@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis.Operations;
 
 namespace OrchardCore.Localization.Extraction;
 
-public sealed record LocalizationCall(IOperation Receiver, IOperation Key, IOperation? Plural = null, IOperation? PluralForms = null, IReadOnlyList<string?>? FormatArguments = null);
+public sealed record LocalizationCall(IOperation Receiver, IOperation Key, IOperation? Plural = null, IOperation? PluralForms = null, IReadOnlyList<string?>? FormatArguments = null, IOperation? Note = null, IOperation? Count = null);
 
 public interface ICSharpLocalizationAdapter
 {
@@ -123,15 +123,24 @@ public sealed class CSharpLocalizationExtractor
         }
 
         var plural = method.Name == "Plural" ? invocation.Arguments.FirstOrDefault(argument => argument.Parameter?.Name == "plural")?.Value : null;
-        return new LocalizationCall(receiver, key ?? forms!, plural, forms, GetFormatArguments(invocation.Arguments, method.Name == "Plural"));
+        var note = invocation.Arguments.FirstOrDefault(argument => argument.Parameter?.Name == "note")?.Value;
+        var count = method.Name == "Plural" ? invocation.Arguments.FirstOrDefault(argument => argument.Parameter?.Name == "count")?.Value : null;
+        return new LocalizationCall(receiver, key ?? forms!, plural, forms, GetFormatArguments(invocation.Arguments, method.Name == "Plural"), note, count);
     }
 
-    private static List<string?> GetFormatArguments(IEnumerable<IArgumentOperation> arguments, bool plural = false)
+    internal static List<string?> GetFormatArguments(IEnumerable<IArgumentOperation> arguments, bool plural = false)
     {
         var descriptions = new List<string?>();
         if (plural)
         {
-            descriptions.Add("count");
+            var count = arguments.FirstOrDefault(argument => argument.Parameter?.Name == "count")?.Value;
+            string? name = null;
+            if (count is not null)
+            {
+                GetCountMetadata(count, out name, out _);
+            }
+
+            descriptions.Add(name ?? "count");
         }
 
         foreach (var argument in arguments.Where(argument => argument.Parameter?.Name == "arguments"))
@@ -139,19 +148,152 @@ public sealed class CSharpLocalizationExtractor
             var value = Unwrap(argument.Value);
             if (value is IArrayCreationOperation { Initializer: not null } array)
             {
-                descriptions.AddRange(array.Initializer.ElementValues.Select(element => Unwrap(element).Syntax.ToString()));
+                descriptions.AddRange(array.Initializer.ElementValues.Select(DescribeArgument));
             }
             else if (value is ICollectionExpressionOperation collection)
             {
-                descriptions.AddRange(collection.Elements.Select(element => Unwrap(element).Syntax.ToString()));
+                descriptions.AddRange(collection.Elements.Select(DescribeArgument));
             }
             else if (value.Type is not IArrayTypeSymbol)
             {
-                descriptions.Add(value.Syntax.ToString());
+                descriptions.Add(DescribeArgument(value));
             }
         }
 
         return descriptions;
+    }
+
+    private static string? DescribeArgument(IOperation operation)
+    {
+        operation = Unwrap(operation);
+        if (TryGetArgumentName(operation, out var name))
+        {
+            return name ?? ((IInvocationOperation)operation).Arguments.FirstOrDefault(argument => argument.Parameter?.Ordinal == 1)?.Value.Syntax.ToString();
+        }
+
+        return operation.Syntax.ToString();
+    }
+
+    /// <summary>
+    /// Gets the name given to a format argument with an <c>Arg(name, value)</c> or <c>Arg(name, value, min, max)</c>
+    /// helper, which returns its value unchanged at runtime.
+    /// </summary>
+    private static bool TryGetArgumentName(IOperation operation, out string? name)
+    {
+        name = null;
+        if (operation is not IInvocationOperation { TargetMethod: { Name: "Arg", IsStatic: true } method } invocation
+            || !IsArg(method) && !IsRangedArg(method))
+        {
+            return false;
+        }
+
+        var argument = invocation.Arguments.FirstOrDefault(argument => argument.Parameter?.Ordinal == 0);
+        name = argument is null ? null : GetConstant(argument.Value);
+        return true;
+    }
+
+    private static bool IsArg(IMethodSymbol method)
+        => method is { Arity: 1, Parameters.Length: 2 }
+            && method.Parameters[0] is { Name: "name", Type.SpecialType: SpecialType.System_String }
+            && method.Parameters[1].Name == "value"
+            && SymbolEqualityComparer.Default.Equals(method.Parameters[1].Type, method.TypeArguments[0])
+            && SymbolEqualityComparer.Default.Equals(method.ReturnType, method.TypeArguments[0]);
+
+    private static bool IsRangedArg(IMethodSymbol method)
+        => method is { Arity: 0, Parameters.Length: 4, ReturnType.SpecialType: SpecialType.System_Int32 }
+            && method.Parameters[0] is { Name: "name", Type.SpecialType: SpecialType.System_String }
+            && method.Parameters[1] is { Name: "value", Type.SpecialType: SpecialType.System_Int32 }
+            && method.Parameters[2] is { Name: "min", Type.SpecialType: SpecialType.System_Int32 }
+            && method.Parameters[3] is { Name: "max", Type.SpecialType: SpecialType.System_Int32 };
+
+    internal static bool HasDynamicArgumentName(IOperation operation)
+        => TryGetArgumentName(operation, out var name) && name is null;
+
+    /// <summary>
+    /// Gets whether an operation calls an <c>Arg(name, value, min, max)</c> helper, which declares the range of the count
+    /// of a plural message.
+    /// </summary>
+    private static bool IsRangedArg(IOperation operation)
+        => operation is IInvocationOperation { TargetMethod: { Name: "Arg", IsStatic: true } method } && IsRangedArg(method);
+
+    /// <summary>
+    /// Gets the name and the range declared by the <c>Arg</c> helper wrapping the count of a plural message.
+    /// </summary>
+    private static void GetCountMetadata(IOperation count, out string? name, out IInvocationOperation? range)
+    {
+        count = Unwrap(count);
+        range = IsRangedArg(count) ? (IInvocationOperation)count : null;
+        if (!TryGetArgumentName(count, out name))
+        {
+            name = null;
+        }
+    }
+
+    /// <summary>
+    /// Gets the range declared on the count of a plural message, and reports the ranges that are not constant, are
+    /// invalid, or do not apply to the count of a plural message.
+    /// </summary>
+    /// <param name="operation">The localization call.</param>
+    /// <param name="count">The count of the plural message, if any.</param>
+    /// <param name="catalog">The catalog receiving the diagnostics.</param>
+    /// <param name="source">The source of the localization call.</param>
+    internal static PluralRange? GetPluralRange(IOperation? operation, IOperation? count, LocalizationCatalog catalog, SourceReference source)
+    {
+        IInvocationOperation? range = null;
+        if (count is not null)
+        {
+            GetCountMetadata(count, out _, out range);
+        }
+
+        if (operation is not null && operation.DescendantsAndSelf().Any(descendant => IsRangedArg(descendant) && (range is null || descendant.Syntax.Span != range.Syntax.Span)))
+        {
+            catalog.Diagnostics.Add(new ExtractionDiagnostic("OCLOC011", "A plural range only applies to the count of a plural message.", source));
+        }
+
+        if (range is null)
+        {
+            return null;
+        }
+
+        var min = GetInt32(range.Arguments.FirstOrDefault(argument => argument.Parameter?.Ordinal == 2)?.Value);
+        var max = GetInt32(range.Arguments.FirstOrDefault(argument => argument.Parameter?.Ordinal == 3)?.Value);
+        if (min is not >= 0 || max is null || min > max)
+        {
+            catalog.Diagnostics.Add(new ExtractionDiagnostic("OCLOC011", "The plural range bounds are not compile-time constants with 0 <= min <= max.", source));
+            return null;
+        }
+
+        return new PluralRange(min.Value, max.Value);
+    }
+
+    private static int? GetInt32(IOperation? operation)
+        => operation is not null && Unwrap(operation).ConstantValue is { HasValue: true, Value: int value } ? value : null;
+
+    /// <summary>
+    /// Removes the <c>Note(note)</c> calls wrapping a localizer, which return the localizer unchanged at runtime, and
+    /// collects their notes.
+    /// </summary>
+    private static IOperation UnwrapNotes(IOperation receiver, List<IOperation> notes)
+    {
+        while (Unwrap(receiver) is IInvocationOperation { TargetMethod: { Name: "Note", IsExtensionMethod: true } method } invocation
+            && method.ContainingType.ToDisplayString() is "Microsoft.Extensions.Localization.StringLocalizerExtensions" or "Microsoft.AspNetCore.Mvc.Localization.HtmlLocalizerExtensions")
+        {
+            var localizer = invocation.Arguments.FirstOrDefault(argument => argument.Parameter?.Ordinal == 0)?.Value;
+            var note = invocation.Arguments.FirstOrDefault(argument => argument.Parameter?.Name == "note")?.Value;
+            if (localizer is null)
+            {
+                break;
+            }
+
+            if (note is not null)
+            {
+                notes.Add(note);
+            }
+
+            receiver = localizer;
+        }
+
+        return receiver;
     }
 
     private void ExtractCall(LocalizationCall call, SyntaxNode node, string? viewContext, SemanticModel model)
@@ -187,7 +329,36 @@ public sealed class CSharpLocalizationExtractor
             return;
         }
 
-        var context = ResolveContext(call.Receiver, viewContext, new HashSet<ISymbol>(SymbolEqualityComparer.Default));
+        var noteOperations = new List<IOperation>();
+        if (call.Note is not null)
+        {
+            noteOperations.Add(call.Note);
+        }
+
+        var receiver = UnwrapNotes(call.Receiver, noteOperations);
+        var notes = new List<string>();
+        foreach (var noteOperation in noteOperations)
+        {
+            var note = GetConstant(noteOperation);
+            if (note is null)
+            {
+                _catalog.Diagnostics.Add(new ExtractionDiagnostic("OCLOC010", "The translator note or format argument name is not a compile-time constant string.", source));
+            }
+            else
+            {
+                notes.Add(note);
+            }
+        }
+
+        var operation = model.GetOperation(node);
+        if (operation is not null && operation.Descendants().Any(HasDynamicArgumentName))
+        {
+            _catalog.Diagnostics.Add(new ExtractionDiagnostic("OCLOC010", "The translator note or format argument name is not a compile-time constant string.", source));
+        }
+
+        var range = GetPluralRange(operation, plural is null ? null : call.Count, _catalog, source);
+
+        var context = ResolveContext(receiver, viewContext, new HashSet<ISymbol>(SymbolEqualityComparer.Default));
         if (context is null && model.GetEnclosingSymbol(node.SpanStart)?.ContainingType is { } containingType)
         {
             context = GetResourceName(containingType, allowGenericDefinition: true);
@@ -199,8 +370,9 @@ public sealed class CSharpLocalizationExtractor
             return;
         }
 
-        _catalog.Add(context, key, plural, source, GetComment(node), call.FormatArguments);
+        _catalog.Add(context, key, plural, source, GetComment(node), call.FormatArguments, notes, range);
     }
+
 
     internal static string? GetConstant(IOperation operation)
     {

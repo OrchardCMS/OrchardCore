@@ -319,7 +319,7 @@ public class OpenIdAuthenticationTests
     }
 
     [Fact]
-    public async Task OpenIdPasswordGrant_RateLimitExceededReturnsTooManyRequests_Succeeds()
+    public async Task OpenIdPasswordGrant_RateLimitExceeded_ReturnsSlowDownError()
     {
         var context = new SiteContext();
 
@@ -376,7 +376,118 @@ public class OpenIdAuthenticationTests
             response = await context.Client.SendAsync(request, CancellationToken.None);
         }
 
-        Assert.Equal(HttpStatusCode.TooManyRequests, response.StatusCode);
+        // The rejected request gets an OAuth 2.0 error response that token clients understand.
+        Assert.False(response.IsSuccessStatusCode);
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+        var payload = await response.Content.ReadFromJsonAsync<JsonObject>(CancellationToken.None);
+
+        Assert.Equal(OpenIddictConstants.Errors.SlowDown, payload["error"]?.GetValue<string>());
+        Assert.False(string.IsNullOrEmpty(payload["error_description"]?.GetValue<string>()));
+    }
+
+    [Fact]
+    public async Task OpenIdPasswordGrant_TenantPolicyExceeded_ReturnsSlowDownErrorWithRetryAfter()
+    {
+        var context = new SiteContext();
+
+        await context.InitializeAsync();
+
+        const string clientId = "password-flow-policy-client";
+
+        var recipe = new JsonObject
+        {
+            ["steps"] = new JsonArray
+            {
+                new JsonObject
+                {
+                    { "name", "Feature" },
+                    { "enable", new JsonArray(
+                        "OrchardCore.Users",
+                        "OrchardCore.RateLimits",
+                        "OrchardCore.OpenId.Server",
+                        "OrchardCore.OpenId.Validation",
+                        "OrchardCore.OpenId") },
+                },
+                new JsonObject
+                {
+                    { "name", "OpenIdServerSettings" },
+                    { "EnableTokenEndpoint", true },
+                    { "AllowPasswordFlow", true },
+                },
+                new JsonObject
+                {
+                    { "name", "OpenIdApplication" },
+                    { "ClientId", clientId },
+                    { "DisplayName", "Password Flow Policy Test Application" },
+                    { "Type", "public" },
+                    { "AllowPasswordFlow", true },
+                },
+                new JsonObject
+                {
+                    { "name", "CreateOrUpdateRateLimitPolicies" },
+                    { "policies", new JsonArray
+                        {
+                            new JsonObject
+                            {
+                                { "PolicyId", "openid-token-test-policy" },
+                                { "Name", "OpenID Token Test Policy" },
+                                { "IsEnabled", true },
+                                { "Scope", "Endpoint" },
+                                { "Path", "/connect/token" },
+                                { "Limiters", new JsonArray
+                                    {
+                                        new JsonObject
+                                        {
+                                            { "Id", "openid-token-test-limiter" },
+                                            { "Source", "FixedWindow" },
+                                            { "Properties", new JsonObject
+                                                {
+                                                    { "FixedWindowRateLimiterData", new JsonObject
+                                                        {
+                                                            { "PermitLimit", 1 },
+                                                            { "WindowSeconds", 60 },
+                                                            { "QueueLimit", 0 },
+                                                        }
+                                                    },
+                                                }
+                                            },
+                                        },
+                                    }
+                                },
+                            },
+                        }
+                    },
+                },
+            },
+        };
+
+        await RecipeHelpers.RunRecipeAsync(context, recipe);
+
+        HttpResponseMessage response = null;
+
+        // Whichever limiter rejects the token request, the client gets an OAuth 2.0 error response.
+        for (var i = 0; i < 2; i++)
+        {
+            var request = HttpRequestHelper.CreatePostMessage("connect/token", new Dictionary<string, string>
+            {
+                { "client_id", clientId },
+                { "grant_type", "password" },
+                { "username", "admin" },
+                { "password", "WrongPassword01_" },
+            });
+
+            response = await context.Client.SendAsync(request, CancellationToken.None);
+        }
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.NotNull(response.Headers.RetryAfter?.Delta);
+        Assert.True(response.Headers.RetryAfter.Delta > TimeSpan.Zero);
+
+        var payload = await response.Content.ReadFromJsonAsync<JsonObject>(CancellationToken.None);
+
+        Assert.Equal(OpenIddictConstants.Errors.SlowDown, payload["error"]?.GetValue<string>());
+        Assert.False(string.IsNullOrEmpty(payload["error_description"]?.GetValue<string>()));
     }
 
     [Fact]

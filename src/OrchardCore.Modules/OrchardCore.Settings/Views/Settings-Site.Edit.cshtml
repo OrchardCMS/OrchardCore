@@ -51,7 +51,7 @@
 </div>
 
 <div class="ocat-limited-wrapper" asp-validation-class-for="PageSize">
-    <label asp-for="PageSize" class="ocat-label">@T["Page size"]</label>
+    <label asp-for="PageSize" class="ocat-label ocat-label-required">@T["Page size"]</label>
     <div class="ocat-limited">
         <input asp-for="PageSize" type="number" class="form-control" />
         <span asp-validation-for="PageSize"></span>
@@ -71,7 +71,7 @@
 </div>
 
 <div class="ocat-wrapper @(Model.AllowPageSizeSelection ? "" : "d-none")" id="pageSizeOptionsWrapper" asp-validation-class-for="PageSizeOptions">
-    <label asp-for="PageSizeOptions" class="ocat-label">@T["Page size options"]</label>
+    <label asp-for="PageSizeOptions" class="ocat-label ocat-label-required">@T["Page size options"]</label>
     <div class="ocat-end">
         <input asp-for="PageSizeOptions" class="form-control" placeholder="10, 25, 50, 100" />
         <span asp-validation-for="PageSizeOptions"></span>

@@ -14,7 +14,7 @@ public sealed class SealedShapeTypeAnalyzer : DiagnosticAnalyzer
     private const string ShapeFactoryExtensionsMetadataName = "OrchardCore.DisplayManagement.ShapeFactoryExtensions";
     private const string DisplayDriverBaseMetadataName = "OrchardCore.DisplayManagement.Handlers.DisplayDriverBase";
 
-    private static readonly DiagnosticDescriptor Rule = new(
+    private static readonly DiagnosticDescriptor s_rule = new(
         DiagnosticId,
         "Sealed types can't be used as proxy-based shapes",
         "Type '{0}' is sealed and does not implement IShape, so OrchardCore can't create a proxy-based shape for this '{1}' call",
@@ -23,7 +23,7 @@ public sealed class SealedShapeTypeAnalyzer : DiagnosticAnalyzer
         isEnabledByDefault: true,
         description: "OrchardCore creates strongly typed shapes by subclassing the model type with Castle DynamicProxy. Sealed types that do not implement IShape fail at runtime. Remove the sealed modifier, implement IShape, or use a non-proxy shape creation pattern such as View, Copy, or Dynamic.");
 
-    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [Rule];
+    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [s_rule];
 
     public override void Initialize(AnalysisContext context)
     {
@@ -60,7 +60,7 @@ public sealed class SealedShapeTypeAnalyzer : DiagnosticAnalyzer
         }
 
         context.ReportDiagnostic(Diagnostic.Create(
-            Rule,
+            s_rule,
             invocation.Syntax.GetLocation(),
             namedType.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat),
             targetMethod.Name));

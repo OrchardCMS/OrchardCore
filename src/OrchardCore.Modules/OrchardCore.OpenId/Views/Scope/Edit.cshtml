@@ -12,7 +12,7 @@
 <form asp-action="Edit" method="post" class="no-multisubmit">
 
     <div class="ocat-wrapper" asp-validation-class-for="DisplayName">
-        <label asp-for="DisplayName" class="ocat-label">@T["Display Name"]</label>
+        <label asp-for="DisplayName" class="ocat-label ocat-label-required">@T["Display Name"]</label>
         <div class="ocat-end">
             <input asp-for="DisplayName" class="form-control" autofocus />
             <span asp-validation-for="DisplayName" class="text-danger"></span>
@@ -20,7 +20,7 @@
     </div>
 
     <div class="ocat-wrapper" asp-validation-class-for="Name">
-        <label asp-for="Name" class="ocat-label">@T["Name"]</label>
+        <label asp-for="Name" class="ocat-label ocat-label-required">@T["Name"]</label>
         <div class="ocat-end">
             <input asp-for="Name" class="form-control" />
             <span asp-validation-for="Name" class="text-danger"></span>
@@ -44,10 +44,8 @@
         </div>
     </div>
 
-    <div class="ocat-wrapper">
-        <div class="ocat-end-offset">
-            <button class="btn btn-primary save" type="submit">@T["Save"]</button>
-            <a class="btn btn-secondary cancel" role="button" asp-route-action="Index">@T["Cancel"]</a>
-        </div>
+    <div class="action-bar-bottom">
+        <button class="btn btn-primary save" type="submit">@T["Save"]</button>
+        <a class="btn btn-secondary cancel" role="button" asp-route-action="Index">@T["Cancel"]</a>
     </div>
 </form>

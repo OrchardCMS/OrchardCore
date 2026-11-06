@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Net;
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Html;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Descriptors;
@@ -10,6 +11,7 @@ using OrchardCore.DisplayManagement.Html;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Modules;
+using OrchardCore.Telemetry;
 
 namespace OrchardCore.DisplayManagement.Implementation;
 
@@ -25,6 +27,7 @@ public class DefaultHtmlDisplay : IHtmlDisplay
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger _logger;
     private readonly IOptionsMonitor<ShapeRenderingOptions> _shapeRenderingOptions;
+    private TimeSpan? _slowShapeThreshold;
 
     public DefaultHtmlDisplay(
         IEnumerable<IShapeDisplayEvents> shapeDisplayEvents,
@@ -84,7 +87,7 @@ public class DefaultHtmlDisplay : IHtmlDisplay
             activity.SetTag("orchardcore.shape.type", shapeMetadata.Type);
         }
 
-        var startTimestamp = DisplayManagementDiagnostics.ShapeRenderDuration.Enabled ? Stopwatch.GetTimestamp() : 0;
+        var startTimestamp = DisplayManagementDiagnostics.ShapeRenderDuration.Enabled || ShapeTelemetry.IsEnabled ? Stopwatch.GetTimestamp() : 0;
 
         // Copy the current context such that the rendering can customize it if necessary,
         // for instance to change the HtmlFieldPrefix.
@@ -136,7 +139,7 @@ public class DefaultHtmlDisplay : IHtmlDisplay
                 }
 
                 // Now find the actual binding to render, taking alternates into account.
-                actualBinding = await GetShapeBindingAsync(shapeMetadata.Type, shapeMetadata.Alternates, shapeTable);
+                actualBinding = await GetShapeBindingAsync(shapeMetadata.Type, shapeMetadata.HasAlternates ? shapeMetadata.Alternates : AlternatesCollection.Empty, shapeTable);
 
                 if (actualBinding == null)
                 {
@@ -150,7 +153,7 @@ public class DefaultHtmlDisplay : IHtmlDisplay
             }
 
             // Process wrappers.
-            if (shapeMetadata.Wrappers.Count > 0)
+            if (shapeMetadata.HasWrappers)
             {
                 foreach (var frameType in shapeMetadata.Wrappers)
                 {
@@ -205,9 +208,20 @@ public class DefaultHtmlDisplay : IHtmlDisplay
 
             if (startTimestamp != 0)
             {
-                DisplayManagementDiagnostics.ShapeRenderDuration.Record(
-                    Stopwatch.GetElapsedTime(startTimestamp).TotalSeconds,
-                    new KeyValuePair<string, object>("orchardcore.shape.type", shapeMetadata.Type));
+                var elapsed = Stopwatch.GetElapsedTime(startTimestamp);
+
+                if (DisplayManagementDiagnostics.ShapeRenderDuration.Enabled)
+                {
+                    DisplayManagementDiagnostics.ShapeRenderDuration.Record(
+                        elapsed.TotalSeconds,
+                        new KeyValuePair<string, object>("orchardcore.shape.type", shapeMetadata.Type));
+                }
+
+                // A shape already traced by the display management source isn't traced twice.
+                if (activity is null)
+                {
+                    ShapeTelemetry.RecordSlow(shapeMetadata, actualBinding, elapsed, GetSlowShapeThreshold());
+                }
             }
 
             if (activity is not null && actualBinding is not null)
@@ -222,6 +236,12 @@ public class DefaultHtmlDisplay : IHtmlDisplay
         }
 
         return shapeMetadata.ChildContent;
+    }
+
+    private TimeSpan GetSlowShapeThreshold()
+    {
+        return _slowShapeThreshold ??= _serviceProvider.GetService<IOptions<OrchardCoreTelemetryOptions>>()?.Value.SlowShapeThreshold
+            ?? new OrchardCoreTelemetryOptions().SlowShapeThreshold;
     }
 
     private static IHtmlContent AddShapeDebugInformation(IHtmlContent childContent, string shapeType, ShapeBinding actualBinding, List<ShapeBinding> wrapperBindings)

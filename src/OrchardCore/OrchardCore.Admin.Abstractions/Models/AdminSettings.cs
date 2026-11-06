@@ -35,10 +35,11 @@ public class AdminSettings
     public AdminListLayout? ListLayout { get; set; }
 
     /// <summary>
-    /// The layout of the row actions of admin lists, either <see cref="AdminListActionsLayout.Buttons"/> or <see cref="AdminListActionsLayout.Menu"/>.
+    /// The layout of the admin actions, either <see cref="AdminListActionsLayout.Buttons"/> or <see cref="AdminListActionsLayout.Menu"/>.
+    /// It applies to the row actions of admin lists and to the secondary actions of the bottom action bar of edit pages.
     /// When null, <see cref="AdminListOptions.DefaultActionsLayout"/> is used.
     /// </summary>
-    public AdminListActionsLayout? ListActionsLayout { get; set; }
+    public AdminListActionsLayout? ActionsLayout { get; set; }
 
     /// <summary>
     /// Whether a list shows a selector letting the user render it with another layout. The choice is kept in a

@@ -44,13 +44,14 @@
         </div>
     </div>
 
-    <button class="btn btn-success download" type="submit">@T["Download"]</button>
+    <div class="action-bar-bottom">
+        <button class="btn btn-success download" type="submit">@T["Download"]</button>
 
-    @if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
-    {
-        <a class="btn btn-secondary cancel" role="button" href="@returnUrl">@T["Cancel"]</a>
-    }
-
+        @if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+        {
+            <a class="btn btn-secondary cancel" role="button" href="@returnUrl">@T["Cancel"]</a>
+        }
+    </div>
 </form>
 
 <script asp-src="~/OrchardCore.Contents/Scripts/download-editors/download-display.min.js" debug-src="~/OrchardCore.Contents/Scripts/download-editors/download-display.js" at="Foot" type="module"></script>

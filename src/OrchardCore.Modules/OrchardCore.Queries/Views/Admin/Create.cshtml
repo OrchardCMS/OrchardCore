@@ -13,14 +13,12 @@
         @await DisplayAsync(Model.Editor.Content)
     }
 
+    <input type="hidden" asp-for="SourceName" />
+
     @if (Model.Editor.Actions != null)
     {
-        <div class="ocat-wrapper">
-            <div class="ocat-end-offset">
-                @await DisplayAsync(Model.Editor.Actions)
-            </div>
+        <div class="action-bar-bottom">
+            @await DisplayAsync(Model.Editor.Actions)
         </div>
     }
-
-    <input type="hidden" asp-for="SourceName" />
 </form>

@@ -76,9 +76,32 @@ public class ShapeMetadata
 
     public string Differentiator { get; set; }
 
-    public AlternatesCollection Wrappers { get; set; } = new();
+    private AlternatesCollection _wrappers;
+    private AlternatesCollection _alternates;
 
-    public AlternatesCollection Alternates { get; set; } = new();
+    // The collections are allocated on first access, as most shapes don't have any wrapper or alternate.
+
+    public AlternatesCollection Wrappers
+    {
+        get => _wrappers ??= new();
+        set => _wrappers = value;
+    }
+
+    public AlternatesCollection Alternates
+    {
+        get => _alternates ??= new();
+        set => _alternates = value;
+    }
+
+    /// <summary>
+    /// Whether the shape has wrappers, without allocating the collection.
+    /// </summary>
+    internal bool HasWrappers => _wrappers is { Count: > 0 };
+
+    /// <summary>
+    /// Whether the shape has alternates, without allocating the collection.
+    /// </summary>
+    internal bool HasAlternates => _alternates is { Count: > 0 };
 
     public bool IsCached => UseMainCacheContext
         ? _mainCacheContext.Context is not null

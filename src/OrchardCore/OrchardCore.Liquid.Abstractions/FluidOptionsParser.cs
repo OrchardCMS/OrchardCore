@@ -35,10 +35,7 @@ public sealed class FluidOptionsParser<TOptions> where TOptions : class
     {
         if (_templateContext == null)
         {
-            var templateOptions = new TemplateOptions();
-            _templateContext = new TemplateContext(templateOptions);
-            templateOptions.MemberAccessStrategy.Register<ShellSettings>();
-            templateOptions.MemberAccessStrategy.Register<TOptions>();
+            _templateContext = new TemplateContext(TemplateOptions.Default);
             _templateContext.SetValue("ShellSettings", _shellSettings);
         }
 

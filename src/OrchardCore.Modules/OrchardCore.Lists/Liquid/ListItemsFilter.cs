@@ -20,13 +20,13 @@ public class ListItemsFilter : ILiquidFilter
     {
         string listContentItemId;
 
-        if (input.Type == FluidValues.Object && input.ToObjectValue() is ContentItem contentItem)
+        if (input.Type == FluidValues.Object && input.ToObjectValue(ctx) is ContentItem contentItem)
         {
             listContentItemId = contentItem.ContentItemId;
         }
         else
         {
-            listContentItemId = input.ToStringValue();
+            listContentItemId = input.ToStringValue(ctx);
         }
 
         var listItems = await ListQueryHelpers.QueryListItemsAsync(_session, listContentItemId);

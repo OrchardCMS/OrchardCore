@@ -140,6 +140,11 @@ msgstr[1] ""
 
 #: Views/AdminSettings.Edit.cshtml
 msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
+msgid "Actions layout"
+msgstr ""
+
+#: Views/AdminSettings.Edit.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
 msgid "Buttons"
 msgstr ""
 
@@ -182,7 +187,7 @@ msgstr ""
 #: Views/AdminSettings.Edit.cshtml
 #, csharp-format
 msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
-msgid "How the actions of each row are displayed: as buttons, or in a single compact menu. Use the configuration default to inherit {0} from appsettings.json."
+msgid "How the actions of each list row and the secondary actions of the bottom action bar of edit pages are displayed: as buttons, or in a single compact menu. On small screens the secondary actions of the bottom action bar are always in a menu. Use the configuration default to inherit {0} from appsettings.json."
 msgstr ""
 
 #. Format arguments: {0}: "OrchardCore:Admin:List:DefaultLayout"
@@ -200,11 +205,6 @@ msgstr ""
 #: Views/AdminSettings.Edit.cshtml
 msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
 msgid "List"
-msgstr ""
-
-#: Views/AdminSettings.Edit.cshtml
-msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
-msgid "List actions layout"
 msgstr ""
 
 #: Views/AdminSettings.Edit.cshtml

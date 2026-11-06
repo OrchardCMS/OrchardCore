@@ -30,7 +30,7 @@
 
 <div id="Custom_AzureAI_Settings" class="@(Model.ConfigurationsAreOptional ? (Model.UseCustomConfiguration ? " collapse show" : " collapse") : string.Empty)">
     <div class="ocat-wrapper" asp-validation-class-for="Endpoint">
-        <label asp-for="Endpoint" class="ocat-label">@T["Endpoint"]</label>
+        <label asp-for="Endpoint" class="ocat-label ocat-label-required">@T["Endpoint"]</label>
         <div class="ocat-end">
         <input type="url" asp-for="Endpoint" class="form-control" placeholder="https://[search service name].search.windows.net" />
         <span asp-validation-for="Endpoint"></span>
@@ -38,7 +38,7 @@
     </div>
 
     <div class="ocat-wrapper" asp-validation-class-for="AuthenticationType">
-        <label asp-for="AuthenticationType" class="ocat-label">@T["Authentication Type"]</label>
+        <label asp-for="AuthenticationType" class="ocat-label ocat-label-required">@T["Authentication Type"]</label>
         <div class="ocat-end">
         <select asp-for="AuthenticationType" class="form-select azure-ai-auth-type" asp-items="Model.AuthenticationTypes"></select>
         <span asp-validation-for="AuthenticationType"></span>
@@ -46,7 +46,7 @@
     </div>
 
     <div class="ocat-wrapper azure-ai-api-key-wrapper@(Model.AuthenticationType == AzureAIAuthenticationType.ApiKey ? string.Empty : " d-none")" asp-validation-class-for="ApiKey" id="@apiKeyWrapperHtmlId">
-        <label asp-for="ApiKey" class="ocat-label">@T["Api Key"]</label>
+        <label asp-for="ApiKey" class="ocat-label ocat-label-required">@T["Api Key"]</label>
         <div class="ocat-end">
         <secret-input asp-for="ApiKey" secret-name="@AzureAISearchConstants.SecretNames.ApiKey" placeholder="@T["Provide an authentication key"].Value" />
         <span asp-validation-for="ApiKey"></span>

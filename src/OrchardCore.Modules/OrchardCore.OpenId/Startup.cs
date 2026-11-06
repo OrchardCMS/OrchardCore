@@ -1,11 +1,13 @@
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
+using System.Globalization;
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -234,13 +236,16 @@ public sealed class ServerSecretsStartup : StartupBase
 [RequireFeatures("OrchardCore.RateLimits")]
 public sealed class ServerRateLimitsStartup : StartupBase
 {
+    private const string TokenRouteName = "Access.Token";
+
     public override void ConfigureServices(IServiceCollection services)
     {
         // Shares the budget of the login page, so it must use the same limit.
         var passwordAuthentication = RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.PasswordAuthentication, 100);
 
         services.Configure<RateLimitsOptions>(options =>
-            options.AddRouteRateLimit("Access.Token", HttpMethods.Post, context =>
+        {
+            options.AddRouteRateLimit(TokenRouteName, HttpMethods.Post, context =>
             {
                 // Only the password grant checks user credentials. The other grants exchange codes, refresh tokens or client secrets
                 // that can't be guessed, and they are often sent for many users by a single server, so they must not share this budget.
@@ -250,7 +255,34 @@ public sealed class ServerRateLimitsStartup : StartupBase
                 return request is null || request.IsPasswordGrantType()
                     ? passwordAuthentication(context)
                     : RateLimitPartition.GetNoLimiter(UserRateLimiterPolicyNames.PasswordAuthentication);
-            }));
+            });
+
+            options.AddRouteRejectionHandler(TokenRouteName, OnTokenRequestRejectedAsync);
+        });
+    }
+
+    private static async ValueTask OnTokenRequestRejectedAsync(OnRejectedContext context, CancellationToken cancellationToken)
+    {
+        // Lets the OpenID server handler return an OAuth 2.0 error response, which token clients understand, instead of an empty response.
+        if (context.HttpContext.GetOpenIddictServerRequest() is null)
+        {
+            return;
+        }
+
+        if (context.Lease.TryGetMetadata(MetadataName.RetryAfter, out var retryAfter))
+        {
+            context.HttpContext.Response.Headers.RetryAfter = ((int)Math.Ceiling(retryAfter.TotalSeconds)).ToString(CultureInfo.InvariantCulture);
+        }
+
+        // The 'slow_down' error is defined by the device authorization grant, but it's the error that best describes a rejected request.
+        // The error description is not localized as OAuth 2.0 only allows select US-ASCII characters in it.
+        var properties = new AuthenticationProperties(new Dictionary<string, string>(StringComparer.Ordinal)
+        {
+            [OpenIddictServerAspNetCoreConstants.Properties.Error] = OpenIddictConstants.Errors.SlowDown,
+            [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] = "Too many requests. Please retry later.",
+        });
+
+        await context.HttpContext.ForbidAsync(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme, properties);
     }
 }
 

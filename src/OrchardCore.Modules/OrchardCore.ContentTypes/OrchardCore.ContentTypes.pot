@@ -552,6 +552,16 @@ msgstr ""
 
 #: Views/Admin/Edit.cshtml
 msgctxt "OrchardCore.ContentTypes.Views.Admin.Edit"
+msgid "Save actions"
+msgstr ""
+
+#: Views/Admin/Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.Admin.Edit"
+msgid "Save and continue"
+msgstr ""
+
+#: Views/Admin/Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.Admin.Edit"
 msgid "System-defined fields are integral components of the system and cannot be removed."
 msgstr ""
 

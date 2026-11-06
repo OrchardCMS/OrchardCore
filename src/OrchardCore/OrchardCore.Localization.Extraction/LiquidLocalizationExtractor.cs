@@ -32,37 +32,37 @@ public sealed class LiquidLocalizationExtractor
     private static ExtractionLiquidParser CreateDefaultParser()
         => new ExtractionLiquidParser();
 
-    private static ValueTask<Completion> IgnoreTagAsync(TextWriter writer, TextEncoder encoder, TemplateContext context)
+    private static ValueTask<Completion> IgnoreTagAsync(IFluidOutput output, TextEncoder encoder, TemplateContext context)
     {
-        _ = writer;
+        _ = output;
         _ = encoder;
         _ = context;
         return ValueTask.FromResult(Completion.Normal);
     }
 
-    private static ValueTask<Completion> IgnoreExpressionTagAsync(Expression expression, TextWriter writer, TextEncoder encoder, TemplateContext context)
+    private static ValueTask<Completion> IgnoreExpressionTagAsync(Expression expression, IFluidOutput output, TextEncoder encoder, TemplateContext context)
     {
         _ = expression;
-        _ = writer;
+        _ = output;
         _ = encoder;
         _ = context;
         return ValueTask.FromResult(Completion.Normal);
     }
 
-    private static ValueTask<Completion> IgnoreParserTagAsync<T>(T arguments, TextWriter writer, TextEncoder encoder, TemplateContext context)
+    private static ValueTask<Completion> IgnoreParserTagAsync<T>(T arguments, IFluidOutput output, TextEncoder encoder, TemplateContext context)
     {
         _ = arguments;
-        _ = writer;
+        _ = output;
         _ = encoder;
         _ = context;
         return ValueTask.FromResult(Completion.Normal);
     }
 
-    private static ValueTask<Completion> IgnoreParserBlockAsync(IReadOnlyList<FilterArgument> arguments, IReadOnlyList<Statement> statements, TextWriter writer, TextEncoder encoder, TemplateContext context)
+    private static ValueTask<Completion> IgnoreParserBlockAsync(IReadOnlyList<FilterArgument> arguments, IReadOnlyList<Statement> statements, IFluidOutput output, TextEncoder encoder, TemplateContext context)
     {
         _ = arguments;
         _ = statements;
-        _ = writer;
+        _ = output;
         _ = encoder;
         _ = context;
         return ValueTask.FromResult(Completion.Normal);
@@ -71,7 +71,7 @@ public sealed class LiquidLocalizationExtractor
     private sealed class ExtractionLiquidParser : FluidParser
     {
         public ExtractionLiquidParser()
-            : base(new FluidParserOptions { AllowFunctions = true })
+            : base(new FluidParserOptions { AllowFunctions = true, AllowStringEscapeSequences = true })
         {
             RegisterEmptyTag("render_body", IgnoreTagAsync);
             RegisterEmptyTag("antiforgerytoken", IgnoreTagAsync);
@@ -85,8 +85,7 @@ public sealed class LiquidLocalizationExtractor
             {
                 "render_section", "page_title", "page_title_add_segment", "httpcontext_add_items",
                 "meta", "link", "script", "style", "resources", "helper", "shape", "cache_dependency", "cache_expires_on", "cache_expires_after",
-                "cache_expires_sliding", "shape_add_properties", "shape_remove_property", "shape_remove_item",
-                "shape_pager",
+                "cache_expires_sliding",
             })
             {
                 RegisterParserTag(tag, ArgumentsList, IgnoreParserTagAsync);
@@ -99,6 +98,10 @@ public sealed class LiquidLocalizationExtractor
             RegisterParserTag("shape_type", Primary.And(Primary), IgnoreParserTagAsync);
             RegisterParserTag("shape_display_type", Primary.And(Primary), IgnoreParserTagAsync);
             RegisterParserTag("shape_position", Primary.And(Primary), IgnoreParserTagAsync);
+            RegisterParserTag("shape_add_properties", Primary.And(ArgumentsList), IgnoreParserTagAsync);
+            RegisterParserTag("shape_remove_property", Primary.And(Primary), IgnoreParserTagAsync);
+            RegisterParserTag("shape_remove_item", Primary.And(Primary), IgnoreParserTagAsync);
+            RegisterParserTag("shape_pager", Primary.And(ArgumentsList), IgnoreParserTagAsync);
             RegisterParserTag("httpcontext_remove_items", Primary, IgnoreParserTagAsync);
 
             foreach (var tag in new[] { "zone", "form", "cache", "a", "block" })
@@ -110,6 +113,9 @@ public sealed class LiquidLocalizationExtractor
 
     private sealed class LocalizationVisitor : AstVisitor
     {
+        // Matches the named argument the 't' filter ignores at runtime.
+        private const string NoteArgumentName = "note";
+
         private readonly string _context;
         private readonly SourceReference _source;
         private readonly LocalizationCatalog _catalog;
@@ -132,7 +138,28 @@ public sealed class LiquidLocalizationExtractor
             {
                 if (expression.Input is LiteralExpression { Value: StringValue value })
                 {
-                    _catalog.Add(_context, value.ToStringValue(), null, _source);
+                    var notes = new List<string>();
+                    var formatArguments = new List<string?>();
+                    foreach (var parameter in expression.Parameters)
+                    {
+                        if (parameter.Name == NoteArgumentName)
+                        {
+                            if (parameter.Expression is LiteralExpression { Value: StringValue note })
+                            {
+                                notes.Add(note.ToStringValue(null));
+                            }
+                            else
+                            {
+                                _catalog.Diagnostics.Add(new ExtractionDiagnostic("OCLOC010", "The Liquid translator note is not a literal string.", _source));
+                            }
+                        }
+                        else
+                        {
+                            formatArguments.Add(parameter.Name);
+                        }
+                    }
+
+                    _catalog.Add(_context, value.ToStringValue(null), null, _source, formatArguments: formatArguments, notes: notes);
                 }
                 else
                 {

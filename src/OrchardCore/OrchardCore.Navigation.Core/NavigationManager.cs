@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
-using OrchardCore.Environment.Shell;
+using OrchardCore.Mvc.Utilities;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Navigation;
@@ -13,7 +13,6 @@ public class NavigationManager : INavigationManager
 {
     private readonly IEnumerable<INavigationProvider> _navigationProviders;
     private readonly ILogger _logger;
-    protected readonly ShellSettings _shellSettings;
     private readonly IUrlHelperFactory _urlHelperFactory;
     private readonly IAuthorizationService _authorizationService;
 
@@ -22,13 +21,11 @@ public class NavigationManager : INavigationManager
     public NavigationManager(
         IEnumerable<INavigationProvider> navigationProviders,
         ILogger<NavigationManager> logger,
-        ShellSettings shellSettings,
         IUrlHelperFactory urlHelperFactory,
         IAuthorizationService authorizationService)
     {
         _navigationProviders = navigationProviders;
         _logger = logger;
-        _shellSettings = shellSettings;
         _urlHelperFactory = urlHelperFactory;
         _authorizationService = authorizationService;
     }
@@ -64,6 +61,9 @@ public class NavigationManager : INavigationManager
 
         // Keep only menu items with an Href, or that have child items with an Href.
         menuItems = Reduce(menuItems);
+
+        // Add breadcrumbs-like classes to each node.
+        AddNavigationClasses(menuItems, "oc-navigation-" + name.HtmlClassify(separator: '_'));
 
         return menuItems;
     }
@@ -283,5 +283,15 @@ public class NavigationManager : INavigationManager
         }
 
         return item.Items.Any(HasHrefOrChildHref);
+    }
+    
+    private static void AddNavigationClasses(List<MenuItem> menuItems, string classPrefix)
+    {
+        foreach (var menuItem in menuItems)
+        {
+            var className = $"{classPrefix}-{menuItem.Text.Name.HtmlClassify(separator: '_')}";
+            menuItem.Classes.Add(className);
+            AddNavigationClasses(menuItem.Items, className);
+        }
     }
 }

@@ -22,6 +22,7 @@ using OrchardCore.Security.Permissions;
 using OrchardCore.Users;
 using OrchardCore.Users.Models;
 using OrchardCore.Workflows.Helpers;
+using OrchardCore.Workflows.Options;
 using YesSql.Filters.Query;
 
 namespace OrchardCore.Notifications;
@@ -38,6 +39,8 @@ public sealed class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddScoped<INotificationService, NotificationService>();
+        services.AddScoped<INotificationManager, NotificationManager>();
+        services.AddScoped<INotificationVisibilityEvaluator, NotificationVisibilityEvaluator>();
         services.AddScoped<INotificationMethodProviderAccessor, NotificationMethodProviderAccessor>();
 
         services.AddDataMigration<NotificationMigrations>();
@@ -71,12 +74,12 @@ public sealed class Startup : StartupBase
         services.AddDisplayDriver<User, UserNotificationPreferencesPartDisplayDriver>();
         services.AddDisplayDriver<Navbar, NotificationNavbarDisplayDriver>();
         services.AddScoped<INotificationEvents, CacheNotificationEventsHandler>();
-
     }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
     {
         routes.AddMarkAsReadEndpoint();
+        routes.AddOpenNotificationEndpoint();
     }
 }
 
@@ -85,6 +88,8 @@ public sealed class WorkflowsStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.Configure<WorkflowOptions>(options => options.CategoryIcons[NotificationsLocalizationSources.Notifications.Value] = "fa-solid fa-bell");
+
         services.AddActivity<NotifyUserTask, NotifyUserTaskDisplayDriver>();
     }
 }

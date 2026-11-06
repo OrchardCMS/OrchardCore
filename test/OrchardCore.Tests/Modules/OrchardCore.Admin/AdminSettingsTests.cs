@@ -11,11 +11,11 @@ public class AdminSettingsTests
     [InlineData("Menu", AdminListActionsLayout.Menu)]
     public void Deserialize_ActionsLayout_ReadsEnumByName(string value, AdminListActionsLayout expected)
     {
-        var settings = JsonSerializer.Deserialize<AdminSettings>($$"""{ "ListActionsLayout": "{{value}}" }""", JOptions.Default);
+        var settings = JsonSerializer.Deserialize<AdminSettings>($$"""{ "ActionsLayout": "{{value}}" }""", JOptions.Default);
 
-        Assert.Equal(expected, settings.ListActionsLayout);
+        Assert.Equal(expected, settings.ActionsLayout);
         var json = JsonSerializer.Serialize(settings, JOptions.Default);
-        Assert.Equal(expected, JsonSerializer.Deserialize<AdminSettings>(json, JOptions.Default).ListActionsLayout);
+        Assert.Equal(expected, JsonSerializer.Deserialize<AdminSettings>(json, JOptions.Default).ActionsLayout);
     }
 
     [Fact]
@@ -23,7 +23,7 @@ public class AdminSettingsTests
     {
         var settings = JsonSerializer.Deserialize<AdminSettings>("{}", JOptions.Default);
 
-        Assert.Null(settings.ListActionsLayout);
+        Assert.Null(settings.ActionsLayout);
     }
 
     // The default of the navigation menu behavior is the first member of its enum, not an

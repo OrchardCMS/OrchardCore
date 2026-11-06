@@ -287,6 +287,7 @@
     <Project Path="src/OrchardCore/OrchardCore.Navigation.Core/OrchardCore.Navigation.Core.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Notifications.Abstractions/OrchardCore.Notifications.Abstractions.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Notifications.Core/OrchardCore.Notifications.Core.csproj" />
+    <Project Path="src/OrchardCore/OrchardCore.OpenTelemetry/OrchardCore.OpenTelemetry.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.OpenApi.Core/OrchardCore.OpenApi.Core.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.OpenId.Core/OrchardCore.OpenId.Core.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Queries.Abstractions/OrchardCore.Queries.Abstractions.csproj" />
@@ -367,6 +368,7 @@
     <Project Path="test/OrchardCore.Tests.Modules/Examples.Modules.AssyAttrib.Charlie/Examples.Modules.AssyAttrib.Charlie.csproj" />
     <Project Path="test/OrchardCore.Tests.Modules/Examples.OrchardCoreModules.Alpha/Examples.OrchardCoreModules.Alpha.csproj" />
     <Project Path="test/OrchardCore.Tests.Modules/ModuleSample/ModuleSample.csproj" />
+    <Project Path="test/OrchardCore.Tests.Modules/WorkflowsSample/WorkflowsSample.csproj" />
   </Folder>
   <Folder Name="/test/OrchardCore.Tests.Pages/" />
   <Folder Name="/test/OrchardCore.Tests.Pages/OrchardCore.Application.Pages/">

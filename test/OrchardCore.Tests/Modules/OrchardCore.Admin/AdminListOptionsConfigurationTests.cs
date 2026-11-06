@@ -15,7 +15,7 @@ public class AdminListOptionsConfigurationTests
         site.Put(new AdminSettings
         {
             ListLayout = AdminListLayout.Grid,
-            ListActionsLayout = AdminListActionsLayout.Menu,
+            ActionsLayout = AdminListActionsLayout.Menu,
             AllowUserListLayoutSelection = true,
         });
 
@@ -51,7 +51,7 @@ public class AdminListOptionsConfigurationTests
     public void Configure_ButtonsOverride_WinsOverConfiguredMenu()
     {
         var site = new SiteSettings();
-        site.Put(new AdminSettings { ListActionsLayout = AdminListActionsLayout.Buttons });
+        site.Put(new AdminSettings { ActionsLayout = AdminListActionsLayout.Buttons });
 
         var options = Configure(new AdminListOptions
         {
@@ -72,7 +72,7 @@ public class AdminListOptionsConfigurationTests
         var options = new AdminListOptions();
         if (siteOverride)
         {
-            site.Put(new AdminSettings { ListActionsLayout = (AdminListActionsLayout)42 });
+            site.Put(new AdminSettings { ActionsLayout = (AdminListActionsLayout)42 });
         }
         else
         {

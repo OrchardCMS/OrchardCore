@@ -4,10 +4,12 @@
 
 @inject ThemeTogglerService ThemeTogglerService
 @inject IOptions<AdminOptions> AdminOptions
+@inject IOptionsMonitor<AdminListOptions> AdminListOptions
 @inject IDisplayManager<Navbar> DisplayManager
 @inject IUpdateModelAccessor UpdateModelAccessor
 @{
     var adminSettings = Site.GetOrCreate<AdminSettings>();
+    var actionsLayout = AdminListOptions.CurrentValue.DefaultActionsLayout == AdminListActionsLayout.Menu ? "menu" : "buttons";
 
     // Branding and Navbar are pre-rendered to allow resource injection.
     var brandingHtml = await DisplayAsync(await New.AdminBranding());
@@ -43,7 +45,7 @@
 
     @await RenderSectionAsync("HeadMeta", required: false)
 </head>
-<body class="preload">
+<body class="preload" data-actions-layout="@actionsLayout" data-more-actions-label="@T["More actions"]">
     <div class="ta-wrapper">
         <nav class="ta-navbar-top navbar text-bg-theme fixed-top">
             <div class="container-fluid">

@@ -42,29 +42,33 @@ internal sealed class CultureValue : FluidValue
             return false;
         }
 
-        return ToStringValue() == other.ToStringValue();
+        return Culture.Name == other.ToStringValue(null);
     }
 
-    public override bool ToBooleanValue() => true;
+    public override bool ToBooleanValue(TemplateContext context) => true;
 
-    public override decimal ToNumberValue() => 0;
+    public override decimal ToNumberValue(TemplateContext context) => 0;
 
-    public override object ToObjectValue() => Culture;
+    public override object ToObjectValue(TemplateContext context) => Culture;
 
-    public override string ToStringValue() => Culture.Name;
+    public override string ToStringValue(TemplateContext context) => Culture.Name;
 
-    public override async ValueTask WriteToAsync(TextWriter writer, TextEncoder encoder, CultureInfo cultureInfo)
-        => await writer.WriteAsync(Culture.Name);
+    public override ValueTask WriteToAsync(IFluidOutput output, TextEncoder encoder, TemplateContext context)
+    {
+        output.Write(Culture.Name);
+
+        return ValueTask.CompletedTask;
+    }
 
     public override ValueTask<FluidValue> GetValueAsync(string name, TemplateContext context)
     {
         return name switch
         {
-            nameof(CultureInfo.Name) => ValueTask.FromResult<FluidValue>(new StringValue(Culture.Name)),
-            nameof(CultureInfo.NativeName) => ValueTask.FromResult<FluidValue>(new StringValue(Culture.NativeName)),
-            nameof(CultureInfo.DisplayName) => ValueTask.FromResult<FluidValue>(new StringValue(Culture.DisplayName)),
-            nameof(CultureInfo.TwoLetterISOLanguageName) => ValueTask.FromResult<FluidValue>(new StringValue(Culture.TwoLetterISOLanguageName)),
-            "Dir" => ValueTask.FromResult<FluidValue>(new StringValue(Culture.GetLanguageDirection())),
+            nameof(CultureInfo.Name) => ValueTask.FromResult<FluidValue>(StringValue.Create(Culture.Name)),
+            nameof(CultureInfo.NativeName) => ValueTask.FromResult<FluidValue>(StringValue.Create(Culture.NativeName)),
+            nameof(CultureInfo.DisplayName) => ValueTask.FromResult<FluidValue>(StringValue.Create(Culture.DisplayName)),
+            nameof(CultureInfo.TwoLetterISOLanguageName) => ValueTask.FromResult<FluidValue>(StringValue.Create(Culture.TwoLetterISOLanguageName)),
+            "Dir" => ValueTask.FromResult<FluidValue>(StringValue.Create(Culture.GetLanguageDirection())),
             "SupportedCultures" => _culture is null ? GetSupportedCulturesAsync(context) : ValueTask.FromResult<FluidValue>(NilValue.Instance),
             "DefaultCulture" => _culture is null ? GetDefaultCultureAsync(context) : ValueTask.FromResult<FluidValue>(NilValue.Instance),
             _ => ValueTask.FromResult<FluidValue>(NilValue.Instance)
@@ -80,7 +84,7 @@ internal sealed class CultureValue : FluidValue
         var localizationService = services.GetRequiredService<ILocalizationService>();
         var supportedCultures = await localizationService.GetSupportedCulturesAsync();
 
-        return new ArrayValue(supportedCultures.Select(c => new CultureValue(CultureInfo.GetCultureInfo(c))).ToArray());
+        return ArrayValue.Create(supportedCultures.Select(c => new CultureValue(CultureInfo.GetCultureInfo(c))).ToArray());
     }
 
     private static async ValueTask<FluidValue> GetDefaultCultureAsync(TemplateContext context)

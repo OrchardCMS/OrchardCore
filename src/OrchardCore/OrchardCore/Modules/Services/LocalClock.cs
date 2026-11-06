@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
 using OrchardCore.Localization;
 
@@ -7,19 +8,24 @@ public class LocalClock : ILocalClock
 {
     private readonly IEnumerable<ITimeZoneSelector> _timeZoneSelectors;
     private readonly IClock _clock;
-    private readonly ICalendarManager _calendarManager;
+    private readonly IServiceProvider _serviceProvider;
 
+    private ICalendarManager _calendarManager;
     private Task<ITimeZone> _timeZoneTask;
 
     public LocalClock(
         IEnumerable<ITimeZoneSelector> timeZoneSelectors,
         IClock clock,
-        ICalendarManager calendarManager)
+        IServiceProvider serviceProvider)
     {
         _timeZoneSelectors = timeZoneSelectors;
         _clock = clock;
-        _calendarManager = calendarManager;
+        _serviceProvider = serviceProvider;
     }
+
+    // Resolved on demand as it is only used to convert dates to local ones, while the local clock
+    // itself is resolved by every rendered Liquid template.
+    private ICalendarManager CalendarManager => _calendarManager ??= _serviceProvider.GetRequiredService<ICalendarManager>();
 
     public async Task<DateTimeOffset> GetLocalNowAsync()
         => _clock.ConvertToTimeZone(_clock.UtcNow, await GetLocalTimeZoneAsync());
@@ -33,7 +39,7 @@ public class LocalClock : ILocalClock
         var localTimeZone = await GetLocalTimeZoneAsync();
         var dateTimeZone = ((TimeZone)localTimeZone).DateTimeZone;
         var offsetDateTime = OffsetDateTime.FromDateTimeOffset(dateTimeOffSet);
-        var currentCalendar = BclCalendars.GetCalendarByName(await _calendarManager.GetCurrentCalendar());
+        var currentCalendar = BclCalendars.GetCalendarByName(await CalendarManager.GetCurrentCalendar());
 
         return offsetDateTime.InZone(dateTimeZone)
             .WithCalendar(currentCalendar)

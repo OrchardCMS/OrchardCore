@@ -18,12 +18,12 @@ msgstr ""
 
 #: Activities/MetaConversionsApiEventTask.cs
 msgctxt "OrchardCore.Facebook.Activities.MetaConversionsApiEventTask"
-msgid "Meta"
+msgid "Meta Conversions API Event Task"
 msgstr ""
 
 #: Activities/MetaConversionsApiEventTask.cs
 msgctxt "OrchardCore.Facebook.Activities.MetaConversionsApiEventTask"
-msgid "Meta Conversions API Event Task"
+msgid "The result of sending the event."
 msgstr ""
 
 #: AdminMenu.cs

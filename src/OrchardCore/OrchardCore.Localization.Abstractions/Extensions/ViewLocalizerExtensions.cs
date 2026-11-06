@@ -43,4 +43,37 @@ public static class ViewLocalizerExtensions
 
         return localizer[pluralForms[0], new PluralizationArgument { Count = count, Forms = pluralForms, Arguments = arguments }];
     }
+
+    /// <summary>
+    /// Gets the pluralization form, with a note for translators.
+    /// </summary>
+    /// <param name="localizer">The <see cref="IViewLocalizer"/>.</param>
+    /// <param name="note">The note explaining the meaning or usage of the message to translators. It is read by the localization extraction and has no effect at runtime.</param>
+    /// <param name="count">The number to be used for selecting the pluralization form.</param>
+    /// <param name="singular">The singular form key.</param>
+    /// <param name="plural">The plural form key.</param>
+    /// <param name="arguments">The parameters used in the key.</param>
+    [SkipLocalizationExtraction]
+    public static LocalizedHtmlString Plural(this IViewLocalizer localizer, string note, int count, string singular, string plural, params object[] arguments)
+    {
+        _ = note;
+
+        return localizer.Plural(count, singular, plural, arguments);
+    }
+
+    /// <summary>
+    /// Gets the pluralization form, with a note for translators.
+    /// </summary>
+    /// <param name="localizer">The <see cref="IViewLocalizer"/>.</param>
+    /// <param name="note">The note explaining the meaning or usage of the message to translators. It is read by the localization extraction and has no effect at runtime.</param>
+    /// <param name="count">The number to be used for selecting the pluralization form.</param>
+    /// <param name="pluralForms">A list of pluralization forms.</param>
+    /// <param name="arguments">The parameters used in the key.</param>
+    [SkipLocalizationExtraction]
+    public static LocalizedHtmlString Plural(this IViewLocalizer localizer, string note, int count, string[] pluralForms, params object[] arguments)
+    {
+        _ = note;
+
+        return localizer.Plural(count, pluralForms, arguments);
+    }
 }

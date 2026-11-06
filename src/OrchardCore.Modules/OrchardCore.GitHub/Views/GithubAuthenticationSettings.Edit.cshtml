@@ -17,7 +17,7 @@
 </div>
 
 <div class="ocat-limited-wrapper" asp-validation-class-for="ClientID">
-    <label asp-for="ClientID" class="ocat-label">@T["Client ID"]</label>
+    <label asp-for="ClientID" class="ocat-label ocat-label-required">@T["Client ID"]</label>
     <div class="ocat-limited">
         <input asp-for="ClientID" class="form-control" />
         <span asp-validation-for="ClientID"></span>

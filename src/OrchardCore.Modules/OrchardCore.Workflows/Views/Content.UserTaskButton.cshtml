@@ -7,7 +7,7 @@
 {
     @foreach (var action in actions)
     {
-        <div class="btn-group" role="group">
+        <div class="btn-group action-bar-secondary" role="group">
             <button class="btn btn-warning" type="submit" name="submit.Save" value="user-task.@action">@T[Html.Encode(action)] @T["and Save"]</button>
             <button type="button" class="btn btn-warning dropdown-toggle dropdown-toggle-split" data-reference="parent" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span class="visually-hidden">@T["Toggle Dropdown"]</span>
@@ -20,7 +20,7 @@
 }
 else
 {
-    <div class="btn-group" role="group">
+    <div class="btn-group action-bar-secondary" role="group">
         <button id="userActionsButtonGroup" type="button" class="btn btn-warning dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             @T["User Actions"]
         </button>

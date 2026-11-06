@@ -17,7 +17,7 @@
 </div>
 
 <div class="ocat-limited-wrapper" asp-validation-class-for="APIKey">
-    <label asp-for="APIKey" class="ocat-label">@T["API key"]</label>
+    <label asp-for="APIKey" class="ocat-label ocat-label-required">@T["API key"]</label>
     <div class="ocat-limited">
         <input asp-for="APIKey" class="form-control" autocomplete="off" />
         <span asp-validation-for="APIKey"></span>
@@ -34,7 +34,7 @@
 </div>
 
 <div class="ocat-limited-wrapper" asp-validation-class-for="AccessToken">
-    <label asp-for="AccessToken" class="ocat-label">@T["Access Token"]</label>
+    <label asp-for="AccessToken" class="ocat-label ocat-label-required">@T["Access Token"]</label>
     <div class="ocat-limited">
         <input asp-for="AccessToken" class="form-control" autocomplete="off" />
         <span asp-validation-for="AccessToken"></span>

@@ -130,6 +130,16 @@ msgstr ""
 
 #: Views/Admin/Create.cshtml
 msgctxt "OrchardCore.Shortcodes.Views.Admin.Create"
+msgid "Save actions"
+msgstr ""
+
+#: Views/Admin/Create.cshtml
+msgctxt "OrchardCore.Shortcodes.Views.Admin.Create"
+msgid "Save and continue"
+msgstr ""
+
+#: Views/Admin/Create.cshtml
+msgctxt "OrchardCore.Shortcodes.Views.Admin.Create"
 msgid "Shortcodes"
 msgstr ""
 
@@ -216,6 +226,16 @@ msgstr ""
 #: Views/Admin/Edit.cshtml
 msgctxt "OrchardCore.Shortcodes.Views.Admin.Edit"
 msgid "Save"
+msgstr ""
+
+#: Views/Admin/Edit.cshtml
+msgctxt "OrchardCore.Shortcodes.Views.Admin.Edit"
+msgid "Save actions"
+msgstr ""
+
+#: Views/Admin/Edit.cshtml
+msgctxt "OrchardCore.Shortcodes.Views.Admin.Edit"
+msgid "Save and continue"
 msgstr ""
 
 #: Views/Admin/Edit.cshtml

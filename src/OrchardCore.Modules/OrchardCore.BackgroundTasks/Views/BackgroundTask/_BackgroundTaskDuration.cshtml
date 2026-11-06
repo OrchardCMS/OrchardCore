@@ -1,0 +1,14 @@
+@model TimeSpan
+
+@if (Model.TotalSeconds < 1)
+{
+    @T["{0} ms", (int)Model.TotalMilliseconds]
+}
+else if (Model.TotalMinutes < 1)
+{
+    @T["{0} s", Math.Round(Model.TotalSeconds, 1)]
+}
+else
+{
+    @await DisplayAsync(await New.Duration(timeSpan: Model))
+}

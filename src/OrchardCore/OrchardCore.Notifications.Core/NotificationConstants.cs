@@ -14,6 +14,24 @@ public static class NotificationConstants
     // minus 2 to allow a new date time, for example 'ReadAtUtc'.
     public const int NotificationIndexContentLength = 705;
 
+    /// <summary>
+    /// The maximum length of <see cref="Notification.Type"/>.
+    /// </summary>
+    public const int NotificationTypeLength = 64;
+
+    /// <summary>
+    /// The maximum length of <see cref="Notification.ReferenceId"/>.
+    /// </summary>
+    public const int NotificationReferenceIdLength = 255;
+
+    public static class DisplayTypes
+    {
+        /// <summary>
+        /// The display type of a notification in the navbar.
+        /// </summary>
+        public const string Header = "Header";
+    }
+
     public static class Features
     {
         public const string Notifications = "OrchardCore.Notifications";

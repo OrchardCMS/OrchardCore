@@ -27,7 +27,7 @@
 
 <div class="autoroute-disabled" data-autoroute-disabled-for="@Html.IdFor(m => m.Disabled)" style="@(Model.Disabled ? "display: none" : string.Empty)">
     <div class="ocat-wrapper" asp-validation-class-for="Path">
-        <label asp-for="Path" class="ocat-label ocat-label-required">@T["Permalink"]</label>
+        <label asp-for="Path" class="ocat-label">@T["Permalink"]</label>
         <div class="ocat-end">
             <div class="input-group">
                 @if (!string.IsNullOrWhiteSpace(site.BaseUrl))

@@ -33,6 +33,11 @@ msgstr ""
 
 #: Views/Layout.cshtml
 msgctxt "TheAdmin.Views.Layout"
+msgid "More actions"
+msgstr ""
+
+#: Views/Layout.cshtml
+msgctxt "TheAdmin.Views.Layout"
 msgid "Ok"
 msgstr ""
 

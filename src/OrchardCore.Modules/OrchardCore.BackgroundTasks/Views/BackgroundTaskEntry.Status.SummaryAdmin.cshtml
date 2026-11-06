@@ -1,0 +1,24 @@
+@using OrchardCore.BackgroundTasks.ViewModels
+@using OrchardCore.DisplayManagement.Views
+
+@model ShapeViewModel<BackgroundTaskEntry>
+
+@{
+    var state = Model.Value.State;
+}
+
+@if (state is null)
+{
+    <span class="badge ta-badge fw-normal">@T["Waiting for the background service to load this task"]</span>
+}
+else
+{
+    <partial name="_BackgroundTaskStatus" model="state" />
+
+    if (state.FailureCount > 0)
+    {
+        <span class="badge fw-normal text-danger-emphasis bg-danger-subtle border border-danger-subtle" data-failure-count>
+            <span class="fw-bold">@T["Failed runs"]</span> @T["{0} of {1}", state.FailureCount, state.RunCount]
+        </span>
+    }
+}

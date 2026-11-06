@@ -14,12 +14,22 @@ public static class SortableMenuHelper
     private static ILocator MenuItem(IPage page, string itemText)
         => page.Locator("#menu li.menu-item").Filter(new LocatorFilterOptions { HasText = itemText }).First;
 
+    // Raw mouse drags don't scroll like locator actions do, and an item in the viewport
+    // can still be covered by the sticky bottom action bar, so it is centered first.
+    private static async Task<LocatorBoundingBoxResult> GetDragHandleBoxAsync(IPage page, string itemText)
+    {
+        var handle = MenuItem(page, itemText).Locator(".menu-item-title");
+        await handle.EvaluateAsync("e => e.scrollIntoView({ block: 'center' })");
+
+        return await handle.BoundingBoxAsync();
+    }
+
     // Drags the item purely sideways from its own position, by deltaX pixels -
     // enough (see INDENT_THRESHOLD in sortable-menu.ts) to request an indent
     // (positive) or outdent (negative), without repositioning vertically first.
     public static async Task DragMenuItemSidewaysAsync(this IPage page, string itemText, float deltaX)
     {
-        var box = await MenuItem(page, itemText).Locator(".menu-item-title").BoundingBoxAsync();
+        var box = await GetDragHandleBoxAsync(page, itemText);
         Assert.NotNull(box);
 
         await page.Mouse.MoveAsync(box.X + box.Width / 2, box.Y + box.Height / 2);
@@ -52,7 +62,7 @@ public static class SortableMenuHelper
     // a fixed coordinate goes stale) rather than nudging around a fixed point.
     public static async Task DragMenuItemJustAfterAsync(this IPage page, string itemText, string targetText)
     {
-        var fromBox = await MenuItem(page, itemText).Locator(".menu-item-title").BoundingBoxAsync();
+        var fromBox = await GetDragHandleBoxAsync(page, itemText);
         Assert.NotNull(fromBox);
 
         await page.Mouse.MoveAsync(fromBox.X + fromBox.Width / 2, fromBox.Y + fromBox.Height / 2);
@@ -77,7 +87,7 @@ public static class SortableMenuHelper
     // same reason (see its comment).
     public static async Task DragMenuItemJustBeforeAsync(this IPage page, string itemText, string targetText)
     {
-        var fromBox = await MenuItem(page, itemText).Locator(".menu-item-title").BoundingBoxAsync();
+        var fromBox = await GetDragHandleBoxAsync(page, itemText);
         Assert.NotNull(fromBox);
 
         await page.Mouse.MoveAsync(fromBox.X + fromBox.Width / 2, fromBox.Y + fromBox.Height / 2);

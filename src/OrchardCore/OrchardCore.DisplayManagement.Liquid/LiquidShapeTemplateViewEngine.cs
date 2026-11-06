@@ -24,6 +24,7 @@ public class LiquidShapeTemplateViewEngine : IShapeTemplateViewEngine
     private static readonly ConcurrentDictionary<string, LiquidShapeTemplateView> s_views = new(StringComparer.Ordinal);
 
     private readonly ViewContextAccessor _viewContextAccessor;
+    private readonly LiquidTemplateContextAccessor _templateContextAccessor;
     private readonly RazorShapeTemplateViewEngine _razorShapeTemplateViewEngine;
     private readonly IServiceProvider _serviceProvider;
     private readonly TemplateOptions _templateOptions;
@@ -31,12 +32,14 @@ public class LiquidShapeTemplateViewEngine : IShapeTemplateViewEngine
 
     public LiquidShapeTemplateViewEngine(
         ViewContextAccessor viewContextAccessor,
+        LiquidTemplateContextAccessor templateContextAccessor,
         RazorShapeTemplateViewEngine razorShapeTemplateViewEngine,
         IServiceProvider serviceProvider,
         IOptions<TemplateOptions> templateOptions,
         HtmlEncoder htmlEncoder)
     {
         _viewContextAccessor = viewContextAccessor;
+        _templateContextAccessor = templateContextAccessor;
         _razorShapeTemplateViewEngine = razorShapeTemplateViewEngine;
         _serviceProvider = serviceProvider;
         _templateOptions = templateOptions.Value;
@@ -92,7 +95,8 @@ public class LiquidShapeTemplateViewEngine : IShapeTemplateViewEngine
 
         try
         {
-            var context = new LiquidTemplateContext(_serviceProvider, _templateOptions);
+            // The context is shared by all the templates of the request, each one is rendered in its own scope.
+            var context = _templateContextAccessor.GetContext(_templateOptions);
 
             await context.InvokeInScopeAsync(
                 templateViewContext,

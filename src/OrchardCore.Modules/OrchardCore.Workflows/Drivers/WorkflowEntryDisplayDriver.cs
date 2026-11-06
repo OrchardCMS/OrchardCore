@@ -1,4 +1,5 @@
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Workflows.ViewModels;
 
@@ -12,6 +13,13 @@ public sealed class WorkflowEntryDisplayDriver : DisplayDriver<WorkflowEntry>
 {
     public override Task<IDisplayResult> DisplayAsync(WorkflowEntry entry, BuildDisplayContext context)
     {
+        // Each row names its instance, for tests and scripts that find the row of an instance.
+        if (context.DisplayType is OrchardCoreConstants.DisplayType.SummaryAdmin or OrchardCoreConstants.DisplayType.SummaryAdminGrid
+            && context.Shape is Shape rowShape)
+        {
+            rowShape.Attributes["data-cy"] = $"instance-{entry.Workflow.Id}";
+        }
+
         return CombineAsync(
             View("WorkflowEntry_Checkbox_SummaryAdmin", entry)
                 .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Checkbox:1")

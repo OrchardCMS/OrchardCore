@@ -11,7 +11,7 @@
         <div class="card mb-4">
             <div class="card-body">
                 <div class="ocat-wrapper" asp-validation-class-for="Path">
-                    <label asp-for="Path" class="ocat-label">@T["Path"] </label>
+                    <label asp-for="Path" class="ocat-label ocat-label-required">@T["Path"] </label>
                     <div class="ocat-end">
                         <div class="input-group">
                             @if (!string.IsNullOrWhiteSpace(Site.BaseUrl))

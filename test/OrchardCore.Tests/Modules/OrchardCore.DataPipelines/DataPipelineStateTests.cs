@@ -71,10 +71,10 @@ public sealed class DataPipelineStateTests
     [Fact]
     public async Task Run_Failed_KeepsTheStateOfTheLastSuccessfulRun()
     {
-        // Arrange: the media library rejects CSV files by default, so the run fails after the source read its rows.
+        // Arrange: the folder is outside the media library, so the run fails after the source read its rows.
         using var context = await CreateContextAsync();
         await context.CreateContentItem("BlogPost", builder => builder.DisplayText = "First post");
-        var pipelineId = await CreatePipelineAsync(context, "csv");
+        var pipelineId = await CreatePipelineAsync(context, "json");
 
         // Act
         var run = await RunAsync(context, pipelineId);
@@ -170,7 +170,7 @@ public sealed class DataPipelineStateTests
         Assert.Equal(["b"], state.Keys);
     }
 
-    private static async Task<string> CreatePipelineAsync(BlogContext context, string format)
+    private static async Task<string> CreatePipelineAsync(BlogContext context, string format, string folder = "exports")
     {
         string pipelineId = null;
 
@@ -187,7 +187,7 @@ public sealed class DataPipelineStateTests
                 [
                     Step("source", DataSourceStep.StepName, new DataSourceStepSettings { Source = "Contents", DataSet = "BlogPost", Fields = ["DisplayText"], IncrementalField = "ModifiedUtc" }),
                     Step("file", CreateFileStep.StepName, new CreateFileStepSettings { Format = format, FileName = "changed" }),
-                    Step("media", SaveToMediaStep.StepName, new SaveToMediaStepSettings { Folder = "exports" }),
+                    Step("media", SaveToMediaStep.StepName, new SaveToMediaStepSettings { Folder = folder }),
                 ];
                 draft.Connections = [Connect("source", "file"), Connect("file", "media")];
             }, admin);

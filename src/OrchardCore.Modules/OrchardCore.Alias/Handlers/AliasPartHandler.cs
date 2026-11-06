@@ -107,7 +107,7 @@ public class AliasPartHandler : ContentPartHandler<AliasPart>
             };
 
             part.Alias = await _liquidTemplateManager.RenderStringAsync(pattern, NullEncoder.Default, model,
-                new Dictionary<string, FluidValue>() { [nameof(ContentItem)] = new ObjectValue(model.ContentItem) });
+                new Dictionary<string, FluidValue>() { [nameof(ContentItem)] = ObjectValue.Create(model.ContentItem) });
 
             part.Alias = part.Alias.ReplaceLineEndings(string.Empty);
 

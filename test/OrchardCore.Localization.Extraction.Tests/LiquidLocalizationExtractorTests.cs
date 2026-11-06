@@ -103,4 +103,26 @@ public sealed class LiquidLocalizationExtractorTests
         Assert.Empty(catalog.Diagnostics);
         Assert.Equal("Alias key", Assert.Single(catalog.Messages).Text);
     }
+
+    [Fact]
+    public void Extract_NamedArgumentsAndNote_DescribeMessage()
+    {
+        using var workspace = new TestWorkspace();
+        var catalog = new LocalizationCatalog();
+        new LiquidLocalizationExtractor().Extract("{{ 'in {0} years' | t: years: time.years, note: 'Relative date shown for future dates.' }}", new ExtractionFile("Views/Test.liquid", "Views/Test.liquid"), workspace.Options(), catalog, TestContext.Current.CancellationToken);
+        Assert.Empty(catalog.Diagnostics);
+        var message = Assert.Single(catalog.Messages);
+        Assert.Equal("Relative date shown for future dates.", Assert.Single(message.Comments));
+        Assert.Contains("#. Relative date shown for future dates.\n#. Format arguments: {0}: years\n", PotWriter.Write(catalog, "Example"));
+    }
+
+    [Fact]
+    public void Extract_DynamicNote_ReportsAndKeepsMessage()
+    {
+        using var workspace = new TestWorkspace();
+        var catalog = new LocalizationCatalog();
+        new LiquidLocalizationExtractor().Extract("{{ 'Hello {0}' | t: Model.Name, note: Model.Note }}", new ExtractionFile("Views/Test.liquid", "Views/Test.liquid"), workspace.Options(), catalog, TestContext.Current.CancellationToken);
+        Assert.Equal("OCLOC010", Assert.Single(catalog.Diagnostics).Code);
+        Assert.Empty(Assert.Single(catalog.Messages).Comments);
+    }
 }
