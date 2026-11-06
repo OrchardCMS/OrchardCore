@@ -127,7 +127,7 @@ public sealed class PasskeyController : TwoFactorAuthenticationBaseController
         var passkeys = await UserManager.GetPasskeysAsync(user);
 
         result.Passkey.Name = string.IsNullOrWhiteSpace(model.Name)
-            ? S["Passkey {0}", passkeys.Count + 1]
+            ? GetDefaultPasskeyName(passkeys)
             : model.Name.Trim();
 
         var identityResult = await UserManager.AddOrUpdatePasskeyAsync(user, result.Passkey);
@@ -364,6 +364,20 @@ public sealed class PasskeyController : TwoFactorAuthenticationBaseController
 
     private IActionResult RedirectToPasskeys()
         => RedirectToSecurity("passkeys");
+
+    // Numbering the passkeys by their count would repeat a name after a passkey was removed.
+    private string GetDefaultPasskeyName(IList<UserPasskeyInfo> passkeys)
+    {
+        for (var number = passkeys.Count + 1; ; number++)
+        {
+            string name = S["Passkey {0}", number];
+
+            if (!passkeys.Any(passkey => passkey.Name == name))
+            {
+                return name;
+            }
+        }
+    }
 
     private bool IsTwoFactorMethod
         => TwoFactorOptions.Providers.Contains(UserConstants.PasskeyTwoFactorProvider);

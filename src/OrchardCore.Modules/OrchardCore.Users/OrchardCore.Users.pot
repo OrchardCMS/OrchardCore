@@ -600,7 +600,7 @@ msgctxt "OrchardCore.Users.Controllers.PasskeyController"
 msgid "Local login is disabled."
 msgstr ""
 
-#. Format arguments: {0}: passkeys.Count + 1
+#. Format arguments: {0}: number
 #: Controllers/PasskeyController.cs
 #, csharp-format
 msgctxt "OrchardCore.Users.Controllers.PasskeyController"

@@ -721,6 +721,34 @@ public class PasskeyControllerTests
     }
 
     [Fact]
+    public async Task Create_WithoutNameAfterRemoval_GivesUnusedName()
+    {
+        // Arrange
+        var context = await GetSiteContextAsync();
+        var client = CreateClient(context, out _);
+        using var first = new TestPasskeyAuthenticator();
+        using var second = new TestPasskeyAuthenticator();
+        using var third = new TestPasskeyAuthenticator();
+
+        await LoginWithPasswordAsync(client);
+        await RegisterPasskeyAsync(client, first, null);
+        await RegisterPasskeyAsync(client, second, null);
+
+        var token = AntiForgeryHelper.ExtractAntiForgeryToken(await client.GetStringAsync("Security", TestContext.Current.CancellationToken));
+
+        await PostAsync(client, "OrchardCore.Users/Passkey/Delete", token, new()
+        {
+            ["Id"] = System.Buffers.Text.Base64Url.EncodeToString(first.CredentialId),
+        });
+
+        // Act
+        await RegisterPasskeyAsync(client, third, null);
+
+        // Assert
+        Assert.Equal(["Passkey 2", "Passkey 3"], (await GetPasskeysAsync(context)).Select(passkey => passkey.Name).Order());
+    }
+
+    [Fact]
     public async Task Rename_WithValidName_RenamesPasskey()
     {
         // Arrange
