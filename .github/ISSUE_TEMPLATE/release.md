@@ -41,8 +41,8 @@ assignees: ''
 **Update Translations**: After finalizing code changes, update translations in the [Translations project](https://github.com/OrchardCMS/OrchardCore.Translations):
 
 - [ ] Make sure the translation templates are up to date by building the solution from the repository root with `dotnet build OrchardCore.slnx -c Release -p:UpdateLocalizationCatalogs=true` and committing any changed `.pot` file. Upload the templates, listed by `git ls-files '*.pot'`, to [Crowdin](https://crowdin.com/project/orchard-core), then download the translated PO files to update the Translations project. Follow the [translation templates workflow](../../src/docs/reference/modules/Localize/README.md#export-translation-templates-for-localization-platforms), the successor to POExtractor.
-- [ ] Publish the new version on NuGet.
-- [ ] Update the `OrchardCore.Translations.All` package reference in the main repository's `./Dependencies.Packages.props` file.
+- [ ] Publish the stable translation package on NuGet.org after reviewing the release's translations, or select a compatible existing stable package.
+- [ ] Run **Prepare Release Translations** on the release or release-preparation branch with that stable version. Review and merge its `Directory.Packages.props` update PR before creating the OC release tag. See [translation package release preparation](../../src/docs/reference/modules/Localize/README.md#selecting-translations-for-a-release) for the one-time token setup and validation details.
 
 ## Step 4: Validation
 
@@ -93,6 +93,7 @@ dotnet run occms
 **Merge to `main`**: After releasing the new version, merge the release branch into the main branch to ensure that `main` contains all administrative changes.
 
 - [ ] Create a pull request from the release branch (e.g., `release/3.0`) into `main`.
+- [ ] Preserve `main`'s preview `OrchardCore.Translations.All` reference in `Directory.Packages.props`; do not replace it with the stable release reference.
 - [ ] Resolve any merge conflicts using external tools (e.g., Fork) to avoid auto-merging `main` into the release branch. **Important**: DO NOT resolve conflicts using GitHub's interface; that will automatically merge `main` into the release branch, which must be avoided.
 - [ ] Merge the PR if all checks pass. If there are merge conflicts, then you'll need to merge to `main` manually using the following steps:
   1. Fetch the latest changes from the Git repository.
