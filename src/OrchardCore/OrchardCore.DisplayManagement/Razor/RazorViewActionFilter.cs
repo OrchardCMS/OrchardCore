@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Diagnostics;
+using OrchardCore.DisplayManagement.Title;
 using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Environment.Shell;
@@ -14,6 +16,8 @@ namespace OrchardCore.DisplayManagement.Razor;
 /// </summary>
 public sealed class RazorViewActionFilter : IAsyncViewActionFilter
 {
+    private static readonly object s_layoutResetKey = new();
+
     public Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
         static async Task Awaited(Task task, ActionExecutionDelegate next)
@@ -59,6 +63,21 @@ public sealed class RazorViewActionFilter : IAsyncViewActionFilter
         }
 
         var services = context.HttpContext.RequestServices;
+
+        if ((context.HttpContext.Features.Get<IExceptionHandlerFeature>() is not null ||
+             context.HttpContext.Features.Get<IStatusCodeReExecuteFeature>() is not null) &&
+            !context.HttpContext.Items.ContainsKey(s_layoutResetKey))
+        {
+            context.HttpContext.Items[s_layoutResetKey] = true;
+        
+            if (services.GetService<ILayoutAccessor>() is LayoutAccessor layoutAccessor)
+            {
+                layoutAccessor.ResetLayout();
+            }
+        
+            razorViewFeature.ThemeLayout = null;
+            services.GetService<IPageTitleBuilder>()?.Clear();
+        }
 
         if (razorViewFeature.Site is null)
         {
