@@ -48,6 +48,8 @@ public sealed class OpenIdValidationConfiguration : IConfigureOptions<Authentica
 
     public void Configure(AuthenticationOptions options)
     {
+        ArgumentNullException.ThrowIfNull(options);
+
         var settings = GetValidationSettingsAsync().GetAwaiter().GetResult();
         if (settings == null)
         {
@@ -85,6 +87,8 @@ public sealed class OpenIdValidationConfiguration : IConfigureOptions<Authentica
 
     public void Configure(OpenIddictValidationOptions options)
     {
+        ArgumentNullException.ThrowIfNull(options);
+
         var settings = GetValidationSettingsAsync().GetAwaiter().GetResult();
         if (settings == null)
         {
@@ -189,6 +193,8 @@ public sealed class OpenIdValidationConfiguration : IConfigureOptions<Authentica
 
     public void Configure(OpenIddictValidationDataProtectionOptions options)
     {
+        ArgumentNullException.ThrowIfNull(options);
+
         var settings = GetValidationSettingsAsync().GetAwaiter().GetResult();
         if (settings == null)
         {
@@ -218,6 +224,8 @@ public sealed class OpenIdValidationConfiguration : IConfigureOptions<Authentica
 
     public void Configure(string name, ApiAuthorizationOptions options)
     {
+        ArgumentNullException.ThrowIfNull(options);
+
         // The default Orchard API authentication handler uses "Bearer" as the forwarded
         // authentication scheme, that corresponds to the default value used by the JWT
         // bearer handler from Microsoft. Yet, the OpenIddict validation handler uses
