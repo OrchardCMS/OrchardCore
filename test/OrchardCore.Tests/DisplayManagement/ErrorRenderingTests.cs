@@ -89,7 +89,7 @@ public class ErrorRenderingTests
                 }
                 else
                 {
-                    await layout.Zones[failurePoint].AddAsync(new Shape { Metadata = new ShapeMetadata { Type = "Fail" } });
+                    await layout.Zones[failurePoint].AddAsync(new Shape { Metadata = { Type = "Fail" } });
                 }
 
                 await RenderAsync(context, "Original body", renderingFailures);
@@ -109,7 +109,7 @@ public class ErrorRenderingTests
 
             if (failurePoint == "StatusCodeThenException" && context.Request.Path == "/Error/404")
             {
-                await layout.Zones["LaterZone"].AddAsync(new Shape { Metadata = new ShapeMetadata { Type = "Fail" } });
+                await layout.Zones["LaterZone"].AddAsync(new Shape { Metadata = { Type = "Fail" } });
                 await RenderAsync(context, "404 body", renderingFailures);
                 return;
             }
@@ -136,7 +136,7 @@ public class ErrorRenderingTests
 
         responseBody.Position = 0;
         using var reader = new StreamReader(responseBody);
-        var response = await reader.ReadToEndAsync();
+        var response = await reader.ReadToEndAsync(TestContext.Current.CancellationToken);
         Assert.Contains("Error title", response);
         Assert.Contains("Error body", response);
         Assert.DoesNotContain("Original", response);
