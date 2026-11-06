@@ -3,6 +3,7 @@ using System.Net.Mime;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.Extensions.Logging;
 using OrchardCore.Admin;
 using OrchardCore.Deployment.Core.Mvc;
 using OrchardCore.Deployment.Core.Services;
@@ -24,6 +25,7 @@ public sealed class ExportFileController : Controller
     private readonly IAuthorizationService _authorizationService;
     private readonly ISession _session;
     private readonly ITempDirectoryProvider _tempDirectoryProvider;
+    private readonly ILogger<ExportFileController> _logger;
     private readonly INotifier _notifier;
     private readonly IHtmlLocalizer<ExportFileController> H;
 
@@ -32,6 +34,7 @@ public sealed class ExportFileController : Controller
         ISession session,
         IDeploymentManager deploymentManager,
         ITempDirectoryProvider tempDirectoryProvider,
+        ILogger<ExportFileController> logger,
         INotifier notifier,
         IHtmlLocalizer<ExportFileController> htmlLocalizer)
     {
@@ -39,6 +42,7 @@ public sealed class ExportFileController : Controller
         _deploymentManager = deploymentManager;
         _session = session;
         _tempDirectoryProvider = tempDirectoryProvider;
+        _logger = logger;
         _notifier = notifier;
         H = htmlLocalizer;
     }
@@ -89,8 +93,9 @@ public sealed class ExportFileController : Controller
                 await _deploymentManager.ExecuteDeploymentPlanAsync(deploymentPlan, deploymentPlanResult);
                 await ZipFile.CreateFromDirectoryAsync(fileBuilder.Folder, archiveFileName, HttpContext.RequestAborted);
             }
-            catch
+            catch (Exception exception)
             {
+                _logger.LogError(exception, "An error occurred while trying execute deployment plan and save it to file.");
                 await _notifier.ErrorAsync(
                     H["An error has occurred while exporting to file. Please try again or check the application logs."]);
                 return RedirectToAction(
