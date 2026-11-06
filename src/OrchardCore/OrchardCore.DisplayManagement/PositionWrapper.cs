@@ -50,9 +50,15 @@ public sealed class PositionWrapper : IHtmlContent, IPositioned, IShape
         _value.WriteTo(writer, encoder);
     }
 
+    /// <summary>
+    /// Rejects additions because this wrapper holds already rendered content.
+    /// </summary>
+    /// <param name="item">The item to add.</param>
+    /// <param name="position">The requested position.</param>
+    /// <exception cref="NotSupportedException">Adding items to rendered content is not supported.</exception>
     public ValueTask<IShape> AddAsync(object item, string position)
     {
-        throw new System.NotImplementedException();
+        throw new NotSupportedException("Adding items to a PositionWrapper is not supported.");
     }
 
     public static IPositioned TryWrap(object value, string position)
