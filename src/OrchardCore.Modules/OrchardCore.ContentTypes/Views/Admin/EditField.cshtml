@@ -45,7 +45,7 @@
     @Html.ValidationSummary()
 
     <div class="ocat-limited-wrapper">
-        <label asp-for="DisplayName" class="ocat-label">@T["Display Name"]</label>
+        <label asp-for="DisplayName" class="ocat-label ocat-label-required">@T["Display Name"]</label>
         <div class="ocat-limited">
             <input asp-for="DisplayName" autofocus class="form-control" />
             <span class="hint">@T["Name of the field as it will be displayed in screens."]</span>
@@ -116,14 +116,12 @@
         </div>
     }
 
-    <div class="ocat-wrapper">
-        <div class="ocat-end-offset">
-            <button class="btn btn-primary save" type="submit" name="submit.Save" value="Save">@T["Save"]</button>
-            @if (Url.IsLocalUrl(returnUrl))
-            {
-                <a class="btn btn-secondary cancel" role="button" href="@returnUrl">@T["Cancel"]</a>
-            }
-        </div>
+    <div class="action-bar-bottom">
+        <button class="btn btn-primary save" type="submit" name="submit.Save" value="Save">@T["Save"]</button>
+        @if (Url.IsLocalUrl(returnUrl))
+        {
+            <a class="btn btn-secondary cancel" role="button" href="@returnUrl">@T["Cancel"]</a>
+        }
     </div>
 </form>
 

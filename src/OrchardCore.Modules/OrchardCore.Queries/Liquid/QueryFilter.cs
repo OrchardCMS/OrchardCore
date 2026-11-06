@@ -16,7 +16,7 @@ public class QueryFilter : ILiquidFilter
 
     public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
     {
-        var query = input.ToObjectValue() as Query;
+        var query = input.ToObjectValue(ctx) as Query;
 
         if (query == null)
         {
@@ -27,7 +27,7 @@ public class QueryFilter : ILiquidFilter
 
         foreach (var name in arguments.Names)
         {
-            parameters.Add(name, arguments[name].ToObjectValue());
+            parameters.Add(name, arguments[name].ToObjectValue(ctx));
         }
 
         var queryManager = _serviceProvider.GetRequiredService<IQueryManager>();

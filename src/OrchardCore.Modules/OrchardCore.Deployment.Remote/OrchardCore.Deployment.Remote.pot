@@ -1,0 +1,361 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Deployment.Remote\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Deployment.Remote.AdminMenu"
+msgid "Deployments"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Deployment.Remote.AdminMenu"
+msgid "Remote Clients"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Deployment.Remote.AdminMenu"
+msgid "Remote Instances"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Deployment.Remote.AdminMenu"
+msgid "Tools"
+msgstr ""
+
+#. Format arguments: {0}: response.ReasonPhrase; {1}: response.StatusCode
+#: Controllers/ExportRemoteInstanceController.cs
+#, csharp-format
+msgctxt "OrchardCore.Deployment.Remote.Controllers.ExportRemoteInstanceController"
+msgid "An error occurred while sending the deployment to the remote instance: \"{0} ({1})\""
+msgstr ""
+
+#: Controllers/ExportRemoteInstanceController.cs
+msgctxt "OrchardCore.Deployment.Remote.Controllers.ExportRemoteInstanceController"
+msgid "Deployment executed successfully."
+msgstr ""
+
+#. Format arguments: {0}: string.Join(' ', e.StepResult.Errors)
+#: Controllers/ImportRemoteInstanceController.cs
+#, csharp-format
+msgctxt "OrchardCore.Deployment.Remote.Controllers.ImportRemoteInstanceController"
+msgid "The deployment plan failed with the following errors: {0}"
+msgstr ""
+
+#: Controllers/ImportRemoteInstanceController.cs
+msgctxt "OrchardCore.Deployment.Remote.Controllers.ImportRemoteInstanceController"
+msgid "Unexpected error occurred while executing a deployment plan."
+msgstr ""
+
+#: Controllers/RemoteClientController.cs
+msgctxt "OrchardCore.Deployment.Remote.Controllers.RemoteClientController"
+msgid "Delete"
+msgstr ""
+
+#: Controllers/RemoteClientController.cs
+msgctxt "OrchardCore.Deployment.Remote.Controllers.RemoteClientController"
+msgid "Remote client created successfully."
+msgstr ""
+
+#: Controllers/RemoteClientController.cs
+msgctxt "OrchardCore.Deployment.Remote.Controllers.RemoteClientController"
+msgid "Remote client deleted successfully."
+msgstr ""
+
+#: Controllers/RemoteClientController.cs
+msgctxt "OrchardCore.Deployment.Remote.Controllers.RemoteClientController"
+msgid "Remote client updated successfully."
+msgstr ""
+
+#: Controllers/RemoteClientController.cs
+msgctxt "OrchardCore.Deployment.Remote.Controllers.RemoteClientController"
+msgid "Remote clients successfully removed."
+msgstr ""
+
+#: Controllers/RemoteClientController.cs
+msgctxt "OrchardCore.Deployment.Remote.Controllers.RemoteClientController"
+msgid "The api key is mandatory."
+msgstr ""
+
+#: Controllers/RemoteClientController.cs
+msgctxt "OrchardCore.Deployment.Remote.Controllers.RemoteClientController"
+msgid "The client name is mandatory."
+msgstr ""
+
+#: Controllers/RemoteInstanceController.cs
+msgctxt "OrchardCore.Deployment.Remote.Controllers.RemoteInstanceController"
+msgid "Delete"
+msgstr ""
+
+#: Controllers/RemoteInstanceController.cs
+msgctxt "OrchardCore.Deployment.Remote.Controllers.RemoteInstanceController"
+msgid "Remote instance created successfully."
+msgstr ""
+
+#: Controllers/RemoteInstanceController.cs
+msgctxt "OrchardCore.Deployment.Remote.Controllers.RemoteInstanceController"
+msgid "Remote instance deleted successfully."
+msgstr ""
+
+#: Controllers/RemoteInstanceController.cs
+msgctxt "OrchardCore.Deployment.Remote.Controllers.RemoteInstanceController"
+msgid "Remote instance updated successfully."
+msgstr ""
+
+#: Controllers/RemoteInstanceController.cs
+msgctxt "OrchardCore.Deployment.Remote.Controllers.RemoteInstanceController"
+msgid "Remote instances successfully removed."
+msgstr ""
+
+#: Controllers/RemoteInstanceController.cs
+msgctxt "OrchardCore.Deployment.Remote.Controllers.RemoteInstanceController"
+msgid "The api key is mandatory."
+msgstr ""
+
+#: Controllers/RemoteInstanceController.cs
+msgctxt "OrchardCore.Deployment.Remote.Controllers.RemoteInstanceController"
+msgid "The client name is mandatory."
+msgstr ""
+
+#: Controllers/RemoteInstanceController.cs
+msgctxt "OrchardCore.Deployment.Remote.Controllers.RemoteInstanceController"
+msgid "The name is mandatory."
+msgstr ""
+
+#: Controllers/RemoteInstanceController.cs
+msgctxt "OrchardCore.Deployment.Remote.Controllers.RemoteInstanceController"
+msgid "The url is invalid."
+msgstr ""
+
+#: Controllers/RemoteInstanceController.cs
+msgctxt "OrchardCore.Deployment.Remote.Controllers.RemoteInstanceController"
+msgid "The url is mandatory."
+msgstr ""
+
+#: Views/RemoteClient.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteClient.Buttons.SummaryAdmin"
+msgid "Delete"
+msgstr ""
+
+#: Views/RemoteClient.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteClient.Buttons.SummaryAdmin"
+msgid "Edit"
+msgstr ""
+
+#: Views/RemoteClient/Create.cshtml
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteClient.Create"
+msgid "Api Key"
+msgstr ""
+
+#: Views/RemoteClient/Create.cshtml
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteClient.Create"
+msgid "Cancel"
+msgstr ""
+
+#: Views/RemoteClient/Create.cshtml
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteClient.Create"
+msgid "Client Name"
+msgstr ""
+
+#: Views/RemoteClient/Create.cshtml
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteClient.Create"
+msgid "Create"
+msgstr ""
+
+#: Views/RemoteClient/Edit.cshtml
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteClient.Edit"
+msgid "Api Key"
+msgstr ""
+
+#: Views/RemoteClient/Edit.cshtml
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteClient.Edit"
+msgid "Cancel"
+msgstr ""
+
+#: Views/RemoteClient/Edit.cshtml
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteClient.Edit"
+msgid "Client Name"
+msgstr ""
+
+#: Views/RemoteClient/Edit.cshtml
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteClient.Edit"
+msgid "Edit Remote Client"
+msgstr ""
+
+#: Views/RemoteClient/Edit.cshtml
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteClient.Edit"
+msgid "Remote Clients"
+msgstr ""
+
+#: Views/RemoteClient/Edit.cshtml
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteClient.Edit"
+msgid "Save"
+msgstr ""
+
+#: Views/RemoteClient/Index.cshtml
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteClient.Index"
+msgid "<strong>Nothing here!</strong> There are no remote clients for the moment."
+msgstr ""
+
+#: Views/RemoteClient/Index.cshtml
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteClient.Index"
+msgid "Actions"
+msgstr ""
+
+#: Views/RemoteClient/Index.cshtml
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteClient.Index"
+msgid "Add Remote Client"
+msgstr ""
+
+#: Views/RemoteClient/Index.cshtml
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteClient.Index"
+msgid "Client name"
+msgstr ""
+
+#: Views/RemoteClient/Index.cshtml
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteClient.Index"
+msgid "Remote Clients"
+msgstr ""
+
+#: Views/RemoteClient/Index.cshtml
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteClient.Index"
+msgid "Search"
+msgstr ""
+
+#: Views/RemoteClient/Index.cshtml
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteClient.Index"
+msgid "selected"
+msgstr ""
+
+#: Views/RemoteInstance.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Buttons.SummaryAdmin"
+msgid "Delete"
+msgstr ""
+
+#: Views/RemoteInstance.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Buttons.SummaryAdmin"
+msgid "Edit"
+msgstr ""
+
+#: Views/RemoteInstance/Create.cshtml
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Create"
+msgid "Api Key"
+msgstr ""
+
+#: Views/RemoteInstance/Create.cshtml
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Create"
+msgid "Cancel"
+msgstr ""
+
+#: Views/RemoteInstance/Create.cshtml
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Create"
+msgid "Client Name"
+msgstr ""
+
+#: Views/RemoteInstance/Create.cshtml
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Create"
+msgid "Create"
+msgstr ""
+
+#: Views/RemoteInstance/Create.cshtml
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Create"
+msgid "Create Remote Instance"
+msgstr ""
+
+#: Views/RemoteInstance/Create.cshtml
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Create"
+msgid "Name"
+msgstr ""
+
+#: Views/RemoteInstance/Create.cshtml
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Create"
+msgid "Remote Instances"
+msgstr ""
+
+#: Views/RemoteInstance/Create.cshtml
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Create"
+msgid "Url"
+msgstr ""
+
+#: Views/RemoteInstance/Edit.cshtml
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Edit"
+msgid "Api Key"
+msgstr ""
+
+#: Views/RemoteInstance/Edit.cshtml
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Edit"
+msgid "Cancel"
+msgstr ""
+
+#: Views/RemoteInstance/Edit.cshtml
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Edit"
+msgid "Client Name"
+msgstr ""
+
+#: Views/RemoteInstance/Edit.cshtml
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Edit"
+msgid "Edit Remote Instance"
+msgstr ""
+
+#: Views/RemoteInstance/Edit.cshtml
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Edit"
+msgid "Name"
+msgstr ""
+
+#: Views/RemoteInstance/Edit.cshtml
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Edit"
+msgid "Remote Instances"
+msgstr ""
+
+#: Views/RemoteInstance/Edit.cshtml
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Edit"
+msgid "Save"
+msgstr ""
+
+#: Views/RemoteInstance/Edit.cshtml
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Edit"
+msgid "Url"
+msgstr ""
+
+#: Views/RemoteInstance/Index.cshtml
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Index"
+msgid "<strong>Nothing here!</strong> There are no remote instances for the moment."
+msgstr ""
+
+#: Views/RemoteInstance/Index.cshtml
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Index"
+msgid "Actions"
+msgstr ""
+
+#: Views/RemoteInstance/Index.cshtml
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Index"
+msgid "Add Remote Instance"
+msgstr ""
+
+#: Views/RemoteInstance/Index.cshtml
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Index"
+msgid "Name"
+msgstr ""
+
+#: Views/RemoteInstance/Index.cshtml
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Index"
+msgid "Remote Instances"
+msgstr ""
+
+#: Views/RemoteInstance/Index.cshtml
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Index"
+msgid "Search"
+msgstr ""
+
+#: Views/RemoteInstance/Index.cshtml
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Index"
+msgid "selected"
+msgstr ""
+
+#: Services/RemoteInstanceDeploymentTargetProvider.cs
+msgctxt "OrchardCore.Deployment.RemoteInstanceDeploymentTargetProvider"
+msgid "Sends the deployment plan to a remote instance."
+msgstr ""

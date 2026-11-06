@@ -182,6 +182,39 @@ public class RateLimiterMiddlewareTests
     }
 
     [Fact]
+    public async Task RouteRejectionHandler_AnyLimiterRejectsRoute_WritesResponse()
+    {
+        using var staticAssetDirectory = new StaticAssetDirectory();
+        using var host = await CreateHostAsync(
+            staticAssetDirectory.Path,
+            configureRouteLimits: options =>
+            {
+                options.AddRouteRejectionHandler("TenantLimitedRoute", static async (context, cancellationToken) =>
+                {
+                    context.HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
+                    await context.HttpContext.Response.WriteAsync("slow_down", cancellationToken);
+                });
+            },
+            enabledPolicies:
+            [
+                CreateGlobalFixedWindowPolicy("Global", 1, 60),
+            ],
+            cancellationToken: TestContext.Current.CancellationToken);
+
+        var client = host.GetTestClient();
+
+        var firstTenantResponse = await client.GetAsync("/tenant/limited", TestContext.Current.CancellationToken);
+        var secondTenantResponse = await client.GetAsync("/tenant/limited", TestContext.Current.CancellationToken);
+        var otherTenantResponse = await client.GetAsync("/tenant/other", TestContext.Current.CancellationToken);
+
+        Assert.Equal(HttpStatusCode.OK, firstTenantResponse.StatusCode);
+        Assert.Equal(HttpStatusCode.BadRequest, secondTenantResponse.StatusCode);
+        Assert.Equal("slow_down", await secondTenantResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+        Assert.Equal(HttpStatusCode.TooManyRequests, otherTenantResponse.StatusCode);
+        Assert.Empty(await otherTenantResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+    }
+
+    [Fact]
     public async Task Apply_EndpointSpecificPoliciesWithoutGlobalPolicies_Succeeds()
     {
         using var staticAssetDirectory = new StaticAssetDirectory();

@@ -78,6 +78,8 @@ Use this decision guide when creating or updating admin edit views:
 
 ### Required Text Input
 
+Every field whose editor rejects an empty value (`[Required]`, a model error on empty, or an HTML `required` attribute) gets `ocat-label-required` on its label. Add it conditionally when the field is only required in some states, e.g. `@(settings.Required ? "ocat-label-required" : null)`, and don't add it to fields whose empty value is accepted or generated.
+
 ```html
 <div class="ocat-wrapper" asp-validation-class-for="FieldName">
     <label asp-for="FieldName" class="ocat-label ocat-label-required">@T["Label"]</label>

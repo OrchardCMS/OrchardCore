@@ -18,7 +18,6 @@ using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
-using TimeZoneConverter;
 
 namespace OrchardCore.DisplayManagement.Liquid;
 
@@ -66,7 +65,9 @@ internal static class LiquidViewTemplate
     private static async Task RenderAsyncCore(RazorPage<dynamic> page, IServiceProvider services, IFluidTemplate template)
     {
         var templateOptions = services.GetRequiredService<IOptions<TemplateOptions>>().Value;
-        var context = new LiquidTemplateContext(services, templateOptions);
+
+        // The context is shared by all the templates of the request, each one is rendered in its own scope.
+        var context = services.GetRequiredService<LiquidTemplateContextAccessor>().GetContext(templateOptions);
         var htmlEncoder = services.GetRequiredService<HtmlEncoder>();
 
         // Defer the buffer disposing so that a template can be rendered twice.
@@ -90,10 +91,9 @@ internal static class LiquidViewTemplate
         return cache.GetOrCreateAsync(path, async entry =>
         {
             var parser = services.GetRequiredService<LiquidViewParser>();
-            var templateOptions = services.GetRequiredService<IOptions<TemplateOptions>>().Value;
             var isDevelopment = services.GetRequiredService<IHostEnvironment>().IsDevelopment();
 
-            var fileProvider = templateOptions.FileProvider;
+            var fileProvider = services.GetRequiredService<IOptions<LiquidViewOptions>>().Value.FileProvider;
 
             entry.SetSlidingExpiration(TimeSpan.FromHours(1));
             var fileInfo = fileProvider.GetFileInfo(path);
@@ -135,7 +135,13 @@ public static class LiquidViewTemplateExtensions
 
         viewContext ??= viewContextAccessor.ViewContext = await GetViewContextAsync(context);
 
-        await context.InvokeInScopeAsync(viewContext, model, static state => state.Template.RenderAsync(state.Writer, state.Encoder, state.Context), (Template: template, Writer: writer, Encoder: encoder, Context: context));
+        await context.InvokeInScopeAsync(
+            viewContext,
+            model,
+            static state => state.Writer is IFluidOutput output
+                ? state.Template.RenderAsync(output, state.Encoder, state.Context)
+                : state.Template.RenderAsync(state.Writer, state.Encoder, state.Context),
+            (Template: template, Writer: writer, Encoder: encoder, Context: context));
     }
 
     /// <summary>
@@ -157,14 +163,19 @@ public static class LiquidViewTemplateExtensions
             return await callback();
         }
 
+        // The context may be shared by nested templates, the view context of the enclosing one is restored.
+        var previousViewContext = context.ViewContext;
+
+        using var scope = context.EnterScope();
+
         try
         {
-            await context.EnterScopeAsync(viewContext, model);
+            context.InitializeScope(viewContext, model);
             return await callback();
         }
         finally
         {
-            context.ReleaseScope();
+            context.ViewContext = previousViewContext;
         }
     }
 
@@ -206,14 +217,19 @@ public static class LiquidViewTemplateExtensions
             return;
         }
 
+        // The context may be shared by nested templates, the view context of the enclosing one is restored.
+        var previousViewContext = context.ViewContext;
+
+        using var scope = context.EnterScope();
+
         try
         {
-            await context.EnterScopeAsync(viewContext, model);
+            context.InitializeScope(viewContext, model);
             await callback(state);
         }
         finally
         {
-            context.ReleaseScope();
+            context.ViewContext = previousViewContext;
         }
     }
 
@@ -278,7 +294,7 @@ public static class LiquidTemplateContextExtensions
             // Configure Fluid with the time zone to represent local date and times
             var localTimeZone = await localClock.GetLocalTimeZoneAsync();
 
-            if (TZConvert.TryGetTimeZoneInfo(localTimeZone.TimeZoneId, out var timeZoneInfo))
+            if (TimeZoneInfo.TryFindSystemTimeZoneById(localTimeZone.TimeZoneId, out var timeZoneInfo))
             {
                 context.TimeZone = timeZoneInfo;
             }
@@ -296,16 +312,15 @@ public static class LiquidTemplateContextExtensions
         }
     }
     
-    internal static async ValueTask EnterScopeAsync(this LiquidTemplateContext context, ViewContext viewContext, object model)
+    internal static void InitializeScope(this LiquidTemplateContext context, ViewContext viewContext, object model)
     {
-        await context.InitializeAsync(viewContext);
-
-        context.EnterChildScope();
+        // The template is rendered with its own view context, e.g. its executing file path localizes it.
+        context.ViewContext = viewContext;
 
         // The view localizer is only resolved and contextualized if the template localizes something.
-        context.SetValue("ViewLocalizer", new ObjectValue(new LazyViewLocalizer(context.Services, viewContext)));
+        context.SetValue("ViewLocalizer", ObjectValue.Create(new LazyViewLocalizer(context.Services, viewContext)));
 
-        if (context.GetValue("Model")?.ToObjectValue() == model && model is IShape shape)
+        if (context.GetValue("Model")?.ToObjectValue(context) == model && model is IShape shape)
         {
             if (context.ShapeRecursions++ > LiquidTemplateContext.MaxShapeRecursions)
             {

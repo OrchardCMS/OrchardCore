@@ -6,15 +6,15 @@ namespace OrchardCore.Contents.Liquid;
 
 public static class DisplayTextFilter
 {
-    public static ValueTask<FluidValue> DisplayText(FluidValue input, FilterArguments _1, TemplateContext _2)
+    public static ValueTask<FluidValue> DisplayText(FluidValue input, FilterArguments _, TemplateContext context)
     {
-        var contentItem = input.ToObjectValue() as ContentItem;
+        var contentItem = input.ToObjectValue(context) as ContentItem;
 
         if (contentItem == null)
         {
             return ValueTask.FromResult<FluidValue>(NilValue.Instance);
         }
 
-        return ValueTask.FromResult<FluidValue>(new StringValue(contentItem.DisplayText ?? string.Empty));
+        return ValueTask.FromResult<FluidValue>(StringValue.Create(contentItem.DisplayText ?? string.Empty));
     }
 }

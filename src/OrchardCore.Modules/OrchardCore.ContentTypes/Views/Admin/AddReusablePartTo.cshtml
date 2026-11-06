@@ -20,7 +20,7 @@
     @if (Model.PartSelections.Any())
     {
         <div class="ocat-limited-wrapper">
-            <label asp-for="DisplayName" class="ocat-label">@T["Display Name"]</label>
+            <label asp-for="DisplayName" class="ocat-label ocat-label-required">@T["Display Name"]</label>
             <div class="ocat-limited">
                 <input data-displayname="@Html.IdFor(m => m.DisplayName)" asp-for="DisplayName" class="form-control" autofocus />
                 <span class="hint">@T["Name of the reusable part as it will be displayed in screens."]</span>
@@ -28,7 +28,7 @@
         </div>
 
         <div class="ocat-limited-wrapper">
-            <label asp-for="Name" class="ocat-label">@T["Technical Name"]</label>
+            <label asp-for="Name" class="ocat-label ocat-label-required">@T["Technical Name"]</label>
             <div class="ocat-limited">
                 <input data-name="@Html.IdFor(m => m.DisplayName)" asp-for="Name" class="form-control" />
                 <span class="hint">@T["Technical name of the reusable part."]</span>
@@ -69,14 +69,12 @@
         <p class="alert alert-warning">@T["There are no available named parts."]</p>
     }
 
-    <div class="ocat-wrapper">
-        <div class="ocat-end-offset">
-            @if (Model.PartSelections.Any())
-            {
-                <button class="btn btn-primary save" type="submit" name="submit.Save" value="Save">@T["Save"]</button>
-                <button class="btn btn-secondary" type="submit" name="submit.Save" value="SaveAndConfigure">@T["Save &amp; Configure"]</button>
-            }
-            <a class="btn btn-secondary cancel" role="button" asp-route-action="Edit" asp-route-id="@Model.Type.Name">@T["Cancel"]</a>
-        </div>
+    <div class="action-bar-bottom">
+        @if (Model.PartSelections.Any())
+        {
+            <button class="btn btn-primary save" type="submit" name="submit.Save" value="Save">@T["Save"]</button>
+            <button class="btn btn-secondary action-bar-secondary" type="submit" name="submit.Save" value="SaveAndConfigure">@T["Save &amp; Configure"]</button>
+        }
+        <a class="btn btn-secondary cancel" role="button" asp-route-action="Edit" asp-route-id="@Model.Type.Name">@T["Cancel"]</a>
     </div>
 </form>

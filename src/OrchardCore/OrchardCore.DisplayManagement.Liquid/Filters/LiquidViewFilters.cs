@@ -2,42 +2,64 @@ using System.Runtime.CompilerServices;
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Mvc.Localization;
+using OrchardCore.Localization;
 using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.DisplayManagement.Liquid.Filters;
 
 public static class LiquidViewFilters
 {
+    [SkipLocalizationExtraction]
     public static ValueTask<FluidValue> Localize(FluidValue input, FilterArguments arguments, TemplateContext ctx)
     {
-        var localizer = ctx.GetValue("ViewLocalizer")?.ToObjectValue() as IViewLocalizer;
+        var localizer = ctx.GetValue("ViewLocalizer")?.ToObjectValue(ctx) as IViewLocalizer;
 
         if (localizer == null)
         {
             return ThrowArgumentException<ValueTask<FluidValue>>("ViewLocalizer missing while invoking 't'");
         }
 
-        var parameters = arguments.Count > 0 ? new object[arguments.Count] : [];
-        for (var i = 0; i < arguments.Count; i++)
+        // The 'note' named argument is a note for translators, read by the localization extraction, and is not a format
+        // argument. The other named arguments are format arguments, whose names describe their placeholders.
+        var note = arguments.HasNamed("note") ? arguments["note"] : null;
+        var noteIndex = -1;
+        if (note is not null)
         {
-            parameters[i] = arguments.At(i).ToStringValue();
+            for (var i = arguments.Count - 1; i >= 0; i--)
+            {
+                if (ReferenceEquals(arguments.At(i), note))
+                {
+                    noteIndex = i;
+                    break;
+                }
+            }
         }
 
-        return ValueTask.FromResult<FluidValue>(new StringValue(localizer.GetString(input.ToStringValue(), parameters)));
+        var count = noteIndex >= 0 ? arguments.Count - 1 : arguments.Count;
+        var parameters = count > 0 ? new object[count] : [];
+        for (int i = 0, j = 0; i < arguments.Count; i++)
+        {
+            if (i != noteIndex)
+            {
+                parameters[j++] = arguments.At(i).ToStringValue(ctx);
+            }
+        }
+
+        return ValueTask.FromResult<FluidValue>(StringValue.Create(localizer.GetString(input.ToStringValue(ctx), parameters)));
     }
 
-    public static ValueTask<FluidValue> HtmlClass(FluidValue input, FilterArguments _1, TemplateContext _2)
+    public static ValueTask<FluidValue> HtmlClass(FluidValue input, FilterArguments _, TemplateContext context)
     {
-        return ValueTask.FromResult<FluidValue>(new StringValue(input.ToStringValue().HtmlClassify()));
+        return ValueTask.FromResult<FluidValue>(StringValue.Create(input.ToStringValue(context).HtmlClassify()));
     }
 
     public static ValueTask<FluidValue> ShapeProperties(FluidValue input, FilterArguments arguments, TemplateContext ctx)
     {
-        if (input.ToObjectValue() is IShape shape)
+        if (input.ToObjectValue(ctx) is IShape shape)
         {
             foreach (var name in arguments.Names)
             {
-                shape.Properties[name.ToPascalCaseUnderscore()] = arguments[name].ToObjectValue();
+                shape.Properties[name.ToPascalCaseUnderscore()] = arguments[name].ToObjectValue(ctx);
             }
             return FluidValue.Create(shape, ctx.Options);
         }

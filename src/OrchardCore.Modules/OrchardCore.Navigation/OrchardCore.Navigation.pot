@@ -1,0 +1,42 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Navigation\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: PagerShapesTableProvider.cs
+msgctxt "OrchardCore.Navigation.PagerShapes"
+msgid "..."
+msgstr ""
+
+#: PagerShapesTableProvider.cs
+msgctxt "OrchardCore.Navigation.PagerShapes"
+msgid "<"
+msgstr ""
+
+#: PagerShapesTableProvider.cs
+msgctxt "OrchardCore.Navigation.PagerShapes"
+msgid "<<"
+msgstr ""
+
+#: PagerShapesTableProvider.cs
+msgctxt "OrchardCore.Navigation.PagerShapes"
+msgid ">"
+msgstr ""
+
+#: PagerShapesTableProvider.cs
+msgctxt "OrchardCore.Navigation.PagerShapes"
+msgid ">>"
+msgstr ""
+
+#: PagerShapesTableProvider.cs
+msgctxt "OrchardCore.Navigation.PagerShapes"
+msgid "Items per page"
+msgstr ""
+
+#: Views/Breadcrumb.cshtml
+msgctxt "OrchardCore.Navigation.Views.Breadcrumb"
+msgid "Breadcrumb"
+msgstr ""

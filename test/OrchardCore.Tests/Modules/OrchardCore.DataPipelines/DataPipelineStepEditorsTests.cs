@@ -431,9 +431,9 @@ public sealed class DataPipelineStepEditorsTests
         // Assert
         var warning = editor.QuerySelector("[data-dp-rejected-extensions]");
         Assert.NotNull(warning);
-        Assert.Contains(".csv", warning.TextContent, StringComparison.Ordinal);
+        Assert.Contains(".json", warning.TextContent, StringComparison.Ordinal);
         Assert.Contains(".zip", warning.TextContent, StringComparison.Ordinal);
-        Assert.DoesNotContain(".xlsx", warning.TextContent, StringComparison.Ordinal);
+        Assert.DoesNotContain(".csv", warning.TextContent, StringComparison.Ordinal);
     }
 
     [Fact]

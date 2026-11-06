@@ -1,5 +1,6 @@
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace OrchardCore.RateLimits;
 
@@ -11,6 +12,7 @@ public sealed class RateLimitsOptions
     private readonly Dictionary<string, RouteRateLimit> _routeRateLimits = new(StringComparer.OrdinalIgnoreCase);
     private readonly List<GroupRateLimit> _groupRateLimits = [];
     private readonly List<PathString> _globalPolicyExcludedPaths = [];
+    private readonly Dictionary<string, Func<OnRejectedContext, CancellationToken, ValueTask>> _routeRejectionHandlers = new(StringComparer.OrdinalIgnoreCase);
 
     /// <summary>
     /// Gets the registered built-in route rate limits.
@@ -89,6 +91,39 @@ public sealed class RateLimitsOptions
         {
             _globalPolicyExcludedPaths.Add(pathPrefix);
         }
+    }
+
+    /// <summary>
+    /// Registers the handler that writes the response of a request to the specified named route when any active limiter
+    /// rejects it, such as an endpoint that must return an error in the format its clients expect. The response status code
+    /// is set to <c>429 Too Many Requests</c> before the handler is invoked.
+    /// </summary>
+    /// <param name="routeName">The named route whose rejected requests the handler responds to.</param>
+    /// <param name="onRejected">The handler that writes the response of a rejected request.</param>
+    public void AddRouteRejectionHandler(string routeName, Func<OnRejectedContext, CancellationToken, ValueTask> onRejected)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(routeName);
+        ArgumentNullException.ThrowIfNull(onRejected);
+
+        _routeRejectionHandlers[routeName] = onRejected;
+    }
+
+    /// <summary>
+    /// Gets the handler that writes the response of a rejected request to the specified named route.
+    /// </summary>
+    /// <param name="routeName">The named route of the rejected request.</param>
+    /// <param name="onRejected">The registered handler, or <see langword="null"/> when the route has none.</param>
+    /// <returns><see langword="true"/> when a handler is registered for the route; otherwise, <see langword="false"/>.</returns>
+    public bool TryGetRouteRejectionHandler(string routeName, out Func<OnRejectedContext, CancellationToken, ValueTask> onRejected)
+    {
+        if (string.IsNullOrEmpty(routeName))
+        {
+            onRejected = null;
+
+            return false;
+        }
+
+        return _routeRejectionHandlers.TryGetValue(routeName, out onRejected);
     }
 
     private static string CreateKey(string routeName, IReadOnlyList<string> httpMethods)

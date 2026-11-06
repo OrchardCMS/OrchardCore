@@ -1,0 +1,38 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Apis.GraphQL\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Apis.GraphQL.AdminMenu"
+msgid "GraphiQL"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Apis.GraphQL.AdminMenu"
+msgid "Tools"
+msgstr ""
+
+#. Format arguments: {0}: value.Value; {1}: arg.Name; {2}: _maxNumberOfResults
+#: ValidationRules/MaxNumberOfResultsValidationRule.cs
+#, csharp-format
+msgctxt "OrchardCore.Apis.GraphQL.ValidationRules.MaxNumberOfResultsValidationRule"
+msgid "'{0}' exceeds the maximum number of results for '{1}' ({2})"
+msgstr ""
+
+#. Format arguments: {0}: nodeName
+#: ValidationRules/RequiresPermissionValidationRule.cs
+#, csharp-format
+msgctxt "OrchardCore.Apis.GraphQL.ValidationRules.RequiresPermissionValidationRule"
+msgid "Authorization is required to access the node. {0}"
+msgstr ""
+
+#. Format arguments: {0}: operationName
+#: ValidationRules/RequiresPermissionValidationRule.cs
+#, csharp-format
+msgctxt "OrchardCore.Apis.GraphQL.ValidationRules.RequiresPermissionValidationRule"
+msgid "Authorization is required to access {0}."
+msgstr ""

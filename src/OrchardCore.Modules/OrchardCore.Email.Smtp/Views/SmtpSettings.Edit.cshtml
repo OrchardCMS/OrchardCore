@@ -14,7 +14,7 @@
 
 <div id="Smtp_Provider_Settings" class="collapse @(Model.IsEnabled ? " show" : string.Empty)">
     <div class="ocat-wrapper" asp-validation-class-for="DefaultSender">
-        <label asp-for="DefaultSender" class="ocat-label">@T["Sender email address"]</label>
+        <label asp-for="DefaultSender" class="ocat-label ocat-label-required">@T["Sender email address"]</label>
         <div class="ocat-end">
             <input asp-for="DefaultSender" class="form-control" type="text" />
             <span asp-validation-for="DefaultSender"></span>
@@ -47,7 +47,7 @@
             </div>
 
             <div class="ocat-limited-wrapper" asp-validation-class-for="Host">
-                <label asp-for="Host" class="ocat-label">@T["Host name"]</label>
+                <label asp-for="Host" class="ocat-label ocat-label-required">@T["Host name"]</label>
                 <div class="ocat-limited">
                     <input asp-for="Host" class="form-control" type="text" />
                     <span asp-validation-for="Host"></span>

@@ -39,7 +39,7 @@
         var selectStore = Model.IsNew && Model.AvailableStores.Count > 1;
     }
     <div class="ocat-wrapper" asp-validation-class-for="Store">
-        <label for="@(selectStore ? Html.IdFor(m => m.Store) : "store-display")" class="ocat-label">@T["Store"]</label>
+        <label for="@(selectStore ? Html.IdFor(m => m.Store) : "store-display")" class="ocat-label @(selectStore ? "ocat-label-required" : null)">@T["Store"]</label>
         <div class="ocat-end">
             @if (selectStore)
             {
@@ -209,10 +209,8 @@
         </div>
     </div>
 
-    <div class="ocat-wrapper">
-        <div class="ocat-end-offset">
-            <button class="btn btn-primary save" type="submit">@T["Save"]</button>
-            <a class="btn btn-secondary cancel" asp-action="Index">@T["Cancel"]</a>
-        </div>
+    <div class="action-bar-bottom">
+        <button class="btn btn-primary save" type="submit">@T["Save"]</button>
+        <a class="btn btn-secondary cancel" asp-action="Index">@T["Cancel"]</a>
     </div>
 </form>

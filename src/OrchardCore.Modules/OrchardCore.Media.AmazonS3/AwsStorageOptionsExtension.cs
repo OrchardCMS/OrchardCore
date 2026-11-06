@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using Amazon.Extensions.NETCore.Setup;
 using Amazon.Runtime;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -24,6 +23,10 @@ public static class AwsStorageOptionsExtension
                 yield return new ValidationResult(AmazonS3Constants.ValidationMessages.RegionAndServiceUrlAreEmpty);
             }
         }
+        else if (!string.IsNullOrWhiteSpace(options.BucketName))
+        {
+            yield return new ValidationResult(AmazonS3Constants.ValidationMessages.AwsOptionsAreInvalid);
+        }
     }
 
     public static AwsStorageOptionsBase BindConfiguration(this AwsStorageOptionsBase options, string configSection, IShellConfiguration shellConfiguration, ILogger logger)
@@ -44,22 +47,26 @@ public static class AwsStorageOptionsExtension
             return options;
         }
 
-        options.BucketName = section.GetValue(nameof(options.BucketName), string.Empty);
-        options.BasePath = section.GetValue(nameof(options.BasePath), string.Empty);
-        options.CreateBucket = section.GetValue(nameof(options.CreateBucket), false);
-        options.RemoveBucket = section.GetValue(nameof(options.RemoveBucket), false);
-
         try
         {
+            options.BucketName = section.GetValue(nameof(options.BucketName), string.Empty);
+            options.BasePath = section.GetValue(nameof(options.BasePath), string.Empty);
+            options.CreateBucket = section.GetValue(nameof(options.CreateBucket), false);
+            options.RemoveBucket = section.GetValue(nameof(options.RemoveBucket), false);
+
             // Binding AWS Options. Using the AmazonS3Config type parameter is necessary to be able to configure
             // S3-specific properties like ForcePathStyle via the configuration provider.
-            options.AwsOptions = shellConfiguration
-                .GetSectionCompat(AmazonS3Constants.ConfigSections.AmazonS3, AmazonS3Constants.ConfigSections.LegacyAmazonS3)
-                .GetAWSOptions(string.Empty);
+            var awsSection = shellConfiguration.GetSectionCompat(AmazonS3Constants.ConfigSections.AmazonS3, AmazonS3Constants.ConfigSections.LegacyAmazonS3);
+            options.AwsOptions = awsSection.GetAWSOptions(string.Empty);
 
             // In case Credentials sections was specified, trying to add BasicAWSCredential to AWSOptions
             // since by design GetAWSOptions skips Credential section while parsing config.
             var credentials = section.GetSection("Credentials");
+            if (!credentials.Exists())
+            {
+                credentials = awsSection.GetSection("Credentials");
+            }
+
             if (credentials.Exists())
             {
                 var secretKey = credentials.GetValue(AmazonS3Constants.AwsCredentialParamNames.SecretKey, string.Empty);
@@ -72,13 +79,16 @@ public static class AwsStorageOptionsExtension
                     options.AwsOptions.Credentials = awsCredentials;
                 }
             }
-
-            return options;
         }
-        catch (ConfigurationException ex)
+        catch (Exception ex)
         {
+            // A malformed value shouldn't prevent the tenant from starting: without AWS options the validation fails
+            // and the features using these options keep the local file storage.
             logger.LogCritical(ex, "Failed to configure AWS options.");
-            throw;
+
+            options.AwsOptions = null;
         }
+
+        return options;
     }
 }

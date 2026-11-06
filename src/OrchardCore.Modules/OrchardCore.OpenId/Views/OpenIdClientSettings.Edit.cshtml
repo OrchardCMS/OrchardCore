@@ -11,7 +11,7 @@
 <style asp-src="~/OrchardCore.OpenId/Styles/parametersEditor.min.css" debug-src="~/OrchardCore.OpenId/Styles/parametersEditor.css"></style>
 
 <div class="ocat-wrapper" asp-validation-class-for="DisplayName">
-    <label asp-for="DisplayName" class="ocat-label">@T["Display Name"]</label>
+    <label asp-for="DisplayName" class="ocat-label ocat-label-required">@T["Display Name"]</label>
     <div class="ocat-end">
         <input asp-for="DisplayName" class="form-control" />
         <span asp-validation-for="DisplayName"></span>
@@ -20,7 +20,7 @@
 </div>
 
 <div class="ocat-wrapper" asp-validation-class-for="Authority">
-    <label asp-for="Authority" class="ocat-label">@T["Authority"]</label>
+    <label asp-for="Authority" class="ocat-label ocat-label-required">@T["Authority"]</label>
     <div class="ocat-end">
         <input asp-for="Authority" class="form-control" />
         <span asp-validation-for="Authority"></span>
@@ -29,7 +29,7 @@
 </div>
 
 <div class="ocat-wrapper" asp-validation-class-for="ClientId">
-    <label asp-for="ClientId" class="ocat-label">@T["ClientId"]</label>
+    <label asp-for="ClientId" class="ocat-label ocat-label-required">@T["ClientId"]</label>
     <div class="ocat-end">
         <input asp-for="ClientId" class="form-control" />
         <span asp-validation-for="ClientId"></span>

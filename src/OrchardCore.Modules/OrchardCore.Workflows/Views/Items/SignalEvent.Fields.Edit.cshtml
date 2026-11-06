@@ -2,7 +2,7 @@
 @model SignalEventViewModel
 
 <div class="ocat-wrapper" asp-validation-class-for="SignalNameExpression">
-    <label asp-for="SignalNameExpression" class="ocat-label">@T["Name"]</label>
+    <label asp-for="SignalNameExpression" class="ocat-label ocat-label-required">@T["Name"]</label>
     <div class="ocat-end">
         <input type="text" asp-for="SignalNameExpression" class="form-control code" autofocus />
         <span asp-validation-for="SignalNameExpression"></span>

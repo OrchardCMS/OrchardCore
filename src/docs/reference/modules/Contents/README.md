@@ -284,7 +284,7 @@ We can also query a specific `BlogPost` content item using the `blogPost` query.
 
 ```graphql
 query {
-  blosPost(where: {
+  blogPost(where: {
     contentItemId: "417qsjrgv97e74wvp149h4da53"
   }) {
     contentItemId
@@ -428,7 +428,7 @@ Query all `BlogPost` content items whose creation date is less than a specific d
 ```graphql
 query {
   blogPost(where: {
-    creationgUtc_lt: "2011-11-13T07:45:00"
+    createdUtc_lt: "2011-11-13T07:45:00"
   }) {
     contentItemId
     displayText

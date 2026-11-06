@@ -41,6 +41,7 @@ public sealed class RateLimiterOptionsConfigurations : IConfigureOptions<RateLim
     public void Configure(RateLimiterOptions options)
     {
         options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+        options.OnRejected = OnRejectedAsync;
 
         var limiters = new List<PartitionedRateLimiter<HttpContext>>
         {
@@ -99,6 +100,16 @@ public sealed class RateLimiterOptionsConfigurations : IConfigureOptions<RateLim
             1 => limiters[0],
             _ => PartitionedRateLimiter.CreateChained([.. limiters]),
         };
+    }
+
+    private ValueTask OnRejectedAsync(OnRejectedContext context, CancellationToken cancellationToken)
+    {
+        if (_rateLimitsOptions.TryGetRouteRejectionHandler(GetEndpointRouteName(context.HttpContext), out var onRejected))
+        {
+            return onRejected(context, cancellationToken);
+        }
+
+        return ValueTask.CompletedTask;
     }
 
     private RouteRateLimit FindRouteRateLimit(HttpContext context)

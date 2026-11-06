@@ -1,0 +1,14 @@
+@model IShape
+@using Microsoft.AspNetCore.Html
+@{
+    Notification notification = Model.Properties[nameof(Notification)] as Notification;
+    var restricted = Model.Properties.TryGetValue(nameof(NotificationVisibility), out var visibility) && visibility is NotificationVisibility.Restricted;
+}
+
+<zone Name="Title">
+    <breadcrumb name="NotificationsDisplay" title="@(restricted ? T["Notification"] : new HtmlContentBuilder().Append(notification?.Subject ?? string.Empty))">
+        <breadcrumb-item id="Notifications" action="List" controller="Admin" area="OrchardCore.Notifications" permission="@NotificationPermissions.ManageNotifications.Name">@T["Notification Center"]</breadcrumb-item>
+    </breadcrumb>
+</zone>
+
+@await DisplayAsync(Model)

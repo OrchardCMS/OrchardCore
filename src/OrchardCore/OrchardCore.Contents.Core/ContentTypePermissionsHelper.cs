@@ -1,5 +1,4 @@
 using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.Liquid;
 using OrchardCore.Localization;
 using OrchardCore.Security.Permissions;
 
@@ -11,20 +10,20 @@ namespace OrchardCore.Contents.Security;
 /// </summary>
 public static class ContentTypePermissionsHelper
 {
-    private static readonly PermissionTemplate s_publishContent = CreateTemplate("Publish", "Publish or unpublish {0} for others", CommonPermissions.PublishContent);
-    private static readonly PermissionTemplate s_publishOwnContent = CreateTemplate("PublishOwn", "Publish or unpublish {0}", CommonPermissions.PublishOwnContent, s_publishContent);
-    private static readonly PermissionTemplate s_editContent = CreateTemplate("Edit", "Edit {0} for others", CommonPermissions.EditContent, s_publishContent);
-    private static readonly PermissionTemplate s_editOwnContent = CreateTemplate("EditOwn", "Edit {0}", CommonPermissions.EditOwnContent, s_editContent, s_publishOwnContent);
-    private static readonly PermissionTemplate s_deleteContent = CreateTemplate("Delete", "Delete {0} for others", CommonPermissions.DeleteContent);
-    private static readonly PermissionTemplate s_deleteOwnContent = CreateTemplate("DeleteOwn", "Delete {0}", CommonPermissions.DeleteOwnContent, s_deleteContent);
-    private static readonly PermissionTemplate s_viewContent = CreateTemplate("View", "View {0} by others", CommonPermissions.ViewContent, s_editContent);
-    private static readonly PermissionTemplate s_viewOwnContent = CreateTemplate("ViewOwn", "View own {0}", CommonPermissions.ViewOwnContent, s_viewContent);
-    private static readonly PermissionTemplate s_previewContent = CreateTemplate("Preview", "Preview {0} by others", CommonPermissions.PreviewContent, s_editContent);
-    private static readonly PermissionTemplate s_previewOwnContent = CreateTemplate("PreviewOwn", "Preview own {0}", CommonPermissions.PreviewOwnContent, s_previewContent);
-    private static readonly PermissionTemplate s_cloneContent = CreateTemplate("Clone", "Clone {0} by others", CommonPermissions.CloneContent, s_editContent);
-    private static readonly PermissionTemplate s_cloneOwnContent = CreateTemplate("CloneOwn", "Clone own {0}", CommonPermissions.CloneOwnContent, s_cloneContent);
-    private static readonly PermissionTemplate s_listContent = CreateTemplate("ListContent", "List {0} content items", CommonPermissions.ListContent);
-    private static readonly PermissionTemplate s_editContentOwner = CreateTemplate("EditContentOwner", "Edit the owner of a {0} content item", CommonPermissions.EditContentOwner);
+    private static readonly PermissionTemplate s_publishContent = CreateTemplate("Publish", LocalizationSource.Create("Publish or unpublish {0} for others", typeof(ContentTypePermissionsHelper)), CommonPermissions.PublishContent);
+    private static readonly PermissionTemplate s_publishOwnContent = CreateTemplate("PublishOwn", LocalizationSource.Create("Publish or unpublish {0}", typeof(ContentTypePermissionsHelper)), CommonPermissions.PublishOwnContent, s_publishContent);
+    private static readonly PermissionTemplate s_editContent = CreateTemplate("Edit", LocalizationSource.Create("Edit {0} for others", typeof(ContentTypePermissionsHelper)), CommonPermissions.EditContent, s_publishContent);
+    private static readonly PermissionTemplate s_editOwnContent = CreateTemplate("EditOwn", LocalizationSource.Create("Edit {0}", typeof(ContentTypePermissionsHelper)), CommonPermissions.EditOwnContent, s_editContent, s_publishOwnContent);
+    private static readonly PermissionTemplate s_deleteContent = CreateTemplate("Delete", LocalizationSource.Create("Delete {0} for others", typeof(ContentTypePermissionsHelper)), CommonPermissions.DeleteContent);
+    private static readonly PermissionTemplate s_deleteOwnContent = CreateTemplate("DeleteOwn", LocalizationSource.Create("Delete {0}", typeof(ContentTypePermissionsHelper)), CommonPermissions.DeleteOwnContent, s_deleteContent);
+    private static readonly PermissionTemplate s_viewContent = CreateTemplate("View", LocalizationSource.Create("View {0} by others", typeof(ContentTypePermissionsHelper)), CommonPermissions.ViewContent, s_editContent);
+    private static readonly PermissionTemplate s_viewOwnContent = CreateTemplate("ViewOwn", LocalizationSource.Create("View own {0}", typeof(ContentTypePermissionsHelper)), CommonPermissions.ViewOwnContent, s_viewContent);
+    private static readonly PermissionTemplate s_previewContent = CreateTemplate("Preview", LocalizationSource.Create("Preview {0} by others", typeof(ContentTypePermissionsHelper)), CommonPermissions.PreviewContent, s_editContent);
+    private static readonly PermissionTemplate s_previewOwnContent = CreateTemplate("PreviewOwn", LocalizationSource.Create("Preview own {0}", typeof(ContentTypePermissionsHelper)), CommonPermissions.PreviewOwnContent, s_previewContent);
+    private static readonly PermissionTemplate s_cloneContent = CreateTemplate("Clone", LocalizationSource.Create("Clone {0} by others", typeof(ContentTypePermissionsHelper)), CommonPermissions.CloneContent, s_editContent);
+    private static readonly PermissionTemplate s_cloneOwnContent = CreateTemplate("CloneOwn", LocalizationSource.Create("Clone own {0}", typeof(ContentTypePermissionsHelper)), CommonPermissions.CloneOwnContent, s_cloneContent);
+    private static readonly PermissionTemplate s_listContent = CreateTemplate("ListContent", LocalizationSource.Create("List {0} content items", typeof(ContentTypePermissionsHelper)), CommonPermissions.ListContent);
+    private static readonly PermissionTemplate s_editContentOwner = CreateTemplate("EditContentOwner", LocalizationSource.Create("Edit the owner of a {0} content item", typeof(ContentTypePermissionsHelper)), CommonPermissions.EditContentOwner);
 
     public static readonly Dictionary<string, PermissionTemplate> PermissionTemplates = new()
     {
@@ -147,12 +146,12 @@ public static class ContentTypePermissionsHelper
 
     private static PermissionTemplate CreateTemplate(
         string nameBase,
-        string description,
+        LocalizationSource description,
         Permission impliedBy,
         params PermissionTemplate[] impliedByTemplates) =>
         new(
             nameBase + "_{0}",
-            LocalizationSource.Create(description, typeof(ContentTypePermissionsHelper)),
+            description,
             "{1} Content Type - {0}",
             impliedBy)
         {

@@ -4,7 +4,7 @@
 @model MetaConversionsApiEventTaskViewModel
 
 <div class="ocat-wrapper" asp-validation-class-for="EventName">
-    <label asp-for="EventName" class="ocat-label">@T["Event Name"]</label>
+    <label asp-for="EventName" class="ocat-label ocat-label-required">@T["Event Name"]</label>
     <div class="ocat-end">
         <input type="text" asp-for="EventName" class="form-control" list="metaStandardEventNames" />
         <datalist id="metaStandardEventNames">
