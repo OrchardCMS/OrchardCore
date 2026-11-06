@@ -61,6 +61,11 @@ msgctxt "OrchardCore.Deployment.Controllers.DeploymentPlanController"
 msgid "The name is mandatory."
 msgstr ""
 
+#: Controllers/ExportFileController.cs
+msgctxt "OrchardCore.Deployment.Controllers.ExportFileController"
+msgid "An error has occurred while exporting to file. Please try again or check the application logs."
+msgstr ""
+
 #: Controllers/ImportController.cs
 msgctxt "OrchardCore.Deployment.Controllers.ImportController"
 msgid "Deployment package imported."
@@ -163,6 +168,16 @@ msgstr ""
 #, csharp-format
 msgctxt "OrchardCore.Deployment.Recipes.DeploymentPlansRecipeStep"
 msgid "No changes have been made. The following types of deployment plans cannot be added: {0}. Please ensure that the related features are enabled to add these types of deployment plans."
+msgstr ""
+
+#: Steps/CustomFileDeploymentStepDriver.cs
+msgctxt "OrchardCore.Deployment.Steps.CustomFileDeploymentStepDriver"
+msgid "A virtual path is required."
+msgstr ""
+
+#: Steps/CustomFileDeploymentStepDriver.cs
+msgctxt "OrchardCore.Deployment.Steps.CustomFileDeploymentStepDriver"
+msgid "Path must be relative to the base directory."
 msgstr ""
 
 #: Steps/JsonRecipeDeploymentStepDriver.cs
