@@ -36,7 +36,7 @@ internal sealed class ShapeTemplateWriter : TextWriter, IHtmlContent, IHtmlConte
     {
         if (!string.IsNullOrEmpty(unencoded))
         {
-            _entries.Add(new StringHtmlContent(unencoded));
+            _entries.Add(new Microsoft.AspNetCore.Mvc.ViewFeatures.StringHtmlContent(unencoded));
         }
 
         return this;
@@ -58,6 +58,50 @@ internal sealed class ShapeTemplateWriter : TextWriter, IHtmlContent, IHtmlConte
     {
         _entries.Clear();
         return this;
+    }
+
+    public void CopyTo(IHtmlContentBuilder destination)
+    {
+        ArgumentNullException.ThrowIfNull(destination);
+
+        for (var i = 0; i < _entries.Count; i++)
+        {
+            switch (_entries[i])
+            {
+                case string text:
+                    destination.AppendHtml(text);
+                    break;
+                case IHtmlContentContainer container:
+                    container.CopyTo(destination);
+                    break;
+                case IHtmlContent content:
+                    destination.AppendHtml(content);
+                    break;
+            }
+        }
+    }
+
+    public void MoveTo(IHtmlContentBuilder destination)
+    {
+        ArgumentNullException.ThrowIfNull(destination);
+
+        for (var i = 0; i < _entries.Count; i++)
+        {
+            switch (_entries[i])
+            {
+                case string text:
+                    destination.AppendHtml(text);
+                    break;
+                case IHtmlContentContainer container:
+                    container.MoveTo(destination);
+                    break;
+                case IHtmlContent content:
+                    destination.AppendHtml(content);
+                    break;
+            }
+        }
+
+        _entries.Clear();
     }
 
     public override void Write(string value)
