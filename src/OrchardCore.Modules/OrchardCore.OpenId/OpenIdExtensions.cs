@@ -1,4 +1,6 @@
 using System.Security.Claims;
+using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Environment.Shell.Builders;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace OrchardCore.OpenId;
@@ -46,8 +48,26 @@ internal static class OpenIdExtensions
         ArgumentNullException.ThrowIfNull(principal);
 
         return principal.FindAll(c => c.Type is Claims.Role or ClaimTypes.Role)
-        .Select(x => x.Value)
-        .Distinct()
-        .ToArray();
+            .Select(x => x.Value)
+            .Distinct()
+            .ToArray();
+    }
+
+    internal static IServiceCollection RemoveAll<TService, TImplementation>(this IServiceCollection services)
+        where TImplementation : TService
+    {
+        ArgumentNullException.ThrowIfNull(services);
+
+        for (var index = services.Count - 1; index is >= 0; index--)
+        {
+            var descriptor = services[index];
+            if (descriptor.ServiceType == typeof(TService) &&
+                descriptor.GetImplementationType() == typeof(TImplementation))
+            {
+                services.RemoveAt(index);
+            }
+        }
+
+        return services;
     }
 }
