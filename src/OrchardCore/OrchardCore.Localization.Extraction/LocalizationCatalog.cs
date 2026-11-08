@@ -13,7 +13,20 @@ public sealed class LocalizationMessage
     public ISet<string> Comments { get; } = new SortedSet<string>(StringComparer.Ordinal);
     public ISet<string> Flags { get; } = new SortedSet<string>(StringComparer.Ordinal);
     public IDictionary<int, ISet<string>> FormatArguments { get; } = new SortedDictionary<int, ISet<string>>();
+
+    /// <summary>
+    /// Gets or sets the range of values the count of a plural message can take, written as the gettext <c>range</c>
+    /// flag. When call sites declare different ranges, the message carries the smallest range containing all of them.
+    /// </summary>
+    public PluralRange? Range { get; set; }
 }
+
+/// <summary>
+/// The range of values the count of a plural message can take.
+/// </summary>
+/// <param name="Min">The smallest value of the count.</param>
+/// <param name="Max">The largest value of the count.</param>
+public readonly record struct PluralRange(int Min, int Max);
 
 public sealed class LocalizationCatalog
 {
@@ -60,7 +73,8 @@ public sealed class LocalizationCatalog
     /// <param name="comment">A comment for translators, such as a <c>// TRANSLATORS:</c> comment.</param>
     /// <param name="formatArguments">The descriptions of the format arguments, by placeholder index.</param>
     /// <param name="notes">The notes explaining the meaning or usage of the message to translators.</param>
-    public void Add(string context, string text, string? plural, SourceReference source, string? comment = null, IReadOnlyList<string?>? formatArguments = null, IEnumerable<string>? notes = null)
+    /// <param name="range">The range of values the count of a plural message can take.</param>
+    public void Add(string context, string text, string? plural, SourceReference source, string? comment = null, IReadOnlyList<string?>? formatArguments = null, IEnumerable<string>? notes = null, PluralRange? range = null)
     {
         if (text.Length == 0)
         {
@@ -101,6 +115,20 @@ public sealed class LocalizationCatalog
                 {
                     existing.Comments.Add(note.Trim());
                 }
+            }
+        }
+
+        if (range is { } value)
+        {
+            if (plural is null)
+            {
+                Diagnostics.Add(new ExtractionDiagnostic("OCLOC011", "A plural range only applies to the count of a plural message.", source));
+            }
+            else
+            {
+                existing.Range = existing.Range is { } current
+                    ? new PluralRange(Math.Min(current.Min, value.Min), Math.Max(current.Max, value.Max))
+                    : value;
             }
         }
 

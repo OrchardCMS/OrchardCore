@@ -3,6 +3,11 @@ namespace OrchardCore.Modules;
 public class BackgroundServiceOptions
 {
     /// <summary>
+    /// The default value of <see cref="MaxRecentRuns" />.
+    /// </summary>
+    public const int DefaultMaxRecentRuns = 10;
+
+    /// <summary>
     /// Gets or sets a value indicating whether the shell should be warmed up.
     /// </summary>
     public bool ShellWarmup { get; set; }
@@ -16,4 +21,9 @@ public class BackgroundServiceOptions
     /// Gets or sets the minimum idle time before the background tasks of a tenant are triggered, as well as between tasks similar to <see cref="PollingTime" />.
     /// </summary>
     public TimeSpan MinimumIdleTime { get; set; } = TimeSpan.FromSeconds(10);
+
+    /// <summary>
+    /// Gets or sets the number of completed runs kept in memory for each background task, to be shown with its execution state.
+    /// </summary>
+    public int MaxRecentRuns { get; set; } = DefaultMaxRecentRuns;
 }

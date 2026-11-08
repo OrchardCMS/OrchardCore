@@ -15,9 +15,11 @@ using OrchardCore.Contents.Controllers;
 using OrchardCore.Contents.Services;
 using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
+using YesSql;
 using YesSql.Filters.Query;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Contents;
@@ -98,6 +100,77 @@ public class AdminControllerTests
         Assert.Equal("Page,Widget", Assert.Single(filterResult.OfType<StereotypeFilterNode>()).Operation.ToString());
     }
 
+    [Theory]
+    [InlineData(1, 5, 5)]
+    [InlineData(1, 0, 0)]
+    [InlineData(3, 5, 25)]
+    [InlineData(50, 0, 490)]
+    [InlineData(1, 10, 1000)]
+    [InlineData(3, 10, 1000)]
+    [InlineData(101, 5, 1000)]
+    [InlineData(200, 0, 1000)]
+    public async Task List_MaxPagedCountSet_ReportsTotalWithoutCountingItems(int page, int contentItemsCount, int expectedTotalItemCount)
+    {
+        var query = CreateQuery(contentItemsCount);
+
+        var (options, pagerShape) = await ListAsync(query, new PagerOptions { PageSize = 10, MaxPagedCount = 1000 }, page);
+
+        Assert.Equal(contentItemsCount, options.ContentItemsCount);
+        Assert.Equal(expectedTotalItemCount, options.TotalItemCount);
+        Assert.Equal(expectedTotalItemCount, pagerShape.Properties["TotalItemCount"]);
+        query.Verify(value => value.CountAsync(It.IsAny<CancellationToken>()), Times.Never());
+    }
+
+    [Fact]
+    public async Task List_MaxPagedCountNotSet_CountsItems()
+    {
+        var query = CreateQuery(5);
+        query
+            .Setup(value => value.CountAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(25);
+
+        var (options, pagerShape) = await ListAsync(query, new PagerOptions { PageSize = 10 }, 1);
+
+        Assert.Equal(25, options.TotalItemCount);
+        Assert.Equal(25, pagerShape.Properties["TotalItemCount"]);
+    }
+
+    private static async Task<(ContentOptionsViewModel Options, IShape PagerShape)> ListAsync(Mock<IQuery<ContentItem>> query, PagerOptions pagerOptions, int page)
+    {
+        var (controller, queryService) = CreateController();
+        var options = new ContentOptionsViewModel();
+        var shapeFactory = new TestShapeFactory();
+        queryService
+            .Setup(service => service.QueryAsync(options, controller))
+            .ReturnsAsync(query.Object);
+
+        await Assert.ThrowsAsync<HeaderReachedException>(() => controller.List(
+            Options.Create(pagerOptions),
+            shapeFactory,
+            queryService.Object,
+            CreateFilterResult(),
+            options,
+            new PagerParameters { Page = page }));
+
+        return (options, shapeFactory.Shape);
+    }
+
+    private static Mock<IQuery<ContentItem>> CreateQuery(int contentItemsCount)
+    {
+        var query = new Mock<IQuery<ContentItem>>();
+        query
+            .Setup(value => value.Skip(It.IsAny<int>()))
+            .Returns(query.Object);
+        query
+            .Setup(value => value.Take(It.IsAny<int>()))
+            .Returns(query.Object);
+        query
+            .Setup(value => value.ListAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Enumerable.Range(0, contentItemsCount).Select(_ => new ContentItem()).ToList());
+
+        return query;
+    }
+
     private static (AdminController Controller, Mock<IContentsAdminListQueryService> QueryService) CreateController()
     {
         var definitions = new[]
@@ -137,12 +210,27 @@ public class AdminControllerTests
             .Setup(localizer => localizer[It.IsAny<string>()])
             .Returns((string name) => new LocalizedString(name, name));
 
+        var contentManager = new Mock<IContentManager> { DefaultValue = DefaultValue.Mock };
+        contentManager
+            .Setup(manager => manager.LoadAsync(It.IsAny<ContentItem>()))
+            .ReturnsAsync((ContentItem contentItem) => contentItem);
+
+        var contentOptionsDisplayManager = new Mock<IDisplayManager<ContentOptionsViewModel>>();
+        contentOptionsDisplayManager
+            .Setup(manager => manager.BuildEditorAsync(
+                It.IsAny<ContentOptionsViewModel>(),
+                It.IsAny<IUpdateModel>(),
+                It.IsAny<bool>(),
+                It.IsAny<string>(),
+                It.IsAny<string>()))
+            .ThrowsAsync(new HeaderReachedException());
+
         var controller = new AdminController(
             authorizationService.Object,
-            Mock.Of<IContentManager>(),
+            contentManager.Object,
             Mock.Of<IContentItemDisplayManager>(),
             definitionManager.Object,
-            Mock.Of<IDisplayManager<ContentOptionsViewModel>>(),
+            contentOptionsDisplayManager.Object,
             Mock.Of<YesSql.ISession>(),
             Mock.Of<INotifier>(),
             Mock.Of<IHtmlLocalizer<AdminController>>(),
@@ -171,4 +259,23 @@ public class AdminControllerTests
     }
 
     private sealed class QueryReachedException : Exception;
+
+    private sealed class HeaderReachedException : Exception;
+
+    private sealed class TestShapeFactory : IShapeFactory
+    {
+        public dynamic New => throw new NotSupportedException();
+
+        public IShape Shape { get; private set; }
+
+        public async ValueTask<IShape> CreateAsync(
+            string shapeType, Func<ValueTask<IShape>> shapeFactory,
+            Action<ShapeCreatingContext> creating, Action<ShapeCreatedContext> created)
+        {
+            Shape = await shapeFactory();
+            created?.Invoke(new ShapeCreatedContext { Shape = Shape });
+
+            return Shape;
+        }
+    }
 }

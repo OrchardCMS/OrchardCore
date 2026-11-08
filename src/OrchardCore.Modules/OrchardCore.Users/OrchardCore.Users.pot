@@ -1026,6 +1026,7 @@ msgctxt "OrchardCore.Users.Views.AuditTrailAdmin.Index"
 msgid "Audit Trail User Event Settings"
 msgstr ""
 
+#. Redaction option that stores the value of a user property as is, without redacting it.
 #: Views/AuditTrailAdmin/Index.cshtml
 msgctxt "OrchardCore.Users.Views.AuditTrailAdmin.Index"
 msgid "Store"
