@@ -28,7 +28,7 @@ public class RazorShapeTemplateViewEngine : IShapeTemplateViewEngine
     private readonly ViewContextAccessor _viewContextAccessor;
     private readonly ITempDataProvider _tempDataProvider;
     private readonly IHtmlHelper _htmlHelper;
-    private readonly IRazorPageFactoryProvider _pageFactoryProvider;
+    private readonly IRazorViewEngine _razorViewEngine;
     private readonly IRazorPageActivator _pageActivator;
 
     public RazorShapeTemplateViewEngine(
@@ -49,7 +49,7 @@ public class RazorShapeTemplateViewEngine : IShapeTemplateViewEngine
         ViewContextAccessor viewContextAccessor,
         ITempDataProvider tempDataProvider,
         IHtmlHelper htmlHelper,
-        IRazorPageFactoryProvider pageFactoryProvider,
+        IRazorViewEngine razorViewEngine,
         IRazorPageActivator pageActivator)
     {
         _options = options;
@@ -58,7 +58,7 @@ public class RazorShapeTemplateViewEngine : IShapeTemplateViewEngine
         _viewContextAccessor = viewContextAccessor;
         _tempDataProvider = tempDataProvider;
         _htmlHelper = htmlHelper;
-        _pageFactoryProvider = pageFactoryProvider;
+        _razorViewEngine = razorViewEngine;
         _pageActivator = pageActivator;
     }
 
@@ -83,16 +83,14 @@ public class RazorShapeTemplateViewEngine : IShapeTemplateViewEngine
         if (viewContext?.View != null)
         {
             // The compiled page of the template is executed directly in the current view context, instead of being
-            // rendered as a partial view, which looks up a view, creates a 'RazorView' and a second view buffer, and
-            // moves the rendered pages of the template into the buffer of the partial view, for each rendered shape.
-            if (_pageFactoryProvider is not null && _pageActivator is not null)
+            // rendered as a partial view, which creates a second view buffer and moves the rendered pages of the
+            // template into the buffer of the partial view, for each rendered shape.
+            // The page is obtained from the view engine, whose lookup cache holds the page factory of each view path
+            // and the change tokens of its compilation, so that it is still recompiled when runtime compilation is on.
+            if (_razorViewEngine is not null && _pageActivator is not null &&
+                _razorViewEngine.GetView(executingFilePath: null, view.Path, isMainPage: false) is { Success: true, View: RazorView razorView })
             {
-                var factoryResult = _pageFactoryProvider.CreateFactory(view.Path);
-
-                if (factoryResult.Success)
-                {
-                    return RenderPageAsync(factoryResult.RazorPageFactory(), view, viewContext, displayContext);
-                }
+                return RenderPageAsync(razorView.RazorPage, view, viewContext, displayContext);
             }
 
             // The partial view gets its own copy of the view data, so a copy with a different 'HtmlFieldPrefix'

@@ -7,9 +7,11 @@ namespace OrchardCore.DisplayManagement.Razor;
 /// <summary>
 /// The output of a Razor shape template executed by the <see cref="RazorShapeTemplateViewEngine"/>: the text the
 /// template writes and the <see cref="IHtmlContent"/> of its child shapes, kept by reference as an MVC view buffer
-/// does, so that nothing is copied until the page is written to the response.
+/// does, so that nothing is copied until the page is written to the response. It is also an
+/// <see cref="IHtmlContentBuilder"/>, so that an <see cref="IHtmlContentContainer"/> whose instance is reused, e.g.
+/// the output of a tag helper, moves its content into it instead of being referenced.
 /// </summary>
-internal sealed class ShapeTemplateWriter : TextWriter, IHtmlContent
+internal sealed class ShapeTemplateWriter : TextWriter, IHtmlContent, IHtmlContentBuilder
 {
     // Strings and IHtmlContent instances, in the order they were written.
     private readonly List<object> _entries = new(8);
@@ -25,6 +27,37 @@ internal sealed class ShapeTemplateWriter : TextWriter, IHtmlContent
         {
             _entries.Add(content);
         }
+    }
+
+    /// <summary>
+    /// Appends a text that is HTML encoded when this writer is written.
+    /// </summary>
+    IHtmlContentBuilder IHtmlContentBuilder.Append(string unencoded)
+    {
+        if (!string.IsNullOrEmpty(unencoded))
+        {
+            _entries.Add(new StringHtmlContent(unencoded));
+        }
+
+        return this;
+    }
+
+    IHtmlContentBuilder IHtmlContentBuilder.AppendHtml(string encoded)
+    {
+        Write(encoded);
+        return this;
+    }
+
+    IHtmlContentBuilder IHtmlContentBuilder.AppendHtml(IHtmlContent content)
+    {
+        Append(content);
+        return this;
+    }
+
+    IHtmlContentBuilder IHtmlContentBuilder.Clear()
+    {
+        _entries.Clear();
+        return this;
     }
 
     public override void Write(string value)

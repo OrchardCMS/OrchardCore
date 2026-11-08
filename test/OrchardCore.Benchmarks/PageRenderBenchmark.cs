@@ -95,6 +95,14 @@ public class PageRenderBenchmark
             var count = Interlocked.Read(ref s_shapesRendered) - before;
 
             Console.WriteLine($"// {name}: {count} shapes rendered, {html.Length:N0} chars of HTML");
+
+            // To compare the rendered pages of two builds, set this variable to a folder where they are written.
+            if (System.Environment.GetEnvironmentVariable("PAGE_RENDER_DUMP_DIR") is { Length: > 0 } dumpDirectory)
+            {
+                System.IO.Directory.CreateDirectory(dumpDirectory);
+                await System.IO.File.WriteAllTextAsync(System.IO.Path.Combine(dumpDirectory, name + ".html"), html);
+            }
+
             Console.WriteLine($"//   by engine: {string.Join(", ", bindings.OrderByDescending(x => x.Value).Select(x => $"{x.Key}={x.Value}"))}");
             Console.WriteLine($"//   top types: {string.Join(", ", types.OrderByDescending(x => x.Value).Take(12).Select(x => $"{x.Key}={x.Value}"))}");
         }
