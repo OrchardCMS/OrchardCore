@@ -2,7 +2,9 @@
 
 A proposal to redesign the shape system of Orchard Core so that it stops being a per-fragment tax on every page, while keeping what it is for: letting modules, themes and the application compose and override the UI without knowing about each other. Breaking changes are on the table; the proposal says which ones are worth it, and which ones aren't.
 
-The numbers in this document come from the benchmarks added with it in `test/OrchardCore.Benchmarks` (`ShapePipelineBenchmark`, `DynamicShapeAccessBenchmark`, `ShapePrototypeBenchmark`, `PageRenderBenchmark`). The prototype of the proposed model lives in `test/OrchardCore.Benchmarks/ShapePrototype`.
+**Summary.** The shape pipeline costs about 2.5 µs and 1.8 KB per shape before any template runs, which a prototype of the proposed model brings down 20 times in CPU and 10 times in memory. But on the pages measured, the pipeline itself is a few percent of a request: what makes a page of shapes expensive is what each shape drags along, the MVC partial view rendered for every Razor template, the dynamic model, the per-shape buffers and copies, the per-tenant shape table, and the allocation volume (1.5 MB for a 7 KB page). The proposal therefore changes the shape *model* (typed nodes, shared alternates, cached resolution, streaming rendering) so that these costs can be removed, rather than optimizing the current objects further. Theme authors keep their conventions; module authors get typed, smaller APIs; the `dynamic` surface goes away.
+
+The numbers in this document come from the benchmarks added with it in `test/OrchardCore.Benchmarks` (`ShapePipelineBenchmark`, `DynamicShapeAccessBenchmark`, `ShapePrototypeBenchmark`, `PageRenderBenchmark`, `ShapeTemplateEngineBenchmark`). The prototype of the proposed model lives in `test/OrchardCore.Benchmarks/ShapePrototype`.
 
 ## 1. What shapes are for
 
@@ -87,11 +89,32 @@ The per-content-item-id alternates (`Content__{id}`, `Content_{displayType}__{id
 
 `PageRenderBenchmark` renders real pages of a `Blog` recipe tenant through the test server and counts the shapes with the `OrchardCore.DisplayManagement` meter and activity source:
 
-{{PAGES_TABLE}}
+| Page (Blog recipe, test server, Sqlite) | Shapes rendered | By engine | Request time | Allocated per request | HTML |
+| --- | ---: | --- | ---: | ---: | ---: |
+| `GET /` (blog home, list of posts) | 19 | 8 code, 5 Razor, 5 Liquid | 11.0 ms | 1,453 KB | 7.6 KB |
+| `GET /blog/{post}` (detail, with widgets) | 15 | 5 code, 5 Liquid, 4 Razor | 9.0 ms | 1,509 KB | 8.5 KB |
+| `GET /Admin/Contents/ContentItems` (admin list, 5 items) | 148 | 83 Razor, 61 code | 8.7 ms | 1,699 KB | 48 KB |
+| `GET /Admin/Contents/ContentItems/{id}/Edit` (editor) | 64 | 47 Razor, 17 code | 5.7 ms | 919 KB | 36 KB |
 
-{{PAGES_PROFILE}}
+*In-process short run; the absolute times include the test server and the console logging of the test host, and are only comparable to each other.*
 
-### 2.5 Structural costs that benchmarks don't show
+Two things stand out:
+
+- **The shape pipeline is a small share of these requests.** At 2.5 µs and 1.8 KB per shape (2.1), the pipeline accounts for about 50 µs and 35 KB of the home page (0.5% of the time, 2% of the memory) and about 370 µs and 270 KB of the admin list (4% and 16%). A CPU sampling trace of the run (`dotnet-trace`, see the benchmark's remarks) agrees: the frames of `DefaultHtmlDisplay`, `ShapeResult` and `DefaultShapeFactory` hold a few percent of the request samples. The rest of a request is the MVC pipeline, DI scopes, YesSql and Sqlite, the Razor views and tag helpers, and the GC work induced by the allocation volume.
+- **The allocation volume is the problem, and shapes multiply it through the template engines.** 1.5 MB per request for 7 KB of HTML is 200 bytes allocated per byte of output. The admin list, with 148 shapes of which 83 are Razor templates, allocates the most. What each engine costs per shape, in the same tenant, is measured in 2.5.
+
+The trace also shows two costs that are not per request:
+
+- **Cold start per tenant**: harvesting the templates of all the enabled extensions (`ShapeTemplateBindingStrategy`), reflecting over the `[Shape]` methods and building the descriptors, plus the first Razor view lookups, the Liquid template parsing, the DI call sites and the JIT, were 20% of the busy CPU of the whole run (16 s for the three tenants the benchmark created after the trace started, and their first renders of four pages). Every new tenant, and every theme switch, pays the shape table part again.
+- **Runtime expression compilation on first use**: `RazorPageActivator`, `ViewDataDictionaryFactory` and the DLR call sites compile expression trees the first time a page type, a model type or a dynamic member access is seen, per tenant, since each tenant has its own service provider.
+
+### 2.5 The template engines per shape
+
+`ShapeTemplateEngineBenchmark` renders one shape 100 times through `IShapeHtmlRenderer` inside the Blog tenant: a code binding (the `DateTime` shape), the smallest Razor template of the repository (`TitlePart.cshtml`, `<h1>@Model.Title</h1>`, typed model) and a Liquid template of the theme (`Search-Form.liquid`).
+
+{{ENGINES_TABLE}}
+
+### 2.6 Structural costs that benchmarks don't show
 
 - **The shape table is built per tenant and per theme on the first request**, by enumerating the `Views`, `Views/Items`, `Views/Parts`, `Views/Fields`, `Views/Elements` folders of every enabled extension through the file provider, and by reflecting over every `[Shape]` method. Descriptors are shared across tenants, but the enumeration and the `ShapeDescriptorIndex` construction are per tenant, and the cold start of a tenant pays it.
 - **Castle DynamicProxy** generates a proxy type per view model type, at runtime, and every typed shape is a proxy with a `ShapeViewModel` mixin. It is incompatible with native AOT and trimming, and it forces view models to be non-sealed with virtual-friendly members.
