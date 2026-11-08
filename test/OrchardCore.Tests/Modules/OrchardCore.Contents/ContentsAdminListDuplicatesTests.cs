@@ -15,10 +15,10 @@ using OrchardCore.ContentManagement.Records;
 using OrchardCore.Contents;
 using OrchardCore.Contents.Services;
 using OrchardCore.Contents.ViewModels;
-using OrchardCore.Data;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Entities;
-using OrchardCore.Environment.Shell;
+using OrchardCore.Lists.Indexes;
+using OrchardCore.Lists.Models;
 using OrchardCore.Settings;
 using OrchardCore.Taxonomies.Indexing;
 using OrchardCore.Taxonomies.Services;
@@ -34,15 +34,17 @@ using ContentMigrations = OrchardCore.ContentManagement.Records.Migrations;
 namespace OrchardCore.Tests.Modules.OrchardCore.Contents;
 
 /// <summary>
-/// Runs the filters of the contents admin list on a database, as a list only stops early by not grouping the matches by document, which
-/// must not make a content item appear twice or the pages disagree with the count. The list doesn't stop early on SQLite, so the tenant
-/// says it uses another database, to run that SQL on SQLite anyway.
+/// Runs the filters of the contents admin list on a database. ContentItemIndex and ContainedPartIndex declare a single record per
+/// document, so YesSql doesn't group the matches by document when a query only joins such indexes, which lets a page stop early. That
+/// must not make a content item appear twice or the pages disagree with the count, and a filter joining another index stays grouped.
 /// </summary>
 public class ContentsAdminListDuplicatesTests : IAsyncLifetime
 {
     private const string TaxonomyId = "taxonomy";
+    private const string ListId = "list";
 
     // From the most recently modified: A and C have several terms of the taxonomy, so they have several records in TaxonomyIndex.
+    // A, C and E are in a list.
     private static readonly (string Name, string[] Terms)[] s_items =
     [
         ("A", ["t1", "t2"]),
@@ -77,10 +79,19 @@ public class ContentsAdminListDuplicatesTests : IAsyncLifetime
                 .Column<string>("TermContentItemId", column => column.WithLength(26))
                 .Column<bool>("Published")
                 .Column<bool>("Latest"));
+            await schemaBuilder.CreateMapIndexTableAsync<ContainedPartIndex>(table => table
+                .Column<string>("ContentItemId", column => column.WithLength(26))
+                .Column<string>("ListContentItemId", column => column.WithLength(26))
+                .Column<string>("DisplayText", column => column.WithLength(ContainedPartIndex.MaxDisplayTextSize))
+                .Column<int>("Order")
+                .Column<string>("ListContentType")
+                .Column<bool>("Published")
+                .Column<bool>("Latest"));
             await session.SaveChangesAsync(TestContext.Current.CancellationToken);
         }
 
         _store.RegisterIndexes<ContentItemIndexProvider>();
+        _store.RegisterIndexes<ContainedPartIndexProvider>();
         _store.RegisterIndexes<TermsIndexProvider>();
 
         await using (var session = _store.CreateSession())
@@ -88,7 +99,7 @@ public class ContentsAdminListDuplicatesTests : IAsyncLifetime
             var modified = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
             for (var i = 0; i < s_items.Length; i++)
             {
-                await session.SaveAsync(new ContentItem
+                var contentItem = new ContentItem
                 {
                     ContentItemId = s_items[i].Name,
                     ContentItemVersionId = s_items[i].Name,
@@ -97,7 +108,14 @@ public class ContentsAdminListDuplicatesTests : IAsyncLifetime
                     Latest = true,
                     Published = true,
                     ModifiedUtc = modified.AddDays(-i),
-                }, cancellationToken: TestContext.Current.CancellationToken);
+                };
+
+                if (i % 2 == 0)
+                {
+                    contentItem.Weld(new ContainedPart { ListContentItemId = ListId, ListContentType = "Blog", Order = i });
+                }
+
+                await session.SaveAsync(contentItem, cancellationToken: TestContext.Current.CancellationToken);
             }
 
             await session.SaveChangesAsync(TestContext.Current.CancellationToken);
@@ -129,13 +147,26 @@ public class ContentsAdminListDuplicatesTests : IAsyncLifetime
     [InlineData("status:Latest")]
     [InlineData("status:Published sort:Modified")]
     [InlineData("type:Article")]
-    public async Task QueryAsync_ContentItemIndexOnly_StopsEarly(string filter)
+    [InlineData("sort:Title")]
+    [InlineData("sort:Created")]
+    [InlineData("sort:Published")]
+    public async Task QueryAsync_ContentItemIndexOnly_IsNotGrouped(string filter)
     {
         var result = await ListAsync(filter);
 
         Assert.False(result.Grouped);
         Assert.Equal(5, result.Count);
         Assert.Equal(["A", "B", "C", "D", "E"], result.Items);
+    }
+
+    [Fact]
+    public async Task CountAsync_ContentItemIndexOnly_ReadsTheIndexTable()
+    {
+        var result = await ListAsync(string.Empty);
+
+        Assert.Equal(5, result.Count);
+        Assert.Contains("count(*)", result.CountQuery, StringComparison.Ordinal);
+        Assert.DoesNotContain("[Document]", result.CountQuery, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -166,26 +197,25 @@ public class ContentsAdminListDuplicatesTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task QueryAsync_OnSqlite_DeDuplicates()
+    public async Task QueryAsync_Search_IsGrouped()
     {
-        var result = await ListAsync(string.Empty, databaseProvider: DatabaseProviderValue.Sqlite);
+        var result = await ListAsync("C");
 
         Assert.True(result.Grouped);
-        Assert.Equal(5, result.Count);
-        Assert.Equal(["A", "B", "C", "D", "E"], result.Items);
+        Assert.Equal(1, result.Count);
+        Assert.Equal(["C"], result.Items);
+        Assert.Contains("[Document]", result.CountQuery, StringComparison.Ordinal);
     }
 
-    [Theory]
-    [InlineData("sort:Title")]
-    [InlineData("sort:Created")]
-    [InlineData("sort:Published")]
-    [InlineData("A")]
-    public async Task QueryAsync_OtherOrderOrSearch_DeDuplicates(string filter)
+    [Fact]
+    public async Task QueryAsync_FilterJoiningSingleRecordIndex_IsNotGrouped()
     {
-        var result = await ListAsync(filter);
+        var result = await ListAsync(string.Empty, filters: [new ListFilter()]);
 
-        Assert.True(result.Grouped);
-        Assert.Equal(result.Count, result.Items.Count);
+        Assert.False(result.Grouped);
+        Assert.Equal(3, result.Count);
+        Assert.Equal(["A", "C", "E"], result.Items);
+        Assert.DoesNotContain("[Document]", result.CountQuery, StringComparison.Ordinal);
     }
 
     [Theory]
@@ -202,7 +232,7 @@ public class ContentsAdminListDuplicatesTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task QueryAsync_TaxonomyFilterWithoutSelection_StopsEarly()
+    public async Task QueryAsync_TaxonomyFilterWithoutSelection_IsNotGrouped()
     {
         var result = await ListAsync(string.Empty, selectedTaxonomy: string.Empty);
 
@@ -211,9 +241,9 @@ public class ContentsAdminListDuplicatesTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task QueryAsync_FilterNotDeclaringDuplicates_ReturnsEachItemOnce()
+    public async Task QueryAsync_FilterJoiningMultiRecordIndex_ReturnsEachItemOnce()
     {
-        var result = await ListAsync(string.Empty, filters: [new JoiningFilter()]);
+        var result = await ListAsync(string.Empty, filters: [new TaxonomyFilter()]);
 
         Assert.Equal(4, result.Count);
         Assert.Equal(["A", "B", "C", "D"], result.Items);
@@ -247,8 +277,7 @@ public class ContentsAdminListDuplicatesTests : IAsyncLifetime
         string filter,
         string selectedTaxonomy = null,
         IContentsAdminListFilter[] filters = null,
-        Action<QueryEngineBuilder<ContentItem>> configure = null,
-        string databaseProvider = DatabaseProviderValue.Postgres)
+        Action<QueryEngineBuilder<ContentItem>> configure = null)
     {
         var builder = new QueryEngineBuilder<ContentItem>();
         new DefaultContentsAdminListFilterProvider().Build(builder);
@@ -283,7 +312,6 @@ public class ContentsAdminListDuplicatesTests : IAsyncLifetime
                 services,
                 listFilters,
                 Options.Create(new ContentsAdminListFilterOptions()),
-                new ShellSettings { ["DatabaseProvider"] = databaseProvider },
                 NullLogger<DefaultContentsAdminListQueryService>.Instance);
 
             return await queryService.QueryAsync(new ContentOptionsViewModel { FilterResult = parser.Parse(filter) }, updater.Object);
@@ -295,6 +323,8 @@ public class ContentsAdminListDuplicatesTests : IAsyncLifetime
             count = await (await QueryAsync(session)).CountAsync(TestContext.Current.CancellationToken);
         }
 
+        var countQuery = _logger.Query;
+
         // Two items at a time, as a duplicate would also move the items after it to another page.
         var items = new List<string>();
         for (var page = 0; ; page++)
@@ -305,7 +335,7 @@ public class ContentsAdminListDuplicatesTests : IAsyncLifetime
 
             if (pageOfItems.Count == 0)
             {
-                return new ListResult(count, items, _logger.Query.Contains("GROUP BY", StringComparison.Ordinal));
+                return new ListResult(count, items, _logger.Query.Contains("GROUP BY", StringComparison.Ordinal), countQuery);
             }
 
             items.AddRange(pageOfItems.Select(item => item.ContentItemId));
@@ -345,14 +375,25 @@ public class ContentsAdminListDuplicatesTests : IAsyncLifetime
             .BuildServiceProvider();
     }
 
-    private sealed record ListResult(int Count, List<string> Items, bool Grouped);
+    private sealed record ListResult(int Count, List<string> Items, bool Grouped, string CountQuery);
 
-    // A module's filter, which doesn't say whether it can return duplicates.
-    private sealed class JoiningFilter : IContentsAdminListFilter
+    // A module's filter joining an index with several records per document.
+    private sealed class TaxonomyFilter : IContentsAdminListFilter
     {
         public Task FilterAsync(ContentOptionsViewModel model, IQuery<ContentItem> query, IUpdateModel updater)
         {
             query.With<TaxonomyIndex>(x => x.TaxonomyContentItemId == TaxonomyId);
+
+            return Task.CompletedTask;
+        }
+    }
+
+    // A module's filter joining an index with a single record per document.
+    private sealed class ListFilter : IContentsAdminListFilter
+    {
+        public Task FilterAsync(ContentOptionsViewModel model, IQuery<ContentItem> query, IUpdateModel updater)
+        {
+            query.With<ContainedPartIndex>(x => x.ListContentItemId == ListId);
 
             return Task.CompletedTask;
         }

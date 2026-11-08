@@ -21,9 +21,6 @@ public class ListPartContentsAdminListFilter : IContentsAdminListFilter
         _contentDefinitionManager = contentDefinitionManager;
     }
 
-    // ContainedPartIndex has a single record per document.
-    public bool CanReturnDuplicates => false;
-
     public async Task FilterAsync(ContentOptionsViewModel model, IQuery<ContentItem> query, IUpdateModel updater)
     {
         var viewModel = new ListPartContentsAdminFilterViewModel();

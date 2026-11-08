@@ -72,15 +72,14 @@ public sealed class DefaultContentsAdminListFilterProvider : IContentsAdminListF
                 .AlwaysRun()
             )
             .WithNamedTerm("sort", builder => builder
-                .OneCondition((val, query, ctx) =>
+                .OneCondition((val, query) =>
                 {
-                    var context = (ContentQueryContext)ctx;
                     if (Enum.TryParse<ContentsOrder>(val, true, out var contentsOrder))
                     {
                         switch (contentsOrder)
                         {
                             case ContentsOrder.Modified:
-                                OrderByModified(query, context);
+                                OrderByModified(query);
                                 break;
                             case ContentsOrder.Published:
                                 query.With<ContentItemIndex>().OrderByDescending(cr => cr.PublishedUtc).ThenBy(cr => cr.Id);
@@ -96,10 +95,10 @@ public sealed class DefaultContentsAdminListFilterProvider : IContentsAdminListF
                     else
                     {
                         // Modified is a default value and applied when there is no filter.
-                        OrderByModified(query, context);
+                        OrderByModified(query);
                     }
 
-                    return ValueTask.FromResult<IQuery<ContentItem>>(query);
+                    return query;
                 })
                 .MapTo<ContentOptionsViewModel>((val, model) =>
                 {
@@ -296,17 +295,19 @@ public sealed class DefaultContentsAdminListFilterProvider : IContentsAdminListF
             )
             .WithDefaultTerm(ContentsAdminListFilterOptions.DefaultTermName, builder => builder
                 .ManyCondition(
-                    (val, query) => query.With<ContentItemIndex>(x => x.DisplayText.Contains(val)),
-                    (val, query) => query.With<ContentItemIndex>(x => x.DisplayText.NotContains(val))
+                    (val, query) => SearchDisplayText(query).With<ContentItemIndex>(x => x.DisplayText.Contains(val)),
+                    (val, query) => SearchDisplayText(query).With<ContentItemIndex>(x => x.DisplayText.NotContains(val))
                 )
             );
     }
 
     // Both columns go in the same direction, in the order of the indexes on ModifiedUtc, so that these can be read backward. MySQL and
     // SQL Server can't read an index in two directions, they would sort every match instead.
-    private static void OrderByModified(IQuery<ContentItem> query, ContentQueryContext context)
-    {
-        query.With<ContentItemIndex>().OrderByDescending(cr => cr.ModifiedUtc).ThenByDescending(cr => cr.DocumentId);
-        context.OrderedByModified = true;
-    }
+    private static void OrderByModified(IQuery<ContentItem> query)
+        => query.With<ContentItemIndex>().OrderByDescending(cr => cr.ModifiedUtc).ThenByDescending(cr => cr.DocumentId);
+
+    // A text can't seek, and without the grouping the database could walk the index of the order looking for the few items that
+    // contain it, all of it when none does. Grouped, it reads the matches of the other filters and sorts them, as before.
+    private static IQuery<ContentItem> SearchDisplayText(IQuery<ContentItem> query)
+        => query.NoIndexOptimizations();
 }
