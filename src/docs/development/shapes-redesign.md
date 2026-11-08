@@ -112,7 +112,16 @@ The trace also shows two costs that are not per request:
 
 `ShapeTemplateEngineBenchmark` renders one shape 100 times through `IShapeHtmlRenderer` inside the Blog tenant: a code binding (the `DateTime` shape), the smallest Razor template of the repository (`TitlePart.cshtml`, `<h1>@Model.Title</h1>`, typed model) and a Liquid template of the theme (`Search-Form.liquid`).
 
-{{ENGINES_TABLE}}
+| Shape rendered through `IShapeHtmlRenderer`, in a tenant scope | Mean | Allocated | Over the harness |
+| --- | ---: | ---: | ---: |
+| Harness only: pre-rendered content, returned before the pipeline | 5.8 µs | 4.6 KB | — |
+| Code binding (`[Shape] DateTime`: time zone conversion, localized format) | 7.2 µs | 6.6 KB | +1.4 µs, +2.0 KB |
+| Razor template (`TitlePart.cshtml`, `<h1>@Model.Title</h1>`, typed model) | 10.7 µs | 8.5 KB | +4.9 µs, +3.9 KB |
+| Liquid template (`Search-Form.liquid`: a form, two filters, three properties) | 15.0 µs | 12.2 KB | +9.2 µs, +7.6 KB |
+
+*5 warmups, 10 iterations of 100 renders; the harness row is the `ViewContext`, `ActionContext` and tenant scope work `IShapeHtmlRenderer` does around each call, identical in every row.*
+
+A one-line Razor template costs a page 3.5 µs and 2 KB more than a code binding doing real work: that is the MVC partial machinery (`HtmlHelper.PartialAsync`, view lookup, `RazorView`, `ViewDataDictionary`, page activation, `ViewBuffer`), on top of the 1.8 KB of the pipeline. On the admin list, 83 Razor shapes plus the 148 pipeline passes come to about 0.8 ms and 600 KB, a tenth of the request time and a third of its memory. The Liquid row is higher because this template does more (`href` and `t` filters, assignments), and because the Liquid engine too creates a `ViewContext`, a `ViewDataDictionary` and a `ViewBufferTextWriterContent` per shape; the dynamic `Shape` holding its properties is read through `ShapeAccessor`.
 
 ### 2.6 Structural costs that benchmarks don't show
 
@@ -335,7 +344,7 @@ In the prototype the 144 bytes of a leaf are the node and its model; rendering i
 The prototype is not a complete implementation (no Razor compilation, no cache step, no editor grouping), but it exercises the hot path: node creation, placement with rules, key-cached resolution, wrappers and streaming into a writer. The gains that are structural, and don't depend on the quality of the prototype:
 
 - Per shape: no `DisplayContext`/`ShapeDisplayContext`/`ShapeCreatingContext`/`ShapeCreatedContext`, no alternates copy, no probing, no proxy, no `IHtmlContent` buffer and copy. On the content tree scenario that is 20 times less CPU and 10 times less memory in the pipeline itself.
-- Per page: the Razor partial overhead per shape is removed by executing pages directly, as the Liquid engine already does. {{RAZOR_GAIN}}
+- Per page: the Razor partial overhead per shape, about 3.5 µs and 2 KB for the smallest template (2.5), is removed by executing the compiled page directly in the current view context, as the Liquid engine already does for its templates; the per-shape `ViewDataDictionary`, `ViewContext` and buffer go with it in both engines. On the admin list that is a third of the request's memory.
 - Memory: a shape is one node (≈ 100 bytes) and its model, instead of a `Shape` (properties dictionary, metadata, alternates dictionary, classes list, attributes dictionary, items list, proxy, mixin).
 - Startup: no proxy type generation; file enumeration shared across tenants.
 

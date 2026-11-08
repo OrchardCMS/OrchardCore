@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
+using Microsoft.AspNetCore.Html;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Shapes;
@@ -29,6 +30,7 @@ public class ShapeTemplateEngineBenchmark
         await _context.InitializeAsync();
 
         // Warm up: builds the shape table of the theme, compiles the first Razor view lookups, parses the Liquid template.
+        await RenderAsync(CreatePreRenderedShape);
         await RenderAsync(CreateCodeShape);
         await RenderAsync(CreateRazorShape);
         await RenderAsync(CreateLiquidShape);
@@ -57,6 +59,11 @@ public class ShapeTemplateEngineBenchmark
         });
     }
 
+    // Pre-rendered content is returned by the display helper before the pipeline runs: this measures the harness alone,
+    // i.e. what IShapeHtmlRenderer and the tenant scope cost around each shape.
+    private static ValueTask<IShape> CreatePreRenderedShape(IShapeFactory factory)
+        => ValueTask.FromResult((IShape)PositionWrapper.TryWrap(new HtmlString("<p>Hello</p>"), string.Empty));
+
     // 'DateTime' is a [Shape] method of OrchardCore.DisplayManagement: the pipeline without any template engine.
     private static ValueTask<IShape> CreateCodeShape(IShapeFactory factory)
         => factory.CreateAsync("DateTime", Arguments.From(new { Utc = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) }));
@@ -69,7 +76,10 @@ public class ShapeTemplateEngineBenchmark
     private static ValueTask<IShape> CreateLiquidShape(IShapeFactory factory)
         => factory.CreateAsync("Search__Form", Arguments.From(new { Index = "Search", Terms = "hello" }));
 
-    [Benchmark(Baseline = true, OperationsPerInvoke = OperationsPerInvoke, Description = "Code binding ([Shape] DateTime)")]
+    [Benchmark(Baseline = true, OperationsPerInvoke = OperationsPerInvoke, Description = "Harness only (pre-rendered content)")]
+    public Task PreRendered() => RenderAsync(CreatePreRenderedShape);
+
+    [Benchmark(OperationsPerInvoke = OperationsPerInvoke, Description = "Code binding ([Shape] DateTime)")]
     public Task Code() => RenderAsync(CreateCodeShape);
 
     [Benchmark(OperationsPerInvoke = OperationsPerInvoke, Description = "Razor template (TitlePart.cshtml, typed)")]
