@@ -89,12 +89,24 @@ public class DefaultHtmlDisplay : IHtmlDisplay
 
         var startTimestamp = DisplayManagementDiagnostics.ShapeRenderDuration.Enabled || ShapeTelemetry.IsEnabled ? Stopwatch.GetTimestamp() : 0;
 
-        // Copy the current context such that the rendering can customize it if necessary,
-        // for instance to change the HtmlFieldPrefix.
-        var localContext = new DisplayContext(context)
+        // The display helper creates a context for each shape it executes, so it is reused unless the rendering
+        // needs to customize it, for instance to change the HtmlFieldPrefix.
+        var htmlFieldPrefix = shapeMetadata.Prefix ?? string.Empty;
+
+        DisplayContext localContext;
+
+        if (ReferenceEquals(context.Value, shape) && string.Equals(context.HtmlFieldPrefix ?? string.Empty, htmlFieldPrefix, StringComparison.Ordinal))
         {
-            HtmlFieldPrefix = shapeMetadata.Prefix ?? string.Empty,
-        };
+            context.HtmlFieldPrefix = htmlFieldPrefix;
+            localContext = context;
+        }
+        else
+        {
+            localContext = new DisplayContext(context)
+            {
+                HtmlFieldPrefix = htmlFieldPrefix,
+            };
+        }
 
         var displayContext = new ShapeDisplayContext
         {

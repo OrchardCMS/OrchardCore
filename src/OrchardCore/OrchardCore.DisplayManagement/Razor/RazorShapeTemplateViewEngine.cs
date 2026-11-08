@@ -13,12 +13,14 @@ using OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy;
 using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.DisplayManagement.Implementation;
 
+using MvcRazorPage = Microsoft.AspNetCore.Mvc.Razor.IRazorPage;
+
 namespace OrchardCore.DisplayManagement.Razor;
 
 public class RazorShapeTemplateViewEngine : IShapeTemplateViewEngine
 {
-    // Maps the relative paths of the shape templates to their view names, to not allocate them on each rendering.
-    private static readonly ConcurrentDictionary<string, string> s_viewNames = new(StringComparer.Ordinal);
+    // Maps the relative paths of the shape templates to their views, to not allocate them on each rendering.
+    private static readonly ConcurrentDictionary<string, ShapeTemplateView> s_views = new(StringComparer.Ordinal);
 
     private readonly IOptions<MvcViewOptions> _options;
     private readonly IEnumerable<IRazorViewExtensionProvider> _viewExtensionProviders;
@@ -26,6 +28,8 @@ public class RazorShapeTemplateViewEngine : IShapeTemplateViewEngine
     private readonly ViewContextAccessor _viewContextAccessor;
     private readonly ITempDataProvider _tempDataProvider;
     private readonly IHtmlHelper _htmlHelper;
+    private readonly IRazorPageFactoryProvider _pageFactoryProvider;
+    private readonly IRazorPageActivator _pageActivator;
 
     public RazorShapeTemplateViewEngine(
         IOptions<MvcViewOptions> options,
@@ -34,6 +38,19 @@ public class RazorShapeTemplateViewEngine : IShapeTemplateViewEngine
         ViewContextAccessor viewContextAccessor,
         ITempDataProvider tempDataProvider,
         IHtmlHelper htmlHelper)
+        : this(options, viewExtensionProviders, httpContextAccessor, viewContextAccessor, tempDataProvider, htmlHelper, null, null)
+    {
+    }
+
+    public RazorShapeTemplateViewEngine(
+        IOptions<MvcViewOptions> options,
+        IEnumerable<IRazorViewExtensionProvider> viewExtensionProviders,
+        IHttpContextAccessor httpContextAccessor,
+        ViewContextAccessor viewContextAccessor,
+        ITempDataProvider tempDataProvider,
+        IHtmlHelper htmlHelper,
+        IRazorPageFactoryProvider pageFactoryProvider,
+        IRazorPageActivator pageActivator)
     {
         _options = options;
         _viewExtensionProviders = viewExtensionProviders;
@@ -41,6 +58,8 @@ public class RazorShapeTemplateViewEngine : IShapeTemplateViewEngine
         _viewContextAccessor = viewContextAccessor;
         _tempDataProvider = tempDataProvider;
         _htmlHelper = htmlHelper;
+        _pageFactoryProvider = pageFactoryProvider;
+        _pageActivator = pageActivator;
     }
 
     public IEnumerable<string> TemplateFileExtensions
@@ -57,12 +76,25 @@ public class RazorShapeTemplateViewEngine : IShapeTemplateViewEngine
 
     public Task<IHtmlContent> RenderAsync(string relativePath, DisplayContext displayContext)
     {
-        var viewName = s_viewNames.GetOrAdd(relativePath, static path => Path.ChangeExtension("/" + path, RazorViewEngine.ViewExtension));
+        var view = s_views.GetOrAdd(relativePath, static path => new ShapeTemplateView(Path.ChangeExtension("/" + path, RazorViewEngine.ViewExtension)));
 
         var viewContext = _viewContextAccessor.ViewContext;
 
         if (viewContext?.View != null)
         {
+            // The compiled page of the template is executed directly in the current view context, instead of being
+            // rendered as a partial view, which looks up a view, creates a 'RazorView' and a second view buffer, and
+            // moves the rendered pages of the template into the buffer of the partial view, for each rendered shape.
+            if (_pageFactoryProvider is not null && _pageActivator is not null)
+            {
+                var factoryResult = _pageFactoryProvider.CreateFactory(view.Path);
+
+                if (factoryResult.Success)
+                {
+                    return RenderPageAsync(factoryResult.RazorPageFactory(), view, viewContext, displayContext);
+                }
+            }
+
             // The partial view gets its own copy of the view data, so a copy with a different 'HtmlFieldPrefix'
             // is only needed when the prefix changes, which is not the case of most displayed shapes.
             var viewData = viewContext.ViewData;
@@ -74,12 +106,52 @@ public class RazorShapeTemplateViewEngine : IShapeTemplateViewEngine
             }
 
             var htmlHelper = MakeHtmlHelper(viewContext, viewData);
-            return htmlHelper.PartialAsync(viewName, displayContext.Value);
+            return htmlHelper.PartialAsync(view.Path, displayContext.Value);
         }
         else
         {
-            return RenderRazorViewAsync(viewName, displayContext);
+            return RenderRazorViewAsync(view.Path, displayContext);
         }
+    }
+
+    /// <summary>
+    /// Executes the compiled page of a shape template as a partial view of the current view would, with its own view
+    /// data whose model is the shape and whose prefix is the one of the shape, and its own view context whose executing
+    /// file path is the one of the template, e.g. to localize it.
+    /// </summary>
+    private async Task<IHtmlContent> RenderPageAsync(MvcRazorPage page, ShapeTemplateView view, ViewContext viewContext, DisplayContext displayContext)
+    {
+        var viewData = new ViewDataDictionary<object>(viewContext.ViewData, displayContext.Value);
+        viewData.TemplateInfo.HtmlFieldPrefix = displayContext.HtmlFieldPrefix ?? string.Empty;
+
+        // The template writes to a buffer, as a partial view does, in which the content of its child shapes is
+        // kept by reference, so that the whole page is written once to the response.
+        var writer = new ShapeTemplateWriter();
+
+        var pageContext = new ViewContext(viewContext, view, viewData, writer)
+        {
+            ExecutingFilePath = page.Path ?? view.Path,
+        };
+
+        try
+        {
+            // Setting the view context of an Orchard Core Razor page also makes it the current one.
+            page.ViewContext = pageContext;
+            _pageActivator.Activate(page, pageContext);
+
+            await page.ExecuteAsync();
+        }
+        finally
+        {
+            _viewContextAccessor.ViewContext = viewContext;
+        }
+
+        if (!string.IsNullOrEmpty(page.Layout))
+        {
+            throw new InvalidOperationException($"The shape template '{view.Path}' sets a layout, which is not supported. A shape is rendered where its parent displays it.");
+        }
+
+        return writer;
     }
 
     private async Task<IHtmlContent> RenderRazorViewAsync(string viewName, DisplayContext displayContext)
@@ -161,5 +233,21 @@ public class RazorShapeTemplateViewEngine : IShapeTemplateViewEngine
         }
 
         return _htmlHelper;
+    }
+
+    /// <summary>
+    /// The view of a Razor shape template, which only describes it in the view context of its page.
+    /// </summary>
+    private sealed class ShapeTemplateView : IView
+    {
+        public ShapeTemplateView(string path)
+        {
+            Path = path;
+        }
+
+        public string Path { get; }
+
+        public Task RenderAsync(ViewContext context)
+            => throw new NotSupportedException("A Razor shape template is executed by the 'RazorShapeTemplateViewEngine'.");
     }
 }

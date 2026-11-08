@@ -28,6 +28,22 @@ public abstract class RazorPage<TModel> : Microsoft.AspNetCore.Mvc.Razor.RazorPa
         }
     }
 
+    /// <summary>
+    /// Writes a value to the output, HTML encoded unless it is an <see cref="IHtmlContent"/>. When the page is a shape
+    /// template executed by the <see cref="RazorShapeTemplateViewEngine"/>, an <see cref="IHtmlContent"/>, e.g. the
+    /// rendered content of a child shape, is kept by reference instead of being copied to the output.
+    /// </summary>
+    public override void Write(object value)
+    {
+        if (value is IHtmlContent htmlContent && Output is ShapeTemplateWriter writer)
+        {
+            writer.Append(htmlContent);
+            return;
+        }
+
+        base.Write(value);
+    }
+
     private void EnsureDisplayHelper()
         => _displayHelper ??= Context.RequestServices.GetService<IDisplayHelper>();
 
