@@ -373,7 +373,7 @@ What the redesign does not change: the time spent *inside* templates (Razor code
 5. `IShapeBindingResolver` consulted once per shape type per request (the Templates module already caches `_isAdmin`; the resolver can be asked for the whole alternates list at once).
 6. Positions parsed at `AddAsync` time.
 
-Each item is a self-contained PR with its benchmark. The first PR implements items 1 (the list storage of the alternates), 3 (a compiled constructor call instead of `Activator.CreateInstance` for the proxies) and 7 (an in-place stable sort of the items), and reuses the display context when the prefix doesn't change: the pipeline renders the content tree of `ShapePipelineBenchmark` 15% faster with 18% less memory. Executing Razor shape templates directly, instead of as partial views, was measured in the same work and dropped, see 2.6.
+Each item is a self-contained PR with its benchmark. The first PR stores the alternates of a shape in a list instead of an ordered dictionary, creates the proxies through a compiled constructor call instead of `Activator.CreateInstance` (a first step of item 3), sorts the items in place with a stable sort (item 6), and reuses the display context when the prefix doesn't change: the pipeline renders the content tree of `ShapePipelineBenchmark` 15% faster with 18% less memory. Executing Razor shape templates directly, instead of as partial views, was measured in the same work and dropped, see 2.6.
 
 **Phase 2 (breaking, 5.0): the new model.** `ShapeNode`, `AlternateSet`/`ShapeKey`, `TemplateTable`/`RenderPlan`, `IShapeTemplate`, streaming rendering, `ShapeTemplatePage<TModel>`, the Liquid `Shape` value, drivers on nodes, the compatibility adapter, core templates migrated, analyzer, docs and release notes.
 
