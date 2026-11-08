@@ -130,7 +130,7 @@ A one-line Razor template costs a page 3.5 µs and 2 KB more than a code binding
 - **`Items` are sorted by re-parsing position strings** (`FlatPositionComparer` splits `"5.1"` on each comparison) on first enumeration, with an `OrderBy().ToList()` allocation per container.
 - **Six lifecycle events** (`Creating`, `Created`, `Displaying`, `Processing`, `Displayed`, `DisplayingFinalized`) at three scopes (instance, type, global) are checked for every shape. Across the repository: 54 `OnDisplaying` (almost all add alternates), 14 `OnProcessing` (lazy data loading, so that the Dynamic Cache can skip it), 6 `OnCreated`, 4 `OnDisplayed`, 3 `OnCreating`, and two global `IShapeDisplayEvents` (Dynamic Cache, MiniProfiler).
 - **`IHtmlContent` per shape**: each template renders into its own `ViewBuffer` (with its `ViewBufferTextWriter` and pooled pages), returned as `IHtmlContent`, stored in `Metadata.ChildContent` and appended by reference to the parent's buffer. The page is a tree of buffers flattened when the response is written; a cached shape is written a second time, to a string, to be stored.
-- **Razor shape templates render as MVC partials**: `IHtmlHelper.PartialAsync()` → `ViewEngine.FindView()` (cached by name and theme) → `RazorView.RenderAsync()` with a new `ViewDataDictionary`, a new `ViewContext`, a page activation and a `ViewBuffer`. The Liquid engine already bypasses `RazorView` and renders the parsed Fluid template directly, for this reason.
+- **Razor shape templates render as MVC partials**: `IHtmlHelper.PartialAsync()` → `ViewEngine.GetView()` (cached by path) → `RazorView.RenderAsync()` with a new `ViewDataDictionary`, a new `ViewContext`, a page activation, a `ViewBuffer` for the partial and a second one for the page, moved into the first. Executing the compiled page directly, as the Liquid engine does for its templates, was implemented and measured in the Phase 1 work: it saved no measurable time per shape and allocated more on template-heavy pages, so the 3.5 µs and 2 KB a one-line Razor template costs over a code binding (2.5) are in `RazorPageActivator.Activate()` (property injection of `Html`, `Url`, `Component`, `ViewData`, `Json`, ...), the `ViewDataDictionary<TModel>` created for the page's model type, and the tag helper runtime, not in the partial view machinery. A lighter page base for shape templates, activated once per template type and request, is what the redesign has to provide to recover that cost.
 
 ## 3. Goals
 
@@ -344,7 +344,7 @@ In the prototype the 144 bytes of a leaf are the node and its model; rendering i
 The prototype is not a complete implementation (no Razor compilation, no cache step, no editor grouping), but it exercises the hot path: node creation, placement with rules, key-cached resolution, wrappers and streaming into a writer. The gains that are structural, and don't depend on the quality of the prototype:
 
 - Per shape: no `DisplayContext`/`ShapeDisplayContext`/`ShapeCreatingContext`/`ShapeCreatedContext`, no alternates copy, no probing, no proxy, no `IHtmlContent` buffer and copy. On the content tree scenario that is 20 times less CPU and 10 times less memory in the pipeline itself.
-- Per page: the Razor partial overhead per shape, about 3.5 µs and 2 KB for the smallest template (2.5), is removed by executing the compiled page directly in the current view context, as the Liquid engine already does for its templates; the per-shape `ViewDataDictionary`, `ViewContext` and buffer go with it in both engines. On the admin list that is a third of the request's memory.
+- Per page: the 3.5 µs and 2 KB a one-line Razor template costs over a code binding (2.5) are not in the partial view machinery (2.6) but in the page activation, the typed view data and the tag helper runtime. Recovering them needs a shape template page base that is activated once per template type and request and reads its model from the render context, which is a 5.0 change of how templates are compiled and executed, not an optimization of the current engine. On the admin list that cost is a third of the request's memory.
 - Memory: a shape is one node (≈ 100 bytes) and its model, instead of a `Shape` (properties dictionary, metadata, alternates dictionary, classes list, attributes dictionary, items list, proxy, mixin).
 - Startup: no proxy type generation; file enumeration shared across tenants.
 
@@ -371,10 +371,9 @@ What the redesign does not change: the time spent *inside* templates (Razor code
 3. `Initialize<TModel>` without Castle when `TModel` implements `IShape` or when a `ShapeViewModel<TModel>` wrapper is acceptable to the template (`@model` of the wrapper).
 4. Placement predicates flattened; `PlacementInfo` results cached per rule and key.
 5. `IShapeBindingResolver` consulted once per shape type per request (the Templates module already caches `_isAdmin`; the resolver can be asked for the whole alternates list at once).
-6. Razor shape templates executed through the page factory instead of `PartialAsync`.
-7. Positions parsed at `AddAsync` time.
+6. Positions parsed at `AddAsync` time.
 
-Each item is a self-contained PR with its benchmark.
+Each item is a self-contained PR with its benchmark. The first PR implements items 1 (the list storage of the alternates), 3 (a compiled constructor call instead of `Activator.CreateInstance` for the proxies) and 7 (an in-place stable sort of the items), and reuses the display context when the prefix doesn't change: the pipeline renders the content tree of `ShapePipelineBenchmark` 15% faster with 18% less memory. Executing Razor shape templates directly, instead of as partial views, was measured in the same work and dropped, see 2.6.
 
 **Phase 2 (breaking, 5.0): the new model.** `ShapeNode`, `AlternateSet`/`ShapeKey`, `TemplateTable`/`RenderPlan`, `IShapeTemplate`, streaming rendering, `ShapeTemplatePage<TModel>`, the Liquid `Shape` value, drivers on nodes, the compatibility adapter, core templates migrated, analyzer, docs and release notes.
 
