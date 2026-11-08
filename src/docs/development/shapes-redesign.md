@@ -29,15 +29,29 @@ Two things are *not* on the list, although the current implementation is built a
 
 `ShapePipelineBenchmark` renders shapes whose binding is a code delegate returning a constant string, so the numbers are the cost of the pipeline alone (`DefaultShapeFactory`, `ShapeResult`, `DefaultHtmlDisplay`), without any template engine. The floor is the delegate called directly.
 
-{{PIPELINE_TABLE}}
+| Scenario (current pipeline, code bindings) | Mean | Allocated |
+| --- | ---: | ---: |
+| Floor: call the binding delegate directly | 30 ns | 72 B |
+| Create: dynamic `Shape` through `IShapeFactory` | 174 ns | 576 B |
+| Create: typed proxy (`Initialize<TModel>`) through `IShapeFactory` | 201 ns | 584 B |
+| Create: `new ShapeViewModel()` (no factory) | 38 ns | 296 B |
+| Render leaf: no alternates | 1,215 ns | 928 B |
+| Render leaf: 5 alternates, none bound | 1,891 ns | 1,440 B |
+| Render leaf: 5 alternates + `Templates` resolver | 1,902 ns | 1,440 B |
+| Render leaf: 5 alternates + 1 wrapper | 2,358 ns | 2,072 B |
+| Place: `ShapeResult.ApplyAsync()` (`Initialize<TModel>` + placement rules) | 1,164 ns | 688 B |
+| Content tree: build 6 results and render 9 shapes | 22,541 ns | 16,160 B |
+
+*.NET 10, x64, 4 cores, in-process short run (3 warmups, 3 iterations); the content tree row has a ±4 µs standard deviation.*
 
 What the table says:
 
-- Rendering a leaf shape through `DefaultHtmlDisplay` costs {{LEAF_RATIO}} the direct call and allocates {{LEAF_ALLOC}}, for a shape that has no alternates, no wrapper, no event and no cache. That is the fixed price of `DisplayContext` + `ShapeDisplayContext` + the event loops + `Activity`/`Stopwatch` checks + the binding lookup.
-- A typical content part shape carries 5 alternates (see 2.3). None of them usually has a template, so they are 5 dictionary misses before the base type is found, on every shape, on every request: {{ALTERNATES_DELTA}}.
-- With the `Templates` feature enabled, an `IShapeBindingResolver` is asked for each alternate and for the type, as an `async` interface call each: {{RESOLVER_DELTA}}.
-- Placing one driver result (`Initialize<TModel>()` + `Location()` + `ShapeResult.ApplyAsync()`) costs {{PLACE_COST}}: a `ShapeResult`, a closure state tuple, the placement predicates chain, a `ShapePlacementContext`, a `PlacementInfo`, the Castle DynamicProxy instance of the model ({{PROXY_COST}} by itself, see `ShapeProxyBenchmark`), and the `OrderedDictionary` of alternates.
-- A content item with six parts and fields (nine shapes, two zones) costs {{TREE_COST}} to build and render, before any template runs.
+- Rendering a leaf shape through `DefaultHtmlDisplay` costs 40 times the direct call and allocates 928 bytes, for a shape that has no alternates, no wrapper, no event and no cache. That is the fixed price of `DisplayContext` + `ShapeDisplayContext` + the event loops + the `Activity`/`Stopwatch` checks + the binding lookup + the `IHtmlContent` result.
+- A typical content part shape carries 5 alternates (see 2.3). None of them usually has a template, so they are 5 dictionary misses before the base type is found, on every shape, on every request: +0.7 µs and +512 bytes per shape, the latter being the `OrderedDictionary` that holds them.
+- With the `Templates` feature enabled, an `IShapeBindingResolver` is asked for each alternate and for the type, as an `async` interface call each. The resolver answers from a per-request cache, so the six calls add little here (+10 ns); the first call of a request loads the templates document.
+- A wrapper adds +0.5 µs and +632 bytes: a second binding lookup and a second `IHtmlContent` buffer around the first.
+- Placing one driver result (`Initialize<TModel>()` + `Location()` + `ShapeResult.ApplyAsync()`) costs 1.2 µs and 688 bytes: a `ShapeResult`, a closure state tuple, the placement predicates chain, a `ShapePlacementContext`, a `PlacementInfo`, the Castle DynamicProxy instance of the model (the proxy alone is about 230 ns and 700 bytes, see `ShapeProxyBenchmark`), and the alternates copied into the shape.
+- A content item with six parts and fields (nine shapes, two zones) costs 22.5 µs and 16 KB to build and render, before any template runs: about 2.5 µs and 1.8 KB per shape.
 
 ### 2.2 Reading data from a template
 
@@ -282,11 +296,22 @@ A Razor shape template without `@model` compiles against `object`. To keep exist
 
 ## 6. Expected gains
 
-{{PROTOTYPE_TABLE}}
+`ShapePrototypeBenchmark` runs the scenarios of `ShapePipelineBenchmark` on the prototype, with the same markup written by code templates:
+
+| Scenario | Current pipeline | Prototype | Time | Memory |
+| --- | ---: | ---: | ---: | ---: |
+| Create a typed shape | 201 ns, 584 B | 30 ns, 144 B | ÷ 6.7 | ÷ 4 |
+| Render leaf: no alternates | 1,215 ns, 928 B | 84 ns, 144 B | ÷ 14 | ÷ 6.4 |
+| Render leaf: 5 alternates, none bound | 1,891 ns, 1,440 B | 81 ns, 144 B | ÷ 23 | ÷ 10 |
+| Render leaf: 5 alternates + 1 wrapper | 2,358 ns, 2,072 B | 303 ns, 336 B | ÷ 7.8 | ÷ 6.2 |
+| Place one driver result | 1,164 ns, 688 B | 133 ns, 560 B | ÷ 8.8 | ÷ 1.2 |
+| Content tree: build 6 results, render 9 shapes | 22,541 ns, 16,160 B | 1,031 ns, 1,576 B | ÷ 22 | ÷ 10 |
+
+In the prototype the 144 bytes of a leaf are the node and its model; rendering it allocates nothing, and alternates cost nothing once their key is cached. The placement row allocates the zone node and its children list, which the current pipeline shares across the benchmark; in the tree row, where both build the same structure, the prototype allocates ten times less.
 
 The prototype is not a complete implementation (no Razor compilation, no cache step, no editor grouping), but it exercises the hot path: node creation, placement with rules, key-cached resolution, wrappers and streaming into a writer. The gains that are structural, and don't depend on the quality of the prototype:
 
-- Per shape: no `DisplayContext`/`ShapeDisplayContext`/`ShapeCreatingContext`/`ShapeCreatedContext`, no alternates copy, no probing, no proxy, no `IHtmlContent` buffer and copy. {{STRUCTURAL_GAIN}}
+- Per shape: no `DisplayContext`/`ShapeDisplayContext`/`ShapeCreatingContext`/`ShapeCreatedContext`, no alternates copy, no probing, no proxy, no `IHtmlContent` buffer and copy. On the content tree scenario that is 20 times less CPU and 10 times less memory in the pipeline itself.
 - Per page: the Razor partial overhead per shape is removed by executing pages directly, as the Liquid engine already does. {{RAZOR_GAIN}}
 - Memory: a shape is one node (≈ 100 bytes) and its model, instead of a `Shape` (properties dictionary, metadata, alternates dictionary, classes list, attributes dictionary, items list, proxy, mixin).
 - Startup: no proxy type generation; file enumeration shared across tenants.
