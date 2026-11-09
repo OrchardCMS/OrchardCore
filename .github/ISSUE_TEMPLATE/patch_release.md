@@ -37,7 +37,7 @@ assignees: ''
 
 ## Step 3: Validation
 
-- [ ] **Check Translations**: Reuse the release branch's stable translation package if it remains suitable. To select a different published stable version, run **Prepare Release Translations** on the release or release-preparation branch and merge its update PR before tagging. See [translation package release preparation](../../src/docs/reference/modules/Localize/README.md#selecting-translations-for-a-release).
+- [ ] **Check Translations**: Reuse the release branch's stable translation package if it remains suitable. To change it, run **Prepare Release Translations** on the release or release-preparation branch; leave the version empty to use OC's `VersionPrefix`, or enter a compatible published stable version. Merge its update PR before tagging. See [translation package release preparation](../../src/docs/reference/modules/Localize/README.md#selecting-translations-for-a-release).
 - [ ] **Check Functionality**: Update [`OrchardCore.Samples`](https://github.com/OrchardCMS/OrchardCore.Samples) to the latest preview version generated in the previous step (just change the `OrchardCoreVersion` property in the root `Directory.Build.props` file). Ensure the samples work as expected.
 - [ ] **Test Guides**: Test the following guides with NuGet packages from the Cloudsmith feed. At this point, the versions of these pages in the version branch (e.g., `release-prep/2.1.1`), should contain the version number of the upcoming version.
   - [Creating a modular ASP.NET Core application](https://docs.orchardcore.net/en/latest/guides/create-modular-application-mvc/)

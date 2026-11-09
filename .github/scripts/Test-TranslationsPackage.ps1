@@ -18,12 +18,23 @@ if ($references.Count -ne 1) {
 $reference = $references[0]
 $stableVersionPattern = '(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)'
 if (-not $PSBoundParameters.ContainsKey('Version')) {
-    $currentVersion = $reference.GetAttribute('Version')
-    if ($currentVersion -cmatch "\A\[(?<version>$stableVersionPattern)\]\z" -or
-        $currentVersion -cmatch "\A(?<version>$stableVersionPattern)\z") {
-        $Version = $Matches.version
+    if ($UpdateReference) {
+        $buildDirectory = Join-Path (Join-Path (Split-Path $PackagesPropsPath -Parent) 'src') 'OrchardCore.Build'
+        $commonsPath = Join-Path $buildDirectory 'OrchardCore.Commons.props'
+        $commons = [xml](Get-Content -Raw -Path $commonsPath)
+        $prefixes = @($commons.SelectNodes('/*[local-name()="Project"]/*[local-name()="PropertyGroup"]/*[local-name()="VersionPrefix"]'))
+        if ($prefixes.Count -ne 1) {
+            throw 'Expected exactly one VersionPrefix in OrchardCore.Commons.props.'
+        }
+        $Version = $prefixes[0].InnerText
     } else {
-        throw "Release translations must reference a single stable version, not '$currentVersion'. Run Prepare Release Translations before tagging."
+        $currentVersion = $reference.GetAttribute('Version')
+        if ($currentVersion -cmatch "\A\[(?<version>$stableVersionPattern)\]\z" -or
+            $currentVersion -cmatch "\A(?<version>$stableVersionPattern)\z") {
+            $Version = $Matches.version
+        } else {
+            throw "Release translations must reference a single stable version, not '$currentVersion'. Run Prepare Release Translations before tagging."
+        }
     }
 }
 
@@ -60,7 +71,7 @@ try {
     # An isolated cache and config prevent Cloudsmith or previously cached packages from satisfying the check.
     dotnet restore $projectPath --configfile $configPath --packages $packagesPath --no-http-cache --verbosity minimal
     if ($LASTEXITCODE -ne 0) {
-        throw "Could not restore translation package $Version and its dependencies from NuGet.org."
+        throw "Could not restore translation package $Version and its dependencies from NuGet.org. Publish that version first or explicitly select an existing compatible stable version."
     }
 
     $assetsPath = Join-Path (Join-Path $temporaryDirectory 'obj') 'project.assets.json'

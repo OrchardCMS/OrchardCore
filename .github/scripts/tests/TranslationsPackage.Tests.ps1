@@ -6,6 +6,7 @@ $propsPath = Join-Path $testDirectory 'Directory.Packages.props'
 $global:translationPackageTests = @{
     RestoreCalls = 0
     RestoreExitCode = 0
+    ExpectedVersion = '3.0.0'
     ResolvedPackages = @('OrchardCore.Translations.All/3.0.0', 'OrchardCore.Translations.fr/3.0.0')
 }
 
@@ -24,7 +25,7 @@ function dotnet {
     }
 
     $project = [xml](Get-Content -Raw -Path $arguments[1])
-    if ($project.Project.ItemGroup.PackageReference.Version -ne '[3.0.0]') {
+    if ($project.Project.ItemGroup.PackageReference.Version -ne "[$($global:translationPackageTests.ExpectedVersion)]") {
         throw 'Expected an exact package version.'
     }
 
@@ -47,6 +48,14 @@ function Set-TestReference([string]$Version) {
   </ItemGroup>
 </Project>
 "@ | Set-Content -Path $propsPath
+}
+
+function Set-TestVersionPrefix([string]$Version) {
+    $buildDirectory = Join-Path (Join-Path $testDirectory 'src') 'OrchardCore.Build'
+    New-Item -ItemType Directory -Force -Path $buildDirectory | Out-Null
+    '<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003"><PropertyGroup><VersionPrefix>' +
+        $Version + '</VersionPrefix></PropertyGroup></Project>' |
+        Set-Content -Path (Join-Path $buildDirectory 'OrchardCore.Commons.props')
 }
 
 function Assert-Failure([scriptblock]$Action, [string]$Message) {
@@ -90,6 +99,31 @@ try {
 
     & $validator -PackagesPropsPath $propsPath
     Set-TestReference '3.0.0'
+    & $validator -PackagesPropsPath $propsPath
+
+    foreach ($version in @('4.0.0', '5.0.0')) {
+        Set-TestReference '[3.0.0-preview-20094]'
+        Set-TestVersionPrefix $version
+        $global:translationPackageTests.ExpectedVersion = $version
+        $global:translationPackageTests.ResolvedPackages = @("OrchardCore.Translations.All/$version", "OrchardCore.Translations.fr/$version")
+        & $validator -UpdateReference -PackagesPropsPath $propsPath
+        $props = [xml](Get-Content -Raw -Path $propsPath)
+        if ($props.Project.ItemGroup.PackageVersion[1].Version -ne "[$version]") {
+            throw 'Release preparation must default to OC VersionPrefix.'
+        }
+    }
+
+    Set-TestReference '[3.0.0-preview-20094]'
+    $global:translationPackageTests.RestoreExitCode = 1
+    Assert-Failure { & $validator -UpdateReference -PackagesPropsPath $propsPath } 'Publish that version first'
+    $global:translationPackageTests.RestoreExitCode = 0
+    Set-TestVersionPrefix '5.0.0-preview'
+    Assert-Failure { & $validator -UpdateReference -PackagesPropsPath $propsPath } 'major.minor.patch'
+
+    $global:translationPackageTests.ExpectedVersion = '3.0.0'
+    $global:translationPackageTests.ResolvedPackages = @('OrchardCore.Translations.All/3.0.0', 'OrchardCore.Translations.fr/3.0.0')
+    & $validator -Version '3.0.0' -UpdateReference -PackagesPropsPath $propsPath
+    Set-TestVersionPrefix '5.0.0'
     & $validator -PackagesPropsPath $propsPath
 
     Set-TestReference '[3.0.0-preview-20094]'

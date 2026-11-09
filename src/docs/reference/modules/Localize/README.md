@@ -12,10 +12,11 @@ The localization files for the different cultures are available on [Crowdin](htt
 ### Translation package updates
 
 `OrchardCore.Application.Cms.Targets` includes `OrchardCore.Translations.All`. Its version is managed in
-`Directory.Packages.props`. On `main`, Renovate tracks the latest `3.0.0-preview-*` package from Cloudsmith,
-independently of the normal weekly dependency schedule and 15-day update delay. These packages contain
-translations for OC `main`, despite the `3.0.0` version prefix. When the translations repository changes its
-preview version scheme, update the translation-specific `allowedVersions` rule in `renovate.json5`.
+`Directory.Packages.props`. On `main`, Renovate tracks the latest `major.minor.patch-preview-<build>` package
+from Cloudsmith, independently of the normal weekly dependency schedule and 15-day update delay. Preview
+packages contain translations for OC `main`, even when their version prefix differs from OC's.
+Renovate accepts higher preview version prefixes automatically, so aligning the translation packages or
+starting a new OC major version requires no change to the translation-specific Renovate rule.
 
 The reference uses an exact NuGet version range (`[version]`), not a floating version. New previews arrive
 through a dedicated PR, which can automerge after the required checks pass. "Latest" therefore means the latest
@@ -37,11 +38,15 @@ Before creating an OC release tag:
    translations repository, if needed. An OC patch release may reuse a compatible existing stable package;
    the translation version does not have to equal the OC version.
 2. Run **Prepare Release Translations** from the Actions tab. Select the intended `release/*` or
-   `release-prep/*` branch and enter the existing stable translation version, for example `3.0.0`.
+   `release-prep/*` branch. Leave the version empty to use that branch's `VersionPrefix` from
+   `src/OrchardCore.Build/OrchardCore.Commons.props`, or enter an existing compatible stable translation
+   version, for example `3.0.0`, to override it.
    The workflow must be present on that branch as well as the default branch.
 3. The workflow restores the meta-package and all dependencies from NuGet.org using an isolated package
    cache. It rejects missing packages, prereleases, and mismatched culture-package versions, then opens or
-   updates a PR pinning the selected version in `Directory.Packages.props`.
+   updates a PR pinning the selected version in `Directory.Packages.props`. If the default version is not
+   published, the workflow fails; publish it first or explicitly override the version. It never silently
+   substitutes an older package.
 4. Review and merge the PR before tagging the OC release. If the branch already references the selected exact
    version, no PR is needed.
 
@@ -59,7 +64,13 @@ locally, run:
 ./.github/scripts/Test-TranslationsPackage.ps1
 ```
 
-To select an already-published stable version locally:
+To select the stable translation package matching OC's `VersionPrefix` locally:
+
+```powershell
+./.github/scripts/Test-TranslationsPackage.ps1 -UpdateReference
+```
+
+To override that default with an already-published compatible stable version:
 
 ```powershell
 ./.github/scripts/Test-TranslationsPackage.ps1 -Version 3.0.0 -UpdateReference

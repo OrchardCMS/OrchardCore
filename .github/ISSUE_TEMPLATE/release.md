@@ -42,7 +42,7 @@ assignees: ''
 
 - [ ] Make sure the translation templates are up to date by building the solution from the repository root with `dotnet build OrchardCore.slnx -c Release -p:UpdateLocalizationCatalogs=true` and committing any changed `.pot` file. Upload the templates, listed by `git ls-files '*.pot'`, to [Crowdin](https://crowdin.com/project/orchard-core), then download the translated PO files to update the Translations project. Follow the [translation templates workflow](../../src/docs/reference/modules/Localize/README.md#export-translation-templates-for-localization-platforms), the successor to POExtractor.
 - [ ] Publish the stable translation package on NuGet.org after reviewing the release's translations, or select a compatible existing stable package.
-- [ ] Run **Prepare Release Translations** on the release or release-preparation branch with that stable version. Review and merge its `Directory.Packages.props` update PR before creating the OC release tag. See [translation package release preparation](../../src/docs/reference/modules/Localize/README.md#selecting-translations-for-a-release) for the one-time token setup and validation details.
+- [ ] Run **Prepare Release Translations** on the release or release-preparation branch. Leave the version empty to use OC's `VersionPrefix`, or override it with a compatible published stable translation version. Review and merge its `Directory.Packages.props` update PR before creating the OC release tag. See [translation package release preparation](../../src/docs/reference/modules/Localize/README.md#selecting-translations-for-a-release) for the one-time token setup and validation details.
 
 ## Step 4: Validation
 

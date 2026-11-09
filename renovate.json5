@@ -191,8 +191,7 @@
             matchPackageNames: ['OrchardCore.Translations.All'],
             enabled: true,
             registryUrls: ['https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json'],
-            // The translations repository still versions its main-branch previews as 3.0.0.
-            allowedVersions: '/^3\\.0\\.0-preview-[0-9]+$/',
+            allowedVersions: '/^[0-9]+\\.[0-9]+\\.[0-9]+-preview-[0-9]+$/',
             ignoreUnstable: false,
             respectLatest: false,
             rangeStrategy: 'pin',

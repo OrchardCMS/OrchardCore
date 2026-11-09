@@ -3,8 +3,8 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: Existing stable translation version on NuGet.org (can be reused for an OC patch release)
-        required: true
+        description: Stable translation version on NuGet.org (leave empty to use OC VersionPrefix)
+        required: false
         type: string
 permissions:
   contents: read
@@ -34,10 +34,19 @@ jobs:
         persist-credentials: false
     - uses: ./.github/actions/setup-dotnet
     - name: Validate and select stable translations
+      id: translations
       shell: pwsh
       env:
         TRANSLATIONS_VERSION: ${{ inputs.version }}
-      run: ./.github/scripts/Test-TranslationsPackage.ps1 -Version $env:TRANSLATIONS_VERSION -UpdateReference
+      run: |
+        if ([string]::IsNullOrEmpty($env:TRANSLATIONS_VERSION)) {
+            ./.github/scripts/Test-TranslationsPackage.ps1 -UpdateReference
+        } else {
+            ./.github/scripts/Test-TranslationsPackage.ps1 -Version $env:TRANSLATIONS_VERSION -UpdateReference
+        }
+        $packages = [xml](Get-Content Directory.Packages.props -Raw)
+        $reference = $packages.SelectSingleNode('/Project/ItemGroup/PackageVersion[@Include="OrchardCore.Translations.All"]')
+        "version=$($reference.GetAttribute('Version').Trim('[', ']'))" >> $env:GITHUB_OUTPUT
     - name: Open translation update pull request
       id: pull-request
       uses: peter-evans/create-pull-request@22a9089034f40e5a961c8808d113e2c98fb63676 # v7
@@ -46,14 +55,14 @@ jobs:
         base: ${{ github.ref_name }}
         branch: automation/translations-${{ github.ref_name }}
         add-paths: Directory.Packages.props
-        commit-message: Select stable translations ${{ inputs.version }}
-        title: Select stable translations ${{ inputs.version }}
+        commit-message: Select stable translations ${{ steps.translations.outputs.version }}
+        title: Select stable translations ${{ steps.translations.outputs.version }}
         body: |
           <!--- Please make sure that you're familiar with our contribution guidelines before submitting a pull request: https://docs.orchardcore.net/en/latest/contributing/. -->
 
-          Selects OrchardCore.Translations.All ${{ inputs.version }} for ${{ github.ref_name }}.
+          Selects OrchardCore.Translations.All ${{ steps.translations.outputs.version }} for ${{ github.ref_name }}.
 
-          Validation: `.github/scripts/Test-TranslationsPackage.ps1 -Version ${{ inputs.version }} -UpdateReference` passed.
+          Validation: `.github/scripts/Test-TranslationsPackage.ps1 -Version ${{ steps.translations.outputs.version }} -UpdateReference` passed.
           The meta-package and all its dependencies were restored from NuGet.org into an isolated package cache,
           with stable, matching translation versions verified before updating the reference.
 
