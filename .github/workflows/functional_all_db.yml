@@ -259,7 +259,8 @@ jobs:
       with:
         name: functional-cms-redis-azurite-failure
         path: |
-          src/OrchardCore.Cms.Web/App_Data_Tests/logs
+          src/OrchardCore.Cms.Web/App_Data_Tests_*/logs
+          test/OrchardCore.Tests.Functional/traces
           TestResults
         retention-days: 3
 

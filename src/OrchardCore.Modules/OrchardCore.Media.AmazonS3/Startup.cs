@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 using Amazon;
 using Amazon.S3;
@@ -43,8 +44,9 @@ public sealed class Startup : Modules.StartupBase
         services.AddNavigationProvider<AdminMenu>();
         services.AddTransient<IConfigureOptions<AwsStorageOptions>, AwsStorageOptionsConfiguration>();
 
-        var storeOptions = new AwsStorageOptions().BindConfiguration(AmazonS3Constants.ConfigSections.AmazonS3, AmazonS3Constants.ConfigSections.LegacyAmazonS3, _configuration, _logger);
-        var validationErrors = storeOptions.Validate().ToList();
+        var validationErrors = _configuration.TryBindConfiguration<AwsStorageOptions>(AmazonS3Constants.ConfigSections.AmazonS3, AmazonS3Constants.ConfigSections.LegacyAmazonS3, _logger, out var storeOptions)
+            ? storeOptions.Validate().ToList()
+            : [new ValidationResult(AmazonS3Constants.ValidationMessages.AwsOptionsAreInvalid)];
         var stringBuilder = new StringBuilder();
 
         if (validationErrors.Count > 0)
@@ -67,11 +69,6 @@ public sealed class Startup : Modules.StartupBase
             services.AddSingleton<IMediaFileStoreCacheFileProvider>(serviceProvider =>
             {
                 var hostingEnvironment = serviceProvider.GetRequiredService<IWebHostEnvironment>();
-
-                if (string.IsNullOrWhiteSpace(hostingEnvironment.WebRootPath))
-                {
-                    throw new MediaConfigurationException("The wwwroot folder for serving cache media files is missing.");
-                }
 
                 var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>().Value;
                 var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
@@ -140,7 +137,7 @@ public sealed class Startup : Modules.StartupBase
     }
 
     private static string GetMediaCachePath(IWebHostEnvironment hostingEnvironment, ShellSettings shellSettings, string assetsPath)
-        => PathExtensions.Combine(hostingEnvironment.WebRootPath, shellSettings.Name, assetsPath);
+        => PathExtensions.Combine(hostingEnvironment.GetWebRootPathOrDefault(), shellSettings.Name, assetsPath);
 }
 
 [Feature("OrchardCore.Media.AmazonS3.ImageCache")]
@@ -161,8 +158,9 @@ public sealed class MediaAmazonS3ImageCacheStartup : Modules.StartupBase
     {
         services.AddTransient<IConfigureOptions<AwsMediaImageCacheOptions>, AwsMediaImageCacheOptionsConfiguration>();
 
-        var storeOptions = new AwsStorageOptions().BindConfiguration(AmazonS3Constants.ConfigSections.AmazonS3ImageCache, AmazonS3Constants.ConfigSections.LegacyAmazonS3ImageCache, _configuration, _logger);
-        var validationErrors = storeOptions.Validate().ToList();
+        var validationErrors = _configuration.TryBindConfiguration<AwsMediaImageCacheOptions>(AmazonS3Constants.ConfigSections.AmazonS3ImageCache, AmazonS3Constants.ConfigSections.LegacyAmazonS3ImageCache, _logger, out var storeOptions)
+            ? storeOptions.Validate().ToList()
+            : [new ValidationResult(AmazonS3Constants.ValidationMessages.AwsOptionsAreInvalid)];
         var stringBuilder = new StringBuilder();
 
         if (validationErrors.Count > 0)
@@ -208,10 +206,9 @@ public sealed class MediaAmazonS3TusStartup : Modules.StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        var storeOptions = new AwsStorageOptions().BindConfiguration(AmazonS3Constants.ConfigSections.AmazonS3, AmazonS3Constants.ConfigSections.LegacyAmazonS3, _configuration, _logger);
-
         // Only replace the default local store if the media store is active, as it provides the client and the bucket.
-        if (!storeOptions.Validate().Any())
+        if (_configuration.TryBindConfiguration<AwsStorageOptions>(AmazonS3Constants.ConfigSections.AmazonS3, AmazonS3Constants.ConfigSections.LegacyAmazonS3, _logger, out var storeOptions) &&
+            !storeOptions.Validate().Any())
         {
             services.Replace(ServiceDescriptor.Singleton<ITusTempStore, S3TusTempStore>());
         }

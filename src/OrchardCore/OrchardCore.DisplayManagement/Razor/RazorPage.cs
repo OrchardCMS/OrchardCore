@@ -215,6 +215,18 @@ public abstract class RazorPage<TModel> : Microsoft.AspNetCore.Mvc.Razor.RazorPa
     public static TValue Arg<TValue>(string name, TValue value) => OrchardCore.Localization.LocalizationMetadata.Arg(name, value);
 
     /// <summary>
+    /// Names the count of a plural message and declares the range of values it can take, for translators, for example
+    /// <c>T.Plural(Arg("hours", hours, 0, 23), "1 hour", "{0} hours")</c>. It has no effect at runtime.
+    /// </summary>
+    /// <param name="name">The name describing the count. Must be a compile-time constant to be extracted.</param>
+    /// <param name="value">The count of the plural message.</param>
+    /// <param name="min">The smallest value of the count. Must be a non-negative compile-time constant to be extracted.</param>
+    /// <param name="max">The largest value of the count. Must be a compile-time constant, not smaller than
+    /// <paramref name="min"/>, to be extracted.</param>
+    /// <returns><paramref name="value"/>, unchanged.</returns>
+    public static int Arg(string name, int value, int min, int max) => OrchardCore.Localization.LocalizationMetadata.Arg(name, value, min, max);
+
+    /// <summary>
     /// Adds a segment to the title and returns all segments.
     /// </summary>
     /// <param name="segment">The segment to add to the title.</param>

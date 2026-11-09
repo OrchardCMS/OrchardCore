@@ -5,7 +5,7 @@ using OrchardCore.BackgroundTasks;
 
 namespace OrchardCore.Media.Services;
 
-[BackgroundTask(Schedule = "0 0 * * *", Description = "Resized media cache cleanup.")]
+[BackgroundTask(Title = "Resized Media Cache Cleaner", Schedule = "0 0 * * *", Description = "Resized media cache cleanup.")]
 public sealed class ResizedMediaCacheBackgroundTask : IBackgroundTask
 {
     private readonly ILogger _logger;

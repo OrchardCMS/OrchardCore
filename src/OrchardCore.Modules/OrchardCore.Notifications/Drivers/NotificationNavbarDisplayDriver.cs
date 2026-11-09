@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin.Models;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Notifications.Indexes;
@@ -14,34 +15,57 @@ namespace OrchardCore.Notifications.Drivers;
 
 public sealed class NotificationNavbarDisplayDriver : DisplayDriver<Navbar>
 {
+    // How long the navbar can be cached when a visibility handler failed: long enough not to call
+    // a failing handler on every page, and short enough to show the hidden notifications soon after it recovers.
+    private static readonly TimeSpan _failedEvaluationCacheDuration = TimeSpan.FromMinutes(1);
+
     private readonly IAuthorizationService _authorizationService;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly INotificationVisibilityEvaluator _visibilityEvaluator;
     private readonly NotificationOptions _notificationOptions;
     private readonly YesSql.ISession _session;
 
     public NotificationNavbarDisplayDriver(
         IAuthorizationService authorizationService,
         IHttpContextAccessor httpContextAccessor,
+        INotificationVisibilityEvaluator visibilityEvaluator,
         IOptions<NotificationOptions> notificationOptions,
         YesSql.ISession session)
     {
         _authorizationService = authorizationService;
         _httpContextAccessor = httpContextAccessor;
+        _visibilityEvaluator = visibilityEvaluator;
         _notificationOptions = notificationOptions.Value;
         _session = session;
     }
 
     public override async Task<IDisplayResult> DisplayAsync(Navbar model, BuildDisplayContext context)
     {
-        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, NotificationPermissions.ManageNotifications))
+        var user = _httpContextAccessor.HttpContext.User;
+
+        if (!await _authorizationService.AuthorizeAsync(user, NotificationPermissions.ManageNotifications))
         {
             return null;
         }
 
+        var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
+
         var result = Initialize<UserNotificationNavbarViewModel>("UserNotificationNavbar")
             .Processing<UserNotificationNavbarViewModel>(async model =>
             {
-                var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+                model.MaxVisibleNotifications = _notificationOptions.TotalUnreadNotifications;
+
+                if (_visibilityEvaluator.HasHandlers)
+                {
+                    await PopulateVisibleAsync(model, userId, user);
+
+                    if (_visibilityEvaluator.HasFailures)
+                    {
+                        LimitCacheDuration((IShape)model);
+                    }
+
+                    return;
+                }
 
                 var notifications = (await _session.Query<Notification, NotificationIndex>(x => x.UserId == userId && !x.IsRead, collection: NotificationConstants.NotificationCollection)
                     .OrderByDescending(x => x.CreatedAtUtc)
@@ -49,7 +73,6 @@ public sealed class NotificationNavbarDisplayDriver : DisplayDriver<Navbar>
                     .ListAsync()).ToList();
 
                 model.Notifications = notifications;
-                model.MaxVisibleNotifications = _notificationOptions.TotalUnreadNotifications;
                 model.TotalUnread = notifications.Count < _notificationOptions.TotalUnreadNotifications
                 ? notifications.Count
                 : await _session.QueryIndex<NotificationIndex>(x => x.UserId == userId && !x.IsRead, collection: NotificationConstants.NotificationCollection).CountAsync();
@@ -59,13 +82,14 @@ public sealed class NotificationNavbarDisplayDriver : DisplayDriver<Navbar>
 
         if (_notificationOptions.AbsoluteCacheExpirationSeconds > 0 || _notificationOptions.SlidingCacheExpirationSeconds > 0)
         {
-            return result
+            result
                 .Cache(NotificationConstants.TopUnreadUserNotificationCacheTag, context =>
                 {
                     context.AddContext("user")
                         // Allow another feature to clear all notification cache entries if necessary.
                         .AddTag(NotificationConstants.TopUnreadUserNotificationCacheTag)
-                        .AddTag(NotificationsHelper.GetUnreadUserNotificationTagKey(_httpContextAccessor.HttpContext.User.Identity.Name));
+                        .AddTag(NotificationsHelper.GetUnreadUserNotificationTagKey(user.Identity.Name))
+                        .AddTag(NotificationsHelper.GetUnreadUserNotificationTagKeyByUserId(userId));
 
                     if (_notificationOptions.AbsoluteCacheExpirationSeconds > 0)
                     {
@@ -79,6 +103,40 @@ public sealed class NotificationNavbarDisplayDriver : DisplayDriver<Navbar>
                 });
         }
 
-        return result;
+        // A cached shape doesn't register its resources when its content comes from the cache, so they have their own shape.
+        return Combine(
+            result,
+            Dynamic("UserNotificationNavbarResources")
+                .Location(OrchardCoreConstants.DisplayType.Detail, "Content:9")
+                .Location(OrchardCoreConstants.DisplayType.DetailAdmin, "Content:9"));
+    }
+
+    private static void LimitCacheDuration(IShape shape)
+    {
+        var cacheContext = shape.Metadata.Cache();
+
+        if (cacheContext != null && !(cacheContext.ExpiresAfter < _failedEvaluationCacheDuration))
+        {
+            cacheContext.WithExpiryAfter(_failedEvaluationCacheDuration);
+        }
+    }
+
+    // The hidden notifications are neither shown nor counted, so the unread notifications are evaluated
+    // before they are counted, up to the configured maximum.
+    private async Task PopulateVisibleAsync(UserNotificationNavbarViewModel model, string userId, ClaimsPrincipal user)
+    {
+        var maxEvaluated = Math.Max(_notificationOptions.MaxEvaluatedUnreadNotifications, _notificationOptions.TotalUnreadNotifications);
+
+        // One more is loaded to know whether the user has more unread notifications than the evaluated ones.
+        var unread = (await _session.Query<Notification, NotificationIndex>(x => x.UserId == userId && !x.IsRead, collection: NotificationConstants.NotificationCollection)
+            .OrderByDescending(x => x.CreatedAtUtc)
+            .Take(maxEvaluated + 1)
+            .ListAsync()).ToList();
+
+        var visible = await _visibilityEvaluator.FilterAsync(unread.Take(maxEvaluated), user);
+
+        model.Notifications = visible.Take(_notificationOptions.TotalUnreadNotifications).ToList();
+        model.TotalUnread = visible.Count;
+        model.IsTotalUnreadCapped = unread.Count > maxEvaluated;
     }
 }

@@ -235,6 +235,33 @@ public sealed class LocalizationSourceExtractorTests
     }
 
     [Fact]
+    public void Extract_DeferredPluralRange_WritesRangeFlag()
+    {
+        var catalog = TestWorkspace.ExtractCSharp("""
+            using OrchardCore.Localization;
+            using Microsoft.Extensions.Localization;
+            using static OrchardCore.Localization.LocalizationMetadata;
+            namespace Example;
+            public class Owner
+            {
+                public static LocalizationSource Hours => LocalizationSource.Create<Owner>("1 hour", "Hours of the day.");
+                public static LocalizationSource Greeting => LocalizationSource.Create<Owner>("Hello {0}");
+                public string Get(IStringLocalizerFactory strings, int hours, string user)
+                    => strings.Plural(Arg("hours", hours, 0, 23), Hours, "{0} hours").Value
+                        + strings.Localize(Greeting, Arg("user", hours, 0, 1)).Value;
+            }
+            """, includeSources: true, includePlurals: true);
+
+        var diagnostic = Assert.Single(catalog.Diagnostics);
+        Assert.Equal("OCLOC011", diagnostic.Code);
+        var hours = Assert.Single(catalog.Messages, message => message.Text == "1 hour");
+        Assert.Equal(new PluralRange(0, 23), hours.Range);
+        Assert.Equal("hours", Assert.Single(hours.FormatArguments[0]));
+        Assert.Null(Assert.Single(catalog.Messages, message => message.Text == "Hello {0}").Range);
+        Assert.Contains("#, csharp-format, range: 0..23\nmsgctxt \"Example.Owner\"\nmsgid \"1 hour\"\n", PotWriter.Write(catalog, "Example"));
+    }
+
+    [Fact]
     public void Extract_InlineDeferredPlural_DoesNotCreateSingularConflict()
     {
         var catalog = TestWorkspace.ExtractCSharp("""
