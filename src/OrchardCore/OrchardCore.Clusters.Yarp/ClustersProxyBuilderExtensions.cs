@@ -1,0 +1,81 @@
+using System.Diagnostics;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
+using OrchardCore.Telemetry;
+using Yarp.ReverseProxy.Transforms;
+
+namespace OrchardCore.Clusters;
+
+/// <summary>
+/// Extension methods for configuring the tenant clusters proxy.
+/// </summary>
+public static class ClustersProxyBuilderExtensions
+{
+    /// <summary>
+    /// Registers the tenant clusters components, on all the nodes of a clustered application.
+    /// </summary>
+    public static IReverseProxyBuilder AddTenantClusters(this IReverseProxyBuilder builder)
+    {
+        builder.Services.AddSingleton<IConfigureOptions<ClustersOptions>, ClustersOptionsSetup>();
+
+        // An invalid configuration should prevent the host from starting, instead of failing on each request.
+        builder.Services.AddOptions<ClustersOptions>().ValidateOnStart();
+
+        builder.Services.AddSingleton<IOptionsChangeTokenSource<ClustersOptions>>(serviceProvider =>
+            new ConfigurationChangeTokenSource<ClustersOptions>(
+                Options.DefaultName,
+                serviceProvider.GetRequiredService<IConfiguration>().GetSection(ClustersOptions.ConfigurationSection)));
+        builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<MatcherPolicy, ClustersProxyMatcherPolicy>());
+        builder.Services.AddHostedService<ClusteredTenantInactivityService>();
+
+        // Replaces a value sent by the client, and is read on each request to follow the configuration reloads.
+        builder.AddTransforms(context =>
+        {
+            if (context.Route.RouteId != ClustersOptions.RouteTemplate)
+            {
+                return;
+            }
+
+            var optionsMonitor = context.Services.GetRequiredService<IOptionsMonitor<ClustersOptions>>();
+
+            context.AddRequestTransform(transformContext =>
+            {
+                var headers = transformContext.ProxyRequest.Headers;
+
+                headers.Remove(RequestHeaderNames.FromClustersProxy);
+                headers.TryAddWithoutValidation(RequestHeaderNames.FromClustersProxy, optionsMonitor.CurrentValue.ProxySecret);
+
+                // The 'proxy.forwarder' span refers to the cluster of the route, and no tenant runs here to add its name.
+                // This can't be done before the transforms, as YARP adds the cluster to this span just before them.
+                var clusterFeature = transformContext.HttpContext.Features.Get<ClusterFeature>();
+
+                Activity.Current?
+                    .SetTag("proxy.cluster_id", clusterFeature?.ClusterId)
+                    .SetTag(OrchardCoreTelemetryConstants.Attributes.TenantName, clusterFeature?.TenantName);
+
+                return ValueTask.CompletedTask;
+            });
+        });
+
+        return builder.AddConfigFilter<ClustersProxyConfigFilter>();
+    }
+
+    /// <summary>
+    /// Forwards the requests of the tenants when this node is a clusters proxy, should be placed just before <c>UseOrchardCore()</c>.
+    /// </summary>
+    public static IApplicationBuilder UseTenantClusterRouting(this IApplicationBuilder builder) =>
+        builder.UseMiddleware<ClustersRoutingMiddleware>();
+
+    /// <summary>
+    /// Distributes requests across tenant clusters, should be placed first in the proxy pipeline.
+    /// </summary>
+    public static IReverseProxyApplicationBuilder UseTenantClusters(this IReverseProxyApplicationBuilder builder)
+    {
+        builder.UseMiddleware<ClustersProxyMiddleware>();
+        return builder;
+    }
+}

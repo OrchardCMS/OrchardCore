@@ -1,0 +1,63 @@
+{
+  "type": "object",
+  "properties": {
+    "OrchardCore": {
+      "type": "object",
+      "properties": {
+        "Clusters": {
+          "type": "object",
+          "description": "Configures tenant clustering, which forwards the requests of each tenant to the cluster holding its slot. This section is also the YARP configuration of the clusters proxy. See https://docs.orchardcore.net/en/latest/reference/modules/ReverseProxy/TenantClusters/.",
+          "properties": {
+            "Enabled": {
+              "type": "boolean",
+              "description": "Whether this instance forwards the requests to the tenant clusters. Requires the 'RouteTemplate' route and at least one cluster. Defaults to false."
+            },
+            "ProxySecret": {
+              "type": "string",
+              "description": "The secret sent with the forwarded requests, and required from another instance for a request not to be forwarded again. Required when 'Enabled' is true, and shared by the instances having 'Enabled' set to true. Must only contain visible ASCII characters."
+            },
+            "MaxIdleTime": {
+              "type": "string",
+              "description": "The maximum idle time before a tenant running on this instance is released, e.g. '01:00:00'. Must be greater than zero. When not defined, tenants are not released."
+            },
+            "Routes": {
+              "type": "object",
+              "description": "The YARP routes. The 'RouteTemplate' route is the catch-all route used to forward the requests.",
+              "properties": {
+                "RouteTemplate": {
+                  "type": "object",
+                  "description": "The catch-all YARP route used to forward the requests. Its 'ClusterId' must reference a configured cluster, each request then being reassigned to the cluster of its tenant."
+                }
+              }
+            },
+            "Clusters": {
+              "type": "object",
+              "description": "The tenant clusters by identifier, which are also YARP clusters.",
+              "additionalProperties": {
+                "type": "object",
+                "description": "A tenant cluster.",
+                "properties": {
+                  "SlotRange": {
+                    "type": "array",
+                    "description": "The inclusive minimum and maximum tenant slots of this cluster, between 0 and 16383. The ranges of different clusters must not overlap.",
+                    "items": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 16383
+                    },
+                    "minItems": 2,
+                    "maxItems": 2
+                  },
+                  "Destinations": {
+                    "type": "object",
+                    "description": "The YARP destinations by identifier. Each destination must be able to serve the tenants of this cluster."
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -247,6 +247,7 @@ These libraries, used by Orchard Core modules, emit their own telemetry:
 | Elasticsearch client | Elasticsearch | `Elastic.Transport` | |
 | MailKit | SMTP email | `MailKit.Net.SmtpClient` | |
 | Azure SDK | Azure Blob Storage, Key Vault, Communication Services, AI Search | `Azure.*` | |
+| YARP | [Tenant Clustering](../ReverseProxy/TenantClusters.md#tracing) | `Yarp.ReverseProxy` | |
 
 Names of libraries that emit nothing are ignored. A library that doesn't emit telemetry itself needs an instrumentation package from its own maintainers or from OpenTelemetry, added with the callback of `AddOpenTelemetry()`, e.g. `OpenTelemetry.Instrumentation.SqlClient` for the SQL Server client.
 

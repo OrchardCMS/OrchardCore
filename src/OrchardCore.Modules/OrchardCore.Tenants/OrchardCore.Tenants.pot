@@ -432,6 +432,11 @@ msgstr ""
 
 #: Views/Admin/Index.cshtml
 msgctxt "OrchardCore.Tenants.Views.Admin.Index"
+msgid "Activity"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.Tenants.Views.Admin.Index"
 msgid "Add Tenant"
 msgstr ""
 
@@ -1118,6 +1123,30 @@ msgstr ""
 #: Views/ShellSettingsEntry.State.SummaryAdmin.cshtml
 msgctxt "OrchardCore.Tenants.Views.ShellSettingsEntry.State.SummaryAdmin"
 msgid "Uninitialized"
+msgstr ""
+
+#: Views/ShellSettingsEntryActivity.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Tenants.Views.ShellSettingsEntryActivity.SummaryAdmin"
+msgid "Asleep"
+msgstr ""
+
+#: Views/ShellSettingsEntryActivity.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Tenants.Views.ShellSettingsEntryActivity.SummaryAdmin"
+msgid "Awake"
+msgstr ""
+
+#. Format arguments: {0}: Model.NodeName; {1}: await DisplayAsync(await New.DateTime(Utc: Model.LastRequestUtc, Format: "g"))
+#: Views/ShellSettingsEntryActivity.SummaryAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Tenants.Views.ShellSettingsEntryActivity.SummaryAdmin"
+msgid "Last request on {0}: {1}"
+msgstr ""
+
+#. Format arguments: {0}: Model.NodeName
+#: Views/ShellSettingsEntryActivity.SummaryAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Tenants.Views.ShellSettingsEntryActivity.SummaryAdmin"
+msgid "No request pipeline on {0}, it is built on the next request of this tenant to this node."
 msgstr ""
 
 #: Views/TenantsFilters.cshtml
