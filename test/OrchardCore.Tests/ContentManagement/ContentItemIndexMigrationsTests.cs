@@ -16,6 +16,8 @@ public class ContentItemIndexMigrationsTests : IAsyncLifetime
     private const string DocumentIdContentTypeIndex = "IDX_ContentItemIndex_DocumentId_ContentType";
     private const string ForeignKeyIndex = "IDX_FK_ContentItemIndex";
     private const string OwnerIndex = "IDX_ContentItemIndex_Owner";
+    private const string ModifiedIndex = "IDX_ContentItemIndex_ModifiedUtc";
+    private const string ContentTypeModifiedIndex = "IDX_ContentItemIndex_ContentType_ModifiedUtc";
 
     private IStore _store;
     private string _tempFilename;
@@ -51,7 +53,7 @@ public class ContentItemIndexMigrationsTests : IAsyncLifetime
     {
         var version = await RunAsync(migrations => migrations.CreateAsync());
 
-        Assert.Equal(8, version);
+        Assert.Equal(9, version);
         Assert.Equal(["ContentItemId", "DocumentId", "Published", "Latest"], await GetIndexColumnsAsync(ContentItemIdIndex));
     }
 
@@ -73,7 +75,7 @@ public class ContentItemIndexMigrationsTests : IAsyncLifetime
         var indexes = await GetIndexesAsync();
 
         Assert.Equal(
-            [ContentItemIdIndex, ContentItemVersionIdIndex, ContentTypeIndex, DocumentIdContentTypeIndex, OwnerIndex, ForeignKeyIndex],
+            [ContentItemIdIndex, ContentItemVersionIdIndex, ContentTypeIndex, ContentTypeModifiedIndex, DocumentIdContentTypeIndex, ModifiedIndex, OwnerIndex, ForeignKeyIndex],
             indexes.Keys.Order(StringComparer.Ordinal));
     }
 
@@ -112,7 +114,39 @@ public class ContentItemIndexMigrationsTests : IAsyncLifetime
         var version = await RunAsync(migrations => migrations.UpdateFrom7Async());
 
         Assert.Equal(8, version);
+
+        await RunAsync(migrations => migrations.UpdateFrom8Async());
+
         Assert.Equal(expected, await GetIndexesAsync());
+    }
+
+    [Fact]
+    public async Task CreateAsync_CreatesIndexesForModifiedDateOrder()
+    {
+        await RunAsync(migrations => migrations.CreateAsync());
+
+        Assert.Equal(["ModifiedUtc", "DocumentId", "Latest", "Published", "ContentType"], await GetIndexColumnsAsync(ModifiedIndex));
+        Assert.Equal(["ContentType", "ModifiedUtc", "DocumentId", "Latest", "Published"], await GetIndexColumnsAsync(ContentTypeModifiedIndex));
+    }
+
+    [Fact]
+    public async Task UpdateFrom8Async_CreatesSameIndexesAsCreateAsync()
+    {
+        // The table and indexes as a tenant at version 8 has them.
+        await RunAsync(migrations => migrations.CreateAsync());
+        var modifiedColumns = await GetIndexColumnsAsync(ModifiedIndex);
+        var contentTypeModifiedColumns = await GetIndexColumnsAsync(ContentTypeModifiedIndex);
+        await DropIndexAsync(ModifiedIndex);
+        await DropIndexAsync(ContentTypeModifiedIndex);
+
+        Assert.Empty(await GetIndexColumnsAsync(ModifiedIndex));
+        Assert.Empty(await GetIndexColumnsAsync(ContentTypeModifiedIndex));
+
+        var version = await RunAsync(migrations => migrations.UpdateFrom8Async());
+
+        Assert.Equal(9, version);
+        Assert.Equal(modifiedColumns, await GetIndexColumnsAsync(ModifiedIndex));
+        Assert.Equal(contentTypeModifiedColumns, await GetIndexColumnsAsync(ContentTypeModifiedIndex));
     }
 
     [Fact]
@@ -146,6 +180,20 @@ public class ContentItemIndexMigrationsTests : IAsyncLifetime
         Assert.Equal(
             [DocumentIdContentTypeIndex, ForeignKeyIndex],
             (await GetIndexesAsync()).Keys.Order(StringComparer.Ordinal));
+    }
+
+    [Fact]
+    public async Task UpdateFrom8Async_IndexesInUpdatesDisabled_DoesNotCreateIndexes()
+    {
+        await RunAsync(migrations => migrations.CreateAsync());
+        await DropIndexAsync(ModifiedIndex);
+        await DropIndexAsync(ContentTypeModifiedIndex);
+
+        var version = await RunAsync(migrations => migrations.UpdateFrom8Async(), createIndexesInUpdates: false);
+
+        Assert.Equal(9, version);
+        Assert.Empty(await GetIndexColumnsAsync(ModifiedIndex));
+        Assert.Empty(await GetIndexColumnsAsync(ContentTypeModifiedIndex));
     }
 
     private async Task<int> RunAsync(Func<ContentMigrations, Task<int>> step, bool createIndexesInUpdates = true)
