@@ -20,7 +20,10 @@ internal sealed class PhysicalFileSystemResizedImageCache : IResizedImageCache
         ShellSettings shellSettings,
         ILogger<PhysicalFileSystemResizedImageCache> logger)
     {
-        _cacheRoot = Path.Combine(env.WebRootPath, shellSettings.Name, CacheFolder);
+        var webRootPath = string.IsNullOrEmpty(env.WebRootPath)
+            ? Path.Combine(env.ContentRootPath, "wwwroot")
+            : env.WebRootPath;
+        _cacheRoot = Path.Combine(webRootPath, shellSettings.Name, CacheFolder);
         _logger = logger;
     }
 
