@@ -2,11 +2,13 @@
 
 using NetVips;
 using OrchardCore.Media.Core.Processing;
+using OrchardCore.Media.Processing;
 
-namespace OrchardCore.Media.Processing;
+namespace OrchardCore.Media.NetVips.Services;
 
 /// <summary>
-/// The default <see cref="IImageProcessingEngine"/>, backed by libvips through NetVips.
+/// An <see cref="IImageProcessingEngine"/> backed by libvips through NetVips. Registered in place of
+/// the default ImageSharp engine when the <c>OrchardCore.Media.NetVips</c> feature is enabled.
 /// </summary>
 internal sealed class VipsImageProcessingEngine : IImageProcessingEngine
 {

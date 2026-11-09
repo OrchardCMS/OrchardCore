@@ -494,9 +494,19 @@ The same fallback applies to the other per-tenant folders under the web root: th
 
 The image processing engine is a pluggable service contract (`IImageProcessingEngine`, defined in `OrchardCore.Media.Abstractions`). The middleware parses the validated request into an engine-agnostic `ImageProcessingCommands` instance and hands it to the registered engine, so engines never deal with query strings, tokens or cache keys.
 
-Orchard Core ships a single engine, backed by [NetVips](https://github.com/kleisauke/net-vips), a managed binding over the native [libvips](https://www.libvips.org/) library. It is registered by default by the `OrchardCore.Media` module.
+Two engines ship with Orchard Core:
 
-To provide your own engine, implement `IImageProcessingEngine` and replace the registration after the `OrchardCore.Media` module's services are configured:
+| Engine | Feature | Backed by | Default |
+| --- | --- | --- | --- |
+| ImageSharp | **Media ImageSharp Image Processing** (`OrchardCore.Media.ImageSharp`) | [SixLabors.ImageSharp](https://github.com/SixLabors/ImageSharp), a fully managed library | Yes |
+| NetVips | **Media NetVips Image Processing** (`OrchardCore.Media.NetVips`) | [NetVips](https://github.com/kleisauke/net-vips), a managed binding over the native [libvips](https://www.libvips.org/) library | No |
+
+The `OrchardCore.Media` feature depends on the ImageSharp feature, which registers the default engine. To use NetVips instead, enable the **Media NetVips Image Processing** feature; it replaces the default engine registration. The native libvips binaries are provided by the `NetVips.Native` package for the common runtimes. If you publish for a runtime that is not covered by the default native package, add the matching `NetVips.Native.<rid>` package to your web project.
+
+!!! note
+    ImageSharp checks for a [Six Labors license](https://sixlabors.com/pricing/) when building a project that references the `SixLabors.ImageSharp` package directly. The `OrchardCore.Media.ImageSharp` project includes an assembly-scoped community license, so neither building Orchard Core from source nor referencing the Orchard Core packages requires a license. A project of your own that references `SixLabors.ImageSharp` directly, for instance to implement a custom engine, needs its own license.
+
+To provide your own engine, implement `IImageProcessingEngine` and replace the registration from the startup of a feature that depends on `OrchardCore.Media`, so it runs after the default engine is registered:
 
 ```csharp
 services.Replace(ServiceDescriptor.Singleton<IImageProcessingEngine, MyImageProcessingEngine>());
@@ -504,7 +514,7 @@ services.Replace(ServiceDescriptor.Singleton<IImageProcessingEngine, MyImageProc
 
 ### Supported output formats
 
-The default engine supports resizing to `jpg`/`jpeg`, `png`, `gif` and `webp`. Any other or unspecified format falls back to JPEG. The `bmp` and `tga` formats are no longer supported.
+Both engines support resizing to `jpg`/`jpeg`, `png`, `gif` and `webp`. Any other or unspecified format falls back to JPEG. The `bmp` and `tga` formats are no longer supported.
 
 !!! note
     The Media Library `StaticFileOptions` configuration is separated from the configuration for static files contained in module `wwwroot` folders.

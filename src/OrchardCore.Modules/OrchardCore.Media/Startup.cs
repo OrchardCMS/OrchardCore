@@ -170,8 +170,8 @@ public sealed class Startup : StartupBase
         services.AddScoped<IAuthorizationHandler, ManageMediaFolderAuthorizationHandler>();
         services.AddNavigationProvider<AdminMenu>();
 
-        // Image processing pipeline (NetVips-based)
-        services.AddSingleton<IImageProcessingEngine, VipsImageProcessingEngine>();
+        // Image processing pipeline. The IImageProcessingEngine is registered by the
+        // OrchardCore.Media.ImageSharp feature this one depends on, or replaced by another feature.
         services.AddSingleton<IResizedImageCache, PhysicalFileSystemResizedImageCache>();
         services.AddSingleton<MediaCommandParser>();
         // Shared single-flight instance so concurrent cold-cache requests for the same resized image
