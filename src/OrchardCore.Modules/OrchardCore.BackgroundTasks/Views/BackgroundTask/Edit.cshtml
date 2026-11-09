@@ -37,12 +37,13 @@
             </div>
 
             <div class="ocat-wrapper" asp-validation-class-for="Schedule">
-                <label asp-for="Schedule" class="ocat-label">@T["Schedule"]</label>
+                <label asp-for="Schedule" class="ocat-label ocat-label-required">@T["Schedule"]</label>
                 <div class="ocat-end">
                     <div class="input-group mb-3">
                         <input asp-for="Schedule" class="form-control background-task-schedule" />
                         <button type="button" id="use-default-schedule" class="btn btn-outline-danger">@T["Reset Schedule"]</button>
                     </div>
+                    <span asp-validation-for="Schedule"></span>
                     <span class="hint">@T["The task schedule as a cron expression."]</span>
                 </div>
             </div>

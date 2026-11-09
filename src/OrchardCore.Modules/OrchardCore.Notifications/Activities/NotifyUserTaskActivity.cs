@@ -76,6 +76,24 @@ public abstract class NotifyUserTaskActivity : TaskActivity, IActivityProvidedVa
     }
 
     /// <summary>
+    /// Gets or sets the optional URL the notification points to, as a workflow expression.
+    /// </summary>
+    public WorkflowExpression<string> Url
+    {
+        get => GetProperty(() => new WorkflowExpression<string>());
+        set => SetProperty(value);
+    }
+
+    /// <summary>
+    /// Gets or sets the optional type of the notification, see <see cref="Notification.Type"/>.
+    /// </summary>
+    public string NotificationType
+    {
+        get => GetProperty<string>();
+        set => SetProperty(value);
+    }
+
+    /// <summary>
     /// Gets the workflow outcomes that can be produced by this activity.
     /// </summary>
     /// <param name="workflowContext">The workflow execution context.</param>
@@ -136,6 +154,8 @@ public abstract class NotifyUserTaskActivity : TaskActivity, IActivityProvidedVa
             TextBody = await _expressionEvaluator.EvaluateAsync(TextBody, workflowContext, null),
             HtmlBody = await _expressionEvaluator.EvaluateAsync(HtmlBody, workflowContext, _htmlEncoder),
             IsHtmlPreferred = IsHtmlPreferred,
+            Url = string.IsNullOrWhiteSpace(Url.Expression) ? null : (await _expressionEvaluator.EvaluateAsync(Url, workflowContext, null))?.Trim(),
+            Type = string.IsNullOrWhiteSpace(NotificationType) ? null : NotificationType.Trim(),
         };
     }
 

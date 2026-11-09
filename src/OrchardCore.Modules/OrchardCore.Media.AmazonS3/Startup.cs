@@ -68,11 +68,6 @@ public sealed class Startup : Modules.StartupBase
             {
                 var hostingEnvironment = serviceProvider.GetRequiredService<IWebHostEnvironment>();
 
-                if (string.IsNullOrWhiteSpace(hostingEnvironment.WebRootPath))
-                {
-                    throw new MediaConfigurationException("The wwwroot folder for serving cache media files is missing.");
-                }
-
                 var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>().Value;
                 var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
                 var logger = serviceProvider.GetRequiredService<ILogger<DefaultMediaFileStoreCacheFileProvider>>();
@@ -140,7 +135,7 @@ public sealed class Startup : Modules.StartupBase
     }
 
     private static string GetMediaCachePath(IWebHostEnvironment hostingEnvironment, ShellSettings shellSettings, string assetsPath)
-        => PathExtensions.Combine(hostingEnvironment.WebRootPath, shellSettings.Name, assetsPath);
+        => PathExtensions.Combine(hostingEnvironment.GetWebRootPathOrDefault(), shellSettings.Name, assetsPath);
 }
 
 [Feature("OrchardCore.Media.AmazonS3.ImageCache")]
@@ -182,6 +177,9 @@ public sealed class MediaAmazonS3ImageCacheStartup : Modules.StartupBase
                     "Starting with S3 Media Image Cache configuration. BucketName: {BucketName}; BasePath: {BasePath}", storeOptions.BucketName, storeOptions.BasePath);
             }
 
+            // The image cache has its own bucket, so it can be active while the media store isn't and hasn't registered the client.
+            services.TryAddAWSService<IAmazonS3>(storeOptions.AwsOptions);
+
             services.Replace(ServiceDescriptor.Singleton<IResizedImageCache, AWSS3ResizedImageCache>());
 
             services.AddScoped<IModularTenantEvents, AwsS3MediaImageCacheTenantEvents>();
@@ -192,9 +190,26 @@ public sealed class MediaAmazonS3ImageCacheStartup : Modules.StartupBase
 [RequireFeatures("OrchardCore.Media.Tus")]
 public sealed class MediaAmazonS3TusStartup : Modules.StartupBase
 {
+    private readonly IShellConfiguration _configuration;
+    private readonly ILogger _logger;
+
+    public MediaAmazonS3TusStartup(
+        IShellConfiguration configuration,
+        ILogger<MediaAmazonS3TusStartup> logger)
+    {
+        _configuration = configuration;
+        _logger = logger;
+    }
+
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.Replace(ServiceDescriptor.Singleton<ITusTempStore, S3TusTempStore>());
+        var storeOptions = new AwsStorageOptions().BindConfiguration(AmazonS3Constants.ConfigSections.AmazonS3, AmazonS3Constants.ConfigSections.LegacyAmazonS3, _configuration, _logger);
+
+        // Only replace the default local store if the media store is active, as it provides the client and the bucket.
+        if (!storeOptions.Validate().Any())
+        {
+            services.Replace(ServiceDescriptor.Singleton<ITusTempStore, S3TusTempStore>());
+        }
     }
 }
 
