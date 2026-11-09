@@ -29,6 +29,13 @@ namespace OrchardCore.Benchmarks;
 /// independently of any template engine: every binding is a code delegate that returns a static string.
 /// The <c>DirectBinding</c> benchmark is the floor, it is what a page would pay if templates were called directly.
 /// </summary>
+/// <remarks>
+/// The <c>CreateAsync&lt;TModel&gt;()</c> and <c>Initialize&lt;TModel&gt;()</c> calls of this project are intercepted
+/// by the shape source generator, as they are in the modules: the typed shapes are generated classes, not Castle
+/// DynamicProxy proxies. The proxy path, taken by the call sites the generator doesn't intercept, is measured by
+/// calling the factory extension through a delegate, which the generator doesn't intercept, and in
+/// <see cref="ShapeProxyBenchmark"/>.
+/// </remarks>
 [MemoryDiagnoser]
 public class ShapePipelineBenchmark
 {
@@ -44,6 +51,10 @@ public class ShapePipelineBenchmark
         "Content__TitlePart",
         "Content_Summary__TitlePart",
     ];
+
+    // A method group converted to a delegate is not intercepted by the source generator, so this calls the runtime
+    // path of the factory extension, which creates a Castle DynamicProxy proxy of the model.
+    private static readonly Func<IShapeFactory, string, Action<TitlePartViewModel>, ValueTask<IShape>> s_createProxyShape = ShapeFactoryExtensions.CreateAsync;
 
     private IServiceProvider _services;
     private IServiceProvider _servicesWithResolver;
@@ -245,8 +256,11 @@ public class ShapePipelineBenchmark
     [Benchmark(Description = "Create: dynamic Shape through the factory")]
     public ValueTask<IShape> CreateDynamicShape() => _factory.CreateAsync("TitlePart");
 
-    [Benchmark(Description = "Create: typed proxy (Initialize<TModel>) through the factory")]
-    public ValueTask<IShape> CreateTypedProxyShape() => _factory.CreateAsync<TitlePartViewModel>("TitlePart", static m => m.Title = "Hello");
+    [Benchmark(Description = "Create: generated typed shape (CreateAsync<TModel>, source generator) through the factory")]
+    public ValueTask<IShape> CreateGeneratedShape() => _factory.CreateAsync<TitlePartViewModel>("TitlePart", static m => m.Title = "Hello");
+
+    [Benchmark(Description = "Create: Castle proxy shape (CreateAsync<TModel> without the source generator) through the factory")]
+    public ValueTask<IShape> CreateProxyShape() => s_createProxyShape(_factory, "TitlePart", static m => m.Title = "Hello");
 
     [Benchmark(Description = "Create: new ShapeViewModel (no factory)")]
     public IShape CreateShapeViewModel() => new ShapeViewModel("TitlePart");
@@ -267,7 +281,7 @@ public class ShapePipelineBenchmark
 
     // --- Placing driver results --------------------------------------------------------------------------------
 
-    [Benchmark(Description = "Place: ShapeResult.ApplyAsync (Initialize<TModel> + placement rules)")]
+    [Benchmark(Description = "Place: ShapeResult.ApplyAsync (generated Initialize<TModel> + placement rules)")]
     public async Task PlaceDriverResult()
     {
         var result = new DisplayDriverStub().Build();
