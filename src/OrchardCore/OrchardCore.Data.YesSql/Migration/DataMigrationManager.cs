@@ -1,5 +1,7 @@
 using System.Reflection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OrchardCore.Data.Migration.Records;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Modules;
@@ -23,6 +25,8 @@ public class DataMigrationManager : IDataMigrationManager
     private readonly IExtensionManager _extensionManager;
     private readonly ILogger _logger;
     private readonly ITypeFeatureProvider _typeFeatureProvider;
+    private readonly DataMigrationOptions _options;
+    private readonly bool _createIndexesInUpdates;
     private readonly List<string> _processedFeatures;
 
     private DataMigrationRecord _dataMigrationRecord;
@@ -35,6 +39,8 @@ public class DataMigrationManager : IDataMigrationManager
     /// <param name="session">The <see cref="ISession"/>.</param>
     /// <param name="store">The <see cref="IStore"/>.</param>
     /// <param name="extensionManager">The <see cref="IExtensionManager"/>.</param>
+    /// <param name="options">The <see cref="DataMigrationOptions"/>.</param>
+    /// <param name="hostEnvironment">The <see cref="IHostEnvironment"/>.</param>
     /// <param name="logger">The <see cref="ILogger"/>.</param>
     public DataMigrationManager(
         ITypeFeatureProvider typeFeatureProvider,
@@ -42,6 +48,8 @@ public class DataMigrationManager : IDataMigrationManager
         ISession session,
         IStore store,
         IExtensionManager extensionManager,
+        IOptions<DataMigrationOptions> options,
+        IHostEnvironment hostEnvironment,
         ILogger<DataMigrationManager> logger)
     {
         _typeFeatureProvider = typeFeatureProvider;
@@ -49,6 +57,13 @@ public class DataMigrationManager : IDataMigrationManager
         _session = session;
         _store = store;
         _extensionManager = extensionManager;
+        _options = options.Value;
+        _createIndexesInUpdates = _options.CreateIndexesInUpdates switch
+        {
+            MigrationIndexCreation.Disabled => false,
+            MigrationIndexCreation.Development => hostEnvironment.IsDevelopment(),
+            _ => true,
+        };
         _logger = logger;
         _processedFeatures = [];
     }
@@ -213,6 +228,13 @@ public class DataMigrationManager : IDataMigrationManager
                 _dataMigrationRecord.DataMigrations.Add(dataMigrationRecord);
             }
 
+            // The update steps that run right after the Create step add their indexes to new and empty tables.
+            var dataMigration = migration as DataMigration;
+            if (dataMigration is not null)
+            {
+                dataMigration.CreateIndexesInUpdates = current == 0 || _createIndexesInUpdates;
+            }
+
             try
             {
                 // Do we need to call Create or CreateAsync?
@@ -231,6 +253,16 @@ public class DataMigrationManager : IDataMigrationManager
                 }
 
                 var lookupTable = CreateUpgradeLookupTable(migration);
+
+                if (dataMigration is { CreateIndexesInUpdates: false } && lookupTable.ContainsKey(current))
+                {
+                    _logger.LogWarning(
+                        "The update steps of '{Migration}' in '{FeatureId}' from version {Version} don't create the indexes they add to existing tables, as 'OrchardCore:Data:Migrations:CreateIndexesInUpdates' is '{CreateIndexesInUpdates}'. See https://docs.orchardcore.net/en/latest/reference/modules/Migrations/#indexes-added-by-update-steps to create them later.",
+                        migration.GetType().FullName,
+                        featureId,
+                        current,
+                        _options.CreateIndexesInUpdates);
+                }
 
                 while (lookupTable.TryGetValue(current, out var methodInfo))
                 {

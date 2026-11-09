@@ -51,6 +51,30 @@ await SchemaBuilder.AlterIndexTableAsync<TimeFieldIndex>(table => table
     .DropIndex("IDX_TimeFieldIndex_DocumentId_Time"));
 ```
 
+## Indexes added by an update step
+
+Creating an index on a large table blocks its writes on most providers, while the tenant starts. In an `UpdateFromX` step, create an index on a table that existed before the step only when `CreateIndexesInUpdates` is `true`, which the migration manager sets from the `OrchardCore:Data:Migrations:CreateIndexesInUpdates` setting (`All`, `Development`, `Disabled`). It is always `true` for `CreateAsync` and the steps that follow it in the same pass.
+
+```csharp
+public async Task<int> UpdateFrom2Async()
+{
+    // A new column is always added.
+    await SchemaBuilder.AlterIndexTableAsync<LinkFieldIndex>(table => table
+        .AddColumn<string>("Rel", column => column.Nullable().WithLength(50)));
+
+    // See the SQL to create this index in the release notes, when CreateIndexesInUpdates is false.
+    if (CreateIndexesInUpdates)
+    {
+        await SchemaBuilder.AlterIndexTableAsync<LinkFieldIndex>(table => table
+            .CreateIndex("IDX_LinkFieldIndex_Rel", "Rel", "DocumentId"));
+    }
+
+    return 3;
+}
+```
+
+Then add the index, with a SQL tab per provider using its online options, to the "Indexes Created by Migration Update Steps" section of the release notes, `src/docs/releases/<version>.md`, and link a new release from `src/docs/reference/modules/Migrations/README.md#indexes-of-each-release`. A later step that drops such an index must not fail when it's missing (MySQL has no `drop index if exists`).
+
 ## Provider quirks
 
 ### SQLite cannot drop columns

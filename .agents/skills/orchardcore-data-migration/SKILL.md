@@ -103,6 +103,8 @@ public async Task<int> UpdateFrom1Async()
 }
 ```
 
+An index added to an **existing** table in an `UpdateFromX` step goes behind `if (CreateIndexesInUpdates)`, and is documented with its SQL for each database in the release notes of the release (`src/docs/releases/<version>.md`, section "Indexes Created by Migration Update Steps"). See "Indexes in Migration Update Steps" in `AGENTS.md` and `references/schema-builder.md`.
+
 ### Step 5: Test the migration
 
 1. **Fresh install** — run on a clean tenant; only `CreateAsync` executes, schema lands at the latest version.
@@ -148,6 +150,7 @@ Static or instance, sync or async — all supported. Async (`...Async`) is the c
 
 - Always set column **length** on string index columns (`.WithLength(n)`) or `.Unlimited()` — unlengthed columns fail on some providers.
 - `CreateAsync` should return the latest version, not `1`, once `UpdateFromX` methods exist.
+- An `UpdateFromX` step creates an index on an existing table only `if (CreateIndexesInUpdates)`: the `OrchardCore:Data:Migrations:CreateIndexesInUpdates` setting lets a site skip them and run the documented online SQL instead. `CreateAsync` always creates the index.
 - Patch loops must page by `DocumentId` and call `FlushAsync()` periodically (see `references/patterns.md`).
 - Mark obsolete `UpdateFromX` methods with `// This code can be removed in a later version.` but keep them until you drop support for that upgrade path.
 

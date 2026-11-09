@@ -130,11 +130,15 @@ public sealed class Migrations : DataMigration
             .AddColumn<string>("WorkflowTypeVersionId", c => c.WithLength(26))
         );
 
-        await SchemaBuilder.AlterIndexTableAsync<WorkflowIndex>(table => table
-            .CreateIndex("IDX_WorkflowIndex_WorkflowTypeVersionId",
-                "DocumentId",
-                "WorkflowTypeVersionId")
-        );
+        // UpdateFrom8Async() replaces this index.
+        if (CreateIndexesInUpdates)
+        {
+            await SchemaBuilder.AlterIndexTableAsync<WorkflowIndex>(table => table
+                .CreateIndex("IDX_WorkflowIndex_WorkflowTypeVersionId",
+                    "DocumentId",
+                    "WorkflowTypeVersionId")
+            );
+        }
 
         // Existing workflow types become their version 1. Existing instances stay unpinned: they keep resuming on
         // the current definition, as before.
@@ -168,12 +172,16 @@ public sealed class Migrations : DataMigration
             .AddColumn<DateTime?>(nameof(WorkflowIndex.RetryDueUtc), column => column.Nullable())
         );
 
-        await SchemaBuilder.AlterIndexTableAsync<WorkflowIndex>(table => table
-            .CreateIndex("IDX_WorkflowIndex_RetryDueUtc",
-                "DocumentId",
-                nameof(WorkflowIndex.RetryDueUtc),
-                nameof(WorkflowIndex.WorkflowStatus))
-        );
+        // UpdateFrom8Async() replaces this index.
+        if (CreateIndexesInUpdates)
+        {
+            await SchemaBuilder.AlterIndexTableAsync<WorkflowIndex>(table => table
+                .CreateIndex("IDX_WorkflowIndex_RetryDueUtc",
+                    "DocumentId",
+                    nameof(WorkflowIndex.RetryDueUtc),
+                    nameof(WorkflowIndex.WorkflowStatus))
+            );
+        }
 
         return 8;
     }
@@ -183,8 +191,18 @@ public sealed class Migrations : DataMigration
     /// filter on a status, a workflow type, a version or a workflow don't use: they scanned the whole table. These
     /// indexes begin with the filtered columns.
     /// </summary>
+    /// <remarks>
+    /// When <see cref="DataMigration.CreateIndexesInUpdates"/> is <see langword="false"/>, this step changes nothing: the SQL
+    /// in the 4.0.0 release notes drops and creates the same indexes.
+    /// </remarks>
     public async Task<int> UpdateFrom8Async()
     {
+        // The two indexes dropped here may not exist either, and dropping a missing index fails on MySQL.
+        if (!CreateIndexesInUpdates)
+        {
+            return 9;
+        }
+
         await SchemaBuilder.AlterIndexTableAsync<WorkflowIndex>(table =>
         {
             table.DropIndex("IDX_WorkflowIndex_WorkflowTypeVersionId");

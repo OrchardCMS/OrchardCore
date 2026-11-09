@@ -205,16 +205,24 @@ public sealed class Migrations : DataMigration
         return 6;
     }
 
+    // See the SQL to create this index in the 4.0.0 release notes, when CreateIndexesInUpdates is false.
     public async Task<int> UpdateFrom6Async()
     {
-        await CreateContentItemIdIndexAsync();
+        if (CreateIndexesInUpdates)
+        {
+            await CreateContentItemIdIndexAsync();
+        }
 
         return 7;
     }
 
+    // See the SQL to create these indexes in the 4.0.0 release notes, when CreateIndexesInUpdates is false.
     public async Task<int> UpdateFrom7Async()
     {
-        await CreateFilterIndexesAsync();
+        if (CreateIndexesInUpdates)
+        {
+            await CreateFilterIndexesAsync();
+        }
 
         // A join on DocumentId seeks on IDX_FK_ContentItemIndex or IDX_ContentItemIndex_DocumentId_ContentType. All these added is a
         // smaller index to scan for a filter that can't seek anyway, such as on DisplayText with Contains or on Author, which isn't

@@ -351,6 +351,30 @@ public class YourIndexProvider : IndexProvider<YourDocument>
 }
 ```
 
+### Indexes in Migration Update Steps
+
+Creating an index on a large existing table can block its writes while a tenant starts, so an update step creates the indexes it adds to existing tables only when `CreateIndexesInUpdates` is `true`. The migration manager sets it from the `OrchardCore:Data:Migrations:CreateIndexesInUpdates` setting (`All`, `Development` or `Disabled`), and to `true` for the `Create` step and the update steps that follow it in the same pass.
+
+```csharp
+public async Task<int> UpdateFrom3Async()
+{
+    // See the SQL to create this index in the release notes, when CreateIndexesInUpdates is false.
+    if (CreateIndexesInUpdates)
+    {
+        await SchemaBuilder.AlterIndexTableAsync<YourIndex>(table => table
+            .CreateIndex("IDX_YourIndex_Name", "Name", "DocumentId"));
+    }
+
+    return 4;
+}
+```
+
+- Always create the index in `CreateAsync()` too, without the check: a new table is empty.
+- Don't check it for an index on a table created in the same step, or for the other changes of the step, such as new columns.
+- Add the SQL to create the index to the release notes of the release, under `### Indexes Created by Migration Update Steps` in `src/docs/releases/<version>.md`, so that a site that skipped it can run it when upgrading. Give its migration class, versions, and a tab per database (SQL Server, PostgreSQL, MySQL, SQLite) using the online options of each one, as the entries of `src/docs/releases/4.0.0.md` do. For a new release, add the section and link it from [Indexes of each release](src/docs/reference/modules/Migrations/README.md#indexes-of-each-release).
+- A later step that drops or replaces an index created behind the check must handle the index being missing: `DROP INDEX` fails on MySQL when the index doesn't exist. Skip the drop when `CreateIndexesInUpdates` is `false`, and drop it if it exists in the documented SQL.
+- Test the step with `CreateIndexesInUpdates` set to `false`, e.g. like `ContentItemIndexMigrationsTests`.
+
 ## Testing Patterns
 
 ### Unit Test Structure

@@ -115,6 +115,10 @@ The `OrchardCore:Data:TableOptions` section defines presets that Orchard Core co
 
 The examples above show the root web application's `appsettings.json` shape. In a tenant-local `App_Data/Sites/{tenant}/appsettings.json` file, omit the outer `OrchardCore` section. See [Configuration](../Configuration/README.md) for the complete configuration source hierarchy.
 
+## Data migrations
+
+The `OrchardCore:Data:Migrations:CreateIndexesInUpdates` setting defines whether the update steps of the data migrations create the indexes they add to existing tables, which can block the writes to a large table while a tenant starts. See [Indexes added by update steps](../Migrations/README.md#indexes-added-by-update-steps) for its values and how to create these indexes later, with the SQL statements listed in the release notes of each version.
+
 ## Running SQL queries
 
 Prefer `IContentManager` for content items and `ISession` for YesSql documents and indexes. Use raw SQL only when you need to work directly with relational tables.

@@ -194,6 +194,8 @@ public class OpenIdSecretsFeatureTests
             session.Object,
             Mock.Of<IStore>(),
             extensionManager,
+            Options.Create(new DataMigrationOptions()),
+            Mock.Of<IHostEnvironment>(),
             NullLogger<DataMigrationManager>.Instance);
 
         Assert.Equal("OrchardCore.OpenId.Secrets.Migrations", typeof(OpenIdSecretsMigrations).FullName);

@@ -1,4 +1,5 @@
 using System.Data.Common;
+using OrchardCore.Data.Migration.Records;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using ISession = YesSql.ISession;
@@ -90,7 +91,49 @@ public class DataMigrationManagerTests
         Assert.True(StaticUninstallMigration2.UninstallCalled);
     }
 
-    private static DataMigrationManager GetDataMigrationManager(IEnumerable<DataMigration> dataMigrations)
+    [Theory]
+    [InlineData(MigrationIndexCreation.All, "Production", true)]
+    [InlineData(MigrationIndexCreation.Development, "Development", true)]
+    [InlineData(MigrationIndexCreation.Development, "Production", false)]
+    [InlineData(MigrationIndexCreation.Disabled, "Development", false)]
+    public async Task UpdateAsync_ExistingMigration_SetsCreateIndexesInUpdatesFromOptions(
+        MigrationIndexCreation createIndexesInUpdates,
+        string environmentName,
+        bool expected)
+    {
+        // Arrange
+        var migration = new IndexMigration();
+        var record = new DataMigrationRecord();
+        record.DataMigrations.Add(new Records.DataMigration { DataMigrationClass = typeof(IndexMigration).FullName, Version = 1 });
+
+        var migrationManager = GetDataMigrationManager([migration], createIndexesInUpdates, environmentName, record);
+
+        // Act
+        await migrationManager.UpdateAsync("TestFeature");
+
+        // Assert
+        Assert.Equal([expected, expected], migration.CreateIndexesInUpdatesSteps);
+    }
+
+    [Fact]
+    public async Task UpdateAsync_FreshMigrationWithIndexesDisabled_CreatesIndexesInUpdatesAfterCreate()
+    {
+        // Arrange
+        var migration = new IndexMigration();
+        var migrationManager = GetDataMigrationManager([migration], MigrationIndexCreation.Disabled);
+
+        // Act
+        await migrationManager.UpdateAsync("TestFeature");
+
+        // Assert
+        Assert.Equal([true, true, true], migration.CreateIndexesInUpdatesSteps);
+    }
+
+    private static DataMigrationManager GetDataMigrationManager(
+        IEnumerable<DataMigration> dataMigrations,
+        MigrationIndexCreation createIndexesInUpdates = MigrationIndexCreation.All,
+        string environmentName = "Production",
+        DataMigrationRecord record = null)
     {
         var featureInfo = new Mock<IFeatureInfo>();
         featureInfo.Setup(f => f.Id).Returns("TestFeature");
@@ -108,7 +151,7 @@ public class DataMigrationManagerTests
             .ReturnsAsync(Mock.Of<DbTransaction>());
 
         sessionMock.Setup(s => s.Query())
-            .Returns(new FakeQuery());
+            .Returns(new FakeQuery(record));
 
         sessionMock.Setup(s => s.SaveAsync(It.IsAny<object>()))
             .Returns(Task.CompletedTask);
@@ -122,7 +165,35 @@ public class DataMigrationManagerTests
             sessionMock.Object,
             storeMock.Object,
             extensionManagerMock.Object,
+            Options.Create(new DataMigrationOptions { CreateIndexesInUpdates = createIndexesInUpdates }),
+            Mock.Of<IHostEnvironment>(e => e.EnvironmentName == environmentName),
             NullLogger<DataMigrationManager>.Instance);
+    }
+
+    private sealed class IndexMigration : DataMigration
+    {
+        public List<bool> CreateIndexesInUpdatesSteps { get; } = [];
+
+        public int Create()
+        {
+            CreateIndexesInUpdatesSteps.Add(CreateIndexesInUpdates);
+
+            return 1;
+        }
+
+        public int UpdateFrom1()
+        {
+            CreateIndexesInUpdatesSteps.Add(CreateIndexesInUpdates);
+
+            return 2;
+        }
+
+        public Task<int> UpdateFrom2Async()
+        {
+            CreateIndexesInUpdatesSteps.Add(CreateIndexesInUpdates);
+
+            return Task.FromResult(3);
+        }
     }
 
     private sealed class Migration1 : DataMigration
@@ -255,10 +326,14 @@ public class DataMigrationManagerTests
 
     private sealed class FakeQuery : IQuery
     {
+        private readonly object _result;
+
+        public FakeQuery(object result) => _result = result;
+
         public IQuery<object> Any()
             => throw new NotImplementedException();
 
-        public IQuery<T> For<T>(bool filterType = true) where T : class => new FakeQuery<T>();
+        public IQuery<T> For<T>(bool filterType = true) where T : class => new FakeQuery<T>(_result as T);
 
         IQueryIndex<T> IQuery.ForIndex<T>()
             => throw new NotImplementedException();
@@ -266,6 +341,10 @@ public class DataMigrationManagerTests
 
     private sealed class FakeQuery<T> : IQuery<T> where T : class
     {
+        private readonly T _result;
+
+        public FakeQuery(T result) => _result = result;
+
         public IQuery<T> All(params Func<IQuery<T>, IQuery<T>>[] predicates)
             => throw new NotImplementedException();
 
@@ -282,7 +361,7 @@ public class DataMigrationManagerTests
             => throw new NotImplementedException();
 
         public Task<T> FirstOrDefaultAsync(CancellationToken cancellationToken = default)
-            => Task.FromResult((T)null);
+            => Task.FromResult(_result);
 
         public string GetTypeAlias(Type t)
             => throw new NotImplementedException();

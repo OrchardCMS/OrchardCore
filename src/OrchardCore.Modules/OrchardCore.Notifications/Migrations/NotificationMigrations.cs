@@ -71,7 +71,11 @@ public sealed class NotificationMigrations : DataMigration
             collection: NotificationConstants.NotificationCollection
         );
 
-        await CreateTypeIndexesAsync();
+        // See the SQL to create these indexes in the 4.0.0 release notes, when CreateIndexesInUpdates is false.
+        if (CreateIndexesInUpdates)
+        {
+            await CreateTypeIndexesAsync();
+        }
 
         return 3;
     }

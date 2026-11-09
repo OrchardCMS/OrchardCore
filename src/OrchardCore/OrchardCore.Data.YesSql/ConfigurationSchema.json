@@ -60,6 +60,22 @@
                 }
               }
             },
+            "Migrations": {
+              "type": "object",
+              "description": "Configures how the data migrations run. See https://docs.orchardcore.net/en/latest/reference/modules/Migrations/.",
+              "properties": {
+                "CreateIndexesInUpdates": {
+                  "type": "string",
+                  "enum": [
+                    "All",
+                    "Development",
+                    "Disabled"
+                  ],
+                  "default": "All",
+                  "description": "In which environments the update steps of the migrations create the indexes they add to existing tables, which can block the writes to large tables meanwhile. 'Development' creates them only in the Development environment. Indexes that aren't created can be added later with the SQL listed in the release notes. The Create steps always create their indexes."
+                }
+              }
+            },
             "TableOptions": {
               "type": "object",
               "description": "Defines the table naming presets copied into the tenant settings when a tenant is set up. Changing them later doesn't rename existing tables or alter existing identity columns. See https://docs.orchardcore.net/en/latest/reference/modules/Data/.",

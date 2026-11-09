@@ -115,12 +115,46 @@ public class ContentItemIndexMigrationsTests : IAsyncLifetime
         Assert.Equal(expected, await GetIndexesAsync());
     }
 
-    private async Task<int> RunAsync(Func<ContentMigrations, Task<int>> step)
+    [Fact]
+    public async Task UpdateFrom6Async_IndexesInUpdatesDisabled_DoesNotCreateIndex()
+    {
+        await RunAsync(migrations => migrations.CreateAsync());
+        await DropIndexAsync(ContentItemIdIndex);
+
+        var version = await RunAsync(migrations => migrations.UpdateFrom6Async(), createIndexesInUpdates: false);
+
+        Assert.Equal(7, version);
+        Assert.Empty(await GetIndexColumnsAsync(ContentItemIdIndex));
+    }
+
+    [Fact]
+    public async Task UpdateFrom7Async_IndexesInUpdatesDisabled_DropsIndexesWithoutCreatingOthers()
+    {
+        await RunAsync(migrations => migrations.CreateAsync());
+
+        // The indexes as a tenant at version 7 has them, without the index of step 6.
+        foreach (var index in (await GetIndexesAsync()).Keys.Where(x => x != ForeignKeyIndex))
+        {
+            await DropIndexAsync(index);
+        }
+
+        await RunAsync(migrations => migrations.UpdateFrom5Async());
+
+        var version = await RunAsync(migrations => migrations.UpdateFrom7Async(), createIndexesInUpdates: false);
+
+        Assert.Equal(8, version);
+        Assert.Equal(
+            [DocumentIdContentTypeIndex, ForeignKeyIndex],
+            (await GetIndexesAsync()).Keys.Order(StringComparer.Ordinal));
+    }
+
+    private async Task<int> RunAsync(Func<ContentMigrations, Task<int>> step, bool createIndexesInUpdates = true)
     {
         await using var session = _store.CreateSession();
         var migrations = new ContentMigrations(Mock.Of<IContentDefinitionManager>())
         {
             SchemaBuilder = new SchemaBuilder(_store.Configuration, await session.BeginTransactionAsync()),
+            CreateIndexesInUpdates = createIndexesInUpdates,
         };
 
         var version = await step(migrations);

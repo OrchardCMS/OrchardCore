@@ -41,6 +41,7 @@ public static class OrchardCoreBuilderExtensions
 
             // The 'OrchardCore_YesSql' section is deprecated and will be removed in a future major version, use 'YesSql' instead.
             services.Configure<YesSqlOptions>(configuration.GetSectionCompat("YesSql", "OrchardCore_YesSql"));
+            services.Configure<DataMigrationOptions>(configuration.GetSection("Data:Migrations"));
             services.AddScoped<IDbConnectionValidator, DbConnectionValidator>();
             services.AddScoped<IDataMigrationManager, DataMigrationManager>();
             services.AddScoped<IModularTenantEvents, AutomaticDataMigrations>();

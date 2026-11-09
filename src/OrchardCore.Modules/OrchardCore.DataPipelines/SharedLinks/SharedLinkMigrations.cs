@@ -41,9 +41,13 @@ public sealed class SharedLinkMigrations : DataMigration
             .AddColumn<string>("ResourceId", column => column.Nullable().WithLength(SharedLinkIndex.MaxResourceIdLength))
         );
 
-        await SchemaBuilder.AlterIndexTableAsync<SharedLinkIndex>(table => table
-            .CreateIndex("IDX_SharedLinkIndex_Resource", "DocumentId", "Kind", "ResourceId")
-        );
+        // See the SQL to create this index in the 4.0.0 release notes, when CreateIndexesInUpdates is false.
+        if (CreateIndexesInUpdates)
+        {
+            await SchemaBuilder.AlterIndexTableAsync<SharedLinkIndex>(table => table
+                .CreateIndex("IDX_SharedLinkIndex_Resource", "DocumentId", "Kind", "ResourceId")
+            );
+        }
 
         return 2;
     }
