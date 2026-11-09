@@ -57,11 +57,6 @@ public sealed class Startup : Modules.StartupBase
             {
                 var hostingEnvironment = serviceProvider.GetRequiredService<IWebHostEnvironment>();
 
-                if (string.IsNullOrWhiteSpace(hostingEnvironment.WebRootPath))
-                {
-                    throw new MediaConfigurationException("The wwwroot folder for serving cache media files is missing.");
-                }
-
                 var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>().Value;
                 var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
                 var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
@@ -138,7 +133,7 @@ public sealed class Startup : Modules.StartupBase
     }
 
     private static string GetMediaCachePath(IWebHostEnvironment hostingEnvironment, ShellSettings shellSettings, string assetsPath)
-        => PathExtensions.Combine(hostingEnvironment.WebRootPath, shellSettings.Name, assetsPath);
+        => PathExtensions.Combine(hostingEnvironment.GetWebRootPathOrDefault(), shellSettings.Name, assetsPath);
 
     private static bool CheckOptions(string connectionString, string containerName, ILogger logger)
     {
