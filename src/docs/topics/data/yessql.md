@@ -95,7 +95,7 @@ context.For<ProductIndex>()
 
 YesSql can't verify the records that are already in the table, for example those written before the map returned a single record. A query is still grouped when it joins an index that doesn't declare a single record per document. A query that these declarations make slower, such as one where the database walks an index in the requested order looking for rare matches, can opt out with `NoIndexOptimizations()`. A query that joins an index with several records per document, but only matches one of them, can skip the grouping with `SkipDeduplication()`.
 
-`ContentItemIndex`, `ContainedPartIndex` and `LocalizedContentItemIndex` declare both.
+These indexes declare both: `ContentItemIndex`, `ContainedPartIndex`, `LocalizedContentItemIndex`, `UserIndex`, `WorkflowIndex`, `DataPipelineRunIndex`, `AuditTrailEventIndex` and `NotificationIndex`.
 
 Real examples in the Orchard Core source: [`ContentItemIndex`](https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore/OrchardCore.ContentManagement/Records/ContentItemIndex.cs), [`AliasPartIndex`](https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore.Modules/OrchardCore.Alias/Indexes/AliasPartIndex.cs) and its [migration](https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore.Modules/OrchardCore.Alias/Migrations.cs).
 
