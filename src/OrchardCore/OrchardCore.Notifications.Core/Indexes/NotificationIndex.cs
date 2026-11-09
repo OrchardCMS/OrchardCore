@@ -36,7 +36,11 @@ public partial class NotificationIndexProvider : IndexProvider<Notification>
 
     public override void Describe(DescribeContext<Notification> context)
     {
+        // A notification is a document with a single record here, so a query that only joins indexes with a single record per document
+        // isn't grouped by document, and its count reads this table without joining the document table.
         context.For<NotificationIndex>()
+            .ExclusiveToDocumentType()
+            .SingleRecordPerDocument()
             .Map(notification =>
             {
                 var content = notification.Summary ?? string.Empty;
