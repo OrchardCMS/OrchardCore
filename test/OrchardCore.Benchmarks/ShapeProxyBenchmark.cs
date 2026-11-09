@@ -22,11 +22,17 @@ using OrchardCore.Tests.Stubs;
 namespace OrchardCore.Benchmarks;
 
 /*
-| Method                       | Mean       | Error      | StdDev    | Gen0   | Allocated |
-|----------------------------- |-----------:|-----------:|----------:|-------:|----------:|
-| CreateInstance               |   9.774 ns |  17.795 ns | 0.9754 ns | 0.0093 |      88 B |
-| CreateDynamicProxy           | 722.913 ns | 121.855 ns | 6.6793 ns | 0.2222 |    2096 B |
-| CreateCachedProxy            | 233.722 ns |  65.978 ns | 3.6165 ns | 0.0756 |     712 B |
+| Method                           | Mean        | Error        | StdDev     | Gen0   | Allocated |
+|--------------------------------- |------------:|-------------:|-----------:|-------:|----------:|
+| CreateInstance                   |    21.88 ns |     4.905 ns |   0.269 ns | 0.0006 |      88 B |
+| CreateDynamicProxy               | 1,572.21 ns | 3,016.084 ns | 165.322 ns | 0.0134 |    2048 B |
+| CreateCachedProxy                |   484.60 ns |   261.948 ns |  14.358 ns | 0.0048 |     728 B |
+| CreateDynamicShapeThroughFactory |   174.04 ns |    66.406 ns |   3.640 ns | 0.0041 |     576 B |
+| CreateProxyThroughFactory        |   317.52 ns |   278.306 ns |  15.255 ns | 0.0067 |     936 B |
+
+The proxy created through the factory, with its compiled constructor call, costs the difference between the two
+factory rows: about 145 ns and 360 B, against 485 ns and 728 B for the cached proxy type instantiated with
+'Activator.CreateInstance' and its arguments.
 */
 
 [MemoryDiagnoser]
