@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Html;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Moq;
+using OrchardCore.Benchmarks.Support;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
@@ -52,9 +53,9 @@ public class ShapePipelineBenchmark
         "Content_Summary__TitlePart",
     ];
 
-    // A method group converted to a delegate is not intercepted by the source generator, so this calls the runtime
-    // path of the factory extension, which creates a Castle DynamicProxy proxy of the model.
-    private static readonly Func<IShapeFactory, string, Action<TitlePartViewModel>, ValueTask<IShape>> s_createProxyShape = ShapeFactoryExtensions.CreateAsync;
+    // A delegate invocation is not intercepted by the source generator, so this calls the runtime path of the
+    // factory extension, which creates a Castle DynamicProxy proxy of the model.
+    private static readonly Func<IShapeFactory, string, Action<TitlePartViewModel>, ValueTask<IShape>> s_createProxyShape = ShapeFactoryRuntimePath.GetCreateAsync<TitlePartViewModel>();
 
     private IServiceProvider _services;
     private IServiceProvider _servicesWithResolver;

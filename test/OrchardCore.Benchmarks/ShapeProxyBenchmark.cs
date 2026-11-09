@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
 using Castle.DynamicProxy;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Benchmarks.Support;
 using OrchardCore.ContentManagement.Display.ViewModels;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
@@ -40,9 +41,9 @@ public class ShapeProxyBenchmark
     private static readonly ProxyGenerator s_proxyGenerator = new();
     private static readonly Type s_proxyType;
 
-    // A method group converted to a delegate is not intercepted by the shape source generator, so this calls the
-    // runtime path of the factory extension, which creates a proxy of the model with its cached compiled factory.
-    private static readonly Func<IShapeFactory, string, Action<MenuItem>, ValueTask<IShape>> s_createProxyShape = ShapeFactoryExtensions.CreateAsync;
+    // A delegate invocation is not intercepted by the shape source generator, so this calls the runtime path of
+    // the factory extension, which creates a proxy of the model with its cached compiled factory.
+    private static readonly Func<IShapeFactory, string, Action<MenuItem>, ValueTask<IShape>> s_createProxyShape = ShapeFactoryRuntimePath.GetCreateAsync<MenuItem>();
 
     private IShapeFactory _factory;
 
