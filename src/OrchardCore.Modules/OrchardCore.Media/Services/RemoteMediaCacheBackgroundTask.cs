@@ -29,11 +29,8 @@ public sealed class RemoteMediaCacheBackgroundTask : IBackgroundTask
     {
         _mediaFileStore = mediaFileStore;
 
-        var webRootPath = string.IsNullOrEmpty(webHostEnvironment.WebRootPath)
-            ? Path.Combine(webHostEnvironment.ContentRootPath, "wwwroot")
-            : webHostEnvironment.WebRootPath;
         _cachePath = Path.Combine(
-            webRootPath,
+            webHostEnvironment.GetWebRootPathOrDefault(),
             shellSettings.Name,
             DefaultMediaFileStoreCacheFileProvider.AssetsCachePath);
 

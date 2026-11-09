@@ -68,11 +68,6 @@ public sealed class Startup : Modules.StartupBase
             {
                 var hostingEnvironment = serviceProvider.GetRequiredService<IWebHostEnvironment>();
 
-                if (string.IsNullOrWhiteSpace(hostingEnvironment.WebRootPath))
-                {
-                    throw new MediaConfigurationException("The wwwroot folder for serving cache media files is missing.");
-                }
-
                 var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>().Value;
                 var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
                 var logger = serviceProvider.GetRequiredService<ILogger<DefaultMediaFileStoreCacheFileProvider>>();
@@ -140,7 +135,7 @@ public sealed class Startup : Modules.StartupBase
     }
 
     private static string GetMediaCachePath(IWebHostEnvironment hostingEnvironment, ShellSettings shellSettings, string assetsPath)
-        => PathExtensions.Combine(hostingEnvironment.WebRootPath, shellSettings.Name, assetsPath);
+        => PathExtensions.Combine(hostingEnvironment.GetWebRootPathOrDefault(), shellSettings.Name, assetsPath);
 }
 
 [Feature("OrchardCore.Media.AmazonS3.ImageCache")]

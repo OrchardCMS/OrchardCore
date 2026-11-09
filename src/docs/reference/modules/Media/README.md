@@ -488,6 +488,8 @@ On-demand image resizing is performed by a built-in middleware backed by an `IIm
 
 The default filesystem resized image cache stores files under `<web root>/<tenant name>/media-cache`. If the host has no web root, it uses `wwwroot` under the content root instead. Cache directories are created when an image is cached, so an empty `wwwroot` directory does not need to be included in the published application for this cache.
 
+The same fallback applies to the other per-tenant folders under the web root: the remote media cache of the Azure Blob and Amazon S3 media stores and its cleanup task, the sitemap cache, and the tenant folder deleted when a tenant is removed.
+
 ### Image processing engines
 
 The image processing engine is a pluggable service contract (`IImageProcessingEngine`, defined in `OrchardCore.Media.Abstractions`). The middleware parses the validated request into an engine-agnostic `ImageProcessingCommands` instance and hands it to the registered engine, so engines never deal with query strings, tokens or cache keys.

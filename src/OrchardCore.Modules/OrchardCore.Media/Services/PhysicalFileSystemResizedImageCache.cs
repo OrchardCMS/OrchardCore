@@ -3,6 +3,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Media.Services;
 
@@ -20,10 +21,7 @@ internal sealed class PhysicalFileSystemResizedImageCache : IResizedImageCache
         ShellSettings shellSettings,
         ILogger<PhysicalFileSystemResizedImageCache> logger)
     {
-        var webRootPath = string.IsNullOrEmpty(env.WebRootPath)
-            ? Path.Combine(env.ContentRootPath, "wwwroot")
-            : env.WebRootPath;
-        _cacheRoot = Path.Combine(webRootPath, shellSettings.Name, CacheFolder);
+        _cacheRoot = Path.Combine(env.GetWebRootPathOrDefault(), shellSettings.Name, CacheFolder);
         _logger = logger;
     }
 
