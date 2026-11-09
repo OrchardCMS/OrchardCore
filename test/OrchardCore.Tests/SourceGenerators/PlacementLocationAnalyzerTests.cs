@@ -15,6 +15,9 @@ public class PlacementLocationAnalyzerTests
     [InlineData("result.Location(\"Content:1#\" + location)")]
     [InlineData("result.Location(l => l.Tab(location))")]
     [InlineData("result.Location(l => l.Zone(\"Content\").Card(location))")]
+    [InlineData("result.Location(l => l.Tab($\"Section{position}\"))")]
+    [InlineData("result.Location(l => l.Card(\"Section\" + position))")]
+    [InlineData("result.Location(\"Content:\" + position + PlacementInfo.TabDelimiter + \"Settings\")")]
     public async Task Analyze_NonConstantPlacement_ReportsNonConstantPlacement(string expression)
     {
         // Arrange

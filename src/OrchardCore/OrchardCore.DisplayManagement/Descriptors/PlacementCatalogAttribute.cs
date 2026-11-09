@@ -17,18 +17,24 @@ public sealed class PlacementCatalogAttribute : Attribute
     /// <summary>
     /// Initializes a new instance of the <see cref="PlacementCatalogAttribute"/> class.
     /// </summary>
-    /// <param name="declaringType">
-    /// The type that sets the locations, its generic type definition when it is generic.
+    /// <param name="declaringTypeName">
+    /// The name of the type that sets the locations, as <see cref="System.Reflection.Assembly.GetType(string)"/> of the
+    /// assembly reads it, such as <c>MyModule.Drivers.Outer+MyDriver</c>, of its generic type definition when it is
+    /// generic.
     /// </param>
-    public PlacementCatalogAttribute(Type declaringType)
+    /// <remarks>
+    /// The type is named rather than referenced with <c>typeof</c>, so that private nested types are recorded as they
+    /// are, and no name has to be accessible or escaped in the generated code.
+    /// </remarks>
+    public PlacementCatalogAttribute(string declaringTypeName)
     {
-        DeclaringType = declaringType;
+        DeclaringTypeName = declaringTypeName;
     }
 
     /// <summary>
-    /// Gets the type that sets the locations.
+    /// Gets the name of the type that sets the locations, as the assembly resolves it.
     /// </summary>
-    public Type DeclaringType { get; }
+    public string DeclaringTypeName { get; }
 
     /// <summary>
     /// Gets or sets the placement locations with a tab or a card.

@@ -3,22 +3,23 @@ using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell;
 
-[assembly: PlacementCatalog(typeof(OrchardCore.DataLocalization.Services.Tests.CatalogDriver), Locations = new[] { "Content:1#Settings;2%Details", "Content:2" }, Tabs = new[] { "Advanced" }, Cards = new[] { "Summary" })]
-[assembly: PlacementCatalog(typeof(OrchardCore.DataLocalization.Services.Tests.CatalogBaseDriver<>), Locations = new[] { "Content:7#Capabilities;9" })]
-[assembly: PlacementCatalog(typeof(OrchardCore.DataLocalization.Services.Tests.DisabledDriver), Locations = new[] { "Content:1#Disabled" })]
+[assembly: PlacementCatalog("OrchardCore.DataLocalization.Services.Tests.CatalogDriver", Locations = new[] { "Content:1#Settings;2%Details", "Content:2" }, Tabs = new[] { "Advanced" }, Cards = new[] { "Summary" })]
+[assembly: PlacementCatalog("OrchardCore.DataLocalization.Services.Tests.CatalogBaseDriver`1", Locations = new[] { "Content:7#Capabilities;9" })]
+[assembly: PlacementCatalog("OrchardCore.DataLocalization.Services.Tests.CatalogContainer+NestedDriver", Locations = new[] { "Content:3#Nested" })]
+[assembly: PlacementCatalog("OrchardCore.DataLocalization.Services.Tests.DisabledDriver", Locations = new[] { "Content:1#Disabled" })]
 
 namespace OrchardCore.DataLocalization.Services.Tests;
 
 public sealed class TabAndCardLocalizationDataProviderTests
 {
     [Fact]
-    public async Task GetDescriptorsAsync_Contributors_ListsEachNameOnceWithTheDefaultGroup()
+    public async Task GetDescriptorsAsync_Contributors_ListsEachNameOnceWhateverItsCaseWithTheDefaultGroup()
     {
         // Arrange
         var provider = new TabAndCardLocalizationDataProvider(
         [
             CreateContributor("Settings", "Details", " "),
-            CreateContributor("Settings", "Advanced"),
+            CreateContributor("settings", "Advanced", "content"),
         ]);
 
         // Act
@@ -33,16 +34,17 @@ public sealed class TabAndCardLocalizationDataProviderTests
     public async Task PlacementCatalogContributor_EnabledTypes_ListsTheirNamesAndThoseOfTheirBaseTypes()
     {
         // Arrange
+        var nestedDriver = CatalogContainer.NestedDriverType;
         var feature = Mock.Of<IFeatureInfo>(feature => feature.Id == "Enabled");
         var shellFeaturesManager = Mock.Of<IShellFeaturesManager>(manager => manager.GetEnabledFeaturesAsync() == Task.FromResult<IEnumerable<IFeatureInfo>>(new[] { feature }));
-        var typeFeatureProvider = Mock.Of<ITypeFeatureProvider>(provider => provider.GetTypesForFeature(feature) == new[] { typeof(CatalogDriver), typeof(CatalogDerivedDriver) });
+        var typeFeatureProvider = Mock.Of<ITypeFeatureProvider>(provider => provider.GetTypesForFeature(feature) == new[] { typeof(CatalogDriver), typeof(CatalogDerivedDriver), nestedDriver });
         var contributor = new PlacementCatalogTabAndCardNameContributor(shellFeaturesManager, typeFeatureProvider);
 
         // Act
         var names = await contributor.GetNamesAsync();
 
         // Assert
-        Assert.Equal(["Advanced", "Capabilities", "Details", "Settings", "Summary"], names.Order(StringComparer.Ordinal));
+        Assert.Equal(["Advanced", "Capabilities", "Details", "Nested", "Settings", "Summary"], names.Order(StringComparer.Ordinal));
     }
 
     [Fact]
@@ -90,3 +92,13 @@ public class CatalogBaseDriver<TModel>;
 public sealed class CatalogDerivedDriver : CatalogBaseDriver<string>;
 
 public sealed class DisabledDriver;
+
+public sealed class CatalogContainer
+{
+    /// <summary>
+    /// Gets the private driver, registered in DI as such.
+    /// </summary>
+    public static Type NestedDriverType => typeof(NestedDriver);
+
+    private sealed class NestedDriver;
+}

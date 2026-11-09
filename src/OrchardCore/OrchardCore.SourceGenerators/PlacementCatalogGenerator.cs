@@ -84,7 +84,7 @@ public sealed class PlacementCatalogGenerator : IIncrementalGenerator
         }
 
         var values = new List<string?>();
-        if (!PlacementLocations.TryGetConstantValues(argument!.Value, values))
+        if (!PlacementLocations.TryGetConstantValues(argument!.Value, kind, values))
         {
             return [];
         }
@@ -125,34 +125,35 @@ public sealed class PlacementCatalogGenerator : IIncrementalGenerator
     }
 
     /// <summary>
-    /// Gets the type that declares a symbol, as it is written in a <c>typeof</c> of an assembly attribute: its generic
-    /// type definition, or its nearest containing type when it isn't accessible to the assembly.
+    /// Gets the type that declares a symbol as the runtime resolves it with <c>Assembly.GetType()</c>: the metadata name
+    /// of its generic type definition, with <c>+</c> between nested types. A name is valid whatever the accessibility of
+    /// the type and of its containing types, and needs no escaping.
     /// </summary>
     private static string? GetDeclaringType(ISymbol? symbol)
     {
         var type = symbol as INamedTypeSymbol ?? symbol?.ContainingType;
 
-        while (type is not null && (type.IsFileLocal || type.DeclaredAccessibility is Accessibility.Private or Accessibility.Protected or Accessibility.ProtectedAndInternal))
-        {
-            type = type.ContainingType;
-        }
-
-        return type is null || type.IsFileLocal ? null : GetTypeOfName(type.OriginalDefinition);
+        return type is null ? null : GetMetadataName(type.OriginalDefinition);
     }
 
-    private static string GetTypeOfName(INamedTypeSymbol type)
+    private static string GetMetadataName(INamedTypeSymbol type)
     {
-        var name = type.Arity > 0 ? $"{type.Name}<{new string(',', type.Arity - 1)}>" : type.Name;
-
         if (type.ContainingType is not null)
         {
-            return $"{GetTypeOfName(type.ContainingType)}.{name}";
+            return $"{GetMetadataName(type.ContainingType)}+{type.MetadataName}";
         }
 
-        return type.ContainingNamespace.IsGlobalNamespace
-            ? $"global::{name}"
-            : $"global::{type.ContainingNamespace.ToDisplayString()}.{name}";
+        var namespaceName = GetNamespaceName(type.ContainingNamespace);
+
+        return namespaceName.Length == 0 ? type.MetadataName : $"{namespaceName}.{type.MetadataName}";
     }
+
+    private static string GetNamespaceName(INamespaceSymbol? @namespace)
+        => @namespace is null || @namespace.IsGlobalNamespace
+            ? string.Empty
+            : GetNamespaceName(@namespace.ContainingNamespace) is { Length: > 0 } parent
+                ? $"{parent}.{@namespace.MetadataName}"
+                : @namespace.MetadataName;
 
     private static string Generate(IEnumerable<PlacementEntry> entries)
     {
@@ -162,7 +163,7 @@ public sealed class PlacementCatalogGenerator : IIncrementalGenerator
 
         foreach (var type in entries.GroupBy(entry => entry.DeclaringType).OrderBy(group => group.Key, StringComparer.Ordinal))
         {
-            builder.Append("[assembly: global::").Append(PlacementLocations.CatalogAttributeMetadataName).Append("(typeof(").Append(type.Key).Append(')');
+            builder.Append("[assembly: global::").Append(PlacementLocations.CatalogAttributeMetadataName).Append('(').Append(SymbolDisplay.FormatLiteral(type.Key, quote: true));
             AppendValues(builder, "Locations", type, PlacementValueKind.Location);
             AppendValues(builder, "Tabs", type, PlacementValueKind.Tab);
             AppendValues(builder, "Cards", type, PlacementValueKind.Card);

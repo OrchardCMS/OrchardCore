@@ -44,7 +44,12 @@ public sealed class PlacementCatalogTabAndCardNameContributor : ITabAndCardNameC
         {
             foreach (var catalog in assembly.GetCustomAttributes<PlacementCatalogAttribute>())
             {
-                if (catalog.DeclaringType is null || !types.Contains(catalog.DeclaringType))
+                // The catalog names a type of its own assembly, private nested types included.
+                var declaringType = string.IsNullOrEmpty(catalog.DeclaringTypeName)
+                    ? null
+                    : assembly.GetType(catalog.DeclaringTypeName, throwOnError: false);
+
+                if (declaringType is null || !types.Contains(declaringType))
                 {
                     continue;
                 }

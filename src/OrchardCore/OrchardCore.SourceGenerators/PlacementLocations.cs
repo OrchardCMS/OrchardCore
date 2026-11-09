@@ -87,10 +87,11 @@ internal sealed class PlacementLocations
 
     /// <summary>
     /// Adds the values that an expression can have to <paramref name="values"/>: a compile-time constant, or a
-    /// conditional, coalesce or switch expression of constants. A concatenation or an interpolation that can have no
-    /// tab or card, such as a computed position, has no value to add. Returns <see langword="false"/> otherwise.
+    /// conditional, coalesce or switch expression of constants. A location built from a concatenation or an
+    /// interpolation that can have no tab or card, such as a computed position, has no value to add; a tab or card
+    /// name always needs constants. Returns <see langword="false"/> otherwise.
     /// </summary>
-    public static bool TryGetConstantValues(IOperation operation, List<string?> values)
+    public static bool TryGetConstantValues(IOperation operation, PlacementValueKind kind, List<string?> values)
     {
         operation = Unwrap(operation);
 
@@ -104,18 +105,19 @@ internal sealed class PlacementLocations
         return operation switch
         {
             IConditionalOperation { WhenFalse: not null } conditional =>
-                TryGetConstantValues(conditional.WhenTrue, values) && TryGetConstantValues(conditional.WhenFalse, values),
+                TryGetConstantValues(conditional.WhenTrue, kind, values) && TryGetConstantValues(conditional.WhenFalse, kind, values),
             ICoalesceOperation coalesce =>
-                TryGetConstantValues(coalesce.Value, values) && TryGetConstantValues(coalesce.WhenNull, values),
+                TryGetConstantValues(coalesce.Value, kind, values) && TryGetConstantValues(coalesce.WhenNull, kind, values),
             ISwitchExpressionOperation switchExpression =>
-                switchExpression.Arms.All(arm => TryGetConstantValues(arm.Value, values)),
-            IBinaryOperation { OperatorKind: BinaryOperatorKind.Add } or IInterpolatedStringOperation => HasNoTabOrCard(operation),
+                switchExpression.Arms.All(arm => TryGetConstantValues(arm.Value, kind, values)),
+            IBinaryOperation { OperatorKind: BinaryOperatorKind.Add } or IInterpolatedStringOperation when kind == PlacementValueKind.Location =>
+                HasNoTabOrCard(operation),
             _ => false,
         };
     }
 
     /// <summary>
-    /// Gets whether a location is built only from text without a tab or card delimiter and from numbers.
+    /// Gets whether a location is built only from text and characters without a tab or card delimiter and from numbers.
     /// </summary>
     private static bool HasNoTabOrCard(IOperation operation)
     {
@@ -123,7 +125,12 @@ internal sealed class PlacementLocations
 
         if (operation.ConstantValue.HasValue)
         {
-            return operation.ConstantValue.Value is not string text || !HasTabOrCard(text);
+            return operation.ConstantValue.Value switch
+            {
+                string text => !HasTabOrCard(text),
+                char character => character is not ('#' or '%'),
+                _ => true,
+            };
         }
 
         return operation switch

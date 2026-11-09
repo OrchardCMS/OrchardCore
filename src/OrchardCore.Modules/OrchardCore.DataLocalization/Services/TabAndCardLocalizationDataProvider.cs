@@ -18,8 +18,9 @@ public sealed class TabAndCardLocalizationDataProvider : ILocalizationDataProvid
 
     public async Task<IEnumerable<DataLocalizedString>> GetDescriptorsAsync()
     {
-        // The group of the shapes placed in no tab or card is named implicitly.
-        var names = new HashSet<string>(StringComparer.Ordinal) { TabAndCardNames.Default };
+        // The group of the shapes placed in no tab or card is named implicitly. The translation editor keys translations
+        // case-insensitively, so names differing only in case are listed once, as first seen.
+        var names = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { TabAndCardNames.Default };
 
         foreach (var contributor in _contributors)
         {

@@ -76,8 +76,8 @@ public sealed class PlacementLocationAnalyzer : DiagnosticAnalyzer
         public void AnalyzeInvocation(OperationAnalysisContext context)
         {
             var invocation = (IInvocationOperation)context.Operation;
-            if (!_placementLocations.TryGetArgument(invocation, out var argument, out _) ||
-                PlacementLocations.TryGetConstantValues(argument!.Value, []) ||
+            if (!_placementLocations.TryGetArgument(invocation, out var argument, out var kind) ||
+                PlacementLocations.TryGetConstantValues(argument!.Value, kind, []) ||
                 IsSkipped(context.ContainingSymbol) ||
                 IsDeclared(context.ContainingSymbol.ContainingType ?? context.ContainingSymbol as INamedTypeSymbol))
             {

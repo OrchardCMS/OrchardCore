@@ -29,10 +29,10 @@ public class PlacementCatalogGeneratorTests
             """;
 
         // Act
-        var catalog = Assert.Single(GenerateCatalogs(source));
+        var (declaringType, catalog) = Assert.Single(GenerateCatalogs(source));
 
         // Assert
-        Assert.Equal("Example.Driver", catalog.DeclaringType.FullName);
+        Assert.Equal("Example.Driver", declaringType.FullName);
         Assert.Equal(["Content:1#Settings;2%Details", "Content:2#General", "Parts:1#Summary"], catalog.Locations);
         Assert.Empty(catalog.Tabs);
         Assert.Empty(catalog.Cards);
@@ -51,7 +51,7 @@ public class PlacementCatalogGeneratorTests
             """;
 
         // Act
-        var catalog = Assert.Single(GenerateCatalogs(source));
+        var catalog = Assert.Single(GenerateCatalogs(source)).Value;
 
         // Assert
         Assert.Empty(catalog.Locations);
@@ -85,12 +85,12 @@ public class PlacementCatalogGeneratorTests
         var catalogs = GenerateCatalogs(source);
 
         // Assert
-        Assert.Equal(["Content:7#Capabilities;9"], catalogs.Single(catalog => catalog.DeclaringType.Name == "BaseDriver").Locations);
-        Assert.Equal(["Parameters:8#Tools;3"], catalogs.Single(catalog => catalog.DeclaringType.Name == "DerivedDriver").Locations);
+        Assert.Equal(["Content:7#Capabilities;9"], catalogs.Single(pair => pair.Key.Name == "BaseDriver").Value.Locations);
+        Assert.Equal(["Parameters:8#Tools;3"], catalogs.Single(pair => pair.Key.Name == "DerivedDriver").Value.Locations);
     }
 
     [Fact]
-    public void Generate_GenericAndPrivateNestedTypes_ListsTheAccessibleTypeDefinitions()
+    public void Generate_GenericNestedAndKeywordNamedTypes_NamesTheTypesThemselves()
     {
         // Arrange
         const string source = """
@@ -105,6 +105,24 @@ public class PlacementCatalogGeneratorTests
                 {
                     public void Build(ShapeResult result) => result.Location("Content:1#Nested");
                 }
+
+                private class Hidden
+                {
+                    public class PublicDriver
+                    {
+                        public void Build(ShapeResult result) => result.Location("Content:1#Hidden");
+                    }
+                }
+            }
+
+            public class @event
+            {
+                public void Build(ShapeResult result) => result.Location("Content:1#Keyword");
+            }
+
+            file class FileDriver
+            {
+                public void Build(ShapeResult result) => result.Location("Content:1#File");
             }
             """;
 
@@ -112,21 +130,27 @@ public class PlacementCatalogGeneratorTests
         var catalogs = GenerateCatalogs(source);
 
         // Assert
-        Assert.Equal(["Content:1#Generic"], catalogs.Single(catalog => catalog.DeclaringType.IsGenericTypeDefinition).Locations);
-        Assert.Equal(["Content:1#Nested"], catalogs.Single(catalog => catalog.DeclaringType.Name == "Outer").Locations);
+        Assert.Equal(["Content:1#Generic"], catalogs.Single(pair => pair.Key.IsGenericTypeDefinition).Value.Locations);
+        Assert.Equal(["Content:1#Nested"], catalogs.Single(pair => pair.Key.FullName == "Example.Outer+NestedDriver").Value.Locations);
+        Assert.Equal(["Content:1#Hidden"], catalogs.Single(pair => pair.Key.FullName == "Example.Outer+Hidden+PublicDriver").Value.Locations);
+        Assert.Equal(["Content:1#Keyword"], catalogs.Single(pair => pair.Key.FullName == "Example.event").Value.Locations);
+        Assert.Equal(["Content:1#File"], catalogs.Single(pair => pair.Key.Name.EndsWith("FileDriver", StringComparison.Ordinal)).Value.Locations);
     }
 
     [Fact]
-    public void Generate_NoTabOrCard_GeneratesNothing()
+    public void Generate_NoConstantTabOrCard_GeneratesNothing()
     {
         // Arrange
         const string source = """
             public class Driver
             {
-                public void Build(ShapeResult result, string location)
+                public void Build(ShapeResult result, string location, int position)
                 {
                     result.Location("Content:1");
                     result.Location(location);
+                    result.Location("Actions:40." + position);
+                    result.Location("Content:" + position + PlacementInfo.TabDelimiter + "Settings");
+                    result.Location(l => l.Tab($"Section{position}"));
                 }
             }
             """;
@@ -138,17 +162,19 @@ public class PlacementCatalogGeneratorTests
         Assert.Empty(result.GeneratedTrees);
     }
 
-    private static PlacementCatalogAttribute[] GenerateCatalogs(string source)
+    private static Dictionary<Type, PlacementCatalogAttribute> GenerateCatalogs(string source)
     {
         var result = RunGenerator(source, out var compilation);
         Assert.Single(result.GeneratedTrees);
         Assert.Empty(compilation.GetDiagnostics().Where(diagnostic => diagnostic.Severity == DiagnosticSeverity.Error));
 
-        // The generated attributes are read back as the runtime reads them.
+        // The generated attributes are read back, and their type names resolved, as the runtime does.
         using var stream = new MemoryStream();
         Assert.True(compilation.Emit(stream).Success);
+        var assembly = Assembly.Load(stream.ToArray());
 
-        return Assembly.Load(stream.ToArray()).GetCustomAttributes<PlacementCatalogAttribute>().ToArray();
+        return assembly.GetCustomAttributes<PlacementCatalogAttribute>()
+            .ToDictionary(catalog => assembly.GetType(catalog.DeclaringTypeName, throwOnError: true)!, catalog => catalog);
     }
 
     private static GeneratorDriverRunResult RunGenerator(string source, out Compilation compilation)
