@@ -278,7 +278,7 @@ public sealed class AdminController : Controller
         return RedirectToAction(nameof(Edit), "Admin", new { area = "OrchardCore.Contents", contentItemId = menuContentItemId });
     }
 
-    private static JsonObject FindMenuItem(JsonObject contentItem, string menuItemId)
+    internal static JsonObject FindMenuItem(JsonObject contentItem, string menuItemId)
     {
         // The content of the menu itself has no 'ContentItemId', so without this check an empty ID would match
         // the menu instead of a menu item.
