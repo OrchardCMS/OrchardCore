@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
 using System.Text.Encodings.Web;
@@ -38,6 +39,10 @@ namespace OrchardCore.Benchmarks;
 /// <see cref="ShapeProxyBenchmark"/>.
 /// </remarks>
 [MemoryDiagnoser]
+[SuppressMessage(
+    "Performance",
+    "CA1822:Mark members as static",
+    Justification = "BenchmarkDotNet needs all benchmark methods to be instance-level.")]
 public class ShapePipelineBenchmark
 {
     private static readonly HtmlString s_html = new("<p>Hello</p>");
@@ -169,7 +174,7 @@ public class ShapePipelineBenchmark
         return descriptor;
     }
 
-    private static IServiceProvider BuildServices(ShapeTable shapeTable, bool withResolver)
+    private static ServiceProvider BuildServices(ShapeTable shapeTable, bool withResolver)
     {
         var services = new ServiceCollection();
 
@@ -218,7 +223,7 @@ public class ShapePipelineBenchmark
         public string Title { get; set; }
     }
 
-    private static IShape NewPartShape(string type, bool withAlternates, bool withWrapper = false)
+    private static ShapeViewModel NewPartShape(string type, bool withAlternates, bool withWrapper = false)
     {
         var shape = new ShapeViewModel(type);
         shape.Metadata.DisplayType = "Summary";
