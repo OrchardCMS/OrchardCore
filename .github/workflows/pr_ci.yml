@@ -58,7 +58,7 @@ jobs:
         foreach ($project in 'OrchardCore.Cms.Web', 'OrchardCore.Mvc.Web')
         {
             $output = Join-Path $env:RUNNER_TEMP "publish-$project"
-            dotnet publish "src/$project/$project.csproj" -c Release --no-build --framework net10.0 --property:PublishDir=$output
+            dotnet publish "src/$project/$project.csproj" -c Release --no-build --framework net11.0 --property:PublishDir=$output
             if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
             if (-not (Test-Path (Join-Path $output 'wwwroot') -PathType Container))
             {
