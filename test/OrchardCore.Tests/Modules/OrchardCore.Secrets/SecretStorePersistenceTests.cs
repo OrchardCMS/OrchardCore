@@ -6,7 +6,6 @@ using OrchardCore.Secrets;
 using OrchardCore.Secrets.Models;
 using OrchardCore.Secrets.Services;
 using OrchardCore.Tests.Apis.Context;
-using ISecret = OrchardCore.Secrets.ISecret;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Secrets;
 
@@ -49,7 +48,7 @@ public class SecretStorePersistenceTests
         {
             var manager = scope.ServiceProvider.GetRequiredService<ISecretManager>();
             Assert.Empty(await manager.GetSecretInfosAsync());
-            Assert.Null(await manager.GetSecretAsync<ISecret>("text"));
+            Assert.Null((await manager.GetSecretAsync("text")).Value);
             Assert.Equal("private-text", (await memory.GetSecretAsync<TextSecret>("text")).Text);
             Assert.Equal(expires, memory.Entries["text"].Info.ExpiresUtc);
             Assert.Equal("description", memory.Entries["text"].Info.Description);
