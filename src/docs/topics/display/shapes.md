@@ -52,6 +52,28 @@ The dynamic `New` property exposed by `IShapeFactory` is shorthand for the same
 operation. Both `await New.Car()` and `await New.CarAsync()` create a shape with
 the type `Car`.
 
+### Render a shape outside of a view
+
+Shape templates render as partial views of the current view. An endpoint that
+returns the markup of a shape as data, such as in a JSON response, has no view:
+the first template of the request would render as a main page, wrapped in the
+theme layout. Use `IShapeHtmlRenderer` there. It renders a shape, or one zone of
+a shape, in a view context without output, and returns the HTML as a string:
+
+```csharp
+// The whole shape.
+var html = await _shapeHtmlRenderer.RenderAsync(shape);
+
+// Only the 'Content' zone, where the display drivers placed their shapes,
+// without the template of the shape itself.
+var content = await _shapeHtmlRenderer.RenderZoneAsync(shape, "Content");
+```
+
+`RenderZoneAsync` returns an empty string when the shape has no zones, or when
+the zone is empty. Both methods take an optional `CancellationToken`, such as
+`HttpContext.RequestAborted`; it is checked before rendering starts, since a
+shape can't be stopped once it renders.
+
 The [Display Management](../../reference/modules/DisplayManagement/README.md)
 reference also describes the `<shape>` tag helper and the equivalent Liquid
 filters.
@@ -210,6 +232,12 @@ current tenant and active theme. `IShapeTableProvider` implementations build and
 alter that table. The startup application has the highest override priority,
 followed by the active theme and its base themes, then modules in dependency
 order.
+
+Descriptors are cached across tenants by provider type and feature.
+`ShapeTableBuilder.ExcludedFeatureIds` identifies features already cached for
+the current provider type, not features described by other providers. Module
+templates are associated with each enabled feature of the module, so their
+availability does not depend on tenant activation order.
 
 For normal customization, add a template to the active theme rather than working
 with the shape table directly.
@@ -382,8 +410,22 @@ await garage.AddAsync(firstCar, "1");
 
 The `Items` collection is sorted lazily when it is read. Positions use numeric,
 hierarchical ordering rather than string ordering: `1`, `1.1`, `2`, and `10`
-appear in that order. `before` and `after` place items at the beginning and end,
-and an empty position is treated as `0`.
+appear in that order. `before` and `after` place items at the beginning and end
+of the numeric range, and an empty position is treated as `0`.
+
+Any non-numeric position (for example the value produced by `PrefixPosition()`,
+which alphabetizes sibling menu items) sorts *after* `after`, because `before`
+and `after` are anchors within the numeric range rather than absolute terminals.
+When an item must sort truly first or truly last regardless of every other
+position — including free text — use the `start` and `end` sentinels. The full
+order is:
+
+```
+start  <  before  <  numbers  <  after  <  free-text  <  end
+```
+
+Like `before`/`after`, the sentinels support sub-ordering, so `end.50` sorts
+before `end.100`, and a bare `end` sorts before both.
 
 A container binding normally renders each item:
 

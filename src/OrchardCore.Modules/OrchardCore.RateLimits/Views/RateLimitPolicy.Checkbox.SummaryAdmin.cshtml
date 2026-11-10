@@ -1,0 +1,9 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.RateLimits.Models
+
+@model ShapeViewModel<RateLimitPolicy>
+
+<div class="form-check">
+    <input type="checkbox" class="form-check-input" value="@Model.Value.PolicyId" name="policyIds" id="policy-@Model.Value.PolicyId">
+    <label class="form-check-label" for="policy-@Model.Value.PolicyId">&nbsp;</label>
+</div>

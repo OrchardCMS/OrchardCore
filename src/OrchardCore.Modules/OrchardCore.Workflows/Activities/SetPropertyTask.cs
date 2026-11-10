@@ -1,29 +1,34 @@
 using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Activities;
 
-public class SetPropertyTask : TaskActivity<SetPropertyTask>
+public class SetPropertyTask : TaskActivity<SetPropertyTask>, IActivityOutputs, IActivityProvidedValues, IActivityDescription
 {
-    private readonly IWorkflowScriptEvaluator _scriptEvaluator;
-    private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
+    private readonly IWorkflowExpressionManager _expressionManager;
+    private readonly IStringLocalizerFactory _localizerFactory;
     protected readonly IStringLocalizer S;
 
     public SetPropertyTask(
-        IWorkflowScriptEvaluator scriptEvaluator,
-        IWorkflowExpressionEvaluator expressionEvaluator,
+        IWorkflowExpressionManager expressionManager,
+        IStringLocalizerFactory localizerFactory,
         IStringLocalizer<SetPropertyTask> localizer)
     {
-        _scriptEvaluator = scriptEvaluator;
-        _expressionEvaluator = expressionEvaluator;
+        _expressionManager = expressionManager;
+        _localizerFactory = localizerFactory;
         S = localizer;
     }
 
-    public override LocalizedString DisplayText => S["Set Property Task"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<SetPropertyTask>("Set Property Task");
 
-    public override LocalizedString Category => S["Primitives"];
+    public static LocalizationSource CategoryName => ActivityCategoryLocalizationSources.Primitives;
+
+    public override LocalizedString DisplayText => _localizerFactory.Localize(DisplayName);
+
+    public override LocalizedString Category => _localizerFactory.Localize(CategoryName);
 
     public string PropertyName
     {
@@ -31,18 +36,29 @@ public class SetPropertyTask : TaskActivity<SetPropertyTask>
         set => SetProperty(value);
     }
 
+    /// <summary>
+    /// The value.
+    /// </summary>
     public WorkflowExpression<object> Value
     {
         get => GetProperty(() => new WorkflowExpression<object>());
         set => SetProperty(value);
     }
 
+    /// <summary>
+    /// Legacy: the Liquid liquidvalue of an activity saved before a syntax could be chosen for each expression, used when
+    /// <see cref="Value"/> has no syntax and <see cref="Syntax"/> is Liquid.
+    /// </summary>
     public WorkflowExpression<object> LiquidValue
     {
         get => GetProperty(() => new WorkflowExpression<object>());
         set => SetProperty(value);
     }
 
+    /// <summary>
+    /// Legacy: which expression an activity saved before a syntax could be chosen for each expression evaluates.
+    /// It's only used when <see cref="Value"/> has no <see cref="WorkflowExpression{T}.Syntax"/>.
+    /// </summary>
     public WorkflowScriptSyntax Syntax
     {
         get => GetProperty(() => WorkflowScriptSyntax.JavaScript);
@@ -50,21 +66,23 @@ public class SetPropertyTask : TaskActivity<SetPropertyTask>
     }
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        return Outcomes(S["Done"]);
-    }
+        => Outcome(S["Done"]);
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        var value = Syntax switch
-        {
-            WorkflowScriptSyntax.Liquid => await _expressionEvaluator.EvaluateAsync(LiquidValue, workflowContext, null),
-            WorkflowScriptSyntax.JavaScript => await _scriptEvaluator.EvaluateAsync(Value, workflowContext),
-            _ => throw new NotSupportedException($"The syntax {Syntax} isn't supported for SetPropertyTask.")
-        };
+        var value = await _expressionManager.EvaluateAsync(WorkflowExpressionSyntaxes.Resolve(Value, LiquidValue.Expression, Syntax), workflowContext);
 
         workflowContext.Properties[PropertyName] = value;
+        workflowContext.SetActivityOutput(activityContext, "Value", value);
 
-        return Outcomes("Done");
+        return Outcome("Done");
     }
+
+    private static readonly ActivityOutputDescriptor[] s_outputs = [new ActivityOutputDescriptor { Name = "Value", TypeName = "any", DisplayName = LocalizationSource.Create<SetPropertyTask>("Value"), Description = LocalizationSource.Create<SetPropertyTask>("The value the task sets the property to.") }];
+
+    public IEnumerable<ActivityOutputDescriptor> GetOutputs()
+        => s_outputs;
+
+    public IEnumerable<ActivityProvidedValue> GetProvidedValues()
+        => string.IsNullOrEmpty(PropertyName) ? [] : [new ActivityProvidedValue { Source = WorkflowValueSource.Properties, Name = PropertyName, TypeName = "any", Description = LocalizationSource.Create<SetPropertyTask>("The value this activity sets.") }];
 }

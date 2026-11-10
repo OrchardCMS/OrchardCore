@@ -24,6 +24,7 @@
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.ResourceManagement\OrchardCore.ResourceManagement.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Rules.Core\OrchardCore.Rules.Core.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Scripting.JavaScript\OrchardCore.Scripting.JavaScript.csproj" />
   </ItemGroup>
 
 </Project>

@@ -5,6 +5,7 @@ using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Environment.Shell.Events;
 using OrchardCore.Environment.Shell.Scope;
+using OrchardCore.Telemetry;
 
 namespace OrchardCore.Environment.Shell;
 
@@ -212,6 +213,7 @@ public sealed class ShellHost : IShellHost, IDisposable, IAsyncDisposable
             {
                 _runningShellTable.Remove(settings);
                 context.Settings.AsDisposable();
+                RecordRelease(context, "reload");
                 await context.ReleaseAsync();
             }
 
@@ -268,6 +270,7 @@ public sealed class ShellHost : IShellHost, IDisposable, IAsyncDisposable
 
         if (_shellContexts.TryRemove(settings.Name, out var context))
         {
+            RecordRelease(context, "release");
             await context.ReleaseAsync();
         }
 
@@ -299,6 +302,7 @@ public sealed class ShellHost : IShellHost, IDisposable, IAsyncDisposable
         if (_shellContexts.TryRemove(settings.Name, out var context))
         {
             context.Settings.AsDisposable();
+            RecordRelease(context, "remove");
             await context.ReleaseAsync();
         }
 
@@ -481,6 +485,22 @@ public sealed class ShellHost : IShellHost, IDisposable, IAsyncDisposable
         }
 
         _runningShellTable.Add(settings);
+    }
+
+    /// <summary>
+    /// Counts the release of a built shell, placeholders have nothing to release.
+    /// </summary>
+    private static void RecordRelease(ShellContext context, string reason)
+    {
+        if (context.Released || !OrchardCoreTelemetry.TenantReleases.Enabled)
+        {
+            return;
+        }
+
+        OrchardCoreTelemetry.TenantReleases.Add(
+            1,
+            new KeyValuePair<string, object>(OrchardCoreTelemetryConstants.Attributes.TenantName, context.Settings.Name),
+            new KeyValuePair<string, object>(OrchardCoreTelemetryConstants.Attributes.TenantReleaseReason, reason));
     }
 
     /// <summary>

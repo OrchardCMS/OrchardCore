@@ -1,0 +1,38 @@
+{
+  "type": "object",
+  "properties": {
+    "OrchardCore": {
+      "type": "object",
+      "properties": {
+        "Secrets": {
+          "type": "object",
+          "properties": {
+            "AzureKeyVault": {
+              "type": "object",
+              "description": "Azure Key Vault secret store settings. See https://docs.orchardcore.net/en/latest/reference/modules/Secrets/.",
+              "required": ["AzureClient"],
+              "properties": {
+                "AzureClient": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "\\S",
+                  "not": {
+                    "const": "OrchardCore.Secrets.AzureKeyVault"
+                  },
+                  "description": "The service key of a SecretClient registered by the host, for example 'SecretClient' registered from 'AzureClients:SecretClient'. The feature lazily resolves this shared client; it does not register clients from configuration."
+                },
+                "NamePrefix": {
+                  "type": "string",
+                  "default": "oc",
+                  "minLength": 1,
+                  "maxLength": 256,
+                  "description": "Application namespace prefix used even for single-tenant sites sharing a vault. The readable name is normalized, but the hash and ownership tags preserve the exact prefix. Changing this prefix requires explicit secret migration."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -7,7 +7,7 @@ namespace OrchardCore.Layers;
 
 public sealed class AdminMenu : AdminNavigationProvider
 {
-    private static readonly RouteValueDictionary _routeValues = new()
+    private static readonly RouteValueDictionary s_routeValues = new()
     {
         { "area", "OrchardCore.Settings" },
         { "groupId", LayerSiteSettingsDisplayDriver.GroupId },
@@ -22,27 +22,6 @@ public sealed class AdminMenu : AdminNavigationProvider
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
-        if (NavigationHelper.UseLegacyFormat())
-        {
-            builder
-                .Add(S["Design"], design => design
-                    .Add(S["Settings"], settings => settings
-                        .Add(S["Zones"], S["Zones"].PrefixPosition(), zones => zones
-                            .Action("Index", "Admin", _routeValues)
-                            .Permission(Permissions.ManageLayers)
-                            .LocalNav()
-                        )
-                    )
-                    .Add(S["Widgets"], S["Widgets"].PrefixPosition(), widgets => widgets
-                        .Permission(Permissions.ManageLayers)
-                        .Action("Index", "Admin", "OrchardCore.Layers")
-                        .LocalNav()
-                    )
-                );
-
-            return ValueTask.CompletedTask;
-        }
-
         builder
             .Add(S["Design"], design => design
                 .Add(S["Widgets"], S["Widgets"].PrefixPosition(), widgets => widgets
@@ -53,7 +32,7 @@ public sealed class AdminMenu : AdminNavigationProvider
             )
             .Add(S["Settings"], settings => settings
                 .Add(S["Zones"], S["Zones"].PrefixPosition(), zones => zones
-                    .Action("Index", "Admin", _routeValues)
+                    .Action("Index", "Admin", s_routeValues)
                     .Permission(Permissions.ManageLayers)
                     .LocalNav()
                 )

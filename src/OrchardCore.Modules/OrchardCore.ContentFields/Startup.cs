@@ -1,4 +1,3 @@
-using Fluid;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentFields.Drivers;
 using OrchardCore.ContentFields.Fields;
@@ -7,13 +6,14 @@ using OrchardCore.ContentFields.Indexing;
 using OrchardCore.ContentFields.Indexing.SQL;
 using OrchardCore.ContentFields.Services;
 using OrchardCore.ContentFields.Settings;
-using OrchardCore.ContentFields.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Indexing;
+using OrchardCore.Liquid;
+using OrchardCore.Localization;
 using OrchardCore.Modules;
 using OrchardCore.Users;
 
@@ -23,33 +23,10 @@ public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
+        services.AddHtmlServices();
 
-        services.Configure<TemplateOptions>(o =>
-        {
-            o.MemberAccessStrategy.Register<BooleanField>();
-            o.MemberAccessStrategy.Register<DisplayBooleanFieldViewModel>();
-            o.MemberAccessStrategy.Register<HtmlField>();
-            o.MemberAccessStrategy.Register<DisplayHtmlFieldViewModel>();
-            o.MemberAccessStrategy.Register<LinkField>();
-            o.MemberAccessStrategy.Register<DisplayLinkFieldViewModel>();
-            o.MemberAccessStrategy.Register<NumericField>();
-            o.MemberAccessStrategy.Register<DisplayNumericFieldViewModel>();
-            o.MemberAccessStrategy.Register<TextField>();
-            o.MemberAccessStrategy.Register<DisplayTextFieldViewModel>();
-            o.MemberAccessStrategy.Register<DateTimeField>();
-            o.MemberAccessStrategy.Register<DisplayDateTimeFieldViewModel>();
-            o.MemberAccessStrategy.Register<DateField>();
-            o.MemberAccessStrategy.Register<DisplayDateFieldViewModel>();
-            o.MemberAccessStrategy.Register<TimeField>();
-            o.MemberAccessStrategy.Register<DisplayTimeFieldViewModel>();
-            o.MemberAccessStrategy.Register<MultiTextField>();
-            o.MemberAccessStrategy.Register<DisplayMultiTextFieldViewModel>();
-            o.MemberAccessStrategy.Register<UserPickerField>();
-            o.MemberAccessStrategy.Register<DisplayUserPickerFieldViewModel>();
-            o.MemberAccessStrategy.Register<ContentPickerField>();
-            o.MemberAccessStrategy.Register<DisplayContentPickerFieldViewModel>();
-        });
+        services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
+        services.AddScoped<IJSLocalizer, ContentFieldsJSLocalizer>();
 
         // Boolean Field
         services.AddContentField<BooleanField>()
@@ -69,8 +46,7 @@ public sealed class Startup : StartupBase
 
         // Html Field
         services.AddContentField<HtmlField>()
-            .UseDisplayDriver<HtmlFieldDisplayDriver>()
-            .AddHandler<HtmlFieldHandler>();
+            .UseDisplayDriver<HtmlFieldDisplayDriver>();
         services.AddScoped<IContentPartFieldDefinitionDisplayDriver, HtmlFieldSettingsDriver>();
         services.AddScoped<IContentPartFieldDefinitionDisplayDriver, HtmlFieldTrumbowygEditorSettingsDriver>();
         services.AddScoped<IContentPartFieldDefinitionDisplayDriver, HtmlFieldMonacoEditorSettingsDriver>();
@@ -184,13 +160,6 @@ public sealed class UserPickerStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.Configure<TemplateOptions>(o =>
-        {
-            o.MemberAccessStrategy.Register<UserPickerField>();
-            o.MemberAccessStrategy.Register<DisplayUserPickerFieldViewModel>();
-            o.MemberAccessStrategy.Register<DisplayUserPickerFieldUserNamesViewModel>();
-        });
-
         services.AddContentField<UserPickerField>()
             .UseDisplayDriver<UserPickerFieldDisplayDriver>(d => !string.Equals(d, "UserNames", StringComparison.OrdinalIgnoreCase))
             .UseDisplayDriver<UserPickerFieldUserNamesDisplayDriver>(d => string.Equals(d, "UserNames", StringComparison.OrdinalIgnoreCase))

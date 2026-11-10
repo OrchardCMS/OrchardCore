@@ -335,26 +335,24 @@ public sealed class AccessController : Controller
         }
 
         // If the server is configured to allow skipping the confirmation prompt and a valid
-        // id_token_hint matching the current authenticated user is supplied, sign the user out
-        // immediately. The id_token_hint validation (signature, issuer, audience, lifetime) is
-        // performed by OpenIddict before the principal is exposed via AuthenticateAsync.
+        // id_token_hint matching the current authenticated user is supplied, sign the user
+        // out immediately without rendering a confirmation form.
+        //
+        // Note: the id_token_hint is validated by OpenIddict before its principal is exposed via
+        // AuthenticateAsync(). As allowed for hints, its lifetime is deliberately not validated.
         var settings = await _serverService.GetSettingsAsync();
         if (!settings.RequireEndSessionConfirmation && !string.IsNullOrEmpty(request.IdTokenHint))
         {
             var hintResult = await HttpContext.AuthenticateAsync(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
-            if (hintResult is { Succeeded: true, Principal: not null })
-            {
-                var hintSub = hintResult.Principal.GetClaim(Claims.Subject);
-                var cookieSub = result.Principal.GetUserIdentifier();
+            var hintSubject = hintResult is { Succeeded: true } ? hintResult.Principal?.GetClaim(Claims.Subject) : null;
+            var userIdentifier = result.Principal.FindUserIdentifier();
 
-                if (hintSub != null && CryptographicOperations.FixedTimeEquals(
-                    MemoryMarshal.AsBytes<char>(hintSub.AsSpan()),
-                    MemoryMarshal.AsBytes<char>((cookieSub ?? string.Empty).AsSpan())))
-                {
-                    return SignOut(
-                        new AuthenticationProperties { RedirectUri = "/" },
-                        OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
-                }
+            if (!string.IsNullOrEmpty(hintSubject) && !string.IsNullOrEmpty(userIdentifier) &&
+                CryptographicOperations.FixedTimeEquals(
+                    MemoryMarshal.AsBytes<char>(hintSubject.AsSpan()),
+                    MemoryMarshal.AsBytes<char>(userIdentifier.AsSpan())))
+            {
+                return await SignOutAndRedirectAsync(request);
             }
         }
 
@@ -386,18 +384,7 @@ public sealed class AccessController : Controller
         // sent by a malicious client that could abuse this interactive endpoint to silently
         // log the user out without the user explicitly approving the log out operation.
 
-        await HttpContext.SignOutAsync();
-
-        // If no post_logout_redirect_uri was specified, redirect the user agent
-        // to the root page, that should correspond to the home page in most cases.
-        if (string.IsNullOrEmpty(request.PostLogoutRedirectUri))
-        {
-            return Redirect("~/");
-        }
-
-        return SignOut(
-            new AuthenticationProperties { RedirectUri = "/" },
-            OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+        return await SignOutAndRedirectAsync(request);
     }
 
     [ActionName(nameof(Logout)), AllowAnonymous, DisableCors]
@@ -421,6 +408,22 @@ public sealed class AccessController : Controller
         }
 
         return Redirect("~/");
+    }
+
+    private async Task<IActionResult> SignOutAndRedirectAsync(OpenIddictRequest request)
+    {
+        await HttpContext.SignOutAsync();
+
+        // If no post_logout_redirect_uri was specified, redirect the user agent
+        // to the root page, that should correspond to the home page in most cases.
+        if (string.IsNullOrEmpty(request.PostLogoutRedirectUri))
+        {
+            return Redirect("~/");
+        }
+
+        return SignOut(
+            new AuthenticationProperties { RedirectUri = "/" },
+            OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
     }
 
     [AllowAnonymous, HttpPost]

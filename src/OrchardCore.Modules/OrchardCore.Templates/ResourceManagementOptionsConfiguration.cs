@@ -5,13 +5,13 @@ namespace OrchardCore.Templates;
 
 public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<ResourceManagementOptions>
 {
-    private static readonly ResourceManifest _manifest;
+    private static readonly ResourceManifest s_manifest;
 
     static ResourceManagementOptionsConfiguration()
     {
-        _manifest = new ResourceManifest();
+        s_manifest = new ResourceManifest();
 
-        _manifest
+        s_manifest
             .DefineScript("templatepreview-edit")
             .SetUrl("~/OrchardCore.Templates/Scripts/templatepreview.edit.min.js", "~/OrchardCore.Templates/Scripts/templatepreview.edit.js")
             .SetVersion("1.0.0");
@@ -19,6 +19,6 @@ public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<R
 
     public void Configure(ResourceManagementOptions options)
     {
-        options.ResourceManifests.Add(_manifest);
+        options.ResourceManifests.Add(s_manifest);
     }
 }

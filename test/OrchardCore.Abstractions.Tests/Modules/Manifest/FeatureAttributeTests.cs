@@ -34,7 +34,7 @@ public class FeatureAttributeTests : FeatureAttributeTests<FeatureAttribute>
     {
         var id = LoremWords(1);
         var description = LoremWords(7);
-        var deps = LoremWords(5).Split(' ');
+        var deps = LoremWords(5, distinct: true).Split(' ');
         const bool defaultTenant = default;
         const bool alwaysEnabled = default;
         const bool enabledByDependencyOnly = default;
@@ -64,6 +64,8 @@ public class FeatureAttributeTests : FeatureAttributeTests<FeatureAttribute>
 
         Assert.NotNull(feature.Dependencies);
         Assert.Equal(deps, feature.Dependencies);
+        Assert.Empty(feature.Before);
+        Assert.Empty(feature.After);
 
         Assert.Equal(defaultTenant, feature.DefaultTenantOnly);
         Assert.Equal(alwaysEnabled, feature.IsAlwaysEnabled);
@@ -80,7 +82,7 @@ public class FeatureAttributeTests : FeatureAttributeTests<FeatureAttribute>
         var id = LoremWords(1);
         var name = LoremWords(1);
         var description = LoremWords(7);
-        var deps = LoremWords(5).Split(' ');
+        var deps = LoremWords(5, distinct: true).Split(' ');
         const bool defaultTenant = default;
         const bool alwaysEnabled = default;
         const bool enabledByDependencyOnly = default;
@@ -111,6 +113,8 @@ public class FeatureAttributeTests : FeatureAttributeTests<FeatureAttribute>
 
         Assert.NotNull(feature.Dependencies);
         Assert.Equal(deps, feature.Dependencies);
+        Assert.Empty(feature.Before);
+        Assert.Empty(feature.After);
 
         Assert.Equal(defaultTenant, feature.DefaultTenantOnly);
         Assert.Equal(alwaysEnabled, feature.IsAlwaysEnabled);
@@ -129,7 +133,7 @@ public class FeatureAttributeTests : FeatureAttributeTests<FeatureAttribute>
         var category = LoremWords(1);
         var priority = 1;
         var description = LoremWords(7);
-        var deps = LoremWords(5).Split(' ');
+        var deps = LoremWords(5, distinct: true).Split(' ');
         const bool defaultTenant = default;
         const bool alwaysEnabled = default;
         const bool enabledByDependencyOnly = default;
@@ -163,6 +167,8 @@ public class FeatureAttributeTests : FeatureAttributeTests<FeatureAttribute>
 
         Assert.NotNull(feature.Dependencies);
         Assert.Equal(deps, feature.Dependencies);
+        Assert.Empty(feature.Before);
+        Assert.Empty(feature.After);
 
         Assert.Equal(defaultTenant, feature.DefaultTenantOnly);
         Assert.Equal(alwaysEnabled, feature.IsAlwaysEnabled);
@@ -372,6 +378,20 @@ public class FeatureAttributeTests : FeatureAttributeTests<FeatureAttribute>
         Assert.Equal("Uncategorized", alpha.Categorize(alpha, alpha));
     }
 
+    [Fact]
+    public void Dependencies_Are_Independent_From_Before_And_After()
+    {
+        var feature = CreateFromFactory();
+
+        feature.Dependencies = ["Alpha", "Beta", "Alpha"];
+        feature.After = ["Gamma"];
+        feature.Before = ["Delta"];
+
+        Assert.Equal(["Alpha", "Beta"], feature.Dependencies);
+        Assert.Equal(["Gamma"], feature.After);
+        Assert.Equal(["Delta"], feature.Before);
+    }
+
     /// <summary>
     /// Verifies that <see cref="FeatureAttribute.Dependencies"/> functions correctly in
     /// a handful of delimiter scenarios.
@@ -386,7 +406,7 @@ public class FeatureAttributeTests : FeatureAttributeTests<FeatureAttribute>
     ]
     public virtual void Dependencies(char delim)
     {
-        var deps = LoremWords(5).Split(' ');
+        var deps = LoremWords(5, distinct: true).Split(' ');
         var depString = string.Join(delim, deps);
 
         var listDelims = FeatureAttribute.ListDelimiters;

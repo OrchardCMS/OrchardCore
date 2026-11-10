@@ -1,10 +1,9 @@
-using System.Net.Security;
-using System.Security.Cryptography.X509Certificates;
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.StackExchangeRedis;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Caching.Distributed;
@@ -15,7 +14,6 @@ using OrchardCore.Locking.Distributed;
 using OrchardCore.Modules;
 using OrchardCore.Redis.Options;
 using OrchardCore.Redis.Services;
-using StackExchange.Redis;
 
 namespace OrchardCore.Redis;
 
@@ -34,47 +32,31 @@ public sealed class Startup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        try
+        var validationErrors = _configuration.TryBindConfiguration(_logger, out var redisOptions)
+            ? redisOptions.Validate()
+            : [new ValidationResult("The 'Redis' section is invalid.")];
+
+        if (validationErrors.Any())
         {
-            var section = _configuration.GetSection("OrchardCore_Redis");
+            _logger.LogError("'Redis' features are not active on tenant '{TenantName}': {Errors}", _tenant, string.Join(' ', validationErrors.Select(error => error.ErrorMessage)));
 
-            var configuration = section["Configuration"];
-            var configurationOptions = ConfigurationOptions.Parse(configuration);
-            var instancePrefix = section["InstancePrefix"];
-
-            if (section.GetValue("DisableCertificateVerification", false))
-            {
-                configurationOptions.CertificateValidation += IgnoreCertificateErrors;
-            }
-
-            var allowAdmin = section.GetValue<bool?>("AllowAdmin", null);
-            if (allowAdmin.HasValue)
-            {
-                configurationOptions.AllowAdmin = allowAdmin.Value;
-            }
-
+            services.TryAddSingleton<IRedisService, NullRedisService>();
+        }
+        else
+        {
             services.Configure<RedisOptions>(options =>
             {
-                options.Configuration = configuration;
-                options.ConfigurationOptions = configurationOptions;
-                options.InstancePrefix = instancePrefix;
+                options.Configuration = redisOptions.Configuration;
+                options.ConfigurationOptions = redisOptions.ConfigurationOptions;
+                options.InstancePrefix = redisOptions.InstancePrefix;
             });
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, "'Redis' features are not active on tenant '{TenantName}' as the 'Configuration' string is missing or invalid.", _tenant);
-            return;
+
+            services.AddSingleton<IRedisService, RedisService>();
+            services.AddSingleton<IModularTenantEvents>(sp => sp.GetRequiredService<IRedisService>());
         }
 
-        services.AddSingleton<IRedisService, RedisService>();
-        services.AddSingleton<IModularTenantEvents>(sp => sp.GetRequiredService<IRedisService>());
         services.AddSingleton<IRedisDatabaseFactory, RedisDatabaseFactory>();
     }
-
-    // Callback for accepting any certificate as long as it exists, while ignoring other SSL policy errors.
-    // This allows the use of self-signed certificates on the Redis server.
-    private static bool IgnoreCertificateErrors(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
-        => (sslPolicyErrors & SslPolicyErrors.RemoteCertificateNotAvailable) == 0;
 }
 
 [Feature("OrchardCore.Redis.Cache")]
@@ -82,7 +64,7 @@ public sealed class RedisCacheStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        if (services.Any(d => d.ServiceType == typeof(IRedisService)))
+        if (services.IsRedisConfigured())
         {
             services.AddSingleton<IDistributedCache, RedisCacheWrapper>(sp =>
             {
@@ -100,7 +82,7 @@ public sealed class RedisBusStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        if (services.Any(d => d.ServiceType == typeof(IRedisService)))
+        if (services.IsRedisConfigured())
         {
             services.AddSingleton<IMessageBus, RedisBus>();
         }
@@ -112,7 +94,7 @@ public sealed class RedisLockStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        if (services.Any(d => d.ServiceType == typeof(IRedisService)))
+        if (services.IsRedisConfigured())
         {
             services.AddSingleton<IDistributedLock, RedisLock>();
         }
@@ -124,7 +106,7 @@ public sealed class RedisDataProtectionStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        if (services.Any(d => d.ServiceType == typeof(IRedisService)))
+        if (services.IsRedisConfigured())
         {
             services.AddTransient<IConfigureOptions<KeyManagementOptions>, RedisKeyManagementOptionsSetup>();
         }

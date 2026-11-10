@@ -1,7 +1,7 @@
 @model OrchardCore.Layers.ViewModels.LayerMetadataEditViewModel
 
 <div class="ocat-wrapper" asp-validation-class-for="Title">
-    <label asp-for="Title" class="ocat-label">@T["Title"]</label>
+    <label asp-for="Title" class="ocat-label ocat-label-required">@T["Title"]</label>
     <div class="ocat-end">
         <input asp-for="Title" class="form-control" type="text" />
         <span asp-validation-for="Title"></span>
@@ -19,7 +19,7 @@
 </div>
 
 <div class="ocat-wrapper" asp-validation-class-for="LayerMetadata.Layer">
-    <label asp-for="LayerMetadata.Layer" class="ocat-label">@T["The layer"]</label>
+    <label asp-for="LayerMetadata.Layer" class="ocat-label ocat-label-required">@T["The layer"]</label>
     <div class="ocat-end">
         <select asp-for="LayerMetadata.Layer" class="form-select">
             <option value="">@T["Select a layer"]</option>

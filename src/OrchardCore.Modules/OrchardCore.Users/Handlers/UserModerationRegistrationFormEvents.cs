@@ -6,17 +6,17 @@ namespace OrchardCore.Users.Handlers;
 
 internal sealed class UserModerationRegistrationFormEvents : RegistrationFormEventsBase
 {
-    private readonly RegistrationOptions _registrationOptions;
+    private readonly IOptionsMonitor<RegistrationOptions> _registrationOptions;
 
-    public UserModerationRegistrationFormEvents(IOptions<RegistrationOptions> registrationOptions)
+    public UserModerationRegistrationFormEvents(IOptionsMonitor<RegistrationOptions> registrationOptions)
     {
-        _registrationOptions = registrationOptions.Value;
+        _registrationOptions = registrationOptions;
     }
 
     public override Task RegisteringAsync(UserRegisteringContext context)
     {
         if (context.User is User user &&
-            _registrationOptions.UsersAreModerated &&
+            _registrationOptions.CurrentValue.UsersAreModerated &&
             !user.IsEnabled)
         {
             context.CancelSignIn = true;

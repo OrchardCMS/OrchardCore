@@ -1,0 +1,91 @@
+@model UploadToFtpStepViewModel
+
+<div class="ocat-wrapper" asp-validation-class-for="Host">
+    <label asp-for="Host" class="ocat-label ocat-label-required">@T["Host"]</label>
+    <div class="ocat-end">
+        <input asp-for="Host" class="form-control" placeholder="ftp.example.com" autocomplete="off" />
+        <span asp-validation-for="Host"></span>
+    </div>
+</div>
+
+<div class="ocat-limited-wrapper" asp-validation-class-for="Port">
+    <label asp-for="Port" class="ocat-label">@T["Port"]</label>
+    <div class="ocat-limited">
+        <input asp-for="Port" type="number" min="1" max="65535" class="form-control" />
+        <span asp-validation-for="Port"></span>
+        <span class="hint">@T["Usually 21, or 990 for implicit TLS."]</span>
+    </div>
+</div>
+
+<div class="ocat-wrapper">
+    <label asp-for="Encryption" class="ocat-label">@T["Encryption"]</label>
+    <div class="ocat-end">
+        <select asp-for="Encryption" class="form-select">
+            <option value="@DataPipelineFtpEncryption.ExplicitTls">@T["Explicit TLS (FTPES)"]</option>
+            <option value="@DataPipelineFtpEncryption.ImplicitTls">@T["Implicit TLS (FTPS)"]</option>
+            <option value="@DataPipelineFtpEncryption.None">@T["None (plain FTP)"]</option>
+        </select>
+    </div>
+</div>
+
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        @if (Model.Encryption == DataPipelineFtpEncryption.None)
+        {
+            <div class="alert alert-warning mb-0" role="alert">
+                @T["Plain FTP isn't encrypted: the user name, the password and the files travel in clear text."]
+            </div>
+        }
+        else
+        {
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" asp-for="ValidateCertificate" />
+                <label class="form-check-label" asp-for="ValidateCertificate">@T["Validate the certificate of the server"]</label>
+                <span class="hint dashed">@T["Clear it only for a server with a self-signed certificate on a trusted network."]</span>
+            </div>
+        }
+    </div>
+</div>
+
+<div class="ocat-wrapper">
+    <label asp-for="Username" class="ocat-label ocat-label-required">@T["User name"]</label>
+    <div class="ocat-end">
+        <input asp-for="Username" class="form-control" autocomplete="off" />
+    </div>
+</div>
+
+<partial name="DataPipelineSecretInput" model="@(new DataPipelineSecretInputViewModel
+{
+    Name = nameof(Model.Password),
+    Label = T["Password"].Value,
+    HasValue = Model.HasPassword,
+    KeepHint = T["Leave empty to keep the current password."].Value,
+    RemoveName = nameof(Model.RemovePassword),
+    RemoveLabel = T["Remove the password"].Value,
+})" />
+
+<div class="ocat-wrapper">
+    <label asp-for="RemoteFolder" class="ocat-label">@T["Remote folder"]</label>
+    <div class="ocat-end">
+        <input asp-for="RemoteFolder" class="form-control" placeholder="/exports/{Date:yyyy}" />
+        <span class="hint">@T["Created when it doesn't exist. Empty for the folder the user starts in. Placeholders: {0}, {1}, and {2}.", "{PipelineName}", "{RunId}", "{Date:format}"]</span>
+    </div>
+</div>
+
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="Overwrite" />
+            <label class="form-check-label" asp-for="Overwrite">@T["Replace existing files"]</label>
+            <span class="hint dashed">@T["Otherwise the step fails when a file with the same name exists."]</span>
+        </div>
+    </div>
+</div>
+
+<div class="ocat-limited-wrapper" asp-validation-class-for="TimeoutSeconds">
+    <label asp-for="TimeoutSeconds" class="ocat-label">@T["Timeout (seconds)"]</label>
+    <div class="ocat-limited">
+        <input asp-for="TimeoutSeconds" type="number" min="1" class="form-control" />
+        <span asp-validation-for="TimeoutSeconds"></span>
+    </div>
+</div>

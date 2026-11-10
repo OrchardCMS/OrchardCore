@@ -10,6 +10,8 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell;
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Roles.ViewModels;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
@@ -20,9 +22,20 @@ namespace OrchardCore.Roles.Controllers;
 [Admin("Roles/{action}/{id?}", "Roles{action}")]
 public sealed class AdminController : Controller
 {
+    /// <summary>
+    /// The submit button value that opens the new role's edit page after creating it.
+    /// </summary>
+    public const string SaveAndConfigureSubmitValue = "SaveAndConfigure";
+
+    /// <summary>
+    /// The submit button value that keeps the user on the role's edit page after saving.
+    /// </summary>
+    public const string SaveAndContinueSubmitValue = "SaveAndContinue";
+
     private readonly IDocumentStore _documentStore;
     private readonly RoleManager<IRole> _roleManager;
     private readonly IAuthorizationService _authorizationService;
+    private readonly IPermissionGrantingService _permissionGrantingService;
     private readonly IEnumerable<IPermissionProvider> _permissionProviders;
     private readonly ITypeFeatureProvider _typeFeatureProvider;
     private readonly IShellFeaturesManager _shellFeaturesManager;
@@ -36,6 +49,7 @@ public sealed class AdminController : Controller
         IDocumentStore documentStore,
         RoleManager<IRole> roleManager,
         IAuthorizationService authorizationService,
+        IPermissionGrantingService permissionGrantingService,
         IEnumerable<IPermissionProvider> permissionProviders,
         ITypeFeatureProvider typeFeatureProvider,
         IShellFeaturesManager shellFeaturesManager,
@@ -47,6 +61,7 @@ public sealed class AdminController : Controller
         _documentStore = documentStore;
         _roleManager = roleManager;
         _authorizationService = authorizationService;
+        _permissionGrantingService = permissionGrantingService;
         _permissionProviders = permissionProviders;
         _typeFeatureProvider = typeFeatureProvider;
         _shellFeaturesManager = shellFeaturesManager;
@@ -87,6 +102,12 @@ public sealed class AdminController : Controller
             model.RoleEntries.Add(entry);
         }
 
+        // The AdminList shape renders the roles with the configured layout (List, Grid, ...).
+        model.List = new AdminListContext<RoleEntry>
+        {
+            Source = model.RoleEntries,
+        };
+
         return View(model);
     }
 
@@ -103,7 +124,7 @@ public sealed class AdminController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(CreateRoleViewModel model)
+    public async Task<IActionResult> Create(CreateRoleViewModel model, string submit)
     {
         if (!await _authorizationService.AuthorizeAsync(User, RolesPermissions.ManageRoles))
         {
@@ -123,6 +144,11 @@ public sealed class AdminController : Controller
             if (result.Succeeded)
             {
                 await _notifier.SuccessAsync(H["Role created successfully."]);
+
+                if (submit == SaveAndConfigureSubmitValue)
+                {
+                    return RedirectToAction(nameof(Edit), new { id = role.RoleName });
+                }
 
                 return RedirectToAction(nameof(Index));
             }
@@ -162,7 +188,7 @@ public sealed class AdminController : Controller
     }
 
     [HttpPost, ActionName(nameof(Edit))]
-    public async Task<IActionResult> EditPost(string id, string roleDescription)
+    public async Task<IActionResult> EditPost(string id, string roleDescription, string submit)
     {
         if (!await _authorizationService.AuthorizeAsync(User, RolesPermissions.ManageRoles))
         {
@@ -185,6 +211,11 @@ public sealed class AdminController : Controller
         await _roleManager.UpdateAsync(role);
 
         await _notifier.SuccessAsync(H["Role updated successfully."]);
+
+        if (submit == SaveAndContinueSubmitValue)
+        {
+            return RedirectToAction(nameof(Edit), new { id = role.RoleName });
+        }
 
         return RedirectToAction(nameof(Index));
     }
@@ -395,7 +426,29 @@ public sealed class AdminController : Controller
         };
     }
 
-    private async Task<IEnumerable<string>> GetEffectivePermissions(Role role, IEnumerable<Permission> allPermissions)
+    private async Task<ISet<string>> GetRoleGrantedPermissionsAsync(string roleName, IEnumerable<Permission> allPermissions)
+    {
+        var role = await _roleManager.FindByNameAsync(roleName) as Role;
+        if (role == null)
+        {
+            return new HashSet<string>(StringComparer.Ordinal);
+        }
+
+        var roleClaims = role.RoleClaims.Select(c => c.ToClaim()).ToArray();
+        var result = new HashSet<string>(StringComparer.Ordinal);
+
+        foreach (var permission in allPermissions)
+        {
+            if (_permissionGrantingService.IsGranted(new PermissionRequirement(permission), roleClaims))
+            {
+                result.Add(permission.Name);
+            }
+        }
+
+        return result;
+    }
+
+    private async Task<IDictionary<string, Permission>> GetEffectivePermissions(Role role, IEnumerable<Permission> allPermissions)
     {
         // Create a fake user to check the actual permissions. If the role is anonymous
         // IsAuthenticated needs to be false.
@@ -410,13 +463,13 @@ public sealed class AdminController : Controller
 
         var fakePrincipal = new ClaimsPrincipal(fakeIdentity);
 
-        var result = new List<string>();
+        var result = new Dictionary<string, Permission>(StringComparer.Ordinal);
 
         foreach (var permission in allPermissions)
         {
             if (await _authorizationService.AuthorizeAsync(fakePrincipal, permission))
             {
-                result.Add(permission.Name);
+                result[permission.Name] = permission;
             }
         }
 
@@ -452,6 +505,25 @@ public sealed class AdminController : Controller
                 .ToArray();
         }
 
+        var isAnonymousRole = string.Equals(role.RoleName, OrchardCoreConstants.Roles.Anonymous, StringComparison.OrdinalIgnoreCase);
+        var isAuthenticatedRole = string.Equals(role.RoleName, OrchardCoreConstants.Roles.Authenticated, StringComparison.OrdinalIgnoreCase);
+
+        ISet<string> anonymousGrantedPermissions = new HashSet<string>(StringComparer.Ordinal);
+        ISet<string> authenticatedGrantedPermissions = new HashSet<string>(StringComparer.Ordinal);
+
+        if (!isAdminRole && !isAnonymousRole)
+        {
+            // Anonymous role permissions are always effective for authenticated users too,
+            // so show their source even when editing the Authenticated role.
+            anonymousGrantedPermissions = await GetRoleGrantedPermissionsAsync(OrchardCoreConstants.Roles.Anonymous, allPermissions);
+
+            if (!isAuthenticatedRole)
+            {
+                // Skip Authenticated role attribution when editing that role itself.
+                authenticatedGrantedPermissions = await GetRoleGrantedPermissionsAsync(OrchardCoreConstants.Roles.Authenticated, allPermissions);
+            }
+        }
+
         return new RolePermissionsViewModel
         {
             IsAdminRole = isAdminRole,
@@ -461,11 +533,13 @@ public sealed class AdminController : Controller
                 .Select(c => c.ClaimValue)
                 .ToHashSet(StringComparer.Ordinal),
             RoleCategoryPermissions = isAdminRole
-                ? new Dictionary<PermissionGroupKey, IEnumerable<Permission>>()
+                ? null
                 : installedPermissions,
             EffectivePermissions = isAdminRole
-                ? []
+                ? null
                 : await GetEffectivePermissions(role, allPermissions),
+            AnonymousGrantedPermissions = anonymousGrantedPermissions,
+            AuthenticatedGrantedPermissions = authenticatedGrantedPermissions,
         };
     }
 }

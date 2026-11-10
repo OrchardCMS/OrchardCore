@@ -1,0 +1,9 @@
+[
+  {
+    "action": "parcel",
+    "name": "recipes-index",
+    "source": "Assets/ts/recipes-index.ts",
+    "dest": "wwwroot/Scripts/recipes-index/",
+    "tags": ["admin", "dashboard", "js"]
+  }
+]

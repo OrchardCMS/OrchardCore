@@ -16,6 +16,7 @@ public static class ServiceExtensions
             .AddCommands()
 
             .AddSecurity()
+            .AddApiProblemDetails()
             .AddMvc()
             .AddIdGeneration()
             .AddEmailAddressValidator()

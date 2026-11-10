@@ -11,7 +11,7 @@ namespace OrchardCore.Contents.Services;
 
 public sealed class DefaultContentsAdminListQueryService : IContentsAdminListQueryService
 {
-    private static readonly string[] _operators = ["OR", "AND", "||", "&&"];
+    private static readonly string[] s_operators = ["OR", "AND", "||", "&&"];
 
     private readonly ISession _session;
     private readonly IServiceProvider _serviceProvider;
@@ -56,7 +56,7 @@ public sealed class DefaultContentsAdminListQueryService : IContentsAdminListQue
 
                 var value = defaultTermNode.ToString();
                 if (_contentsAdminListFilterOptions.UseExactMatch
-                    && !_operators.Any(op => value.Contains(op, StringComparison.Ordinal)))
+                    && !s_operators.Any(op => value.Contains(op, StringComparison.Ordinal)))
                 {
                     // Use an unary operator based on a full quoted string.
                     defaultOperator = new UnaryNode(value.Trim('"'), OperateNodeQuotes.Double);
@@ -88,7 +88,9 @@ public sealed class DefaultContentsAdminListQueryService : IContentsAdminListQue
         await _contentsAdminListFilters
             .InvokeAsync((filter, model, query, updater) => filter.FilterAsync(model, query, updater), model, query, updater, _logger);
 
-        if (hasFilterResult && defaultOperator != defaultTermNode?.Operation)
+        if (hasFilterResult &&
+            defaultTermNode is not null &&
+            (defaultTermName != defaultTermNode?.TermName || defaultOperator != defaultTermNode?.Operation))
         {
             // Restore the original 'defaultTermNode'.
             model.FilterResult.TryRemove(defaultTermName);

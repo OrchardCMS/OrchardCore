@@ -2,16 +2,108 @@
     --oc-mde-zindex: var(--oc-editor-fullscreen) !important;
 }
 
-.CodeMirror {
+// 'html' outranks codemirror.css, which pages that add editors later (the workflow designer's panels) load after
+// this stylesheet: otherwise its white background and black text win in dark mode.
+html .CodeMirror {
     height: auto;
     border: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color);
     background-color: var(--bs-body-bg);
     color: var(--bs-body-color);
 }
 
-.CodeMirror-gutters {
+html .CodeMirror-gutters {
+    border-right-color: var(--bs-border-color);
     background-color: var(--bs-secondary-bg);
     color: var(--bs-secondary-color);
+}
+
+html .CodeMirror-linenumber {
+    color: var(--bs-secondary-color);
+}
+
+html .CodeMirror-cursor {
+    border-left-color: var(--bs-body-color);
+}
+
+// The token colors of the default theme are made for a light background.
+[data-bs-theme="dark"] {
+    .CodeMirror-selected {
+        background: rgba(var(--bs-primary-rgb), 0.25);
+    }
+
+    .CodeMirror-focused .CodeMirror-selected {
+        background: rgba(var(--bs-primary-rgb), 0.35);
+    }
+
+    .cm-s-default {
+        .cm-header,
+        .cm-def,
+        .cm-attribute,
+        .cm-link {
+            color: #82aaff;
+        }
+
+        .cm-quote,
+        .cm-tag {
+            color: #7fd88f;
+        }
+
+        .cm-keyword {
+            color: #c792ea;
+        }
+
+        .cm-atom,
+        .cm-builtin {
+            color: #f78c6c;
+        }
+
+        .cm-number {
+            color: #f7b267;
+        }
+
+        .cm-variable-2 {
+            color: #80cbc4;
+        }
+
+        .cm-variable-3,
+        .cm-type {
+            color: #4ec9b0;
+        }
+
+        .cm-comment {
+            color: #8b949e;
+        }
+
+        .cm-string {
+            color: #c3e88d;
+        }
+
+        .cm-string-2 {
+            color: #ffcb6b;
+        }
+
+        .cm-meta,
+        .cm-qualifier,
+        .cm-hr {
+            color: #a0a8b3;
+        }
+
+        .cm-bracket {
+            color: #d7c99a;
+        }
+
+        .cm-error {
+            color: #ff6b6b;
+        }
+    }
+
+    div.CodeMirror span.CodeMirror-matchingbracket {
+        color: #7fd88f;
+    }
+
+    div.CodeMirror span.CodeMirror-nonmatchingbracket {
+        color: #ff6b6b;
+    }
 }
 
 .CodeMirror-fullscreen {

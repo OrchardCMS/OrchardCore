@@ -41,7 +41,7 @@ public sealed class BlobFileStoreGen2Tests : BlobFileStoreTestsBase
         Assert.NotNull(await GetDirectoryInfoAsync("a/b/c"));
         Assert.NotNull(await GetDirectoryInfoAsync("a/b"));
         Assert.NotNull(await GetDirectoryInfoAsync("a"));
-        Assert.True(Store.IsHierarchicalNamespaceEnabled);
+        Assert.True(Store.Capabilities.HasHierarchicalNamespace);
     }
 
     [AzuriteFact]

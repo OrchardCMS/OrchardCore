@@ -2,6 +2,7 @@ using OrchardCore.Email;
 using OrchardCore.Email.Services;
 using OrchardCore.Email.Smtp.Services;
 using OrchardCore.Email.Workflows.Activities;
+using OrchardCore.Localization;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 
@@ -9,7 +10,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email.Workflows;
 
 public class EmailTaskTests
 {
-    private static readonly IDictionary<string, object> _emptyDictionary = new Dictionary<string, object>();
+    private static readonly IDictionary<string, object> s_emptyDictionary = new Dictionary<string, object>();
 
     [Fact]
     public async Task ExecuteTask_Default_ToAndCcAndBccAreNotSetFail()
@@ -23,6 +24,7 @@ public class EmailTaskTests
         var task = new EmailTask(
             emailService,
             new SimpleWorkflowExpressionEvaluator(),
+            new NullStringLocalizerFactory(),
             Mock.Of<IStringLocalizer<EmailTask>>(),
             HtmlEncoder.Default)
         {
@@ -33,9 +35,9 @@ public class EmailTaskTests
         var executionContext = new WorkflowExecutionContext(
             new WorkflowType(),
             new Workflow(),
-            _emptyDictionary,
-            _emptyDictionary,
-            _emptyDictionary,
+            s_emptyDictionary,
+            s_emptyDictionary,
+            s_emptyDictionary,
             [],
             default,
             []);
@@ -50,7 +52,7 @@ public class EmailTaskTests
 
     private static DefaultEmailService CreateSmtpService(SmtpOptions smtpOptions)
     {
-        var options = new Mock<IOptions<SmtpOptions>>();
+        var options = new Mock<IOptionsMonitor<SmtpOptions>>();
         var logger = new Mock<ILogger<SmtpEmailProvider>>();
         var logger2 = new Mock<ILogger<DefaultEmailService>>();
 
@@ -61,7 +63,7 @@ public class EmailTaskTests
         emailValidator.Setup(x => x.Validate(It.IsAny<string>()))
             .Returns(true);
 
-        options.Setup(o => o.Value)
+        options.Setup(o => o.CurrentValue)
             .Returns(smtpOptions);
 
         var smtp = new SmtpEmailProvider(options.Object, emailValidator.Object, logger.Object, localizer.Object);

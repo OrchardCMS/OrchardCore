@@ -33,100 +33,55 @@
     </div>
 </div>
 
-<script at="Foot">
-    (function () {
-        const list = document.getElementById('@methodsHtmlId')
+@if (Model.TypePreferences.Count > 0)
+{
+    var typeMethodsName = Html.NameFor(x => x.TypeMethods);
+    var typeMethodsId = Html.IdFor(x => x.TypeMethods);
 
-        const getMouseOffset = (evt) => {
-            const targetRect = evt.target.getBoundingClientRect()
-            const offset = {
-                x: evt.pageX - targetRect.left,
-                y: evt.pageY - targetRect.top
-            }
-            return offset
-        }
+    <div class="ocat-wrapper">
+        <label class="ocat-label">@T["Notification Types"]</label>
+        <div class="ocat-end">
+            <span class="hint">@T["Choose how you receive each type of notification. A method turned off above stays off for every type."]</span>
+            <div class="table-responsive">
+                <table class="table table-sm align-middle mb-0" id="@typeMethodsId">
+                    <thead>
+                        <tr>
+                            <th scope="col">@T["Type"]</th>
+                            @foreach (var method in Model.AvailableMethods)
+                            {
+                                <th scope="col" class="text-center">@method.Text</th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var type in Model.TypePreferences)
+                        {
+                            <tr>
+                                <th scope="row" class="fw-normal">
+                                    @type.DisplayName
+                                    @if (!string.IsNullOrEmpty(type.Description))
+                                    {
+                                        <span class="hint d-block">@type.Description</span>
+                                    }
+                                </th>
+                                @foreach (var method in Model.AvailableMethods)
+                                {
+                                    var htmlId = $"{typeMethodsId}_{type.Name}_{method.Value}";
 
-        const getElementVerticalCenter = (el) => {
-            const rect = el.getBoundingClientRect()
-            return (rect.bottom - rect.top) / 2
-        }
+                                    <td class="text-center">
+                                        <div class="form-check d-inline-block">
+                                            <input class="form-check-input" type="checkbox" name="@($"{typeMethodsName}[{type.Name}]")" value="@method.Value" id="@htmlId" @(type.EnabledMethods.Contains(method.Value, StringComparer.OrdinalIgnoreCase) ? "checked" : null)>
+                                            <label class="form-check-label visually-hidden" for="@htmlId">@T["Receive {0} with {1}", type.DisplayName, method.Text]</label>
+                                        </div>
+                                    </td>
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
 
-        const appendPlaceholder = (evt, idx) => {
-            evt.preventDefault()
-            if (idx === dragIndex) {
-                return
-            }
-
-            const offset = getMouseOffset(evt)
-            const middleY = getElementVerticalCenter(evt.target)
-            const placeholder = list.children[dragIndex]
-
-            if (offset.y > middleY) {
-                list.insertBefore(evt.target, placeholder)
-            } else if (list.children[idx + 1]) {
-                list.insertBefore(evt.target.nextSibling || evt.target, placeholder)
-            }
-            return
-        }
-
-        function sortable(rootEl, onUpdate) {
-            var dragEl;
-
-            // Making all siblings movable
-            [].slice.call(rootEl.children).forEach(function (itemEl) {
-                itemEl.draggable = true;
-            });
-
-            // Function responsible for sorting
-            function _onDragOver(evt) {
-                evt.preventDefault();
-                evt.dataTransfer.dropEffect = 'move';
-
-                var target = evt.target;
-                if (target && target !== dragEl) {
-                    // Sorting
-                    const offset = getMouseOffset(evt)
-                    const middleY = getElementVerticalCenter(evt.target)
-
-                    if (offset.y > middleY) {
-                        rootEl.insertBefore(dragEl, target.nextSibling)
-                    } else {
-                        rootEl.insertBefore(dragEl, target)
-                    }
-                }
-            }
-
-            // End of sorting
-            function _onDragEnd(evt) {
-                evt.preventDefault();
-
-                dragEl.classList.remove('ghost');
-                rootEl.removeEventListener('dragover', _onDragOver, false);
-                rootEl.removeEventListener('dragend', _onDragEnd, false);
-
-                // Notification about the end of sorting
-                onUpdate(dragEl);
-            }
-
-            // Sorting starts
-            rootEl.addEventListener('dragstart', function (evt) {
-                dragEl = evt.target; // Remembering an element that will be moved
-
-                // Limiting the movement type
-                evt.dataTransfer.effectAllowed = 'move';
-                evt.dataTransfer.setData('Text', dragEl.textContent);
-
-                // Subscribing to the events at dnd
-                rootEl.addEventListener('dragover', _onDragOver, false);
-                rootEl.addEventListener('dragend', _onDragEnd, false);
-                setTimeout(function () {
-                    // If this action is performed without setTimeout, then
-                    // the moved object will be of this class.
-                    dragEl.classList.add('ghost');
-                }, 0)
-            }, false);
-        }
-
-        sortable(list);
-    })();
-</script>
+<script asp-src="~/OrchardCore.Notifications/Scripts/user-notification-preferences-part/user-notification-preferences-part.min.js" debug-src="~/OrchardCore.Notifications/Scripts/user-notification-preferences-part/user-notification-preferences-part.js" at="Foot" type="module"></script>

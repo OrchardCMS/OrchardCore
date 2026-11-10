@@ -44,12 +44,12 @@ public sealed class ContentPickerFieldDisplayDriver : ContentFieldDisplayDriver<
 
     public override IDisplayResult Display(ContentPickerField field, BuildFieldDisplayContext fieldDisplayContext)
     {
-        return Initialize<DisplayContentPickerFieldViewModel>(GetDisplayShapeType(fieldDisplayContext), model =>
+        return Initialize<DisplayContentPickerFieldViewModel, ContentPickerField, BuildFieldDisplayContext> (GetDisplayShapeType(fieldDisplayContext), static (model, field, fieldDisplayContext) =>
         {
             model.Field = field;
             model.Part = fieldDisplayContext.ContentPart;
             model.PartFieldDefinition = fieldDisplayContext.PartFieldDefinition;
-        })
+        }, field, fieldDisplayContext)
         .Location(OrchardCoreConstants.DisplayType.Detail, "Content")
         .Location(OrchardCoreConstants.DisplayType.Summary, "Content");
     }
@@ -84,7 +84,7 @@ public sealed class ContentPickerFieldDisplayDriver : ContentFieldDisplayDriver<
                     {
                         Id = contentItemId,
                         DisplayText = await _templateManager.RenderStringAsync(settings.TitlePattern, NullEncoder.Default, contentItem,
-                            new Dictionary<string, FluidValue>() { [nameof(ContentItem)] = new ObjectValue(contentItem) }),
+                            new Dictionary<string, FluidValue>() { [nameof(ContentItem)] = ObjectValue.Create(contentItem) }),
                         HasPublished = await _contentManager.HasPublishedVersionAsync(contentItem),
                         IsEditable = await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext!.User, CommonPermissions.EditContent, contentItem),
                         IsViewable = await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext!.User, CommonPermissions.ViewContent, contentItem),

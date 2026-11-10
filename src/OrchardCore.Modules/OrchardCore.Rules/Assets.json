@@ -10,5 +10,19 @@
     "name": "rules",
     "source": "Assets/js/rules.js",
     "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "javascript-condition",
+    "source": "Assets/ts/javascript-condition.ts",
+    "dest": "wwwroot/Scripts/javascript-condition/",
+    "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "conditions-modal",
+    "source": "Assets/ts/conditions-modal.ts",
+    "dest": "wwwroot/Scripts/conditions-modal/",
+    "tags": ["admin", "dashboard", "js"]
   }
 ]

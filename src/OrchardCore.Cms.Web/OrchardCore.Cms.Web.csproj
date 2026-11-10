@@ -36,6 +36,14 @@
     <MakeDir Directories="$(MSBuildProjectDirectory)\wwwroot;$(MSBuildProjectDirectory)\Localization" />
   </Target>
 
+  <!--
+    Necessary as we reference the Projects and not the Packages, which declare their configuration schema as a 'JsonSchemaSegment'.
+    Provides IntelliSense and validation for the configuration sections in the 'appsettings.json' files when using Visual Studio.
+  -->
+  <ItemGroup>
+    <JsonSchemaSegment Include="..\OrchardCore\*\ConfigurationSchema.json;..\OrchardCore.Modules\*\ConfigurationSchema.json" FilePathPattern="appsettings\..*json" />
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Condition="'$(RazorRuntimeCompilation)' == 'true'" />
   </ItemGroup>
@@ -43,6 +51,7 @@
   <ItemGroup>
     <ProjectReference Include="..\OrchardCore\OrchardCore.Application.Cms.Targets\OrchardCore.Application.Cms.Targets.csproj" />
     <ProjectReference Include="..\OrchardCore\OrchardCore.Logging.NLog\OrchardCore.Logging.NLog.csproj" />
+    <ProjectReference Include="..\OrchardCore\OrchardCore.OpenTelemetry\OrchardCore.OpenTelemetry.csproj" />
   </ItemGroup>
 
   <!-- Necessary as we reference the Project and not the Package -->

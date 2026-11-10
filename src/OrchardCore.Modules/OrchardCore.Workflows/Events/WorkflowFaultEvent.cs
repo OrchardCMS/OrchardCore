@@ -1,27 +1,36 @@
 using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
+using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Events;
 
-public class WorkflowFaultEvent : EventActivity
+public class WorkflowFaultEvent : EventActivity, IActivityProvidedValues, IActivityDescription
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
     protected readonly IStringLocalizer<WorkflowFaultEvent> S;
     private readonly IWorkflowScriptEvaluator _scriptEvaluator;
 
     public WorkflowFaultEvent(
+        IStringLocalizerFactory localizerFactory,
         IStringLocalizer<WorkflowFaultEvent> stringLocalizer,
         IWorkflowScriptEvaluator scriptEvaluator)
     {
+        _localizerFactory = localizerFactory;
         S = stringLocalizer;
         _scriptEvaluator = scriptEvaluator;
     }
 
     public override string Name => nameof(WorkflowFaultEvent);
-    public override LocalizedString DisplayText => S["Catch Workflow Fault Event"];
-    public override LocalizedString Category => S["Background"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<WorkflowFaultEvent>("Catch Workflow Fault Event");
+
+    public static LocalizationSource CategoryName => ActivityCategoryLocalizationSources.Background;
+
+    public override LocalizedString DisplayText => _localizerFactory.Localize(DisplayName);
+    public override LocalizedString Category => _localizerFactory.Localize(CategoryName);
 
     public WorkflowExpression<bool> ErrorFilter
     {
@@ -30,14 +39,10 @@ public class WorkflowFaultEvent : EventActivity
     }
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        return Outcomes(S["Done"]);
-    }
+        => Outcome(S["Done"]);
 
     public override ActivityExecutionResult Resume(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        return Outcomes("Done");
-    }
+        => Outcome("Done");
 
     public override async Task<bool> CanExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
@@ -72,4 +77,9 @@ return result;";
 
         return sample;
     }
+
+    private static readonly ActivityProvidedValue[] s_providedValues = [new ActivityProvidedValue { Source = WorkflowValueSource.Input, Name = WorkflowFaultModel.WorkflowFaultInputKey, TypeName = "object", Description = LocalizationSource.Create<WorkflowFaultEvent>("The fault the workflow caught."), Members = WorkflowValueMembers.WorkflowFault }];
+
+    public IEnumerable<ActivityProvidedValue> GetProvidedValues()
+        => s_providedValues;
 }

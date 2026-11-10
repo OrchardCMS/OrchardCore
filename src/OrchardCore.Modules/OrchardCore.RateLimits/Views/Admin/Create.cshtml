@@ -1,6 +1,10 @@
 @model OrchardCore.RateLimits.ViewModels.RateLimitPolicyEditViewModel
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["New Rate Limit Policy"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="RateLimitsCreate" title="@T["New Rate Limit Policy"]">
+        <breadcrumb-item id="RateLimits" action="Index" controller="Admin" area="OrchardCore.RateLimits" permission="@RateLimitsPermissions.ManageRateLimits.Name">@T["Rate Limit Policies"]</breadcrumb-item>
+    </breadcrumb>
+</zone>
 
 <form asp-action="Create" method="post" class="no-multisubmit">
     @Html.ValidationSummary()
@@ -14,12 +18,8 @@
         </div>
     </div>
 
-    <div class="ocat-wrapper mt-4">
-        <div class="ocat-end-offset">
-            <div class="d-flex gap-1">
-                <button class="btn btn-primary" type="submit">@T["Save and Continue"]</button>
-                <a asp-action="Index" class="btn btn-secondary">@T["Cancel"]</a>
-            </div>
-        </div>
+    <div class="action-bar-bottom">
+        <button class="btn btn-primary" type="submit">@T["Save and Continue"]</button>
+        <a asp-action="Index" class="btn btn-secondary">@T["Cancel"]</a>
     </div>
 </form>

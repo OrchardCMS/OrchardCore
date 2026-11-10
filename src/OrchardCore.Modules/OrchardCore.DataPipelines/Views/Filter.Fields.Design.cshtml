@@ -1,0 +1,10 @@
+@model FilterStepViewModel
+
+@if (string.IsNullOrWhiteSpace(Model.Condition))
+{
+    <span class="text-muted">@T["Enter a condition"]</span>
+}
+else
+{
+    <code class="text-break">@Model.Condition</code>
+}

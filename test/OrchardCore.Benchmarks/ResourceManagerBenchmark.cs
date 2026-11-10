@@ -11,12 +11,12 @@ namespace OrchardCore.Benchmarks;
 [MemoryDiagnoser]
 public class ResourceManagerBenchmark
 {
-    private static readonly ShellFileVersionProvider _fileVersionProvider = new(
+    private static readonly ShellFileVersionProvider s_fileVersionProvider = new(
         [],
         new FakeWebHostEnvironment(),
         new MemoryCache(Options.Create(new MemoryCacheOptions())));
 
-    private static readonly OptionsWrapper<ResourceManagementOptions> _options;
+    private static readonly OptionsWrapper<ResourceManagementOptions> s_options;
 
     static ResourceManagerBenchmark()
     {
@@ -38,7 +38,7 @@ public class ResourceManagerBenchmark
         dependency2.DefineStyle("dependency2").SetUrl("file://dependency2.txt").SetVersion("1.0.0");
         options.ResourceManifests.Add(dependency2);
 
-        _options = new OptionsWrapper<ResourceManagementOptions>(options);
+        s_options = new OptionsWrapper<ResourceManagementOptions>(options);
     }
 
     [Benchmark]
@@ -47,8 +47,8 @@ public class ResourceManagerBenchmark
 #pragma warning restore CA1822 // Mark members as static
     {
         var manager = new ResourceManager(
-            options: _options,
-            fileVersionProvider: _fileVersionProvider);
+            options: s_options,
+            fileVersionProvider: s_fileVersionProvider);
 
         manager.RegisterResource("stylesheet", "some1").UseVersion("1.0.0").ShouldAppendVersion(true);
         manager.RegisterResource("stylesheet", "some2").UseVersion("1.0.0").ShouldAppendVersion(true);

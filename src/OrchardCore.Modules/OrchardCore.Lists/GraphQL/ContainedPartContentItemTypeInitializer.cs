@@ -39,7 +39,21 @@ internal sealed class ContainedPartContentItemTypeInitializer : IContentItemType
                 schema.RegisterType(fieldType);
             }
 
-            contentItemType.Field<ContainedQueryObjectType>(type.Name.ToFieldName())
+            var parentFieldName = type.Name.ToFieldName();
+            if (contentItemType.Fields.Any(f => f.Name == parentFieldName))
+            {
+                var i = 1;
+                string fieldName;
+                do
+                {
+                    fieldName = $"{parentFieldName}_{i}";
+                    i++;
+                } while (contentItemType.Fields.Any(f => f.Name == fieldName));
+
+                parentFieldName = fieldName;
+            }
+
+            contentItemType.Field<ContainedQueryObjectType>(parentFieldName)
                 .Description(S["The parent content item of type {0}.", type.Name])
                 .Type(fieldType)
                 .Resolve(context =>

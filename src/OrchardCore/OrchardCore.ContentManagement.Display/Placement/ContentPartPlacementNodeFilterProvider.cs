@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using System.Text.Json.Nodes;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
@@ -13,20 +14,23 @@ public class ContentPartPlacementNodeFilterProvider : ContentPlacementParseFilte
     public bool IsMatch(ShapePlacementContext context, object expression)
     {
         var contentItem = GetContent(context);
+
         if (contentItem is null)
         {
             return false;
         }
 
-        var jsonNode = JNode.FromObject(expression);
-        if (jsonNode is JsonArray jsonArray)
+        var contentParts = GetValues(expression);
+
+        for (var i = 0; i < contentParts.Length; i++)
         {
-            return jsonArray.Any(p => contentItem.Has(p.Value<string>()));
+            if (contentItem.Has(contentParts[i]))
+            {
+                return true;
+            }
         }
-        else
-        {
-            return contentItem.Has(jsonNode.Value<string>());
-        }
+
+        return false;
     }
 }
 
@@ -37,34 +41,35 @@ public class ContentTypePlacementNodeFilterProvider : ContentPlacementParseFilte
     public bool IsMatch(ShapePlacementContext context, object expression)
     {
         var contentItem = GetContent(context);
+
         if (contentItem is null)
         {
             return false;
         }
 
-        IEnumerable<string> contentTypes;
+        var contentTypes = GetValues(expression);
 
-        var jsonNode = JNode.FromObject(expression);
-        if (jsonNode is JsonArray jsonArray)
+        for (var i = 0; i < contentTypes.Length; i++)
         {
-            contentTypes = jsonArray.Values<string>();
-        }
-        else
-        {
-            contentTypes = new string[] { jsonNode.Value<string>() };
-        }
+            var ct = contentTypes[i];
 
-        return contentTypes.Any(ct =>
-        {
             if (ct.EndsWith('*'))
             {
-                var prefix = ct[..^1];
+                var prefix = ct.AsSpan(0, ct.Length - 1);
 
-                return (contentItem.ContentType ?? "").StartsWith(prefix, StringComparison.OrdinalIgnoreCase) || (GetStereotype(context) ?? "").StartsWith(prefix, StringComparison.OrdinalIgnoreCase);
+                if ((contentItem.ContentType ?? "").AsSpan().StartsWith(prefix, StringComparison.OrdinalIgnoreCase) ||
+                    (GetStereotype(context) ?? "").AsSpan().StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
             }
+            else if (contentItem.ContentType == ct || GetStereotype(context) == ct)
+            {
+                return true;
+            }
+        }
 
-            return contentItem.ContentType == ct || GetStereotype(context) == ct;
-        });
+        return false;
     }
 
     private static string GetStereotype(ShapePlacementContext context)
@@ -78,6 +83,10 @@ public class ContentTypePlacementNodeFilterProvider : ContentPlacementParseFilte
 
 public class ContentPlacementParseFilterProviderBase
 {
+    // The filter expressions come from the placement files and live as long as the shape tables, so they
+    // are parsed once instead of being converted to JSON on each placement evaluation.
+    private static readonly ConditionalWeakTable<object, string[]> s_values = [];
+
     protected static bool HasContent(ShapePlacementContext context)
     {
         var shape = context.ZoneShape as Shape;
@@ -95,5 +104,42 @@ public class ContentPlacementParseFilterProviderBase
         shape.TryGetProperty("ContentItem", out ContentItem contentItem);
 
         return contentItem;
+    }
+
+    /// <summary>
+    /// Gets the string values of a filter expression, which can be a single value or an array of values.
+    /// </summary>
+    protected static string[] GetValues(object expression)
+    {
+        if (expression is null)
+        {
+            return [];
+        }
+
+        if (expression is string value)
+        {
+            return [value];
+        }
+
+        return s_values.GetValue(expression, static expression => ParseValues(expression));
+    }
+
+    private static string[] ParseValues(object expression)
+    {
+        if (expression is IEnumerable<string> values)
+        {
+            return values.Where(v => v != null).ToArray();
+        }
+
+        var jsonNode = JNode.FromObject(expression);
+
+        if (jsonNode is JsonArray jsonArray)
+        {
+            return jsonArray.Values<string>().Where(v => v != null).ToArray();
+        }
+
+        var jsonValue = jsonNode?.Value<string>();
+
+        return jsonValue is null ? [] : [jsonValue];
     }
 }

@@ -1,6 +1,7 @@
 using OrchardCore.FileStorage;
 using OrchardCore.Infrastructure.Html;
 using OrchardCore.Media.Core;
+using OrchardCore.Media.Core.Helpers;
 using OrchardCore.Media.Shortcodes;
 using OrchardCore.ResourceManagement;
 using OrchardCore.Shortcodes.Services;
@@ -40,12 +41,20 @@ public class ImageShortcodeTests
         var sanitizerOptions = new HtmlSanitizerOptions();
         sanitizerOptions.Configure.Add(opt => opt.AllowedAttributes.Add("class"));
 
+        var stringLocalizerMock = new Mock<IStringLocalizer<FileSizeHelper>>();
+        stringLocalizerMock.Setup(x => x[It.IsAny<string>()])
+            .Returns((string key) => new LocalizedString(key, key));
+
+        stringLocalizerMock.Setup(x => x[It.IsAny<string>(), It.IsAny<object[]>()])
+            .Returns((string key, object[] args) => new LocalizedString(key, string.Format(key, args)));
+
         var fileStore = new DefaultMediaFileStore(
             Mock.Of<IFileStore>(),
             "/media",
             cdnBaseUrl,
             [],
             [],
+            new FileSizeHelper(stringLocalizerMock.Object),
             Mock.Of<ILogger<DefaultMediaFileStore>>());
 
         var fileVersionProvider = Mock.Of<IFileVersionProvider>();

@@ -1,0 +1,14 @@
+@*
+    The status filter of the background tasks admin list, passed to the AdminListToolbar as its 'Actions'
+    so it renders at the end of the toolbar next to the bulk actions.
+*@
+@using Microsoft.AspNetCore.Mvc.Rendering
+@using OrchardCore.BackgroundTasks.ViewModels
+
+@{
+    var options = (AdminIndexOptions)Model.Options;
+}
+
+<div class="btn-group filter">
+    <select asp-for="@options.Status" name="Options.Status" asp-items="@options.Statuses" class="selectpicker show-tick me-2" data-header="@T["Filter by status"]" data-width="fit" data-selected-text-format="static" data-dropdown-align-right="true" title="@T["Status"]" data-style="btn-sm"></select>
+</div>

@@ -35,7 +35,7 @@ Setup recipes (with `"issetuprecipe": true`) appear in the setup screen's recipe
   "variables": {
     "homeContentItemId": "[js:uuid()]",
     "menuContentItemId": "[js:uuid()]",
-    "adminUrlPrefix": "[js: configuration('OrchardCore_Admin:AdminUrlPrefix', 'Admin')]"
+    "adminUrlPrefix": "[js: configuration('Admin:AdminUrlPrefix', 'Admin')]"
   },
 
   "steps": [

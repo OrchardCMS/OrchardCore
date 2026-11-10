@@ -1,5 +1,6 @@
-using Microsoft.Extensions.Localization;
+using System.Text.Json.Serialization;
 using OrchardCore.Deployment;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Settings.Deployment;
 
@@ -8,14 +9,10 @@ namespace OrchardCore.Settings.Deployment;
 /// </summary>
 public class SiteSettingsPropertyDeploymentStep<TModel> : DeploymentStep where TModel : class, new()
 {
-    public SiteSettingsPropertyDeploymentStep()
-    {
-        Name = typeof(TModel).Name + "_SiteSettingsPropertyDeploymentStep";
-    }
+    private static readonly string s_name = typeof(TModel).Name + "_SiteSettingsPropertyDeploymentStep";
 
-    public SiteSettingsPropertyDeploymentStep(IStringLocalizer<SiteSettingsPropertyDeploymentStep<TModel>> S)
-        : this()
-    {
-        Category = S["Configuration"];
-    }
+    public override string Name => s_name;
+
+    [JsonIgnore]
+    public override LocalizationSource Category => CommonLocalizationSources.Configuration;
 }

@@ -9,6 +9,7 @@ using OrchardCore.Admin;
 using OrchardCore.Deployment.Indexes;
 using OrchardCore.Deployment.ViewModels;
 using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Mvc.Utilities;
@@ -32,6 +33,7 @@ public sealed class DeploymentPlanController : Controller
     private readonly INotifier _notifier;
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly IShapeFactory _shapeFactory;
+    private readonly IStringLocalizerFactory _stringLocalizerFactory;
 
     internal readonly IStringLocalizer S;
     internal readonly IHtmlLocalizer H;
@@ -43,6 +45,7 @@ public sealed class DeploymentPlanController : Controller
         ISession session,
         IOptions<PagerOptions> pagerOptions,
         IShapeFactory shapeFactory,
+        IStringLocalizerFactory stringLocalizerFactory,
         IStringLocalizer<DeploymentPlanController> stringLocalizer,
         IHtmlLocalizer<DeploymentPlanController> htmlLocalizer,
         INotifier notifier,
@@ -56,11 +59,14 @@ public sealed class DeploymentPlanController : Controller
         _notifier = notifier;
         _updateModelAccessor = updateModelAccessor;
         _shapeFactory = shapeFactory;
+        _stringLocalizerFactory = stringLocalizerFactory;
         S = stringLocalizer;
         H = htmlLocalizer;
     }
 
-    public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
+    public async Task<IActionResult> Index(
+        ContentOptions options,
+        PagerParameters pagerParameters)
     {
         if (!await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.ManageDeploymentPlan))
         {
@@ -72,7 +78,7 @@ public sealed class DeploymentPlanController : Controller
             return Forbid();
         }
 
-        var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
+        var pager = new Pager(pagerParameters, _pagerOptions);
 
         var deploymentPlans = _session.Query<DeploymentPlan, DeploymentPlanIndex>();
 
@@ -110,6 +116,13 @@ public sealed class DeploymentPlanController : Controller
         [
             new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Delete)),
         ];
+
+        // The AdminList shape renders the plans with the configured layout (List, Grid, ...).
+        model.List = new AdminListContext<DeploymentPlanEntry>
+        {
+            Source = model.DeploymentPlans,
+            Pager = model.Pager,
+        };
 
         return View(model);
     }
@@ -181,7 +194,7 @@ public sealed class DeploymentPlanController : Controller
             var step = factory.Create();
             var thumbnail = await _displayManager.BuildDisplayAsync(step, _updateModelAccessor.ModelUpdater, "Thumbnail");
             thumbnail.Properties["DeploymentStep"] = step;
-            var category = step.Category?.Value ?? string.Empty;
+            var category = _stringLocalizerFactory.Localize(step.Category)?.Value ?? string.Empty;
 
             thumbnails.Add(new DisplayDeploymentPlanThumbnailViewModel
             {

@@ -37,7 +37,7 @@ public sealed class FixedWindowRateLimiterSource : RateLimiterSourceBase<FixedWi
     protected override RateLimitPartition<string> CreatePartition(string policyName, HttpContext context, FixedWindowRateLimiterData model)
     {
         return RateLimitPartition.GetFixedWindowLimiter(
-            partitionKey: $"{policyName}:{SourceName}:{RateLimitPartitionHelpers.GetRemoteIpAddress(context)}",
+            partitionKey: $"{policyName}:{SourceName}:{RateLimitPartitionHelpers.GetClientPartitionKey(context)}",
             factory: _ => new FixedWindowRateLimiterOptions
             {
                 PermitLimit = model.PermitLimit,

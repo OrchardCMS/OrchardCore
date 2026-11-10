@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>OrchardCore.DataPipelines</RootNamespace>
+    <!-- NuGet properties-->
+    <Title>OrchardCore Data Pipelines Abstractions</Title>
+    <Description>$(OCCMSDescription)
+
+      Abstractions to define data pipelines that read data, transform it and deliver it, and to write the steps they
+      are made of.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS DataPipelines ETL</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OrchardCore.DataSources.Abstractions\OrchardCore.DataSources.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.Infrastructure.Abstractions\OrchardCore.Infrastructure.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

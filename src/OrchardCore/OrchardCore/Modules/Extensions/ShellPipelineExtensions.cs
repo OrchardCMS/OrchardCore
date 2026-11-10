@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Scope;
+using OrchardCore.Telemetry;
 
 namespace OrchardCore.Modules;
 
@@ -15,21 +16,25 @@ public static class ShellPipelineExtensions
 {
     private const string EndpointRouteBuilder = "__EndpointRouteBuilder";
 
-    private static readonly ConcurrentDictionary<string, SemaphoreSlim> _semaphores = new();
+    private static readonly ConcurrentDictionary<string, SemaphoreSlim> s_semaphores = new();
 
     /// <summary>
     /// Builds the tenant pipeline atomically.
     /// </summary>
     public static async Task BuildPipelineAsync(this ShellContext context)
     {
-        var semaphore = _semaphores.GetOrAdd(context.Settings.Name, _ => new SemaphoreSlim(1));
+        var semaphore = s_semaphores.GetOrAdd(context.Settings.Name, _ => new SemaphoreSlim(1));
 
         await semaphore.WaitAsync();
         try
         {
             if (!context.HasPipeline())
             {
-                context.Pipeline = await context.BuildPipelineInternalAsync();
+                await OrchardCoreTelemetry.MeasureTenantOperationAsync(
+                    "Build tenant pipeline",
+                    OrchardCoreTelemetry.TenantPipelineDuration,
+                    context.Settings.Name,
+                    async () => context.Pipeline = await context.BuildPipelineInternalAsync());
             }
         }
         finally

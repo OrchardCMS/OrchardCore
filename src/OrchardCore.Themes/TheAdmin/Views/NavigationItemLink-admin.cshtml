@@ -1,19 +1,34 @@
+@using OrchardCore.DisplayManagement
 @using OrchardCore.Localization
 @using OrchardCore.Navigation
 @{
-    // Morphing the shape to keep Model untouched.
-    Model.Metadata.Alternates.Clear();
-    Model.Metadata.Type = "NavigationItemText";
+    // The shape is used through its static type, as it is rendered for each menu item, falling back to
+    // dynamic accesses for shapes that are not navigation items.
+    var shape = (IShape)Model;
+    var navigationItem = shape as NavigationItemViewModel;
 
-    if (Model.Id != null)
+    // Morphing the shape to keep Model untouched.
+    shape.Metadata.Alternates.Clear();
+    shape.Metadata.Type = "NavigationItemText";
+
+    if (shape.Id != null)
     {
-        Model.Metadata.Alternates.Add("NavigationItemText_Id__" + Model.Id);
+        shape.Metadata.Alternates.Add("NavigationItemText_Id__" + shape.Id);
     }
 
-    var isToggleOnlyItem = Model.HasItems && (Model.Href == null || Model.Href.ToString() == "#");
-    TagBuilder tag = Tag(Model, isToggleOnlyItem ? "button" : "a");
+    var level = navigationItem?.Level ?? (int)Model.Level;
+    var hasItems = navigationItem?.HasItems ?? (bool)Model.HasItems;
+    var href = navigationItem is not null ? navigationItem.Href : Model.Href?.ToString();
+
+    // When an item has children but no page of its own, the whole row toggles those children.
+    var isToggleOnlyItem = hasItems && (string.IsNullOrEmpty(href) || href == "#");
+
+    var hash = navigationItem is not null ? navigationItem.Hash : (string)Model.Hash;
+    var target = navigationItem is not null ? navigationItem.Target : (string)Model.Target;
+
+    TagBuilder tag = Tag(shape, isToggleOnlyItem ? "button" : "a");
     tag.Attributes["id"] = null;
-    tag.Attributes["data-admin-hash"] = Model.Hash;
+    tag.Attributes["data-admin-hash"] = hash;
 
     if (isToggleOnlyItem)
     {
@@ -21,22 +36,28 @@
     }
     else
     {
-        tag.Attributes["href"] = Model.Href;
+        tag.Attributes["href"] = navigationItem is not null ? navigationItem.Href : (string)Model.Href;
     }
 
-    if (!string.IsNullOrEmpty(Model.Target))
+    if (!string.IsNullOrEmpty(target))
     {
-        tag.Attributes["target"] = Model.Target;
+        tag.Attributes["target"] = target;
     }
-    
+
     // Extract classes that are not icons from 'Model.Classes'.
-    var notIconClasses = ((IEnumerable<string>)Model.Classes)
-        .Where(c => !c.StartsWith(NavigationConstants.CssClassPrefix, StringComparison.OrdinalIgnoreCase))
-        .ToArray();
+    string notIconClasses = null;
 
-    if (notIconClasses.Length > 0)
+    foreach (var className in shape.Classes)
     {
-        tag.Attributes["class"] = string.Join(' ', notIconClasses);
+        if (!className.StartsWith(NavigationConstants.CssClassPrefix, StringComparison.OrdinalIgnoreCase))
+        {
+            notIconClasses = notIconClasses is null ? className : notIconClasses + " " + className;
+        }
+    }
+
+    if (notIconClasses is not null)
+    {
+        tag.Attributes["class"] = notIconClasses;
     }
     else
     {
@@ -45,31 +66,32 @@
         tag.Attributes.Remove("class");
     }
 
-    tag.AddCssClass("item-label d-flex");
+    tag.AddCssClass("item-label");
 
-    if (Model.HasItems)
+    if (level == 1 && hasItems)
     {
-        tag.Attributes["data-bs-toggle"] = "collapse";
-        tag.Attributes["data-bs-target"] = "#m" + Model.GetHashCode().ToString();
-        tag.Attributes["aria-expanded"] = "false";
-        tag.Attributes["aria-controls"] = "m" + Model.GetHashCode().ToString();
-        tag.TagRenderMode = TagRenderMode.Normal;
-
-        if ((bool)Model.Selected)
-        {
-            tag.Attributes["aria-expanded"] = "true";
-        }
-        else
-        {
-            tag.Attributes["aria-expanded"] = "false";
-        }
+        tag.AddCssClass("nav-group-label");
     }
 
-    tag.InnerHtml.AppendHtml(await DisplayAsync(Model));
-
-    if (Model.HasItems)
+    if (isToggleOnlyItem)
     {
-        tag.InnerHtml.AppendHtml(Html.Raw("<div class=\"btn-nostyle\"><span class=\"collapse-icon\"><i class=\"fa-solid fa-chevron-" + (Orchard.CultureDir() == LanguageDirection.LTR ? "right" : "left") + " fa-xs chevron\"></i></span></div>"));
+        var targetId = "m" + hash;
+
+        tag.Attributes["data-bs-toggle"] = "collapse";
+        tag.Attributes["data-bs-target"] = "#" + targetId;
+        tag.Attributes["aria-controls"] = targetId;
+
+        // Nothing is expanded when the menu is rendered, the script restores what the
+        // user last left open.
+        tag.Attributes["aria-expanded"] = "false";
+        tag.TagRenderMode = TagRenderMode.Normal;
+    }
+
+    tag.InnerHtml.AppendHtml(await DisplayAsync(shape));
+
+    if (isToggleOnlyItem)
+    {
+        tag.InnerHtml.AppendHtml(Html.Raw("<span class=\"collapse-icon\"><i class=\"fa-solid fa-chevron-" + (Orchard.CultureDir() == LanguageDirection.LTR ? "right" : "left") + " chevron\" aria-hidden=\"true\"></i></span>"));
     }
 }
 

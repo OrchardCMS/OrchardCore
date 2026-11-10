@@ -1,8 +1,12 @@
 # Menu (`OrchardCore.Menu`)
 
+The **Menus** admin navigation item is available to users who can list `Menu` content items. The `Edit_Menu` content-type permission also grants `ManageMenu`, allowing users who can edit menus to manage their menu items.
+
 ## Rendering Menus
 
 Menus can be rendered in your theme using either Razor tag helpers or Liquid. This section describes how to render a menu on the frontend of your site.
+
+Link menu items and HTML menu items validate their URLs when rendered, including items created through APIs or imported from older content. Unsafe URLs, such as `javascript:` links, are replaced with an empty URL on a rendering-only copy; the stored content item is not changed.
 
 ### Razor Tag Helper
 

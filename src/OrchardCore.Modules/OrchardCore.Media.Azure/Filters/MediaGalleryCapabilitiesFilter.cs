@@ -34,13 +34,9 @@ public sealed class MediaGalleryCapabilitiesFilter : IAsyncActionFilter
             descriptor.ControllerTypeInfo == typeof(global::OrchardCore.Media.Controllers.AdminController) &&
             descriptor.ActionName == nameof(global::OrchardCore.Media.Controllers.AdminController.Index))
         {
-            if (_blobFileStore.IsHierarchicalNamespaceEnabled == true)
+            if (_blobFileStore.Capabilities.HasHierarchicalNamespace)
             {
                 await _notifier.WarningAsync(H["This site's Azure Storage account has Hierarchical Namespace (ADLS Gen2) enabled. The current Media Library has not been fully verified against Gen2 storage yet; some behavior may be affected. Full support is coming with the next Media Library update — until then, prefer a Gen1 (flat-namespace) storage account for this site."]);
-            }
-            else if (_blobFileStore.IsHierarchicalNamespaceEnabled is null)
-            {
-                await _notifier.WarningAsync(H["Unable to determine whether this site's Azure Storage account has Hierarchical Namespace (ADLS Gen2) enabled. Falling back to standard flat-namespace operations."]);
             }
         }
 

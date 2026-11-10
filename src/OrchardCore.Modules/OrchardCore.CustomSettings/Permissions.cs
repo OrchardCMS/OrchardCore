@@ -1,12 +1,16 @@
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.CustomSettings.Services;
+using OrchardCore.Localization;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.CustomSettings;
 
 public sealed class Permissions : IPermissionProvider
 {
-    private static readonly Permission _manageCustomSettings = new("ManageCustomSettings_{0}", "Manage Custom Settings - {0}", new[] { new Permission("ManageResourceSettings") });
+    private static readonly PermissionTemplate s_manageCustomSettings = new(
+        "ManageCustomSettings_{0}",
+        LocalizationSource.Create<Permissions>("Manage Custom Settings - {0}"), 
+        new Permission("ManageResourceSettings"));
 
     private readonly CustomSettingsService _customSettingsService;
 
@@ -28,16 +32,10 @@ public sealed class Permissions : IPermissionProvider
     }
 
     public static string CreatePermissionName(string name)
-        => string.Format(_manageCustomSettings.Name, name);
+        => string.Format(s_manageCustomSettings.Name, name);
 
     public static Permission CreatePermissionForType(ContentTypeDefinition type)
-    {
-        return new Permission(
-                CreatePermissionName(type.Name),
-                string.Format(_manageCustomSettings.Description, type.DisplayName),
-                _manageCustomSettings.ImpliedBy
-            );
-    }
+        => s_manageCustomSettings.CreateDynamicPermission(type.Name, type.DisplayName);
 
     public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
         => [];

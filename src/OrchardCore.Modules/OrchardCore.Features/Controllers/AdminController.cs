@@ -5,12 +5,17 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Features.Models;
 using OrchardCore.Features.Services;
 using OrchardCore.Features.ViewModels;
+using OrchardCore.Modules;
+using OrchardCore.Mvc.Utilities;
 using OrchardCore.Routing;
 
 namespace OrchardCore.Features.Controllers;
@@ -51,7 +56,9 @@ public sealed class AdminController : Controller
     }
 
     [Admin("Features/{tenant?}", "Features")]
-    public async Task<ActionResult> Features(string tenant)
+    public async Task<ActionResult> Features(
+        string tenant,
+        [FromServices] IShapeFactory shapeFactory)
     {
         if (!await _authorizationService.AuthorizeAsync(User, FeaturesPermissions.ManageFeatures))
         {
@@ -73,7 +80,79 @@ public sealed class AdminController : Controller
             viewModel.Features = await featureService.GetModuleFeaturesAsync();
         });
 
+        // The categories share one layout, so the page offers it once, beside its filters, and its lists do not
+        // carry a selector of their own.
+        viewModel.LayoutSelector = await shapeFactory.CreateAsync(AdminListConstants.LayoutSelectorShapeType, Arguments.From(new
+        {
+            ListName = FeaturesAdminList.Name,
+        }));
+
+        // The page keeps one list per category, and every list follows the configured layout.
+        foreach (var group in viewModel.Features.GroupBy(feature => feature.Descriptor.Category).OrderBy(group => group.Key))
+        {
+            var category = group.Key ?? S["Uncategorized"].Value;
+            var entries = group.OrderBy(feature => feature.Descriptor.Name)
+                .Select(feature => CreateEntry(viewModel, feature, category, tenant)).ToArray();
+            var hasSelectableFeature = entries.Any(entry => entry.IsSelectable);
+
+            // A category with nothing to select has no select-all checkbox, so it gets no toolbar at all, not even
+            // the generic one.
+            var toolbar = hasSelectableFeature
+                ? await shapeFactory.CreateAsync("FeaturesGroupToolbar", Arguments.From(new
+                {
+                    CategoryName = category,
+                    CheckboxId = $"select-all-{category.HtmlClassify()}",
+                }))
+                : null;
+
+            viewModel.Groups.Add(new FeatureGroupViewModel
+            {
+                Category = category,
+                List = new AdminListContext<FeatureEntry>
+                {
+                    Source = entries,
+                    Toolbar = toolbar,
+                    ShowLayoutSelector = false,
+                },
+            });
+        }
+
         return View(viewModel);
+    }
+
+    internal static FeatureEntry CreateEntry(FeaturesViewModel viewModel, ModuleFeature feature, string category, string tenant)
+    {
+        var descriptor = feature.Descriptor;
+        var isAlwaysEnabled = feature.IsAlwaysEnabled;
+
+        if (viewModel.IsProxy && descriptor.Id == FeaturesConstants.FeatureId)
+        {
+            isAlwaysEnabled = false;
+        }
+
+        // The features this one depends on, whether it declares them itself or reaches them through a dependency.
+        var dependencies = feature.FeatureDependencies
+            .Select(dependency => viewModel.Features.FirstOrDefault(f => f.Descriptor.Id == dependency.Id))
+            .Where(f => f != null)
+            .OrderBy(f => f.Descriptor.Name)
+            .Select(f => f.Descriptor)
+            .ToList();
+
+        var missingDependencies = feature.FeatureDependencies
+            .Where(dependency => !viewModel.Features.Any(f => f.Descriptor.Id == dependency.Id))
+            .ToList();
+
+        return new FeatureEntry
+        {
+            Feature = feature,
+            Tenant = tenant,
+            IsAlwaysEnabled = isAlwaysEnabled,
+            CanDisable = !descriptor.EnabledByDependencyOnly && !isAlwaysEnabled && category != "Core" && descriptor.Name != Application.ModuleName,
+            CanEnable = !descriptor.EnabledByDependencyOnly && missingDependencies.Count == 0 && descriptor.Id != "OrchardCore.Setup" && descriptor.Id != "OrchardCore.AutoSetup",
+            DirectDependencies = dependencies.Where(dependency => descriptor.Dependencies.Contains(dependency.Id)).ToList(),
+            IndirectDependencies = dependencies.Where(dependency => !descriptor.Dependencies.Contains(dependency.Id)).ToList(),
+            MissingDependencies = missingDependencies.ToList(),
+        };
     }
 
     [HttpPost]

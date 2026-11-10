@@ -1,0 +1,147 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Markdown\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: GraphQL/MarkdownBodyQueryObjectType.cs
+msgctxt "OrchardCore.Markdown.GraphQL.MarkdownBodyQueryObjectType"
+msgid "Content stored as Markdown. You can also query the HTML interpreted version of Markdown."
+msgstr ""
+
+#: GraphQL/MarkdownBodyQueryObjectType.cs
+msgctxt "OrchardCore.Markdown.GraphQL.MarkdownBodyQueryObjectType"
+msgid "the HTML representation of the markdown content"
+msgstr ""
+
+#: GraphQL/MarkdownBodyQueryObjectType.cs
+msgctxt "OrchardCore.Markdown.GraphQL.MarkdownBodyQueryObjectType"
+msgid "the markdown value"
+msgstr ""
+
+#: GraphQL/MarkdownFieldQueryObjectType.cs
+msgctxt "OrchardCore.Markdown.GraphQL.MarkdownFieldQueryObjectType"
+msgid "Content stored as Markdown. You can also query the HTML interpreted version of Markdown."
+msgstr ""
+
+#: GraphQL/MarkdownFieldQueryObjectType.cs
+msgctxt "OrchardCore.Markdown.GraphQL.MarkdownFieldQueryObjectType"
+msgid "the HTML representation of the markdown content"
+msgstr ""
+
+#: GraphQL/MarkdownFieldQueryObjectType.cs
+msgctxt "OrchardCore.Markdown.GraphQL.MarkdownFieldQueryObjectType"
+msgid "the markdown value"
+msgstr ""
+
+#: Settings/MarkdownBodyPartWysiwygEditorSettingsDriver.cs
+msgctxt "OrchardCore.Markdown.Settings.MarkdownBodyPartWysiwygEditorSettingsDriver"
+msgid "The options are written in an incorrect format."
+msgstr ""
+
+#: Settings/MarkdownFieldWysiwygEditorSettingsDriver.cs
+msgctxt "OrchardCore.Markdown.Settings.MarkdownFieldWysiwygEditorSettingsDriver"
+msgid "The options are written in an incorrect format."
+msgstr ""
+
+#: Views/MarkdownBodyPart-Wysiwyg.Edit.cshtml
+msgctxt "OrchardCore.Markdown.Views.MarkdownBodyPart-Wysiwyg.Edit"
+msgid "The markdown text of the content item."
+msgstr ""
+
+#: Views/MarkdownBodyPart-Wysiwyg.Option.cshtml
+msgctxt "OrchardCore.Markdown.Views.MarkdownBodyPart-Wysiwyg.Option"
+msgid "Wysiwyg editor"
+msgstr ""
+
+#: Views/MarkdownBodyPart.DisplayOption.cshtml
+msgctxt "OrchardCore.Markdown.Views.MarkdownBodyPart.DisplayOption"
+msgid "Standard"
+msgstr ""
+
+#: Views/MarkdownBodyPart.Edit.cshtml
+msgctxt "OrchardCore.Markdown.Views.MarkdownBodyPart.Edit"
+msgid "The body of the content item, in Markdown format."
+msgstr ""
+
+#: Views/MarkdownBodyPart.Option.cshtml
+msgctxt "OrchardCore.Markdown.Views.MarkdownBodyPart.Option"
+msgid "Standard"
+msgstr ""
+
+#: Views/MarkdownBodyPartSettings.Edit.cshtml
+msgctxt "OrchardCore.Markdown.Views.MarkdownBodyPartSettings.Edit"
+msgid "Sanitize Html"
+msgstr ""
+
+#: Views/MarkdownBodyPartSettings.Edit.cshtml
+msgctxt "OrchardCore.Markdown.Views.MarkdownBodyPartSettings.Edit"
+msgid "See documentation"
+msgstr ""
+
+#: Views/MarkdownBodyPartSettings.Edit.cshtml
+msgctxt "OrchardCore.Markdown.Views.MarkdownBodyPartSettings.Edit"
+msgid "Whether the Html output from Markdown is sanitized, e.g. by removing script tags (and more)."
+msgstr ""
+
+#: Views/MarkdownBodyPartWysiwygEditorSettings.Edit.cshtml
+msgctxt "OrchardCore.Markdown.Views.MarkdownBodyPartWysiwygEditorSettings.Edit"
+msgid "Documentation for options"
+msgstr ""
+
+#: Views/MarkdownBodyPartWysiwygEditorSettings.Edit.cshtml
+msgctxt "OrchardCore.Markdown.Views.MarkdownBodyPartWysiwygEditorSettings.Edit"
+msgid "Enter the editor options"
+msgstr ""
+
+#: Views/MarkdownField-Wysiwyg.Option.cshtml
+msgctxt "OrchardCore.Markdown.Views.MarkdownField-Wysiwyg.Option"
+msgid "Wysiwyg editor"
+msgstr ""
+
+#: Views/MarkdownField.DisplayOption.cshtml
+msgctxt "OrchardCore.Markdown.Views.MarkdownField.DisplayOption"
+msgid "Standard"
+msgstr ""
+
+#: Views/MarkdownField.Option.cshtml
+msgctxt "OrchardCore.Markdown.Views.MarkdownField.Option"
+msgid "Standard"
+msgstr ""
+
+#: Views/MarkdownFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.Markdown.Views.MarkdownFieldSettings.Edit"
+msgid "Hint"
+msgstr ""
+
+#: Views/MarkdownFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.Markdown.Views.MarkdownFieldSettings.Edit"
+msgid "Sanitize Html"
+msgstr ""
+
+#: Views/MarkdownFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.Markdown.Views.MarkdownFieldSettings.Edit"
+msgid "See documentation"
+msgstr ""
+
+#: Views/MarkdownFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.Markdown.Views.MarkdownFieldSettings.Edit"
+msgid "The hint text to display for this field on the editor."
+msgstr ""
+
+#: Views/MarkdownFieldSettings.Edit.cshtml
+msgctxt "OrchardCore.Markdown.Views.MarkdownFieldSettings.Edit"
+msgid "Whether the Html output from Markdown is sanitized, e.g. by removing script tags (and more)."
+msgstr ""
+
+#: Views/MarkdownFieldWysiwygEditorSettings.Edit.cshtml
+msgctxt "OrchardCore.Markdown.Views.MarkdownFieldWysiwygEditorSettings.Edit"
+msgid "Documentation for options"
+msgstr ""
+
+#: Views/MarkdownFieldWysiwygEditorSettings.Edit.cshtml
+msgctxt "OrchardCore.Markdown.Views.MarkdownFieldWysiwygEditorSettings.Edit"
+msgid "Enter the editor options"
+msgstr ""

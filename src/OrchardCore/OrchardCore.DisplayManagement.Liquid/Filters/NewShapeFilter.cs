@@ -21,12 +21,12 @@ public class NewShapeFilter : ILiquidFilter
             return FluidValue.Create(await task, options);
         }
 
-        var type = input.ToStringValue();
+        var type = input.ToStringValue(ctx);
         var properties = new Dictionary<string, object>(arguments.Count);
 
         foreach (var name in arguments.Names)
         {
-            properties.Add(name.ToPascalCaseUnderscore(), arguments[name].ToObjectValue());
+            properties.Add(name.ToPascalCaseUnderscore(), arguments[name].ToObjectValue(ctx));
         }
 
         var task = _shapeFactory.CreateAsync(type, Arguments.From(properties));

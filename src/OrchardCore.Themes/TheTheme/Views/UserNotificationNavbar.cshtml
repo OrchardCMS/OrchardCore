@@ -13,12 +13,12 @@
 
 @model UserNotificationNavbarViewModel
 
-<li class="nav-item dropdown text-end">
+<li class="nav-item dropdown text-end notification-navbar-container" data-mark-as-read-url="@Url.RouteUrl(MarkAsReadEndpoints.RouteName, new { area = NotificationConstants.Features.Notifications })">
     <a type="button" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false" aria-label="@T["Notifications"]">
         @if (Model.TotalUnread > 0)
         {
             LocalizedHtmlString title;
-            if (Model.TotalUnread > Model.MaxVisibleNotifications)
+            if (Model.TotalUnread > Model.MaxVisibleNotifications || Model.IsTotalUnreadCapped)
             {
                 title = T["You have more than {0} unread notifications", Model.MaxVisibleNotifications];
             }
@@ -29,7 +29,7 @@
 
             <i class="fa-solid fa-bell" aria-hidden="true" data-bs-toggle="tooltip" data-bs-original-title="@title"></i>
 
-            <span class="position-absolute start-50 translate-middle badge rounded-pill text-bg-danger" id="UnreadNotificationBadge">@Model.TotalUnread</span>
+            <span class="position-absolute start-50 translate-middle badge rounded-pill text-bg-danger" id="UnreadNotificationBadge" data-capped="@Model.IsTotalUnreadCapped.ToString().ToLowerInvariant()">@Model.TotalUnread@(Model.IsTotalUnreadCapped ? "+" : null)</span>
         }
         else
         {
@@ -45,7 +45,6 @@
                 {
                     var notification = Model.Notifications[i];
                     var shape = await NotificationDisplayDriver.BuildDisplayAsync(notification, UpdateModelAccessor.ModelUpdater, "Header");
-                    shape.Properties[nameof(Notification)] = notification;
                     <div class="@(i == maxCount - 1 ? string.Empty : "border-bottom")">
                         @await DisplayAsync(shape)
                     </div>
@@ -69,28 +68,3 @@
         }
     </ul>
 </li>
-
-<script at="Foot" asp-name="notification-manager-initializes" depends-on="notification-manager">
-    (function () {
-        notificationManager.initializeContainer('@Url.RouteUrl(MarkAsReadEndpoints.RouteName, new { area = NotificationConstants.Features.Notifications }))', '#UnreadNotificationBadge')
-    })();
-</script>
-
-<style at="Head">
-    #UnreadNotificationBadge {
-        top:5px;
-    }
-    .notification-navbar {
-        max-width: 20rem;
-    }
-
-        .notification-navbar .notification-is-unread {
-            font-weight: 600 !important;
-        }
-
-    .dropdown-menu.scrollable {
-        overflow-y: auto;
-        max-height: var(--oc-height-dropdown, 250px);
-        scrollbar-width: thin;
-    }
-</style>

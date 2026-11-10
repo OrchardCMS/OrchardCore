@@ -16,8 +16,8 @@ namespace OrchardCore.Mvc;
 public class ShellFileVersionProvider : IFileVersionProvider
 {
     private const string VersionKey = "v";
-    private static readonly char[] _queryStringAndFragmentTokens = ['?', '#'];
-    private static readonly MemoryCache _sharedCache = new(new MemoryCacheOptions());
+    private static readonly char[] s_queryStringAndFragmentTokens = ['?', '#'];
+    private static readonly MemoryCache s_sharedCache = new(new MemoryCacheOptions());
 
     private readonly IFileProvider[] _fileProviders;
     private readonly IMemoryCache _cache;
@@ -40,11 +40,14 @@ public class ShellFileVersionProvider : IFileVersionProvider
 
         var resolvedPath = path;
 
-        var queryStringOrFragmentStartIndex = path.IndexOfAny(_queryStringAndFragmentTokens);
+        var queryStringOrFragmentStartIndex = path.IndexOfAny(s_queryStringAndFragmentTokens);
         if (queryStringOrFragmentStartIndex != -1)
         {
             resolvedPath = path[..queryStringOrFragmentStartIndex];
         }
+
+        // The versioned path is cached for the common case of a path without any query string or fragment.
+        var isResolvedPath = queryStringOrFragmentStartIndex == -1;
 
         if (Uri.TryCreate(resolvedPath, UriKind.Absolute, out var uri) && !uri.IsFile)
         {
@@ -52,24 +55,34 @@ public class ShellFileVersionProvider : IFileVersionProvider
             return path;
         }
 
-        // Try to get the hash from the tenant level cache.
-        if (_cache.TryGetValue(resolvedPath, out string value))
+        // Try to get the version from the tenant level cache.
+        if (_cache.TryGetValue(resolvedPath, out FileVersion fileVersion))
         {
-            if (value.Length > 0)
+            if (fileVersion.Hash.Length > 0)
             {
-                return QueryHelpers.AddQueryString(path, VersionKey, value);
+                return isResolvedPath
+                    ? fileVersion.VersionedPath
+                    : QueryHelpers.AddQueryString(path, VersionKey, fileVersion.Hash);
             }
 
             return path;
         }
 
-        // Try to get the hash from the cache shared across tenants.
+        // Try to get the version from the cache shared across tenants.
         if (resolvedPath.StartsWith(requestPathBase.Value, StringComparison.OrdinalIgnoreCase))
         {
 #pragma warning disable CA1831 // Use AsSpan instead of Range-based indexers for string
-            if (_sharedCache.TryGetValue(resolvedPath[requestPathBase.Value.Length..], out value))
+            if (s_sharedCache.TryGetValue(resolvedPath[requestPathBase.Value.Length..], out fileVersion))
             {
-                return QueryHelpers.AddQueryString(path, VersionKey, value);
+                if (!isResolvedPath)
+                {
+                    return QueryHelpers.AddQueryString(path, VersionKey, fileVersion.Hash);
+                }
+
+                // The shared versioned path is relative to the request path base.
+                return requestPathBase.HasValue
+                    ? string.Concat(requestPathBase.Value, fileVersion.VersionedPath)
+                    : fileVersion.VersionedPath;
             }
 #pragma warning restore CA1831
         }
@@ -105,27 +118,51 @@ public class ShellFileVersionProvider : IFileVersionProvider
 
             if (fileInfo.Exists)
             {
-                value = GetHashForFile(fileInfo);
-                cacheEntryOptions.SetSize(value.Length * sizeof(char));
+                var hash = GetHashForFile(fileInfo);
 
                 // Cache module static files to the shared cache.
                 if (fileProvider is IModuleStaticFileProvider)
                 {
-                    _sharedCache.Set(resolvedPath, value, cacheEntryOptions);
+                    // The shared versioned path is computed for the path relative to the request path base.
+                    fileVersion = new FileVersion(hash, QueryHelpers.AddQueryString(resolvedPath, VersionKey, hash));
+                    cacheEntryOptions.SetSize(fileVersion.Size);
+                    s_sharedCache.Set(resolvedPath, fileVersion, cacheEntryOptions);
                 }
                 else
                 {
-                    _cache.Set(cacheKey, value, cacheEntryOptions);
+                    fileVersion = new FileVersion(hash, QueryHelpers.AddQueryString(cacheKey, VersionKey, hash));
+                    cacheEntryOptions.SetSize(fileVersion.Size);
+                    _cache.Set(cacheKey, fileVersion, cacheEntryOptions);
                 }
 
-                return QueryHelpers.AddQueryString(path, VersionKey, value);
+                return QueryHelpers.AddQueryString(path, VersionKey, hash);
             }
         }
 
         // If the file is not in the current server, set cache so no further checks are done.
         cacheEntryOptions.SetSize(0);
-        _cache.Set(cacheKey, string.Empty, cacheEntryOptions);
+        _cache.Set(cacheKey, FileVersion.NotFound, cacheEntryOptions);
         return path;
+    }
+
+    /// <summary>
+    /// The cached version of a file: its hash and the path with the version appended.
+    /// </summary>
+    private sealed class FileVersion
+    {
+        public static readonly FileVersion NotFound = new(string.Empty, null);
+
+        public FileVersion(string hash, string versionedPath)
+        {
+            Hash = hash;
+            VersionedPath = versionedPath;
+        }
+
+        public string Hash { get; }
+
+        public string VersionedPath { get; }
+
+        public long Size => (Hash.Length + (VersionedPath?.Length ?? 0)) * sizeof(char);
     }
 
     private static string GetHashForFile(IFileInfo fileInfo)

@@ -2,6 +2,7 @@ using System.Text.Json.Dynamic;
 using System.Text.Json.Nodes;
 using Fluid;
 using Fluid.Values;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,12 +15,15 @@ using OrchardCore.Indexing;
 using OrchardCore.Liquid.Drivers;
 using OrchardCore.Liquid.Endpoints.Scripts;
 using OrchardCore.Liquid.Filters;
+using OrchardCore.Liquid.Fields;
 using OrchardCore.Liquid.Handlers;
 using OrchardCore.Liquid.Indexing;
+using OrchardCore.Liquid.DataMigrations;
 using OrchardCore.Liquid.Models;
 using OrchardCore.Liquid.Services;
-using OrchardCore.Liquid.ViewModels;
+using OrchardCore.Liquid.Security;
 using OrchardCore.Modules;
+using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Liquid;
 
@@ -33,41 +37,43 @@ public sealed class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddScoped<ILiquidTemplateManager, LiquidTemplateManager>();
+        services.AddPermissionProvider<Permissions>();
 
-        services.Configure<TemplateOptions>(options =>
+        services.Configure<TemplateOptionsBuilder>(options =>
         {
-            options.Filters.AddFilter("t", LiquidViewFilters.Localize);
-            options.Filters.AddFilter("html_class", LiquidViewFilters.HtmlClass);
-            options.Filters.AddFilter("shape_properties", LiquidViewFilters.ShapeProperties);
+            options.AddFilter("t", LiquidViewFilters.Localize);
+            options.AddFilter("html_class", LiquidViewFilters.HtmlClass);
+            options.AddFilter("shape_properties", LiquidViewFilters.ShapeProperties);
 
-            options.MemberAccessStrategy.Register<LiquidPartViewModel>();
+            options.ConfigureMemberAccess(strategy =>
+            {
+                // Used to provide a factory to return a value based on a property name that is unknown at registration time.
+                strategy.Register<LiquidPropertyAccessor, FluidValue>((obj, name) => obj.GetValueAsync(name));
 
-            // Used to provide a factory to return a value based on a property name that is unknown at registration time.
-            options.MemberAccessStrategy.Register<LiquidPropertyAccessor, FluidValue>((obj, name) => obj.GetValueAsync(name));
+                // When a property of a 'JsonObject' value is accessed, try to look into its properties.
+                strategy.Register<JsonObject, object>((source, name) => source[name]);
 
-            // When a property of a 'JsonObject' value is accessed, try to look into its properties.
-            options.MemberAccessStrategy.Register<JsonObject, object>((source, name) => source[name]);
-
-            // When a property of a 'JsonDynamicObject' value is accessed, try to look into its properties.
-            options.MemberAccessStrategy.Register<JsonDynamicObject, object>((json, name) => json[name]);
+                // When a property of a 'JsonDynamicObject' value is accessed, try to look into its properties.
+                strategy.Register<JsonDynamicObject, object>((json, name) => json[name]);
+            });
 
             // Convert JToken to FluidValue
-            options.ValueConverters.Add(x =>
+            options.AddValueConverter(x =>
             {
                 return x switch
                 {
-                    JsonObject o => new ObjectValue(o),
-                    JsonDynamicObject o => new ObjectValue((JsonObject)o),
+                    JsonObject o => ObjectValue.Create(o),
+                    JsonDynamicObject o => ObjectValue.Create((JsonObject)o),
                     JsonValue o => o.GetObjectValue(),
                     JsonDynamicValue o => ((JsonValue)(o.Node)).GetObjectValue(),
-                    DateTime d => new ObjectValue(d),
+                    DateTime d => ObjectValue.Create(d),
                     _ => null
 
                 };
             });
 
-            options.Filters.AddFilter("json", JsonFilter.Json);
-            options.Filters.AddFilter("jsonparse", JsonParseFilter.JsonParse);
+            options.AddFilter("json", JsonFilter.Json);
+            options.AddFilter("jsonparse", JsonParseFilter.JsonParse);
         })
         .AddLiquidFilter<LocalTimeZoneFilter>("local")
         .AddLiquidFilter<UtcTimeZoneFilter>("utc")
@@ -105,8 +111,14 @@ public sealed class LiquidPartStartup : StartupBase
             .UseDisplayDriver<LiquidPartDisplayDriver>()
             .AddHandler<LiquidPartHandler>();
 
+        services.AddContentField<LiquidField>()
+            .UseDisplayDriver<LiquidFieldDisplayDriver>()
+            .AddHandler<LiquidFieldHandler>();
+
+        services.AddScoped<IAuthorizationHandler, LiquidContentAuthorizationHandler>();
         services.AddDataMigration<Migrations>();
         services.AddScoped<IContentPartIndexHandler, LiquidPartIndexHandler>();
+        services.AddScoped<IContentFieldIndexHandler, LiquidFieldIndexHandler>();
     }
 }
 
@@ -116,6 +128,15 @@ public sealed class ShortcodesStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddLiquidFilter<ShortcodeFilter>("shortcode");
+    }
+}
+
+[RequireFeatures("OrchardCore.Roles")]
+public sealed class RolesStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddDataMigration<PermissionMigrations>();
     }
 }
 

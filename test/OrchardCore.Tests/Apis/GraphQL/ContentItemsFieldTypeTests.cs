@@ -15,6 +15,7 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Extensions;
 using OrchardCore.Json;
 using OrchardCore.Localization;
+using OrchardCore.Tests.Utilities;
 using YesSql.Indexes;
 using YesSql.Provider.Sqlite;
 using YesSql.Serialization;
@@ -70,31 +71,8 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
         _prefixedStore.Dispose();
         _prefixedStore = null;
 
-        if (File.Exists(_tempFilename))
-        {
-            try
-            {
-                File.Delete(_tempFilename);
-            }
-            catch
-            {
-
-            }
-        }
-
-        var prefixFilename = _tempFilename + _prefix;
-
-        if (File.Exists(prefixFilename))
-        {
-            try
-            {
-                File.Delete(prefixFilename);
-            }
-            catch
-            {
-
-            }
-        }
+        TestFileHelper.TryDelete(_tempFilename);
+        TestFileHelper.TryDelete(_tempFilename + _prefix);
 
         return ValueTask.CompletedTask;
     }
@@ -724,7 +702,7 @@ public class AnimalLocalizationIndexProvider : IndexProvider<ContentItem>
 
 public class MultipleAliasIndexProvider : IIndexAliasProvider
 {
-    private static readonly IndexAlias[] _aliases =
+    private static readonly IndexAlias[] s_aliases =
     [
         new IndexAlias
         {
@@ -748,13 +726,13 @@ public class MultipleAliasIndexProvider : IIndexAliasProvider
 
     public ValueTask<IEnumerable<IndexAlias>> GetAliasesAsync()
     {
-        return ValueTask.FromResult<IEnumerable<IndexAlias>>(_aliases);
+        return ValueTask.FromResult<IEnumerable<IndexAlias>>(s_aliases);
     }
 }
 
 public class AnimalLocalizationAliasProvider : IIndexAliasProvider
 {
-    private static readonly IndexAlias[] _aliases =
+    private static readonly IndexAlias[] s_aliases =
     [
         new IndexAlias
         {
@@ -766,13 +744,13 @@ public class AnimalLocalizationAliasProvider : IIndexAliasProvider
 
     public ValueTask<IEnumerable<IndexAlias>> GetAliasesAsync()
     {
-        return ValueTask.FromResult<IEnumerable<IndexAlias>>(_aliases);
+        return ValueTask.FromResult<IEnumerable<IndexAlias>>(s_aliases);
     }
 }
 
 public class MultipleIndexesIndexProvider : IIndexAliasProvider
 {
-    private static readonly IndexAlias[] _aliases =
+    private static readonly IndexAlias[] s_aliases =
     [
         new IndexAlias
         {
@@ -796,7 +774,7 @@ public class MultipleIndexesIndexProvider : IIndexAliasProvider
 
     public ValueTask<IEnumerable<IndexAlias>> GetAliasesAsync()
     {
-        return ValueTask.FromResult<IEnumerable<IndexAlias>>(_aliases);
+        return ValueTask.FromResult<IEnumerable<IndexAlias>>(s_aliases);
     }
 }
 

@@ -11,19 +11,19 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags;
 public static class FluidTagHelper
 {
     public static readonly Dictionary<string, string> DefaultArgumentsMapping = [];
-    private static long _uniqueId;
+    private static long s_uniqueId;
 
-    public static ValueTask<Completion> WriteArgumentsTagHelperAsync(IReadOnlyList<FilterArgument> arguments, TextWriter writer, TextEncoder encoder, TemplateContext context)
+    public static ValueTask<Completion> WriteArgumentsTagHelperAsync(IReadOnlyList<FilterArgument> arguments, IFluidOutput output, TextEncoder encoder, TemplateContext context)
     {
-        return WriteToAsync(null, arguments, [], writer, encoder, context);
+        return WriteToAsync(null, arguments, [], output, encoder, context);
     }
 
-    public static ValueTask<Completion> WriteArgumentsBlockHelperAsync(IReadOnlyList<FilterArgument> arguments, IReadOnlyList<Statement> statements, TextWriter writer, TextEncoder encoder, TemplateContext context)
+    public static ValueTask<Completion> WriteArgumentsBlockHelperAsync(IReadOnlyList<FilterArgument> arguments, IReadOnlyList<Statement> statements, IFluidOutput output, TextEncoder encoder, TemplateContext context)
     {
-        return WriteToAsync(null, arguments, statements, writer, encoder, context);
+        return WriteToAsync(null, arguments, statements, output, encoder, context);
     }
 
-    public static async ValueTask<Completion> WriteToAsync(string identifier, IReadOnlyList<FilterArgument> arguments, IReadOnlyList<Statement> statements, TextWriter writer, TextEncoder encoder, TemplateContext context)
+    public static async ValueTask<Completion> WriteToAsync(string identifier, IReadOnlyList<FilterArgument> arguments, IReadOnlyList<Statement> statements, IFluidOutput output, TextEncoder encoder, TemplateContext context)
     {
         var services = ((LiquidTemplateContext)context).Services;
 
@@ -33,7 +33,7 @@ public static class FluidTagHelper
         // If no identifier is set, use the first argument as the name of the tag helper
         // e.g., {% helper "input", for: "Text", class: "form-control" %}
 
-        identifier ??= (await arguments[0].Expression.EvaluateAsync(context)).ToStringValue();
+        identifier ??= (await arguments[0].Expression.EvaluateAsync(context)).ToStringValue(context);
 
         // These mapping will assign an argument name to the first element in the filter arguments,
         // such that the tag helper can be matched based on the expected attribute names.
@@ -61,7 +61,7 @@ public static class FluidTagHelper
             return Completion.Normal;
         }
 
-        var tagHelper = factory.CreateTagHelper(activator, viewContext,
+        var tagHelper = factory.CreateTagHelper(activator, viewContext, context,
             filterArguments, out var contextAttributes, out var outputAttributes);
 
         ViewBufferTextWriterContent content = null;
@@ -78,7 +78,7 @@ public static class FluidTagHelper
             }
         }
 
-        var id = Interlocked.Increment(ref _uniqueId);
+        var id = Interlocked.Increment(ref s_uniqueId);
 
         var tagHelperContext = new TagHelperContext(contextAttributes, new Dictionary<object, object>(), id.ToString());
 
@@ -101,7 +101,7 @@ public static class FluidTagHelper
         }
 
         await tagHelper.ProcessAsync(tagHelperContext, tagHelperOutput);
-        tagHelperOutput.WriteTo(writer, (HtmlEncoder)encoder);
+        output.Write(tagHelperOutput, (HtmlEncoder)encoder);
 
         return Completion.Normal;
     }

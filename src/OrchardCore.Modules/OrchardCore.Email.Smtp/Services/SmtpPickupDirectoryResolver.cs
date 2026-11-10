@@ -7,9 +7,9 @@ internal static class SmtpPickupDirectoryResolver
 {
     public const string DefaultPickupDirectoryLocation = "/";
     public const string DefaultPickupDirectoryLocationBaseTemplate = @"{{ AppData }}\Sites\{{ ShellSettings.Name }}\Emails";
-    private static readonly char[] _directorySeparators = ['\\', '/'];
+    private static readonly char[] s_directorySeparators = ['\\', '/'];
 
-    private static readonly char[] _invalidPickupDirectoryLocationCharacters =
+    private static readonly char[] s_invalidPickupDirectoryLocationCharacters =
     [
         ..Path.GetInvalidPathChars(),
         '~',
@@ -85,7 +85,7 @@ internal static class SmtpPickupDirectoryResolver
 
         pickupDirectoryLocation = pickupDirectoryLocation.Trim();
 
-        if (pickupDirectoryLocation.IndexOfAny(_invalidPickupDirectoryLocationCharacters) >= 0 ||
+        if (pickupDirectoryLocation.IndexOfAny(s_invalidPickupDirectoryLocationCharacters) >= 0 ||
             pickupDirectoryLocation.Contains("{%", StringComparison.Ordinal))
         {
             return false;
@@ -136,7 +136,7 @@ internal static class SmtpPickupDirectoryResolver
     private static bool ContainsNavigationSegments(string pickupDirectoryLocation)
     {
         return pickupDirectoryLocation
-            .Split(_directorySeparators, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Split(s_directorySeparators, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
             .Any(segment => segment is "." or "..");
     }
 
@@ -153,15 +153,13 @@ internal static class SmtpPickupDirectoryResolver
 
     private static string ParseAndFormat(string template, FluidParser fluidParser, ShellOptions shellOptions, ShellSettings shellSettings)
     {
-        var templateOptions = new TemplateOptions();
-        templateOptions.MemberAccessStrategy.Register<ShellSettings>();
 
         if (!fluidParser.TryParse(template, out var parsedTemplate, out var errors))
         {
             throw new InvalidOperationException($"Failed to parse SMTP pickup directory location base: {string.Join(System.Environment.NewLine, errors)}");
         }
 
-        var templateContext = new TemplateContext(templateOptions);
+        var templateContext = new TemplateContext(TemplateOptions.Default);
         templateContext.SetValue("AppData", shellOptions.ShellsApplicationDataPath);
         templateContext.SetValue("ShellSettings", shellSettings);
 

@@ -4,6 +4,16 @@ This module provides a way to create templates securely from the admin site.
 For more information about the Liquid syntax, please refer to this site: <https://shopify.github.io/liquid/>.
 Liquid syntax is powered by Fluid. Check <https://github.com/sebastienros/fluid> for extra examples and custom filters.
 
+## Liquid content
+
+The module provides both `LiquidPart` and `LiquidField`. Their authored `Liquid` source is stored exactly as submitted and rendered when the corresponding shape, body aspect, or GraphQL field is requested. Because Liquid can produce HTML, JSON, XML, plain text, or another format, these components do not expose a `Sanitize HTML` setting.
+
+Editing Liquid parts, fields, Facebook plugin bodies, Templates, Admin Templates, and template previews requires the security-critical `ManageLiquidTemplates` permission. The permission is granted to the Administrator and Editor roles by default. Template navigation and content-definition shortcuts are hidden when this permission is not granted.
+
+The permission also applies to the containing content item whenever it includes a `LiquidPart`, `LiquidField`, or `FacebookPluginPart`, including content items serialized recursively inside Flow, Bag, or other custom content. Orchard Core enforces this requirement for standard editors, the Content API, and remote publishing endpoints, and rejects the entire mutation instead of ignoring the protected Liquid component.
+
+Use `LiquidPart` or `LiquidField` whenever authored content needs Liquid execution. `HtmlBodyPart`, `HtmlField`, `MarkdownBodyPart`, and `MarkdownField` treat Liquid syntax as ordinary source text.
+
 ## General concepts
 
 ### HTML escaping
@@ -101,23 +111,6 @@ Output
 ```text
 this-is-some-text
 ```
-
-There is an option to transliterate (by default `true`) which first transliterates and slugifies afterwards:
-
-```liquid
-{{ "Ελληνικά" | slugify }}
-```
-or 
-```liquid
-{{ "Ελληνικά" | slugify: transliterate: true}}
-```
-
-Output
-
-```text
-ellinika
-```
-
 
 ### `local`
 
@@ -698,7 +691,7 @@ Here is an example of how to use the `TrackingConsent` object in a Liquid templa
 {% endif %}
 ```
 
-## Localization Filters
+## Data Localization Filters
 
 ### `d`
 
@@ -814,7 +807,7 @@ Input
 
 ### `layout`
 
-Sets the layout of a view.
+Sets the layout of a view, or of the page from a shape template.
 
 Input
 
@@ -1248,6 +1241,83 @@ Output
 ```
 
 Optionally you can pass a class for model binding.
+
+## Evaluating Liquid in code
+
+The `LiquidViewTemplateExtensions.RenderAsync` overloads render parsed templates in a Liquid view scope. They reuse the current `ViewContext` or create one from the current HTTP request.
+
+For custom evaluation that needs the same model and localization scope, use `LiquidViewTemplateExtensions.InvokeInScopeAsync` with a `LiquidTemplateContext`, an explicit `ViewContext`, a model, and an asynchronous callback. The helper initializes the context, exposes `Model` and `ViewLocalizer` in a child scope, and releases that scope even when the callback throws. Both callbacks returning a result and callbacks returning only a `Task` are supported.
+
+The caller is responsible for resolving the view context. Passing `null` initializes the Liquid context without entering a child scope or setting `Model` and `ViewLocalizer`; this supports non-view evaluation outside an HTTP request.
+
+## Extending Liquid from a module
+
+A module configures Liquid through `TemplateOptionsBuilder`. The `TemplateOptions` of a tenant are immutable and are built once from it, when they are first used, and are read from `IOptions<TemplateOptions>`.
+
+```csharp
+services.Configure<TemplateOptionsBuilder>(options =>
+{
+    // A filter without dependencies. A filter that needs services implements 'ILiquidFilter' and is registered with 'services.AddLiquidFilter<T>("name")'.
+    options.AddFilter("shout", (input, arguments, context) => StringValue.Create(input.ToStringValue(context).ToUpperInvariant()));
+
+    // A value available in all the templates.
+    options.WithGlobalValue("Store", ObjectValue.Create(new StoreAccessor()));
+
+    // A converter called when a CLR object is converted to a Liquid value.
+    options.AddValueConverter(x => x is Money money ? NumberValue.Create(money.Amount) : null);
+
+    // A member computed on demand, which doesn't have to exist on the type.
+    options.ConfigureMemberAccess(strategy =>
+    {
+        strategy.Register<StoreAccessor, Product>("Featured", (obj, context) => GetFeaturedProduct(context));
+    });
+});
+```
+
+A type needing services to configure the options implements `IConfigureOptions<TemplateOptionsBuilder>`.
+
+Templates can read the public properties and fields of any object reachable from their model, without registering its type. Member names are matched without considering their case, and the accessor of a custom registration takes precedence over them.
+
+!!! warning
+    A template can read everything that is reachable from its model, so don't expose a service or a secret in the model of a shape. To restrict what templates read from a type, register an accessor for all its members, like `User` and `Site` do:
+
+    ```csharp
+    options.ConfigureMemberAccess(strategy => strategy.Register<Account, FluidValue>((account, name, context) => name switch
+    {
+        nameof(Account.DisplayName) => StringValue.Create(account.DisplayName),
+        _ => NilValue.Instance,
+    }));
+    ```
+
+Custom tags and blocks are registered on the `LiquidViewParser`, with `LiquidViewOptions.LiquidViewParserConfiguration`, and write to an `IFluidOutput`.
+
+```csharp
+services.Configure<LiquidViewOptions>(options => options.LiquidViewParserConfiguration.Add(parser =>
+{
+    parser.RegisterParserTag("product_link", parser.ArgumentsListParser, ProductLinkTag.WriteToAsync);
+}));
+
+public static class ProductLinkTag
+{
+    public static async ValueTask<Completion> WriteToAsync(IReadOnlyList<FilterArgument> arguments, IFluidOutput output, TextEncoder encoder, TemplateContext context)
+    {
+        var name = (await arguments[0].Expression.EvaluateAsync(context)).ToStringValue(context);
+
+        // Writes some text.
+        output.Write(encoder.Encode(name));
+
+        // Writes an 'IHtmlContent'.
+        output.Write(new HtmlString("<hr />"), (HtmlEncoder)encoder);
+
+        // Gets a 'TextWriter' for a component that renders to a writer.
+        var writer = output.AsTextWriter();
+
+        return Completion.Normal;
+    }
+}
+```
+
+`IFluidOutput` buffers what is written to it. The `Write()` overload that accepts an `IHtmlContent` and `AsTextWriter()` are extension methods of the `OrchardCore.Liquid` namespace, which don't allocate anything when a template is rendered as an `IHtmlContent`.
 
 ## CREDITS
 

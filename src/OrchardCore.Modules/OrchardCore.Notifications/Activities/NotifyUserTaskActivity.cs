@@ -1,6 +1,7 @@
 using System.Text.Encodings.Web;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Localization;
 using OrchardCore.Notifications.Models;
 using OrchardCore.Users;
 using OrchardCore.Workflows.Abstractions.Models;
@@ -10,7 +11,7 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Notifications.Activities;
 
-public abstract class NotifyUserTaskActivity : TaskActivity
+public abstract class NotifyUserTaskActivity : TaskActivity, IActivityProvidedValues
 {
     protected readonly INotificationService _notificationService;
     protected readonly IWorkflowExpressionEvaluator _expressionEvaluator;
@@ -23,6 +24,7 @@ public abstract class NotifyUserTaskActivity : TaskActivity
         IWorkflowExpressionEvaluator expressionEvaluator,
         HtmlEncoder htmlEncoder,
         ILogger logger,
+        IStringLocalizerFactory localizerFactory,
         IStringLocalizer localizer
     )
     {
@@ -30,10 +32,18 @@ public abstract class NotifyUserTaskActivity : TaskActivity
         _expressionEvaluator = expressionEvaluator;
         _htmlEncoder = htmlEncoder;
         _logger = logger;
+        LocalizerFactory = localizerFactory;
         S = localizer;
     }
 
-    public override LocalizedString Category => S["Notifications"];
+    /// <summary>
+    /// Gets the factory that translates the <see cref="LocalizationSource"/> descriptions of the activity.
+    /// </summary>
+    protected IStringLocalizerFactory LocalizerFactory { get; }
+
+    public static LocalizationSource CategoryName => NotificationsLocalizationSources.Notifications;
+
+    public override LocalizedString Category => LocalizerFactory.Localize(CategoryName);
 
     public WorkflowExpression<string> Subject
     {
@@ -66,13 +76,37 @@ public abstract class NotifyUserTaskActivity : TaskActivity
     }
 
     /// <summary>
+    /// Gets or sets the optional URL the notification points to, as a workflow expression.
+    /// </summary>
+    public WorkflowExpression<string> Url
+    {
+        get => GetProperty(() => new WorkflowExpression<string>());
+        set => SetProperty(value);
+    }
+
+    /// <summary>
+    /// Gets or sets the optional type of the notification, see <see cref="Notification.Type"/>.
+    /// </summary>
+    public string NotificationType
+    {
+        get => GetProperty<string>();
+        set => SetProperty(value);
+    }
+
+    /// <summary>
     /// Gets the workflow outcomes that can be produced by this activity.
     /// </summary>
     /// <param name="workflowContext">The workflow execution context.</param>
     /// <param name="activityContext">The activity context.</param>
     /// <returns>The possible workflow outcomes.</returns>
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-        => Outcomes(S["Done"], S["Failed"], S["Failed: no user found"]);
+        => Outcome(S["Done"], S["Failed"], S["Failed: no user found"]);
+
+    /// <summary>
+    /// Returns the values the activity provides: how many notifications it sent, as the last result.
+    /// </summary>
+    public virtual IEnumerable<ActivityProvidedValue> GetProvidedValues()
+        => [ActivityProvidedValue.LastResult("number", LocalizationSource.Create<NotifyUserTaskActivity>("How many notifications the activity sent."))];
 
     /// <summary>
     /// Sends the configured notification message to each resolved user.
@@ -86,7 +120,7 @@ public abstract class NotifyUserTaskActivity : TaskActivity
 
         if (users == null || !users.Any())
         {
-            return Outcomes("Failed: no user found");
+            return Outcome("Failed: no user found");
         }
 
         var message = await GetMessageAsync(workflowContext);
@@ -95,18 +129,15 @@ public abstract class NotifyUserTaskActivity : TaskActivity
 
         foreach (var user in users)
         {
-            var result = await _notificationService.SendAsync(user, message);
+            var result = await _notificationService.SendAsync(user, message, workflowContext.CancellationToken);
             totalSent += result.SuccessfulCount;
         }
 
         workflowContext.LastResult = totalSent;
 
-        if (totalSent == 0)
-        {
-            return Outcomes("Failed");
-        }
-
-        return Outcomes("Done");
+        return totalSent == 0
+            ? Outcome("Failed")
+            : Outcome("Done");
     }
 
     /// <summary>
@@ -123,6 +154,8 @@ public abstract class NotifyUserTaskActivity : TaskActivity
             TextBody = await _expressionEvaluator.EvaluateAsync(TextBody, workflowContext, null),
             HtmlBody = await _expressionEvaluator.EvaluateAsync(HtmlBody, workflowContext, _htmlEncoder),
             IsHtmlPreferred = IsHtmlPreferred,
+            Url = string.IsNullOrWhiteSpace(Url.Expression) ? null : (await _expressionEvaluator.EvaluateAsync(Url, workflowContext, null))?.Trim(),
+            Type = string.IsNullOrWhiteSpace(NotificationType) ? null : NotificationType.Trim(),
         };
     }
 
@@ -146,8 +179,9 @@ public abstract class NotifyUserTaskActivity<TActivity> : NotifyUserTaskActivity
         IWorkflowExpressionEvaluator expressionEvaluator,
         HtmlEncoder htmlEncoder,
         ILogger logger,
+        IStringLocalizerFactory localizerFactory,
         IStringLocalizer localizer)
-        : base(notificationService, expressionEvaluator, htmlEncoder, logger, localizer)
+        : base(notificationService, expressionEvaluator, htmlEncoder, logger, localizerFactory, localizer)
     {
     }
 

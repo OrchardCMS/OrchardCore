@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Navigation;
@@ -8,10 +9,14 @@ namespace OrchardCore.AdminMenu.AdminNodes;
 public sealed class PlaceholderAdminNodeDriver : DisplayDriver<MenuItem, PlaceholderAdminNode>
 {
     private readonly IPermissionService _permissionService;
+    private readonly IStringLocalizerFactory _stringLocalizerFactory;
 
-    public PlaceholderAdminNodeDriver(IPermissionService permissionService)
+    public PlaceholderAdminNodeDriver(
+        IPermissionService permissionService,
+        IStringLocalizerFactory stringLocalizerFactory)
     {
         _permissionService = permissionService;
+        _stringLocalizerFactory = stringLocalizerFactory;
     }
 
     public override Task<IDisplayResult> DisplayAsync(PlaceholderAdminNode treeNode, BuildDisplayContext context)
@@ -24,29 +29,29 @@ public sealed class PlaceholderAdminNodeDriver : DisplayDriver<MenuItem, Placeho
 
     public override IDisplayResult Edit(PlaceholderAdminNode treeNode, BuildEditorContext context)
     {
-        return Initialize<PlaceholderAdminNodeViewModel>("PlaceholderAdminNode_Fields_TreeEdit", async model =>
+        return Initialize<PlaceholderAdminNodeViewModel, PlaceholderAdminNode, IPermissionService, IStringLocalizerFactory>("PlaceholderAdminNode_Fields_TreeEdit", static async (model, treeNode, permissionService, stringLocalizerFactory) =>
         {
             model.LinkText = treeNode.LinkText;
             model.IconClass = treeNode.IconClass;
 
-            var selectedPermissions = await _permissionService.FindByNamesAsync(treeNode.PermissionNames);
+            var selectedPermissions = await permissionService.FindByNamesAsync(treeNode.PermissionNames);
 
             model.SelectedItems = selectedPermissions
                 .Select(p => new PermissionViewModel
                 {
                     Name = p.Name,
-                    DisplayText = p.Description,
+                    DisplayText = stringLocalizerFactory.Localize(p.Description)?.Value,
                 }).ToArray();
 
-            var permissions = await _permissionService.GetPermissionsAsync();
+            var permissions = await permissionService.GetPermissionsAsync();
 
             model.AllItems = permissions
                 .Select(p => new PermissionViewModel
                 {
                     Name = p.Name,
-                    DisplayText = p.Description,
+                    DisplayText = stringLocalizerFactory.Localize(p.Description)?.Value,
                 }).ToArray();
-        }).Location("Content");
+        }, treeNode, _permissionService, _stringLocalizerFactory).Location("Content");
     }
 
     public override async Task<IDisplayResult> UpdateAsync(PlaceholderAdminNode treeNode, UpdateEditorContext context)

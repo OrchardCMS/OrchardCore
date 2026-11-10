@@ -1,9 +1,9 @@
 using System.Text.Encodings.Web;
-using Cysharp.Text;
 using Fluid;
 using Fluid.Ast;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.DisplayManagement.Liquid;
 using OrchardCore.Liquid;
 using OrchardCore.ResourceManagement;
 
@@ -11,9 +11,9 @@ namespace OrchardCore.Resources.Liquid;
 
 public class ScriptBlock
 {
-    private static readonly char[] _separators = [',', ' '];
+    private static readonly char[] s_separators = [',', ' '];
 
-    public static async ValueTask<Completion> WriteToAsync(IReadOnlyList<FilterArgument> argumentsList, IReadOnlyList<Statement> statements, TextWriter writer, TextEncoder encoder, TemplateContext context)
+    public static async ValueTask<Completion> WriteToAsync(IReadOnlyList<FilterArgument> argumentsList, IReadOnlyList<Statement> statements, IFluidOutput output, TextEncoder encoder, TemplateContext context)
     {
         var services = ((LiquidTemplateContext)context).Services;
         var resourceManager = services.GetRequiredService<IResourceManager>();
@@ -34,31 +34,31 @@ public class ScriptBlock
             switch (argument.Name)
             {
                 case "name":
-                    name = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                    name = (await argument.Expression.EvaluateAsync(context)).ToStringValue(context);
                     break;
                 case "useCdn":
-                    useCdn = (await argument.Expression.EvaluateAsync(context)).ToBooleanValue();
+                    useCdn = (await argument.Expression.EvaluateAsync(context)).ToBooleanValue(context);
                     break;
                 case "condition":
-                    condition = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                    condition = (await argument.Expression.EvaluateAsync(context)).ToStringValue(context);
                     break;
                 case "culture":
-                    culture = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                    culture = (await argument.Expression.EvaluateAsync(context)).ToStringValue(context);
                     break;
                 case "debug":
-                    debug = (await argument.Expression.EvaluateAsync(context)).ToBooleanValue();
+                    debug = (await argument.Expression.EvaluateAsync(context)).ToBooleanValue(context);
                     break;
                 case "depends_on":
-                    dependsOn = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                    dependsOn = (await argument.Expression.EvaluateAsync(context)).ToStringValue(context);
                     break;
                 case "version":
-                    version = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                    version = (await argument.Expression.EvaluateAsync(context)).ToStringValue(context);
                     break;
                 case "at":
-                    Enum.TryParse((await argument.Expression.EvaluateAsync(context)).ToStringValue(), ignoreCase: true, out at);
+                    Enum.TryParse((await argument.Expression.EvaluateAsync(context)).ToStringValue(context), ignoreCase: true, out at);
                     break;
                 default:
-                    (customAttributes ??= [])[argument.Name] = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                    (customAttributes ??= [])[argument.Name] = (await argument.Expression.EvaluateAsync(context)).ToStringValue(context);
                     break;
             }
         }
@@ -102,7 +102,7 @@ public class ScriptBlock
             // This allows additions to the pre registered scripts dependencies.
             if (!string.IsNullOrEmpty(dependsOn))
             {
-                setting.SetDependencies(dependsOn.Split(_separators, StringSplitOptions.RemoveEmptyEntries));
+                setting.SetDependencies(dependsOn.Split(s_separators, StringSplitOptions.RemoveEmptyEntries));
             }
 
             // Allow Inline to work with both named scripts, and named inline scripts.
@@ -112,7 +112,7 @@ public class ScriptBlock
 
                 if (statements != null && statements.Count > 0)
                 {
-                    using var sw = new ZStringWriter();
+                    using var sw = new ViewBufferTextWriterContent();
                     var completion = await statements.RenderStatementsAsync(sw, encoder, context);
 
                     if (completion != Completion.Normal)
@@ -132,12 +132,12 @@ public class ScriptBlock
 
                 if (at == ResourceLocation.Inline)
                 {
-                    resourceManager.RenderLocalScript(setting, writer);
+                    resourceManager.RenderLocalScript(setting, output.AsTextWriter());
                 }
             }
             else
             {
-                resourceManager.RenderLocalScript(setting, writer);
+                resourceManager.RenderLocalScript(setting, output.AsTextWriter());
             }
         }
         else
@@ -148,7 +148,7 @@ public class ScriptBlock
 
             if (statements != null && statements.Count > 0)
             {
-                using var sw = new ZStringWriter();
+                using var sw = new ViewBufferTextWriterContent();
                 var completion = await statements.RenderStatementsAsync(sw, encoder, context);
 
                 if (completion != Completion.Normal)
@@ -177,7 +177,7 @@ public class ScriptBlock
             }
             else if (at == ResourceLocation.Inline)
             {
-                builder.WriteTo(writer, (HtmlEncoder)encoder);
+                output.Write(builder, (HtmlEncoder)encoder);
             }
             else
             {

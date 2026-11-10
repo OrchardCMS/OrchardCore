@@ -2,7 +2,7 @@
 // Scripts
 // 
 
-window.addEventListener('DOMContentLoaded', event => {
+window.addEventListener('DOMContentLoaded', () => {
 
     // Navbar shrink function
     var navbarShrink = function () {
@@ -35,7 +35,7 @@ window.addEventListener('DOMContentLoaded', event => {
 
     // Collapse responsive navbar when toggler is visible
     const navbarToggler = document.body.querySelector('.navbar-toggler');
-    const responsiveNavItems = [].slice.call(
+    const responsiveNavItems = Array.from(
         document.querySelectorAll('#navbarResponsive .nav-link')
     );
     responsiveNavItems.map(function (responsiveNavItem) {

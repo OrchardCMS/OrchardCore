@@ -8,7 +8,10 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.Deployment.Remote.Services;
 using OrchardCore.Deployment.Remote.ViewModels;
+using OrchardCore.Deployment.Remote.Models;
 using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
@@ -48,14 +51,16 @@ public sealed class RemoteInstanceController : Controller
         _service = service;
     }
 
-    public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
+    public async Task<IActionResult> Index(
+        ContentOptions options,
+        PagerParameters pagerParameters)
     {
         if (!await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.ManageRemoteInstances))
         {
             return Forbid();
         }
 
-        var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
+        var pager = new Pager(pagerParameters, _pagerOptions);
 
         var remoteInstances = (await _service.GetRemoteInstanceListAsync()).RemoteInstances;
 
@@ -88,6 +93,13 @@ public sealed class RemoteInstanceController : Controller
         [
             new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
         ];
+
+        // The AdminList shape renders the rows with the configured layout (List, Grid, ...).
+        model.List = new AdminListContext<RemoteInstance>
+        {
+            Source = model.RemoteInstances,
+            Pager = model.Pager,
+        };
 
         return View(model);
     }

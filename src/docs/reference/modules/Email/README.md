@@ -23,13 +23,13 @@ The `OrchardCore.Email` module provides you with the capability to integrate add
 If your provider does not require any settings, you may register it using the `AddEmailProvider<>` extension. For instance:
 
 ```csharp
-services.AddEmailProvider<YourCustomImplemenation>("A technical name for your implementation")
+services.AddEmailProvider<YourCustomImplementation>("A technical name for your implementation")
 ```
 
 However, if you have a complex provider like the included SMTP one, you may implement `IConfigureOptions<EmailProviderOptions>` and register it using the `AddEmailProviderOptionsConfiguration<>` extension. For instance:
 
 ```csharp
-services.AddEmailProviderOptionsConfiguration<YourCustomImplemenation>()
+services.AddEmailProviderOptionsConfiguration<YourCustomImplementation>()
 ```
 
 Here is and example of how we register the SMTP complex provider:
@@ -55,6 +55,10 @@ public class SmtpProviderOptionsConfigurations : IConfigureOptions<EmailProvider
     }
 }
 ```
+
+If your provider options are built from site settings or other tenant data that can change at runtime, consume them through `IOptionsMonitor<TOptions>` in the provider and any `IConfigureOptions<EmailProviderOptions>` implementation that depends on them. Register `AddSignalOptionsChangeTokenSource<TOptions>()` for any options type that should participate in post-commit refresh, then request invalidation for the affected options types with `IOptionsUpdateNotifier` when the settings editor saves changes.
+
+For example, Orchard Core now refreshes the Azure email provider in-place by invalidating `AzureEmailOptions`, `EmailProviderOptions`, and `EmailOptions`, and the built-in email modules register signal-backed change token sources for those options types so the standard `IOptionsMonitor<TOptions>` can rebuild them from committed tenant state.
 
 ## Sending Email Messages
 

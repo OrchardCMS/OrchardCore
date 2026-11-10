@@ -1,5 +1,6 @@
-using Microsoft.Extensions.Localization;
+using System.Text.Json.Serialization;
 using OrchardCore.Deployment;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Contents.Deployment;
 
@@ -8,16 +9,13 @@ namespace OrchardCore.Contents.Deployment;
 /// </summary>
 public class AllContentDeploymentStep : DeploymentStep
 {
-    public AllContentDeploymentStep()
-    {
-        Name = "AllContent";
-    }
+    public override string Name => "AllContent";
 
-    public AllContentDeploymentStep(IStringLocalizer<AllContentDeploymentStep> S)
-        : this()
-    {
-        Category = S["Content Management"];
-    }
+    [JsonIgnore]
+    public override LocalizationSource Category => CommonLocalizationSources.ContentManagement;
+
+    [JsonIgnore]
+    public override LocalizationSource Title => ContentsLocalizationSources.AllContent;
 
     public bool ExportAsSetupRecipe { get; set; }
 }

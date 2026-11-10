@@ -8,16 +8,19 @@ internal sealed class WorkflowRoutesHandler : WorkflowHandlerBase
 {
     private readonly IWorkflowInstanceRouteEntries _workflowRouteEntries;
     private readonly IWorkflowTypeStore _workflowTypeStore;
+    private readonly IWorkflowTypeVersionStore _workflowTypeVersionStore;
     private readonly IActivityLibrary _activityLibrary;
 
     public WorkflowRoutesHandler(
         IWorkflowInstanceRouteEntries workflowRouteEntries,
         IWorkflowTypeStore workflowTypeStore,
+        IWorkflowTypeVersionStore workflowTypeVersionStore,
         IActivityLibrary activityLibrary
     )
     {
         _workflowRouteEntries = workflowRouteEntries;
         _workflowTypeStore = workflowTypeStore;
+        _workflowTypeVersionStore = workflowTypeVersionStore;
         _activityLibrary = activityLibrary;
     }
 
@@ -39,7 +42,11 @@ internal sealed class WorkflowRoutesHandler : WorkflowHandlerBase
     private async Task UpdateRouteEntriesAsync(WorkflowContext context)
     {
         var workflow = context.Workflow;
-        var workflowType = await _workflowTypeStore.GetAsync(workflow.WorkflowTypeId);
+        // The routes the instance waits on are those of the version it runs.
+        var workflowType = await _workflowTypeVersionStore.GetWorkflowTypeAsync(
+            await _workflowTypeStore.GetAsync(workflow.WorkflowTypeId),
+            workflow.WorkflowTypeVersionId);
+
         var entries = WorkflowInstanceRouteEntries.GetWorkflowRoutesEntries(workflowType, context.Workflow, _activityLibrary);
 
         await _workflowRouteEntries.AddEntriesAsync(entries);

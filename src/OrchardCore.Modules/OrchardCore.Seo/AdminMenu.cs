@@ -6,7 +6,7 @@ namespace OrchardCore.Seo;
 
 public sealed class AdminMenu : AdminNavigationProvider
 {
-    private static readonly RouteValueDictionary _routeValues = new()
+    private static readonly RouteValueDictionary s_routeValues = new()
     {
         { "area", "OrchardCore.Settings" },
         { "groupId", SeoConstants.RobotsSettingsGroupId },
@@ -21,24 +21,6 @@ public sealed class AdminMenu : AdminNavigationProvider
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
-        if (NavigationHelper.UseLegacyFormat())
-        {
-            builder
-                .Add(S["Configuration"], configuration => configuration
-                    .Add(S["Settings"], settings => settings
-                       .Add(S["SEO"], S["SEO"].PrefixPosition(), seo => seo
-                           .AddClass("seo")
-                           .Id("seo")
-                           .Action("Index", "Admin", _routeValues)
-                           .Permission(SeoConstants.ManageSeoSettings)
-                           .LocalNav()
-                        )
-                    )
-                );
-
-            return ValueTask.CompletedTask;
-        }
-
         builder
             .Add(S["Settings"], settings => settings
                 .Add(S["Search"], S["Search"].PrefixPosition(), search => search
@@ -46,7 +28,7 @@ public sealed class AdminMenu : AdminNavigationProvider
                         .AddClass("seo")
                         .Id("seo")
                         .Add(S["Robots"], S["Robots"].PrefixPosition(), robots => robots
-                            .Action("Index", "Admin", _routeValues)
+                            .Action("Index", "Admin", s_routeValues)
                             .Permission(SeoConstants.ManageSeoSettings)
                             .LocalNav()
                         )

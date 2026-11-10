@@ -35,14 +35,16 @@ public sealed class SqlQueryDisplayDriver : DisplayDriver<Query>
         }
 
         return Combine(
-            Dynamic("SqlQuery_SummaryAdmin", model =>
+            // The source is a badge in the Tags zone of the List layout, and in the 'Source' column of the Grid layout.
+            Dynamic("SqlQuery_SummaryAdmin", static (model, query) =>
             {
                 model.Query = query;
-            }).Location("Content:5"),
-            Dynamic("SqlQuery_Buttons_SummaryAdmin", model =>
+            }, query).Location("Tags:5")
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "Source:5"),
+            Dynamic("SqlQuery_Buttons_SummaryAdmin", static (model, query) =>
             {
                 model.Query = query;
-            }).Location("Actions:2")
+            }, query).Location("Actions:2")
         );
     }
 
@@ -92,6 +94,13 @@ public sealed class SqlQueryDisplayDriver : DisplayDriver<Query>
         {
             context.Updater.ModelState.AddModelError(Prefix, nameof(viewModel.Query), S["The query field is required"]);
         }
+        else if (!ContainsLiquidSyntax(viewModel.Query))
+        {
+            foreach (var message in SqlParser.Validate(viewModel.Query))
+            {
+                context.Updater.ModelState.AddModelError(Prefix, nameof(viewModel.Query), message);
+            }
+        }
 
         viewModel.HasLiquidOutputExpressions = _outputExpressionDetector.ContainsOutputStatement(viewModel.Query);
 
@@ -112,4 +121,8 @@ public sealed class SqlQueryDisplayDriver : DisplayDriver<Query>
 
         return await EditAsync(query, context);
     }
+
+    private static bool ContainsLiquidSyntax(string query) =>
+        query.Contains("{{", StringComparison.Ordinal) ||
+        query.Contains("{%", StringComparison.Ordinal);
 }

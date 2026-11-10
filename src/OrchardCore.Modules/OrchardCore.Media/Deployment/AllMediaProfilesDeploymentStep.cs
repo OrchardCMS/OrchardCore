@@ -1,5 +1,6 @@
-using Microsoft.Extensions.Localization;
+using System.Text.Json.Serialization;
 using OrchardCore.Deployment;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Media.Deployment;
 
@@ -8,14 +9,8 @@ namespace OrchardCore.Media.Deployment;
 /// </summary>
 public class AllMediaProfilesDeploymentStep : DeploymentStep
 {
-    public AllMediaProfilesDeploymentStep()
-    {
-        Name = "AllMediaProfiles";
-    }
+    public override string Name => "AllMediaProfiles";
 
-    public AllMediaProfilesDeploymentStep(IStringLocalizer<AllMediaProfilesDeploymentStep> S)
-        : this()
-    {
-        Category = S["Content Management"];
-    }
+    [JsonIgnore]
+    public override LocalizationSource Category => CommonLocalizationSources.ContentManagement;
 }

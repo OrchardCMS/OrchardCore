@@ -33,9 +33,11 @@ public sealed class LuceneQueryDisplayDriver : DisplayDriver<Query>
         }
 
         return Combine(
-            Dynamic("LuceneQuery_SummaryAdmin", model => { model.Query = query; })
-                .Location("Content:5"),
-            Dynamic("LuceneQuery_Buttons_SummaryAdmin", model => { model.Query = query; })
+            // The source is a badge in the Tags zone of the List layout, and in the 'Source' column of the Grid layout.
+            Dynamic("LuceneQuery_SummaryAdmin", static (model, query) => { model.Query = query; }, query)
+                .Location("Tags:5")
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "Source:5"),
+            Dynamic("LuceneQuery_Buttons_SummaryAdmin", static (model, query) => { model.Query = query; }, query)
                 .Location("Actions:2")
         );
     }

@@ -13,6 +13,7 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Indexing;
 using OrchardCore.Liquid;
+using OrchardCore.Localization;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
@@ -27,7 +28,6 @@ using OrchardCore.Taxonomies.Liquid;
 using OrchardCore.Taxonomies.Models;
 using OrchardCore.Taxonomies.Services;
 using OrchardCore.Taxonomies.Settings;
-using OrchardCore.Taxonomies.ViewModels;
 
 namespace OrchardCore.Taxonomies;
 
@@ -35,13 +35,8 @@ public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.Configure<TemplateOptions>(o =>
+        services.Configure<TemplateOptionsBuilder>(o =>
         {
-            o.MemberAccessStrategy.Register<TaxonomyField>();
-            o.MemberAccessStrategy.Register<TaxonomyPartViewModel>();
-            o.MemberAccessStrategy.Register<TermPartViewModel>();
-            o.MemberAccessStrategy.Register<DisplayTaxonomyFieldViewModel>();
-            o.MemberAccessStrategy.Register<DisplayTaxonomyFieldTagsViewModel>();
         })
         .AddLiquidFilter<InheritedTermsFilter>("inherited_terms")
         .AddLiquidFilter<TaxonomyTermsFilter>("taxonomy_terms");
@@ -49,6 +44,7 @@ public sealed class Startup : StartupBase
         services.AddDataMigration<Migrations>();
         services.AddShapeTableProvider<TermShapes>();
         services.AddPermissionProvider<Permissions>();
+        services.AddScoped<IJSLocalizer, TaxonomiesJSLocalizer>();
 
         // Taxonomy Part
         services.AddContentPart<TaxonomyPart>()

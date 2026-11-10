@@ -3,7 +3,7 @@
 This module provides a database-backed localization system for translating dynamic content that cannot be handled by static PO files, such as:
 
 - Content Type and Content Field display names
-- Permission names and descriptions
+- Permission descriptions that are not translated with PO files, and permission categories
 - Any custom dynamic strings via `ILocalizationDataProvider`
 
 ## Features
@@ -92,6 +92,8 @@ The module includes these built-in `ILocalizationDataProvider` implementations:
 
 Provides admin menu display names for translation.
 
+Admin menu providers, including content-type admin menu nodes, require both `OrchardCore.DataLocalization` and `OrchardCore.AdminMenu`. Content type and content field display names remain available for translation when `OrchardCore.Contents` and `OrchardCore.DataLocalization` are enabled, even if `OrchardCore.AdminMenu` is disabled.
+
 - **Context**: `Admin Menus` or `Admin Menus:{menuName}`
 - **Strings**: Display names of all admin menu / sub menu items
 
@@ -111,10 +113,10 @@ Provides content field display names for translation.
 
 ### Permissions Provider
 
-Provides permission descriptions for translation.
+Provides permission descriptions and categories for translation.
 
 - **Context**: `Permissions` or `Permissions:{groupName}`
-- **Strings**: Descriptions of all non-template permissions
+- **Strings**: The categories of the permissions, and the descriptions that are not templates and have no PO translation context. Descriptions created with `LocalizationSource.Create(description, typeof(DeclaringType))` are translated with PO files and are not listed. See [Declaring permissions](../Roles/README.md#declaring-permissions).
 
 ### Search Provider
 

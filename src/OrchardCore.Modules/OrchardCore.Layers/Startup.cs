@@ -1,6 +1,6 @@
-using Fluid;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
@@ -15,7 +15,7 @@ using OrchardCore.Layers.Indexes;
 using OrchardCore.Layers.Models;
 using OrchardCore.Layers.Recipes;
 using OrchardCore.Layers.Services;
-using OrchardCore.Layers.ViewModels;
+using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
@@ -28,19 +28,19 @@ public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.Configure<TemplateOptions>(o =>
-        {
-            o.MemberAccessStrategy.Register<WidgetWrapper>();
-        });
-
+        // The filter is resolved from the container instead of being activated by reflection on each request.
+        services.AddTransient<LayerFilter>();
         services.Configure<MvcOptions>((options) =>
         {
-            options.Filters.Add<LayerFilter>();
+            options.Filters.AddService<LayerFilter>();
         });
 
         services.AddSiteDisplayDriver<LayerSiteSettingsDisplayDriver>();
         services.AddContentPart<LayerMetadata>();
         services.AddScoped<IContentDisplayDriver, LayerMetadataWelder>();
+
+        // Builds the rows of the layers admin list.
+        services.AddDisplayDriver<Layer, LayerDisplayDriver>();
         services.AddNavigationProvider<AdminMenu>();
         services.AddScoped<ILayerService, LayerService>();
         services.AddScoped<IContentHandler, LayerMetadataHandler>();
@@ -50,5 +50,6 @@ public sealed class Startup : StartupBase
         services.AddRecipeExecutionStep<LayerStep>();
         services.AddDeployment<AllLayersDeploymentSource, AllLayersDeploymentStep, AllLayersDeploymentStepDriver>();
         services.AddSingleton<IGlobalMethodProvider, DefaultLayersMethodProvider>();
+
     }
 }

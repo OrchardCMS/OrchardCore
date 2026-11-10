@@ -18,7 +18,7 @@ public class LiquidTagHelperActivator
     public static readonly LiquidTagHelperActivator None = new();
 
     private readonly Func<ITagHelperFactory, ViewContext, ITagHelper> _activatorByFactory;
-    private readonly Dictionary<string, Action<ITagHelper, ModelExpressionProvider, ViewDataDictionary<object>, string, FluidValue>> _setters =
+    private readonly Dictionary<string, Action<ITagHelper, ModelExpressionProvider, ViewDataDictionary<object>, string, FluidValue, TemplateContext>> _setters =
         new(StringComparer.OrdinalIgnoreCase);
 
     private readonly Func<ViewContext, ITagHelper> _activatorByService;
@@ -74,45 +74,45 @@ public class LiquidTagHelperActivator
 
             foreach (var propertyName in allNames)
             {
-                _setters.Add(propertyName, (h, mp, vd, k, v) =>
+                _setters.Add(propertyName, (h, mp, vd, k, v, context) =>
                 {
                     object value = null;
 
                     if (property.PropertyType.IsEnum)
                     {
-                        value = Enum.Parse(property.PropertyType, v.ToStringValue());
+                        value = Enum.Parse(property.PropertyType, v.ToStringValue(context));
                     }
                     else if (property.PropertyType == typeof(string))
                     {
-                        value = v.ToStringValue();
+                        value = v.ToStringValue(context);
                     }
                     else if (property.PropertyType == typeof(bool))
                     {
-                        value = Convert.ToBoolean(v.ToStringValue());
+                        value = Convert.ToBoolean(v.ToStringValue(context));
                     }
                     else if (property.PropertyType == typeof(bool?))
                     {
-                        value = v.IsNil() ? null : (bool?)Convert.ToBoolean(v.ToStringValue());
+                        value = v.IsNil() ? null : (bool?)Convert.ToBoolean(v.ToStringValue(context));
                     }
                     else if (property.PropertyType == typeof(IDictionary<string, string>))
                     {
                         var dictionary = (IDictionary<string, string>)getter(h);
-                        dictionary[k] = v.ToStringValue();
+                        dictionary[k] = v.ToStringValue(context);
                         value = dictionary;
                     }
                     else if (property.PropertyType == typeof(IDictionary<string, object>))
                     {
                         var dictionary = (IDictionary<string, object>)getter(h);
-                        dictionary[k] = v.ToObjectValue();
+                        dictionary[k] = v.ToObjectValue(context);
                         value = dictionary;
                     }
                     else if (property.PropertyType == typeof(ModelExpression))
                     {
-                        value = mp.CreateModelExpression(vd, v.ToStringValue());
+                        value = mp.CreateModelExpression(vd, v.ToStringValue(context));
                     }
                     else
                     {
-                        value = v.ToObjectValue();
+                        value = v.ToObjectValue(context);
                     }
 
                     setter(h, value);
@@ -139,7 +139,7 @@ public class LiquidTagHelperActivator
         }
     }
 
-    public ITagHelper Create(ITagHelperFactory factory, ViewContext context, FilterArguments arguments,
+    public ITagHelper Create(ITagHelperFactory factory, ViewContext context, TemplateContext templateContext, FilterArguments arguments,
         out TagHelperAttributeList contextAttributes, out TagHelperAttributeList outputAttributes)
     {
         contextAttributes = [];
@@ -189,7 +189,7 @@ public class LiquidTagHelperActivator
             {
                 try
                 {
-                    setter(tagHelper, expresionProvider, viewData, dictionaryKey, arguments[name]);
+                    setter(tagHelper, expresionProvider, viewData, dictionaryKey, arguments[name], templateContext);
                     found = true;
                 }
                 catch (ArgumentException e)
@@ -198,7 +198,7 @@ public class LiquidTagHelperActivator
                 }
             }
 
-            var attribute = new TagHelperAttribute(name.Replace('_', '-'), arguments[name].ToObjectValue());
+            var attribute = new TagHelperAttribute(name.Replace('_', '-'), arguments[name].ToObjectValue(templateContext));
 
             contextAttributes.Add(attribute);
 
@@ -223,13 +223,13 @@ public class LiquidTagHelperActivator
     {
         // Create a delegate TDeclaringType -> { TDeclaringType.Property = TValue; }
         var setterAsAction = prop.SetMethod.CreateDelegate(typeof(Action<,>).MakeGenericType(type, prop.PropertyType));
-        var setterClosedGenericMethod = _callPropertySetterOpenGenericMethod.MakeGenericMethod(type, prop.PropertyType);
+        var setterClosedGenericMethod = s_callPropertySetterOpenGenericMethod.MakeGenericMethod(type, prop.PropertyType);
         var setterDelegate = setterClosedGenericMethod.CreateDelegate<Action<object, object>>(setterAsAction);
 
         return (Action<object, object>)setterDelegate;
     }
 
-    private static readonly MethodInfo _callPropertySetterOpenGenericMethod =
+    private static readonly MethodInfo s_callPropertySetterOpenGenericMethod =
         typeof(LiquidTagHelperActivator).GetTypeInfo().GetDeclaredMethod(nameof(CallPropertySetter));
 
     private static void CallPropertySetter<TDeclaringType, TValue>(Action<TDeclaringType, TValue> setter, object target, object value)
@@ -239,13 +239,13 @@ public class LiquidTagHelperActivator
     {
         // Create a delegate TDeclaringType -> { TDeclaringType.Property = TValue; }
         var getterAsFunc = prop.GetMethod.CreateDelegate(typeof(Func<,>).MakeGenericType(type, prop.PropertyType));
-        var getterClosedGenericMethod = _callPropertyGetterOpenGenericMethod.MakeGenericMethod(type, prop.PropertyType);
+        var getterClosedGenericMethod = s_callPropertyGetterOpenGenericMethod.MakeGenericMethod(type, prop.PropertyType);
         var getterDelegate = getterClosedGenericMethod.CreateDelegate<Func<object, object>>(getterAsFunc);
 
         return (Func<object, object>)getterDelegate;
     }
 
-    private static readonly MethodInfo _callPropertyGetterOpenGenericMethod =
+    private static readonly MethodInfo s_callPropertyGetterOpenGenericMethod =
         typeof(LiquidTagHelperActivator).GetTypeInfo().GetDeclaredMethod(nameof(CallPropertyGetter));
 
     private static object CallPropertyGetter<TDeclaringType, TValue>(Func<TDeclaringType, TValue> getter, object target)

@@ -5,15 +5,15 @@ namespace OrchardCore.Tests.Modules.Contents.VersionPruning;
 
 public class ContentVersionPruningSelectorTests
 {
-    private static readonly DateTime _now = new(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+    private static readonly DateTime s_now = new(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
-    // A 30-day retention threshold relative to _now.
-    private static readonly DateTime _threshold = _now.AddDays(-30);
+    // A 30-day retention threshold relative to s_now.
+    private static readonly DateTime s_threshold = s_now.AddDays(-30);
 
     [Fact]
     public void SelectForDeletion_EmptyInput_ReturnsEmpty()
     {
-        var result = ContentVersionPruningSelector.SelectForDeletion([], versionsToKeep: 1, _threshold);
+        var result = ContentVersionPruningSelector.SelectForDeletion([], versionsToKeep: 1, s_threshold);
 
         Assert.Empty(result);
     }
@@ -23,10 +23,10 @@ public class ContentVersionPruningSelectorTests
     {
         var versions = new List<ContentItem>
         {
-            MakeVersion("item-1", "v1", _now.AddDays(-40)),
+            MakeVersion("item-1", "v1", s_now.AddDays(-40)),
         };
 
-        var result = ContentVersionPruningSelector.SelectForDeletion(versions, versionsToKeep: 1, _threshold);
+        var result = ContentVersionPruningSelector.SelectForDeletion(versions, versionsToKeep: 1, s_threshold);
 
         Assert.Empty(result);
     }
@@ -38,12 +38,12 @@ public class ContentVersionPruningSelectorTests
         // Of the remaining versions, only those older than the threshold are deleted.
         var versions = new List<ContentItem>
         {
-            MakeVersion("item-1", "v3", _now.AddDays(-5)),   // newest, kept by VersionsToKeep
-            MakeVersion("item-1", "v2", _now.AddDays(-10)),  // not older than threshold, kept
-            MakeVersion("item-1", "v1", _now.AddDays(-90)),  // older than threshold, deleted
+            MakeVersion("item-1", "v3", s_now.AddDays(-5)),   // newest, kept by VersionsToKeep
+            MakeVersion("item-1", "v2", s_now.AddDays(-10)),  // not older than threshold, kept
+            MakeVersion("item-1", "v1", s_now.AddDays(-90)),  // older than threshold, deleted
         };
 
-        var result = ContentVersionPruningSelector.SelectForDeletion(versions, versionsToKeep: 1, _threshold);
+        var result = ContentVersionPruningSelector.SelectForDeletion(versions, versionsToKeep: 1, s_threshold);
 
         Assert.Single(result);
         Assert.Equal("v1", result[0].ContentItemVersionId);
@@ -57,12 +57,12 @@ public class ContentVersionPruningSelectorTests
         // even though the old version is itself the only one past the threshold.
         var versions = new List<ContentItem>
         {
-            MakeVersion("item-1", "v3", _now.AddDays(-5)),
-            MakeVersion("item-1", "v2", _now.AddDays(-10)),
-            MakeVersion("item-1", "v1", _now.AddDays(-90)),
+            MakeVersion("item-1", "v3", s_now.AddDays(-5)),
+            MakeVersion("item-1", "v2", s_now.AddDays(-10)),
+            MakeVersion("item-1", "v1", s_now.AddDays(-90)),
         };
 
-        var result = ContentVersionPruningSelector.SelectForDeletion(versions, versionsToKeep: 1, _threshold);
+        var result = ContentVersionPruningSelector.SelectForDeletion(versions, versionsToKeep: 1, s_threshold);
 
         Assert.Contains(result, r => r.ContentItemVersionId == "v1");
         Assert.DoesNotContain(result, r => r.ContentItemVersionId == "v3");
@@ -74,12 +74,12 @@ public class ContentVersionPruningSelectorTests
     {
         var versions = new List<ContentItem>
         {
-            MakeVersion("item-1", "v1", _now.AddDays(-90)),
-            MakeVersion("item-1", "v2", _now.AddDays(-60)),
-            MakeVersion("item-1", "v3", _now.AddDays(-31)),
+            MakeVersion("item-1", "v1", s_now.AddDays(-90)),
+            MakeVersion("item-1", "v2", s_now.AddDays(-60)),
+            MakeVersion("item-1", "v3", s_now.AddDays(-31)),
         };
 
-        var result = ContentVersionPruningSelector.SelectForDeletion(versions, versionsToKeep: 0, _threshold);
+        var result = ContentVersionPruningSelector.SelectForDeletion(versions, versionsToKeep: 0, s_threshold);
 
         Assert.Equal(3, result.Count);
     }
@@ -89,11 +89,11 @@ public class ContentVersionPruningSelectorTests
     {
         var versions = new List<ContentItem>
         {
-            MakeVersion("item-1", "v1", _now.AddDays(-90)),
-            MakeVersion("item-1", "v2", _now.AddDays(-60)),
+            MakeVersion("item-1", "v1", s_now.AddDays(-90)),
+            MakeVersion("item-1", "v2", s_now.AddDays(-60)),
         };
 
-        var result = ContentVersionPruningSelector.SelectForDeletion(versions, versionsToKeep: 5, _threshold);
+        var result = ContentVersionPruningSelector.SelectForDeletion(versions, versionsToKeep: 5, s_threshold);
 
         Assert.Empty(result);
     }
@@ -104,11 +104,11 @@ public class ContentVersionPruningSelectorTests
         // A null ModifiedUtc sorts last (oldest) and is always considered past the threshold.
         var versions = new List<ContentItem>
         {
-            MakeVersion("item-1", "v2", _now.AddDays(-5)),
+            MakeVersion("item-1", "v2", s_now.AddDays(-5)),
             MakeVersion("item-1", "v1", modifiedUtc: null),
         };
 
-        var result = ContentVersionPruningSelector.SelectForDeletion(versions, versionsToKeep: 1, _threshold);
+        var result = ContentVersionPruningSelector.SelectForDeletion(versions, versionsToKeep: 1, s_threshold);
 
         Assert.Single(result);
         Assert.Equal("v1", result[0].ContentItemVersionId);
@@ -124,7 +124,7 @@ public class ContentVersionPruningSelectorTests
                 ContentItemId = "item-1",
                 ContentItemVersionId = "v-latest",
                 ContentType = "TestPage",
-                ModifiedUtc = _now.AddDays(-40),
+                ModifiedUtc = s_now.AddDays(-40),
                 Latest = true,
             },
             new()
@@ -132,13 +132,13 @@ public class ContentVersionPruningSelectorTests
                 ContentItemId = "item-1",
                 ContentItemVersionId = "v-published",
                 ContentType = "TestPage",
-                ModifiedUtc = _now.AddDays(-50),
+                ModifiedUtc = s_now.AddDays(-50),
                 Published = true,
             },
-            MakeVersion("item-1", "v-old", _now.AddDays(-90)),
+            MakeVersion("item-1", "v-old", s_now.AddDays(-90)),
         };
 
-        var result = ContentVersionPruningSelector.SelectForDeletion(versions, versionsToKeep: 0, _threshold);
+        var result = ContentVersionPruningSelector.SelectForDeletion(versions, versionsToKeep: 0, s_threshold);
 
         Assert.Single(result);
         Assert.Equal("v-old", result[0].ContentItemVersionId);

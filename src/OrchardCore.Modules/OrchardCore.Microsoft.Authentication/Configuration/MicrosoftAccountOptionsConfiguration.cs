@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Microsoft.Authentication.Settings;
+using OrchardCore.Secrets;
 
 namespace OrchardCore.Microsoft.Authentication.Configuration;
 
@@ -13,15 +14,18 @@ public class MicrosoftAccountOptionsConfiguration :
     IConfigureNamedOptions<MicrosoftAccountOptions>
 {
     private readonly MicrosoftAccountSettings _microsoftAccountSettings;
+    private readonly IServiceProvider _serviceProvider;
     private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly ILogger _logger;
 
     public MicrosoftAccountOptionsConfiguration(
         IOptions<MicrosoftAccountSettings> microsoftAccountSettings,
+        IServiceProvider serviceProvider,
         IDataProtectionProvider dataProtectionProvider,
         ILogger<MicrosoftAccountOptionsConfiguration> logger)
     {
         _microsoftAccountSettings = microsoftAccountSettings.Value;
+        _serviceProvider = serviceProvider;
         _dataProtectionProvider = dataProtectionProvider;
         _logger = logger;
     }
@@ -33,8 +37,10 @@ public class MicrosoftAccountOptionsConfiguration :
             return;
         }
 
-        if (string.IsNullOrWhiteSpace(_microsoftAccountSettings.AppId) ||
-            string.IsNullOrWhiteSpace(_microsoftAccountSettings.AppSecret))
+        var hasAppSecret = !string.IsNullOrWhiteSpace(_microsoftAccountSettings.AppSecretSecretName) ||
+                           !string.IsNullOrWhiteSpace(_microsoftAccountSettings.AppSecret);
+
+        if (string.IsNullOrWhiteSpace(_microsoftAccountSettings.AppId) || !hasAppSecret)
         {
             _logger.LogWarning("The Microsoft login provider is enabled but not configured.");
 
@@ -64,14 +70,13 @@ public class MicrosoftAccountOptionsConfiguration :
 
         options.ClientId = _microsoftAccountSettings.AppId;
 
-        try
-        {
-            options.ClientSecret = _dataProtectionProvider.CreateProtector(MicrosoftAuthenticationConstants.Features.MicrosoftAccount).Unprotect(_microsoftAccountSettings.AppSecret);
-        }
-        catch
-        {
-            _logger.LogError("The Microsoft Account secret key could not be decrypted. It may have been encrypted using a different key.");
-        }
+        options.ClientSecret = _serviceProvider.GetSecretValueAsync(
+            _microsoftAccountSettings.AppSecretSecretName,
+            _microsoftAccountSettings.AppSecret,
+            _dataProtectionProvider.CreateProtector(MicrosoftAuthenticationConstants.Features.MicrosoftAccount),
+            _logger)
+            .GetAwaiter()
+            .GetResult();
 
         if (_microsoftAccountSettings.CallbackPath.HasValue)
         {

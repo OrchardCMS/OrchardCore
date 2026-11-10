@@ -4,7 +4,9 @@ namespace OrchardCore.Security;
 
 public static class SecurityHeaderDefaults
 {
-    internal const char PoliciesSeparator = ';';
+    internal const char ContentSecurityPolicySeparator = ';';
+
+    internal const char PermissionsPolicySeparator = ',';
 
     internal static readonly string[] ContentSecurityPolicyNames =
     [

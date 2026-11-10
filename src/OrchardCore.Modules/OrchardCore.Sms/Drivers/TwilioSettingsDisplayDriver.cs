@@ -2,15 +2,15 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Entities;
-using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Options;
 using OrchardCore.Mvc.ModelBinding;
+using OrchardCore.Secrets;
 using OrchardCore.Settings;
 using OrchardCore.Sms.Models;
 using OrchardCore.Sms.Services;
@@ -20,12 +20,13 @@ namespace OrchardCore.Sms.Drivers;
 
 public sealed class TwilioSettingsDisplayDriver : SiteDisplayDriver<TwilioSettings>
 {
-    private readonly IShellReleaseManager _shellReleaseManager;
+    private readonly IOptionsUpdateNotifier _optionsUpdateNotifier;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly IPhoneFormatValidator _phoneFormatValidator;
-    private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly INotifier _notifier;
+    private readonly IDataProtectionProvider _dataProtectionProvider;
+    private readonly IServiceProvider _serviceProvider;
 
     internal readonly IHtmlLocalizer H;
     internal readonly IStringLocalizer S;
@@ -34,21 +35,23 @@ public sealed class TwilioSettingsDisplayDriver : SiteDisplayDriver<TwilioSettin
         => SmsSettings.GroupId;
 
     public TwilioSettingsDisplayDriver(
-        IShellReleaseManager shellReleaseManager,
+        IOptionsUpdateNotifier optionsUpdateNotifier,
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
         IPhoneFormatValidator phoneFormatValidator,
-        IDataProtectionProvider dataProtectionProvider,
         INotifier notifier,
+        IDataProtectionProvider dataProtectionProvider,
+        IServiceProvider serviceProvider,
         IHtmlLocalizer<TwilioSettingsDisplayDriver> htmlLocalizer,
         IStringLocalizer<TwilioSettingsDisplayDriver> stringLocalizer)
     {
-        _shellReleaseManager = shellReleaseManager;
+        _optionsUpdateNotifier = optionsUpdateNotifier;
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         _phoneFormatValidator = phoneFormatValidator;
-        _dataProtectionProvider = dataProtectionProvider;
         _notifier = notifier;
+        _dataProtectionProvider = dataProtectionProvider;
+        _serviceProvider = serviceProvider;
         H = htmlLocalizer;
         S = stringLocalizer;
     }
@@ -60,9 +63,9 @@ public sealed class TwilioSettingsDisplayDriver : SiteDisplayDriver<TwilioSettin
             model.IsEnabled = settings.IsEnabled;
             model.PhoneNumber = settings.PhoneNumber;
             model.AccountSID = settings.AccountSID;
-            model.HasAuthToken = !string.IsNullOrEmpty(settings.AuthToken);
+            model.AuthToken = SecretInputViewModel.Create(settings.AuthToken, settings.AuthTokenSecretName);
         }).Location("Content:5#Twilio")
-        .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, SmsPermissions.ManageSmsSettings))
+        .RenderWhen(static (driver) => driver._authorizationService.AuthorizeAsync(driver._httpContextAccessor.HttpContext?.User, SmsPermissions.ManageSmsSettings), this)
         .OnGroup(SettingsGroupId);
     }
 
@@ -112,9 +115,30 @@ public sealed class TwilioSettingsDisplayDriver : SiteDisplayDriver<TwilioSettin
                 context.Updater.ModelState.AddModelError(Prefix, nameof(model.AccountSID), S["Account SID requires a value."]);
             }
 
-            if (settings.AuthToken == null && string.IsNullOrWhiteSpace(model.AuthToken))
+            var authToken = await model.AuthToken.UpdateAsync(new SecretInputUpdateContext(
+                _serviceProvider,
+                _dataProtectionProvider.CreateProtector(TwilioSmsProvider.ProtectorName),
+                context.Updater.ModelState,
+                $"{Prefix}.{nameof(model.AuthToken)}")
             {
-                context.Updater.ModelState.AddModelError(Prefix, nameof(model.AuthToken), S["Auth Token required a value."]);
+                ProtectedValue = settings.AuthToken,
+                SecretName = settings.AuthTokenSecretName,
+            });
+
+            if (authToken.Succeeded)
+            {
+                if (string.IsNullOrEmpty(authToken.ProtectedValue) && string.IsNullOrEmpty(authToken.SecretName))
+                {
+                    context.Updater.ModelState.AddModelError(Prefix, nameof(model.AuthToken), S["Auth Token required a value."]);
+                }
+                else
+                {
+                    hasChanges |= settings.AuthToken != authToken.ProtectedValue;
+                    hasChanges |= settings.AuthTokenSecretName != authToken.SecretName;
+
+                    settings.AuthToken = authToken.ProtectedValue;
+                    settings.AuthTokenSecretName = authToken.SecretName;
+                }
             }
 
             // Has change should be evaluated before updating the value.
@@ -123,16 +147,6 @@ public sealed class TwilioSettingsDisplayDriver : SiteDisplayDriver<TwilioSettin
 
             settings.PhoneNumber = model.PhoneNumber;
             settings.AccountSID = model.AccountSID;
-
-            if (!string.IsNullOrWhiteSpace(model.AuthToken))
-            {
-                var protector = _dataProtectionProvider.CreateProtector(TwilioSmsProvider.ProtectorName);
-
-                var protectedToken = protector.Protect(model.AuthToken);
-                hasChanges |= settings.AuthToken != protectedToken;
-
-                settings.AuthToken = protectedToken;
-            }
         }
 
         if (context.Updater.ModelState.IsValid && settings.IsEnabled && string.IsNullOrEmpty(smsSettings.DefaultProviderName))
@@ -147,7 +161,9 @@ public sealed class TwilioSettingsDisplayDriver : SiteDisplayDriver<TwilioSettin
 
         if (hasChanges)
         {
-            _shellReleaseManager.RequestRelease();
+            _optionsUpdateNotifier
+                .RequestUpdate<TwilioOptions>()
+                .RequestUpdate<SmsProviderOptions>();
         }
 
         return Edit(site, settings, context);

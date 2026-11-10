@@ -1,18 +1,13 @@
-using Microsoft.Extensions.Localization;
+using System.Text.Json.Serialization;
 using OrchardCore.Deployment;
+using OrchardCore.Localization;
 
 namespace OrchardCore.DataLocalization.Deployment;
 
 public class AllDataTranslationsDeploymentStep : DeploymentStep
 {
-    public AllDataTranslationsDeploymentStep()
-    {
-        Name = "AllDataTranslations";
-    }
+    public override string Name => "AllDataTranslations";
 
-    public AllDataTranslationsDeploymentStep(IStringLocalizer<AllDataTranslationsDeploymentStep> S)
-        : this()
-    {
-        Category = S["Internationalization"];
-    }
+    [JsonIgnore]
+    public override LocalizationSource Category => DataLocalizationLocalizationSources.Internationalization;
 }

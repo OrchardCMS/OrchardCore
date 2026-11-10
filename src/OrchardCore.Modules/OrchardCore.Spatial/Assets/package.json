@@ -1,6 +1,10 @@
 {
   "name": "@orchardcore/spatial",
   "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "check": "vue-tsc --noEmit"
+  },
   "dependencies": {
     "leaflet": "1.9.4"
   }

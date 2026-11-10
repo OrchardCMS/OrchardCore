@@ -5,7 +5,7 @@ namespace OrchardCore.Media.Services;
 
 public class MediaProfileService : IMediaProfileService
 {
-    private static readonly IDictionary<string, string> _nullProfile = new Dictionary<string, string>();
+    private static readonly IDictionary<string, string> s_nullProfile = new Dictionary<string, string>();
     private readonly MediaProfilesManager _mediaProfilesManager;
 
     public MediaProfileService(MediaProfilesManager mediaProfilesManager)
@@ -61,7 +61,7 @@ public class MediaProfileService : IMediaProfileService
         }
         else
         {
-            return _nullProfile;
+            return s_nullProfile;
         }
     }
 }

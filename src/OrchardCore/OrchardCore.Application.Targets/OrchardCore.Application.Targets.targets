@@ -28,6 +28,14 @@
     </ItemGroup>
   </Target>
 
+  <!--
+    Publishing only copies files, so an empty 'wwwroot' folder is left out of the publish output. Without it, the host has
+    no web root: 'IWebHostEnvironment.WebRootPath' is null and static files are not served from it.
+  -->
+  <Target Name="EnsurePublishedWebRootExists" AfterTargets="CopyFilesToPublishDirectory">
+    <MakeDir Directories="$(PublishDir)wwwroot" />
+  </Target>
+
   <Target Name="NoWarnOnRazorViewImportedTypeConflicts" BeforeTargets="RazorCoreCompile">
     <PropertyGroup>
       <NoWarn>$(NoWarn);0436</NoWarn>

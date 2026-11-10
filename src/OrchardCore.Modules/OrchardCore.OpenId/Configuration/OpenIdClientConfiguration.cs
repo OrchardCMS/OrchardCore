@@ -8,6 +8,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
+using OrchardCore.Secrets;
 
 namespace OrchardCore.OpenId.Configuration;
 
@@ -16,17 +17,20 @@ public sealed class OpenIdClientConfiguration :
     IConfigureNamedOptions<OpenIdConnectOptions>
 {
     private readonly IOpenIdClientService _clientService;
+    private readonly IServiceProvider _serviceProvider;
     private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly ShellSettings _shellSettings;
     private readonly ILogger _logger;
 
     public OpenIdClientConfiguration(
         IOpenIdClientService clientService,
+        IServiceProvider serviceProvider,
         IDataProtectionProvider dataProtectionProvider,
         ShellSettings shellSettings,
         ILogger<OpenIdClientConfiguration> logger)
     {
         _clientService = clientService;
+        _serviceProvider = serviceProvider;
         _dataProtectionProvider = dataProtectionProvider;
         _shellSettings = shellSettings;
         _logger = logger;
@@ -78,18 +82,17 @@ public sealed class OpenIdClientConfiguration :
             }
         }
 
-        if (!string.IsNullOrEmpty(settings.ClientSecret))
-        {
-            var protector = _dataProtectionProvider.CreateProtector(nameof(OpenIdClientConfiguration));
+        var clientSecret = _serviceProvider.GetSecretValueAsync(
+            settings.ClientSecretSecretName,
+            settings.ClientSecret,
+            _dataProtectionProvider.CreateProtector(nameof(OpenIdClientConfiguration)),
+            _logger)
+            .GetAwaiter()
+            .GetResult();
 
-            try
-            {
-                options.ClientSecret = protector.Unprotect(settings.ClientSecret);
-            }
-            catch
-            {
-                _logger.LogError("The client secret could not be decrypted. It may have been encrypted using a different key.");
-            }
+        if (!string.IsNullOrEmpty(clientSecret))
+        {
+            options.ClientSecret = clientSecret;
         }
 
         if (settings.Parameters != null && settings.Parameters.Length > 0)

@@ -6,24 +6,24 @@ namespace OrchardCore.Benchmarks;
 [MemoryDiagnoser]
 public class SlugBenchmark
 {
-    private static readonly SlugService _slugService;
+    private static readonly SlugService s_slugService;
 
     static SlugBenchmark()
     {
-        _slugService = new SlugService();
+        s_slugService = new SlugService();
     }
 
     [Benchmark]
 #pragma warning disable CA1822 // Mark members as static
     public void EvaluateSlugifyWithShortSlug()
     {
-        _slugService.Slugify("Je veux aller à Saint-Étienne");
+        s_slugService.Slugify("Je veux aller à Saint-Étienne");
     }
 
     [Benchmark]
     public void EvaluateSlugifyWithLongSlug()
     {
-        _slugService.Slugify("Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne");
+        s_slugService.Slugify("Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne");
     }
 #pragma warning restore CA1822 // Mark members as static
 }

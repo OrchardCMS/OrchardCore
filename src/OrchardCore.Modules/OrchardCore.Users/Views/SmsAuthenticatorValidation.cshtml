@@ -8,32 +8,4 @@
 <form id="RequestCodeForm" method="post" asp-area="@UserConstants.Features.Users" asp-route="@SendCode.RouteName" class="d-none">
 </form>
 
-<script at="Head" asp-name="RequestVerificationCodeViaSms">
-    document.addEventListener('DOMContentLoaded', () => {
-
-        const box = document.getElementById('RequestCodeFeedback');
-        const btn = document.getElementById('RequestCode');
-        const form = document.getElementById('RequestCodeForm');
-
-        btn.addEventListener('click', (e) => {
-            e.preventDefault();
-            box.classList.add('d-none')
-
-            fetch(form.getAttribute('action'), {
-                method: form.getAttribute('method'),
-                body: new FormData(form)
-            }).then(response => response.json())
-                .then(result => {
-                    if (result.success) {
-                        box.classList.add('alert-success');
-                        box.classList.remove('alert-danger');
-                    } else {
-                        box.classList.add('alert-danger');
-                        box.classList.remove('alert-success');
-                    }
-                    box.innerText = result.message;
-                    box.classList.remove('d-none')
-                }).catch(error => console.log(error));
-        });
-    });
-</script>
+<script asp-src="~/OrchardCore.Users/Scripts/user-editors/request-verification-code.min.js" debug-src="~/OrchardCore.Users/Scripts/user-editors/request-verification-code.js" at="Head" type="module"></script>

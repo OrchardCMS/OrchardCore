@@ -1,0 +1,64 @@
+{
+  "type": "object",
+  "properties": {
+    "OrchardCore": {
+      "type": "object",
+      "properties": {
+        "Workflows": {
+          "type": "object",
+          "description": "Configures the workflows. The values can also be defined per tenant under 'OrchardCore:{TenantName}:Workflows'. See https://docs.orchardcore.net/en/latest/reference/modules/Workflows/.",
+          "properties": {
+            "Trimming": {
+              "type": "object",
+              "description": "Configures the 'Workflow Trimming' feature that deletes old workflow instances. The retention period and the trimmed statuses are configured in the site settings, and the frequency through the background task settings.",
+              "properties": {
+                "BatchSize": {
+                  "type": "integer",
+                  "description": "The maximum number of workflow instances deleted in a single run. Lower it if the trimming times out, or increase it if many instances need to be deleted and no timeout occurs.",
+                  "default": 5000,
+                  "minimum": 1
+                }
+              }
+            },
+            "Journal": {
+              "type": "object",
+              "description": "Configures the journal of the activities that workflow instances execute, shown by the page of an instance.",
+              "properties": {
+                "Enabled": {
+                  "type": "boolean",
+                  "description": "Whether the executed activities are recorded.",
+                  "default": true
+                },
+                "MaxRecordsPerInstance": {
+                  "type": "integer",
+                  "description": "The number of most recent records kept per workflow instance. 0 keeps every record.",
+                  "default": 1000,
+                  "minimum": 0
+                }
+              }
+            },
+            "Versions": {
+              "type": "object",
+              "description": "Configures the versions of the workflow types. Each publish of a workflow type creates a version, and instances run on the version they started on.",
+              "properties": {
+                "MaxCount": {
+                  "type": "integer",
+                  "description": "The number of most recent versions to keep per workflow type. When a new version is created, the older versions are deleted, except those that workflow instances run on. 0 keeps every version.",
+                  "default": 0,
+                  "minimum": 0
+                }
+              }
+            }
+          }
+        },
+        "OrchardCore_Workflows": {
+          "type": "object",
+          "deprecated": true,
+          "deprecationMessage": "The 'OrchardCore_Workflows' section is deprecated. Use 'OrchardCore:Workflows' instead.",
+          "description": "Deprecated. Use 'OrchardCore:Workflows' instead.",
+          "doNotSuggest": true
+        }
+      }
+    }
+  }
+}

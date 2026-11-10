@@ -9,9 +9,9 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags;
 
 public class ShapeTag
 {
-    private static readonly char[] _separators = [',', ' '];
+    private static readonly char[] s_separators = [',', ' '];
 
-    public static async ValueTask<Completion> WriteToAsync(IReadOnlyList<FilterArgument> argumentsList, TextWriter writer, TextEncoder encoder, TemplateContext context)
+    public static async ValueTask<Completion> WriteToAsync(IReadOnlyList<FilterArgument> argumentsList, IFluidOutput output, TextEncoder encoder, TemplateContext context)
     {
         var services = ((LiquidTemplateContext)context).Services;
         var shapeFactory = services.GetRequiredService<IShapeFactory>();
@@ -35,26 +35,26 @@ public class ShapeTag
         {
             switch (argument.Name)
             {
-                case "cache_id": cacheId = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
+                case "cache_id": cacheId = (await argument.Expression.EvaluateAsync(context)).ToStringValue(context); break;
 
 #pragma warning disable CA1806 // Do not ignore method results
-                case "cache_fixed_duration": TimeSpan.TryParse((await argument.Expression.EvaluateAsync(context)).ToStringValue(), out var fd); cacheFixedDuration = fd; break;
-                case "cache_sliding_duration": TimeSpan.TryParse((await argument.Expression.EvaluateAsync(context)).ToStringValue(), out var sd); cacheSlidingDuration = sd; break;
+                case "cache_fixed_duration": TimeSpan.TryParse((await argument.Expression.EvaluateAsync(context)).ToStringValue(context), out var fd); cacheFixedDuration = fd; break;
+                case "cache_sliding_duration": TimeSpan.TryParse((await argument.Expression.EvaluateAsync(context)).ToStringValue(context), out var sd); cacheSlidingDuration = sd; break;
 #pragma warning restore CA1806 // Do not ignore method results
 
                 // case "cache_dependency": cacheDependency = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                case "cache_context": cacheContext = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                case "cache_tag": cacheTag = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
+                case "cache_context": cacheContext = (await argument.Expression.EvaluateAsync(context)).ToStringValue(context); break;
+                case "cache_tag": cacheTag = (await argument.Expression.EvaluateAsync(context)).ToStringValue(context); break;
 
-                case "id": id = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                case "alternate": alternate = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                case "wrapper": wrapper = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
+                case "id": id = (await argument.Expression.EvaluateAsync(context)).ToStringValue(context); break;
+                case "alternate": alternate = (await argument.Expression.EvaluateAsync(context)).ToStringValue(context); break;
+                case "wrapper": wrapper = (await argument.Expression.EvaluateAsync(context)).ToStringValue(context); break;
 
                 case null:
                 case "type":
-                case "": type = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
+                case "": type = (await argument.Expression.EvaluateAsync(context)).ToStringValue(context); break;
 
-                default: (customAttributes ??= [])[argument.Name.ToPascalCaseUnderscore()] = (await argument.Expression.EvaluateAsync(context)).ToObjectValue(); break;
+                default: (customAttributes ??= [])[argument.Name.ToPascalCaseUnderscore()] = (await argument.Expression.EvaluateAsync(context)).ToObjectValue(context); break;
             }
         }
 
@@ -93,20 +93,20 @@ public class ShapeTag
 
             if (!string.IsNullOrWhiteSpace(cacheContext))
             {
-                var contexts = cacheContext.Split(_separators, StringSplitOptions.RemoveEmptyEntries);
+                var contexts = cacheContext.Split(s_separators, StringSplitOptions.RemoveEmptyEntries);
                 metadata.Cache().AddContext(contexts);
             }
 
             if (!string.IsNullOrWhiteSpace(cacheTag))
             {
-                var tags = cacheTag.Split(_separators, StringSplitOptions.RemoveEmptyEntries);
+                var tags = cacheTag.Split(s_separators, StringSplitOptions.RemoveEmptyEntries);
                 metadata.Cache().AddTag(tags);
             }
         }
 
         var shapeContent = await displayHelper.ShapeExecuteAsync(shape);
 
-        shapeContent.WriteTo(writer, (HtmlEncoder)encoder);
+        output.Write(shapeContent, (HtmlEncoder)encoder);
 
         return Completion.Normal;
     }

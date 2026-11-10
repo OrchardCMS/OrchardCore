@@ -12,15 +12,23 @@
     "tags": ["admin", "dashboard", "css"]
   },
   {
+    "action": "parcel",
+    "name": "taxonomies-menu",
+    "source": "Assets/ts/menu.ts",
+    "dest": "wwwroot/Scripts/menu/",
+    "tags": ["admin", "dashboard", "js"]
+  },
+  {
     "action": "min",
     "name": "taxonomies-activate-links",
     "source": "Assets/js/activate-links.js",
     "tags": ["admin", "dashboard", "js"]
   },
   {
-    "action": "min",
-    "name": "taxonomies-tags-editor",
-    "source": "Assets/js/tags-editor.js",
+    "action": "parcel",
+    "name": "taxonomy-field-tags",
+    "source": "Assets/ts/taxonomy-field-tags.ts",
+    "dest": "wwwroot/Scripts/taxonomy-field-tags/",
     "tags": ["admin", "dashboard", "js"]
   }
 ]

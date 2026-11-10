@@ -229,41 +229,67 @@ public sealed class AdminController : Controller, IUpdateModel
         // Populate route values to maintain previous route data when generating page links.
         options.RouteValues.TryAdd("q", options.FilterResult.ToString());
 
-        var pager = new Pager(pagerParameters, pagerOptions.Value.GetPageSize());
+        var pager = new Pager(pagerParameters, pagerOptions.Value);
 
-        var itemsPerPage = pagerOptions.Value.MaxPagedCount > 0
-            ? pagerOptions.Value.MaxPagedCount
+        var maxPagedCount = pagerOptions.Value.MaxPagedCount;
+
+        var totalItemCount = maxPagedCount > 0
+            ? maxPagedCount
             : await query.CountAsync();
-
-        var pagerShape = await shapeFactory.PagerAsync(pager, itemsPerPage, options.RouteValues);
 
         // Load items so that loading handlers are invoked.
         var pageOfContentItems = await query.Skip(pager.GetStartIndex())
             .Take(pager.PageSize)
             .ListAsync(_contentManager);
 
-        // We prepare the content items SummaryAdmin shape.
-        var contentItemSummaries = new List<dynamic>();
-        foreach (var contentItem in pageOfContentItems)
+        var contentItemsCount = pageOfContentItems.Count();
+
+        // The items aren't counted when a maximum is set, but no item comes after a page that isn't full,
+        // so that page tells where the list ends.
+        if (maxPagedCount > 0 && contentItemsCount < pager.PageSize)
         {
-            contentItemSummaries.Add(await _contentItemDisplayManager.BuildDisplayAsync(contentItem, this, "SummaryAdmin"));
+            totalItemCount = Math.Min(pager.GetStartIndex() + contentItemsCount, maxPagedCount);
         }
+
+        var pagerShape = await shapeFactory.PagerAsync(pager, totalItemCount, options.RouteValues);
 
         // Populate options pager summary values.
         var startIndex = (pager.Page - 1) * pager.PageSize + 1;
         options.StartIndex = startIndex;
-        options.EndIndex = startIndex + contentItemSummaries.Count - 1;
-        options.ContentItemsCount = contentItemSummaries.Count;
-        options.TotalItemCount = itemsPerPage;
+        options.EndIndex = startIndex + contentItemsCount - 1;
+        options.ContentItemsCount = contentItemsCount;
+        options.TotalItemCount = totalItemCount;
 
         var header = await _contentOptionsDisplayManager.BuildEditorAsync(options, this, false, string.Empty, string.Empty);
 
+        // The AdminList shape renders the items with the configured layout (List, Grid, ...).
+        var list = new AdminListContext<ContentItem>
+        {
+            Source = pageOfContentItems,
+            Header = header,
+            Pager = pagerShape,
+        };
+
+        // What this listing is filtered by, so a column provider can decide on a column from it, e.g. add one
+        // that only makes sense for a content type or a stereotype.
+        if (contentTypeIds is { Length: > 0 })
+        {
+            list.Data[ContentsAdminList.ContentTypesKey] = contentTypeIds;
+        }
+
+        if (stereotypes is { Length: > 0 })
+        {
+            list.Data[ContentsAdminList.StereotypesKey] = stereotypes;
+        }
+
+
         var shapeViewModel = await shapeFactory.CreateAsync<ListContentsViewModel>("ContentsAdminList", viewModel =>
         {
-            viewModel.ContentItems = contentItemSummaries;
+            viewModel.ContentItems = pageOfContentItems.ToList();
             viewModel.Pager = pagerShape;
             viewModel.Options = options;
             viewModel.Header = header;
+            viewModel.List = list;
         });
 
         if (TempData.TryGetValue(nameof(ModelState), out var modelStateJson) && modelStateJson is string)
@@ -735,7 +761,6 @@ public sealed class AdminController : Controller, IUpdateModel
             await _notifier.ErrorAsync(H["The operation was canceled."]);
         }
 
-
         return Url.IsLocalUrl(returnUrl)
             ? this.LocalRedirect(returnUrl, true)
             : RedirectToListActionWithModelState();
@@ -899,7 +924,7 @@ public sealed class AdminController : Controller, IUpdateModel
     private RedirectToActionResult RedirectToListActionWithModelState()
     {
         var errors = ModelState
-            .Where(ms => ms.Value.Errors.Any())
+            .Where(ms => ms.Value.Errors.Count > 0)
             .ToDictionary(
                 kvp => kvp.Key,
                 kvp => kvp.Value.Errors.Select(e => e.ErrorMessage).ToArray()

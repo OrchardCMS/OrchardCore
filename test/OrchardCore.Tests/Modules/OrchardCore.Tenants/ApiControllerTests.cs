@@ -1,6 +1,7 @@
 using OrchardCore.Data;
 using OrchardCore.Email;
 using OrchardCore.Environment.Shell;
+using OrchardCore.FileStorage;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell.Removing;
 using OrchardCore.Setup.Services;
@@ -480,6 +481,7 @@ public class ApiControllerTests
             databaseProviders,
             tenantValidator,
             tenantDatabasePatternResolver,
+            Mock.Of<ITempDirectoryProvider>(),
             tenantApiLocalizerMock.Object,
             Mock.Of<ILogger<TenantApiController>>())
         {

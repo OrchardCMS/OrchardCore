@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.Admin.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -21,6 +22,7 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Environment.Commands;
+using OrchardCore.Environment.Options;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Scope;
@@ -55,8 +57,12 @@ namespace OrchardCore.Users;
 
 public sealed class Startup : StartupBase
 {
-    private static readonly string _accountControllerName = typeof(AccountController).ControllerName();
-    private static readonly string _emailConfirmationControllerName = typeof(EmailConfirmationController).ControllerName();
+    private static readonly string s_accountControllerName = typeof(AccountController).ControllerName();
+    private static readonly string s_emailConfirmationControllerName = typeof(EmailConfirmationController).ControllerName();
+
+    // Long enough to read the confirmation notice and request a new email again once the resend cooldown is over.
+    private static readonly TimeSpan s_emailConfirmationCookieLifetime = TimeSpan.FromMinutes(10);
+
     private readonly string _tenantName;
 
     private UserOptions _userOptions;
@@ -75,7 +81,9 @@ public sealed class Startup : StartupBase
         services.Configure<UserOptions>(userOptions =>
         {
             var configuration = ShellScope.Services.GetRequiredService<IShellConfiguration>();
-            configuration.GetSection("OrchardCore_Users").Bind(userOptions);
+
+            // The 'OrchardCore_Users' section is deprecated and will be removed in a future major version, use 'Users' instead.
+            configuration.GetSectionCompat("Users", "OrchardCore_Users").Bind(userOptions);
         });
 
         // Add ILookupNormalizer as Singleton because it is needed by UserIndexProvider
@@ -94,6 +102,17 @@ public sealed class Startup : StartupBase
         // Configure the authentication options to use the application cookie scheme as the default sign-out handler.
         // This is required for security modules like the OpenID module (that uses SignOutAsync()) to work correctly.
         services.AddAuthentication(options => options.DefaultSignOutScheme = IdentityConstants.ApplicationScheme);
+
+        // A short-lived cookie that identifies a user who passed the password check but hasn't confirmed their email yet,
+        // so that they can request a new confirmation email. Like the 'Identity.TwoFactorUserId' cookie, it doesn't sign the user in.
+        services.AddAuthentication()
+            .AddCookie(UserConstants.EmailConfirmationAuthenticationScheme, options =>
+            {
+                options.Cookie.Name = "orchemail_" + HttpUtility.UrlEncode(_tenantName);
+                options.Cookie.SameSite = SameSiteMode.Strict;
+                options.ExpireTimeSpan = s_emailConfirmationCookieLifetime;
+                options.SlidingExpiration = false;
+            });
 
         services.AddUsers();
 
@@ -156,6 +175,7 @@ public sealed class Startup : StartupBase
         services.AddDisplayDriver<Navbar, UserMenuNavbarDisplayDriver>();
         services.AddDisplayDriver<UserMenu, UserMenuDisplayDriver>();
         services.AddShapeTableProvider<UserMenuShapeTableProvider>();
+        services.AddShapeTableProvider<AdminDashboardShapeTableProvider>();
 
         services.AddRecipeExecutionStep<UsersStep>();
 
@@ -164,6 +184,7 @@ public sealed class Startup : StartupBase
         services.AddDisplayDriver<LoginForm, LoginFormDisplayDriver>();
         services.AddScoped<ILoginFormEvent, EmailConfirmationLoginFormEvent>();
         services.AddScoped<ILoginFormEvent, DisabledUserLoginFormEvent>();
+
     }
 
     public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -176,7 +197,7 @@ public sealed class Startup : StartupBase
             pattern: _userOptions.LoginPath,
             defaults: new
             {
-                controller = _accountControllerName,
+                controller = s_accountControllerName,
                 action = nameof(AccountController.Login),
             }
         );
@@ -187,7 +208,7 @@ public sealed class Startup : StartupBase
             pattern: _userOptions.ChangePasswordUrl,
             defaults: new
             {
-                controller = _accountControllerName,
+                controller = s_accountControllerName,
                 action = nameof(AccountController.ChangePassword),
             }
         );
@@ -198,7 +219,7 @@ public sealed class Startup : StartupBase
             pattern: _userOptions.ChangePasswordConfirmationUrl,
             defaults: new
             {
-                controller = _accountControllerName,
+                controller = s_accountControllerName,
                 action = nameof(AccountController.ChangePasswordConfirmation),
             }
         );
@@ -209,7 +230,7 @@ public sealed class Startup : StartupBase
             pattern: _userOptions.LogoffPath,
             defaults: new
             {
-                controller = _accountControllerName,
+                controller = s_accountControllerName,
                 action = nameof(AccountController.LogOff),
             }
         );
@@ -220,7 +241,7 @@ public sealed class Startup : StartupBase
             pattern: "ConfirmEmail",
             defaults: new
             {
-                controller = _emailConfirmationControllerName,
+                controller = s_emailConfirmationControllerName,
                 action = nameof(EmailConfirmationController.ConfirmEmail),
             }
         );
@@ -231,8 +252,19 @@ public sealed class Startup : StartupBase
             pattern: "ConfirmEmailSent",
             defaults: new
             {
-                controller = _emailConfirmationControllerName,
+                controller = s_emailConfirmationControllerName,
                 action = nameof(EmailConfirmationController.ConfirmEmailSent),
+            }
+        );
+
+        routes.MapAreaControllerRoute(
+            name: RateLimitRouteNames.ResendEmailConfirmation,
+            areaName: UserConstants.Features.Users,
+            pattern: "ResendEmailConfirmation",
+            defaults: new
+            {
+                controller = s_emailConfirmationControllerName,
+                action = nameof(EmailConfirmationController.ResendEmailConfirmation),
             }
         );
 
@@ -247,14 +279,19 @@ public sealed class RateLimitsStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.Configure<RateLimitsOptions>(options =>
-            options.AddRouteRateLimit(RateLimitRouteNames.Login, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.PasswordAuthentication, 10)));
+        {
+            // Users who sign in are anonymous, so these attempts can only be counted per IP address. The limit leaves room for
+            // the many users of an office who share an IP address, as the account lockout already protects each account.
+            options.AddRouteRateLimit(RateLimitRouteNames.Login, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.PasswordAuthentication, 100));
+            options.AddRouteRateLimit(RateLimitRouteNames.ResendEmailConfirmation, HttpMethods.Post, RateLimitPartitionHelpers.CreateFixedWindowPolicy(UserRateLimiterPolicyNames.EmailConfirmation, 2, TimeSpan.FromMinutes(1), RateLimitPartitionKeys.GetEmailConfirmationUser));
+        });
     }
 }
 
 [Feature(UserConstants.Features.ExternalAuthentication)]
 public sealed class ExternalAuthenticationStartup : StartupBase
 {
-    private static readonly string _accountControllerName = typeof(AccountController).ControllerName();
+    private static readonly string s_accountControllerName = typeof(AccountController).ControllerName();
 
     private UserOptions _userOptions;
 
@@ -265,6 +302,7 @@ public sealed class ExternalAuthenticationStartup : StartupBase
         services.AddDisplayDriver<UserMenu, ExternalAuthenticationUserMenuDisplayDriver>();
         services.AddSiteDisplayDriver<ExternalRegistrationSettingsDisplayDriver>();
         services.AddSiteDisplayDriver<ExternalLoginSettingsDisplayDriver>();
+        services.AddSignalOptionsChangeTokenSource<ExternalLoginOptions>();
         services.AddTransient<IConfigureOptions<ExternalLoginOptions>, ExternalLoginOptionsConfigurations>();
     }
 
@@ -278,10 +316,21 @@ public sealed class ExternalAuthenticationStartup : StartupBase
             pattern: _userOptions.ExternalLoginsUrl,
             defaults: new
             {
-                controller = _accountControllerName,
+                controller = s_accountControllerName,
                 action = nameof(ExternalAuthenticationsController.ExternalLogins),
             }
         );
+    }
+}
+
+[Feature(UserConstants.Features.ExternalAuthentication)]
+[RequireFeatures("OrchardCore.Deployment")]
+public sealed class ExternalAuthenticationDeploymentStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddSiteSettingsPropertyDeploymentStep<ExternalRegistrationSettings, ExternalAuthenticationDeploymentStartup>(S => S["External registration settings"], S => S["Exports the external registration settings."]);
+        services.AddSiteSettingsPropertyDeploymentStep<ExternalLoginSettings, ExternalAuthenticationDeploymentStartup>(S => S["External login settings"], S => S["Exports the external login settings."]);
     }
 }
 
@@ -293,8 +342,9 @@ public sealed class ExternalAuthenticationRateLimitsStartup : StartupBase
     {
         services.Configure<RateLimitsOptions>(options =>
         {
-            options.AddRouteRateLimit(RateLimitRouteNames.RegisterExternalLogin, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.UserRegistration, 3));
-            options.AddRouteRateLimit(RateLimitRouteNames.LinkExternalLogin, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.PasswordAuthentication, 10));
+            // These limits share the budgets of the registration and login pages, so they must use the same values.
+            options.AddRouteRateLimit(RateLimitRouteNames.RegisterExternalLogin, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.UserRegistration, 20));
+            options.AddRouteRateLimit(RateLimitRouteNames.LinkExternalLogin, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.PasswordAuthentication, 100));
         });
     }
 }
@@ -338,45 +388,45 @@ public sealed class LiquidStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.Configure<TemplateOptions>(o =>
+        services.Configure<TemplateOptionsBuilder>(o =>
         {
-            o.Filters.AddFilter("has_claim", UserFilters.HasClaim);
-            o.Filters.AddFilter("user_id", UserFilters.UserId);
+            o.AddFilter("has_claim", UserFilters.HasClaim);
+            o.AddFilter("user_id", UserFilters.UserId);
 
-            o.MemberAccessStrategy.Register<ClaimsPrincipal>();
-            o.MemberAccessStrategy.Register<ClaimsIdentity>();
-
-            o.Scope.SetValue("User", new ObjectValue(new LiquidUserAccessor()));
-            o.MemberAccessStrategy.Register<LiquidUserAccessor, FluidValue>((obj, name, ctx) =>
+            o.WithGlobalValue("User", ObjectValue.Create(new LiquidUserAccessor()));
+            o.ConfigureMemberAccess(strategy =>
             {
-                var user = ((LiquidTemplateContext)ctx).Services.GetRequiredService<IHttpContextAccessor>().HttpContext?.User;
-                if (user != null)
+                strategy.Register<LiquidUserAccessor, FluidValue>((obj, name, ctx) =>
+                {
+                    var user = ((LiquidTemplateContext)ctx).Services.GetRequiredService<IHttpContextAccessor>().HttpContext?.User;
+                    if (user != null)
+                    {
+                        return name switch
+                        {
+                            nameof(ClaimsPrincipal.Identity) => ObjectValue.Create(user.Identity),
+                            _ => NilValue.Instance
+                        };
+                    }
+
+                    return NilValue.Instance;
+                });
+
+                strategy.Register<User, FluidValue>((user, name, context) =>
                 {
                     return name switch
                     {
-                        nameof(ClaimsPrincipal.Identity) => new ObjectValue(user.Identity),
+                        nameof(User.UserId) => StringValue.Create(user.UserId ?? string.Empty),
+                        nameof(User.UserName) => StringValue.Create(user.UserName ?? string.Empty),
+                        nameof(User.NormalizedUserName) => StringValue.Create(user.NormalizedUserName ?? string.Empty),
+                        nameof(User.Email) => StringValue.Create(user.Email ?? string.Empty),
+                        nameof(User.NormalizedEmail) => StringValue.Create(user.NormalizedEmail ?? string.Empty),
+                        nameof(User.EmailConfirmed) => user.EmailConfirmed ? BooleanValue.True : BooleanValue.False,
+                        nameof(User.IsEnabled) => user.IsEnabled ? BooleanValue.True : BooleanValue.False,
+                        nameof(User.RoleNames) => ArrayValue.Create(user.RoleNames.Select(x => StringValue.Create(x)).ToArray()),
+                        nameof(User.Properties) => ObjectValue.Create(user.Properties),
                         _ => NilValue.Instance
                     };
-                }
-
-                return NilValue.Instance;
-            });
-
-            o.MemberAccessStrategy.Register<User, FluidValue>((user, name, context) =>
-            {
-                return name switch
-                {
-                    nameof(User.UserId) => new StringValue(user.UserId),
-                    nameof(User.UserName) => new StringValue(user.UserName),
-                    nameof(User.NormalizedUserName) => new StringValue(user.NormalizedUserName),
-                    nameof(User.Email) => new StringValue(user.Email),
-                    nameof(User.NormalizedEmail) => new StringValue(user.NormalizedEmail),
-                    nameof(User.EmailConfirmed) => user.EmailConfirmed ? BooleanValue.True : BooleanValue.False,
-                    nameof(User.IsEnabled) => user.IsEnabled ? BooleanValue.True : BooleanValue.False,
-                    nameof(User.RoleNames) => new ArrayValue(user.RoleNames.Select(x => new StringValue(x)).ToArray()),
-                    nameof(User.Properties) => new ObjectValue(user.Properties),
-                    _ => NilValue.Instance
-                };
+                });
             });
         })
        .AddLiquidFilter<UsersByIdFilter>("users_by_id")
@@ -434,11 +484,6 @@ public sealed class ChangeEmailStartup : StartupBase
             .AddTransient<ChangeEmailTokenProvider>()
             .AddOptions<ChangeEmailTokenProviderOptions>();
 
-        services.Configure<TemplateOptions>(o =>
-        {
-            o.MemberAccessStrategy.Register<ChangeEmailViewModel>();
-        });
-
         services.AddSiteDisplayDriver<ChangeEmailSettingsDisplayDriver>();
         services.AddNavigationProvider<ChangeEmailAdminMenu>();
         services.AddDisplayDriver<UserMenu, ChangeEmailUserMenuDisplayDriver>();
@@ -451,7 +496,7 @@ public sealed class ChangeEmailDeploymentStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddSiteSettingsPropertyDeploymentStep<ChangeEmailDeploymentStartup, ChangeEmailDeploymentStartup>(S => S["Change Email settings"], S => S["Exports the Change Email settings."]);
+        services.AddSiteSettingsPropertyDeploymentStep<ChangeEmailSettings, ChangeEmailDeploymentStartup>(S => S["Change Email settings"], S => S["Exports the Change Email settings."]);
     }
 }
 
@@ -465,14 +510,10 @@ public sealed class RegistrationStartup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.Configure<TemplateOptions>(o =>
-        {
-            o.MemberAccessStrategy.Register<ConfirmEmailViewModel>();
-        });
-
         services.AddDisplayDriver<User, UserRegistrationAdminDisplayDriver>();
         services.AddSiteDisplayDriver<RegistrationSettingsDisplayDriver>();
         services.AddNavigationProvider<RegistrationAdminMenu>();
+        services.AddSignalOptionsChangeTokenSource<RegistrationOptions>();
 
         services.AddDisplayDriver<LoginForm, RegisterUserLoginFormDisplayDriver>();
         services.AddDisplayDriver<RegisterUserForm, RegisterUserFormDisplayDriver>();
@@ -525,7 +566,7 @@ public sealed class RegistrationRateLimitsStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.Configure<RateLimitsOptions>(options =>
-            options.AddRouteRateLimit(RateLimitRouteNames.Register, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.UserRegistration, 3)));
+            options.AddRouteRateLimit(RateLimitRouteNames.Register, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.UserRegistration, 20)));
     }
 }
 
@@ -553,11 +594,6 @@ public sealed class ResetPasswordStartup : StartupBase
         services.AddTransient<IConfigureOptions<IdentityOptions>, PasswordResetIdentityOptionsConfigurations>()
             .AddTransient<PasswordResetTokenProvider>()
             .AddOptions<PasswordResetTokenProviderOptions>();
-
-        services.Configure<TemplateOptions>(o =>
-        {
-            o.MemberAccessStrategy.Register<LostPasswordViewModel>();
-        });
 
         services.AddSiteDisplayDriver<ResetPasswordSettingsDisplayDriver>();
         services.AddNavigationProvider<ResetPasswordAdminMenu>();
@@ -620,8 +656,8 @@ public sealed class ResetPasswordRateLimitsStartup : StartupBase
     {
         services.Configure<RateLimitsOptions>(options =>
         {
-            options.AddRouteRateLimit(RateLimitRouteNames.ForgotPassword, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.PasswordRecovery, 5));
-            options.AddRouteRateLimit(RateLimitRouteNames.ResetPassword, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.PasswordRecovery, 5));
+            options.AddRouteRateLimit(RateLimitRouteNames.ForgotPassword, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.PasswordRecovery, 20));
+            options.AddRouteRateLimit(RateLimitRouteNames.ResetPassword, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.PasswordRecovery, 20));
         });
     }
 }

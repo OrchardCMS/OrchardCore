@@ -1,3 +1,4 @@
+using System.Collections.Frozen;
 using Microsoft.Extensions.FileProviders;
 using OrchardCore.Environment.Shell.Scope;
 
@@ -5,14 +6,38 @@ namespace OrchardCore.Scripting;
 
 public class DefaultScriptingManager : IScriptingManager
 {
-    private readonly IEnumerable<IScriptingEngine> _engines;
+    private readonly FrozenDictionary<string, IScriptingEngine> _enginesByPrefix;
+    private readonly GlobalMethod[] _globalMethods;
 
     public DefaultScriptingManager(
         IEnumerable<IScriptingEngine> engines,
         IEnumerable<IGlobalMethodProvider> globalMethodProviders)
     {
-        _engines = engines;
+        // Resolving the engine used to walk the registrations on every evaluation and keep the first one
+        // whose prefix matched. Two engines can in principle claim the same prefix, so the index is built
+        // with TryAdd rather than an indexer assignment: an engine registered later must not be able to
+        // displace one that already answered for that prefix.
+        var enginesByPrefix = new Dictionary<string, IScriptingEngine>(StringComparer.Ordinal);
+
+        foreach (var engine in engines)
+        {
+            // A directive always carries a prefix, so an engine that declares none can never be addressed
+            // by one and has nothing to be indexed under.
+            if (engine.Prefix is not null)
+            {
+                enginesByPrefix.TryAdd(engine.Prefix, engine);
+            }
+        }
+
+        _enginesByPrefix = enginesByPrefix.ToFrozenDictionary(StringComparer.Ordinal);
+
         GlobalMethodProviders = new List<IGlobalMethodProvider>(globalMethodProviders).AsReadOnly();
+
+        // Every evaluation builds a scope out of the same registered methods, and an evaluation is cheap
+        // enough that the enumerators of a per-evaluation LINQ pipeline are a visible share of it. The
+        // providers are singletons of the tenant and contribute a fixed set of methods once they are
+        // resolved, so the flattening is done once here instead.
+        _globalMethods = GlobalMethodProviders.SelectMany(provider => provider.GetMethods()).ToArray();
     }
 
     public IReadOnlyList<IGlobalMethodProvider> GlobalMethodProviders { get; }
@@ -33,9 +58,20 @@ public class DefaultScriptingManager : IScriptingManager
             return directive;
         }
 
-        var methodProviders = scopedMethodProviders != null ? GlobalMethodProviders.Concat(scopedMethodProviders) : GlobalMethodProviders;
-        var scope = engine.CreateScope(methodProviders.SelectMany(x => x.GetMethods()), ShellScope.Services, fileProvider, basePath);
-        return engine.Evaluate(scope, script);
+        var scope = engine.CreateScope(GetMethods(scopedMethodProviders), ShellScope.Services, fileProvider, basePath);
+
+        try
+        {
+            return engine.Evaluate(scope, script);
+        }
+        finally
+        {
+            // A scope may own state an engine wants back — the JavaScript engine reuses its engines between
+            // evaluations and only learns the evaluation is over from here. The 'finally' is the point: a
+            // script that throws has still left its declarations behind, and skipping the release on that
+            // path is exactly how the next evaluation would inherit them.
+            DisposeScope(scope);
+        }
     }
 
     public async Task<object> EvaluateAsync(string directive,
@@ -55,15 +91,57 @@ public class DefaultScriptingManager : IScriptingManager
             return directive;
         }
 
-        var methodProviders = scopedMethodProviders != null ? GlobalMethodProviders.Concat(scopedMethodProviders) : GlobalMethodProviders;
-        var scope = engine.CreateScope(methodProviders.SelectMany(x => x.GetMethods()), ShellScope.Services, fileProvider, basePath);
-        return await engine.EvaluateAsync(scope, script, cancellationToken);
+        var scope = engine.CreateScope(GetMethods(scopedMethodProviders), ShellScope.Services, fileProvider, basePath);
+
+        try
+        {
+            // Awaited here rather than returned, so that the scope is released after the evaluation has
+            // actually finished. An engine cannot be reset while an asynchronous evaluation it started is
+            // still outstanding.
+            return await engine.EvaluateAsync(scope, script, cancellationToken);
+        }
+        finally
+        {
+            DisposeScope(scope);
+        }
     }
 
     public IScriptingEngine GetScriptingEngine(string prefix)
     {
-        return _engines.FirstOrDefault(x => x.Prefix == prefix);
+        // A prefix parsed out of a directive is never null, but this is public surface and the scan this
+        // replaces accepted a null one and found nothing for it, which is the one question the index
+        // cannot be asked: no engine is indexed under a prefix it cannot declare.
+        if (prefix is null)
+        {
+            return null;
+        }
+
+        _enginesByPrefix.TryGetValue(prefix, out var engine);
+
+        return engine;
     }
+
+    private IEnumerable<GlobalMethod> GetMethods(IEnumerable<IGlobalMethodProvider> scopedMethodProviders)
+    {
+        if (scopedMethodProviders is null)
+        {
+            return _globalMethods;
+        }
+
+        // The scoped providers belong to this evaluation alone, so their methods are read every time. They
+        // come last because a scope installs the methods in order, which is what lets a scoped method
+        // shadow a registered one of the same name.
+        return _globalMethods.Concat(scopedMethodProviders.SelectMany(static provider => provider.GetMethods()));
+    }
+
+    /// <summary>
+    /// Releases a scope that holds resources. <see cref="IScriptingScope"/> is a marker interface and most
+    /// implementations hold nothing, so the capability is discovered rather than required: adding
+    /// <see cref="IDisposable"/> to the interface would break every engine implemented outside this
+    /// repository.
+    /// </summary>
+    private static void DisposeScope(IScriptingScope scope)
+        => (scope as IDisposable)?.Dispose();
 
     private static bool TryParseDirective(string directive, out string prefix, out string script)
     {

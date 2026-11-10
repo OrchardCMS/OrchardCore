@@ -6,15 +6,16 @@ namespace OrchardCore.Workflows;
 public sealed class ResourceManagementOptionsConfiguration
     : IConfigureOptions<ResourceManagementOptions>
 {
-    private static readonly ResourceManifest _manifest;
+    private static readonly ResourceManifest s_manifest;
 
     static ResourceManagementOptionsConfiguration()
     {
-        _manifest = new ResourceManifest();
+        s_manifest = new ResourceManifest();
 
-        _manifest
+        // Obsolete: the workflow designer no longer uses jsPlumb. The resources are kept for third parties
+        // and will be removed in a future major version.
+        s_manifest
             .DefineScript("jsplumb")
-            .SetDependencies("jQuery")
             .SetUrl(
                 "~/OrchardCore.Workflows/Scripts/jsplumb.min.js",
                 "~/OrchardCore.Workflows/Scripts/jsplumb.js"
@@ -29,7 +30,7 @@ public sealed class ResourceManagementOptionsConfiguration
             )
             .SetVersion("2.15.5");
 
-        _manifest
+        s_manifest
             .DefineStyle("jsplumbtoolkit-defaults")
             .SetUrl(
                 "~/OrchardCore.Workflows/Styles/jsplumbtoolkit-defaults.min.css",
@@ -45,36 +46,62 @@ public sealed class ResourceManagementOptionsConfiguration
             )
             .SetVersion("2.15.5");
 
-        _manifest
-            .DefineScript("workflow-editor")
-            .SetDependencies("jsplumb", "bootstrap")
-            .SetUrl(
-                "~/OrchardCore.Workflows/Scripts/Workflows/editor/workflow-editor.min.js",
-                "~/OrchardCore.Workflows/Scripts/Workflows/editor/workflow-editor.js"
-            )
-            .SetVersion("1.0.0");
-
-        _manifest
-            .DefineScript("workflow-viewer")
-            .SetDependencies("jsplumb", "bootstrap")
-            .SetUrl(
-                "~/OrchardCore.Workflows/Scripts/Workflows/viewer/workflow-viewer.min.js",
-                "~/OrchardCore.Workflows/Scripts/Workflows/viewer/workflow-viewer.js"
-            )
-            .SetVersion("1.0.0");
-
-        _manifest
+        s_manifest
             .DefineScript("workflow-url-generator")
-            .SetDependencies("jQuery")
             .SetUrl(
                 "~/OrchardCore.Workflows/Scripts/Workflows/url-generator/workflow-url-generator.min.js",
                 "~/OrchardCore.Workflows/Scripts/Workflows/url-generator/workflow-url-generator.js"
+            )
+            .SetVersion("1.0.0");
+
+        s_manifest
+            .DefineScript("workflow-syntax-toggle")
+            .SetUrl(
+                "~/OrchardCore.Workflows/Scripts/Workflows/syntax-toggle/workflow-syntax-toggle.min.js",
+                "~/OrchardCore.Workflows/Scripts/Workflows/syntax-toggle/workflow-syntax-toggle.js"
+            )
+            .SetVersion("1.0.0");
+
+        s_manifest
+            .DefineScript("workflows-designer")
+            .SetUrl(
+                "~/OrchardCore.Workflows/Scripts/Workflows/designer/workflows-designer.min.js",
+                "~/OrchardCore.Workflows/Scripts/Workflows/designer/workflows-designer.js"
+            )
+            .SetAttribute("type", "module")
+            .SetVersion("1.0.0");
+
+        s_manifest
+            .DefineStyle("workflows-designer")
+            // After Bootstrap, so the designer's rules win over the Bootstrap classes they refine.
+            .SetDependencies("bootstrap")
+            .SetUrl(
+                "~/OrchardCore.Workflows/Styles/workflows-designer.min.css",
+                "~/OrchardCore.Workflows/Styles/workflows-designer.css"
+            )
+            .SetVersion("1.0.0");
+
+        s_manifest
+            .DefineScript("workflow-expression-editor")
+            .SetUrl(
+                "~/OrchardCore.Workflows/Scripts/Workflows/expression-editor/workflow-expression-editor.min.js",
+                "~/OrchardCore.Workflows/Scripts/Workflows/expression-editor/workflow-expression-editor.js"
+            )
+            .SetAttribute("type", "module")
+            .SetVersion("1.0.0");
+
+        s_manifest
+            .DefineScript("workflow-monaco-text-editor")
+            .SetDependencies("monaco")
+            .SetUrl(
+                "~/OrchardCore.Workflows/Scripts/Workflows/monaco-text-editor/workflow-monaco-text-editor.min.js",
+                "~/OrchardCore.Workflows/Scripts/Workflows/monaco-text-editor/workflow-monaco-text-editor.js"
             )
             .SetVersion("1.0.0");
     }
 
     public void Configure(ResourceManagementOptions options)
     {
-        options.ResourceManifests.Add(_manifest);
+        options.ResourceManifests.Add(s_manifest);
     }
 }

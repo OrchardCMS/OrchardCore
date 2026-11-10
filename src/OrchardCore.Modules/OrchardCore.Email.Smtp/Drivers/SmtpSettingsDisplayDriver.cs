@@ -6,11 +6,13 @@ using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Email.Services;
 using OrchardCore.Email.Smtp.Services;
 using OrchardCore.Email.Smtp.ViewModels;
 using OrchardCore.Entities;
-using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Options;
 using OrchardCore.Mvc.ModelBinding;
+using OrchardCore.Secrets;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Email.Smtp.Drivers;
@@ -20,12 +22,13 @@ public sealed class SmtpSettingsDisplayDriver : SiteDisplayDriver<SmtpSettings>
     [Obsolete("This property should no longer be used. Instead use EmailSettings.GroupId")]
     public const string GroupId = EmailSettings.GroupId;
 
-    private readonly IShellReleaseManager _shellReleaseManager;
-    private readonly IDataProtectionProvider _dataProtectionProvider;
+    private readonly IOptionsUpdateNotifier _optionsUpdateNotifier;
     private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly SmtpOptions _smtpOptions;
+    private readonly IOptionsMonitor<SmtpOptions> _smtpOptions;
     private readonly IAuthorizationService _authorizationService;
     private readonly IEmailAddressValidator _emailValidator;
+    private readonly IDataProtectionProvider _dataProtectionProvider;
+    private readonly IServiceProvider _serviceProvider;
 
     internal readonly IStringLocalizer S;
 
@@ -33,20 +36,22 @@ public sealed class SmtpSettingsDisplayDriver : SiteDisplayDriver<SmtpSettings>
         => EmailSettings.GroupId;
 
     public SmtpSettingsDisplayDriver(
-        IShellReleaseManager shellReleaseManager,
-        IDataProtectionProvider dataProtectionProvider,
+        IOptionsUpdateNotifier optionsUpdateNotifier,
         IHttpContextAccessor httpContextAccessor,
-        IOptions<SmtpOptions> options,
+        IOptionsMonitor<SmtpOptions> options,
         IAuthorizationService authorizationService,
         IEmailAddressValidator emailAddressValidator,
+        IDataProtectionProvider dataProtectionProvider,
+        IServiceProvider serviceProvider,
         IStringLocalizer<SmtpSettingsDisplayDriver> stringLocalizer)
     {
-        _shellReleaseManager = shellReleaseManager;
-        _dataProtectionProvider = dataProtectionProvider;
+        _optionsUpdateNotifier = optionsUpdateNotifier;
         _httpContextAccessor = httpContextAccessor;
-        _smtpOptions = options.Value;
+        _smtpOptions = options;
         _authorizationService = authorizationService;
         _emailValidator = emailAddressValidator;
+        _dataProtectionProvider = dataProtectionProvider;
+        _serviceProvider = serviceProvider;
         S = stringLocalizer;
     }
 
@@ -57,11 +62,13 @@ public sealed class SmtpSettingsDisplayDriver : SiteDisplayDriver<SmtpSettings>
             return null;
         }
 
+        var smtpOptions = _smtpOptions.CurrentValue;
+
         return Initialize<SmtpSettingsViewModel>("SmtpSettings_Edit", model =>
         {
             // For backward compatibility with instances before the SMTP provider was factored out of
             // OrchardCore.Email, if IsEnabled is null, we check to see if there's already valid configuration.
-            model.IsEnabled = settings.IsEnabled ?? _smtpOptions.ConfigurationExists();
+            model.IsEnabled = settings.IsEnabled ?? smtpOptions.ConfigurationExists();
             model.DefaultSender = settings.DefaultSender;
             model.DeliveryMethod = settings.DeliveryMethod;
             model.PickupDirectoryLocation = string.IsNullOrWhiteSpace(settings.PickupDirectoryLocation)
@@ -76,7 +83,7 @@ public sealed class SmtpSettingsDisplayDriver : SiteDisplayDriver<SmtpSettings>
             model.RequireCredentials = settings.RequireCredentials;
             model.UseDefaultCredentials = settings.UseDefaultCredentials;
             model.UserName = settings.UserName;
-            model.Password = settings.Password;
+            model.Password = SecretInputViewModel.Create(settings.Password, settings.PasswordSecretName);
             model.IgnoreInvalidSslCertificate = settings.IgnoreInvalidSslCertificate;
         }).Location("Content:5#SMTP")
         .OnGroup(SettingsGroupId);
@@ -144,18 +151,23 @@ public sealed class SmtpSettingsDisplayDriver : SiteDisplayDriver<SmtpSettings>
             hasChanges |= model.DeliveryMethod != settings.DeliveryMethod;
             hasChanges |= model.PickupDirectoryLocation != settings.PickupDirectoryLocation;
 
-            // Store the password when there is a new value.
-            if (!string.IsNullOrWhiteSpace(model.Password))
+            var password = await model.Password.UpdateAsync(new SecretInputUpdateContext(
+                _serviceProvider,
+                _dataProtectionProvider.CreateProtector(SmtpOptionsConfiguration.ProtectorName),
+                context.Updater.ModelState,
+                $"{Prefix}.{nameof(model.Password)}")
             {
-                // Encrypt the password.
-                var protector = _dataProtectionProvider.CreateProtector(SmtpOptionsConfiguration.ProtectorName);
+                ProtectedValue = settings.Password,
+                SecretName = settings.PasswordSecretName,
+            });
 
-                var protectedPassword = protector.Protect(model.Password);
+            if (password.Succeeded)
+            {
+                hasChanges |= password.ProtectedValue != settings.Password;
+                hasChanges |= password.SecretName != settings.PasswordSecretName;
 
-                // Check if the password changed before setting the password.
-                hasChanges |= protectedPassword != settings.Password;
-
-                settings.Password = protectedPassword;
+                settings.Password = password.ProtectedValue;
+                settings.PasswordSecretName = password.SecretName;
             }
 
             settings.IsEnabled = true;
@@ -189,7 +201,10 @@ public sealed class SmtpSettingsDisplayDriver : SiteDisplayDriver<SmtpSettings>
 
             if (hasChanges)
             {
-                _shellReleaseManager.RequestRelease();
+                _optionsUpdateNotifier
+                    .RequestUpdate<SmtpOptions>()
+                    .RequestUpdate<EmailProviderOptions>()
+                    .RequestUpdate<EmailOptions>();
             }
         }
 

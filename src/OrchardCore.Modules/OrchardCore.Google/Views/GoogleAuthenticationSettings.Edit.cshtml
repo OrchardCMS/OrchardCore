@@ -10,15 +10,6 @@
     </div>
 </div>
 
-@if (Model.HasDecryptionError)
-{
-    <div class="ocat-wrapper">
-        <div class="ocat-end-offset">
-            <p class="alert alert-danger">@T["An error occurred while decrypting a setting. Please apply and save."]</p>
-        </div>
-    </div>
-}
-
 <div class="ocat-wrapper">
     <div class="ocat-end-offset">
         <h3>@T["Google Authentication Settings"]</h3>
@@ -26,7 +17,7 @@
 </div>
 
 <div class="ocat-limited-wrapper" asp-validation-class-for="ClientID">
-    <label asp-for="ClientID" class="ocat-label">@T["Client ID"]</label>
+    <label asp-for="ClientID" class="ocat-label ocat-label-required">@T["Client ID"]</label>
     <div class="ocat-limited">
         <input asp-for="ClientID" class="form-control" autocomplete="off" />
         <span asp-validation-for="ClientID"></span>
@@ -34,11 +25,10 @@
     </div>
 </div>
 
-<div class="ocat-limited-wrapper" asp-validation-class-for="ClientSecret">
+<div class="ocat-wrapper" asp-validation-class-for="ClientSecret">
     <label asp-for="ClientSecret" class="ocat-label">@T["API secret key"]</label>
-    <div class="ocat-limited">
-        <input asp-for="ClientSecret" class="form-control" type="password" value="@Model.ClientSecret" autocomplete="off" />
-        <span asp-validation-for="ClientSecret"></span>
+    <div class="ocat-end">
+        <secret-input asp-for="ClientSecret" secret-name="@GoogleConstants.SecretNames.ClientSecret" />
         <span class="hint">@T["The client secret defined in Google API console for the application."]</span>
     </div>
 </div>

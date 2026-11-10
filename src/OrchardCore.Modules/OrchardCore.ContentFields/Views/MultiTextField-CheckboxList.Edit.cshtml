@@ -29,7 +29,7 @@
 
         @if (!string.IsNullOrEmpty(settings.Hint))
         {
-            <span class="hint">@settings.Hint</span>
+            @await DisplayAsync(await New.Hint_Admin(Hint: settings.Hint))
         }
     </div>
 </div>

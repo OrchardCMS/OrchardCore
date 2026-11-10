@@ -1,31 +1,36 @@
 using System.Collections;
 using System.Text.Json;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Activities;
 
-public class ForEachTask : TaskActivity<ForEachTask>
+public class ForEachTask : TaskActivity<ForEachTask>, IActivityProvidedValues, IActivityDescription
 {
-    private readonly IWorkflowScriptEvaluator _scriptEvaluator;
-    private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
+    private readonly IWorkflowExpressionManager _expressionManager;
+    private readonly IStringLocalizerFactory _localizerFactory;
     protected readonly IStringLocalizer S;
 
     public ForEachTask(
-        IWorkflowScriptEvaluator scriptEvaluator,
-        IWorkflowExpressionEvaluator expressionEvaluator,
+        IWorkflowExpressionManager expressionManager,
+        IStringLocalizerFactory localizerFactory,
         IStringLocalizer<ForEachTask> localizer)
     {
-        _scriptEvaluator = scriptEvaluator;
-        _expressionEvaluator = expressionEvaluator;
+        _expressionManager = expressionManager;
+        _localizerFactory = localizerFactory;
         S = localizer;
     }
 
-    public override LocalizedString DisplayText => S["For Each Task"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<ForEachTask>("For Each Task");
 
-    public override LocalizedString Category => S["Control Flow"];
+    public static LocalizationSource CategoryName => ActivityCategoryLocalizationSources.ControlFlow;
+
+    public override LocalizedString DisplayText => _localizerFactory.Localize(DisplayName);
+
+    public override LocalizedString Category => _localizerFactory.Localize(CategoryName);
 
     /// <summary>
     /// An expression evaluating to an enumerable object to iterate over.
@@ -36,12 +41,20 @@ public class ForEachTask : TaskActivity<ForEachTask>
         set => SetProperty(value);
     }
 
+    /// <summary>
+    /// Legacy: the Liquid liquidenumerable of an activity saved before a syntax could be chosen for each expression, used when
+    /// <see cref="Enumerable"/> has no syntax and <see cref="Syntax"/> is Liquid.
+    /// </summary>
     public WorkflowExpression<object> LiquidEnumerable
     {
         get => GetProperty(() => new WorkflowExpression<object>());
         set => SetProperty(value);
     }
 
+    /// <summary>
+    /// Legacy: which expression an activity saved before a syntax could be chosen for each expression evaluates.
+    /// It's only used when <see cref="Enumerable"/> has no <see cref="WorkflowExpression{T}.Syntax"/>.
+    /// </summary>
     public WorkflowScriptSyntax Syntax
     {
         get => GetProperty(() => WorkflowScriptSyntax.JavaScript);
@@ -76,18 +89,11 @@ public class ForEachTask : TaskActivity<ForEachTask>
     }
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        return Outcomes(S["Iterate"], S["Done"]);
-    }
+        => Outcome(S["Iterate"], S["Done"]);
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        var items = Syntax switch
-        {
-            WorkflowScriptSyntax.Liquid => await EvaluateLiquidEnumerableAsync(workflowContext),
-            WorkflowScriptSyntax.JavaScript => (await _scriptEvaluator.EvaluateAsync(Enumerable, workflowContext)).ToList(),
-            _ => throw new NotSupportedException($"The syntax {Syntax} isn't supported for ForEachTask.")
-        };
+        var items = await EvaluateItemsAsync(workflowContext);
 
         var count = items.Count;
 
@@ -99,19 +105,32 @@ public class ForEachTask : TaskActivity<ForEachTask>
             workflowContext.Properties[LoopVariableName] = current;
             workflowContext.LastResult = current;
             Index++;
-            return Outcomes("Iterate");
+
+            return Outcome("Iterate");
         }
         else
         {
             Index = 0;
-            return Outcomes("Done");
+
+            return Outcome("Done");
         }
     }
 
-    private async Task<List<object>> EvaluateLiquidEnumerableAsync(WorkflowExecutionContext workflowContext)
+    private async Task<List<object>> EvaluateItemsAsync(WorkflowExecutionContext workflowContext)
     {
-        var result = await _expressionEvaluator.EvaluateAsync(LiquidEnumerable, workflowContext, null);
+        var expression = WorkflowExpressionSyntaxes.Resolve(Enumerable, LiquidEnumerable.Expression, Syntax);
 
+        // A Liquid template renders its list as JSON or comma-separated text.
+        if (string.Equals(expression.Syntax, WorkflowExpressionSyntaxes.Liquid, StringComparison.OrdinalIgnoreCase))
+        {
+            return ToList(await _expressionManager.EvaluateAsync(new WorkflowExpression<object>(expression.Expression, expression.Syntax), workflowContext));
+        }
+
+        return (await _expressionManager.EvaluateAsync(expression, workflowContext))?.ToList() ?? [];
+    }
+
+    private static List<object> ToList(object result)
+    {
         if (result == null)
         {
             return [];
@@ -139,4 +158,13 @@ public class ForEachTask : TaskActivity<ForEachTask>
             .Cast<object>()
             .ToList();
     }
+
+    private static readonly LocalizationSource s_currentDescription = LocalizationSource.Create<ForEachTask>("The current item of the loop.");
+
+    private static readonly ActivityProvidedValue s_lastResult = ActivityProvidedValue.LastResult("any", s_currentDescription);
+
+    public IEnumerable<ActivityProvidedValue> GetProvidedValues()
+        => string.IsNullOrEmpty(LoopVariableName)
+            ? [s_lastResult]
+            : [new ActivityProvidedValue { Source = WorkflowValueSource.Properties, Name = LoopVariableName, TypeName = "any", Description = s_currentDescription }, s_lastResult];
 }

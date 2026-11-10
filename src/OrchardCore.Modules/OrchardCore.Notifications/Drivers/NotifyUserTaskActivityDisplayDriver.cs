@@ -50,14 +50,16 @@ public abstract class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewMo
             }).Location("Content"));
         }
 
-        results.Add(Initialize<NotifyUserTaskActivityViewModel>("NotifyUserTaskActivity_Fields_Edit", model =>
+        results.Add(Initialize<NotifyUserTaskActivityViewModel, NotifyUserTaskActivity>("NotifyUserTaskActivity_Fields_Edit", static (model, activity) =>
         {
             model.Subject = activity.Subject.Expression;
             model.Summary = activity.Summary.Expression;
             model.TextBody = activity.TextBody.Expression;
             model.HtmlBody = activity.HtmlBody.Expression;
             model.IsHtmlPreferred = activity.IsHtmlPreferred;
-        }).Location("Content"));
+            model.Url = activity.Url.Expression;
+            model.NotificationType = activity.NotificationType;
+        }, activity).Location("Content"));
 
         return Combine(results);
     }
@@ -88,11 +90,23 @@ public abstract class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewMo
             context.Updater.ModelState.AddModelError(Prefix, nameof(model.HtmlBody), S["HTML Body field does not contain a valid Liquid expression. Details: {0}", string.Join(' ', htmlBodyErrors)]);
         }
 
+        if (!_liquidTemplateManager.Validate(model.Url, out var urlErrors))
+        {
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.Url), S["URL field does not contain a valid Liquid expression. Details: {0}", string.Join(' ', urlErrors)]);
+        }
+
+        if (model.NotificationType?.Length > NotificationConstants.NotificationTypeLength)
+        {
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.NotificationType), S["The type cannot be longer than {0} characters.", NotificationConstants.NotificationTypeLength]);
+        }
+
         activity.Subject = new WorkflowExpression<string>(model.Subject);
         activity.Summary = new WorkflowExpression<string>(_htmlSanitizerService.Sanitize(model.Summary ?? string.Empty));
         activity.TextBody = new WorkflowExpression<string>(model.TextBody);
         activity.HtmlBody = new WorkflowExpression<string>(_notificationOptions.DisableNotificationHtmlBodySanitizer ? model.HtmlBody : _htmlSanitizerService.Sanitize(model.HtmlBody ?? string.Empty));
         activity.IsHtmlPreferred = model.IsHtmlPreferred;
+        activity.Url = new WorkflowExpression<string>(model.Url);
+        activity.NotificationType = model.NotificationType?.Trim();
 
         var modelOfT = new TEditViewModel();
 
@@ -118,6 +132,7 @@ public abstract class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewMo
     /// </summary>
     protected override void EditActivity(TActivity activity, TEditViewModel model)
     {
+        // Nothing to do by default, derived drivers override this to populate their own properties.
     }
 
     /// <summary>
@@ -135,15 +150,15 @@ public abstract class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewMo
     /// </summary>
     protected override void UpdateActivity(TEditViewModel model, TActivity activity)
     {
-
+        // Nothing to do by default, derived drivers override this to update their own properties.
     }
 
     public override Task<IDisplayResult> DisplayAsync(TActivity activity, BuildDisplayContext context)
     {
         return CombineAsync(
-            Shape($"{ActivityName}_Fields_Thumbnail", new ActivityViewModel<TActivity>(activity))
+            Factory($"{ActivityName}_Fields_Thumbnail", static (TActivity a) => new ActivityViewModel<TActivity>(a), activity)
                 .Location("Thumbnail", "Content"),
-            Shape($"{ActivityName}_Fields_Design", new ActivityViewModel<TActivity>(activity))
+            Factory($"{ActivityName}_Fields_Design", static (TActivity a) => new ActivityViewModel<TActivity>(a), activity)
                 .Location("Design", "Content")
         );
     }

@@ -18,11 +18,14 @@ public static class AuthorizationServiceExtensions
 
     public static Task<bool> AuthorizeContentTypeAsync(this IAuthorizationService service, ClaimsPrincipal user, Permission requiredPermission, string contentType, string owner = null)
     {
-        ArgumentNullException.ThrowIfNull(user);
-
         ArgumentNullException.ThrowIfNull(requiredPermission);
 
         ArgumentException.ThrowIfNullOrEmpty(contentType);
+        
+        if (user == null)
+        {
+            return Task.FromResult(false);
+        }
 
         var item = new ContentItem()
         {
@@ -44,11 +47,9 @@ public static class AuthorizationServiceExtensions
 
         var permission = GetOwnerVariation(requiredPermission) ?? requiredPermission;
 
-        var contentTypePermission = ContentTypePermissionsHelper.ConvertToDynamicPermission(permission);
-
         foreach (var contentTypeDefinition in contentTypeDefinitions)
         {
-            var dynamicPermission = ContentTypePermissionsHelper.CreateDynamicPermission(contentTypePermission, contentTypeDefinition);
+            var dynamicPermission = ContentTypePermissionsHelper.CreateDynamicPermissionOf(permission, contentTypeDefinition);
 
             if (await service.AuthorizeContentTypeAsync(user, dynamicPermission, contentTypeDefinition.Name, user.FindFirstValue(ClaimTypes.NameIdentifier)))
             {

@@ -1,0 +1,17 @@
+@model LimitStepViewModel
+
+<div class="ocat-limited-wrapper" asp-validation-class-for="Count">
+    <label asp-for="Count" class="ocat-label ocat-label-required">@T["Rows to keep"]</label>
+    <div class="ocat-limited">
+        <input asp-for="Count" type="number" min="1" class="form-control" />
+        <span asp-validation-for="Count"></span>
+    </div>
+</div>
+
+<div class="ocat-limited-wrapper" asp-validation-class-for="Skip">
+    <label asp-for="Skip" class="ocat-label">@T["Rows to skip"]</label>
+    <div class="ocat-limited">
+        <input asp-for="Skip" type="number" min="0" class="form-control" />
+        <span class="hint">@T["Skipped before the rows are kept."]</span>
+    </div>
+</div>

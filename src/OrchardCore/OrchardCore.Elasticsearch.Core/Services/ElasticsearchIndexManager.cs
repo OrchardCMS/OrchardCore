@@ -20,7 +20,7 @@ namespace OrchardCore.Elasticsearch.Core.Services;
 
 public sealed class ElasticsearchIndexManager : IIndexManager
 {
-    private static readonly Dictionary<string, Type> _analyzerGetter = new(StringComparer.OrdinalIgnoreCase)
+    private static readonly Dictionary<string, Type> s_analyzerGetter = new(StringComparer.OrdinalIgnoreCase)
     {
         { ElasticsearchConstants.DefaultAnalyzer, typeof(StandardAnalyzer) },
         { ElasticsearchConstants.SimpleAnalyzer, typeof(SimpleAnalyzer) },
@@ -32,7 +32,7 @@ public sealed class ElasticsearchIndexManager : IIndexManager
         { ElasticsearchConstants.StopAnalyzer, typeof(StopAnalyzer) },
     };
 
-    private static readonly Dictionary<string, Type> _tokenFilterGetter = new(StringComparer.OrdinalIgnoreCase)
+    private static readonly Dictionary<string, Type> s_tokenFilterGetter = new(StringComparer.OrdinalIgnoreCase)
     {
         { "asciifolding", typeof(AsciiFoldingTokenFilter) },
         { "common_grams", typeof(CommonGramsTokenFilter) },
@@ -437,7 +437,7 @@ public sealed class ElasticsearchIndexManager : IIndexManager
 
         if (_elasticSearchOptions.Analyzers is not null && _elasticSearchOptions.Analyzers.TryGetValue(analyzerName, out var analyzerProperties))
         {
-            var analyzer = GetAnalyzer(analyzerProperties);
+            var analyzer = GetAnalyzer(analyzerProperties.DeepClone().AsObject());
 
             indexSettings.Analysis.Analyzers.Add(analyzerName, analyzer);
         }
@@ -447,14 +447,16 @@ public sealed class ElasticsearchIndexManager : IIndexManager
             foreach (var filter in _elasticSearchOptions.TokenFilters)
             {
                 if (!filter.Value.TryGetPropertyValue("type", out var typeObject) ||
-                    !_tokenFilterGetter.TryGetValue(typeObject.ToString(), out var tokenFilterType))
+                    !s_tokenFilterGetter.TryGetValue(typeObject.ToString(), out var tokenFilterType))
                 {
                     continue;
                 }
 
-                RemoveTypeNode(filter.Value);
+                var filterProperties = filter.Value.DeepClone().AsObject();
 
-                var tokenFilter = filter.Value.ToObject(tokenFilterType) as ITokenFilter;
+                RemoveTypeNode(filterProperties);
+
+                var tokenFilter = filterProperties.ToObject(tokenFilterType) as ITokenFilter;
 
                 if (tokenFilter is not null)
                 {
@@ -487,7 +489,7 @@ public sealed class ElasticsearchIndexManager : IIndexManager
         IAnalyzer analyzer = null;
 
         if (analyzerProperties.TryGetPropertyValue("type", out var typeObject)
-            && _analyzerGetter.TryGetValue(typeObject.ToString(), out var analyzerType))
+            && s_analyzerGetter.TryGetValue(typeObject.ToString(), out var analyzerType))
         {
             RemoveTypeNode(analyzerProperties);
 
@@ -496,7 +498,7 @@ public sealed class ElasticsearchIndexManager : IIndexManager
 
         if (analyzer == null)
         {
-            if (_analyzerGetter.TryGetValue(ElasticsearchConstants.DefaultAnalyzer, out analyzerType))
+            if (s_analyzerGetter.TryGetValue(ElasticsearchConstants.DefaultAnalyzer, out analyzerType))
             {
                 RemoveTypeNode(analyzerProperties);
 
@@ -506,7 +508,7 @@ public sealed class ElasticsearchIndexManager : IIndexManager
             {
                 RemoveTypeNode(analyzerProperties);
 
-                analyzer = analyzerProperties.ToObject(_analyzerGetter.First().Value) as IAnalyzer;
+                analyzer = analyzerProperties.ToObject(s_analyzerGetter.First().Value) as IAnalyzer;
             }
         }
 

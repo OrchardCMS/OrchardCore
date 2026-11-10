@@ -5,7 +5,7 @@ namespace OrchardCore.Entities.Scripting;
 
 public class IdGeneratorMethod : IGlobalMethodProvider
 {
-    private static readonly GlobalMethod _uuid = new()
+    private static readonly GlobalMethod s_uuid = new()
     {
         Name = "uuid",
         Method = serviceProvider => () =>
@@ -17,6 +17,6 @@ public class IdGeneratorMethod : IGlobalMethodProvider
 
     public IEnumerable<GlobalMethod> GetMethods()
     {
-        yield return _uuid;
+        yield return s_uuid;
     }
 }

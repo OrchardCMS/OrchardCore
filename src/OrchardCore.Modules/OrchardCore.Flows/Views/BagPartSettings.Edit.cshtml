@@ -3,7 +3,7 @@
 @using OrchardCore.Flows.Models
 
 <div class="ocat-wrapper">
-    <label asp-for="Source" class="ocat-label">@T["Contained Content Types"]</label>
+    <label asp-for="Source" class="ocat-label ocat-label-required">@T["Contained Content Types"]</label>
     <div class="ocat-end w-sm-50" id="@Html.IdFor(x => x.Source)">
         <div class="form-check">
             <input class="form-check-input" type="radio" asp-for="Source" id="SourceContentTypes" value="@(BagPartSettingType.ContentTypes)" checked="@(Model.Source == BagPartSettingType.ContentTypes)">
@@ -21,7 +21,7 @@
 </div>
 
 <div class="ocat-wrapper" id="ContentTypesContainer">
-    <label asp-for="ContainedContentTypes" class="ocat-label">@T["Contained Content Types"]</label>
+    <label asp-for="ContainedContentTypes" class="ocat-label ocat-label-required">@T["Contained Content Types"]</label>
     <div class="ocat-end">
         <span class="hint">@T["The content types that this bag can contain, e.g. Slide for a Slide Show."]</span>
         @await Component.InvokeAsync("SelectContentTypes", new { selectedContentTypes = Model.ContainedContentTypes, htmlName = Html.NameFor(m => m.ContainedContentTypes) })
@@ -29,7 +29,7 @@
 </div>
 
 <div class="ocat-wrapper" id="StereotypesContainer">
-    <label asp-for="Stereotypes" class="ocat-label">@T["Stereotypes"]</label>
+    <label asp-for="Stereotypes" class="ocat-label ocat-label-required">@T["Stereotypes"]</label>
     <div class="ocat-end w-sm-50" id="@Html.IdFor(x => x.Source)">
         <input asp-for="Stereotypes" class="form-control medium" />
         <span class="hint">@T["The Stereotypes of the content types that this bag can contain. You may define multiple Stereotypes using the comma (,) as a separator"]</span>
@@ -54,27 +54,4 @@
     </div>
 </div>
 
-<script at="Foot" asp-name="bagPartSettings">
-    document.addEventListener('DOMContentLoaded', function() {
-        var sources = document.getElementsByName('@Html.NameFor(x => x.Source)');
-        var contentTypesContainer = document.getElementById('ContentTypesContainer');
-        var stereotypeContainer = document.getElementById('StereotypesContainer');
-
-        for (var i = 0; i < sources.length; i++) {
-            var source = sources[i];
-            source.addEventListener('change', function(src) {
-                if (!src.target.checked) {
-                    return;
-                }
-                if (src.target.value == '@(BagPartSettingType.Stereotypes)') {
-                    contentTypesContainer.classList.add('d-none');
-                    stereotypeContainer.classList.remove('d-none');
-                } else {
-                    contentTypesContainer.classList.remove('d-none');
-                    stereotypeContainer.classList.add('d-none');
-                }
-            });
-            source.dispatchEvent(new Event('change'));
-        }
-    });
-</script>
+<script asp-src="~/OrchardCore.Flows/Scripts/bag-part-settings/bag-part-settings.min.js" debug-src="~/OrchardCore.Flows/Scripts/bag-part-settings/bag-part-settings.js" at="Foot" type="module"></script>

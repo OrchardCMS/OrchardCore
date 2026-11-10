@@ -11,16 +11,16 @@ namespace OrchardCore.Tests.Extensions;
 
 public class ExtensionManagerTests
 {
-    private static readonly IHostEnvironment _hostingEnvironment
+    private static readonly IHostEnvironment s_hostingEnvironment
         = new StubHostingEnvironment();
 
-    private static readonly IApplicationContext _applicationContext
-        = new ModularApplicationContext(_hostingEnvironment, [new ModuleNamesProvider()]);
+    private static readonly IApplicationContext s_applicationContext
+        = new ModularApplicationContext(s_hostingEnvironment, [new ModuleNamesProvider()]);
 
-    private static readonly IFeaturesProvider _moduleFeatureProvider =
+    private static readonly IFeaturesProvider s_moduleFeatureProvider =
         new FeaturesProvider(new[] { new ThemeFeatureBuilderEvents() });
 
-    private static readonly IFeaturesProvider _themeFeatureProvider =
+    private static readonly IFeaturesProvider s_themeFeatureProvider =
         new FeaturesProvider(new[] { new ThemeFeatureBuilderEvents() });
 
     private readonly ExtensionManager _moduleScopedExtensionManager;
@@ -35,21 +35,21 @@ public class ExtensionManagerTests
             [new ExtensionDependencyStrategy()],
             [new ExtensionPriorityStrategy()],
             _moduleScopedTypeFeatureProvider,
-            _moduleFeatureProvider
+            s_moduleFeatureProvider
             );
 
         _themeScopedExtensionManager = CreateExtensionManager(
             [new ExtensionDependencyStrategy()],
             [new ExtensionPriorityStrategy()],
             new TypeFeatureProvider(),
-            _themeFeatureProvider
+            s_themeFeatureProvider
             );
 
         _moduleThemeScopedExtensionManager = CreateExtensionManager(
             [new ExtensionDependencyStrategy(), new ThemeExtensionDependencyStrategy()],
             [new ExtensionPriorityStrategy()],
             new TypeFeatureProvider(),
-            _themeFeatureProvider
+            s_themeFeatureProvider
             );
     }
 
@@ -131,6 +131,18 @@ public class ExtensionManagerTests
     }
 
     [Fact]
+    public void GetFeatures_Default_OrdersMixedDirectionalDependencies()
+    {
+        var featureIds = _moduleScopedExtensionManager.GetFeatures()
+            .Where(f => f.Category == "Test" && !f.IsTheme())
+            .Select(f => f.Id)
+            .ToArray();
+
+        Assert.True(Array.IndexOf(featureIds, "Sample2") < Array.IndexOf(featureIds, "Sample3"));
+        Assert.True(Array.IndexOf(featureIds, "Sample3") < Array.IndexOf(featureIds, "Sample4"));
+    }
+
+    [Fact]
     public void GetFeaturesWithAId_Default_ReturnsThatFeatureWithDependenciesOrdered()
     {
         var features = _moduleScopedExtensionManager.GetFeatures((IEnumerable<string>)["Sample2"]);
@@ -182,7 +194,7 @@ public class ExtensionManagerTests
             new global::OrchardCore.Modules.Manifest.FeatureAttribute { Id = "BaseThemeSample.Additional" });
 
         var applicationContext = new TestApplicationContext(
-            new Application(_hostingEnvironment, [themeModule]));
+            new Application(s_hostingEnvironment, [themeModule]));
         var featureBuilderEvents = new[] { new ThemeFeatureBuilderEvents() };
         var extensionManager = CreateExtensionManager(
             applicationContext,
@@ -303,7 +315,7 @@ public class ExtensionManagerTests
         params IFeaturesProvider[] featuresProviders)
     {
         return CreateExtensionManager(
-            _applicationContext,
+            s_applicationContext,
             extensionDependencyStrategies,
             extensionPriorityStrategies,
             typeFeatureProvider,

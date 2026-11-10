@@ -1,41 +1,53 @@
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
+using System.Globalization;
+using System.Threading.RateLimiting;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using OpenIddict.Abstractions;
 using OpenIddict.Server;
 using OpenIddict.Server.AspNetCore;
 using OpenIddict.Server.DataProtection;
 using OpenIddict.Validation;
 using OpenIddict.Validation.AspNetCore;
 using OpenIddict.Validation.DataProtection;
+using OrchardCore.Admin;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Shell.Builders;
+using OrchardCore.Localization;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.OpenId.Configuration;
 using OrchardCore.OpenId.Deployment;
 using OrchardCore.OpenId.Drivers;
+using OrchardCore.OpenId.ViewModels;
 using OrchardCore.OpenId.Handlers;
 using OrchardCore.OpenId.Migrations;
 using OrchardCore.OpenId.Recipes;
+using OrchardCore.OpenId.Secrets.Drivers;
+using OrchardCore.OpenId.Secrets.Services;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Services.Handlers;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.OpenId.Tasks;
 using OrchardCore.Recipes;
 using OrchardCore.RateLimits;
+using OrchardCore.Secrets;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Users;
+using OpenIdSecretsMigrations = OrchardCore.OpenId.Secrets.Migrations;
 
 namespace OrchardCore.OpenId;
 
@@ -64,6 +76,7 @@ public sealed class ClientStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddNavigationProvider<ClientAdminMenu>();
+        services.AddScoped<IJSLocalizer, OpenIdJSLocalizer>();
 
         services.TryAddSingleton<IOpenIdClientService, OpenIdClientService>();
 
@@ -81,6 +94,16 @@ public sealed class ClientStartup : StartupBase
             // Built-in initializers:
             ServiceDescriptor.Singleton<IPostConfigureOptions<OpenIdConnectOptions>, OpenIdConnectPostConfigureOptions>(),
         });
+    }
+}
+
+[Feature(OpenIdConstants.Features.Client)]
+[RequireFeatures("OrchardCore.Secrets")]
+public sealed class ClientSecretsStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddDisplayDriver<SecretMigration, OpenIdClientSecretMigrationDisplayDriver>();
     }
 }
 
@@ -198,14 +221,68 @@ public sealed class ServerStartup : StartupBase
     }
 }
 
+[Feature(OpenIdConstants.Features.Secrets)]
+public sealed class ServerSecretsStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddDisplayDriver<OpenIdServerSettings, OpenIdSecretSettingsDisplayDriver>();
+        services.AddSingleton<IPostConfigureOptions<OpenIddictServerOptions>, OpenIdSecretsOptionsConfiguration>();
+        services.AddDataMigration<OpenIdSecretsMigrations>();
+    }
+}
+
 [Feature(OpenIdConstants.Features.Server)]
 [RequireFeatures("OrchardCore.RateLimits")]
 public sealed class ServerRateLimitsStartup : StartupBase
 {
+    private const string TokenRouteName = "Access.Token";
+
     public override void ConfigureServices(IServiceCollection services)
     {
+        // Shares the budget of the login page, so it must use the same limit.
+        var passwordAuthentication = RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.PasswordAuthentication, 100);
+
         services.Configure<RateLimitsOptions>(options =>
-            options.AddRouteRateLimit("Access.Token", HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.PasswordAuthentication, 10)));
+        {
+            options.AddRouteRateLimit(TokenRouteName, HttpMethods.Post, context =>
+            {
+                // Only the password grant checks user credentials. The other grants exchange codes, refresh tokens or client secrets
+                // that can't be guessed, and they are often sent for many users by a single server, so they must not share this budget.
+                // The token request is extracted by the OpenID server handler, which runs in the authentication middleware.
+                var request = context.GetOpenIddictServerRequest();
+
+                return request is null || request.IsPasswordGrantType()
+                    ? passwordAuthentication(context)
+                    : RateLimitPartition.GetNoLimiter(UserRateLimiterPolicyNames.PasswordAuthentication);
+            });
+
+            options.AddRouteRejectionHandler(TokenRouteName, OnTokenRequestRejectedAsync);
+        });
+    }
+
+    private static async ValueTask OnTokenRequestRejectedAsync(OnRejectedContext context, CancellationToken cancellationToken)
+    {
+        // Lets the OpenID server handler return an OAuth 2.0 error response, which token clients understand, instead of an empty response.
+        if (context.HttpContext.GetOpenIddictServerRequest() is null)
+        {
+            return;
+        }
+
+        if (context.Lease.TryGetMetadata(MetadataName.RetryAfter, out var retryAfter))
+        {
+            context.HttpContext.Response.Headers.RetryAfter = ((int)Math.Ceiling(retryAfter.TotalSeconds)).ToString(CultureInfo.InvariantCulture);
+        }
+
+        // The 'slow_down' error is defined by the device authorization grant, but it's the error that best describes a rejected request.
+        // The error description is not localized as OAuth 2.0 only allows select US-ASCII characters in it.
+        var properties = new AuthenticationProperties(new Dictionary<string, string>(StringComparer.Ordinal)
+        {
+            [OpenIddictServerAspNetCoreConstants.Properties.Error] = OpenIddictConstants.Errors.SlowDown,
+            [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] = "Too many requests. Please retry later.",
+        });
+
+        await context.HttpContext.ForbidAsync(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme, properties);
     }
 }
 
@@ -272,6 +349,11 @@ public sealed class ManagementStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddNavigationProvider<ManagementAdminMenu>();
+
+        // Build the rows of the applications and scopes admin lists.
+        services.AddDisplayDriver<OpenIdApplicationEntry, OpenIdApplicationDisplayDriver>();
+        services.AddDisplayDriver<OpenIdScopeEntry, OpenIdScopeDisplayDriver>();
+
     }
 }
 

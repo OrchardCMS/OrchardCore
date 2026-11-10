@@ -9,9 +9,6 @@ public sealed class Permissions : IPermissionProvider
         SitemapsPermissions.ManageSitemaps,
     ];
 
-    [Obsolete("This will be removed in a future release. Instead use 'SitemapsPermissions.ManageSitemaps'.")]
-    public static readonly Permission ManageSitemaps = SitemapsPermissions.ManageSitemaps;
-
     public Task<IEnumerable<Permission>> GetPermissionsAsync()
         => Task.FromResult(_allPermissions);
 

@@ -1,6 +1,7 @@
 using OrchardCore.FileStorage;
 using OrchardCore.Media;
 using OrchardCore.Media.Core;
+using OrchardCore.Media.Core.Helpers;
 using OrchardCore.Media.Services;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Media;
@@ -37,12 +38,20 @@ public class MediaOrchardHelperExtensionsTests
 
     private static TestOrchardHelper CreateOrchardHelper()
     {
+        var stringLocalizerMock = new Mock<IStringLocalizer<FileSizeHelper>>();
+        stringLocalizerMock.Setup(x => x[It.IsAny<string>()])
+            .Returns((string key) => new LocalizedString(key, key));
+
+        stringLocalizerMock.Setup(x => x[It.IsAny<string>(), It.IsAny<object[]>()])
+            .Returns((string key, object[] args) => new LocalizedString(key, string.Format(key, args)));
+
         var fileStore = new DefaultMediaFileStore(
             Mock.Of<IFileStore>(),
             "/media",
             "",
             [],
             [],
+            new FileSizeHelper(stringLocalizerMock.Object),
             Mock.Of<ILogger<DefaultMediaFileStore>>());
 
         var mediaProfileServiceMock = new Mock<IMediaProfileService>();

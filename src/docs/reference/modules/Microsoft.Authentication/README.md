@@ -150,23 +150,33 @@ The following configuration values can be customized:
 
 ```json
 {
-  "OrchardCore_Microsoft_Authentication_MicrosoftAccount": {
-    "AppId": "",
-    "AppSecret": "",
-    "CallbackPath": "/signin-microsoft",
-    "SaveTokens": false
+  "OrchardCore": {
+    "Authentication": {
+      "MicrosoftAccount": {
+        "AppId": "",
+        "AppSecret": "",
+        "CallbackPath": "/signin-microsoft",
+        "SaveTokens": false
+      }
+    }
   }
 }
 ```
 
 ```json
-    "OrchardCore_Microsoft_Authentication_AzureAD": {
-      "DisplayName": "",
-      "AppId": "",
-      "TenantId": "",
-      "CallbackPath": "/signin-oidc",
-      "SaveTokens": false
+{
+  "OrchardCore": {
+    "Authentication": {
+      "AzureAD": {
+        "DisplayName": "",
+        "AppId": "",
+        "TenantId": "",
+        "CallbackPath": "/signin-oidc",
+        "SaveTokens": false
+      }
     }
+  }
+}
 ```
 
 For more information please refer to [Configuration](../../modules/Configuration/README.md).

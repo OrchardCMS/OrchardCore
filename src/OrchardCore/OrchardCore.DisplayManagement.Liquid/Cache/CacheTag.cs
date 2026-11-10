@@ -1,6 +1,7 @@
 using System.Text.Encodings.Web;
 using Fluid;
 using Fluid.Ast;
+using Fluid.Utils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -12,9 +13,11 @@ namespace OrchardCore.DynamicCache.Liquid;
 
 public class CacheTag
 {
-    private static readonly char[] _splitChars = [',', ' '];
+    private const int StringBuilderBufferSize = 1024;
 
-    public static async ValueTask<Completion> WriteToAsync(IReadOnlyList<FilterArgument> arguments, IReadOnlyList<Statement> statements, TextWriter writer, TextEncoder encoder, TemplateContext context)
+    private static readonly char[] s_splitChars = [',', ' '];
+
+    public static async ValueTask<Completion> WriteToAsync(IReadOnlyList<FilterArgument> arguments, IReadOnlyList<Statement> statements, IFluidOutput output, TextEncoder encoder, TemplateContext context)
     {
         var services = ((LiquidTemplateContext)context).Services;
 
@@ -32,7 +35,7 @@ public class CacheTag
 
             if (statements != null && statements.Count > 0)
             {
-                var completion = await statements.RenderStatementsAsync(writer, encoder, context);
+                var completion = await statements.RenderStatementsAsync(output, encoder, context);
 
                 if (completion != Completion.Normal)
                 {
@@ -49,15 +52,15 @@ public class CacheTag
             filterArguments.Add(argument.Name, await argument.Expression.EvaluateAsync(context));
         }
 
-        var cacheKey = filterArguments.At(0).ToStringValue();
-        var contexts = filterArguments["vary_by"].ToStringValue();
-        var tags = filterArguments["dependencies"].ToStringValue();
-        var durationString = filterArguments["expires_after"].ToStringValue();
-        var slidingDurationString = filterArguments["expires_sliding"].ToStringValue();
+        var cacheKey = filterArguments.At(0).ToStringValue(context);
+        var contexts = filterArguments["vary_by"].ToStringValue(context);
+        var tags = filterArguments["dependencies"].ToStringValue(context);
+        var durationString = filterArguments["expires_after"].ToStringValue(context);
+        var slidingDurationString = filterArguments["expires_sliding"].ToStringValue(context);
 
         var cacheContext = new CacheContext(cacheKey)
-            .AddContext(contexts.Split(_splitChars, StringSplitOptions.RemoveEmptyEntries))
-            .AddTag(tags.Split(_splitChars, StringSplitOptions.RemoveEmptyEntries));
+            .AddContext(contexts.Split(s_splitChars, StringSplitOptions.RemoveEmptyEntries))
+            .AddTag(tags.Split(s_splitChars, StringSplitOptions.RemoveEmptyEntries));
 
         if (TimeSpan.TryParse(durationString, out var duration))
         {
@@ -72,7 +75,7 @@ public class CacheTag
         var cacheResult = await dynamicCache.GetCachedValueAsync(cacheContext);
         if (cacheResult != null)
         {
-            await writer.WriteAsync(cacheResult);
+            output.Write(cacheResult);
 
             return Completion.Normal;
         }
@@ -85,14 +88,14 @@ public class CacheTag
             if (statements != null && statements.Count > 0)
             {
                 using var sb = StringBuilderPool.GetInstance();
-                using (var render = new StringWriter(sb.Builder))
+                using var render = new StringWriter(sb.Builder);
+
+                await using (var renderOutput = new TextWriterFluidOutput(render, StringBuilderBufferSize, leaveOpen: true))
                 {
                     foreach (var statement in statements)
                     {
-                        await statement.WriteToAsync(render, encoder, context);
+                        await statement.WriteToAsync(renderOutput, encoder, context);
                     }
-
-                    await render.FlushAsync();
                 }
 
                 content = sb.Builder.ToString();
@@ -126,7 +129,7 @@ public class CacheTag
 
         await dynamicCache.SetCachedValueAsync(cacheContext, content);
 
-        await writer.WriteAsync(content);
+        output.Write(content);
 
         return Completion.Normal;
     }

@@ -1,0 +1,74 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Media.AmazonS3\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: Controllers/AdminController.cs
+msgctxt "OrchardCore.Media.AmazonS3.AdminController"
+msgid "The Amazon S3 Media feature is enabled, but it was not configured with appsettings.json."
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Media.AmazonS3.AdminMenu"
+msgid "Amazon S3 Options"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Media.AmazonS3.AdminMenu"
+msgid "Media"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Media.AmazonS3.AdminMenu"
+msgid "Settings"
+msgstr ""
+
+#: Permissions.cs
+msgctxt "OrchardCore.Media.AmazonS3.Permissions"
+msgid "View Amazon S3 Media Options"
+msgstr ""
+
+#. Format arguments: {0}: _options.BucketName
+#: Services/AwsTenantEventsBase.cs
+#, csharp-format
+msgctxt "OrchardCore.Media.AmazonS3.Services.AwsTenantEventsBase"
+msgid "Failed to remove the Amazon S3 Bucket '{0}'."
+msgstr ""
+
+#: Views/Admin/Options.cshtml
+msgctxt "OrchardCore.Media.AmazonS3.Views.Admin.Options"
+msgid "Amazon S3 storage is configured with appsettings.json."
+msgstr ""
+
+#: Views/Admin/Options.cshtml
+msgctxt "OrchardCore.Media.AmazonS3.Views.Admin.Options"
+msgid "Amazon S3 storage options"
+msgstr ""
+
+#: Views/Admin/Options.cshtml
+msgctxt "OrchardCore.Media.AmazonS3.Views.Admin.Options"
+msgid "Base Path"
+msgstr ""
+
+#: Views/Admin/Options.cshtml
+msgctxt "OrchardCore.Media.AmazonS3.Views.Admin.Options"
+msgid "Bucket Name"
+msgstr ""
+
+#: Views/Admin/Options.cshtml
+msgctxt "OrchardCore.Media.AmazonS3.Views.Admin.Options"
+msgid "Create Bucket"
+msgstr ""
+
+#: Views/Admin/Options.cshtml
+msgctxt "OrchardCore.Media.AmazonS3.Views.Admin.Options"
+msgid "See documentation."
+msgstr ""
+
+#: Views/Admin/Options.cshtml
+msgctxt "OrchardCore.Media.AmazonS3.Views.Admin.Options"
+msgid "Whether a bucket is created on startup if it does not exist."
+msgstr ""

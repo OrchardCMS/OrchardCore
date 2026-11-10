@@ -1,0 +1,12 @@
+[
+  {
+    "action": "parcel",
+    "name": "facebook-plugin-part-editors",
+    "source": [
+      "Assets/ts/facebook-plugin-part.ts",
+      "Assets/ts/facebook-plugin-part-settings.ts"
+    ],
+    "dest": "wwwroot/Scripts/facebook-plugin-part-editors/",
+    "tags": ["admin", "dashboard", "js"]
+  }
+]

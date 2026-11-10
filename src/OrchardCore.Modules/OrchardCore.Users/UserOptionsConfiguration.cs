@@ -5,18 +5,20 @@ namespace OrchardCore.Users;
 
 public sealed class UserOptionsConfiguration : IConfigureOptions<ResourceManagementOptions>
 {
-    private static readonly ResourceManifest _manifest;
+    private static readonly ResourceManifest s_manifest;
 
     static UserOptionsConfiguration()
     {
-        _manifest = new ResourceManifest();
+        s_manifest = new ResourceManifest();
 
-        _manifest
+        // The 'password-generator' script is deprecated and will be removed in a future major version,
+        // use the generatePassword helper from '@orchardcore/bloom/helpers/passwordGenerator' instead.
+        s_manifest
             .DefineScript("password-generator")
             .SetUrl("~/OrchardCore.Users/Scripts/password-generator.min.js", "~/OrchardCore.Users/Scripts/password-generator.js")
             .SetVersion("1.0.0");
 
-        _manifest
+        s_manifest
             .DefineScript("qrcode")
             .SetUrl("~/OrchardCore.Users/Scripts/qrcode.min.js", "~/OrchardCore.Users/Scripts/qrcode.js")
             .SetVersion("1.0.0");
@@ -24,6 +26,6 @@ public sealed class UserOptionsConfiguration : IConfigureOptions<ResourceManagem
 
     public void Configure(ResourceManagementOptions options)
     {
-        options.ResourceManifests.Add(_manifest);
+        options.ResourceManifests.Add(s_manifest);
     }
 }

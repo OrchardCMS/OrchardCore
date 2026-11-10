@@ -1,8 +1,11 @@
 using Fluid;
 using Fluid.Values;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Admin;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Liquid;
+using OrchardCore.Localization;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
@@ -21,25 +24,26 @@ public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.Configure<TemplateOptions>(o =>
+        services.Configure<TemplateOptionsBuilder>(o =>
         {
-            o.MemberAccessStrategy.Register<ShortcodeViewModel>();
+            o.ConfigureMemberAccess(strategy =>
+            {
+                strategy.Register<Sc.Context, object>((obj, name) => obj[name]);
+            });
 
-            o.MemberAccessStrategy.Register<Sc.Context, object>((obj, name) => obj[name]);
-
-            o.ValueConverters.Add(x =>
+            o.AddValueConverter(x =>
             {
                 return x switch
                 {
                     // Prevent Context from being converted to an ArrayValue as it implements IEnumerable
-                    Sc.Context c => new ObjectValue(c),
+                    Sc.Context c => ObjectValue.Create(c),
                     // Prevent Arguments from being converted to an ArrayValue as it implements IEnumerable
-                    Sc.Arguments a => new ObjectValue(a),
+                    Sc.Arguments a => ObjectValue.Create(a),
                     _ => null
                 };
             });
 
-            o.MemberAccessStrategy.Register<Sc.Arguments, object>((obj, name) => obj.Named(name));
+            o.ConfigureMemberAccess(strategy => strategy.Register<Sc.Arguments, object>((obj, name) => obj.Named(name)));
         });
 
         services.AddScoped<IShortcodeService, ShortcodeService>();
@@ -62,13 +66,18 @@ public sealed class ShortcodeTemplatesStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddScoped<ShortcodeTemplatesManager>();
+
+        // Builds the rows of the shortcode templates admin list.
+        services.AddDisplayDriver<ShortcodeTemplateEntry, ShortcodeTemplateEntryDisplayDriver>();
         services.AddPermissionProvider<Permissions>();
         services.AddNavigationProvider<AdminMenu>();
+        services.AddScoped<IJSLocalizer, ShortcodesJSLocalizer>();
 
         services.AddRecipeExecutionStep<ShortcodeTemplateStep>();
 
         services.AddScoped<Sc.IShortcodeProvider, TemplateShortcodeProvider>();
         services.AddScoped<IShortcodeDescriptorProvider, ShortcodeTemplatesDescriptorProvider>();
+
     }
 }
 

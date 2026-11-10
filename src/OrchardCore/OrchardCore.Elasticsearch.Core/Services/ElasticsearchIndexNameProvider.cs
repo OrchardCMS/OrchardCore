@@ -9,7 +9,7 @@ public sealed class ElasticsearchIndexNameProvider : IIndexNameProvider
 {
     private const string _separator = "_";
 
-    private static readonly List<char> _charsToRemove =
+    private static readonly List<char> s_charsToRemove =
         ['\\', '/', '*', '\"', '|', '<', '>', '`', '\'', ' ', '#', ':', '.'];
 
     private readonly IMemoryCache _memoryCache;
@@ -70,7 +70,7 @@ public sealed class ElasticsearchIndexNameProvider : IIndexNameProvider
             indexName = indexName.Remove(0, 1);
         }
 
-        _charsToRemove.ForEach(c => indexName = indexName.Replace(c.ToString(), string.Empty));
+        s_charsToRemove.ForEach(c => indexName = indexName.Replace(c.ToString(), string.Empty));
 
         return indexName;
     }

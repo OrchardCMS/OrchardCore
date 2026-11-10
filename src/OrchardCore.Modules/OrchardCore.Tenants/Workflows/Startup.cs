@@ -3,6 +3,7 @@ using OrchardCore.Modules;
 using OrchardCore.Tenants.Workflows.Activities;
 using OrchardCore.Tenants.Workflows.Drivers;
 using OrchardCore.Workflows.Helpers;
+using OrchardCore.Workflows.Options;
 
 namespace OrchardCore.Tenants.Workflows;
 
@@ -11,6 +12,8 @@ public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.Configure<WorkflowOptions>(options => options.CategoryIcons[TenantsLocalizationSources.Tenant.Value] = "fa-solid fa-building");
+
         services.AddActivity<DisableTenantTask, DisableTenantTaskDisplayDriver>();
         services.AddActivity<EnableTenantTask, EnableTenantTaskDisplayDriver>();
         services.AddActivity<CreateTenantTask, CreateTenantTaskDisplayDriver>();

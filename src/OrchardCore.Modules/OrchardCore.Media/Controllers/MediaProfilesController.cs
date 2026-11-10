@@ -7,6 +7,8 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Media.Core.Processing;
 using OrchardCore.Media.Models;
@@ -54,14 +56,16 @@ public sealed class MediaProfilesController : Controller
     }
 
     [Admin("MediaProfiles", "MediaProfiles.Index")]
-    public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
+    public async Task<IActionResult> Index(
+        ContentOptions options,
+        PagerParameters pagerParameters)
     {
         if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaProfiles))
         {
             return Forbid();
         }
 
-        var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
+        var pager = new Pager(pagerParameters, _pagerOptions);
 
         var mediaProfilesDocument = await _mediaProfilesManager.GetMediaProfilesDocumentAsync();
         var mediaProfiles = mediaProfilesDocument.MediaProfiles.ToList();
@@ -91,6 +95,7 @@ public sealed class MediaProfilesController : Controller
         var model = new MediaProfileIndexViewModel
         {
             MediaProfiles = mediaProfiles.Select(x => new MediaProfileEntry { Name = x.Key, MediaProfile = x.Value }).ToList(),
+            Options = options,
             Pager = pagerShape,
         };
 
@@ -98,6 +103,13 @@ public sealed class MediaProfilesController : Controller
         [
             new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
         ];
+
+        // The AdminList shape renders the profiles with the configured layout (List, Grid, ...).
+        model.List = new AdminListContext<MediaProfileEntry>
+        {
+            Source = model.MediaProfiles,
+            Pager = model.Pager,
+        };
 
         return View(model);
     }
@@ -348,13 +360,12 @@ public sealed class MediaProfilesController : Controller
         }
 
         model.AvailableResizeModes.Add(new SelectListItem() { Text = S["Default (Max)"], Value = ((int)ResizeMode.Undefined).ToString() });
-        model.AvailableResizeModes.Add(new SelectListItem() { Text = S["Max"], Value = ((int)ResizeMode.Max).ToString() });
+        model.AvailableResizeModes.Add(new SelectListItem() { Text = S.Note("Image resize mode of a media profile. Resizes the image to fit within the size, keeping its aspect ratio.")["Max"], Value = ((int)ResizeMode.Max).ToString() });
         model.AvailableResizeModes.Add(new SelectListItem() { Text = S["Crop"], Value = ((int)ResizeMode.Crop).ToString() });
-        model.AvailableResizeModes.Add(new SelectListItem() { Text = S["Pad"], Value = ((int)ResizeMode.Pad).ToString() });
-        model.AvailableResizeModes.Add(new SelectListItem() { Text = S["BoxPad"], Value = ((int)ResizeMode.BoxPad).ToString() });
-        model.AvailableResizeModes.Add(new SelectListItem() { Text = S["Min"], Value = ((int)ResizeMode.Min).ToString() });
+        model.AvailableResizeModes.Add(new SelectListItem() { Text = S.Note("Image resize mode of a media profile. Resizes the image to fit within the size, padding the remaining area.")["Pad"], Value = ((int)ResizeMode.Pad).ToString() });
+        model.AvailableResizeModes.Add(new SelectListItem() { Text = S.Note("Image resize mode of a media profile. Pads the image to the size without upscaling it.")["BoxPad"], Value = ((int)ResizeMode.BoxPad).ToString() });
+        model.AvailableResizeModes.Add(new SelectListItem() { Text = S.Note("Image resize mode of a media profile. Resizes the image to the smallest size that covers the size, keeping its aspect ratio.")["Min"], Value = ((int)ResizeMode.Min).ToString() });
         model.AvailableResizeModes.Add(new SelectListItem() { Text = S["Stretch"], Value = ((int)ResizeMode.Stretch).ToString() });
-
 
         model.AvailableFormats.Add(new SelectListItem() { Text = S["Default"], Value = ((int)Format.Undefined).ToString() });
         model.AvailableFormats.Add(new SelectListItem() { Text = S["Gif"], Value = ((int)Format.Gif).ToString() });

@@ -1,0 +1,287 @@
+{
+  "name": "WidgetDragTests",
+  "displayName": "WidgetDragTests",
+  "description": "Testing the SortableJS-based WidgetsListPart, AdminDashboard, and DateField-Localized editors, none of which any shipped recipe configures.",
+  "author": "The Orchard Core Team",
+  "website": "https://orchardcore.net",
+  "version": "1.0.0",
+  "issetuprecipe": true,
+  "categories": [ "tests" ],
+  "tags": [ "tests" ],
+
+  "variables": {
+    "widgetsListItemId": "[js:uuid()]",
+    "dashboardWidgetOneId": "[js:uuid()]",
+    "dashboardWidgetTwoId": "[js:uuid()]"
+  },
+
+  "steps": [
+    {
+      "name": "feature",
+      "enable": [
+        "OrchardCore.HomeRoute",
+        "OrchardCore.Admin",
+        "OrchardCore.Navigation",
+        "OrchardCore.Recipes",
+        "OrchardCore.Resources",
+        "OrchardCore.Roles",
+        "OrchardCore.Security",
+        "OrchardCore.Settings",
+        "OrchardCore.Themes",
+        "OrchardCore.Users",
+
+        "OrchardCore.AdminDashboard",
+        "OrchardCore.Alias",
+        "OrchardCore.Autoroute",
+        "OrchardCore.ContentFields",
+        "OrchardCore.Contents",
+        "OrchardCore.ContentTypes",
+        "OrchardCore.Html",
+        "OrchardCore.Title",
+        "OrchardCore.Widgets",
+
+        "TheAdmin",
+        "SafeMode"
+      ]
+    },
+    {
+      "name": "themes",
+      "admin": "TheAdmin",
+      "site": "TheAdmin"
+    },
+    {
+      "name": "settings",
+      "LayerSettings": {
+        "Zones": [ "Content", "Footer" ]
+      }
+    },
+    {
+      "name": "ContentDefinition",
+      "ContentTypes": [
+        {
+          "Name": "TestWidgetA",
+          "DisplayName": "Test Widget A",
+          "Settings": {
+            "ContentTypeSettings": {
+              "Draftable": true,
+              "Versionable": true,
+              "Securable": true,
+              "Stereotype": "Widget"
+            }
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "0"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "Name": "TestWidgetB",
+          "DisplayName": "Test Widget B",
+          "Settings": {
+            "ContentTypeSettings": {
+              "Draftable": true,
+              "Versionable": true,
+              "Securable": true,
+              "Stereotype": "Widget"
+            }
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "0"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "Name": "WidgetsListTest",
+          "DisplayName": "Widgets List Test",
+          "Settings": {
+            "ContentTypeSettings": {
+              "Creatable": true,
+              "Draftable": true,
+              "Versionable": true,
+              "Listable": true,
+              "Securable": true
+            }
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "0"
+                }
+              }
+            },
+            {
+              "PartName": "WidgetsListPart",
+              "Name": "WidgetsListPart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "1"
+                },
+                "WidgetsListPartSettings": {
+                  "Zones": [ "Main", "Sidebar" ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "Name": "DateFieldTest",
+          "DisplayName": "Date Field Test",
+          "Settings": {
+            "ContentTypeSettings": {
+              "Creatable": true,
+              "Draftable": true,
+              "Versionable": true,
+              "Listable": true,
+              "Securable": true
+            }
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "0"
+                }
+              }
+            },
+            {
+              "PartName": "DateFieldTest",
+              "Name": "DateFieldTest",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "1"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "ContentParts": [
+        {
+          "Name": "DateFieldTest",
+          "Settings": {},
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "DateField",
+              "Name": "PublishDate",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Publish Date",
+                  "Editor": "Localized",
+                  "Position": "0"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "content",
+      "Data": [
+        {
+          "ContentItemId": "[js: variables('widgetsListItemId')]",
+          "ContentType": "WidgetsListTest",
+          "DisplayText": "Widgets List Test Page",
+          "Latest": true,
+          "Published": true,
+          "Owner": "[js: parameters('AdminUserId')]",
+          "Author": "[js: parameters('AdminUsername')]",
+          "TitlePart": {
+            "Title": "Widgets List Test Page"
+          },
+          "WidgetsListPart": {
+            "Widgets": {
+              "Main": [
+                {
+                  "ContentItemId": "[js: uuid()]",
+                  "ContentType": "TestWidgetA",
+                  "DisplayText": "First Widget",
+                  "Latest": true,
+                  "Published": true,
+                  "Owner": "[js: parameters('AdminUserId')]",
+                  "Author": "[js: parameters('AdminUsername')]",
+                  "TitlePart": {
+                    "Title": "First Widget"
+                  }
+                }
+              ],
+              "Sidebar": [
+                {
+                  "ContentItemId": "[js: uuid()]",
+                  "ContentType": "TestWidgetB",
+                  "DisplayText": "Second Widget",
+                  "Latest": true,
+                  "Published": true,
+                  "Owner": "[js: parameters('AdminUserId')]",
+                  "Author": "[js: parameters('AdminUsername')]",
+                  "TitlePart": {
+                    "Title": "Second Widget"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "ContentItemId": "[js: variables('dashboardWidgetOneId')]",
+          "ContentType": "HtmlDashboardWidget",
+          "DisplayText": "Dashboard Widget One",
+          "Latest": true,
+          "Published": true,
+          "Owner": "[js: parameters('AdminUserId')]",
+          "Author": "[js: parameters('AdminUsername')]",
+          "TitlePart": {
+            "Title": "Dashboard Widget One"
+          },
+          "HtmlBodyPart": {
+            "Html": "<p>Dashboard Widget One</p>"
+          },
+          "DashboardPart": {
+            "Position": 0,
+            "Width": 1,
+            "Height": 1
+          }
+        },
+        {
+          "ContentItemId": "[js: variables('dashboardWidgetTwoId')]",
+          "ContentType": "HtmlDashboardWidget",
+          "DisplayText": "Dashboard Widget Two",
+          "Latest": true,
+          "Published": true,
+          "Owner": "[js: parameters('AdminUserId')]",
+          "Author": "[js: parameters('AdminUsername')]",
+          "TitlePart": {
+            "Title": "Dashboard Widget Two"
+          },
+          "HtmlBodyPart": {
+            "Html": "<p>Dashboard Widget Two</p>"
+          },
+          "DashboardPart": {
+            "Position": 1,
+            "Width": 1,
+            "Height": 1
+          }
+        }
+      ]
+    }
+  ]
+}

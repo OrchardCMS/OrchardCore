@@ -2,6 +2,7 @@ using Fluid;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Admin;
 using OrchardCore.AdminMenu;
 using OrchardCore.ContentLocalization.Handlers;
 using OrchardCore.ContentLocalization.Models;
@@ -26,7 +27,6 @@ using OrchardCore.Lists.Liquid;
 using OrchardCore.Lists.Models;
 using OrchardCore.Lists.Services;
 using OrchardCore.Lists.Settings;
-using OrchardCore.Lists.ViewModels;
 using OrchardCore.Localization.Data;
 using OrchardCore.Modules;
 
@@ -36,9 +36,8 @@ public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.Configure<TemplateOptions>(o =>
+        services.Configure<TemplateOptionsBuilder>(o =>
         {
-            o.MemberAccessStrategy.Register<ListPartViewModel>();
         })
         .AddLiquidFilter<ListCountFilter>("list_count")
         .AddLiquidFilter<ListItemsFilter>("list_items")
@@ -60,6 +59,8 @@ public sealed class Startup : StartupBase
         services.AddDataMigration<Migrations>();
         services.AddScoped<IDocumentIndexHandler, ContainedPartContentIndexHandler>();
         services.AddScoped<IContainerService, ContainerService>();
+        services.AddScoped<IAdminListItemDisplayManager<ListPartAdminListEntry>, ListPartAdminListDisplayManager>();
+
     }
 }
 

@@ -4,29 +4,37 @@ namespace OrchardCore.Localization.Data;
 
 public class DataLocalizationPermissions
 {
-    private static readonly Dictionary<string, Permission> _culturePermissions = [];
-    private static readonly Permission _manageTranslationsForCulture =
-        new("ManageTranslations_{0}", "Manage {0} translations", [ManageTranslations, ViewDynamicTranslations]);
-
-    /// <summary>
-    /// Read-only permission to view translations and statistics.
-    /// </summary>
-    public static readonly Permission ViewDynamicTranslations =
-        new("ViewDynamicTranslations", "View dynamic translations and statistics");
+    private static readonly Dictionary<string, Permission> s_culturePermissions = [];
 
     /// <summary>
     /// Permission to manage all dynamic translations.
-    /// Implies <see cref="ViewDynamicTranslations"/>.
     /// </summary>
     public static readonly Permission ManageTranslations =
-        new("ManageTranslations", "Manage all dynamic translations", [ViewDynamicTranslations]);
+        new("ManageTranslations", LocalizationSource.Create<DataLocalizationPermissions>("Manage all dynamic translations"));
+
+    /// <summary>
+    /// Read-only permission to view translations and statistics.
+    /// Implied by <see cref="ManageTranslations"/>.
+    /// </summary>
+    public static readonly Permission ViewDynamicTranslations =
+        new("ViewDynamicTranslations", LocalizationSource.Create<DataLocalizationPermissions>("View dynamic translations and statistics"), [ManageTranslations]);
 
     /// <summary>
     /// Legacy permission for managing dynamic localizations.
     /// Kept for backward compatibility; use <see cref="ManageTranslations"/> instead.
     /// </summary>
     public static readonly Permission ManageLocalization =
-        new("ManageLocalization", "Manage dynamic localizations", [ManageTranslations]);
+        new("ManageLocalization", LocalizationSource.Create<DataLocalizationPermissions>("Manage dynamic localizations"), [ManageTranslations]);
+
+    // Declared after ManageTranslations so its ImpliedBy list captures the real instance
+    // rather than the default null a forward reference would read from a static field
+    // initializer that hasn't run yet.
+    private static readonly PermissionTemplate s_manageTranslationsForCulture =
+        new(
+            "ManageTranslations_{0}",
+            LocalizationSource.Create<DataLocalizationPermissions>("Manage {0} translations"),
+            "Data Localization",
+            ManageTranslations);
 
     /// <summary>
     /// Creates a dynamic permission for managing translations in a specific culture.
@@ -38,20 +46,13 @@ public class DataLocalizationPermissions
     {
         ArgumentException.ThrowIfNullOrEmpty(cultureName);
 
-        if (_culturePermissions.TryGetValue(cultureName, out var existingPermission))
+        if (s_culturePermissions.TryGetValue(cultureName, out var existingPermission))
         {
             return existingPermission;
         }
 
-        var permission = new Permission(
-            string.Format(_manageTranslationsForCulture.Name, cultureName),
-            string.Format(_manageTranslationsForCulture.Description, cultureDisplayName),
-            _manageTranslationsForCulture.ImpliedBy)
-        {
-            Category = "Data Localization",
-        };
-
-        _culturePermissions[cultureName] = permission;
+        var permission = s_manageTranslationsForCulture.CreateDynamicPermission(cultureName, cultureDisplayName);
+        s_culturePermissions[cultureName] = permission;
 
         return permission;
     }

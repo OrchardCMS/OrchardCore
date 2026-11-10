@@ -5,30 +5,30 @@ namespace OrchardCore.Flows;
 
 public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<ResourceManagementOptions>
 {
-    private static readonly ResourceManifest _manifest;
+    private static readonly ResourceManifest s_manifest;
 
     static ResourceManagementOptionsConfiguration()
     {
-        _manifest = new ResourceManifest();
+        s_manifest = new ResourceManifest();
 
-        _manifest
+        s_manifest
             .DefineStyle("flowpart-edit")
             .SetDependencies("widgetslist-edit")
             .SetUrl("~/OrchardCore.Flows/Styles/flows.edit.min.css", "~/OrchardCore.Flows/Styles/flows.edit.css");
 
-        _manifest
+        s_manifest
             .DefineScript("flowpart-edit")
-            .SetDependencies("jQuery")
-            .SetUrl("~/OrchardCore.Flows/Scripts/flows.edit.min.js", "~/OrchardCore.Flows/Scripts/flows.edit.js");
+            .SetDependencies("Sortable")
+            .SetUrl("~/OrchardCore.Flows/Scripts/flows/flows.edit.min.js", "~/OrchardCore.Flows/Scripts/flows/flows.edit.js");
 
-        _manifest
+        s_manifest
             .DefineScript("content-type-picker")
-            .SetDependencies("jQuery", "vuejs:2")
-            .SetUrl("~/OrchardCore.Flows/Scripts/content-type-picker.min.js", "~/OrchardCore.Flows/Scripts/content-type-picker.js");
+            .SetDependencies("vuejs")
+            .SetUrl("~/OrchardCore.Flows/Scripts/content-type-picker/content-type-picker.min.js", "~/OrchardCore.Flows/Scripts/content-type-picker/content-type-picker.js");
     }
 
     public void Configure(ResourceManagementOptions options)
     {
-        options.ResourceManifests.Add(_manifest);
+        options.ResourceManifests.Add(s_manifest);
     }
 }

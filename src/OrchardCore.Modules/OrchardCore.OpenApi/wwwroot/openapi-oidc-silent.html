@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex" />
+    <title>OpenAPI documentation — silent sign-in</title>
+</head>
+<body>
+    <!--
+      Registered redirect URI for the Swagger/Scalar documentation UIs' OIDC client. Serves two
+      flows: loaded in a hidden iframe it completes a silent (prompt=none) token renewal; loaded
+      top-level it completes the visible authorization redirect used as a fallback when the silent
+      flow needs interaction, then returns the browser to the doc UI. The data-silent attribute
+      tells the auth bundle (see openapi-ui-auth.ts) to run the callback handler instead of
+      configuring the app. The redirect URI ending in this file's path must be registered on the
+      OIDC client (see the OpenApiPkce recipe).
+    -->
+    <script type="module" src="Scripts/openapi-ui-auth/openapi-ui-auth.js" data-openapi-ui-auth data-silent></script>
+</body>
+</html>

@@ -1,21 +1,28 @@
 using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Workflows.Activities;
 
-public class ForkTask : TaskActivity<ForkTask>
+public class ForkTask : TaskActivity<ForkTask>, IActivityDescription
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
     protected readonly IStringLocalizer S;
 
-    public ForkTask(IStringLocalizer<ForkTask> localizer)
+    public ForkTask(IStringLocalizerFactory localizerFactory, IStringLocalizer<ForkTask> localizer)
     {
+        _localizerFactory = localizerFactory;
         S = localizer;
     }
 
-    public override LocalizedString DisplayText => S["Fork Task"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<ForkTask>("Fork Task");
 
-    public override LocalizedString Category => S["Control Flow"];
+    public static LocalizationSource CategoryName => ActivityCategoryLocalizationSources.ControlFlow;
+
+    public override LocalizedString DisplayText => _localizerFactory.Localize(DisplayName);
+
+    public override LocalizedString Category => _localizerFactory.Localize(CategoryName);
 
     public IList<string> Forks
     {
@@ -24,12 +31,12 @@ public class ForkTask : TaskActivity<ForkTask>
     }
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        return Forks.Select(x => Outcome(S[x]));
-    }
+#pragma warning disable OCLOC104 // The fork names are entered by the user who designs the workflow.
+        => Forks.SelectMany(f => Outcome(S[f]));
+#pragma warning restore OCLOC104
 
     public override ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        return Outcomes(Forks);
+        return Outcome(Forks);
     }
 }

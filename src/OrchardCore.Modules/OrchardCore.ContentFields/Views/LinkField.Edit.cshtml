@@ -7,7 +7,7 @@
     var settings = Model.PartFieldDefinition.GetSettings<LinkFieldSettings>();
     var isRequired = settings.Required && string.IsNullOrWhiteSpace(settings.DefaultUrl);
     var urlClass = settings.Required ? "required" : null;
-    var textClass = settings.LinkTextMode == LinkTextMode.Required ? "required" : null;
+    var textClass = settings.LinkTextMode == LinkTextMode.Required ? "required ocat-label-required" : null;
     var useFormFloating = string.IsNullOrWhiteSpace(settings.UrlPlaceholder) || string.IsNullOrWhiteSpace(settings.TextPlaceholder);
     string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), DataLocalizationContext.ContentField(Model.PartFieldDefinition.PartDefinition.Name)];
 }
@@ -28,7 +28,7 @@
 
                 @if (!string.IsNullOrWhiteSpace(settings.Hint))
                 {
-                    <span class="hint">@settings.Hint</span>
+                    @await DisplayAsync(await New.Hint_Admin(Hint: settings.Hint))
                 }
             </div>
             @if (settings.LinkTextMode == LinkTextMode.Optional || settings.LinkTextMode == LinkTextMode.Required)
@@ -44,7 +44,7 @@
 
                     @if (!string.IsNullOrWhiteSpace(settings.HintLinkText))
                     {
-                        <span class="hint">@settings.HintLinkText</span>
+                        @await DisplayAsync(await New.Hint_Admin(Hint: settings.HintLinkText))
                     }
                 </div>
             }

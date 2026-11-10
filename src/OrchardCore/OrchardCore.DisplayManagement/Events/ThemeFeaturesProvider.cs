@@ -48,6 +48,8 @@ public sealed class ThemeFeaturesProvider : FeaturesProviderBase
             ManifestInfo = manifestInfo,
             Priority = int.TryParse(moduleInfo.Priority, out var priority) ? priority : 0,
             FeatureDependencyIds = moduleInfo.Dependencies,
+            FeatureBeforeDependencyIds = moduleInfo.Before,
+            FeatureAfterDependencyIds = moduleInfo.After,
             DefaultTenantOnly = moduleInfo.DefaultTenantOnly,
             IsAlwaysEnabled = moduleInfo.IsAlwaysEnabled,
             EnabledByDependencyOnly = moduleInfo.EnabledByDependencyOnly,
@@ -61,6 +63,8 @@ public sealed class ThemeFeaturesProvider : FeaturesProviderBase
             ctx.Description,
             ctx.ExtensionInfo,
             ctx.FeatureDependencyIds,
+            ctx.FeatureBeforeDependencyIds,
+            ctx.FeatureAfterDependencyIds,
             ctx.DefaultTenantOnly,
             ctx.IsAlwaysEnabled,
             ctx.EnabledByDependencyOnly));
@@ -78,6 +82,8 @@ public sealed class ThemeFeaturesProvider : FeaturesProviderBase
             string description,
             IExtensionInfo extension,
             string[] dependencies,
+            string[] before,
+            string[] after,
             bool defaultTenantOnly,
             bool isAlwaysEnabled,
             bool enabledByDependencyOnly)
@@ -88,7 +94,9 @@ public sealed class ThemeFeaturesProvider : FeaturesProviderBase
             Category = category;
             Description = description;
             Extension = extension;
-            Dependencies = dependencies;
+            Dependencies = dependencies ?? [];
+            Before = before ?? [];
+            After = after ?? [];
             DefaultTenantOnly = defaultTenantOnly;
             IsAlwaysEnabled = isAlwaysEnabled;
             EnabledByDependencyOnly = enabledByDependencyOnly;
@@ -102,6 +110,8 @@ public sealed class ThemeFeaturesProvider : FeaturesProviderBase
         public bool DefaultTenantOnly { get; }
         public IExtensionInfo Extension { get; }
         public string[] Dependencies { get; }
+        public string[] Before { get; }
+        public string[] After { get; }
         public bool IsAlwaysEnabled { get; }
         public bool EnabledByDependencyOnly { get; }
     }

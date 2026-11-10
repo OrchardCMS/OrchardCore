@@ -1,0 +1,10 @@
+@model SendByEmailStepViewModel
+
+@if (!string.IsNullOrWhiteSpace(Model.To))
+{
+    <span class="text-break">@Model.To</span>
+    @if (Model.RecipientCount > 1)
+    {
+        <span class="text-muted d-block">@T.Plural(Model.RecipientCount, "1 recipient", "{0} recipients")</span>
+    }
+}

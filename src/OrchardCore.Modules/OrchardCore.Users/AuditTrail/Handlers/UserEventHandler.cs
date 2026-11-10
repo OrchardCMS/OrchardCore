@@ -1,3 +1,5 @@
+using System.Security.Claims;
+using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -14,8 +16,6 @@ using OrchardCore.Users.AuditTrail.Services;
 using OrchardCore.Users.Events;
 using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Models;
-using System.Security.Claims;
-using System.Text.Json.Nodes;
 using YesSql;
 using ISession = YesSql.ISession;
 
@@ -168,8 +168,15 @@ public class UserEventHandler : UserEventHandlerBase, ILoginFormEvent
 
         await _auditTrailManager.RecordEventAsync(context);
     }
+
     private JsonObject CreateSnapshotObject(User fullUser, AuditTrailUserEventSettings settings)
     {
+        // Without any configured redactors there are no properties allowed in the snapshot, so there is nothing to store.
+        if (settings.UserSnapshotRedactors is not { Count: > 0 })
+        {
+            return null;
+        }
+
         var redactors = _redactors.ToDictionary(item => item.GetType().Name);
 
         JsonValue Redact(string propertyName, JsonNode value)

@@ -24,7 +24,7 @@ namespace OrchardCore.Users;
 [Feature(UserConstants.Features.TwoFactorAuthentication)]
 public sealed class TwoFactorAuthenticationStartup : StartupBase
 {
-    private static readonly string _twoFactorControllerName = typeof(TwoFactorAuthenticationController).ControllerName();
+    private static readonly string s_twoFactorControllerName = typeof(TwoFactorAuthenticationController).ControllerName();
 
     private UserOptions _userOptions;
 
@@ -53,7 +53,7 @@ public sealed class TwoFactorAuthenticationStartup : StartupBase
                 pattern: "LoginWithTwoFactorAuthentication",
                 defaults: new
                 {
-                    controller = _twoFactorControllerName,
+                    controller = s_twoFactorControllerName,
                     action = nameof(TwoFactorAuthenticationController.LoginWithTwoFactorAuthentication),
                 }
             );
@@ -64,7 +64,7 @@ public sealed class TwoFactorAuthenticationStartup : StartupBase
             pattern: _userOptions.TwoFactorAuthenticationPath,
             defaults: new
             {
-                controller = _twoFactorControllerName,
+                controller = s_twoFactorControllerName,
                 action = nameof(TwoFactorAuthenticationController.Index),
             }
         );
@@ -75,7 +75,7 @@ public sealed class TwoFactorAuthenticationStartup : StartupBase
             pattern: "LoginWithRecoveryCode",
             defaults: new
             {
-                controller = _twoFactorControllerName,
+                controller = s_twoFactorControllerName,
                 action = nameof(TwoFactorAuthenticationController.LoginWithRecoveryCode),
             }
         );
@@ -86,7 +86,7 @@ public sealed class TwoFactorAuthenticationStartup : StartupBase
             pattern: "GenerateRecoveryCodes",
             defaults: new
             {
-                controller = _twoFactorControllerName,
+                controller = s_twoFactorControllerName,
                 action = nameof(TwoFactorAuthenticationController.GenerateRecoveryCodes),
             }
         );
@@ -97,7 +97,7 @@ public sealed class TwoFactorAuthenticationStartup : StartupBase
             pattern: "ShowRecoveryCodes",
             defaults: new
             {
-                controller = _twoFactorControllerName,
+                controller = s_twoFactorControllerName,
                 action = nameof(TwoFactorAuthenticationController.ShowRecoveryCodes),
             }
         );
@@ -108,7 +108,7 @@ public sealed class TwoFactorAuthenticationStartup : StartupBase
             pattern: "DisableTwoFactorAuthentication",
             defaults: new
             {
-                controller = _twoFactorControllerName,
+                controller = s_twoFactorControllerName,
                 action = nameof(TwoFactorAuthenticationController.DisableTwoFactorAuthentication),
             }
         );
@@ -123,8 +123,8 @@ public sealed class TwoFactorAuthenticationRateLimitsStartup : StartupBase
     {
         services.Configure<RateLimitsOptions>(options =>
         {
-            options.AddRouteRateLimit(RateLimitRouteNames.LoginWithTwoFactorAuthentication, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.TwoFactorAuthentication, 5));
-            options.AddRouteRateLimit(RateLimitRouteNames.LoginWithRecoveryCode, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.TwoFactorRecovery, 3));
+            options.AddRouteRateLimit(RateLimitRouteNames.LoginWithTwoFactorAuthentication, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPolicy(UserRateLimiterPolicyNames.TwoFactorAuthentication, 5, RateLimitPartitionKeys.GetTwoFactorUser));
+            options.AddRouteRateLimit(RateLimitRouteNames.LoginWithRecoveryCode, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPolicy(UserRateLimiterPolicyNames.TwoFactorRecovery, 3, RateLimitPartitionKeys.GetTwoFactorUser));
         });
     }
 }
@@ -137,7 +137,7 @@ public sealed class EmailAuthenticatorRateLimitsStartup : StartupBase
     {
         services.Configure<RateLimitsOptions>(options =>
         {
-            options.AddRouteRateLimit(Endpoints.EmailAuthenticator.SendCode.RouteName, HttpMethods.Post, RateLimitPartitionHelpers.CreateFixedWindowPerIpPolicy(UserRateLimiterPolicyNames.TwoFactorCodeSend, 2, TimeSpan.FromMinutes(1)));
+            options.AddRouteRateLimit(Endpoints.EmailAuthenticator.SendCode.RouteName, HttpMethods.Post, RateLimitPartitionHelpers.CreateFixedWindowPolicy(UserRateLimiterPolicyNames.TwoFactorCodeSend, 2, TimeSpan.FromMinutes(1), RateLimitPartitionKeys.GetTwoFactorUser));
         });
     }
 }
@@ -150,7 +150,7 @@ public sealed class SmsAuthenticatorRateLimitsStartup : StartupBase
     {
         services.Configure<RateLimitsOptions>(options =>
         {
-            options.AddRouteRateLimit(Endpoints.SmsAuthenticator.SendCode.RouteName, HttpMethods.Post, RateLimitPartitionHelpers.CreateFixedWindowPerIpPolicy(UserRateLimiterPolicyNames.TwoFactorCodeSend, 2, TimeSpan.FromMinutes(1)));
+            options.AddRouteRateLimit(Endpoints.SmsAuthenticator.SendCode.RouteName, HttpMethods.Post, RateLimitPartitionHelpers.CreateFixedWindowPolicy(UserRateLimiterPolicyNames.TwoFactorCodeSend, 2, TimeSpan.FromMinutes(1), RateLimitPartitionKeys.GetTwoFactorUser));
         });
     }
 }

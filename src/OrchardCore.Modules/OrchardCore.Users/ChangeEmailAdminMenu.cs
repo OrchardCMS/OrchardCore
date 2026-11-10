@@ -7,7 +7,7 @@ namespace OrchardCore.Users;
 
 public sealed class ChangeEmailAdminMenu : AdminNavigationProvider
 {
-    private static readonly RouteValueDictionary _routeValues = new()
+    private static readonly RouteValueDictionary s_routeValues = new()
     {
         { "area", "OrchardCore.Settings" },
         { "groupId", ChangeEmailSettingsDisplayDriver.GroupId },
@@ -22,28 +22,12 @@ public sealed class ChangeEmailAdminMenu : AdminNavigationProvider
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
-        if (NavigationHelper.UseLegacyFormat())
-        {
-            builder
-                .Add(S["Security"], security => security
-                    .Add(S["Settings"], settings => settings
-                        .Add(S["User Change Email"], S["User Change Email"].PrefixPosition(), email => email
-                            .Permission(UsersPermissions.ManageUsers)
-                            .Action("Index", "Admin", _routeValues)
-                            .LocalNav()
-                        )
-                    )
-                );
-
-            return ValueTask.CompletedTask;
-        }
-
         builder
             .Add(S["Settings"], settings => settings
                 .Add(S["Security"], S["Security"].PrefixPosition(), security => security
                     .Add(S["Change Email"], S["Change Email"].PrefixPosition(), email => email
                         .Permission(UsersPermissions.ManageUsers)
-                        .Action("Index", "Admin", _routeValues)
+                        .Action("Index", "Admin", s_routeValues)
                         .LocalNav()
                     )
                 )

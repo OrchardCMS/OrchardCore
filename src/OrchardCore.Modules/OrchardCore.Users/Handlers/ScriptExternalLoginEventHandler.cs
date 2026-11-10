@@ -1,7 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Settings;
-using Microsoft.Extensions.Logging;
 using OrchardCore.Scripting;
 using OrchardCore.Settings;
 using OrchardCore.Users.Models;
@@ -15,10 +14,9 @@ public class ScriptExternalLoginEventHandler : IExternalLoginEventHandler
     // every external login would add a distinct entry to the shared cache.
     private const string ContextMethodName = "externalLoginContext";
 
-    private readonly ILogger _logger;
     private readonly IScriptingManager _scriptingManager;
     private readonly ISiteService _siteService;
-    private static readonly JsonMergeSettings _jsonMergeSettings = new JsonMergeSettings
+    private static readonly JsonMergeSettings s_jsonMergeSettings = new JsonMergeSettings
     {
         MergeArrayHandling = MergeArrayHandling.Union,
         MergeNullValueHandling = MergeNullValueHandling.Merge,
@@ -26,13 +24,10 @@ public class ScriptExternalLoginEventHandler : IExternalLoginEventHandler
 
     public ScriptExternalLoginEventHandler(
         ISiteService siteService,
-        IScriptingManager scriptingManager,
-        ILogger<ScriptExternalLoginEventHandler> logger
-    )
+        IScriptingManager scriptingManager)
     {
         _siteService = siteService;
         _scriptingManager = scriptingManager;
-        _logger = logger;
     }
 
     public async Task<string> GenerateUserName(string provider, IEnumerable<SerializableClaim> claims)
@@ -100,7 +95,7 @@ public class ScriptExternalLoginEventHandler : IExternalLoginEventHandler
                 if (context.PropertiesToUpdate is not null)
                 {
                     // Perhaps other provider will fill some values. we should keep exists value.
-                    context.PropertiesToUpdate.Merge(result, _jsonMergeSettings);
+                    context.PropertiesToUpdate.Merge(result, s_jsonMergeSettings);
                 }
                 else
                 {

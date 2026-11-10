@@ -1,4 +1,3 @@
-using Fluid;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
@@ -15,27 +14,27 @@ public class LiquidViewsFeatureProvider : IApplicationFeatureProvider<ViewsFeatu
     public static readonly string DefaultRazorViewPath = '/' + DefaultLiquidViewName + RazorViewEngine.ViewExtension;
     public static readonly string DefaultLiquidViewPath = '/' + DefaultLiquidViewName + LiquidViewTemplate.ViewExtension;
 
-    private static List<string> _sharedPaths;
-    private static readonly System.Threading.Lock _synLock = new();
+    private static List<string> s_sharedPaths;
+    private static readonly System.Threading.Lock s_synLock = new();
 
-    public LiquidViewsFeatureProvider(IOptions<TemplateOptions> templateOptions)
+    public LiquidViewsFeatureProvider(IOptions<LiquidViewOptions> liquidViewOptions)
     {
-        if (_sharedPaths != null)
+        if (s_sharedPaths != null)
         {
             return;
         }
 
-        lock (_synLock)
+        lock (s_synLock)
         {
-            if (_sharedPaths == null)
+            if (s_sharedPaths == null)
             {
-                _sharedPaths = [];
+                s_sharedPaths = [];
 
-                var filePaths = templateOptions.Value.FileProvider.GetViewFilePaths(
+                var filePaths = liquidViewOptions.Value.FileProvider.GetViewFilePaths(
                     Application.ModulesPath, [LiquidViewTemplate.ViewExtension],
                     LiquidViewTemplate.ViewsFolder);
 
-                _sharedPaths.AddRange(filePaths.Select(p => '/' + p));
+                s_sharedPaths.AddRange(filePaths.Select(p => '/' + p));
             }
         }
     }
@@ -48,7 +47,7 @@ public class LiquidViewsFeatureProvider : IApplicationFeatureProvider<ViewsFeatu
             Item = new TenantRazorCompiledItem(typeof(LiquidPage), DefaultLiquidViewPath),
         });
 
-        foreach (var path in _sharedPaths)
+        foreach (var path in s_sharedPaths)
         {
             if (!Path.GetFileName(path).StartsWith('_'))
             {

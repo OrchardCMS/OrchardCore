@@ -118,7 +118,7 @@ public class DynamicCacheTests
         {
             shape.Properties["property1"] = 1;
             ((MyModel)shape).MyProperty = 3;
-            return Task.CompletedTask;
+            return ValueTask.CompletedTask;
         }).Location("Content");
 
         var contentShape = await factory.CreateAsync("Content");
@@ -170,7 +170,7 @@ public class DynamicCacheTests
             initializing: shape =>
             {
                 initializedCalled++;
-                return Task.CompletedTask;
+                return ValueTask.CompletedTask;
             }).Location("Content").Cache("mycontent", ctx => ctx.WithExpiryAfter(TimeSpan.FromSeconds(1)).AddTag(cacheTag))
             .Processing(shape =>
             {
@@ -531,7 +531,7 @@ public class DynamicCacheTests
             shape =>
             {
                 shape.Properties["ShouldMorph"] = true;
-                return Task.CompletedTask;
+                return ValueTask.CompletedTask;
             })
             .Location("Content")
             .Cache("conditional-morph-true", ctx => ctx.WithExpiryAfter(TimeSpan.FromSeconds(10)).AddTag(cacheTag));
@@ -552,7 +552,7 @@ public class DynamicCacheTests
             shape =>
             {
                 shape.Properties["ShouldMorph"] = false;
-                return Task.CompletedTask;
+                return ValueTask.CompletedTask;
             })
             .Location("Content")
             .Cache("conditional-morph-false", ctx => ctx.WithExpiryAfter(TimeSpan.FromSeconds(10)).AddTag(cacheTag));
@@ -576,7 +576,7 @@ public class DynamicCacheTests
                 shape =>
                 {
                     shape.Properties["ShouldMorph"] = true;
-                    return Task.CompletedTask;
+                    return ValueTask.CompletedTask;
                 })
                 .Location("Content")
                 .Cache("conditional-morph-true", ctx => ctx.WithExpiryAfter(TimeSpan.FromSeconds(10)).AddTag(cacheTag));
@@ -594,7 +594,7 @@ public class DynamicCacheTests
                 shape =>
                 {
                     shape.Properties["ShouldMorph"] = false;
-                    return Task.CompletedTask;
+                    return ValueTask.CompletedTask;
                 })
                 .Location("Content")
                 .Cache("conditional-morph-false", ctx => ctx.WithExpiryAfter(TimeSpan.FromSeconds(10)).AddTag(cacheTag));
@@ -869,7 +869,7 @@ public class DynamicCacheTests
         var shapeResult = new ShapeResult(
             "DoubleMorphShape",
             ctx => factory.CreateAsync("DoubleMorphShape"),
-            shape => { shape.Properties["Data"] = "TestValue"; return Task.CompletedTask; })
+            shape => { shape.Properties["Data"] = "TestValue"; return ValueTask.CompletedTask; })
             .Location("Content")
             .Cache("double-morph-concat", ctx => ctx.WithExpiryAfter(TimeSpan.FromSeconds(10)).AddTag(cacheTag));
 
@@ -891,7 +891,7 @@ public class DynamicCacheTests
             shapeResult = new ShapeResult(
                 "DoubleMorphShape",
                 ctx => factory.CreateAsync("DoubleMorphShape"),
-                shape => { shape.Properties["Data"] = "TestValue"; return Task.CompletedTask; })
+                shape => { shape.Properties["Data"] = "TestValue"; return ValueTask.CompletedTask; })
                 .Location("Content")
                 .Cache("double-morph-concat", ctx => ctx.WithExpiryAfter(TimeSpan.FromSeconds(10)).AddTag(cacheTag));
 
@@ -910,7 +910,7 @@ public class DynamicCacheTests
         var shapeResult2 = new ShapeResult(
             "DoubleMorphShape",
             ctx => factory.CreateAsync("DoubleMorphShape"),
-            shape => { shape.Properties["Data"] = "DifferentValue"; return Task.CompletedTask; })
+            shape => { shape.Properties["Data"] = "DifferentValue"; return ValueTask.CompletedTask; })
             .Location("Content")
             .Cache("double-morph-concat-different", ctx => ctx.WithExpiryAfter(TimeSpan.FromSeconds(10)).AddTag(cacheTag));
 
@@ -931,7 +931,7 @@ public class DynamicCacheTests
         shapeResult = new ShapeResult(
             "DoubleMorphShape",
             ctx => factory.CreateAsync("DoubleMorphShape"),
-            shape => { shape.Properties["Data"] = "TestValue"; return Task.CompletedTask; })
+            shape => { shape.Properties["Data"] = "TestValue"; return ValueTask.CompletedTask; })
             .Location("Content")
             .Cache("double-morph-concat", ctx => ctx.WithExpiryAfter(TimeSpan.FromSeconds(10)).AddTag(cacheTag));
 

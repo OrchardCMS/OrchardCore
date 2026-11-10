@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -11,21 +13,33 @@ public sealed class DefaultSiteSettingsDisplayDriver : DisplayDriver<ISite>
 {
     public const string GroupId = "general";
 
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IAuthorizationService _authorizationService;
     private readonly IShellReleaseManager _shellReleaseManager;
-
     internal readonly IStringLocalizer S;
 
     public DefaultSiteSettingsDisplayDriver(
+        IHttpContextAccessor httpContextAccessor,
+        IAuthorizationService authorizationService,
         IShellReleaseManager shellReleaseManager,
         IStringLocalizer<DefaultSiteSettingsDisplayDriver> stringLocalizer)
     {
+        _httpContextAccessor = httpContextAccessor;
+        _authorizationService = authorizationService;
         _shellReleaseManager = shellReleaseManager;
         S = stringLocalizer;
     }
 
-    public override IDisplayResult Edit(ISite site, BuildEditorContext context)
+    public override async Task<IDisplayResult> EditAsync(ISite site, BuildEditorContext context)
     {
         if (!IsGeneralGroup(context))
+        {
+            return null;
+        }
+
+        if (!await _authorizationService.AuthorizeAsync(
+            _httpContextAccessor.HttpContext?.User,
+            SettingsPermissions.ManageGeneralSettings))
         {
             return null;
         }
@@ -54,20 +68,45 @@ public sealed class DefaultSiteSettingsDisplayDriver : DisplayDriver<ISite>
             return null;
         }
 
+        if (!await _authorizationService.AuthorizeAsync(
+            _httpContextAccessor.HttpContext?.User,
+            SettingsPermissions.ManageGeneralSettings))
+        {
+            return null;
+        }
+
         var model = new SiteSettingsViewModel();
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
         site.SiteName = model.SiteName;
         site.PageTitleFormat = model.PageTitleFormat;
-        site.BaseUrl = model.BaseUrl;
         site.TimeZoneId = model.TimeZone;
         site.PageSize = model.PageSize.Value;
+        site.AllowPageSizeSelection = model.AllowPageSizeSelection;
         site.UseCdn = model.UseCdn;
-        site.CdnBaseUrl = model.CdnBaseUrl;
         site.ResourceDebugMode = model.ResourceDebugMode;
         site.AppendVersion = model.AppendVersion;
         site.CacheMode = model.CacheMode;
+
+        if (ValidateUri(model.BaseUrl, restrictScheme: true))
+        {
+            site.BaseUrl = model.BaseUrl;
+        }
+        else if (!string.IsNullOrEmpty(model.BaseUrl))
+        {
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.BaseUrl), S["The Base url must be a fully qualified URL."]);
+        }
+
+        // The site base URL is always HTTP or HTTPS, while the CDN base URL could be something else (like FTP) as well.
+        if (ValidateUri(model.CdnBaseUrl, restrictScheme: false))
+        {
+            site.CdnBaseUrl = model.CdnBaseUrl;
+        }
+        else if (!string.IsNullOrEmpty(model.CdnBaseUrl))
+        {
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.CdnBaseUrl), S["The CDN base url must be a fully qualified URL."]);
+        }
 
         if (model.PageSize.Value < 1)
         {
@@ -79,9 +118,23 @@ public sealed class DefaultSiteSettingsDisplayDriver : DisplayDriver<ISite>
             context.Updater.ModelState.AddModelError(Prefix, nameof(model.PageSize), S["The page size must be less than or equal to {0}.", site.MaxPageSize]);
         }
 
-        if (!string.IsNullOrEmpty(site.BaseUrl) && !Uri.TryCreate(site.BaseUrl, UriKind.Absolute, out _))
+        if (TryParsePageSizeOptions(model.PageSizeOptions, out var pageSizeOptions))
         {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(model.BaseUrl), S["The Base url must be a fully qualified URL."]);
+            site.PageSizeOptions = pageSizeOptions;
+
+            if (model.AllowPageSizeSelection && pageSizeOptions.Length == 0)
+            {
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.PageSizeOptions), S["Enter at least one page size when page size selection is allowed."]);
+            }
+
+            if (site.MaxPageSize > 0 && Array.Exists(pageSizeOptions, size => size > site.MaxPageSize))
+            {
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.PageSizeOptions), S["The page size options must be less than or equal to {0}.", site.MaxPageSize]);
+            }
+        }
+        else
+        {
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.PageSizeOptions), S["The page size options must be a comma-separated list of positive numbers."]);
         }
 
         _shellReleaseManager.RequestRelease();
@@ -96,6 +149,11 @@ public sealed class DefaultSiteSettingsDisplayDriver : DisplayDriver<ISite>
         model.BaseUrl = site.BaseUrl;
         model.TimeZone = site.TimeZoneId;
         model.PageSize = site.PageSize;
+        model.AllowPageSizeSelection = site.AllowPageSizeSelection;
+        model.PageSizeOptions = site.PageSizeOptions is { Length: > 0 }
+            ? string.Join(", ", site.PageSizeOptions)
+            : string.Empty;
+        model.MaxPageSize = site.MaxPageSize;
         model.UseCdn = site.UseCdn;
         model.CdnBaseUrl = site.CdnBaseUrl;
         model.ResourceDebugMode = site.ResourceDebugMode;
@@ -105,4 +163,46 @@ public sealed class DefaultSiteSettingsDisplayDriver : DisplayDriver<ISite>
 
     private static bool IsGeneralGroup(BuildEditorContext context)
         => context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase);
+
+    private static bool TryParsePageSizeOptions(string value, out int[] result)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            result = [];
+
+            return true;
+        }
+
+        var tokens = value.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        var sizes = new List<int>();
+
+        foreach (var token in tokens)
+        {
+            if (!int.TryParse(token, out var size) || size <= 0)
+            {
+                result = null;
+
+                return false;
+            }
+
+            sizes.Add(size);
+        }
+
+        // Always persist a sorted, distinct list.
+        result = sizes.Distinct().Order().ToArray();
+
+        return true;
+    }
+
+    /// <summary>
+    /// Checks if the provided <paramref name="url"/> is a valid <see cref="Uri"/> and a suitable base URL. The latter
+    /// means that it should end with the path and not contain any query or hash parameters.   
+    /// </summary>
+    /// <param name="url">Raw value to validate</param>
+    /// <param name="restrictScheme">If <see langword="true"/>, only HTTP and HTTPS URLs are allowed.</param>
+    private static bool ValidateUri(string url, bool restrictScheme) =>
+        Uri.TryCreate(url, UriKind.Absolute, out var uri) &&
+        (!restrictScheme || uri.Scheme is "http" or "https") &&
+        string.IsNullOrEmpty(uri.Query) &&
+        string.IsNullOrEmpty(uri.Fragment);
 }

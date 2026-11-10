@@ -1,5 +1,6 @@
+using OrchardCore.Localization;
 using System.ComponentModel.DataAnnotations;
-using Microsoft.Extensions.Localization;
+using System.Text.Json.Serialization;
 using OrchardCore.Deployment;
 
 namespace OrchardCore.Queries.Deployment;
@@ -9,16 +10,13 @@ namespace OrchardCore.Queries.Deployment;
 /// </summary>
 public class QueryBasedContentDeploymentStep : DeploymentStep
 {
-    public QueryBasedContentDeploymentStep()
-    {
-        Name = "QueryBasedContentDeploymentStep";
-    }
+    public override string Name => "QueryBasedContentDeploymentStep";
 
-    public QueryBasedContentDeploymentStep(IStringLocalizer<QueryBasedContentDeploymentStep> S)
-        : this()
-    {
-        Category = S["Content Management"];
-    }
+    [JsonIgnore]
+    public override LocalizationSource Category => CommonLocalizationSources.ContentManagement;
+
+    [JsonIgnore]
+    public override LocalizationSource Title => QueriesLocalizationSources.QueriedContentItems;
 
     [Required]
     public string QueryName { get; set; }

@@ -16,12 +16,12 @@ public abstract class ContentPartDisplayDriver<TPart> : DisplayDriverBase, ICont
 
     private ContentTypePartDefinition _typePartDefinition;
 
-    public override ShapeResult Factory(string shapeType, Func<IBuildShapeContext, ValueTask<IShape>> shapeBuilder, Func<IShape, Task> initializeAsync)
+    public override ShapeResult Factory<TBuilderState, TInitState>(string shapeType, Func<IBuildShapeContext, TBuilderState, ValueTask<IShape>> shapeBuilder, TBuilderState shapeBuilderState, Func<IShape, TInitState, ValueTask> initializingAsync, TInitState initializingState)
     {
         // e.g., HtmlBodyPart.Summary, HtmlBodyPart-BlogPost, BagPart-LandingPage-Services
         // context.Shape is the ContentItem shape, we need to alter the part shape
 
-        var result = base.Factory(shapeType, shapeBuilder, initializeAsync).Prefix(Prefix);
+        var result = base.Factory(shapeType, shapeBuilder, shapeBuilderState, initializingAsync, initializingState);
 
         if (_typePartDefinition != null)
         {

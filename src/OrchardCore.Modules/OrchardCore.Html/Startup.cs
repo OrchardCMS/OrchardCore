@@ -1,4 +1,3 @@
-using Fluid;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -9,8 +8,8 @@ using OrchardCore.Html.Handlers;
 using OrchardCore.Html.Indexing;
 using OrchardCore.Html.Models;
 using OrchardCore.Html.Settings;
-using OrchardCore.Html.ViewModels;
 using OrchardCore.Indexing;
+using OrchardCore.Liquid;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Html;
@@ -19,7 +18,7 @@ public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.Configure<TemplateOptions>(o => o.MemberAccessStrategy.Register<HtmlBodyPartViewModel>());
+        services.AddHtmlServices();
 
         // Body Part
         services.AddContentPart<HtmlBodyPart>()

@@ -78,6 +78,25 @@ public async Task<int> CreateAsync()
 }
 ```
 
+### Declaring the records of an index
+
+A map index can have several records for a document, so a query joining it groups its matches by document to return each document once, and counts distinct documents. A page then reads every match before it can be sorted. An index provider can declare what its index holds, so that YesSql doesn't need to:
+
+- `SingleRecordPerDocument()`: the map returns at most one record per document. A query that only joins indexes declaring it isn't grouped, so a page stops as soon as it's full when a database index serves its order, and its count isn't distinct. Saving a document throws if the map returns several records.
+- `ExclusiveToDocumentType()`: only documents of the provider's type have records in the index, so a count reads the index tables without joining the document table.
+
+```csharp
+context.For<ProductIndex>()
+    .ExclusiveToDocumentType()
+    .SingleRecordPerDocument()
+    .When(contentItem => contentItem.Has<ProductPart>())
+    .Map(contentItem => ...);
+```
+
+YesSql can't verify the records that are already in the table, for example those written before the map returned a single record. A query is still grouped when it joins an index that doesn't declare a single record per document. A query that these declarations make slower, such as one where the database walks an index in the requested order looking for rare matches, can opt out with `NoIndexOptimizations()`. A query that joins an index with several records per document, but only matches one of them, can skip the grouping with `SkipDeduplication()`.
+
+These indexes declare both: `ContentItemIndex`, `ContainedPartIndex`, `LocalizedContentItemIndex`, `UserIndex`, `WorkflowIndex`, `DataPipelineRunIndex`, `AuditTrailEventIndex` and `NotificationIndex`.
+
 Real examples in the Orchard Core source: [`ContentItemIndex`](https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore/OrchardCore.ContentManagement/Records/ContentItemIndex.cs), [`AliasPartIndex`](https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore.Modules/OrchardCore.Alias/Indexes/AliasPartIndex.cs) and its [migration](https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore.Modules/OrchardCore.Alias/Migrations.cs).
 
 ## The session

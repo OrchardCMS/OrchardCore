@@ -14,7 +14,7 @@ public class QueryCacheContextProvider : ICacheContextProvider
 
     public Task PopulateContextEntriesAsync(IEnumerable<string> contexts, List<CacheContextEntry> entries)
     {
-        if (contexts.Any(ctx => string.Equals(ctx, "query", StringComparison.OrdinalIgnoreCase)))
+        if (contexts.ContainsContext("query"))
         {
             var httpContext = _httpContextAccessor.HttpContext;
             var query = httpContext.Request.Query;

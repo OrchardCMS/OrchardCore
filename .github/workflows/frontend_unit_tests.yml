@@ -1,0 +1,56 @@
+name: Frontend Unit Tests
+
+on:
+  push:
+    paths-ignore:
+      - '**/*.md'
+      - 'mkdocs.yml'
+      - 'src/docs/**/*'
+    branches: [ main, release/** ]
+  pull_request:
+
+concurrency:
+  group: ${{ github.head_ref || github.run_id }}-frontend_unit_tests
+  cancel-in-progress: true
+
+jobs:
+  vitest:
+    name: Run Vitest unit tests
+    runs-on: ubuntu-26.04
+    steps:
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+    - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+      with:
+        node-version-file: '.node-version'
+    - name: Install packages
+      run: |
+        npm install -g corepack
+        corepack enable
+        yarn --no-check-resolutions
+    - name: Run vitest unit tests (bloom)
+      working-directory: .scripts/bloom
+      run: yarn vitest run
+    - name: Run vitest unit tests (data-pipelines-designer)
+      working-directory: src/OrchardCore.Modules/OrchardCore.DataPipelines/Assets/designer
+      run: yarn vitest run
+    - name: Run vitest unit tests (media-gallery)
+      working-directory: src/OrchardCore.Modules/OrchardCore.Media/Assets/media-gallery
+      run: yarn vitest run
+    - name: Run vitest unit tests (media-picker)
+      working-directory: src/OrchardCore.Modules/OrchardCore.Media/Assets/media-picker
+      run: yarn vitest run
+    - name: Run vitest unit tests (workflows-designer)
+      working-directory: src/OrchardCore.Modules/OrchardCore.Workflows/Assets/designer
+      run: yarn vitest run
+    - name: Upload vitest test results
+      uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+      if: always()
+      with:
+        name: vitest-results
+        path: |
+          .scripts/bloom/testing/vitest-results.xml
+          src/OrchardCore.Modules/OrchardCore.DataPipelines/Assets/designer/testing/vitest-results.xml
+          src/OrchardCore.Modules/OrchardCore.Media/Assets/media-gallery/testing/vitest-results.xml
+          src/OrchardCore.Modules/OrchardCore.Media/Assets/media-picker/testing/vitest-results.xml
+          src/OrchardCore.Modules/OrchardCore.Workflows/Assets/designer/testing/vitest-results.xml
+        retention-days: 30

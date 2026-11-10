@@ -37,7 +37,8 @@ public sealed class CustomUserSettingsDisplayDriver : DisplayDriver<User>
 
     public override async Task<IDisplayResult> DisplayAsync(User user, BuildDisplayContext context)
     {
-        if (!string.Equals(context.DisplayType, OrchardCoreConstants.DisplayType.SummaryAdmin, StringComparison.OrdinalIgnoreCase))
+        if (!string.Equals(context.DisplayType, OrchardCoreConstants.DisplayType.SummaryAdmin, StringComparison.OrdinalIgnoreCase) &&
+            !string.Equals(context.DisplayType, OrchardCoreConstants.DisplayType.SummaryAdminGrid, StringComparison.OrdinalIgnoreCase))
         {
             return null;
         }
@@ -56,9 +57,10 @@ public sealed class CustomUserSettingsDisplayDriver : DisplayDriver<User>
             results.Add(Factory("CustomUserSettings_SummaryAdmin", async builder =>
                 {
                     var contentItem = await GetUserSettingsAsync(user, contentTypeDefinition);
-                    return await _contentItemDisplayManager.BuildDisplayAsync(contentItem, updater: null, OrchardCoreConstants.DisplayType.SummaryAdmin);
+                    return await _contentItemDisplayManager.BuildDisplayAsync(contentItem, updater: null, context.DisplayType);
                 })
                 .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, PlacementInfo.HiddenLocation)
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, PlacementInfo.HiddenLocation)
                 .Differentiator($"CustomUserSettings-{contentTypeDefinition.Name}")
                 .RenderWhen(() => _authorizationService.AuthorizeAsync(userClaim, CustomUserSettingsPermissions.CreatePermissionForType(contentTypeDefinition))));
         }

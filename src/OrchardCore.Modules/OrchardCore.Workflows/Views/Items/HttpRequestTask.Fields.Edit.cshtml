@@ -2,7 +2,7 @@
 @model HttpRequestTaskViewModel
 
 <div class="ocat-wrapper" asp-validation-class-for="Url">
-    <label asp-for="Url" class="ocat-label">@T["URL"]</label>
+    <label asp-for="Url" class="ocat-label ocat-label-required">@T["URL"]</label>
     <div class="ocat-end">
         <input type="text" asp-for="Url" class="form-control code" />
         <span asp-validation-for="Url"></span>
@@ -11,7 +11,7 @@
 </div>
 
 <div class="ocat-wrapper" asp-validation-class-for="HttpMethod">
-    <label asp-for="HttpMethod" class="ocat-label">@T["HTTP Method"]</label>
+    <label asp-for="HttpMethod" class="ocat-label ocat-label-required">@T["HTTP Method"]</label>
     <div class="ocat-end">
         <select asp-for="HttpMethod" class="form-select">
             <option value="GET">GET</option>
@@ -40,21 +40,23 @@
 </div>
 
 @*TODO: Only display Body field when appropriate for the selected HTTP method.*@
-<div class="ocat-wrapper" asp-validation-class-for="Body">
-    <label asp-for="Body" class="ocat-label">@T["Body"]</label>
-    <div class="ocat-end">
-        <textarea asp-for="Body"></textarea>
-        <span asp-validation-for="Body"></span>
-        <span class="hint">@T["The body to send with POST, PUT and PATCH requests. With Liquid support."]</span>
+<div data-task-editor="http-request" data-body-id="@Html.IdFor(m => m.Body)" data-headers-id="@Html.IdFor(m => m.Headers)">
+    <div class="ocat-wrapper" asp-validation-class-for="Body">
+        <label asp-for="Body" class="ocat-label">@T["Body"]</label>
+        <div class="ocat-end">
+            <textarea asp-for="Body"></textarea>
+            <span asp-validation-for="Body"></span>
+            <span class="hint">@T["The body to send with POST, PUT and PATCH requests. With Liquid support."]</span>
+        </div>
     </div>
-</div>
 
-<div class="ocat-wrapper" asp-validation-class-for="Headers">
-    <label asp-for="Headers" class="ocat-label">@T["Headers"]</label>
-    <div class="ocat-end">
-        <textarea asp-for="Headers"></textarea>
-        <span asp-validation-for="Headers"></span>
-        <span class="hint">@T["Provide additional HTTP headers, one per line. For example: Authorization: Bearer 123ABC. With Liquid support."]</span>
+    <div class="ocat-wrapper" asp-validation-class-for="Headers">
+        <label asp-for="Headers" class="ocat-label">@T["Headers"]</label>
+        <div class="ocat-end">
+            <textarea asp-for="Headers"></textarea>
+            <span asp-validation-for="Headers"></span>
+            <span class="hint">@T["Provide additional HTTP headers, one per line. For example: Authorization: Bearer 123ABC. With Liquid support."]</span>
+        </div>
     </div>
 </div>
 
@@ -77,24 +79,4 @@
 
 <script asp-src="~/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
 
-<script at="Foot">
-    function onDocumentReady(callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
-            document.addEventListener('DOMContentLoaded', callback);
-        }
-    }
-
-    onDocumentReady(function () {
-        var codeMirrorOptions = {
-            autoRefresh: true,
-            lineNumbers: true,
-            styleActiveLine: true,
-            matchBrackets: true,
-            mode: { name: "liquid" },
-        };
-        CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Headers)'), codeMirrorOptions);
-        CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Body)'), codeMirrorOptions);
-    });
-</script>
+<script asp-src="~/OrchardCore.Workflows/Scripts/task-editors/http-request-task.min.js" debug-src="~/OrchardCore.Workflows/Scripts/task-editors/http-request-task.js" at="Foot" type="module"></script>

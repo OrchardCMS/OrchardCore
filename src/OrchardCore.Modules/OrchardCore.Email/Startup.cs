@@ -3,6 +3,7 @@ using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Email.Drivers;
 using OrchardCore.Email.Migrations;
+using OrchardCore.Email.Services;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
@@ -14,7 +15,10 @@ public sealed class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddEmailServices()
+            .AddSignalOptionsChangeTokenSource<EmailOptions>()
+            .AddSignalOptionsChangeTokenSource<EmailProviderOptions>()
             .AddSiteDisplayDriver<EmailSettingsDisplayDriver>()
+            .AddSiteSettingsPermission(EmailSettings.GroupId, EmailPermissions.ManageEmailSettings)
             .AddPermissionProvider<Permissions>()
             .AddNavigationProvider<AdminMenu>();
 

@@ -5,16 +5,16 @@ using OrchardCore.Sms.Azure.Models;
 
 namespace OrchardCore.Sms.Azure.Services;
 
-public sealed class DefaultAzureSmsProvider : AzureSmsProviderBase
+public sealed class DefaultAzureSmsProvider : AzureSmsProviderBase<DefaultAzureSmsOptions>
 {
     public const string TechnicalName = "DefaultAzure";
 
     public DefaultAzureSmsProvider(
-        IOptions<DefaultAzureSmsOptions> options,
+        IOptionsMonitor<DefaultAzureSmsOptions> options,
         IPhoneFormatValidator phoneFormatValidator,
         ILogger<DefaultAzureSmsProvider> logger,
         IStringLocalizer<DefaultAzureSmsProvider> stringLocalizer)
-        : base(options.Value, phoneFormatValidator, logger, stringLocalizer)
+        : base(options, phoneFormatValidator, logger, stringLocalizer)
     {
     }
 

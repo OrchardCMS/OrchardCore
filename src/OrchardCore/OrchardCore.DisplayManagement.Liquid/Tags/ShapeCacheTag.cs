@@ -6,11 +6,11 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags;
 
 public class ShapeCacheTag
 {
-    private static readonly char[] _separators = [',', ' '];
+    private static readonly char[] s_separators = [',', ' '];
 
-    public static async ValueTask<Completion> WriteToAsync(ValueTuple<Expression, IReadOnlyList<FilterArgument>> arguments, TextWriter _1, TextEncoder _2, TemplateContext context)
+    public static async ValueTask<Completion> WriteToAsync(ValueTuple<Expression, IReadOnlyList<FilterArgument>> arguments, IFluidOutput _1, TextEncoder _2, TemplateContext context)
     {
-        var objectValue = (await arguments.Item1.EvaluateAsync(context)).ToObjectValue();
+        var objectValue = (await arguments.Item1.EvaluateAsync(context)).ToObjectValue(context);
 
         if (objectValue is IShape shape)
         {
@@ -20,24 +20,24 @@ public class ShapeCacheTag
 
             if (expressions.HasNamed("cache_id"))
             {
-                metadata.Cache((await expressions["cache_id"].EvaluateAsync(context)).ToStringValue());
+                metadata.Cache((await expressions["cache_id"].EvaluateAsync(context)).ToStringValue(context));
             }
 
             if (expressions.HasNamed("cache_context"))
             {
-                var contexts = (await expressions["cache_context"].EvaluateAsync(context)).ToStringValue().Split(_separators, StringSplitOptions.RemoveEmptyEntries);
+                var contexts = (await expressions["cache_context"].EvaluateAsync(context)).ToStringValue(context).Split(s_separators, StringSplitOptions.RemoveEmptyEntries);
                 metadata.Cache().AddContext(contexts);
             }
 
             if (expressions.HasNamed("cache_tag"))
             {
-                var tags = (await expressions["cache_tag"].EvaluateAsync(context)).ToStringValue().Split(_separators, StringSplitOptions.RemoveEmptyEntries);
+                var tags = (await expressions["cache_tag"].EvaluateAsync(context)).ToStringValue(context).Split(s_separators, StringSplitOptions.RemoveEmptyEntries);
                 metadata.Cache().AddTag(tags);
             }
 
             if (expressions.HasNamed("cache_fixed_duration"))
             {
-                if (TimeSpan.TryParse((await expressions["cache_fixed_duration"].EvaluateAsync(context)).ToStringValue(), out var timespan))
+                if (TimeSpan.TryParse((await expressions["cache_fixed_duration"].EvaluateAsync(context)).ToStringValue(context), out var timespan))
                 {
                     metadata.Cache().WithExpiryAfter(timespan);
                 }
@@ -45,7 +45,7 @@ public class ShapeCacheTag
 
             if (expressions.HasNamed("cache_sliding_duration"))
             {
-                if (TimeSpan.TryParse((await expressions["cache_sliding_duration"].EvaluateAsync(context)).ToStringValue(), out var timespan))
+                if (TimeSpan.TryParse((await expressions["cache_sliding_duration"].EvaluateAsync(context)).ToStringValue(context), out var timespan))
                 {
                     metadata.Cache().WithExpirySliding(timespan);
                 }

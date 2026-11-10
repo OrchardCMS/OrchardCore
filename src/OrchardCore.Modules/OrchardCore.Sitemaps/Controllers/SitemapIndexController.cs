@@ -58,14 +58,16 @@ public sealed class SitemapIndexController : Controller
         H = htmlLocalizer;
     }
 
-    public async Task<IActionResult> List(ContentOptions options, PagerParameters pagerParameters)
+    public async Task<IActionResult> List(
+        ContentOptions options,
+        PagerParameters pagerParameters)
     {
         if (!await _authorizationService.AuthorizeAsync(User, SitemapsPermissions.ManageSitemaps))
         {
             return Forbid();
         }
 
-        var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
+        var pager = new Pager(pagerParameters, _pagerOptions);
 
         var sitemaps = (await _sitemapManager.GetSitemapsAsync())
             .OfType<SitemapIndex>();
@@ -104,6 +106,12 @@ public sealed class SitemapIndexController : Controller
             new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
         ];
 
+        // The AdminList shape renders the rows with the configured layout (List, Grid, ...).
+        model.List = new AdminListContext<SitemapIndexListEntry>
+        {
+            Source = model.SitemapIndexes,
+            Pager = model.Pager,
+        };
 
         return View(model);
     }

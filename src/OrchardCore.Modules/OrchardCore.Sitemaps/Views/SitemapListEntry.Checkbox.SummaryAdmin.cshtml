@@ -1,0 +1,9 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.Sitemaps.ViewModels
+
+@model ShapeViewModel<SitemapListEntry>
+
+<div class="form-check">
+    <input type="checkbox" class="form-check-input" value="@Model.Value.SitemapId" name="itemIds" id="itemIds-@Model.Value.SitemapId">
+    <label class="form-check-label" for="itemIds-@Model.Value.SitemapId">&nbsp;</label>
+</div>

@@ -1,0 +1,14 @@
+@model OrchardCore.Contents.QuickNavigation.ContentQuickNavigationSettings
+
+<div class="ocat-wrapper" asp-validation-class-for="MaxItems">
+    <label asp-for="MaxItems" class="ocat-label">@T["Recent content items in quick navigation"]</label>
+    <div class="ocat-end">
+        <div class="ocat-limited-wrapper">
+            <div class="ocat-limited">
+                <input asp-for="MaxItems" type="number" min="1" class="form-control" />
+                <span asp-validation-for="MaxItems"></span>
+            </div>
+        </div>
+        <span class="hint">@T["The number of most recently updated content items to include. Defaults to 50. Only items you can edit and that have display text are shown."]</span>
+    </div>
+</div>
