@@ -4,6 +4,7 @@ namespace OrchardCore.Media.Services;
 
 internal static class SecureMediaExtensions
 {
+    // Also read by the OrchardCore.Media.ImageSharp project, keep them the same.
     private const string IsSecureMediaKey = "IsSecureMedia";
 
     public static bool IsSecureMediaEnabled(this IServiceProvider serviceProvider)

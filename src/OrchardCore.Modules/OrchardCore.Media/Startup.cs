@@ -28,6 +28,7 @@ using OrchardCore.Media.Events;
 using OrchardCore.Media.Fields;
 using OrchardCore.Media.Filters;
 using OrchardCore.Media.Handlers;
+using OrchardCore.Media.ImageSharp;
 using OrchardCore.Media.Indexing;
 using OrchardCore.Media.Liquid;
 using OrchardCore.Media.Processing;
@@ -43,10 +44,6 @@ using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Shortcodes;
-using SixLabors.ImageSharp.Web.Caching;
-using SixLabors.ImageSharp.Web.DependencyInjection;
-using SixLabors.ImageSharp.Web.Middleware;
-using SixLabors.ImageSharp.Web.Providers;
 
 namespace OrchardCore.Media;
 
@@ -70,8 +67,7 @@ public sealed class Startup : StartupBase
 
         services.AddSingleton<IAnchorTag, MediaAnchorTag>();
 
-        // Resized media and remote media caches cleanups.
-        services.AddSingleton<IBackgroundTask, ResizedMediaCacheBackgroundTask>();
+        // Remote media cache cleanup. The resized media cache cleanup is added with ImageSharp below.
         services.AddSingleton<IBackgroundTask, RemoteMediaCacheBackgroundTask>();
 
         services.Configure<TemplateOptions>(o =>
@@ -140,27 +136,10 @@ public sealed class Startup : StartupBase
         services.AddScoped<IAuthorizationHandler, ManageMediaFolderAuthorizationHandler>();
         services.AddNavigationProvider<AdminMenu>();
 
-        // ImageSharp
-
-        // Add ImageSharp Configuration first, to override ImageSharp defaults.
-        services.AddTransient<IConfigureOptions<ImageSharpMiddlewareOptions>, MediaImageSharpConfiguration>();
-
-        services
-            .AddImageSharp()
-            .RemoveProvider<PhysicalFileSystemProvider>()
-            // For multitenancy we must use an absolute path to prevent leakage across tenants on different hosts.
-            .SetCacheKey<BackwardsCompatibleCacheKey>()
-            .Configure<PhysicalFileSystemCacheOptions>(options =>
-            {
-                options.CacheFolder = $"{_shellSettings.Name}/{ImageSharpCacheFolder}";
-                options.CacheFolderDepth = 12;
-            })
-            .AddProvider<MediaResizingFileProvider>()
-            .AddProcessor<ImageVersionProcessor>()
-            .AddProcessor<TokenCommandProcessor>();
+        // ImageSharp, see the OrchardCore.Media.ImageSharp project.
+        services.AddMediaImageSharp($"{_shellSettings.Name}/{ImageSharpCacheFolder}");
 
         services.AddScoped<MediaTokenSettingsUpdater>();
-        services.AddSingleton<IMediaTokenService, MediaTokenService>();
         services.AddTransient<IConfigureOptions<MediaTokenOptions>, MediaTokenOptionsConfiguration>();
         services.AddScoped<IFeatureEventHandler>(sp => sp.GetRequiredService<MediaTokenSettingsUpdater>());
         services.AddScoped<IModularTenantEvents>(sp => sp.GetRequiredService<MediaTokenSettingsUpdater>());
@@ -218,7 +197,7 @@ public sealed class Startup : StartupBase
         }
 
         // ImageSharp before the static file provider.
-        app.UseImageSharp();
+        app.UseMediaImageSharp();
 
         // The file provider is a circular dependency and replaceable via di.
         mediaOptions.StaticFileOptions.FileProvider = mediaFileProvider;

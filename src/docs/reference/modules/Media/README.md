@@ -440,6 +440,9 @@ services.PostConfigure<ImageSharpMiddlewareOptions>(o => ...);
 ```
 
 !!! note
+    The images are processed by [ImageSharp](https://github.com/SixLabors/ImageSharp) and [ImageSharp.Web](https://github.com/SixLabors/ImageSharp.Web), through the `OrchardCore.Media.ImageSharp` package, which is the only Orchard Core package referencing them. ImageSharp checks for a [Six Labors license](https://sixlabors.com/pricing/) when building a project that references a Six Labors package directly. The `OrchardCore.Media.ImageSharp` project includes an assembly-scoped community license, so neither building Orchard Core from source nor referencing the Orchard Core packages requires a license. A project of your own that references a Six Labors package directly, for instance to configure the `ImageSharpMiddlewareOptions` as above, needs its own license.
+
+!!! note
     The Media Library `StaticFileOptions` configuration is separated from the configuration for static files contained in module `wwwroot` folders.
 
 To configure `wwwroot` static file options apply:
