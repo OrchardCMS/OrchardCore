@@ -42,14 +42,14 @@
     <PackageVersion Include="Lucene.Net.QueryParser" Version="4.8.0-beta00018" />
     <PackageVersion Include="Lucene.Net.Spatial" Version="4.8.0-beta00018" />
     <PackageVersion Include="MailKit" Version="4.18.2" />
-    <PackageVersion Include="Markdig" Version="1.4.1" />
+    <PackageVersion Include="Markdig" Version="1.5.0" />
     <PackageVersion Include="Microsoft.Azure.SignalR" Version="1.33.0" />
     <PackageVersion Include="Microsoft.Extensions.Azure" Version="1.14.1" />
     <PackageVersion Include="Microsoft.Identity.Web" Version="4.16.1" />
     <PackageVersion Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="8.23.0" />
     <PackageVersion Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.1" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.11.0" />
-    <PackageVersion Include="Microsoft.OpenApi" Version="2.12.2" />
+    <PackageVersion Include="Microsoft.OpenApi" Version="2.13.0" />
     <PackageVersion Include="Microsoft.Testing.Extensions.HangDump" Version="2.5.1" />
     <PackageVersion Include="MimeKit" Version="4.18.2" />
     <PackageVersion Include="MiniProfiler.AspNetCore.Mvc" Version="4.5.4" />
@@ -64,10 +64,10 @@
     <PackageVersion Include="OpenIddict.Validation.AspNetCore" Version="7.7.2" />
     <PackageVersion Include="OpenIddict.Validation.DataProtection" Version="7.7.2" />
     <PackageVersion Include="OpenIddict.Validation.SystemNetHttp" Version="7.7.2" />
-    <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.19.1" />
-    <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.19.1" />
-    <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.19.0" />
-    <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.19.0" />
+    <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.20.1" />
+    <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.20.1" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.20.1" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.20.1" />
     <PackageVersion Include="OrchardCore.Translations.All" Version="3.0.0" />
     <PackageVersion Include="PdfPig" Version="0.1.16" />
     <PackageVersion Include="Scalar.AspNetCore" Version="2.18.3" />
@@ -84,11 +84,11 @@
     <PackageVersion Include="Testcontainers.Azurite" Version="4.16.0" />
     <PackageVersion Include="Testcontainers.LocalStack" Version="4.16.0" />
     <PackageVersion Include="xunit.v3.mtp-v2" Version="4.0.2" />
-    <PackageVersion Include="YesSql" Version="6.1.0" />
-    <PackageVersion Include="YesSql.Abstractions" Version="6.1.0" />
-    <PackageVersion Include="YesSql.Core" Version="6.1.0" />
-    <PackageVersion Include="YesSql.Filters.Abstractions" Version="6.1.0" />
-    <PackageVersion Include="YesSql.Filters.Query" Version="6.1.0" />
+    <PackageVersion Include="YesSql" Version="6.2.0" />
+    <PackageVersion Include="YesSql.Abstractions" Version="6.2.0" />
+    <PackageVersion Include="YesSql.Core" Version="6.2.0" />
+    <PackageVersion Include="YesSql.Filters.Abstractions" Version="6.2.0" />
+    <PackageVersion Include="YesSql.Filters.Query" Version="6.2.0" />
     <PackageVersion Include="ZString" Version="2.6.0" />
   </ItemGroup>
   <!-- Microsoft.CodeAnalysis packages must be equal to or lower than the version supported by the Roslyn 
@@ -126,7 +126,7 @@
     <PackageVersion Include="Microsoft.AspNetCore.SignalR.StackExchangeRedis" Version="10.0.13" />
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="10.0.13" />
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.13" />
-    <PackageVersion Include="Microsoft.Playwright" Version="1.63.0" />
+    <PackageVersion Include="Microsoft.Playwright" Version="1.64.1" />
     <PackageVersion Include="Microsoft.AspNetCore.Owin" Version="10.0.13" />
     <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="10.0.13" />
     <PackageVersion Include="Microsoft.Extensions.Caching.Memory" Version="10.0.13" />

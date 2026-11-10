@@ -11,26 +11,30 @@ namespace OrchardCore.Redis;
 /// <summary>
 /// Binds and validates the <see cref="RedisOptions"/> of a tenant.
 /// </summary>
-public static class RedisOptionsExtension
+internal static class RedisOptionsExtension
 {
     /// <summary>
     /// Returns an error when <see cref="RedisOptions.ConfigurationOptions"/> is <see langword="null"/>, which means that
-    /// the configuration is missing or failed to bind.
+    /// the configuration is missing.
     /// </summary>
     public static IEnumerable<ValidationResult> Validate(this RedisOptions options)
     {
         if (options.ConfigurationOptions is null)
         {
-            yield return new ValidationResult("The 'Configuration' string is missing or invalid.");
+            yield return new ValidationResult("The 'Configuration' string is missing.");
         }
     }
 
     /// <summary>
-    /// Binds the options from the <c>Redis</c> configuration section. A missing or invalid configuration leaves
+    /// Binds the options from the <c>Redis</c> configuration section. A missing configuration leaves
     /// <see cref="RedisOptions.ConfigurationOptions"/> <see langword="null"/>, which fails the validation.
     /// </summary>
-    public static RedisOptions BindConfiguration(this RedisOptions options, IShellConfiguration shellConfiguration, ILogger logger)
+    /// <param name="options">The bound options, or <see langword="null"/> if a configured value can't be bound.</param>
+    /// <returns><see langword="false"/> if a configured value can't be bound, after logging the error.</returns>
+    public static bool TryBindConfiguration(this IShellConfiguration shellConfiguration, ILogger logger, out RedisOptions options)
     {
+        options = new RedisOptions();
+
         // The 'OrchardCore_Redis' section is deprecated and will be removed in a future major version, use 'Redis' instead.
         var section = shellConfiguration.GetSectionCompat("Redis", "OrchardCore_Redis");
 
@@ -38,7 +42,7 @@ public static class RedisOptionsExtension
 
         if (string.IsNullOrWhiteSpace(configuration))
         {
-            return options;
+            return true;
         }
 
         try
@@ -63,9 +67,13 @@ public static class RedisOptionsExtension
         catch (Exception ex)
         {
             logger.LogError(ex, "Failed to configure the Redis options.");
+
+            options = null;
+
+            return false;
         }
 
-        return options;
+        return true;
     }
 
     // Callback for accepting any certificate as long as it exists, while ignoring other SSL policy errors.
