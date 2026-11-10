@@ -32,6 +32,7 @@ public sealed class Startup : StartupBase
 
         // MenuPart
         services.AddScoped<IContentHandler, MenuContentHandler>();
+        services.AddScoped<IContentHandler, MenuItemIdentifierContentHandler>();
         services.AddContentPart<MenuPart>()
             .UseDisplayDriver<MenuPartDisplayDriver>();
 

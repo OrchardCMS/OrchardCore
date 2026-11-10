@@ -280,20 +280,26 @@ public sealed class AdminController : Controller
 
     private static JsonObject FindMenuItem(JsonObject contentItem, string menuItemId)
     {
-        if (contentItem["ContentItemId"]?.Value<string>() == menuItemId)
-        {
-            return contentItem;
-        }
-
-        if (contentItem["MenuItemsListPart"] is null)
+        // The content of the menu itself has no 'ContentItemId', so without this check an empty ID would match
+        // the menu instead of a menu item.
+        if (string.IsNullOrEmpty(menuItemId))
         {
             return null;
         }
 
-        var menuItems = (JsonArray)contentItem["MenuItemsListPart"]["MenuItems"];
+        // A stored 'ContentItemId' that is not a string, such as an object, is not an identifier and must not throw.
+        if (contentItem["ContentItemId"] is JsonValue value && value.TryGetValue<string>(out var id) && id == menuItemId)
+        {
+            return contentItem;
+        }
+
+        if (contentItem["MenuItemsListPart"]?["MenuItems"] is not JsonArray menuItems)
+        {
+            return null;
+        }
 
         JsonObject result;
-        foreach (var menuItem in menuItems.Cast<JsonObject>())
+        foreach (var menuItem in menuItems.OfType<JsonObject>())
         {
             // Search in inner menu items.
             result = FindMenuItem(menuItem, menuItemId);

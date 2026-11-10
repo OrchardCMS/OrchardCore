@@ -248,6 +248,10 @@ available on the `MenuItem` shape are still available.
     }
     ```
 
+## Menu item identifiers
+
+The menu editor finds a menu item by its `ContentItemId`, so every menu item has one that is unique in its menu. When a menu is created, imported, saved or published, a menu item whose `ContentItemId` is missing, is not an identifier (only letters, digits, `-` and `_` are allowed), or repeats the identifier of another menu item gets a new identifier. Menu items in a recipe can omit `ContentItemId`, or set it to `"[js: uuid()]"`.
+
 ## Mark active item in a menu
 
 Some times you need to set a menu item as active if it is the currently displayed one.
