@@ -40,11 +40,11 @@
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Shortcodes.Abstractions\OrchardCore.Shortcodes.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.XmlRpc.Abstractions\OrchardCore.XmlRpc.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Abstractions\OrchardCore.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.Media.ImageSharp\OrchardCore.Media.ImageSharp.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Shortcodes" />
-    <PackageReference Include="SixLabors.ImageSharp.Web" />
   </ItemGroup>
 
   <ItemGroup>

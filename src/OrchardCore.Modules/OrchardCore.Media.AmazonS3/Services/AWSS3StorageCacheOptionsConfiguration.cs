@@ -1,12 +1,12 @@
 using Microsoft.Extensions.Options;
 using OrchardCore.FileStorage.AmazonS3;
-using SixLabors.ImageSharp.Web.Caching.AWS;
+using OrchardCore.Media.ImageSharp;
 
 namespace OrchardCore.Media.AmazonS3.Services;
 
-// Configuration for ImageSharp's own configuration object. We just pass the settings from the Orchard Core
+// Configuration of the ImageSharp Amazon S3 cache. We just pass the settings from the Orchard Core
 // configuration.
-internal sealed class AWSS3StorageCacheOptionsConfiguration : IConfigureOptions<AWSS3StorageCacheOptions>
+internal sealed class AWSS3StorageCacheOptionsConfiguration : IConfigureOptions<MediaImageSharpAmazonS3CacheOptions>
 {
     private readonly AwsImageSharpImageCacheOptions _options;
 
@@ -15,7 +15,7 @@ internal sealed class AWSS3StorageCacheOptionsConfiguration : IConfigureOptions<
         _options = options.Value;
     }
 
-    public void Configure(AWSS3StorageCacheOptions options)
+    public void Configure(MediaImageSharpAmazonS3CacheOptions options)
     {
         var credentials = _options.AwsOptions.Credentials.GetCredentials();
 

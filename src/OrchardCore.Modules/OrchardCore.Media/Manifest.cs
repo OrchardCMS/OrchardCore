@@ -13,7 +13,8 @@ using OrchardCore.Modules.Manifest;
     Description = "The media module adds media management support.",
     Dependencies =
     [
-        "OrchardCore.ContentTypes"
+        "OrchardCore.ContentTypes",
+        "OrchardCore.Media.ImageSharp"
     ],
     Category = "Content Management"
 )]
