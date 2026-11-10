@@ -1,0 +1,44 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- NuGet properties-->
+    <Title>OrchardCore Media ImageSharp</Title>
+    <Description>
+      $(OCCMSDescription)
+
+      Provides the default media image processing engine, based on ImageSharp.
+    </Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS ContentManagement</PackageTags>
+  </PropertyGroup>
+
+  <!--
+    ImageSharp validates a Six Labors license at build time, in the projects referencing it directly.
+    The sixlabors.lic file next to this project is an assembly-scoped community license issued for
+    the OrchardCore.Media.ImageSharp assembly only, which is why this project must keep its name and
+    stay the only one referencing the SixLabors.ImageSharp package. The projects referencing this one
+    get ImageSharp transitively and don't need a license.
+  -->
+
+  <ItemGroup>
+    <!-- Only read by the license validation at build time, not a module asset. -->
+    <EmbeddedResource Remove="sixlabors.lic" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Media.Abstractions\OrchardCore.Media.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SixLabors.ImageSharp" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="OrchardCore.Tests" />
+  </ItemGroup>
+
+</Project>

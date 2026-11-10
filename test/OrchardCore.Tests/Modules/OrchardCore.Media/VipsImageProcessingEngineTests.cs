@@ -2,6 +2,7 @@
 
 using NetVips;
 using OrchardCore.Media.Core.Processing;
+using OrchardCore.Media.NetVips.Services;
 using OrchardCore.Media.Processing;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Media;
