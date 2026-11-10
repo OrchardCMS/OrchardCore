@@ -40,9 +40,19 @@ The **Run now** item of the **Actions** menu of a task, available in the list an
 - A task that is already running or queued on the server handling the request is not queued again.
 - A disabled task can also be run on demand, which is convenient to check a task before enabling it. Its schedule is not affected.
 - The task runs only on the server that handled the request, usually within a second or two, as the background service doesn't wait for the end of its polling time nor of its minimum idle time to pick up a requested run. An atomic task still waits to acquire its lock, as for a scheduled run. In a web farm, the other servers are not affected, see [Running in a Web Farm](#running-in-a-web-farm).
-- The background service waits for all the tasks it started to complete before starting others, on any tenant. While a long task runs, a requested task stays queued, and a scheduled task is shown as due, until that task completes.
+- The background service waits for the tasks it started, each one up to its polling time, before starting others, on any tenant. While other tasks run, a requested task stays queued, and a scheduled task is shown as due, until they complete or the background service stops waiting for them, see [Long-Running Tasks](#long-running-tasks).
 - If the task was already due on that server, the requested run takes the place of the scheduled one. The next scheduled run is not affected.
 - Right after a tenant starts, its tasks are only known to the background service after its next polling, so a task may first be reported as not loaded yet. The request triggers that polling, so trying again a moment later succeeds.
+
+## Long-Running Tasks
+
+The background service runs the due tasks of a tenant one after the other, and the tenants in parallel. It waits for each task at most for its polling time, the `PollingTime` setting, one minute by default, or for its `MinimumIdleTime` if it is longer, so that a task that takes longer, or never completes, doesn't prevent the other tasks of all tenants from running:
+
+- A task that has not completed after this time keeps running, while the background service runs the other tasks without waiting for it. A warning is logged once for this run, so that a task that never completes doesn't go unnoticed.
+- Until it completes, the task is not run again, neither on schedule nor on demand. Once it completes, it runs again if one of its scheduled occurrences passed in the meantime.
+- When the application stops, the background service cancels the token passed to the running tasks, and waits for them to complete up to the shutdown timeout of the application.
+
+The background service can't stop a task that doesn't observe its cancellation token, or that blocks its thread. A task that calls a service that may not respond should use a timeout, so that it completes even when the service doesn't. Several long tasks that are due at the same time in a tenant are still waited for one after the other, so they can delay the other tasks by several polling times.
 
 ## Running in a Web Farm
 
@@ -81,7 +91,7 @@ The background service that runs the tasks of all tenants is configured in the `
 | Setting | Description | Default |
 | --- | --- | --- |
 | `ShellWarmup` | Whether all tenants are loaded when the application starts so that their background tasks run without waiting for a first request. | `false` |
-| `PollingTime` | The time to wait between two executions of all the background tasks of a given tenant. | `00:01:00` |
+| `PollingTime` | The time to wait between two executions of all the background tasks of a given tenant. It also bounds how long the background service waits for a task before running the others, see [Long-Running Tasks](#long-running-tasks). | `00:01:00` |
 | `MinimumIdleTime` | The minimum idle time before the background tasks of a tenant are triggered, as well as between tasks. | `00:00:10` |
 | `MaxRecentRuns` | The number of completed runs kept in memory for each task and shown on its details page. | `10` |
 

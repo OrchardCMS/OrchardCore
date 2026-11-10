@@ -9,6 +9,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Locking;
 using OrchardCore.Locking.Distributed;
 using OrchardCore.Settings;
@@ -23,12 +24,19 @@ internal sealed class ModularBackgroundService : BackgroundService
 
     private readonly ConcurrentDictionary<string, IChangeToken> _changeTokens = new();
 
+    // The last run of each task, which keeps running until it completes, even when the service no longer waits for it.
+    private readonly ConcurrentDictionary<(string Tenant, string Name), Task<bool>> _runs = new();
+
     private readonly IShellHost _shellHost;
     private readonly BackgroundTaskMonitor _monitor;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly BackgroundServiceOptions _options;
     private readonly ILogger _logger;
     private readonly IClock _clock;
+
+    // The longest time the service waits for a task before running the next ones, the longer of the polling time
+    // and of the minimum idle time.
+    private readonly TimeSpan _maxRunWaitTime;
 
     public ModularBackgroundService(
         IShellHost shellHost,
@@ -44,6 +52,8 @@ internal sealed class ModularBackgroundService : BackgroundService
         _options = options.Value;
         _logger = logger;
         _clock = clock;
+
+        _maxRunWaitTime = _options.PollingTime > _options.MinimumIdleTime ? _options.PollingTime : _options.MinimumIdleTime;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -104,10 +114,24 @@ internal sealed class ModularBackgroundService : BackgroundService
 
             await WaitAsync(pollingDelay, stoppingToken);
         }
+
+        // Wait for the tasks that are still running, including the ones the service no longer waits for, to complete
+        // on the cancellation.
+        await Task.WhenAll(_runs.Values);
     }
 
     private async Task RunAsync(IEnumerable<(string Tenant, long UtcTicks)> runningShells, CancellationToken stoppingToken)
     {
+        // Forget the runs that completed, after observing a fatal exception of a run the service no longer waited for.
+        foreach (var run in _runs)
+        {
+            if (run.Value.IsCompleted)
+            {
+                _runs.TryRemove(run);
+                await run.Value;
+            }
+        }
+
         await Parallel.ForEachAsync(GetShellsToRun(runningShells), async (tenant, cancellationToken) =>
         {
             // Check if the shell is still registered and running.
@@ -115,9 +139,6 @@ internal sealed class ModularBackgroundService : BackgroundService
             {
                 return;
             }
-
-            // Create a new 'HttpContext' to be used in the background.
-            _httpContextAccessor.HttpContext = shell.CreateHttpContext();
 
             var schedulers = GetSchedulersToRun(tenant);
             foreach (var scheduler in schedulers)
@@ -127,140 +148,193 @@ internal sealed class ModularBackgroundService : BackgroundService
                     break;
                 }
 
-                // Try to create a shell scope on this shell context.
-                var (shellScope, success) = await _shellHost.TryGetScopeAsync(shell.Settings.Name);
-                if (!success)
-                {
-                    break;
-                }
+                // Start the run on its own, so that a task that blocks its thread doesn't block this flow either.
+                var run = Task.Run(() => RunTaskAsync(shell, scheduler, stoppingToken));
+                _runs[(tenant, scheduler.Name)] = run;
 
-                // Check if the shell has no pipeline and should not be warmed up.
-                if (!_options.ShellWarmup && !shellScope.ShellContext.HasPipeline())
-                {
-                    await shellScope.TerminateShellAsync();
-                    break;
-                }
-
-                var locked = false;
-                ILocker locker = null;
                 try
                 {
-                    // Try to acquire a lock before using the scope, so that a next process gets the last committed data.
-                    var distributedLock = shellScope.ShellContext.ServiceProvider.GetRequiredService<IDistributedLock>();
-                    (locker, locked) = await distributedLock.TryAcquireBackgroundTaskLockAsync(scheduler.Settings);
-                    if (!locked)
+                    // Wait for the task, but not longer than the time between two pollings, so that a task that takes
+                    // longer, or never completes, doesn't prevent the other tasks of all tenants from running.
+                    if (!await run.WaitAsync(_maxRunWaitTime, stoppingToken))
                     {
-                        await shellScope.TerminateShellAsync();
-                        if (_logger.IsEnabled(LogLevel.Information))
-                        {
-                            _logger.LogInformation("Timeout to acquire a lock on background task '{TaskName}' on tenant '{TenantName}'.", scheduler.Name, tenant);
-                        }
                         break;
+                    }
+                }
+                catch (TimeoutException)
+                {
+                    _logger.LogWarning(
+                        "Background task '{TaskName}' on tenant '{TenantName}' has not completed after {Duration}, the other tasks are run without waiting for it.",
+                        scheduler.Name,
+                        tenant,
+                        _maxRunWaitTime);
+                }
+                catch (OperationCanceledException)
+                {
+                    break;
+                }
+            }
+        });
+    }
+
+    /// <summary>
+    /// Runs a background task in its own async flow, with its own 'HttpContext', shell scope and lock, so that it can
+    /// keep running while the service runs the other tasks.
+    /// </summary>
+    /// <returns><see langword="false"/> if the task could not be run, in which case the next tasks of the tenant are not
+    /// run before the next polling.</returns>
+    private async Task<bool> RunTaskAsync(ShellContext shell, BackgroundTaskScheduler scheduler, CancellationToken stoppingToken)
+    {
+        var tenant = shell.Settings.Name;
+
+        try
+        {
+            // Create a new 'HttpContext' to be used in the background.
+            _httpContextAccessor.HttpContext = shell.CreateHttpContext();
+
+            // Try to create a shell scope on this shell context.
+            var (shellScope, success) = await _shellHost.TryGetScopeAsync(tenant);
+            if (!success)
+            {
+                return false;
+            }
+
+            // Check if the shell has no pipeline and should not be warmed up.
+            if (!_options.ShellWarmup && !shellScope.ShellContext.HasPipeline())
+            {
+                await shellScope.TerminateShellAsync();
+                return false;
+            }
+
+            var locked = false;
+            ILocker locker = null;
+            try
+            {
+                // Try to acquire a lock before using the scope, so that a next process gets the last committed data.
+                var distributedLock = shellScope.ShellContext.ServiceProvider.GetRequiredService<IDistributedLock>();
+                (locker, locked) = await distributedLock.TryAcquireBackgroundTaskLockAsync(scheduler.Settings);
+                if (!locked)
+                {
+                    await shellScope.TerminateShellAsync();
+                    if (_logger.IsEnabled(LogLevel.Information))
+                    {
+                        _logger.LogInformation("Timeout to acquire a lock on background task '{TaskName}' on tenant '{TenantName}'.", scheduler.Name, tenant);
+                    }
+                    return false;
+                }
+            }
+            catch (Exception ex) when (!ex.IsFatal())
+            {
+                await shellScope.TerminateShellAsync();
+                _logger.LogError(ex, "Failed to acquire a lock on background task '{TaskName}' on tenant '{TenantName}'.", scheduler.Name, tenant);
+                return false;
+            }
+
+            await using var acquiredLock = locker;
+
+            await shellScope.UsingAsync(async scope =>
+            {
+                var taskName = scheduler.Name;
+
+                var task = scope.ServiceProvider.GetServices<IBackgroundTask>().GetTaskByName(taskName);
+                if (task is null)
+                {
+                    return;
+                }
+
+                using var activity = OrchardCoreTelemetry.StartTenantActivity($"Run background task {taskName}", tenant);
+                activity?.SetTag(OrchardCoreTelemetryConstants.Attributes.BackgroundTaskName, taskName);
+
+                var siteService = scope.ServiceProvider.GetService<ISiteService>();
+                if (siteService is not null)
+                {
+                    try
+                    {
+                        // Use the base url, if defined, to override the 'Scheme', 'Host' and 'PathBase'.
+                        SetBaseUrl(_httpContextAccessor.HttpContext, (await siteService.GetSiteSettingsAsync()).BaseUrl);
+                    }
+                    catch (Exception ex) when (!ex.IsFatal())
+                    {
+                        _logger.LogError(ex, "Error while getting the base url from the site settings of the tenant '{TenantName}'.", tenant);
+                    }
+                }
+
+                try
+                {
+                    if (scheduler.Settings.UsePipeline)
+                    {
+                        if (!scope.ShellContext.HasPipeline())
+                        {
+                            // Build the shell pipeline to configure endpoint data sources.
+                            await scope.ShellContext.BuildPipelineAsync();
+                        }
+
+                        // Run the pipeline to make the 'HttpContext' aware of endpoints.
+                        await scope.ShellContext.Pipeline.Invoke(_httpContextAccessor.HttpContext);
                     }
                 }
                 catch (Exception ex) when (!ex.IsFatal())
                 {
-                    await shellScope.TerminateShellAsync();
-                    _logger.LogError(ex, "Failed to acquire a lock on background task '{TaskName}' on tenant '{TenantName}'.", scheduler.Name, tenant);
-                    break;
+                    _logger.LogError(ex, "Error while running in the background the pipeline of tenant '{TenantName}'.", tenant);
                 }
 
-                await using var acquiredLock = locker;
+                var context = new BackgroundTaskEventContext(taskName, scope);
+                var handlers = scope.ServiceProvider.GetServices<IBackgroundTaskEventHandler>();
 
-                await shellScope.UsingAsync(async scope =>
+                await handlers.InvokeAsync((handler, context, token) => handler.ExecutingAsync(context, token), context, stoppingToken, _logger);
+
+                var startTimestamp = Stopwatch.GetTimestamp();
+
+                try
                 {
-                    var taskName = scheduler.Name;
-
-                    var task = scope.ServiceProvider.GetServices<IBackgroundTask>().GetTaskByName(taskName);
-                    if (task is null)
+                    if (_logger.IsEnabled(LogLevel.Information))
                     {
-                        return;
+                        _logger.LogInformation("Start processing background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
                     }
 
-                    using var activity = OrchardCoreTelemetry.StartTenantActivity($"Run background task {taskName}", tenant);
-                    activity?.SetTag(OrchardCoreTelemetryConstants.Attributes.BackgroundTaskName, taskName);
+                    scheduler.Run();
+                    await task.DoWorkAsync(scope.ServiceProvider, stoppingToken);
+                    scheduler.Complete(BackgroundTaskRunResult.Succeeded);
 
-                    var siteService = scope.ServiceProvider.GetService<ISiteService>();
-                    if (siteService is not null)
+                    RecordBackgroundTaskDuration(startTimestamp, tenant, taskName);
+
+                    if (_logger.IsEnabled(LogLevel.Information))
                     {
-                        try
-                        {
-                            // Use the base url, if defined, to override the 'Scheme', 'Host' and 'PathBase'.
-                            SetBaseUrl(_httpContextAccessor.HttpContext, (await siteService.GetSiteSettingsAsync()).BaseUrl);
-                        }
-                        catch (Exception ex) when (!ex.IsFatal())
-                        {
-                            _logger.LogError(ex, "Error while getting the base url from the site settings of the tenant '{TenantName}'.", tenant);
-                        }
+                        _logger.LogInformation("Finished processing background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
                     }
+                }
+                catch (Exception ex) when (!ex.IsFatal())
+                {
+                    scheduler.Complete(
+                        ex is OperationCanceledException && stoppingToken.IsCancellationRequested
+                            ? BackgroundTaskRunResult.Canceled
+                            : BackgroundTaskRunResult.Failed,
+                        ex);
 
-                    try
-                    {
-                        if (scheduler.Settings.UsePipeline)
-                        {
-                            if (!scope.ShellContext.HasPipeline())
-                            {
-                                // Build the shell pipeline to configure endpoint data sources.
-                                await scope.ShellContext.BuildPipelineAsync();
-                            }
+                    _logger.LogError(ex, "Error while processing background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
+                    context.Exception = ex;
+                    OrchardCoreTelemetry.RecordException(activity, ex);
+                    RecordBackgroundTaskDuration(startTimestamp, tenant, taskName, ex);
 
-                            // Run the pipeline to make the 'HttpContext' aware of endpoints.
-                            await scope.ShellContext.Pipeline.Invoke(_httpContextAccessor.HttpContext);
-                        }
-                    }
-                    catch (Exception ex) when (!ex.IsFatal())
-                    {
-                        _logger.LogError(ex, "Error while running in the background the pipeline of tenant '{TenantName}'.", tenant);
-                    }
+                    await scope.HandleExceptionAsync(ex);
+                }
 
-                    var context = new BackgroundTaskEventContext(taskName, scope);
-                    var handlers = scope.ServiceProvider.GetServices<IBackgroundTaskEventHandler>();
+                await handlers.InvokeAsync((handler, context, token) => handler.ExecutedAsync(context, token), context, stoppingToken, _logger);
+            });
 
-                    await handlers.InvokeAsync((handler, context, token) => handler.ExecutingAsync(context, token), context, stoppingToken, _logger);
+            return true;
+        }
+        catch (Exception ex) when (!ex.IsFatal())
+        {
+            _logger.LogError(ex, "Error while running background task '{TaskName}' on tenant '{TenantName}'.", scheduler.Name, tenant);
 
-                    var startTimestamp = Stopwatch.GetTimestamp();
-
-                    try
-                    {
-                        if (_logger.IsEnabled(LogLevel.Information))
-                        {
-                            _logger.LogInformation("Start processing background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
-                        }
-
-                        scheduler.Run();
-                        await task.DoWorkAsync(scope.ServiceProvider, stoppingToken);
-                        scheduler.Complete(BackgroundTaskRunResult.Succeeded);
-
-                        RecordBackgroundTaskDuration(startTimestamp, tenant, taskName);
-
-                        if (_logger.IsEnabled(LogLevel.Information))
-                        {
-                            _logger.LogInformation("Finished processing background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
-                        }
-                    }
-                    catch (Exception ex) when (!ex.IsFatal())
-                    {
-                        scheduler.Complete(
-                            ex is OperationCanceledException && stoppingToken.IsCancellationRequested
-                                ? BackgroundTaskRunResult.Canceled
-                                : BackgroundTaskRunResult.Failed,
-                            ex);
-
-                        _logger.LogError(ex, "Error while processing background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
-                        context.Exception = ex;
-                        OrchardCoreTelemetry.RecordException(activity, ex);
-                        RecordBackgroundTaskDuration(startTimestamp, tenant, taskName, ex);
-
-                        await scope.HandleExceptionAsync(ex);
-                    }
-
-                    await handlers.InvokeAsync((handler, context, token) => handler.ExecutedAsync(context, token), context, stoppingToken, _logger);
-                });
-            }
-
+            return false;
+        }
+        finally
+        {
             // Clear the 'HttpContext' for this async flow.
             _httpContextAccessor.HttpContext = null;
-        });
+        }
     }
 
     private async Task UpdateAsync(
@@ -400,7 +474,7 @@ internal sealed class ModularBackgroundService : BackgroundService
     private string[] GetShellsToRun(IEnumerable<(string Tenant, long UtcTicks)> shells)
     {
         var tenantsToRun = _monitor.Schedulers
-            .Where(scheduler => scheduler.Value.CanRun())
+            .Where(scheduler => !IsRunning(scheduler.Key) && scheduler.Value.CanRun())
             .Select(scheduler => scheduler.Value.Tenant)
             .Distinct()
             .ToArray();
@@ -447,9 +521,12 @@ internal sealed class ModularBackgroundService : BackgroundService
     }
 
     private BackgroundTaskScheduler[] GetSchedulersToRun(string tenant) => _monitor.Schedulers
-        .Where(scheduler => scheduler.Value.Tenant == tenant && scheduler.Value.CanRun())
+        .Where(scheduler => scheduler.Value.Tenant == tenant && !IsRunning(scheduler.Key) && scheduler.Value.CanRun())
         .Select(scheduler => scheduler.Value)
         .ToArray();
+
+    // A task whose last run is still in progress is not run again until it completes, even if the service no longer waits for it.
+    private bool IsRunning((string Tenant, string Name) key) => _runs.TryGetValue(key, out var run) && !run.IsCompleted;
 
     private void UpdateSchedulers(string[] tenants, Action<BackgroundTaskScheduler> action)
     {
