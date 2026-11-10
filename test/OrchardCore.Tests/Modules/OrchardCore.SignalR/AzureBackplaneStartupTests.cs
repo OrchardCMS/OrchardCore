@@ -109,17 +109,18 @@ public sealed class AzureBackplaneStartupTests
     [InlineData(null)]
     [InlineData("")]
     [InlineData(" ")]
-    public void BindConfiguration_WithoutConnectionString_FailsValidation(string connectionString)
+    public void TryBindConfiguration_WithoutConnectionString_FailsValidation(string connectionString)
     {
         // Act
-        var options = new AzureSignalROptions().BindConfiguration(BuildShellConfiguration(connectionString));
+        var result = BuildShellConfiguration(connectionString).TryBindConfiguration(out var options);
 
         // Assert
+        Assert.True(result);
         Assert.Single(options.Validate());
     }
 
     [Fact]
-    public void BindConfiguration_WithConnectionString_BindsOptions()
+    public void TryBindConfiguration_WithConnectionString_BindsOptions()
     {
         // Arrange
         var configuration = new ConfigurationBuilder()
@@ -131,9 +132,10 @@ public sealed class AzureBackplaneStartupTests
             .Build();
 
         // Act
-        var options = new AzureSignalROptions().BindConfiguration(new ShellConfiguration(configuration));
+        var result = new ShellConfiguration(configuration).TryBindConfiguration(out var options);
 
         // Assert
+        Assert.True(result);
         Assert.Equal("Endpoint=https://tenant.service.signalr.net;AccessKey=abc123;Version=1.0;", options.ConnectionString);
         Assert.Equal("Application", options.ApplicationName);
         Assert.Empty(options.Validate());

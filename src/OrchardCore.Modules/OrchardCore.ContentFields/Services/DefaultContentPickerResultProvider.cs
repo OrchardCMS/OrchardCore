@@ -46,6 +46,8 @@ public class DefaultContentPickerResultProvider : IContentPickerResultProvider
 
         if (!string.IsNullOrEmpty(searchContext.Query))
         {
+            // Grouped, a text that few items contain is searched in the matches of the types, instead of in every document in order.
+            query.NoIndexOptimizations();
             query.With<ContentItemIndex>(x => x.DisplayText.Contains(searchContext.Query) || x.ContentType.Contains(searchContext.Query));
         }
 
