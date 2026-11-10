@@ -46,9 +46,9 @@ The **Run now** item of the **Actions** menu of a task, available in the list an
 
 ## Long-Running Tasks
 
-The background service runs the due tasks of a tenant one after the other, and the tenants in parallel. It waits for each task at most for its polling time, the `PollingTime` setting, one minute by default, or for its `MinimumIdleTime` if it is longer, so that a task that takes longer, or never completes, doesn't prevent the other tasks of all tenants from running:
+The background service runs the due tasks of a tenant one after the other, and the tenants in parallel. It waits for each task at most for its polling time, the `PollingTime` setting, one minute by default, or for its minimum idle time if it is longer, so that a task that takes longer, or never completes, doesn't prevent the other tasks of all tenants from running:
 
-- A task that has not completed after this time keeps running, while the background service runs the other tasks without waiting for it. A warning is logged once for this run, so that a task that never completes doesn't go unnoticed.
+- A task that has not completed after this time keeps running, while the background service runs the other tasks without waiting for it. A warning is logged once for this run.
 - Until it completes, the task is not run again, neither on schedule nor on demand. Once it completes, it runs again if one of its scheduled occurrences passed in the meantime.
 - When the application stops, the background service cancels the token passed to the running tasks, and waits for them to complete up to the shutdown timeout of the application.
 

@@ -24,7 +24,7 @@ internal sealed class ModularBackgroundService : BackgroundService
 
     private readonly ConcurrentDictionary<string, IChangeToken> _changeTokens = new();
 
-    // The last run of each task, which keeps running until it completes, even when the service no longer waits for it.
+    // The last run of each task, which may still be running after the service stopped waiting for it.
     private readonly ConcurrentDictionary<(string Tenant, string Name), Task<bool>> _runs = new();
 
     private readonly IShellHost _shellHost;
@@ -115,14 +115,13 @@ internal sealed class ModularBackgroundService : BackgroundService
             await WaitAsync(pollingDelay, stoppingToken);
         }
 
-        // Wait for the tasks that are still running, including the ones the service no longer waits for, to complete
-        // on the cancellation.
+        // Before stopping, wait for the runs that are still in progress.
         await Task.WhenAll(_runs.Values);
     }
 
     private async Task RunAsync(IEnumerable<(string Tenant, long UtcTicks)> runningShells, CancellationToken stoppingToken)
     {
-        // Forget the runs that completed, after observing a fatal exception of a run the service no longer waited for.
+        // Remove the completed runs, and rethrow a fatal exception of a run the service stopped waiting for.
         foreach (var run in _runs)
         {
             if (run.Value.IsCompleted)
@@ -154,8 +153,8 @@ internal sealed class ModularBackgroundService : BackgroundService
 
                 try
                 {
-                    // Wait for the task, but not longer than the time between two pollings, so that a task that takes
-                    // longer, or never completes, doesn't prevent the other tasks of all tenants from running.
+                    // Wait for the task, but not longer than the polling time, so that a task that takes longer,
+                    // or never completes, doesn't prevent the other tasks of all tenants from running.
                     if (!await run.WaitAsync(_maxRunWaitTime, stoppingToken))
                     {
                         break;
@@ -164,7 +163,7 @@ internal sealed class ModularBackgroundService : BackgroundService
                 catch (TimeoutException)
                 {
                     _logger.LogWarning(
-                        "Background task '{TaskName}' on tenant '{TenantName}' has not completed after {Duration}, the other tasks are run without waiting for it.",
+                        "Stopped waiting for background task '{TaskName}' on tenant '{TenantName}' after {Duration}.",
                         scheduler.Name,
                         tenant,
                         _maxRunWaitTime);
@@ -525,7 +524,7 @@ internal sealed class ModularBackgroundService : BackgroundService
         .Select(scheduler => scheduler.Value)
         .ToArray();
 
-    // A task whose last run is still in progress is not run again until it completes, even if the service no longer waits for it.
+    // A task whose last run is still in progress is not run again until it completes.
     private bool IsRunning((string Tenant, string Name) key) => _runs.TryGetValue(key, out var run) && !run.IsCompleted;
 
     private void UpdateSchedulers(string[] tenants, Action<BackgroundTaskScheduler> action)

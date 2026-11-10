@@ -163,7 +163,6 @@ public class ModularBackgroundServiceTests
     [Fact]
     public async Task Schedule_TaskThatBlocksItsThread_StillRunsTheTasksOfTheOtherTenants()
     {
-        // The service starts each run on its own, so that a task that blocks its thread doesn't block the service.
         var threadBlockingWork = new TaskWork { BlocksItsThread = true };
         var work = new TaskWork();
         await using var host = new TestHost(pollingTime: TimeSpan.FromMilliseconds(20));
