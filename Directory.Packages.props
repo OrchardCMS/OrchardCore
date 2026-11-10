@@ -49,7 +49,7 @@
     <PackageVersion Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="8.23.0" />
     <PackageVersion Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.1" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.11.0" />
-    <PackageVersion Include="Microsoft.OpenApi" Version="3.11.0" />
+    <PackageVersion Include="Microsoft.OpenApi" Version="2.13.0" />
     <PackageVersion Include="Microsoft.Testing.Extensions.HangDump" Version="2.5.1" />
     <PackageVersion Include="MimeKit" Version="4.18.2" />
     <PackageVersion Include="MiniProfiler.AspNetCore.Mvc" Version="4.5.4" />
@@ -128,7 +128,8 @@
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="11.0.0" />
     <PackageVersion Include="Microsoft.Playwright" Version="1.64.1" />
     <PackageVersion Include="Microsoft.AspNetCore.Owin" Version="11.0.0" />
-    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="11.0.0" />
+    <!-- Swashbuckle is built on Microsoft.OpenApi 2, which Microsoft.AspNetCore.OpenApi 11 replaces with Microsoft.OpenApi 3. Keep Microsoft.AspNetCore.OpenApi on version 10 until Swashbuckle supports Microsoft.OpenApi 3. -->
+    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="10.0.13" />
     <PackageVersion Include="Microsoft.Extensions.Caching.Memory" Version="11.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="11.0.0" />
     <!-- dotnet/extensions repository -->
