@@ -27,7 +27,10 @@ public class ContainedPartIndexProvider : IndexProvider<ContentItem>
 {
     public override void Describe(DescribeContext<ContentItem> context)
     {
+        // A content item has a single ContainedPart, so the contents admin list filtered on a list stays without grouping.
         context.For<ContainedPartIndex>()
+            .ExclusiveToDocumentType()
+            .SingleRecordPerDocument()
             .Map(contentItem =>
             {
                 if (!contentItem.Latest && !contentItem.Published)
