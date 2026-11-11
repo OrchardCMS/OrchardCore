@@ -260,7 +260,7 @@ public class TermShapes : ShapeTableProvider
 
             if (nextIsUpper)
             {
-                result.Append(c.ToString().ToUpper());
+                result.Append(char.ToUpperInvariant(c));
             }
             else
             {

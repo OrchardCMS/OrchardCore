@@ -105,7 +105,7 @@ Always tag the language: ` ```csharp `, ` ```json `, ` ```bash `, ` ```liquid `.
 
 ### YouTube embeds
 
-Use privacy mode — `https://www.youtube-nocookie.com/embed/<id>`.
+Host videos on YouTube, and never commit a video or its assets to the repository. Use privacy mode — `https://www.youtube-nocookie.com/embed/<id>`.
 
 ## Moving / renaming a page
 

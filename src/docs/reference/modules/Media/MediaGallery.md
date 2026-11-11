@@ -121,6 +121,8 @@ The TUS endpoint is available at `/api/media/tus`.
 !!! warning
     TUS stores partial upload data on local disk by default. In multi-instance deployments, you must ensure that all upload chunks for a given file reach the same server instance. This can be achieved by configuring the temporary file location (`OrchardCore:TempDirectory:Path`) to a **shared filesystem** path accessible from all instances, or by enabling **sticky sessions** (session affinity) on your load balancer. Without this, a chunked upload that spans multiple instances will fail because the second instance cannot find the partial file created by the first.
 
+When Azure Media Storage or Amazon Media Storage is enabled and configured, TUS stores partial upload data in its container or bucket instead. Without a valid configuration, TUS keeps using the local disk.
+
 To configure a shared temporary file location (used by TUS and all other temporary files):
 
 ```json

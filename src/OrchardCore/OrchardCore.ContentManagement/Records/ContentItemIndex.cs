@@ -29,7 +29,12 @@ public class ContentItemIndexProvider : IndexProvider<ContentItem>
 {
     public override void Describe(DescribeContext<ContentItem> context)
     {
+        // Each version of a content item is a document with one record here. So a query that only joins indexes with a single record
+        // per document doesn't group its matches by document, and a page stops as soon as it's full when a database index serves its
+        // order, like the contents admin list by modified date. And its count reads this table without joining the Document table.
         context.For<ContentItemIndex>()
+            .ExclusiveToDocumentType()
+            .SingleRecordPerDocument()
             .Map(contentItem =>
             {
                 var contentItemIndex = new ContentItemIndex

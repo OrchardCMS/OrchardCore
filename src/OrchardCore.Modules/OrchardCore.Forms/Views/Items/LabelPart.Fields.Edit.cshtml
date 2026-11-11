@@ -2,7 +2,7 @@
 @model LabelPartEditViewModel
 
 <div class="ocat-wrapper">
-    <label asp-for="For" class="ocat-label">@T["For"]</label>
+    <label asp-for="For" class="ocat-label">@T.Note("The HTML for attribute of the label: the ID of the form element it describes.")["For"]</label>
     <div class="ocat-end">
         <input asp-for="For" type="text" class="form-control content-preview-text" />
         <span class="hint">@T["The ID of the form element to associate with this label."]</span>

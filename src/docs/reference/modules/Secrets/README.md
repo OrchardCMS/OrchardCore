@@ -4,7 +4,7 @@ The Secrets module provides a secure, centralized way to store and manage sensit
 
 The following video explains why the Secrets module exists, walks through each of its features, and shows how to adopt it in your own modules.
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/DmAkNFIj33Y?si=_ESl2HjZPHxqE1jK" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/DmAkNFIj33Y" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 ## Why Use the Secrets Module?
 
@@ -34,7 +34,7 @@ The Secrets module provides:
 - **Centralized Management**: A single admin UI to view, create, update, and delete all secrets.
 - **Multiple Backends**: Support for database storage (default) and Azure Key Vault for enterprise scenarios.
 - **Deployment Support**: Export secret metadata (not values) and import secrets from environment variables during setup.
-- **Type Safety**: Different secret types (text, RSA keys, X.509 certificates) with appropriate handling for each.
+- **Type Safety**: Different secret types (text, RSA keys, X.509 certificates) with appropriate handling for each, represented by the `Secret` union.
 
 ## Common Use Cases
 
@@ -463,6 +463,24 @@ await _secretManager.SaveSecretAsync("MyApiKey", secret);
 await _secretManager.SaveSecretAsync("MyApiKey", secret, "AzureKeyVault");
 ```
 
+### Handling Any Secret Type
+
+`ISecretManager` and `ISecretStore` exchange secrets as a `Secret`, a C# union of the secret types: `TextSecret`, `RsaKeySecret` and `X509Secret`. An instance of each type converts implicitly to a `Secret`, and `GetSecretAsync<T>()` is an extension method returning the secret only when it is of type `T`. Get the `Secret` itself to handle every type, with a `switch` the compiler checks for exhaustiveness. A secret that is not found has a `null` `Value` and matches the `null` pattern:
+
+```csharp
+var secret = await _secretManager.GetSecretAsync("Signing.Key");
+
+using var rsa = secret switch
+{
+    RsaKeySecret rsaKey => CreateRsa(rsaKey),
+    X509Secret x509 => x509.GetCertificate()?.GetRSAPrivateKey(),
+    TextSecret => throw new InvalidOperationException("The secret is not a key."),
+    null => throw new InvalidOperationException("The secret was not found."),
+};
+```
+
+`Secret` has the same name as the `Microsoft.AspNetCore.DataProtection.Secret` class. In a file importing both namespaces, add a `using Secret = OrchardCore.Secrets.Secret;` alias.
+
 ## Recipe Step
 
 Secrets can be imported using a recipe step. Note that for security reasons, you should provide secret values via environment variables rather than directly in the recipe file.
@@ -623,7 +641,7 @@ The exported JSON will contain encrypted secret values:
 
 Version 1 envelopes use authenticated encryption. Envelopes with an unsupported version or missing authentication tag are rejected. Do not edit names, store names, types, descriptions, or expiration dates in an encrypted recipe: changes invalidate authentication. A failed encrypted export fails the deployment instead of emitting a metadata-only fallback. Duplicate logical names across stores must be resolved before export.
 
-Export and import use registered `ISecretTypeProvider` instances, including custom types. Providers can override `Serialize` and `Deserialize` for their own wire format; the default implementation uses JSON for the provider's concrete CLR type. Register the same provider on the source and destination.
+Export and import use the registered `ISecretTypeProvider` instances, one per secret type. Providers can override `Serialize` and `Deserialize` for their own wire format; the default implementation uses JSON for the provider's concrete CLR type. Register the same provider on the source and destination.
 
 #### Importing Encrypted Secrets
 
@@ -684,7 +702,11 @@ No request to TenantB is made during export. Do not attempt to provision an RSA 
 
 ## Secret Types
 
-The module supports three built-in secret types, each designed for specific use cases:
+The module supports three secret types, each designed for specific use cases. They are the cases of the `Secret` union, a closed set of types:
+
+```csharp
+public union Secret(TextSecret, RsaKeySecret, X509Secret);
+```
 
 ### Choosing Between RsaKeySecret and X509Secret
 
@@ -722,7 +744,7 @@ Prefer a PEM-encoded certificate when the certificate store is not convenient, w
 The most common secret type for storing string values like passwords, API keys, and connection strings.
 
 ```csharp
-public class TextSecret : ISecret
+public sealed class TextSecret
 {
     public string Text { get; set; }
 }
@@ -751,7 +773,7 @@ var apiKey = retrieved?.Text;
 For storing RSA cryptographic keys directly in the secrets store. The key material is encrypted and stored in the database, making it portable across deployments.
 
 ```csharp
-public class RsaKeySecret : ISecret
+public sealed class RsaKeySecret
 {
     public string PublicKey { get; set; }      // Base64-encoded RSA public key
     public string PrivateKey { get; set; }     // Base64-encoded RSA private key
@@ -803,7 +825,7 @@ For X.509 certificates. Its `Source` defines where the certificate is loaded fro
 - `X509SecretSource.Pem`: the secret contains the certificate material itself, the PEM-encoded certificate and, optionally, its PEM-encoded private key. It doesn't depend on a certificate store, so it works the same way on every platform.
 
 ```csharp
-public class X509Secret : ISecret
+public sealed class X509Secret
 {
     public X509SecretSource Source { get; set; }      // Store or Pem
 
@@ -1277,14 +1299,14 @@ public class MyCustomSecretStore : ISecretStore
     public string Name => "MyCustomStore";
     public bool IsReadOnly => false;
 
-    public Task<T> GetSecretAsync<T>(string name) where T : class, ISecret
+    public Task<Secret> GetSecretAsync(string name)
     {
-        // Implementation
+        // Return default when the secret is not found.
     }
 
-    public Task SaveSecretAsync<T>(string name, T secret, SecretSaveOptions options = null) where T : class, ISecret
+    public Task SaveSecretAsync(string name, Secret secret, SecretSaveOptions options = null)
     {
-        // Implementation
+        // Persist secret.Value, along with its type to restore it, e.g. with Secret.TryGetType().
     }
 
     public Task RemoveSecretAsync(string name)

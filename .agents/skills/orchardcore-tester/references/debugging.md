@@ -64,7 +64,7 @@ When running in background, console output is not visible. Use log files instead
 To capture startup errors, you can redirect output when starting:
 
 ```powershell
-Start-Process dotnet -ArgumentList "run -f net10.0 --urls http://localhost:$port" `
+Start-Process dotnet -ArgumentList "run -f net11.0 --urls http://localhost:$port" `
     -WorkingDirectory "src/OrchardCore.Cms.Web" `
     -RedirectStandardOutput "App_Data/logs/console-out.log" `
     -RedirectStandardError "App_Data/logs/console-err.log" `

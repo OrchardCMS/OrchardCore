@@ -29,7 +29,16 @@ internal sealed class AwsMediaImageCacheOptionsConfiguration : IConfigureOptions
 
     public void Configure(AwsMediaImageCacheOptions options)
     {
-        options.BindConfiguration(AmazonS3Constants.ConfigSections.AmazonS3ImageCache, AmazonS3Constants.ConfigSections.LegacyAmazonS3ImageCache, _shellConfiguration, _logger);
+        if (!_shellConfiguration.TryBindConfiguration<AwsMediaImageCacheOptions>(AmazonS3Constants.ConfigSections.AmazonS3ImageCache, AmazonS3Constants.ConfigSections.LegacyAmazonS3ImageCache, _logger, out var rawOptions))
+        {
+            return;
+        }
+
+        options.BucketName = rawOptions.BucketName;
+        options.BasePath = rawOptions.BasePath;
+        options.CreateBucket = rawOptions.CreateBucket;
+        options.RemoveBucket = rawOptions.RemoveBucket;
+        options.AwsOptions = rawOptions.AwsOptions;
 
         var parser = new FluidOptionsParser<AwsMediaImageCacheOptions>(_fluidParser, _shellSettings);
 

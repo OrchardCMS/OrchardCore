@@ -118,7 +118,11 @@ public sealed class DataPipelineRunIndexProvider : IndexProvider<DataPipelineRun
 {
     public override void Describe(DescribeContext<DataPipelineRun> context)
     {
+        // A run is a document with a single record here, so a query that only joins indexes with a single record per document isn't
+        // grouped by document, and its count reads this table without joining the Document table.
         context.For<DataPipelineRunIndex>()
+            .ExclusiveToDocumentType()
+            .SingleRecordPerDocument()
             .Map(run => new DataPipelineRunIndex
             {
                 RunId = run.RunId,

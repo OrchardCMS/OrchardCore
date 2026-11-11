@@ -2,12 +2,16 @@ using System.IO.Compression;
 using System.Net.Mime;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.Extensions.Logging;
 using OrchardCore.Admin;
 using OrchardCore.Deployment.Core.Mvc;
 using OrchardCore.Deployment.Core.Services;
 using OrchardCore.Deployment.Services;
 using OrchardCore.Deployment.Steps;
+using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.FileStorage;
+using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Recipes.Models;
 using YesSql;
@@ -21,17 +25,26 @@ public sealed class ExportFileController : Controller
     private readonly IAuthorizationService _authorizationService;
     private readonly ISession _session;
     private readonly ITempDirectoryProvider _tempDirectoryProvider;
+    private readonly ILogger<ExportFileController> _logger;
+    private readonly INotifier _notifier;
+    private readonly IHtmlLocalizer<ExportFileController> H;
 
     public ExportFileController(
         IAuthorizationService authorizationService,
         ISession session,
         IDeploymentManager deploymentManager,
-        ITempDirectoryProvider tempDirectoryProvider)
+        ITempDirectoryProvider tempDirectoryProvider,
+        ILogger<ExportFileController> logger,
+        INotifier notifier,
+        IHtmlLocalizer<ExportFileController> htmlLocalizer)
     {
         _authorizationService = authorizationService;
         _deploymentManager = deploymentManager;
         _session = session;
         _tempDirectoryProvider = tempDirectoryProvider;
+        _logger = logger;
+        _notifier = notifier;
+        H = htmlLocalizer;
     }
 
     [HttpPost]
@@ -74,8 +87,22 @@ public sealed class ExportFileController : Controller
             }
 
             var deploymentPlanResult = new DeploymentPlanResult(fileBuilder, recipeDescriptor);
-            await _deploymentManager.ExecuteDeploymentPlanAsync(deploymentPlan, deploymentPlanResult);
-            ZipFile.CreateFromDirectory(fileBuilder.Folder, archiveFileName);
+
+            try
+            {
+                await _deploymentManager.ExecuteDeploymentPlanAsync(deploymentPlan, deploymentPlanResult);
+                await ZipFile.CreateFromDirectoryAsync(fileBuilder.Folder, archiveFileName, HttpContext.RequestAborted);
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(exception, "An error occurred while trying execute deployment plan and save it to file.");
+                await _notifier.ErrorAsync(
+                    H["An error has occurred while exporting to file. Please try again or check the application logs."]);
+                return RedirectToAction(
+                    nameof(DeploymentPlanController.Display),
+                    typeof(DeploymentPlanController).ControllerName(),
+                    new { id });
+            }
         }
 
         return new PhysicalFileResult(archiveFileName, MediaTypeNames.Application.Zip) { FileDownloadName = filename };

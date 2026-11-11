@@ -422,7 +422,7 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
             using (CultureScope.Create(cultureAspect.Culture, ignoreSystemSettings: cultureOptions.IgnoreSystemSettings))
             {
                 part.Path = await _liquidTemplateManager.RenderStringAsync(pattern, NullEncoder.Default, model,
-                    new Dictionary<string, FluidValue>() { [nameof(ContentItem)] = new ObjectValue(model.ContentItem) });
+                    new Dictionary<string, FluidValue>() { [nameof(ContentItem)] = ObjectValue.Create(model.ContentItem) });
             }
 
             part.Path = part.Path.ReplaceLineEndings(string.Empty);

@@ -4,7 +4,6 @@ using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Users.AuditTrail.Controllers;
 using OrchardCore.Users.Drivers;
-using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.AuditTrail;
 

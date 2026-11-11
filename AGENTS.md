@@ -14,7 +14,7 @@ Orchard Core is an open-source, modular, multi-tenant application framework and 
 
 ## Prerequisites
 
-- **.NET SDK**: Version 10.0+ (see `global.json` for exact version requirements)
+- **.NET SDK**: Version 11.0+ (see `global.json` for exact version requirements)
 - **Node.js**: Version 24.x LTS (for asset compilation)
 - **Yarn**: Version 4.x (package manager for frontend assets)
 
@@ -30,7 +30,7 @@ cd src/OrchardCore.Cms.Web
 dotnet run
 
 # Or build with specific configuration
-dotnet build -c Debug -f net10.0
+dotnet build -c Debug -f net11.0
 ```
 
 ### Full Solution Build
@@ -45,13 +45,13 @@ dotnet build OrchardCore.sln -c Release
 
 ### Target Framework
 
-The default target framework is `net10.0` as defined in `src/OrchardCore.Build/TargetFrameworks.props`.
+The default target framework is `net11.0` as defined in `src/OrchardCore.Build/TargetFrameworks.props`.
 
 ## Running the Application
 
 ```bash
 cd src/OrchardCore.Cms.Web
-dotnet run -f net10.0
+dotnet run -f net11.0
 ```
 
 The application will be available at `http://localhost:5000` (and `https://localhost:5001`).
@@ -178,7 +178,7 @@ These skills provide step-by-step guidance, code templates, and references for c
 
 ## Videos
 
-Every video of Orchard Core (documentation, pull requests, walkthroughs) follows one specification: 1920x1080 at 30 fps, the Orchard Core logo, colors and Open Sans font on a dark background, recordings at 1536x864 in a green frame, the `en-US-AndrewMultilingualNeural` voice, WebVTT captions, and an H.264 encode under 10 MB. Always produce videos with the `orchardcore-video-producer` skill, and don't change its specification for a single video. Narration describes the current behavior, with no "new", "now", or version wording, so videos stay accurate. In the docs, keep a video in a `videos/` folder next to its page.
+Every video of Orchard Core (documentation, pull requests, walkthroughs) follows one specification: 1920x1080 at 30 fps, the Orchard Core logo, colors and Open Sans font on a dark background, recordings at 1536x864 in a green frame, the `en-US-AndrewMultilingualNeural` voice, WebVTT captions, and an H.264 encode under 10 MB. Always produce videos with the `orchardcore-video-producer` skill, and don't change its specification for a single video. Narration describes the current behavior, with no "new", "now", or version wording, so videos stay accurate. Never commit a video or its assets, such as captions or a poster, to the repository. Publish the video on the Orchard Core YouTube channel, with its captions, and embed it in the docs from `https://www.youtube-nocookie.com/embed/<id>`.
 
 ## Frontend Assets
 
@@ -414,11 +414,11 @@ For browser-based manual testing using Playwright, see the `orchardcore-tester` 
 **Quick start:**
 ```powershell
 # Build
-dotnet build src/OrchardCore.Cms.Web -c Debug -f net10.0
+dotnet build src/OrchardCore.Cms.Web -c Debug -f net11.0
 
 # Generate/get port and start in background
 $port = if (Test-Path .orchardcore-port) { Get-Content .orchardcore-port } else { $p = Get-Random -Min 5000 -Max 6000; $p | Out-File .orchardcore-port -NoNewline; $p }
-$proc = Start-Process dotnet -ArgumentList "run","-f","net10.0","--no-build","--urls","http://localhost:$port" -WorkingDirectory "src/OrchardCore.Cms.Web" -PassThru -NoNewWindow
+$proc = Start-Process dotnet -ArgumentList "run","-f","net11.0","--no-build","--urls","http://localhost:$port" -WorkingDirectory "src/OrchardCore.Cms.Web" -PassThru -NoNewWindow
 $proc.Id | Out-File .orchardcore-pid -NoNewline
 
 # URL: http://localhost:$port

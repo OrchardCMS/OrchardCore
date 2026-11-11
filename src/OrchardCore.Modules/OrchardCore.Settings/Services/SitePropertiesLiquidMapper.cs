@@ -23,6 +23,6 @@ internal sealed class SitePropertiesLiquidMapper : ISitePropertiesLiquidMapper
             }
         }
 
-        return new ObjectValue(json);
+        return ObjectValue.Create(json);
     }
 }

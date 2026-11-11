@@ -20,6 +20,6 @@ public class SupportedCulturesFilter : ILiquidFilter
     {
         var supportedCultures = await _localizationService.GetSupportedCulturesAsync();
 
-        return new ArrayValue(supportedCultures.Select(x => new ObjectValue(CultureInfo.GetCultureInfo(x))).ToArray());
+        return ArrayValue.Create(supportedCultures.Select(x => ObjectValue.Create(CultureInfo.GetCultureInfo(x))).ToArray());
     }
 }

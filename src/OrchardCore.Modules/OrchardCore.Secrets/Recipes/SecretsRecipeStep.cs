@@ -86,7 +86,7 @@ public sealed class SecretsRecipeStep : NamedRecipeStepHandler
             var encryptedData = secretEntry["EncryptedData"]?.GetValue<string>();
             var iv = secretEntry["IV"]?.GetValue<string>();
 
-            ISecret secret = null;
+            Secret secret;
 
             if (hasEncryptionKey || secretEntry.ContainsKey("EncryptedData") || secretEntry.ContainsKey("EncryptedKey") ||
                 secretEntry.ContainsKey("Version") || secretEntry.ContainsKey("Tag") || secretEntry.ContainsKey("IV"))
@@ -184,7 +184,7 @@ public sealed class SecretsRecipeStep : NamedRecipeStepHandler
     private string GetSecretValueFromConfiguration(string name) =>
         _configuration[$"OrchardCore:Secrets:{name}"];
 
-    private async Task SaveSecretAsync(string name, ISecret secret, string store, SecretSaveOptions options = null)
+    private async Task SaveSecretAsync(string name, Secret secret, string store, SecretSaveOptions options = null)
     {
         if (!string.IsNullOrEmpty(store))
         {

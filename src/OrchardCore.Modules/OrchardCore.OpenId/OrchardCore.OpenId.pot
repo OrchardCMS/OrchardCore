@@ -417,6 +417,7 @@ msgctxt "OrchardCore.OpenId.ValidationAdminMenu"
 msgid "Token Validation"
 msgstr ""
 
+#. .NET standard date format of the dates shown on this page (short date). Keep it unless the culture needs another .NET date format.
 #: Views/OpenIdServerSettings.Edit.cshtml
 msgctxt "OrchardCore.OpenId.ViewModels.OpenIdServerSettingsViewModel"
 msgid "d"

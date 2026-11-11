@@ -69,7 +69,7 @@ public class FullTextAspectContentHandler : ContentHandlerBase
             if (settings.IncludeFullTextTemplate && !string.IsNullOrEmpty(settings.FullTextTemplate))
             {
                 var result = await _liquidTemplateManager.RenderStringAsync(settings.FullTextTemplate, NullEncoder.Default, context.ContentItem,
-                    new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(context.ContentItem) });
+                    new Dictionary<string, FluidValue>() { ["ContentItem"] = ObjectValue.Create(context.ContentItem) });
 
                 fullTextAspect.Segments.Add(result);
             }
