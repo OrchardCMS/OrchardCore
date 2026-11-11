@@ -2,6 +2,21 @@ namespace OrchardCore.ContentManagement.Utilities.Tests;
 
 public class StringExtensionsTests
 {
+    [Theory]
+    [InlineData("ab😀cd", 3)]
+    [InlineData("abe\u0301cd", 3)]
+    [InlineData("ab👩‍💻cd", 6)]
+    [InlineData("ab🇺🇸cd", 4)]
+    [InlineData("ab👍🏽cd", 4)]
+    public void Ellipsize_InsideTextElement_KeepsWholeElements(string text, int limit)
+    {
+#pragma warning disable CS0618 // Test the obsolete compatibility overloads.
+        Assert.Equal("ab" + DefaultEllipsis, StringExtensions.Ellipsize(text, limit));
+        Assert.Equal("ab...", StringExtensions.Ellipsize(text, limit, "..."));
+        Assert.Equal("ab...", StringExtensions.Ellipsize(text, limit, "...", wordBoundary: true));
+#pragma warning restore CS0618
+    }
+
     private const string DefaultEllipsis = "\u00A0\u2026";
     private const string CustomEllipsis = " >>>";
 

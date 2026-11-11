@@ -55,7 +55,7 @@ public partial class NotificationIndexProvider : IndexProvider<Notification>
 
                 if (content.Length > NotificationConstants.NotificationIndexContentLength)
                 {
-                    content = content[..NotificationConstants.NotificationIndexContentLength];
+                    content = TextHelper.Truncate(content, NotificationConstants.NotificationIndexContentLength);
                 }
 
                 var isRead = false;
