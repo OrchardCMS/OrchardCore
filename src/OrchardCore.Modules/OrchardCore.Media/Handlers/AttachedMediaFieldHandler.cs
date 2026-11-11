@@ -16,7 +16,7 @@ public class AttachedMediaFieldHandler : ContentFieldHandler<MediaField>
         _attachedMediaFieldFileService = attachedMediaFieldFileService;
     }
 
-    public async override Task ClonedAsync(CloneContentFieldContext context, MediaField field)
+    public override async Task ClonedAsync(CloneContentFieldContext context, MediaField field)
     {
         if (context.ContentPartFieldDefinition.Editor() == "Attached")
         {

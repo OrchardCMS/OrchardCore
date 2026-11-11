@@ -48,7 +48,7 @@ jobs:
         key: playwright-${{ hashFiles('Directory.Packages.props') }}
     - name: Install Playwright Browsers
       run: |
-        pwsh test/OrchardCore.Tests.Functional/bin/Release/net10.0/playwright.ps1 install --with-deps chromium
+        pwsh test/OrchardCore.Tests.Functional/bin/Release/net11.0/playwright.ps1 install --with-deps chromium
     - name: Functional Tests
       # A healthy run takes about 10 minutes; fail a hung run instead of letting it reach the 6-hour job limit.
       timeout-minutes: 30
@@ -89,7 +89,7 @@ jobs:
         key: playwright-${{ hashFiles('Directory.Packages.props') }}
     - name: Install Playwright Browsers
       run: |
-        pwsh test/OrchardCore.Tests.Functional/bin/Release/net10.0/playwright.ps1 install --with-deps chromium
+        pwsh test/OrchardCore.Tests.Functional/bin/Release/net11.0/playwright.ps1 install --with-deps chromium
     - name: Functional Tests
       # A healthy run takes about 10 minutes; fail a hung run instead of letting it reach the 6-hour job limit.
       timeout-minutes: 30
@@ -144,7 +144,7 @@ jobs:
         key: playwright-${{ hashFiles('Directory.Packages.props') }}
     - name: Install Playwright Browsers
       run: |
-        pwsh test/OrchardCore.Tests.Functional/bin/Release/net10.0/playwright.ps1 install --with-deps chromium
+        pwsh test/OrchardCore.Tests.Functional/bin/Release/net11.0/playwright.ps1 install --with-deps chromium
     - name: Functional Tests
       # A healthy run takes about 10 minutes; fail a hung run instead of letting it reach the 6-hour job limit.
       timeout-minutes: 30
@@ -193,7 +193,7 @@ jobs:
         key: playwright-${{ hashFiles('Directory.Packages.props') }}
     - name: Install Playwright Browsers
       run: |
-        pwsh test/OrchardCore.Tests.Functional/bin/Release/net10.0/playwright.ps1 install --with-deps chromium
+        pwsh test/OrchardCore.Tests.Functional/bin/Release/net11.0/playwright.ps1 install --with-deps chromium
     - name: Functional Tests
       # A healthy run takes about 10 minutes; fail a hung run instead of letting it reach the 6-hour job limit.
       timeout-minutes: 30
@@ -248,7 +248,7 @@ jobs:
         key: playwright-${{ hashFiles('Directory.Packages.props') }}
     - name: Install Playwright Browsers
       run: |
-        pwsh test/OrchardCore.Tests.Functional/bin/Release/net10.0/playwright.ps1 install --with-deps chromium
+        pwsh test/OrchardCore.Tests.Functional/bin/Release/net11.0/playwright.ps1 install --with-deps chromium
     - name: Functional Tests
       # A healthy run takes about 10 minutes; fail a hung run instead of letting it reach the 6-hour job limit.
       timeout-minutes: 30
@@ -296,7 +296,7 @@ jobs:
         key: playwright-${{ hashFiles('Directory.Packages.props') }}
     - name: Install Playwright Browsers
       run: |
-        pwsh test/OrchardCore.Tests.Functional/bin/Release/net10.0/playwright.ps1 install --with-deps chromium
+        pwsh test/OrchardCore.Tests.Functional/bin/Release/net11.0/playwright.ps1 install --with-deps chromium
     - name: Functional Tests
       # A healthy run takes about 10 minutes; fail a hung run instead of letting it reach the 6-hour job limit.
       timeout-minutes: 30

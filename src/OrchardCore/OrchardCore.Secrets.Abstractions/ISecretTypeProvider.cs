@@ -1,7 +1,7 @@
 namespace OrchardCore.Secrets;
 
 /// <summary>
-/// Provides information about a secret type.
+/// Provides information about one of the secret types, the cases of <see cref="Secret"/>.
 /// </summary>
 public interface ISecretTypeProvider
 {
@@ -28,15 +28,15 @@ public interface ISecretTypeProvider
     /// <summary>
     /// Creates a new instance of the secret.
     /// </summary>
-    ISecret Create();
+    Secret Create();
 
     /// <summary>
     /// Serializes a secret of this type for external storage and deployment.
     /// </summary>
-    string Serialize(ISecret secret);
+    string Serialize(Secret secret);
 
     /// <summary>
     /// Deserializes a secret of this type from external storage or deployment.
     /// </summary>
-    ISecret Deserialize(string json);
+    Secret Deserialize(string json);
 }

@@ -1,4 +1,3 @@
-using System.Net.NetworkInformation;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata;
@@ -37,7 +36,7 @@ public sealed class ListsAdminNodeDriver : DisplayDriver<MenuItem, ListsAdminNod
         );
     }
 
-    public async override Task<IDisplayResult> EditAsync(ListsAdminNode treeNode, BuildEditorContext context)
+    public override async Task<IDisplayResult> EditAsync(ListsAdminNode treeNode, BuildEditorContext context)
     {
         var contentTypes = await GetContentTypesSelectListAsync();
 

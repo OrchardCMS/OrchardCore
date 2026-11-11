@@ -205,6 +205,7 @@ public static class OrchardCoreBuilderExtensions
             Logger = loggerFactory.CreateLogger("YesSql"),
             ContentSerializer = new DefaultContentJsonSerializer(serializerOptions.Value.SerializerOptions),
             IsolationLevel = yesSqlOptions.IsolationLevel,
+            ConcurrentIndexCreationEnabled = yesSqlOptions.ConcurrentIndexCreationEnabled,
         };
 
         if (yesSqlOptions.IdGenerator != null)

@@ -67,32 +67,28 @@ public class AzureKeyVaultSecretStore : ISecretStore
 
     public bool IsReadOnly => false;
 
-    public async Task<T> GetSecretAsync<T>(string name) where T : class, ISecret
+    public async Task<Secret> GetSecretAsync(string name)
     {
         var secret = await GetEntryAsync(name);
         if (secret == null)
         {
-            return null;
+            return default;
         }
 
         var provider = GetProvider(secret.Properties.Tags[TypeTag]);
-        if (!typeof(T).IsAssignableFrom(provider.SecretType))
-        {
-            return null;
-        }
 
-        return (secret.Properties.ContentType == "text/plain" && provider.SecretType == typeof(TextSecret)
+        return secret.Properties.ContentType == "text/plain" && provider.SecretType == typeof(TextSecret)
             ? new TextSecret { Text = secret.Value }
-            : provider.Deserialize(secret.Value)) as T;
+            : provider.Deserialize(secret.Value);
     }
 
-    public async Task SaveSecretAsync<T>(string name, T secret, SecretSaveOptions options = null) where T : class, ISecret
+    public async Task SaveSecretAsync(string name, Secret secret, SecretSaveOptions options = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
-        ArgumentNullException.ThrowIfNull(secret);
+        ArgumentNullException.ThrowIfNull(secret.Value, nameof(secret));
 
-        var provider = _providers.FirstOrDefault(p => p.SecretType == secret.GetType())
-            ?? throw new InvalidOperationException($"Secret type '{secret.GetType().FullName}' is not registered.");
+        var provider = _providers.FirstOrDefault(p => p.SecretType == secret.Value.GetType())
+            ?? throw new InvalidOperationException($"Secret type '{secret.Value.GetType().FullName}' is not registered.");
         var existing = await GetEntryAsync(name);
         var entry = new KeyVaultSecret(GetVaultName(name), secret is TextSecret text ? text.Text : provider.Serialize(secret));
         entry.Properties.ContentType = secret is TextSecret ? "text/plain" : "application/json";
