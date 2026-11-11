@@ -7,16 +7,17 @@ using OrchardCore.Deployment;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Secrets;
 using OrchardCore.Secrets.Deployment;
+using OrchardCore.Secrets.Providers;
 using OrchardCore.Secrets.Recipes;
 using OrchardCore.Secrets.Services;
-using ISecret = OrchardCore.Secrets.ISecret;
+using Secret = OrchardCore.Secrets.Secret;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Secrets;
 
 public class SecretDeploymentTests
 {
     [Fact]
-    public async Task ExportAndImport_RoundTripCustomTypeAndMetadataFromSpecificStore()
+    public async Task ExportAndImport_RoundTripTypeAndMetadataFromSpecificStore()
     {
         var (manager, source, recipe) = CreateServices();
         var result = new DeploymentPlanResult(null, new RecipeDescriptor());
@@ -27,10 +28,10 @@ public class SecretDeploymentTests
         await recipe.ExecuteAsync(context);
 
         Assert.Empty(context.Errors);
-        manager.Verify(m => m.GetSecretAsync<ISecret>("custom", "AzureKeyVault"), Times.Once);
-        manager.Verify(m => m.GetSecretAsync<ISecret>("custom"), Times.Never);
+        manager.Verify(m => m.GetSecretAsync("custom", "AzureKeyVault"), Times.Once);
+        manager.Verify(m => m.GetSecretAsync("custom"), Times.Never);
         manager.Verify(m => m.SaveSecretAsync("custom",
-            It.Is<ISecret>(s => s is CustomSecret && ((CustomSecret)s).Value == "custom value"),
+            It.Is<Secret>(s => s.Value is TextSecret && ((TextSecret)s.Value).Text == "custom value"),
             "AzureKeyVault", It.Is<SecretSaveOptions>(o => o.Description == "description" && o.ExpiresUtc == Expiration)), Times.Once);
     }
 
@@ -64,14 +65,14 @@ public class SecretDeploymentTests
         await recipe.ExecuteAsync(context);
 
         Assert.NotEmpty(context.Errors);
-        manager.Verify(m => m.SaveSecretAsync(It.IsAny<string>(), It.IsAny<ISecret>(), It.IsAny<string>(), It.IsAny<SecretSaveOptions>()), Times.Never);
+        manager.Verify(m => m.SaveSecretAsync(It.IsAny<string>(), It.IsAny<Secret>(), It.IsAny<string>(), It.IsAny<SecretSaveOptions>()), Times.Never);
     }
 
     [Fact]
     public async Task Export_ReadFailureDoesNotProduceMetadataOnlyFallback()
     {
         var (manager, source, _) = CreateServices();
-        manager.Setup(m => m.GetSecretAsync<ISecret>("custom", "AzureKeyVault")).ReturnsAsync((ISecret)null);
+        manager.Setup(m => m.GetSecretAsync("custom", "AzureKeyVault")).ReturnsAsync(default(Secret));
         var result = new DeploymentPlanResult(null, new RecipeDescriptor());
 
         await Assert.ThrowsAsync<InvalidOperationException>(() =>
@@ -102,7 +103,7 @@ public class SecretDeploymentTests
     {
         using var rsa = RSA.Create(2048);
         var manager = new Mock<ISecretManager>();
-        manager.Setup(m => m.GetSecretAsync<RsaKeySecret>("key")).ReturnsAsync(new RsaKeySecret
+        manager.Setup(m => m.GetSecretAsync("key")).ReturnsAsync(new RsaKeySecret
         {
             PublicKey = Convert.ToBase64String(rsa.ExportRSAPublicKey()),
             PrivateKey = Convert.ToBase64String(rsa.ExportRSAPrivateKey()),
@@ -113,12 +114,12 @@ public class SecretDeploymentTests
             {
                 Name = "custom",
                 Store = "AzureKeyVault",
-                Type = typeof(CustomSecret).FullName,
+                Type = typeof(TextSecret).FullName,
                 Description = "description",
                 ExpiresUtc = Expiration,
             }]);
-        manager.Setup(m => m.GetSecretAsync<ISecret>("custom", "AzureKeyVault")).ReturnsAsync(new CustomSecret { Value = "custom value" });
-        var encryption = new SecretEncryptionService(manager.Object, [new CustomSecretProvider()]);
+        manager.Setup(m => m.GetSecretAsync("custom", "AzureKeyVault")).ReturnsAsync(new TextSecret { Text = "custom value" });
+        var encryption = new SecretEncryptionService(manager.Object, [new TextSecretTypeProvider(Mock.Of<IStringLocalizer<TextSecretTypeProvider>>())]);
         var source = new SecretsDeploymentSource(manager.Object, encryption, NullLogger<SecretsDeploymentSource>.Instance);
         var localizer = new Mock<IStringLocalizer<SecretsRecipeStep>>();
         localizer.Setup(s => s[It.IsAny<string>(), It.IsAny<object[]>()])
@@ -126,16 +127,5 @@ public class SecretDeploymentTests
         var recipe = new SecretsRecipeStep(manager.Object, encryption, new ConfigurationBuilder().Build(),
             NullLogger<SecretsRecipeStep>.Instance, localizer.Object);
         return (manager, source, recipe);
-    }
-
-    public sealed class CustomSecret : ISecret
-    {
-        public string Value { get; set; }
-    }
-
-    private sealed class CustomSecretProvider : SecretTypeProvider<CustomSecret>
-    {
-        public override string DisplayName => "Custom";
-        public override string Description => "Custom secret for deployment coverage.";
     }
 }

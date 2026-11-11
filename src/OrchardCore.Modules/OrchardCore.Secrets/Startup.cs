@@ -27,20 +27,15 @@ public sealed class Startup : StartupBase
         services.AddNavigationProvider<AdminMenu>();
         services.Configure<MvcOptions>(options => options.Filters.Add<SecretExpirationWarningFilter>());
 
-        // Register secret types (extensible by other modules)
+        // Register the secret types, the cases of the Secret union.
         services.AddSecretType<TextSecretTypeProvider>();
         services.AddSecretType<RsaKeySecretTypeProvider>();
         services.AddSecretType<X509SecretTypeProvider>();
 
-        // Register polymorphic JSON serialization for secret types
-        services.AddJsonDerivedTypeInfo<TextSecret, ISecret>();
-        services.AddJsonDerivedTypeInfo<RsaKeySecret, ISecret>();
-        services.AddJsonDerivedTypeInfo<X509Secret, ISecret>();
-
         // Display drivers for secret types
-        services.AddDisplayDriver<ISecret, TextSecretDisplayDriver>();
-        services.AddDisplayDriver<ISecret, RsaSecretDisplayDriver>();
-        services.AddDisplayDriver<ISecret, X509SecretDisplayDriver>();
+        services.AddDisplayDriver<TextSecret, TextSecretDisplayDriver>();
+        services.AddDisplayDriver<RsaKeySecret, RsaSecretDisplayDriver>();
+        services.AddDisplayDriver<X509Secret, X509SecretDisplayDriver>();
 
         services.AddDeployment<SecretsDeploymentSource, SecretsDeploymentStep, SecretsDeploymentStepDriver>();
         services.AddRecipeExecutionStep<SecretsRecipeStep>();

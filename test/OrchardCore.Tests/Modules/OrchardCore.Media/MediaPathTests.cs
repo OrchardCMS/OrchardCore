@@ -118,7 +118,7 @@ public class MediaPathTests
         // media root to the application's assembly directory.
         using var settings = new ShellSettings { Name = "../.." };
 
-        Assert.Throws<ArgumentException>(() => MediaStartup.GetMediaPath(CreateShellOptions(), settings, "bin/Release/net10.0"));
+        Assert.Throws<ArgumentException>(() => MediaStartup.GetMediaPath(CreateShellOptions(), settings, "bin/Release/net11.0"));
     }
 
     [Theory]
