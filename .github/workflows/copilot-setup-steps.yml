@@ -13,4 +13,23 @@ jobs:
     - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
       with:
         node-version-file: '.node-version'
+    - name: Pin global.json SDK in CI
+      shell: pwsh
+      run: |
+        $globalJson = Get-Content global.json -Raw | ConvertFrom-Json
+        $version = $globalJson.sdk.version
+        $globalJson.sdk.PSObject.Properties.Remove('rollForward')
+        $globalJson | ConvertTo-Json -Depth 10 | Set-Content global.json
+        Write-Host "Pinned global.json SDK for CI: $version"
     - uses: ./.github/actions/setup-dotnet
+    - name: Verify exact .NET SDK from global.json
+      shell: pwsh
+      run: |
+        $expected = (Get-Content global.json | ConvertFrom-Json).sdk.version
+        $actual = dotnet --version
+        Write-Host "Expected SDK: $expected"
+        Write-Host "Actual SDK:   $actual"
+        if ($actual -ne $expected) {
+          Write-Error "CI must use exact SDK version from global.json."
+          exit 1
+        }
