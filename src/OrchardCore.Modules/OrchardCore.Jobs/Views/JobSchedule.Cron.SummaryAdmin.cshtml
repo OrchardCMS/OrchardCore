@@ -1,7 +1,9 @@
 @model JobScheduleRowViewModel
 
-<span class="badge ta-badge fw-normal" title="@T["The cron expression of the schedule, in the time zone of the site"]">
-    <i class="fa-regular fa-calendar" aria-hidden="true"></i> <code>@Model.Schedule.Cron</code>
+@* The expression applies to the time zone of the site, as its description does. *@
+<span class="me-1">
+    <i class="fa-regular fa-calendar" aria-hidden="true"></i>
+    <cron-expression value="@Model.Schedule.Cron" />
 </span>
 
 @if (Model.Schedule.IsEnabled)

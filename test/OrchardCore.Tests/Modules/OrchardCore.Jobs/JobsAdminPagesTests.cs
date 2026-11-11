@@ -162,6 +162,60 @@ public sealed class JobsAdminPagesTests
     }
 
     [Fact]
+    public async Task SchedulesPage_Schedule_DescribesItsCronExpression()
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+
+        // Act
+        using var schedules = await GetPageAsync(context, "Admin/Jobs/Schedules");
+        using var jobs = await GetPageAsync(context, "Admin/Jobs");
+
+        // Assert
+        var row = schedules.QuerySelector($"a[href*='/Jobs/Schedules/Edit/{TestJob.DeclaredScheduleName}']")?.Closest("li");
+
+        Assert.NotNull(row);
+        Assert.Equal("0 0 1 1 *", row.QuerySelector(".cron-expression code").TextContent);
+        Assert.Contains("January", row.QuerySelector(".cron-expression-description").TextContent, StringComparison.Ordinal);
+
+        // The list of jobs has no room for the description, which is the tooltip of the expression.
+        Assert.Contains(jobs.QuerySelectorAll(".cron-expression"), expression =>
+            expression.QuerySelector("code").TextContent == "0 0 1 1 *"
+            && expression.GetAttribute("title").Contains("January", StringComparison.Ordinal)
+            && expression.QuerySelector(".cron-expression-description") is null);
+    }
+
+    [Fact]
+    public async Task EditSchedulePage_Schedule_EditsItsCronExpressionWithTheSharedEditor()
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+
+        // The schedule a job declares is created when the schedules are listed.
+        using var schedules = await GetPageAsync(context, "Admin/Jobs/Schedules");
+
+        // Act
+        using var document = await GetPageAsync(context, $"Admin/Jobs/Schedules/Edit/{TestJob.DeclaredScheduleName}");
+
+        // Assert
+        var editor = document.QuerySelector("[data-cron-editor]");
+
+        Assert.NotNull(editor);
+        Assert.Equal("0 0 1 1 *", editor.QuerySelector("input#Cron[name='Cron'][data-cron-input]").GetAttribute("value"));
+        Assert.Contains("January", editor.QuerySelector("[data-cron-description]").TextContent, StringComparison.Ordinal);
+        Assert.EndsWith("/Admin/CronExpression/Describe", editor.GetAttribute("data-cron-describe-url"), StringComparison.Ordinal);
+        Assert.Equal("false", editor.GetAttribute("data-cron-utc"));
+        Assert.NotNull(editor.QuerySelector("a[data-cron-guru][href^='https://crontab.guru/']"));
+
+        // The schedule the job declares is offered after the common ones.
+        var presets = editor.QuerySelectorAll("[data-cron-preset]").Select(preset => preset.GetAttribute("data-cron-preset")).ToArray();
+
+        Assert.Contains("* * * * *", presets);
+        Assert.Equal("0 0 1 1 *", presets[^1]);
+        Assert.Contains(document.Scripts, script => script.Source?.Contains("cron-expression-editor", StringComparison.Ordinal) == true);
+    }
+
+    [Fact]
     public async Task DetailsPage_FailedRun_ShowsTheExceptionToThoseWhoManageJobs()
     {
         // Arrange

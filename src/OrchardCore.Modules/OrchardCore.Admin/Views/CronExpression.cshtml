@@ -1,0 +1,20 @@
+@using System.Globalization
+@using OrchardCore.Admin.Services
+@{
+    var expression = (string)Model.Expression;
+    var placement = Model.Description is CronExpressionDescription value ? value : CronExpressionDescription.Text;
+    var description = placement == CronExpressionDescription.None
+        ? null
+        : CronExpressionDescriber.Describe(expression, CultureInfo.CurrentUICulture);
+}
+
+@if (!string.IsNullOrWhiteSpace(expression))
+{
+    <span class="cron-expression" title="@(placement == CronExpressionDescription.Tooltip ? description : null)">
+        <code>@expression</code>
+        @if (placement == CronExpressionDescription.Text && description is not null)
+        {
+            <span class="cron-expression-description text-body-secondary">@description</span>
+        }
+    </span>
+}

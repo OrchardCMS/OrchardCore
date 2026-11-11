@@ -222,6 +222,59 @@ You can change it by overriding 'VisitSiteNavbarItem' shape, either from a [cust
     </li>
     ```
 
+## Cron Expressions
+
+The admin displays and edits [cron expressions](https://en.wikipedia.org/wiki/Cron#Cron_expression) the same way wherever a schedule is one: the schedule of a [background task](../BackgroundTasks/README.md), of a [job](../Jobs/README.md), or of the Timer event of a [workflow](../Workflows/README.md). The expressions have five fields: minute, hour, day of the month, month and day of the week.
+
+Both tag helpers come with `@addTagHelper *, OrchardCore.Admin.Abstractions`.
+
+### Displaying a cron expression
+
+The `cron-expression` tag displays an expression with a description of when it occurs, such as `0 3 * * *` followed by "At 03:00 AM":
+
+```html
+<cron-expression value="@Model.Schedule" />
+```
+
+| Attribute     | Description |
+| ------------- | ----------- |
+| `value`       | The cron expression. |
+| `description` | Where the description is shown: `Text` (default) next to the expression, `Tooltip` as the tooltip of the expression where there is no room for the text, or `None`. |
+
+An expression that is not valid is displayed without a description.
+
+### Editing a cron expression
+
+The `cron-expression-editor` tag renders the text box of an expression, and helps those who are not familiar with cron expressions:
+
+```html
+<div class="ocat-wrapper" asp-validation-class-for="Schedule">
+    <label asp-for="Schedule" class="ocat-label ocat-label-required">@T["Schedule"]</label>
+    <div class="ocat-end">
+        <cron-expression-editor asp-for="Schedule" default-value="@Model.DefaultSchedule" />
+        <span asp-validation-for="Schedule"></span>
+    </div>
+</div>
+```
+
+- A description of the expression and its next three occurrences, which follow what is typed.
+- **Common schedules**, a menu that fills the text box with a schedule such as every hour or every day at midnight, and with the default schedule when there is one.
+- A link that explains the expression on [crontab.guru](https://crontab.guru/).
+
+| Attribute            | Description |
+| -------------------- | ----------- |
+| `asp-for`            | The property of the model that holds the expression. |
+| `default-value`      | The expression the menu offers as **Default**, when there is one. |
+| `utc`                | `true` when the expression applies to UTC. It applies to the time zone of the site by default. The next occurrences are shown in that time zone. |
+| `site-time-zone-for` | A boolean property of the model, edited by a checkbox of the same form, that makes an expression that applies to UTC apply to the time zone of the site when it is checked. |
+
+The other attributes of the tag, such as `autofocus`, are added to the text box. The editor doesn't replace the validation of the expression when the form is submitted.
+
+!!! note
+    The descriptions are written by the [Cron Expression Descriptor](https://github.com/bradymholt/cron-expression-descriptor) library, in the language of the admin when the library is translated to it, and in English otherwise. They are not part of the translations of Orchard Core.
+
+The tags render the `CronExpression` and `CronExpressionEditor` shapes, whose templates a theme can override.
+
 ## Admin List Layouts
 
 Admin lists such as the content items list are rendered by the `AdminList` shape, which supports exactly two layouts, defined by the `AdminListLayout` enum:

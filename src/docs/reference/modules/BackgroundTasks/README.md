@@ -7,7 +7,7 @@ This module provides tools to manage background tasks. This includes an admin UI
 After enabling the feature, you'll be able to manage background tasks under Tools → Background Tasks. This includes the following:
 
 - Enable or disable a task.
-- Change the schedule of the task, i.e. how frequently it runs, with [cron expressions](https://en.wikipedia.org/wiki/Cron#Cron_expression). A schedule that is not a valid cron expression is rejected.
+- Change the schedule of the task, i.e. how frequently it runs, with [cron expressions](https://en.wikipedia.org/wiki/Cron#Cron_expression). The schedule is shown with a description of when it occurs, such as "At 12:00 AM", and its editor shows the next occurrences of the expression as it is typed, offers common schedules and the default schedule of the task, and links to [crontab.guru](https://crontab.guru/). A schedule that is not a valid cron expression is rejected.
 - Whether to build the tenant routing pipeline for the task, allowing it to generate correct routes.
 - See the execution state of each task: when it last ran, whether that run succeeded or failed and with which error, how long it took, and when it is expected to run next.
 - Run a task on demand.

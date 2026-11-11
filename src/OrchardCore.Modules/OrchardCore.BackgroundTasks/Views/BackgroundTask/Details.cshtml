@@ -154,7 +154,7 @@
 
                             <dt class="col-sm-5">@T["Schedule"]</dt>
                             <dd class="col-sm-7">
-                                <code>@Model.Schedule</code>
+                                <cron-expression value="@Model.Schedule" />
                                 @if (!string.Equals(Model.Schedule, Model.DefaultSchedule, StringComparison.Ordinal))
                                 {
                                     <span class="text-muted small">@T["(default: {0})", Model.DefaultSchedule]</span>

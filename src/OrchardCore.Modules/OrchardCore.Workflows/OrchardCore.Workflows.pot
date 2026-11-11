@@ -4206,16 +4206,14 @@ msgctxt "OrchardCore.Workflows.Views.Items.StartedByWorkflowEvent.Fields.Thumbna
 msgid "Starts this workflow when another workflow runs it with the Execute Workflow task."
 msgstr ""
 
-#. Format arguments: {0}: Model.Activity.CronExpression
-#: Views/Items/TimerEvent.Fields.Design.cshtml
-#, csharp-format
-msgctxt "OrchardCore.Workflows.Views.Items.TimerEvent.Fields.Design"
-msgid "<em>{0}</em>"
-msgstr ""
-
 #: Views/Items/TimerEvent.Fields.Design.cshtml
 msgctxt "OrchardCore.Workflows.Views.Items.TimerEvent.Fields.Design"
 msgid "Timer"
+msgstr ""
+
+#: Views/Items/TimerEvent.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.TimerEvent.Fields.Edit"
+msgid "A CRON expression with five fields: minute, hour, day of the month, month, day of the week."
 msgstr ""
 
 #: Views/Items/TimerEvent.Fields.Edit.cshtml
@@ -4226,11 +4224,6 @@ msgstr ""
 #: Views/Items/TimerEvent.Fields.Edit.cshtml
 msgctxt "OrchardCore.Workflows.Views.Items.TimerEvent.Fields.Edit"
 msgid "The CRON expression uses UTC by default. Check this box to use the site's time zone instead."
-msgstr ""
-
-#: Views/Items/TimerEvent.Fields.Edit.cshtml
-msgctxt "OrchardCore.Workflows.Views.Items.TimerEvent.Fields.Edit"
-msgid "The CRON expression."
 msgstr ""
 
 #: Views/Items/TimerEvent.Fields.Edit.cshtml

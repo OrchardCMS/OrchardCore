@@ -8,15 +8,15 @@
 
 @foreach (var schedule in Model.Value.Schedules)
 {
-    <span class="badge ta-badge fw-normal" title="@(schedule.IsEnabled ? T["The cron expression of a schedule of the job"] : T["A schedule of the job, which is disabled"])">
+    <span class="badge ta-badge fw-normal">
         <i class="fa-regular fa-calendar" aria-hidden="true"></i>
         @if (schedule.IsEnabled)
         {
-            <code>@schedule.Cron</code>
+            <cron-expression value="@schedule.Cron" description="Tooltip" />
         }
         else
         {
-            <code class="text-decoration-line-through">@schedule.Cron</code> @T["Disabled"]
+            <span class="text-decoration-line-through"><cron-expression value="@schedule.Cron" description="Tooltip" /></span> @T["Disabled"]
         }
     </span>
 }

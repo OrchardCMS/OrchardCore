@@ -16,6 +16,11 @@ msgctxt "OrchardCore.Admin.AdminMenu"
 msgid "Settings"
 msgstr ""
 
+#: Controllers/CronExpressionController.cs
+msgctxt "OrchardCore.Admin.Controllers.CronExpressionController"
+msgid "This is not a valid cron expression with five fields: minute, hour, day of the month, month, day of the week."
+msgstr ""
+
 #: Startup.cs
 msgctxt "OrchardCore.Admin.DeploymentStartup"
 msgid "Admin settings"
@@ -285,6 +290,68 @@ msgstr ""
 #: Views/AdminSettings.Edit.cshtml
 msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
 msgid "Whether the titles are displayed in the top bar."
+msgstr ""
+
+#: Views/CronExpressionEditor.cshtml
+msgctxt "OrchardCore.Admin.Views.CronExpressionEditor"
+msgid "Common schedules"
+msgstr ""
+
+#: Views/CronExpressionEditor.cshtml
+msgctxt "OrchardCore.Admin.Views.CronExpressionEditor"
+msgid "Default"
+msgstr ""
+
+#: Views/CronExpressionEditor.cshtml
+msgctxt "OrchardCore.Admin.Views.CronExpressionEditor"
+msgid "Every 15 minutes"
+msgstr ""
+
+#: Views/CronExpressionEditor.cshtml
+msgctxt "OrchardCore.Admin.Views.CronExpressionEditor"
+msgid "Every 5 minutes"
+msgstr ""
+
+#: Views/CronExpressionEditor.cshtml
+msgctxt "OrchardCore.Admin.Views.CronExpressionEditor"
+msgid "Every Monday at midnight"
+msgstr ""
+
+#: Views/CronExpressionEditor.cshtml
+msgctxt "OrchardCore.Admin.Views.CronExpressionEditor"
+msgid "Every day at midnight"
+msgstr ""
+
+#: Views/CronExpressionEditor.cshtml
+msgctxt "OrchardCore.Admin.Views.CronExpressionEditor"
+msgid "Every hour"
+msgstr ""
+
+#: Views/CronExpressionEditor.cshtml
+msgctxt "OrchardCore.Admin.Views.CronExpressionEditor"
+msgid "Every minute"
+msgstr ""
+
+#: Views/CronExpressionEditor.cshtml
+msgctxt "OrchardCore.Admin.Views.CronExpressionEditor"
+msgid "Explain this expression on crontab.guru"
+msgstr ""
+
+#. Format arguments: {0}: "{0}"
+#: Views/CronExpressionEditor.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Admin.Views.CronExpressionEditor"
+msgid "Next occurrences, in the {0} time zone:"
+msgstr ""
+
+#: Views/CronExpressionEditor.cshtml
+msgctxt "OrchardCore.Admin.Views.CronExpressionEditor"
+msgid "The first day of every month at midnight"
+msgstr ""
+
+#: Views/CronExpressionEditor.cshtml
+msgctxt "OrchardCore.Admin.Views.CronExpressionEditor"
+msgid "This expression never occurs."
 msgstr ""
 
 #: Views/QuickNavigationNavbarItem.cshtml

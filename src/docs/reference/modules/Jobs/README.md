@@ -59,6 +59,8 @@ The other jobs only make sense with the parameters their feature queues them wit
 - The occurrences missed while no server was running result in a single run.
 - **Run now** queues a run with the parameters of the schedule, without changing its next occurrence.
 
+A schedule is shown with a description of when it occurs, such as "At 03:00 AM". Its editor shows the description and the next occurrences of the expression as it is typed, offers common schedules and the schedule the job declares, and links to [crontab.guru](https://crontab.guru/).
+
 A job can declare a schedule, shown as **Built-in**. Such a schedule can be changed and disabled, but not deleted.
 
 ## How Runs Execute

@@ -358,17 +358,7 @@ msgstr ""
 
 #: Views/JobEntry.Schedule.SummaryAdmin.cshtml
 msgctxt "OrchardCore.Jobs.Views.JobEntry.Schedule.SummaryAdmin"
-msgid "A schedule of the job, which is disabled"
-msgstr ""
-
-#: Views/JobEntry.Schedule.SummaryAdmin.cshtml
-msgctxt "OrchardCore.Jobs.Views.JobEntry.Schedule.SummaryAdmin"
 msgid "Disabled"
-msgstr ""
-
-#: Views/JobEntry.Schedule.SummaryAdmin.cshtml
-msgctxt "OrchardCore.Jobs.Views.JobEntry.Schedule.SummaryAdmin"
-msgid "The cron expression of a schedule of the job"
 msgstr ""
 
 #: Views/JobRun.ActionsMenuItems.SummaryAdmin.cshtml
@@ -777,11 +767,6 @@ msgstr ""
 
 #: Views/JobSchedule.Cron.SummaryAdmin.cshtml
 msgctxt "OrchardCore.Jobs.Views.JobSchedule.Cron.SummaryAdmin"
-msgid "The cron expression of the schedule, in the time zone of the site"
-msgstr ""
-
-#: Views/JobSchedule.Cron.SummaryAdmin.cshtml
-msgctxt "OrchardCore.Jobs.Views.JobSchedule.Cron.SummaryAdmin"
 msgid "The job declares this schedule: it can be changed and disabled, but not deleted."
 msgstr ""
 
@@ -845,13 +830,6 @@ msgstr ""
 #: Views/JobSchedule/Edit.cshtml
 msgctxt "OrchardCore.Jobs.Views.JobSchedule.Edit"
 msgid "Select a job"
-msgstr ""
-
-#. Format arguments: {0}: Model.DefaultCron
-#: Views/JobSchedule/Edit.cshtml
-#, csharp-format
-msgctxt "OrchardCore.Jobs.Views.JobSchedule.Edit"
-msgid "The job declares {0}."
 msgstr ""
 
 #: Views/JobSchedule/Edit.cshtml
