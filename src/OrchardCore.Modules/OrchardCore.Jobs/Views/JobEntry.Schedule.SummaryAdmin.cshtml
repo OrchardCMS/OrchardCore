@@ -12,11 +12,11 @@
         <i class="fa-regular fa-calendar" aria-hidden="true"></i>
         @if (schedule.IsEnabled)
         {
-            <cron-expression value="@schedule.Cron" description="Tooltip" />
+            <cron-expression value="@schedule.Cron" time-zone="@schedule.TimeZoneId" description="Tooltip" />
         }
         else
         {
-            <span class="text-decoration-line-through"><cron-expression value="@schedule.Cron" description="Tooltip" /></span> @T["Disabled"]
+            <span class="text-decoration-line-through"><cron-expression value="@schedule.Cron" time-zone="@schedule.TimeZoneId" description="Tooltip" /></span> @T["Disabled"]
         }
     </span>
 }

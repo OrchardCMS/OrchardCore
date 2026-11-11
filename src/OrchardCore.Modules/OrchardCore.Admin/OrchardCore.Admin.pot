@@ -292,6 +292,34 @@ msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
 msgid "Whether the titles are displayed in the top bar."
 msgstr ""
 
+#. Format arguments: {0}: timeZoneId
+#: Views/CronExpression.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Admin.Views.CronExpression"
+msgid "In the time zone of the site, {0}"
+msgstr ""
+
+#. Format arguments: {0}: timeZoneId
+#: Views/CronExpression.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Admin.Views.CronExpression"
+msgid "In the {0} time zone"
+msgstr ""
+
+#. Format arguments: {0}: description; {1}: timeZoneId
+#: Views/CronExpression.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Admin.Views.CronExpression"
+msgid "{0}, in the time zone of the site, {1}"
+msgstr ""
+
+#. Format arguments: {0}: description; {1}: timeZoneId
+#: Views/CronExpression.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Admin.Views.CronExpression"
+msgid "{0}, in the {1} time zone"
+msgstr ""
+
 #: Views/CronExpressionEditor.cshtml
 msgctxt "OrchardCore.Admin.Views.CronExpressionEditor"
 msgid "Common schedules"

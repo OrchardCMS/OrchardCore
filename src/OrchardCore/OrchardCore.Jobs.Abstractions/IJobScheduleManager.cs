@@ -41,4 +41,14 @@ public interface IJobScheduleManager
     /// <param name="cron">The cron expression.</param>
     /// <returns><see langword="true"/> when the expression is valid.</returns>
     bool IsValidCron(string cron);
+
+    /// <summary>
+    /// Gets whether a schedule can apply to a time zone.
+    /// </summary>
+    /// <param name="timeZoneId">The identifier of the time zone, such as <c>Europe/Paris</c>.</param>
+    /// <returns>
+    /// <see langword="true"/> when the identifier is the one of a known time zone, or is empty, which stands for
+    /// the time zone of the site.
+    /// </returns>
+    bool IsValidTimeZone(string timeZoneId);
 }

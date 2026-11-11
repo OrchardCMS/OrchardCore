@@ -34,9 +34,16 @@ public sealed class JobSchedule
     public JsonObject Parameters { get; set; }
 
     /// <summary>
-    /// Gets or sets the cron expression, with five fields, in the time zone of the site.
+    /// Gets or sets the cron expression, with five fields, in the time zone of the schedule.
     /// </summary>
     public string Cron { get; set; }
+
+    /// <summary>
+    /// Gets or sets the identifier of the time zone the cron expression applies to, such as <c>Europe/Paris</c>.
+    /// When it is <see langword="null"/>, which is the default, the expression applies to the time zone of the
+    /// site, and follows it when it changes.
+    /// </summary>
+    public string TimeZoneId { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether the schedule creates runs.
@@ -53,6 +60,13 @@ public sealed class JobSchedule
     /// Gets or sets the occurrence that creates the next run, in UTC.
     /// </summary>
     public DateTime? NextOccurrenceUtc { get; set; }
+
+    /// <summary>
+    /// Gets or sets the identifier of the time zone <see cref="NextOccurrenceUtc"/> was computed with. When the
+    /// time zone of the schedule is not this one anymore, such as when the time zone of the site changed, the next
+    /// occurrence is computed again.
+    /// </summary>
+    public string NextOccurrenceTimeZoneId { get; set; }
 
     /// <summary>
     /// Gets or sets the occurrence that created the last run, in UTC.

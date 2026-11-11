@@ -231,6 +231,18 @@ msgctxt "OrchardCore.Jobs.Controllers.JobScheduleController"
 msgid "The schedule was saved."
 msgstr ""
 
+#: Controllers/JobScheduleController.cs
+msgctxt "OrchardCore.Jobs.Controllers.JobScheduleController"
+msgid "The time zone is not a known one."
+msgstr ""
+
+#. Format arguments: {0}: siteTimeZone.TimeZoneId
+#: Controllers/JobScheduleController.cs
+#, csharp-format
+msgctxt "OrchardCore.Jobs.Controllers.JobScheduleController"
+msgid "Time zone of the site, currently {0}"
+msgstr ""
+
 #: JobsPermissions.cs
 msgctxt "OrchardCore.Jobs.JobsPermissions"
 msgid "Manage jobs: run them, cancel and delete their runs, and change their schedules"
@@ -774,7 +786,7 @@ msgstr ""
 #: Views/JobSchedule/Edit.cshtml
 #, csharp-format
 msgctxt "OrchardCore.Jobs.Views.JobSchedule.Edit"
-msgid "A cron expression with five fields (minute, hour, day of the month, month, day of the week), in the time zone of the site. For example, {0} runs the job every day at 3:00."
+msgid "A cron expression with five fields (minute, hour, day of the month, month, day of the week), in the time zone of the schedule. For example, {0} runs the job every day at 3:00."
 msgstr ""
 
 #: Views/JobSchedule/Edit.cshtml
@@ -845,6 +857,16 @@ msgstr ""
 #: Views/JobSchedule/Edit.cshtml
 msgctxt "OrchardCore.Jobs.Views.JobSchedule.Edit"
 msgid "The parameters of the runs, as a JSON object. Leave empty for a job that takes none."
+msgstr ""
+
+#: Views/JobSchedule/Edit.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobSchedule.Edit"
+msgid "The time zone the schedule applies to. With the time zone of the site, the schedule follows it when it changes. Select a time zone, which can be the same one, to keep the schedule in it."
+msgstr ""
+
+#: Views/JobSchedule/Edit.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobSchedule.Edit"
+msgid "Time zone"
 msgstr ""
 
 #: Views/JobSchedule/Edit.cshtml

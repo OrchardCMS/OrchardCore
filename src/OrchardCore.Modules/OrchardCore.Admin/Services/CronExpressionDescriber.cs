@@ -2,6 +2,7 @@ using System.Globalization;
 using CronExpressionDescriptor;
 using NCrontab;
 using OrchardCore.Modules;
+using OrchardCore.Settings;
 
 namespace OrchardCore.Admin.Services;
 
@@ -15,6 +16,11 @@ internal static class CronExpressionDescriber
     /// The longest expression that is looked at.
     /// </summary>
     public const int MaxLength = 256;
+
+    /// <summary>
+    /// The name UTC is shown with.
+    /// </summary>
+    public const string Utc = "UTC";
 
     /// <summary>
     /// Gets whether an expression is one the schedules can be evaluated with.
@@ -62,6 +68,86 @@ internal static class CronExpressionDescriber
             // The expression is valid for the schedules, even if it has no description.
             return null;
         }
+    }
+
+    /// <summary>
+    /// Gets the time zone a cron expression applies to.
+    /// </summary>
+    /// <param name="clock">The clock.</param>
+    /// <param name="siteService">The service that gives the time zone of the site.</param>
+    /// <param name="timeZoneId">The identifier of the time zone of the expression, if it has its own.</param>
+    /// <param name="utc">Whether an expression without a time zone applies to UTC, and not to the time zone of the site.</param>
+    /// <returns>
+    /// The time zone, <see langword="null"/> for UTC, and whether it is the time zone of the site, which an
+    /// expression follows when it has none of its own, or whose own one is not known.
+    /// </returns>
+    public static async Task<(ITimeZone TimeZone, bool IsSiteTimeZone)> GetTimeZoneAsync(IClock clock, ISiteService siteService, string timeZoneId, bool utc)
+    {
+        if (!string.IsNullOrWhiteSpace(timeZoneId))
+        {
+            var timeZone = clock.GetTimeZone(timeZoneId);
+
+            // The clock answers with the time zone of the server for an identifier it doesn't know.
+            if (string.Equals(timeZone.TimeZoneId, timeZoneId, StringComparison.OrdinalIgnoreCase))
+            {
+                return (timeZone, false);
+            }
+        }
+
+        if (utc)
+        {
+            return (null, false);
+        }
+
+        return (clock.GetTimeZone((await siteService.GetSiteSettingsAsync()).TimeZoneId), true);
+    }
+
+    /// <summary>
+    /// Gets the abbreviation of a time zone at a date, such as PST or PDT for <c>America/Los_Angeles</c>, which
+    /// tells a description applies to a time zone that is not the one of the site.
+    /// </summary>
+    /// <param name="timeZone">The time zone, <see langword="null"/> for UTC.</param>
+    /// <param name="utcNow">The date, in UTC, as the abbreviation of a time zone changes with daylight saving time.</param>
+    /// <returns>The abbreviation, or the offset from UTC, such as UTC+05:30, for a time zone that has none.</returns>
+    public static string GetAbbreviation(ITimeZone timeZone, DateTime utcNow)
+    {
+        if (timeZone is null)
+        {
+            return Utc;
+        }
+
+        var zone = NodaTime.DateTimeZoneProviders.Tzdb.GetZoneOrNull(timeZone.TimeZoneId);
+
+        if (zone is null)
+        {
+            return timeZone.TimeZoneId;
+        }
+
+        var interval = zone.GetZoneInterval(NodaTime.Instant.FromDateTimeUtc(DateTime.SpecifyKind(utcNow, DateTimeKind.Utc)));
+
+        // The time zones without an abbreviation are named after their offset, such as +0530 or -03.
+        return string.IsNullOrEmpty(interval.Name) || !char.IsLetter(interval.Name[0])
+            ? Utc + interval.WallOffset.ToString("+HH:mm", CultureInfo.InvariantCulture)
+            : interval.Name;
+    }
+
+    /// <summary>
+    /// Describes when a cron expression occurs, followed by the abbreviation of its time zone when it is not the
+    /// one of the site, such as "At 03:00 AM (JST)".
+    /// </summary>
+    /// <param name="expression">The cron expression.</param>
+    /// <param name="culture">The culture of the description.</param>
+    /// <param name="timeZone">The time zone the expression applies to, <see langword="null"/> for UTC.</param>
+    /// <param name="isSiteTimeZone">Whether the time zone is the one of the site, which is not told.</param>
+    /// <param name="utcNow">The current date, in UTC.</param>
+    /// <returns>The description, or <see langword="null"/> when the expression is not valid or can't be described.</returns>
+    public static string Describe(string expression, CultureInfo culture, ITimeZone timeZone, bool isSiteTimeZone, DateTime utcNow)
+    {
+        var description = Describe(expression, culture);
+
+        return description is null || isSiteTimeZone
+            ? description
+            : $"{description} ({GetAbbreviation(timeZone, utcNow)})";
     }
 
     /// <summary>

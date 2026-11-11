@@ -81,6 +81,11 @@ public class JobScheduleEditViewModel
     [Required]
     public string Cron { get; set; }
 
+    /// <summary>
+    /// The identifier of the time zone of the schedule, empty when it follows the time zone of the site.
+    /// </summary>
+    public string TimeZoneId { get; set; }
+
     public bool IsEnabled { get; set; } = true;
 
     public string Parameters { get; set; }
@@ -93,6 +98,12 @@ public class JobScheduleEditViewModel
 
     [BindNever]
     public string DefaultCron { get; set; }
+
+    /// <summary>
+    /// The time zones the schedule can apply to. The first one stands for the time zone of the site.
+    /// </summary>
+    [BindNever]
+    public List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem> TimeZones { get; set; } = [];
 
     [BindNever]
     public List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem> Jobs { get; set; } = [];

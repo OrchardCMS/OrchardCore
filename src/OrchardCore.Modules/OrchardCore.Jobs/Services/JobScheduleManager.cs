@@ -24,8 +24,9 @@ public sealed class JobScheduleManager : IJobScheduleManager
     private readonly IClock _clock;
     private readonly ISiteService _siteService;
     private readonly JobOptions _jobOptions;
+    private readonly JobsState _state;
     private readonly ILogger _logger;
-    private ITimeZone _timeZone;
+    private ITimeZone _siteTimeZone;
 
     public JobScheduleManager(
         ISession session,
@@ -33,6 +34,7 @@ public sealed class JobScheduleManager : IJobScheduleManager
         IClock clock,
         ISiteService siteService,
         IOptions<JobOptions> jobOptions,
+        JobsState state,
         ILogger<JobScheduleManager> logger)
     {
         _session = session;
@@ -40,6 +42,7 @@ public sealed class JobScheduleManager : IJobScheduleManager
         _clock = clock;
         _siteService = siteService;
         _jobOptions = jobOptions.Value;
+        _state = state;
         _logger = logger;
     }
 
@@ -82,6 +85,16 @@ public sealed class JobScheduleManager : IJobScheduleManager
             throw new ArgumentException($"'{schedule.Cron}' is not a valid cron expression.", nameof(schedule));
         }
 
+        if (!IsValidTimeZone(schedule.TimeZoneId))
+        {
+            throw new ArgumentException($"'{schedule.TimeZoneId}' is not a known time zone.", nameof(schedule));
+        }
+
+        if (string.IsNullOrWhiteSpace(schedule.TimeZoneId))
+        {
+            schedule.TimeZoneId = null;
+        }
+
         var now = _clock.UtcNow;
 
         if (string.IsNullOrEmpty(schedule.ScheduleId))
@@ -94,7 +107,7 @@ public sealed class JobScheduleManager : IJobScheduleManager
             schedule.ModifiedUtc = now;
         }
 
-        schedule.NextOccurrenceUtc = await GetNextOccurrenceAsync(schedule.Cron, now);
+        await SetNextOccurrenceAsync(schedule, now);
 
         await _session.SaveAsync(schedule, collection: JobRun.Collection);
     }
@@ -121,14 +134,45 @@ public sealed class JobScheduleManager : IJobScheduleManager
         return !string.IsNullOrWhiteSpace(cron) && CrontabSchedule.TryParse(cron) is not null;
     }
 
+    /// <inheritdoc />
+    public bool IsValidTimeZone(string timeZoneId)
+    {
+        // The clock answers with the time zone of the server for an identifier it doesn't know.
+        return string.IsNullOrWhiteSpace(timeZoneId)
+            || string.Equals(_clock.GetTimeZone(timeZoneId).TimeZoneId, timeZoneId, StringComparison.OrdinalIgnoreCase);
+    }
+
     /// <summary>
-    /// Gets the occurrence of a cron expression that follows a date, in UTC. The expression applies to the local
-    /// time of the site.
+    /// Gets the time zone a schedule applies to: its own when it has one, and the one of the site otherwise.
+    /// </summary>
+    /// <param name="timeZoneId">The identifier of the time zone of the schedule, if any.</param>
+    /// <returns>The time zone.</returns>
+    public async Task<ITimeZone> GetTimeZoneAsync(string timeZoneId)
+    {
+        if (!string.IsNullOrWhiteSpace(timeZoneId) && IsValidTimeZone(timeZoneId))
+        {
+            return _clock.GetTimeZone(timeZoneId);
+        }
+
+        return _siteTimeZone ??= _clock.GetTimeZone((await _siteService.GetSiteSettingsAsync()).TimeZoneId);
+    }
+
+    /// <summary>
+    /// Gets the occurrence of a cron expression that follows a date, in UTC.
     /// </summary>
     /// <param name="cron">The cron expression.</param>
+    /// <param name="timeZoneId">
+    /// The identifier of the time zone the expression applies to. It applies to the time zone of the site when it
+    /// is empty.
+    /// </param>
     /// <param name="afterUtc">The date the occurrence follows, in UTC.</param>
     /// <returns>The occurrence, or <see langword="null"/> when the expression is not valid or never occurs.</returns>
-    public async Task<DateTime?> GetNextOccurrenceAsync(string cron, DateTime afterUtc)
+    public async Task<DateTime?> GetNextOccurrenceAsync(string cron, string timeZoneId, DateTime afterUtc)
+    {
+        return GetNextOccurrence(cron, await GetTimeZoneAsync(timeZoneId), afterUtc);
+    }
+
+    private DateTime? GetNextOccurrence(string cron, ITimeZone timeZone, DateTime afterUtc)
     {
         var schedule = string.IsNullOrWhiteSpace(cron) ? null : CrontabSchedule.TryParse(cron);
 
@@ -137,9 +181,7 @@ public sealed class JobScheduleManager : IJobScheduleManager
             return null;
         }
 
-        _timeZone ??= _clock.GetTimeZone((await _siteService.GetSiteSettingsAsync()).TimeZoneId);
-
-        var localAfter = _clock.ConvertToTimeZone(afterUtc, _timeZone).DateTime;
+        var localAfter = _clock.ConvertToTimeZone(afterUtc, timeZone).DateTime;
         var localNext = schedule.GetNextOccurrence(localAfter);
 
         // No occurrence was found before the maximum date, which can't be converted to another time zone.
@@ -149,14 +191,93 @@ public sealed class JobScheduleManager : IJobScheduleManager
         }
 
         // The offset depends on the instant, so it is first approximated with the offset at the local time read as UTC.
-        var offset = _clock.ConvertToTimeZone(DateTime.SpecifyKind(localNext, DateTimeKind.Utc), _timeZone).Offset;
+        var offset = _clock.ConvertToTimeZone(DateTime.SpecifyKind(localNext, DateTimeKind.Utc), timeZone).Offset;
         var next = DateTime.SpecifyKind(localNext - offset, DateTimeKind.Utc);
 
-        offset = _clock.ConvertToTimeZone(next, _timeZone).Offset;
+        offset = _clock.ConvertToTimeZone(next, timeZone).Offset;
         next = DateTime.SpecifyKind(localNext - offset, DateTimeKind.Utc);
 
         // A time that occurs twice when the clocks go back must not be found again.
         return next > afterUtc ? next : afterUtc.AddMinutes(1);
+    }
+
+    private async Task SetNextOccurrenceAsync(JobSchedule schedule, DateTime afterUtc)
+    {
+        var timeZone = await GetTimeZoneAsync(schedule.TimeZoneId);
+
+        schedule.NextOccurrenceUtc = GetNextOccurrence(schedule.Cron, timeZone, afterUtc);
+        schedule.NextOccurrenceTimeZoneId = timeZone.TimeZoneId;
+    }
+
+    /// <summary>
+    /// Computes again the next occurrence of the schedules whose time zone is not the one it was computed with,
+    /// which happens to the schedules that follow the time zone of the site when it changes. Their next run would
+    /// otherwise be queued at the time of the previous time zone. The schedules are only looked at when the time
+    /// zone of the site is not the one this server last saw.
+    /// </summary>
+    /// <returns>A task that completes when the next occurrences are up to date.</returns>
+    public async Task RefreshNextOccurrencesAsync()
+    {
+        var siteTimeZoneId = (await GetTimeZoneAsync(null)).TimeZoneId;
+
+        if (string.Equals(_state.SiteTimeZoneId, siteTimeZoneId, StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        var schedules = await _session.Query<JobSchedule, JobScheduleIndex>(collection: JobRun.Collection).ListAsync();
+
+        foreach (var schedule in schedules)
+        {
+            if (await HasCurrentNextOccurrenceAsync(schedule))
+            {
+                continue;
+            }
+
+            var scheduleId = schedule.ScheduleId;
+
+            try
+            {
+                await ShellScope.UsingChildScopeAsync(scope => scope.ServiceProvider.GetRequiredService<JobScheduleManager>().RefreshNextOccurrenceAsync(scheduleId));
+            }
+            catch (Exception ex) when (!ex.IsFatal())
+            {
+                _logger.LogError(ex, "The next occurrence of the job schedule '{ScheduleId}' couldn't be computed again.", scheduleId);
+            }
+        }
+
+        _state.SiteTimeZoneId = siteTimeZoneId;
+    }
+
+    private async Task<bool> HasCurrentNextOccurrenceAsync(JobSchedule schedule)
+    {
+        var timeZone = await GetTimeZoneAsync(schedule.TimeZoneId);
+
+        return string.Equals(schedule.NextOccurrenceTimeZoneId, timeZone.TimeZoneId, StringComparison.Ordinal);
+    }
+
+    private async Task RefreshNextOccurrenceAsync(string scheduleId)
+    {
+        var schedule = await GetAsync(scheduleId);
+        var now = _clock.UtcNow;
+
+        // An occurrence that is already due creates its run, after which the next one is computed.
+        if (schedule is null || await HasCurrentNextOccurrenceAsync(schedule) || schedule.NextOccurrenceUtc <= now)
+        {
+            return;
+        }
+
+        await SetNextOccurrenceAsync(schedule, now);
+        await _session.SaveAsync(schedule, checkConcurrency: true, collection: JobRun.Collection);
+
+        try
+        {
+            await _session.SaveChangesAsync();
+        }
+        catch (ConcurrencyException)
+        {
+            // Another server changed the schedule, and computed its next occurrence.
+        }
     }
 
     /// <summary>
@@ -191,8 +312,9 @@ public sealed class JobScheduleManager : IJobScheduleManager
                 IsEnabled = descriptor.ScheduleEnabled,
                 IsDeclared = true,
                 CreatedUtc = now,
-                NextOccurrenceUtc = await GetNextOccurrenceAsync(descriptor.Schedule, now),
             };
+
+            await SetNextOccurrenceAsync(schedule, now);
 
             if (schedule.NextOccurrenceUtc is null)
             {
@@ -246,7 +368,7 @@ public sealed class JobScheduleManager : IJobScheduleManager
 
         // The occurrences missed while no server was running result in a single run.
         schedule.LastOccurrenceUtc = schedule.NextOccurrenceUtc;
-        schedule.NextOccurrenceUtc = await GetNextOccurrenceAsync(schedule.Cron, now);
+        await SetNextOccurrenceAsync(schedule, now);
 
         if (_jobOptions.Find(schedule.JobName) is not null)
         {

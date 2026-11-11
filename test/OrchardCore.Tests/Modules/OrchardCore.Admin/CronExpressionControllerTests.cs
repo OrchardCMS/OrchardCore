@@ -22,7 +22,9 @@ public sealed class CronExpressionControllerTests
         Assert.Equal(3, utc.RootElement.GetProperty("occurrences").GetArrayLength());
         Assert.Equal("UTC", utc.RootElement.GetProperty("timeZone").GetString());
 
+        // The time zone of the site is the default one, which the description doesn't tell.
         Assert.True(site.RootElement.GetProperty("isValid").GetBoolean());
+        Assert.DoesNotContain("(", site.RootElement.GetProperty("description").GetString(), StringComparison.Ordinal);
         Assert.Equal(3, site.RootElement.GetProperty("occurrences").GetArrayLength());
         Assert.False(string.IsNullOrEmpty(site.RootElement.GetProperty("timeZone").GetString()));
     }
@@ -46,6 +48,27 @@ public sealed class CronExpressionControllerTests
     }
 
     [Fact]
+    public async Task Describe_ExpressionWithATimeZone_ReturnsItsOccurrencesInIt()
+    {
+        // Arrange
+        using var context = new SiteContext();
+        await context.InitializeAsync();
+
+        // Act
+        using var tokyo = await GetAsync(context, "0 3 * * *", utc: true, timeZone: "Asia/Tokyo");
+        using var unknown = await GetAsync(context, "0 3 * * *", utc: true, timeZone: "Nowhere/Unknown");
+
+        // Assert
+        Assert.Equal("Asia/Tokyo", tokyo.RootElement.GetProperty("timeZone").GetString());
+        Assert.EndsWith(" (JST)", tokyo.RootElement.GetProperty("description").GetString(), StringComparison.Ordinal);
+        Assert.Equal(3, tokyo.RootElement.GetProperty("occurrences").GetArrayLength());
+
+        // A time zone that is not known is ignored.
+        Assert.Equal("UTC", unknown.RootElement.GetProperty("timeZone").GetString());
+        Assert.EndsWith(" (UTC)", unknown.RootElement.GetProperty("description").GetString(), StringComparison.Ordinal);
+    }
+
+    [Fact]
     public async Task Describe_ExpressionThatNeverOccurs_ReturnsNoOccurrence()
     {
         // Arrange
@@ -60,9 +83,14 @@ public sealed class CronExpressionControllerTests
         Assert.Equal(0, result.RootElement.GetProperty("occurrences").GetArrayLength());
     }
 
-    private static async Task<JsonDocument> GetAsync(SiteContext context, string expression, bool utc)
+    private static async Task<JsonDocument> GetAsync(SiteContext context, string expression, bool utc, string timeZone = null)
     {
         var path = $"Admin/CronExpression/Describe?expression={Uri.EscapeDataString(expression)}&utc={(utc ? "true" : "false")}";
+
+        if (timeZone is not null)
+        {
+            path += $"&timeZone={Uri.EscapeDataString(timeZone)}";
+        }
 
         using var response = await context.Client.GetAsync(path, TestContext.Current.CancellationToken);
 

@@ -1,11 +1,18 @@
 @using System.Globalization
 @using Microsoft.AspNetCore.Mvc.Localization
 @using OrchardCore.Admin.Services
+@using OrchardCore.Modules
+@using OrchardCore.Settings
+@inject IClock Clock
+@inject ISiteService SiteService
 @{
     var value = (string)Model.Value;
     var defaultValue = (string)Model.DefaultValue;
     var utc = Model.Utc is bool isUtc && isUtc;
-    var description = CronExpressionDescriber.Describe(value, CultureInfo.CurrentUICulture);
+
+    // The script describes the expression again, with the time zone that is selected in the form at that time.
+    var (timeZone, isSiteTimeZone) = await CronExpressionDescriber.GetTimeZoneAsync(Clock, SiteService, (string)Model.TimeZone, utc);
+    var description = CronExpressionDescriber.Describe(value, CultureInfo.CurrentUICulture, timeZone, isSiteTimeZone, Clock.UtcNow);
 
     var presets = new (string Expression, LocalizedHtmlString Label)[]
     {
@@ -27,6 +34,7 @@
      data-cron-describe-url="@Url.Action("Describe", "CronExpression", new { area = "OrchardCore.Admin" })"
      data-cron-utc="@(utc ? "true" : "false")"
      data-cron-site-time-zone-toggle="@Model.SiteTimeZoneToggleId"
+     data-cron-time-zone-input="@Model.TimeZoneInputId"
      data-cron-occurrences-text="@T["Next occurrences, in the {0} time zone:", "{0}"]"
      data-cron-never-text="@T["This expression never occurs."]">
     @Model.Input

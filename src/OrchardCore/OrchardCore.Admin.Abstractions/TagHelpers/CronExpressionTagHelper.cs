@@ -39,6 +39,17 @@ public sealed class CronExpressionTagHelper : TagHelper
     /// </summary>
     public CronExpressionDescription Description { get; set; }
 
+    /// <summary>
+    /// The identifier of the time zone the expression applies to, such as <c>Europe/Paris</c>, which the tooltip
+    /// of the expression tells. When it is empty, the expression applies to the time zone of the site.
+    /// </summary>
+    public string TimeZone { get; set; }
+
+    /// <summary>
+    /// Whether the expression applies to UTC, when it has no time zone, and not to the time zone of the site.
+    /// </summary>
+    public bool Utc { get; set; }
+
     /// <inheritdoc />
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
@@ -46,6 +57,8 @@ public sealed class CronExpressionTagHelper : TagHelper
         {
             Expression = Value,
             Description,
+            TimeZone,
+            Utc,
         }));
 
         output.TagName = null;

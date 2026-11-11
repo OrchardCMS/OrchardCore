@@ -43,6 +43,43 @@ public sealed class CronExpressionDescriberTests
     }
 
     [Theory]
+
+    // The abbreviation follows daylight saving time.
+    [InlineData("America/Los_Angeles", 1, "PST")]
+    [InlineData("America/Los_Angeles", 7, "PDT")]
+    [InlineData("Asia/Tokyo", 1, "JST")]
+
+    // A time zone without an abbreviation is told by its offset.
+    [InlineData("Asia/Kolkata", 1, "IST")]
+    [InlineData("America/Sao_Paulo", 1, "UTC-03:00")]
+    [InlineData(null, 1, "UTC")]
+    public void GetAbbreviation_TimeZone_ReturnsItsAbbreviationAtTheDate(string timeZoneId, int month, string expected)
+    {
+        // Arrange
+        var timeZone = timeZoneId is null ? null : new global::OrchardCore.Modules.Clock().GetTimeZone(timeZoneId);
+
+        // Act
+        var abbreviation = CronExpressionDescriber.GetAbbreviation(timeZone, new DateTime(2026, month, 15, 12, 0, 0, DateTimeKind.Utc));
+
+        // Assert
+        Assert.Equal(expected, abbreviation);
+    }
+
+    [Fact]
+    public void Describe_TimeZoneThatIsNotTheOneOfTheSite_TellsItsAbbreviation()
+    {
+        // Arrange
+        var timeZone = new global::OrchardCore.Modules.Clock().GetTimeZone("Asia/Tokyo");
+        var now = new DateTime(2026, 1, 15, 12, 0, 0, DateTimeKind.Utc);
+
+        // Act & Assert
+        Assert.Equal("At 03:00 AM (JST)", CronExpressionDescriber.Describe("0 3 * * *", _english, timeZone, isSiteTimeZone: false, now));
+        Assert.Equal("At 03:00 AM", CronExpressionDescriber.Describe("0 3 * * *", _english, timeZone, isSiteTimeZone: true, now));
+        Assert.Equal("At 03:00 AM (UTC)", CronExpressionDescriber.Describe("0 3 * * *", _english, timeZone: null, isSiteTimeZone: false, now));
+        Assert.Null(CronExpressionDescriber.Describe("not a cron", _english, timeZone, isSiteTimeZone: false, now));
+    }
+
+    [Theory]
     [InlineData(null)]
     [InlineData("")]
     [InlineData("   ")]

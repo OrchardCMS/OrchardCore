@@ -35,6 +35,10 @@ function initializeCronExpressionEditor(editor: HTMLElement) {
     const toggle = toggleId ? (document.getElementById(toggleId) as HTMLInputElement | null) : null;
     const isUtc = () => editor.dataset.cronUtc === "true" && !toggle?.checked;
 
+    // An expression can have a time zone of its own, chosen in a list or typed in a text box of the form.
+    const timeZoneInputId = editor.dataset.cronTimeZoneInput;
+    const timeZoneInput = timeZoneInputId ? (document.getElementById(timeZoneInputId) as HTMLInputElement | HTMLSelectElement | null) : null;
+
     let timer: number | undefined;
     let request: AbortController | undefined;
 
@@ -85,6 +89,10 @@ function initializeCronExpressionEditor(editor: HTMLElement) {
         url.searchParams.set("expression", expression);
         url.searchParams.set("utc", isUtc() ? "true" : "false");
 
+        if (timeZoneInput?.value) {
+            url.searchParams.set("timeZone", timeZoneInput.value);
+        }
+
         try {
             const response = await fetch(url, {
                 credentials: "same-origin",
@@ -107,6 +115,7 @@ function initializeCronExpressionEditor(editor: HTMLElement) {
     });
 
     toggle?.addEventListener("change", () => void refresh(true));
+    timeZoneInput?.addEventListener("change", () => void refresh(true));
 
     editor.querySelectorAll<HTMLElement>("[data-cron-preset]").forEach((preset) => {
         preset.addEventListener("click", (event) => {

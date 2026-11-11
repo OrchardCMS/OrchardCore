@@ -52,6 +52,8 @@ public sealed class JobsBackgroundTask : IBackgroundTask
             state.DeclaredSchedulesEnsured = true;
         }
 
+        // A schedule that follows the time zone of the site moves with it, before its occurrences are looked at.
+        await scheduleManager.RefreshNextOccurrencesAsync();
         await scheduleManager.QueueDueAsync();
 
         var now = clock.UtcNow;

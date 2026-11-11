@@ -7,6 +7,7 @@ using OrchardCore.Jobs.Indexes;
 using OrchardCore.Jobs.Models;
 using OrchardCore.Jobs.Services;
 using OrchardCore.Modules;
+using OrchardCore.Settings;
 using OrchardCore.Tests.Apis.Context;
 using OrchardCore.Tests.Modules.OrchardCore.DataPipelines;
 using YesSql;
@@ -347,6 +348,126 @@ public sealed class JobsTests
         Assert.Equal(1, TestJob.GetState(key).Executions);
     }
 
+    [Theory]
+
+    // Neither time zone has daylight saving time, so noon is always the same time in UTC.
+    [InlineData("Asia/Tokyo", 3, 0)]
+    [InlineData("Asia/Kolkata", 6, 30)]
+    public async Task Save_ScheduleWithATimeZone_ComputesItsNextOccurrenceInIt(string timeZoneId, int utcHour, int utcMinute)
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+        var schedule = new JobSchedule { JobName = TestJob.Name, Cron = "0 12 * * *", TimeZoneId = timeZoneId };
+
+        // Act
+        await context.UsingTenantScopeAsync(scope => scope.ServiceProvider.GetRequiredService<IJobScheduleManager>().SaveAsync(schedule));
+
+        JobSchedule saved = null;
+        await context.UsingTenantScopeAsync(async scope => saved = await scope.ServiceProvider.GetRequiredService<IJobScheduleManager>().GetAsync(schedule.ScheduleId));
+
+        // Assert
+        Assert.Equal(timeZoneId, saved.TimeZoneId);
+        Assert.Equal(timeZoneId, saved.NextOccurrenceTimeZoneId);
+        Assert.Equal(new TimeSpan(utcHour, utcMinute, 0), saved.NextOccurrenceUtc.Value.TimeOfDay);
+        Assert.True(saved.NextOccurrenceUtc > DateTime.UtcNow);
+    }
+
+    [Fact]
+    public async Task Save_ScheduleWithAnUnknownTimeZone_Throws()
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var manager = scope.ServiceProvider.GetRequiredService<IJobScheduleManager>();
+            var schedule = new JobSchedule { JobName = TestJob.Name, Cron = "0 12 * * *", TimeZoneId = "Nowhere/Unknown" };
+
+            // Act & Assert
+            Assert.False(manager.IsValidTimeZone("Nowhere/Unknown"));
+            Assert.True(manager.IsValidTimeZone("Europe/Paris"));
+            Assert.True(manager.IsValidTimeZone(null));
+
+            await Assert.ThrowsAsync<ArgumentException>(() => manager.SaveAsync(schedule));
+        });
+    }
+
+    [Fact]
+    public async Task RefreshNextOccurrences_SiteTimeZoneChanged_MovesTheSchedulesThatFollowIt()
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+        var following = new JobSchedule { JobName = TestJob.Name, Cron = "0 12 * * *" };
+        var pinned = new JobSchedule { JobName = TestJob.Name, Cron = "0 12 * * *", TimeZoneId = "Asia/Tokyo" };
+
+        await SetSiteTimeZoneAsync(context, "Asia/Tokyo");
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var manager = scope.ServiceProvider.GetRequiredService<IJobScheduleManager>();
+
+            await manager.SaveAsync(following);
+            await manager.SaveAsync(pinned);
+        });
+
+        Assert.Null(following.TimeZoneId);
+        Assert.Equal("Asia/Tokyo", following.NextOccurrenceTimeZoneId);
+        Assert.Equal(new TimeSpan(3, 0, 0), following.NextOccurrenceUtc.Value.TimeOfDay);
+
+        // Act: the time zone of the site changes, and the background task of a server runs.
+        await SetSiteTimeZoneAsync(context, "Asia/Kolkata");
+        await context.UsingTenantScopeAsync(scope => scope.ServiceProvider.GetRequiredService<JobScheduleManager>().RefreshNextOccurrencesAsync());
+
+        JobSchedule savedFollowing = null;
+        JobSchedule savedPinned = null;
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var manager = scope.ServiceProvider.GetRequiredService<IJobScheduleManager>();
+
+            savedFollowing = await manager.GetAsync(following.ScheduleId);
+            savedPinned = await manager.GetAsync(pinned.ScheduleId);
+        });
+
+        // Assert: noon is now the one of the new time zone, without waiting for the run of the previous one.
+        Assert.Equal("Asia/Kolkata", savedFollowing.NextOccurrenceTimeZoneId);
+        Assert.Equal(new TimeSpan(6, 30, 0), savedFollowing.NextOccurrenceUtc.Value.TimeOfDay);
+
+        // The schedule with its own time zone stays in it.
+        Assert.Equal("Asia/Tokyo", savedPinned.NextOccurrenceTimeZoneId);
+        Assert.Equal(new TimeSpan(3, 0, 0), savedPinned.NextOccurrenceUtc.Value.TimeOfDay);
+    }
+
+    [Fact]
+    public async Task RefreshNextOccurrences_OccurrenceAlreadyDue_LeavesItToCreateItsRun()
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+        var schedule = new JobSchedule { JobName = TestJob.Name, Cron = "0 12 * * *" };
+        var due = DateTime.UtcNow.AddMinutes(-5);
+
+        await SetSiteTimeZoneAsync(context, "Asia/Tokyo");
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            await scope.ServiceProvider.GetRequiredService<IJobScheduleManager>().SaveAsync(schedule);
+
+            schedule.NextOccurrenceUtc = due;
+            await scope.ServiceProvider.GetRequiredService<ISession>().SaveAsync(schedule, collection: JobRun.Collection);
+        });
+
+        // Act
+        await SetSiteTimeZoneAsync(context, "Asia/Kolkata");
+        await context.UsingTenantScopeAsync(scope => scope.ServiceProvider.GetRequiredService<JobScheduleManager>().RefreshNextOccurrencesAsync());
+
+        JobSchedule saved = null;
+        await context.UsingTenantScopeAsync(async scope => saved = await scope.ServiceProvider.GetRequiredService<IJobScheduleManager>().GetAsync(schedule.ScheduleId));
+
+        // Assert
+        Assert.Equal(due, saved.NextOccurrenceUtc.Value, TimeSpan.FromSeconds(1));
+        Assert.Equal("Asia/Tokyo", saved.NextOccurrenceTimeZoneId);
+    }
+
     [Fact]
     public async Task List_JobDeclaringASchedule_CreatesItOnce()
     {
@@ -517,6 +638,18 @@ public sealed class JobsTests
     }
 
     private static string NewKey() => Guid.NewGuid().ToString("n");
+
+    private static Task SetSiteTimeZoneAsync(SiteContext context, string timeZoneId)
+    {
+        return context.UsingTenantScopeAsync(async scope =>
+        {
+            var siteService = scope.ServiceProvider.GetRequiredService<ISiteService>();
+            var site = await siteService.LoadSiteSettingsAsync();
+
+            site.TimeZoneId = timeZoneId;
+            await siteService.UpdateSiteSettingsAsync(site);
+        });
+    }
 
     private static async Task<string> EnqueueAsync(SiteContext context, TestJobParameters parameters, Action<JobRequest> configure = null)
     {

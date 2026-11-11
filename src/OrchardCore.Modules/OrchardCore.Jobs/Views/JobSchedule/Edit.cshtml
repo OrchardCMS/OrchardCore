@@ -39,9 +39,18 @@
     <div class="ocat-wrapper" asp-validation-class-for="Cron">
         <label asp-for="Cron" class="ocat-label ocat-label-required">@T["Schedule"]</label>
         <div class="ocat-end">
-            <cron-expression-editor asp-for="Cron" default-value="@Model.DefaultCron" />
+            <cron-expression-editor asp-for="Cron" default-value="@Model.DefaultCron" time-zone-for="TimeZoneId" />
             <span asp-validation-for="Cron"></span>
-            <span class="hint">@T["A cron expression with five fields (minute, hour, day of the month, month, day of the week), in the time zone of the site. For example, {0} runs the job every day at 3:00.", "0 3 * * *"]</span>
+            <span class="hint">@T["A cron expression with five fields (minute, hour, day of the month, month, day of the week), in the time zone of the schedule. For example, {0} runs the job every day at 3:00.", "0 3 * * *"]</span>
+        </div>
+    </div>
+
+    <div class="ocat-wrapper" asp-validation-class-for="TimeZoneId">
+        <label asp-for="TimeZoneId" class="ocat-label">@T["Time zone"]</label>
+        <div class="ocat-end">
+            <select asp-for="TimeZoneId" asp-items="Model.TimeZones" class="form-select"></select>
+            <span asp-validation-for="TimeZoneId"></span>
+            <span class="hint">@T["The time zone the schedule applies to. With the time zone of the site, the schedule follows it when it changes. Select a time zone, which can be the same one, to keep the schedule in it."]</span>
         </div>
     </div>
 

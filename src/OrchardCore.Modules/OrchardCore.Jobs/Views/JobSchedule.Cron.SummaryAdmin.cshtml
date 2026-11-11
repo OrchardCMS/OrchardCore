@@ -1,9 +1,9 @@
 @model JobScheduleRowViewModel
 
-@* The expression applies to the time zone of the site, as its description does. *@
+@* The description tells a time zone that is not the one of the site, and the tooltip of the expression always does. *@
 <span class="me-1">
     <i class="fa-regular fa-calendar" aria-hidden="true"></i>
-    <cron-expression value="@Model.Schedule.Cron" />
+    <cron-expression value="@Model.Schedule.Cron" time-zone="@Model.Schedule.TimeZoneId" />
 </span>
 
 @if (Model.Schedule.IsEnabled)

@@ -240,6 +240,10 @@ The `cron-expression` tag displays an expression with a description of when it o
 | ------------- | ----------- |
 | `value`       | The cron expression. |
 | `description` | Where the description is shown: `Text` (default) next to the expression, `Tooltip` as the tooltip of the expression where there is no room for the text, or `None`. |
+| `time-zone`   | The identifier of the time zone the expression applies to, such as `Europe/Paris`. When it is empty, the expression applies to the time zone of the site. |
+| `utc`         | `true` when an expression without a time zone applies to UTC, and not to the time zone of the site. |
+
+The same clock time is another instant in another time zone, so the tooltip of the expression always tells its time zone. When it is not the time zone of the site, the description also ends with its abbreviation, such as "At 03:00 AM (JST)", or with its offset from UTC when it has none, such as "(UTC-03:00)".
 
 An expression that is not valid is displayed without a description.
 
@@ -267,6 +271,7 @@ The `cron-expression-editor` tag renders the text box of an expression, and help
 | `default-value`      | The expression the menu offers as **Default**, when there is one. |
 | `utc`                | `true` when the expression applies to UTC. It applies to the time zone of the site by default. The next occurrences are shown in that time zone. |
 | `site-time-zone-for` | A boolean property of the model, edited by a checkbox of the same form, that makes an expression that applies to UTC apply to the time zone of the site when it is checked. |
+| `time-zone-for`      | A property of the model, edited by a list or a text box of the same form, that holds the identifier of the time zone of the expression. While it is empty, the expression applies to the time zone of the site, or to UTC with `utc`. |
 
 The other attributes of the tag, such as `autofocus`, are added to the text box. The editor doesn't replace the validation of the expression when the form is submitted.
 

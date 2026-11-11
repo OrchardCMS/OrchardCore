@@ -52,7 +52,7 @@ The other jobs only make sense with the parameters their feature queues them wit
 
 ### Schedules
 
-**Tools → Jobs → Schedules** lists the schedules. A schedule queues a run of a job at each occurrence of a [cron expression](https://en.wikipedia.org/wiki/Cron#Cron_expression) with five fields, in the time zone of the site, optionally with parameters.
+**Tools → Jobs → Schedules** lists the schedules. A schedule queues a run of a job at each occurrence of a [cron expression](https://en.wikipedia.org/wiki/Cron#Cron_expression) with five fields, in the time zone of the schedule, optionally with parameters.
 
 - Whatever the number of servers, an occurrence queues a single run.
 - While the run of an occurrence didn't end, the following occurrences don't queue another one.
@@ -62,6 +62,15 @@ The other jobs only make sense with the parameters their feature queues them wit
 A schedule is shown with a description of when it occurs, such as "At 03:00 AM". Its editor shows the description and the next occurrences of the expression as it is typed, offers common schedules and the schedule the job declares, and links to [crontab.guru](https://crontab.guru/).
 
 A job can declare a schedule, shown as **Built-in**. Such a schedule can be changed and disabled, but not deleted.
+
+#### Time Zone of a Schedule
+
+The cron expression of a schedule is stored as it is typed, and applies to the **time zone** of the schedule:
+
+- **Time zone of the site**, the default, which the list of time zones shows with the one it is at the moment. The schedule follows the time zone of the site: when it changes, the schedule keeps its clock time, such as 3:00, in the new time zone, and its next run moves within a minute.
+- **A selected time zone**, which can be the same one as the site. The schedule stays in it whatever the time zone of the site, which suits a schedule that follows the hours of another region.
+
+The tooltip of a cron expression tells the time zone it applies to, and the description of a schedule with a selected time zone ends with its abbreviation, such as "At 03:00 AM (CET)".
 
 ## How Runs Execute
 

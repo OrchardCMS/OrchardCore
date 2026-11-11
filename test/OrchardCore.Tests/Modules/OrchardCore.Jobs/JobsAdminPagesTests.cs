@@ -177,12 +177,45 @@ public sealed class JobsAdminPagesTests
         Assert.NotNull(row);
         Assert.Equal("0 0 1 1 *", row.QuerySelector(".cron-expression code").TextContent);
         Assert.Contains("January", row.QuerySelector(".cron-expression-description").TextContent, StringComparison.Ordinal);
+        Assert.DoesNotContain("(", row.QuerySelector(".cron-expression-description").TextContent, StringComparison.Ordinal);
+
+        // The same clock time is another instant in another time zone, which the tooltip tells.
+        Assert.Contains("time zone of the site", row.QuerySelector(".cron-expression").GetAttribute("title"), StringComparison.Ordinal);
+        Assert.False(string.IsNullOrEmpty(row.QuerySelector(".cron-expression").GetAttribute("data-cron-time-zone")));
+        Assert.DoesNotContain("{0}", row.QuerySelector(".cron-expression").GetAttribute("title"), StringComparison.Ordinal);
 
         // The list of jobs has no room for the description, which is the tooltip of the expression.
         Assert.Contains(jobs.QuerySelectorAll(".cron-expression"), expression =>
             expression.QuerySelector("code").TextContent == "0 0 1 1 *"
             && expression.GetAttribute("title").Contains("January", StringComparison.Ordinal)
+            && expression.GetAttribute("title").Contains("time zone of the site", StringComparison.Ordinal)
             && expression.QuerySelector(".cron-expression-description") is null);
+    }
+
+    [Fact]
+    public async Task SchedulesPage_ScheduleWithATimeZone_ShowsIt()
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+        var schedule = new JobSchedule { Name = "Paris", JobName = TestJob.ManualName, Cron = "0 3 * * *", TimeZoneId = "Europe/Paris" };
+
+        await context.UsingTenantScopeAsync(scope => scope.ServiceProvider.GetRequiredService<IJobScheduleManager>().SaveAsync(schedule));
+
+        // Act
+        using var schedules = await GetPageAsync(context, "Admin/Jobs/Schedules");
+        using var edit = await GetPageAsync(context, $"Admin/Jobs/Schedules/Edit/{schedule.ScheduleId}");
+
+        // Assert
+        var row = schedules.QuerySelector($"a[href*='/Jobs/Schedules/Edit/{schedule.ScheduleId}']")?.Closest("li");
+
+        Assert.NotNull(row);
+        Assert.Equal("Europe/Paris", row.QuerySelector(".cron-expression").GetAttribute("data-cron-time-zone"));
+        Assert.Equal("In the Europe/Paris time zone", row.QuerySelector(".cron-expression").GetAttribute("title"));
+
+        // The description tells the time zone, as it is not the one of the site: winter or summer time.
+        Assert.Matches(@"\((CET|CEST)\)$", row.QuerySelector(".cron-expression-description").TextContent.Trim());
+
+        Assert.Equal("Europe/Paris", edit.QuerySelector("select#TimeZoneId option[selected]").GetAttribute("value"));
     }
 
     [Fact]
@@ -205,6 +238,18 @@ public sealed class JobsAdminPagesTests
         Assert.Contains("January", editor.QuerySelector("[data-cron-description]").TextContent, StringComparison.Ordinal);
         Assert.EndsWith("/Admin/CronExpression/Describe", editor.GetAttribute("data-cron-describe-url"), StringComparison.Ordinal);
         Assert.Equal("false", editor.GetAttribute("data-cron-utc"));
+
+        // The time zone of the site is the first choice, which the schedule follows, and it can be selected as any
+        // other one. The next occurrences follow the selection.
+        var timeZones = document.QuerySelectorAll("select#TimeZoneId option");
+
+        Assert.Equal("TimeZoneId", editor.GetAttribute("data-cron-time-zone-input"));
+        Assert.Equal(string.Empty, timeZones[0].GetAttribute("value"));
+        Assert.StartsWith("Time zone of the site, currently ", timeZones[0].TextContent, StringComparison.Ordinal);
+
+        // No other time zone is selected, so the first one is.
+        Assert.Null(document.QuerySelector("select#TimeZoneId option[selected]"));
+        Assert.Contains(timeZones, option => option.GetAttribute("value") == "Europe/Paris");
         Assert.NotNull(editor.QuerySelector("a[data-cron-guru][href^='https://crontab.guru/']"));
 
         // The schedule the job declares is offered after the common ones.

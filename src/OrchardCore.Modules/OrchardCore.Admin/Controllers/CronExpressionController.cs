@@ -39,8 +39,9 @@ public sealed class CronExpressionController : Controller
     /// </summary>
     /// <param name="expression">The cron expression.</param>
     /// <param name="utc">Whether the expression applies to UTC, and to the time zone of the site otherwise.</param>
+    /// <param name="timeZone">The identifier of the time zone the expression applies to, when it has its own.</param>
     [HttpGet]
-    public async Task<IActionResult> Describe(string expression, bool utc = false)
+    public async Task<IActionResult> Describe(string expression, bool utc = false, string timeZone = null)
     {
         if (!await _authorizationService.AuthorizeAsync(User, AdminPermissions.AccessAdminPanel))
         {
@@ -58,16 +59,16 @@ public sealed class CronExpressionController : Controller
             });
         }
 
-        var timeZone = utc ? null : _clock.GetTimeZone((await _siteService.GetSiteSettingsAsync()).TimeZoneId);
-        var now = timeZone is null ? _clock.UtcNow : _clock.ConvertToTimeZone(_clock.UtcNow, timeZone).DateTime;
+        var (zone, isSiteTimeZone) = await CronExpressionDescriber.GetTimeZoneAsync(_clock, _siteService, timeZone, utc);
+        var now = zone is null ? _clock.UtcNow : _clock.ConvertToTimeZone(_clock.UtcNow, zone).DateTime;
 
         return Json(new
         {
             IsValid = true,
-            Description = CronExpressionDescriber.Describe(expression, CultureInfo.CurrentUICulture),
+            Description = CronExpressionDescriber.Describe(expression, CultureInfo.CurrentUICulture, zone, isSiteTimeZone, _clock.UtcNow),
             Occurrences = CronExpressionDescriber.GetNextOccurrences(expression, now, Occurrences)
                 .Select(occurrence => occurrence.ToString("f", CultureInfo.CurrentCulture)),
-            TimeZone = timeZone?.TimeZoneId ?? "UTC",
+            TimeZone = zone?.TimeZoneId ?? CronExpressionDescriber.Utc,
         });
     }
 }

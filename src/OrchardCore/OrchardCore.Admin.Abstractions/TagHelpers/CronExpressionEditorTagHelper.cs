@@ -20,6 +20,7 @@ public sealed class CronExpressionEditorTagHelper : TagHelper
 
     private const string ForAttributeName = "asp-for";
     private const string SiteTimeZoneForAttributeName = "site-time-zone-for";
+    private const string TimeZoneForAttributeName = "time-zone-for";
 
     private readonly IDisplayHelper _displayHelper;
     private readonly IShapeFactory _shapeFactory;
@@ -62,6 +63,14 @@ public sealed class CronExpressionEditorTagHelper : TagHelper
     public ModelExpression SiteTimeZoneFor { get; set; }
 
     /// <summary>
+    /// The property of the model, edited by a list or a text box of the same form, that holds the identifier of the
+    /// time zone the expression applies to, such as <c>Europe/Paris</c>. While it is empty, the expression applies
+    /// to the time zone of the site, or to UTC with <see cref="Utc"/>.
+    /// </summary>
+    [HtmlAttributeName(TimeZoneForAttributeName)]
+    public ModelExpression TimeZoneFor { get; set; }
+
+    /// <summary>
     /// The context of the view.
     /// </summary>
     [ViewContext]
@@ -93,13 +102,8 @@ public sealed class CronExpressionEditorTagHelper : TagHelper
         var input = _htmlGenerator.GenerateTextBox(ViewContext, For.ModelExplorer, For.Name, For.Model, format: null, attributes);
         input.TagRenderMode = TagRenderMode.SelfClosing;
 
-        string siteTimeZoneToggleId = null;
-
-        if (SiteTimeZoneFor is not null)
-        {
-            var name = ViewContext.ViewData.TemplateInfo.GetFullHtmlFieldName(SiteTimeZoneFor.Name);
-            siteTimeZoneToggleId = TagBuilder.CreateSanitizedId(name, _htmlGenerator.IdAttributeDotReplacement);
-        }
+        var siteTimeZoneToggleId = GetId(SiteTimeZoneFor);
+        var timeZoneInputId = GetId(TimeZoneFor);
 
         input.Attributes.TryGetValue("id", out var inputId);
         input.Attributes.TryGetValue("value", out var value);
@@ -110,12 +114,28 @@ public sealed class CronExpressionEditorTagHelper : TagHelper
             InputId = inputId,
             Value = value,
             DefaultValue,
-            Utc,
+
+            // The expression applies to the time zone of the site while its checkbox is checked.
+            Utc = Utc && SiteTimeZoneFor?.Model is not true,
             SiteTimeZoneToggleId = siteTimeZoneToggleId,
+            TimeZoneInputId = timeZoneInputId,
+            TimeZone = TimeZoneFor?.Model as string,
         }));
 
         output.TagName = null;
         output.Attributes.Clear();
         output.Content.SetHtmlContent(await _displayHelper.ShapeExecuteAsync(shape));
+    }
+
+    private string GetId(ModelExpression expression)
+    {
+        if (expression is null)
+        {
+            return null;
+        }
+
+        var name = ViewContext.ViewData.TemplateInfo.GetFullHtmlFieldName(expression.Name);
+
+        return TagBuilder.CreateSanitizedId(name, _htmlGenerator.IdAttributeDotReplacement);
     }
 }

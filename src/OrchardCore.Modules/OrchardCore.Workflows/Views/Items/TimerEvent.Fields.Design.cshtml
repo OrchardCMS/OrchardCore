@@ -4,4 +4,4 @@
 <header>
     <h4><i class="fa-solid fa-clock" aria-hidden="true"></i>@Model.Activity.GetTitleOrDefault(() => T["Timer"])</h4>
 </header>
-<cron-expression value="@Model.Activity.CronExpression" />
+<cron-expression value="@Model.Activity.CronExpression" utc="@(!Model.Activity.UseLocalTime)" />

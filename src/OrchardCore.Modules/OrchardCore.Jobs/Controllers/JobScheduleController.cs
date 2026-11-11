@@ -10,6 +10,8 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Jobs.Models;
 using OrchardCore.Jobs.Services;
 using OrchardCore.Jobs.ViewModels;
+using OrchardCore.Modules;
+using OrchardCore.Settings;
 
 namespace OrchardCore.Jobs.Controllers;
 
@@ -22,6 +24,9 @@ public sealed class JobScheduleController : Controller
     private readonly IJobManager _jobManager;
     private readonly IJobScheduleManager _scheduleManager;
     private readonly JobDisplayService _displayService;
+    private readonly ITimeZoneSelectListProvider _timeZoneSelectListProvider;
+    private readonly ISiteService _siteService;
+    private readonly IClock _clock;
     private readonly INotifier _notifier;
 
     internal readonly IStringLocalizer S;
@@ -32,6 +37,9 @@ public sealed class JobScheduleController : Controller
         IJobManager jobManager,
         IJobScheduleManager scheduleManager,
         JobDisplayService displayService,
+        ITimeZoneSelectListProvider timeZoneSelectListProvider,
+        ISiteService siteService,
+        IClock clock,
         INotifier notifier,
         IStringLocalizer<JobScheduleController> stringLocalizer,
         IHtmlLocalizer<JobScheduleController> htmlLocalizer)
@@ -40,6 +48,9 @@ public sealed class JobScheduleController : Controller
         _jobManager = jobManager;
         _scheduleManager = scheduleManager;
         _displayService = displayService;
+        _timeZoneSelectListProvider = timeZoneSelectListProvider;
+        _siteService = siteService;
+        _clock = clock;
         _notifier = notifier;
         S = stringLocalizer;
         H = htmlLocalizer;
@@ -79,7 +90,7 @@ public sealed class JobScheduleController : Controller
 
         var model = new JobScheduleEditViewModel { IsNew = true, JobName = jobName, Cron = "0 0 * * *" };
 
-        Populate(model, null);
+        await PopulateAsync(model, null);
 
         return View(nameof(Edit), model);
     }
@@ -105,7 +116,7 @@ public sealed class JobScheduleController : Controller
 
         if (!ModelState.IsValid)
         {
-            Populate(model, null);
+            await PopulateAsync(model, null);
 
             return View(nameof(Edit), model);
         }
@@ -115,6 +126,7 @@ public sealed class JobScheduleController : Controller
             JobName = job.Name,
             Name = string.IsNullOrWhiteSpace(model.Name) ? null : model.Name.Trim(),
             Cron = model.Cron.Trim(),
+            TimeZoneId = string.IsNullOrWhiteSpace(model.TimeZoneId) ? null : model.TimeZoneId,
             IsEnabled = model.IsEnabled,
             Parameters = parameters,
         });
@@ -144,11 +156,12 @@ public sealed class JobScheduleController : Controller
             JobName = schedule.JobName,
             Name = schedule.Name,
             Cron = schedule.Cron,
+            TimeZoneId = schedule.TimeZoneId,
             IsEnabled = schedule.IsEnabled,
             Parameters = schedule.Parameters?.ToJsonString(_indented),
         };
 
-        Populate(model, schedule);
+        await PopulateAsync(model, schedule);
 
         return View(model);
     }
@@ -182,13 +195,14 @@ public sealed class JobScheduleController : Controller
 
         if (!ModelState.IsValid)
         {
-            Populate(model, schedule);
+            await PopulateAsync(model, schedule);
 
             return View(model);
         }
 
         schedule.Name = string.IsNullOrWhiteSpace(model.Name) ? null : model.Name.Trim();
         schedule.Cron = model.Cron.Trim();
+        schedule.TimeZoneId = string.IsNullOrWhiteSpace(model.TimeZoneId) ? null : model.TimeZoneId;
         schedule.IsEnabled = model.IsEnabled;
         schedule.Parameters = parameters;
 
@@ -300,6 +314,11 @@ public sealed class JobScheduleController : Controller
             ModelState.AddModelError(nameof(JobScheduleEditViewModel.Cron), S["The schedule is not a valid cron expression with five fields."]);
         }
 
+        if (!_scheduleManager.IsValidTimeZone(model.TimeZoneId))
+        {
+            ModelState.AddModelError(nameof(JobScheduleEditViewModel.TimeZoneId), S["The time zone is not a known one."]);
+        }
+
         JsonObject parameters = null;
 
         if (!string.IsNullOrWhiteSpace(model.Parameters) && !JobController.TryParseParameters(model.Parameters, out parameters))
@@ -310,8 +329,16 @@ public sealed class JobScheduleController : Controller
         return parameters;
     }
 
-    private void Populate(JobScheduleEditViewModel model, JobSchedule schedule)
+    private async Task PopulateAsync(JobScheduleEditViewModel model, JobSchedule schedule)
     {
+        // The first choice follows the time zone of the site, and tells which one it is at the moment. The same
+        // time zone can be selected among the others, to keep the schedule in it when the one of the site changes.
+        var siteTimeZone = _clock.GetTimeZone((await _siteService.GetSiteSettingsAsync()).TimeZoneId);
+
+        model.TimeZones = [new SelectListItem(S["Time zone of the site, currently {0}", siteTimeZone.TimeZoneId], string.Empty)];
+        model.TimeZones.AddRange((await _timeZoneSelectListProvider.GetTimeZoneSelectListAsync(HttpContext.RequestAborted))
+            .Select(timeZone => new SelectListItem(timeZone.Value, timeZone.Key)));
+
         model.IsDeclared = schedule?.IsDeclared == true;
         model.DefaultCron = model.IsDeclared ? _displayService.Find(schedule.JobName)?.Schedule : null;
 
