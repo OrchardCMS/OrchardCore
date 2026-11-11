@@ -84,7 +84,7 @@ public static class StringExtensions
             characterCount = backup;
         }
 
-        var trimmed = text[..characterCount];
+        var trimmed = TextHelper.Truncate(text, characterCount);
 
         return trimmed + ellipsis;
     }
