@@ -7,40 +7,39 @@ namespace OrchardCore.Secrets;
 public interface ISecretManager
 {
     /// <summary>
-    /// Gets a secret by its name, searching across all configured stores.
+    /// Gets a secret by its name, from the first configured store containing it.
     /// </summary>
-    /// <typeparam name="T">The type of secret to retrieve.</typeparam>
     /// <param name="name">The name of the secret.</param>
-    /// <returns>The secret if found, otherwise null.</returns>
-    Task<T> GetSecretAsync<T>(string name) where T : class, ISecret;
+    /// <returns>The secret if found, otherwise a secret with a <see langword="null"/> <see cref="Secret.Value"/>.</returns>
+    /// <remarks>
+    /// Use <see cref="SecretManagerExtensions.GetSecretAsync{T}(ISecretManager, string)"/> to get a secret of a specific type.
+    /// </remarks>
+    Task<Secret> GetSecretAsync(string name);
 
     /// <summary>
     /// Gets a secret by its name from a specific store.
     /// </summary>
-    /// <typeparam name="T">The type of secret to retrieve.</typeparam>
     /// <param name="name">The name of the secret.</param>
     /// <param name="storeName">The name of the store to search.</param>
-    /// <returns>The secret if found, otherwise null.</returns>
-    Task<T> GetSecretAsync<T>(string name, string storeName) where T : class, ISecret;
+    /// <returns>The secret if found, otherwise a secret with a <see langword="null"/> <see cref="Secret.Value"/>.</returns>
+    Task<Secret> GetSecretAsync(string name, string storeName);
 
     /// <summary>
     /// Saves a secret with the specified name to the default writable store.
     /// </summary>
-    /// <typeparam name="T">The type of secret to save.</typeparam>
     /// <param name="name">The name of the secret.</param>
     /// <param name="secret">The secret to save.</param>
     /// <param name="options">Optional save options including description and expiration.</param>
-    Task SaveSecretAsync<T>(string name, T secret, SecretSaveOptions options = null) where T : class, ISecret;
+    Task SaveSecretAsync(string name, Secret secret, SecretSaveOptions options = null);
 
     /// <summary>
     /// Saves a secret with the specified name to a specific store.
     /// </summary>
-    /// <typeparam name="T">The type of secret to save.</typeparam>
     /// <param name="name">The name of the secret.</param>
     /// <param name="secret">The secret to save.</param>
     /// <param name="storeName">The name of the store to save to.</param>
     /// <param name="options">Optional save options including description and expiration.</param>
-    Task SaveSecretAsync<T>(string name, T secret, string storeName, SecretSaveOptions options = null) where T : class, ISecret;
+    Task SaveSecretAsync(string name, Secret secret, string storeName, SecretSaveOptions options = null);
 
     /// <summary>
     /// Removes a secret by its name from all stores.

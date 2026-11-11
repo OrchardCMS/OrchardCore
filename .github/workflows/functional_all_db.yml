@@ -57,7 +57,26 @@ jobs:
       OrchardCore__YesSql__EnableThreadSafetyChecks: true
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+    - name: Pin global.json SDK in CI
+      shell: pwsh
+      run: |
+        $globalJson = Get-Content global.json -Raw | ConvertFrom-Json
+        $version = $globalJson.sdk.version
+        $globalJson.sdk.PSObject.Properties.Remove('rollForward')
+        $globalJson | ConvertTo-Json -Depth 10 | Set-Content global.json
+        Write-Host "Pinned global.json SDK for CI: $version"
     - uses: ./.github/actions/setup-dotnet
+    - name: Verify exact .NET SDK from global.json
+      shell: pwsh
+      run: |
+        $expected = (Get-Content global.json | ConvertFrom-Json).sdk.version
+        $actual = dotnet --version
+        Write-Host "Expected SDK: $expected"
+        Write-Host "Actual SDK:   $actual"
+        if ($actual -ne $expected) {
+          Write-Error "CI must use exact SDK version from global.json."
+          exit 1
+        }
     - name: Build
       run: |
         dotnet build -c Release test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj
@@ -68,7 +87,7 @@ jobs:
         key: playwright-${{ hashFiles('Directory.Packages.props') }}
     - name: Install Playwright Browsers
       run: |
-        pwsh test/OrchardCore.Tests.Functional/bin/Release/net10.0/playwright.ps1 install --with-deps chromium
+        pwsh test/OrchardCore.Tests.Functional/bin/Release/net11.0/playwright.ps1 install --with-deps chromium
     - name: Functional Tests
       # A healthy run takes about 10 minutes; fail a hung run instead of letting it reach the 6-hour job limit.
       timeout-minutes: 30
@@ -106,7 +125,26 @@ jobs:
       OrchardCore__YesSql__EnableThreadSafetyChecks: true
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+    - name: Pin global.json SDK in CI
+      shell: pwsh
+      run: |
+        $globalJson = Get-Content global.json -Raw | ConvertFrom-Json
+        $version = $globalJson.sdk.version
+        $globalJson.sdk.PSObject.Properties.Remove('rollForward')
+        $globalJson | ConvertTo-Json -Depth 10 | Set-Content global.json
+        Write-Host "Pinned global.json SDK for CI: $version"
     - uses: ./.github/actions/setup-dotnet
+    - name: Verify exact .NET SDK from global.json
+      shell: pwsh
+      run: |
+        $expected = (Get-Content global.json | ConvertFrom-Json).sdk.version
+        $actual = dotnet --version
+        Write-Host "Expected SDK: $expected"
+        Write-Host "Actual SDK:   $actual"
+        if ($actual -ne $expected) {
+          Write-Error "CI must use exact SDK version from global.json."
+          exit 1
+        }
     - name: Build
       run: |
         dotnet build -c Release test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj
@@ -117,7 +155,7 @@ jobs:
         key: playwright-${{ hashFiles('Directory.Packages.props') }}
     - name: Install Playwright Browsers
       run: |
-        pwsh test/OrchardCore.Tests.Functional/bin/Release/net10.0/playwright.ps1 install --with-deps chromium
+        pwsh test/OrchardCore.Tests.Functional/bin/Release/net11.0/playwright.ps1 install --with-deps chromium
     - name: Functional Tests
       # A healthy run takes about 10 minutes; fail a hung run instead of letting it reach the 6-hour job limit.
       timeout-minutes: 30
@@ -156,7 +194,26 @@ jobs:
       OrchardCore__Media__Azure__ContainerName: "media"
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+    - name: Pin global.json SDK in CI
+      shell: pwsh
+      run: |
+        $globalJson = Get-Content global.json -Raw | ConvertFrom-Json
+        $version = $globalJson.sdk.version
+        $globalJson.sdk.PSObject.Properties.Remove('rollForward')
+        $globalJson | ConvertTo-Json -Depth 10 | Set-Content global.json
+        Write-Host "Pinned global.json SDK for CI: $version"
     - uses: ./.github/actions/setup-dotnet
+    - name: Verify exact .NET SDK from global.json
+      shell: pwsh
+      run: |
+        $expected = (Get-Content global.json | ConvertFrom-Json).sdk.version
+        $actual = dotnet --version
+        Write-Host "Expected SDK: $expected"
+        Write-Host "Actual SDK:   $actual"
+        if ($actual -ne $expected) {
+          Write-Error "CI must use exact SDK version from global.json."
+          exit 1
+        }
     # Azurite is started here instead of as a service container because service containers
     # can't override the image command, and its flags would be parsed as the image name.
     - name: Start Azurite
@@ -172,7 +229,7 @@ jobs:
         key: playwright-${{ hashFiles('Directory.Packages.props') }}
     - name: Install Playwright Browsers
       run: |
-        pwsh test/OrchardCore.Tests.Functional/bin/Release/net10.0/playwright.ps1 install --with-deps chromium
+        pwsh test/OrchardCore.Tests.Functional/bin/Release/net11.0/playwright.ps1 install --with-deps chromium
     - name: Functional Tests
       # A healthy run takes about 10 minutes; fail a hung run instead of letting it reach the 6-hour job limit.
       timeout-minutes: 30
@@ -209,7 +266,26 @@ jobs:
       OrchardCore__YesSql__EnableThreadSafetyChecks: true
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+    - name: Pin global.json SDK in CI
+      shell: pwsh
+      run: |
+        $globalJson = Get-Content global.json -Raw | ConvertFrom-Json
+        $version = $globalJson.sdk.version
+        $globalJson.sdk.PSObject.Properties.Remove('rollForward')
+        $globalJson | ConvertTo-Json -Depth 10 | Set-Content global.json
+        Write-Host "Pinned global.json SDK for CI: $version"
     - uses: ./.github/actions/setup-dotnet
+    - name: Verify exact .NET SDK from global.json
+      shell: pwsh
+      run: |
+        $expected = (Get-Content global.json | ConvertFrom-Json).sdk.version
+        $actual = dotnet --version
+        Write-Host "Expected SDK: $expected"
+        Write-Host "Actual SDK:   $actual"
+        if ($actual -ne $expected) {
+          Write-Error "CI must use exact SDK version from global.json."
+          exit 1
+        }
     - name: Build
       run: |
         dotnet build -c Release test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj
@@ -220,7 +296,7 @@ jobs:
         key: playwright-${{ hashFiles('Directory.Packages.props') }}
     - name: Install Playwright Browsers
       run: |
-        pwsh test/OrchardCore.Tests.Functional/bin/Release/net10.0/playwright.ps1 install --with-deps chromium
+        pwsh test/OrchardCore.Tests.Functional/bin/Release/net11.0/playwright.ps1 install --with-deps chromium
     - name: Functional Tests
       # A healthy run takes about 10 minutes; fail a hung run instead of letting it reach the 6-hour job limit.
       timeout-minutes: 30

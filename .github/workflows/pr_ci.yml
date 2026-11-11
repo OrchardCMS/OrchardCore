@@ -58,7 +58,7 @@ jobs:
         foreach ($project in 'OrchardCore.Cms.Web', 'OrchardCore.Mvc.Web')
         {
             $output = Join-Path $env:RUNNER_TEMP "publish-$project"
-            dotnet publish "src/$project/$project.csproj" -c Release --no-build --framework net10.0 --property:PublishDir=$output
+            dotnet publish "src/$project/$project.csproj" -c Release --no-build --framework net11.0 --property:PublishDir=$output
             if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
             if (-not (Test-Path (Join-Path $output 'wwwroot') -PathType Container))
             {
@@ -75,7 +75,7 @@ jobs:
     - name: Install Playwright Browsers
       if: matrix.os == 'ubuntu-24.04'
       run: |
-        pwsh test/OrchardCore.Tests.Functional/bin/Release/net10.0/playwright.ps1 install --with-deps chromium
+        pwsh test/OrchardCore.Tests.Functional/bin/Release/net11.0/playwright.ps1 install --with-deps chromium
     - name: Functional Tests - CMS
       if: matrix.os == 'ubuntu-24.04'
       # A healthy run takes about 10 minutes; fail a hung run instead of letting it reach the 6-hour job limit.
@@ -117,6 +117,17 @@ jobs:
         $globalJson | ConvertTo-Json -Depth 10 | Set-Content global.json
         Write-Host "Pinned global.json SDK for CI: $version"
     - uses: ./.github/actions/setup-dotnet
+    - name: Verify exact .NET SDK from global.json
+      shell: pwsh
+      run: |
+        $expected = (Get-Content global.json | ConvertFrom-Json).sdk.version
+        $actual = dotnet --version
+        Write-Host "Expected SDK: $expected"
+        Write-Host "Actual SDK:   $actual"
+        if ($actual -ne $expected) {
+          Write-Error "CI must use exact SDK version from global.json."
+          exit 1
+        }
     - name: Check translation templates
       shell: pwsh
       run: |

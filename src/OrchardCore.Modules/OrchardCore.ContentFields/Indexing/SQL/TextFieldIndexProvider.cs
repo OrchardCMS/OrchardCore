@@ -82,7 +82,7 @@ public class TextFieldIndexProvider : ContentFieldIndexProvider
                             ContentType = contentItem.ContentType,
                             ContentPart = pair.Definition.ContentTypePartDefinition.Name,
                             ContentField = pair.Definition.Name,
-                            Text = pair.Field.Text?[..Math.Min(pair.Field.Text.Length, TextFieldIndex.MaxTextSize)],
+                            Text = TextHelper.Truncate(pair.Field.Text, TextFieldIndex.MaxTextSize),
                             BigText = pair.Field.Text,
                         });
             });

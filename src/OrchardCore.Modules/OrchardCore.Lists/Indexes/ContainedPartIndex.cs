@@ -55,7 +55,7 @@ public class ContainedPartIndexProvider : IndexProvider<ContentItem>
 
                 if (contentItem.DisplayText?.Length > ContainedPartIndex.MaxDisplayTextSize)
                 {
-                    containedPartIndex.DisplayText = contentItem.DisplayText[..ContainedPartIndex.MaxDisplayTextSize];
+                    containedPartIndex.DisplayText = TextHelper.Truncate(contentItem.DisplayText, ContainedPartIndex.MaxDisplayTextSize);
                 }
                 else
                 {

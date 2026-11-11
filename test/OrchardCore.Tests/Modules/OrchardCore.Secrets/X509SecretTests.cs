@@ -99,7 +99,7 @@ public class X509SecretTests
         var (certificatePem, privateKeyPem) = CreateCertificatePem();
         var provider = new X509SecretTypeProvider(Mock.Of<IStringLocalizer<X509SecretTypeProvider>>());
 
-        var secret = Assert.IsType<X509Secret>(provider.Deserialize(provider.Serialize(X509Secret.FromPem(certificatePem, privateKeyPem))));
+        var secret = Assert.IsType<X509Secret>(provider.Deserialize(provider.Serialize(X509Secret.FromPem(certificatePem, privateKeyPem))).Value);
 
         Assert.Equal(X509SecretSource.Pem, secret.Source);
         using var certificate = secret.GetCertificate();
@@ -111,7 +111,7 @@ public class X509SecretTests
     {
         var provider = new X509SecretTypeProvider(Mock.Of<IStringLocalizer<X509SecretTypeProvider>>());
 
-        var secret = Assert.IsType<X509Secret>(provider.Deserialize("""{"StoreLocation":1,"StoreName":5,"Thumbprint":"thumbprint"}"""));
+        var secret = Assert.IsType<X509Secret>(provider.Deserialize("""{"StoreLocation":1,"StoreName":5,"Thumbprint":"thumbprint"}""").Value);
 
         Assert.Equal(X509SecretSource.Store, secret.Source);
         Assert.Equal("thumbprint", secret.Thumbprint);

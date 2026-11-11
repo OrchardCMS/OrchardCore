@@ -250,7 +250,7 @@ The layout is selected in **Configuration → Settings → Admin** under **List 
 
 ### Letting a user choose
 
-**Let users choose the layout of a list** (`AdminSettings.AllowUserListLayoutSelection`, or `AllowUserSelection` in the configuration) adds a List/Grid selector to every list beside the item count:
+**Let users choose the layout of a list** (`AdminSettings.AllowUserListLayoutSelection`, or `AllowUserSelection` in the configuration) adds a List/Grid selector to every list beside the item count. It is on by default; turn it off to make every list use the site default:
 
 Clicking one reloads the page with `?layout=Grid`, and the choice is kept in a cookie **per list**, so a user can read the content items as a grid and the users as a list while everyone else sees the site default. The layout resolves from the most specific source to the least:
 

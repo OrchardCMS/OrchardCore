@@ -12,7 +12,7 @@ using OrchardCore.Secrets;
 using OrchardCore.Secrets.Controllers;
 using OrchardCore.Secrets.Providers;
 using OrchardCore.Secrets.ViewModels;
-using ISecret = OrchardCore.Secrets.ISecret;
+using Secret = OrchardCore.Secrets.Secret;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Secrets;
 
@@ -34,7 +34,7 @@ public class SecretAdminControllerTests
         _manager.Setup(m => m.GetStores()).Returns([database.Object, azure.Object]);
         _manager.Setup(m => m.GetSecretInfosAsync()).ReturnsAsync(
             [new SecretInfo { Name = "secret", Store = "AzureKeyVault", Type = nameof(TextSecret), Description = "description" }]);
-        _manager.Setup(m => m.GetSecretAsync<ISecret>("secret", "AzureKeyVault")).ReturnsAsync(new TextSecret { Text = "old" });
+        _manager.Setup(m => m.GetSecretAsync("secret", "AzureKeyVault")).ReturnsAsync(new TextSecret { Text = "old" });
         _controller = new AdminController(_manager.Object,
             [new TextSecretTypeProvider(Mock.Of<IStringLocalizer<TextSecretTypeProvider>>()),
                 new X509SecretTypeProvider(Mock.Of<IStringLocalizer<X509SecretTypeProvider>>())],
@@ -52,7 +52,7 @@ public class SecretAdminControllerTests
         var model = Assert.IsType<SecretEditViewModel>(result.Model);
         Assert.Equal("AzureKeyVault", model.Store);
         Assert.Equal("description", model.Description);
-        _manager.Verify(m => m.GetSecretAsync<ISecret>("secret"), Times.Never);
+        _manager.Verify(m => m.GetSecretAsync("secret"), Times.Never);
     }
 
     [Fact]
@@ -67,7 +67,7 @@ public class SecretAdminControllerTests
         }, "secret", "AzureKeyVault");
 
         Assert.IsType<BadRequestResult>(result);
-        _manager.Verify(m => m.SaveSecretAsync(It.IsAny<string>(), It.IsAny<ISecret>(), It.IsAny<string>(), It.IsAny<SecretSaveOptions>()), Times.Never);
+        _manager.Verify(m => m.SaveSecretAsync(It.IsAny<string>(), It.IsAny<Secret>(), It.IsAny<string>(), It.IsAny<SecretSaveOptions>()), Times.Never);
     }
 
     [Fact]
@@ -103,7 +103,7 @@ public class SecretAdminControllerTests
 
         Assert.IsType<ViewResult>(result);
         Assert.False(_controller.ModelState.IsValid);
-        _manager.Verify(m => m.GetSecretAsync<ISecret>(It.IsAny<string>()), Times.Never);
+        _manager.Verify(m => m.GetSecretAsync(It.IsAny<string>()), Times.Never);
     }
 
     [Fact]
@@ -121,10 +121,10 @@ public class SecretAdminControllerTests
         });
 
         Assert.IsType<RedirectToActionResult>(result);
-        _manager.Verify(m => m.SaveSecretAsync("certificate", It.Is<ISecret>(secret =>
-            ((X509Secret)secret).Source == X509SecretSource.Pem &&
-            !((X509Secret)secret).CertificatePem.Contains("PRIVATE KEY") &&
-            ((X509Secret)secret).PrivateKeyPem == privateKeyPem), "Database", It.IsAny<SecretSaveOptions>()), Times.Once);
+        _manager.Verify(m => m.SaveSecretAsync("certificate", It.Is<Secret>(secret =>
+            ((X509Secret)secret.Value).Source == X509SecretSource.Pem &&
+            !((X509Secret)secret.Value).CertificatePem.Contains("PRIVATE KEY") &&
+            ((X509Secret)secret.Value).PrivateKeyPem == privateKeyPem), "Database", It.IsAny<SecretSaveOptions>()), Times.Once);
     }
 
     [Fact]
@@ -146,7 +146,7 @@ public class SecretAdminControllerTests
 
         Assert.IsType<ViewResult>(result);
         Assert.True(_controller.ModelState.ContainsKey(nameof(SecretEditViewModel.X509CertificatePem)));
-        _manager.Verify(m => m.SaveSecretAsync(It.IsAny<string>(), It.IsAny<ISecret>(), It.IsAny<string>(), It.IsAny<SecretSaveOptions>()), Times.Never);
+        _manager.Verify(m => m.SaveSecretAsync(It.IsAny<string>(), It.IsAny<Secret>(), It.IsAny<string>(), It.IsAny<SecretSaveOptions>()), Times.Never);
     }
 
     [Fact]
@@ -180,15 +180,15 @@ public class SecretAdminControllerTests
         }, "certificate", "Database");
 
         Assert.IsType<RedirectToActionResult>(result);
-        _manager.Verify(m => m.SaveSecretAsync("certificate", It.Is<ISecret>(secret =>
-            ((X509Secret)secret).CertificatePem == certificatePem &&
-            ((X509Secret)secret).PrivateKeyPem == privateKeyPem), "Database", It.IsAny<SecretSaveOptions>()), Times.Once);
+        _manager.Verify(m => m.SaveSecretAsync("certificate", It.Is<Secret>(secret =>
+            ((X509Secret)secret.Value).CertificatePem == certificatePem &&
+            ((X509Secret)secret.Value).PrivateKeyPem == privateKeyPem), "Database", It.IsAny<SecretSaveOptions>()), Times.Once);
     }
 
     private void SetupPemSecret(X509Secret secret)
     {
         _manager.Setup(m => m.GetSecretInfosAsync()).ReturnsAsync(
             [new SecretInfo { Name = "certificate", Store = "Database", Type = nameof(X509Secret) }]);
-        _manager.Setup(m => m.GetSecretAsync<ISecret>("certificate", "Database")).ReturnsAsync(secret);
+        _manager.Setup(m => m.GetSecretAsync("certificate", "Database")).ReturnsAsync(secret);
     }
 }

@@ -35,6 +35,17 @@ public class AdminListOptionsConfigurationTests
 
         Assert.Equal(AdminListLayout.Grid, options.DefaultLayout);
         Assert.Equal(AdminListActionsLayout.Menu, options.DefaultActionsLayout);
+        Assert.True(options.AllowUserSelection);
+    }
+
+    [Fact]
+    public void Configure_UserSelectionTurnedOff_DisablesIt()
+    {
+        var site = new SiteSettings();
+        site.Put(new AdminSettings { AllowUserListLayoutSelection = false });
+
+        var options = Configure(new AdminListOptions(), site);
+
         Assert.False(options.AllowUserSelection);
     }
 
