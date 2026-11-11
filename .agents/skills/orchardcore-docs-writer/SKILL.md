@@ -1,6 +1,6 @@
 ---
 name: orchardcore-docs-writer
-description: Authors OrchardCore documentation — MkDocs Material pages, module README docs, nav entries, admonitions, tabbed content, and redirects. Use when the user needs to add or edit a docs page, document a new module, build/serve the docs site, or wire a page into the navigation.
+description: Authors OrchardCore documentation — User Manual pages for people who use the admin, Technical Manual pages and module README docs for developers, nav entries, admonitions, tabbed content, and redirects. Use when the user needs to add or edit a docs page, document a new module or feature, keep the docs in sync with a code change, build/serve the docs site, or wire a page into the navigation.
 ---
 
 # OrchardCore Docs Writer
@@ -9,11 +9,58 @@ This skill guides you through writing OrchardCore documentation following projec
 
 Docs are **MkDocs** + **Material for MkDocs**. Config: `mkdocs.yml` at repo root; pages live under `src/docs/`. The nav is **explicit** in `mkdocs.yml` — a new `.md` file is invisible until you add it to `nav:`.
 
+## Two manuals
+
+The site has two manuals. A code change often needs both; update them in the same pull request as the code.
+
+| | User Manual | Technical Manual |
+|---|---|---|
+| Folder | `src/docs/user-manual/` | everything else under `src/docs/` |
+| Reader | Editors, site builders, administrators working in the admin | Developers and IT teams |
+| Content | Tasks: menu path, numbered steps with the exact on-screen labels, fields, permission, feature | Modules, configuration, recipes, APIs, extension points, code |
+| Never | Code, JSON, `appsettings.json`, recipes | Admin click-by-click steps (link the User Manual instead) |
+
+**Be honest**: take menu paths from `AdminMenu.cs`, labels from the Razor views (`T["..."]`, exact case), permission descriptions from the permission provider, feature names and ids from `Manifest.cs`, and check behavior in drivers, controllers and settings, or on a running site. Never write from memory or from older docs.
+
+**User Manual page template** (see `src/docs/contributing/contributing-documentation.md`):
+
+```markdown
+---
+title: Users
+description: Add people to the site, reset their passwords, and give them roles.
+technical_manual:
+  - reference/modules/Users/README.md
+---
+
+# Users
+
+Short introduction.
+
+| | |
+| --- | --- |
+| **Menu** | **Access Control > Users** |
+| **Permission** | *Manage security settings and all users* |
+| **Feature** | **Users** (`OrchardCore.Users`) |
+
+## Add a user
+
+1. Open **Access Control > Users** and click **Add User**.
+2. Type the **User name** and the **Email**.
+3. Click **Save**.
+```
+
+- Sentence-case task headings; one action per step; **Click** buttons, **Choose** from lists, **Tick**/**Clear** checkboxes, **Type** text.
+- `technical_manual` paths are relative to `src/docs/`. The hook `.scripts/docs/manuals.py` turns them into the boxes linking the two manuals; never write those boxes by hand.
+- Add the page to the `User Manual` section of `nav` in `mkdocs.yml`, under the job it belongs to, with the page title as nav title. A new feature also needs its row in `user-manual/getting-started/features.md`.
+- When a label, menu path or feature is renamed or removed, search `src/docs/user-manual/` for the old text and fix every page.
+
 ## Where pages live
 
 | Section | Path under `src/docs/` |
 |---------|------------------------|
 | Home | `README.md` |
+| User Manual | `user-manual/<section>/<page>.md` |
+| Technical Manual landing | `technical-manual/index.md` |
 | Getting started | `getting-started/` |
 | Guides (tutorials) | `guides/<name>/README.md` |
 | Key topics | `topics/<topic>/README.md` |

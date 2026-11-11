@@ -1,0 +1,211 @@
+/*
+ * Header: one rounded bar with the logo, the site name, the tabs, the theme toggle, the search box and the repository.
+ * See theme/partials/header.html.
+ */
+
+.md-header.oc-header {
+  padding: 0.5rem 0.6rem 0;
+  background-color: var(--md-default-bg-color);
+  box-shadow: none;
+  color: #fff;
+}
+
+.md-header.oc-header.md-header--hidden {
+  transform: translateY(-110%);
+}
+
+.oc-header .md-header__inner {
+  position: relative;
+  isolation: isolate;
+  align-items: center;
+  height: 3rem;
+  padding: 0 0.4rem;
+  border-radius: 0.75rem;
+  background: linear-gradient(100deg, #00695c 0%, #00897b 45%, #009688 100%);
+  box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.16);
+}
+
+[data-md-color-scheme="slate"] .oc-header .md-header__inner {
+  background: linear-gradient(100deg, #004d40 0%, #00695c 45%, #00796b 100%);
+  box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.45);
+}
+
+/* Abstract shapes behind the logo, fading out to the right. */
+.oc-header__decor {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: -1;
+  width: 26rem;
+  max-width: 100%;
+  overflow: hidden;
+  border-radius: 0.75rem 0 0 0.75rem;
+  pointer-events: none;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 520 64' preserveAspectRatio='xMinYMid slice'%3E%3Ccircle cx='18' cy='-6' r='58' fill='%23fff' fill-opacity='.12'/%3E%3Ccircle cx='96' cy='78' r='46' fill='%23fff' fill-opacity='.08'/%3E%3Ccircle cx='188' cy='-18' r='40' fill='%23fff' fill-opacity='.06'/%3E%3Cpath d='M0 46C70 22 132 70 214 40S372 8 520 30' fill='none' stroke='%23fff' stroke-opacity='.18' stroke-width='1.5'/%3E%3Cpath d='M0 56C88 36 150 78 236 52S398 26 520 44' fill='none' stroke='%23fff' stroke-opacity='.1' stroke-width='1.2'/%3E%3C/svg%3E") left center / cover no-repeat;
+  -webkit-mask-image: linear-gradient(to right, #000 35%, transparent);
+  mask-image: linear-gradient(to right, #000 35%, transparent);
+}
+
+.oc-header .md-header__button.md-logo {
+  margin: 0.2rem 0.2rem 0.2rem 0.4rem;
+}
+
+.oc-header .md-header__button.md-logo img,
+.oc-header .md-header__button.md-logo svg {
+  height: 1.6rem;
+}
+
+/* Thin separators between the groups of the bar. */
+.oc-header__divider {
+  flex: none;
+  width: 1px;
+  height: 1.4rem;
+  margin: 0 0.5rem;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.oc-header .oc-header__title {
+  flex-grow: 0;
+  margin-right: 0.4rem;
+  margin-left: 0.2rem;
+  font-weight: 700;
+}
+
+.oc-header .oc-header__title {
+  min-width: 0;
+}
+
+.oc-header .oc-header__title .md-header__topic {
+  position: static;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+/* The tabs, inline. */
+.oc-header__tabs {
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+  margin-left: 0.6rem;
+}
+
+.oc-header__tabs .md-tabs__list {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  list-style: none;
+  contain: none;
+}
+
+.oc-header__tabs .md-tabs__item {
+  height: auto;
+  padding: 0 0.55rem;
+}
+
+.oc-header__tabs .md-tabs__link {
+  position: relative;
+  margin: 0;
+  padding: 0.35rem 0;
+  color: #fff;
+  font-size: 0.7rem;
+  opacity: 0.82;
+  transition: opacity 0.2s;
+}
+
+.oc-header__tabs .md-tabs__link:hover,
+.oc-header__tabs .md-tabs__link:focus {
+  color: #fff;
+  opacity: 1;
+}
+
+.oc-header__tabs .md-tabs__item--active .md-tabs__link {
+  font-weight: 700;
+  opacity: 1;
+}
+
+.oc-header__tabs .md-tabs__item--active .md-tabs__link::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: -0.1rem;
+  left: 0;
+  height: 0.12rem;
+  border-radius: 0.1rem;
+  background: #fff;
+}
+
+/* Search box as a pill. */
+@media screen and (min-width: 60em) {
+  .oc-header .md-search__form {
+    height: 1.8rem;
+    border-radius: 0.9rem;
+    background-color: rgba(0, 0, 0, 0.22);
+  }
+
+  .oc-header .md-search__form:hover {
+    background-color: rgba(0, 0, 0, 0.3);
+  }
+
+  .oc-header .md-search__input {
+    border-radius: 0.9rem;
+  }
+
+  .oc-header .md-search__inner {
+    width: 9.5rem;
+  }
+}
+
+.oc-header .md-header__source {
+  width: auto;
+  max-width: 10rem;
+  margin-left: 0;
+}
+
+/* Below the width where Material shows the tabs, the drawer holds the navigation. */
+@media screen and (max-width: 76.234375em) {
+  .oc-header__tabs,
+  .oc-header__divider--logo,
+  .oc-header__divider--source {
+    display: none;
+  }
+
+  .oc-header .oc-header__title {
+    flex-grow: 1;
+  }
+}
+
+@media screen and (max-width: 59.984375em) {
+  .md-header.oc-header {
+    padding: 0.4rem 0.4rem 0;
+  }
+
+  .oc-header__divider {
+    display: none;
+  }
+}
+
+/* A wider layout, so the bar and the pages use more of large screens. */
+.md-grid {
+  max-width: 76rem;
+}
+
+/* Make room for the tabs on laptop screens: the repository shows its icon only, and below 1440px the logo stands alone. */
+@media screen and (max-width: 99.984375em) {
+  .oc-header .md-source__repository {
+    display: none;
+  }
+
+  .oc-header .md-source__icon {
+    margin-right: 0;
+  }
+}
+
+@media screen and (min-width: 76.25em) and (max-width: 89.984375em) {
+  .oc-header .oc-header__title,
+  .oc-header__divider--logo {
+    display: none;
+  }
+}
