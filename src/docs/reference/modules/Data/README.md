@@ -57,6 +57,7 @@ Orchard Core binds the `OrchardCore:YesSql` configuration section to `YesSqlOpti
 | `QueryGatingEnabled` | `true` | Coalesces identical concurrent query work so YesSql executes it once and shares the result. |
 | `EnableThreadSafetyChecks` | `false` | Enables checks that help diagnose concurrent use of a YesSql session. |
 | `IsolationLevel` | `ReadCommitted` | Sets the default transaction isolation level passed to the configured provider. |
+| `ConcurrentIndexCreationEnabled` | `true` | Creates the indexes that a data migration adds to an existing table without blocking the writes to that table: online on SQL Server editions that support online index operations (Enterprise, Developer, Azure SQL Database and Azure SQL Managed Instance), and with `ALGORITHM=INPLACE, LOCK=NONE` on MySQL. PostgreSQL can't create an index concurrently in a transaction, and data migrations run in one, so it still blocks the writes. SQLite always creates indexes the regular way. |
 | `IncludeQueryTextInTelemetry` | `false` | Adds the SQL text to the spans of the commands, in `db.query.text`, when the `YesSql` telemetry is collected. See [Other libraries](../OpenTelemetry/README.md#other-libraries). Raw SQL fragments given to a query are included as they are, so they can expose data to the receiver of the telemetry. |
 
 Configure these values through any supported tenant configuration source. For example:
@@ -69,6 +70,7 @@ Configure these values through any supported tenant configuration source. For ex
       "QueryGatingEnabled": true,
       "EnableThreadSafetyChecks": false,
       "IsolationLevel": "ReadCommitted",
+      "ConcurrentIndexCreationEnabled": true,
       "IncludeQueryTextInTelemetry": false
     }
   }
