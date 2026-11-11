@@ -72,13 +72,13 @@ public sealed class SecretStoreOperations : ISecretStoreOperations
                 return Failure(name, SecretStoreOperationFailure.DestinationCollision);
             }
 
-            var secret = await source.GetSecretAsync<ISecret>(name);
-            if (secret == null)
+            var secret = await source.GetSecretAsync(name);
+            if (secret is null)
             {
                 return Failure(name, SecretStoreOperationFailure.SourceMissing);
             }
 
-            var provider = _providers.SingleOrDefault(p => p.SecretType == secret.GetType());
+            var provider = _providers.SingleOrDefault(p => p.SecretType == secret.Value.GetType());
             if (provider == null)
             {
                 return Failure(name, SecretStoreOperationFailure.UnsupportedType);
@@ -92,7 +92,7 @@ public sealed class SecretStoreOperations : ISecretStoreOperations
             });
             destinationSaved = true;
 
-            var saved = await destination.GetSecretAsync<ISecret>(name);
+            var saved = await destination.GetSecretAsync(name);
             var savedInfo = (await destination.GetSecretInfosAsync()).SingleOrDefault(i => i.Name.Equals(name, StringComparison.Ordinal));
             if (!SameValue(provider, serialized, saved) || savedInfo == null ||
                 savedInfo.Description != info.Description || savedInfo.ExpiresUtc != info.ExpiresUtc)
@@ -101,7 +101,7 @@ public sealed class SecretStoreOperations : ISecretStoreOperations
             }
 
             // Store clients outside the manager do not participate in its lock.
-            var current = await source.GetSecretAsync<ISecret>(name);
+            var current = await source.GetSecretAsync(name);
             var currentInfo = (await source.GetSecretInfosAsync()).SingleOrDefault(i => i.Name.Equals(name, StringComparison.Ordinal));
             if (!SameValue(provider, serialized, current) || currentInfo == null ||
                 currentInfo.UpdatedUtc != info.UpdatedUtc || currentInfo.Description != info.Description ||
@@ -165,8 +165,8 @@ public sealed class SecretStoreOperations : ISecretStoreOperations
         return new SecretStoreOperationResult { Name = name, Failure = failure, DestinationSaved = destinationSaved };
     }
 
-    private static bool SameValue(ISecretTypeProvider provider, string serialized, ISecret secret) =>
-        secret != null && secret.GetType() == provider.SecretType && provider.Serialize(secret) == serialized;
+    private static bool SameValue(ISecretTypeProvider provider, string serialized, Secret secret) =>
+        secret.Value?.GetType() == provider.SecretType && provider.Serialize(secret) == serialized;
 
     private static bool IsTimedOut(Stopwatch elapsed) => elapsed.Elapsed >= LockExpiration - TimeSpan.FromMinutes(1);
 

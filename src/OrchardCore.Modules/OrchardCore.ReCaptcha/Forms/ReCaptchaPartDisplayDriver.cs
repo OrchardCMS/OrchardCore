@@ -3,7 +3,6 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.ReCaptcha.Configuration;
-using OrchardCore.Settings;
 
 namespace OrchardCore.ReCaptcha.Forms;
 

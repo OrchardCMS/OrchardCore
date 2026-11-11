@@ -652,7 +652,7 @@ dotnet build src/OrchardCore.Cms.Web/OrchardCore.Cms.Web.csproj -p:LocalizationC
 
 Use an absolute output path so every project copies to the same directory. For other solutions, substitute your solution or application project path. Outside the Orchard Core source tree, add `OrchardCore.Localization.Build` to each project whose strings should be extracted; referencing it only from the application does not enable it in other projects. Prebuilt NuGet dependencies are not re-extracted or collected by this mechanism.
 
-Exported files are named `<output>/<TargetFramework>/<AssemblyName>.pot`, for example `artifacts/localization/net10.0/OrchardCore.Admin.pot`. Framework subdirectories keep parallel multi-target builds from overwriting one another. Projects sharing an assembly name and target framework must use separate export directories or distinct assembly names. Only templates are copied, not request files or extraction caches.
+Exported files are named `<output>/<TargetFramework>/<AssemblyName>.pot`, for example `artifacts/localization/net11.0/OrchardCore.Admin.pot`. Framework subdirectories keep parallel multi-target builds from overwriting one another. Projects sharing an assembly name and target framework must use separate export directories or distinct assembly names. Only templates are copied, not request files or extraction caches.
 
 For Crowdin or a similar service:
 
