@@ -1,35 +1,42 @@
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using OrchardCore.ArchiveLater.Indexes;
-using OrchardCore.ArchiveLater.Models;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement;
-using OrchardCore.Entities;
+using OrchardCore.Jobs;
+using OrchardCore.Jobs.Models;
 using OrchardCore.Modules;
 using YesSql;
 
 namespace OrchardCore.ArchiveLater.Services;
 
+/// <summary>
+/// Finds the content items whose scheduled archive date arrived, and queues a run of <see cref="ArchiveLaterJob"/>
+/// for each of them. Every server looks for them, which only reads the database; the runs are what archives, and a
+/// run is executed by a single server.
+/// </summary>
 [BackgroundTask(
     Title = "Content Items Archiver",
     Schedule = "* * * * *",
-    Description = "Archives content items when their scheduled archive date time arrives.")]
+    Description = "Queues the archiving of the content items whose scheduled archive date time arrived.")]
 public sealed class ScheduledArchivingBackgroundTask : IBackgroundTask
 {
-    private readonly ILogger _logger;
+    // After an archiving failed, the content item is tried again after this delay, not every minute.
+    private static readonly TimeSpan _retryAfter = TimeSpan.FromHours(1);
+
     private readonly IClock _clock;
 
-    public ScheduledArchivingBackgroundTask(ILogger<ScheduledArchivingBackgroundTask> logger, IClock clock)
+    public ScheduledArchivingBackgroundTask(IClock clock)
     {
-        _logger = logger;
         _clock = clock;
     }
 
     public async Task DoWorkAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken)
     {
+        var now = _clock.UtcNow;
+
         var itemsToArchive = await serviceProvider
             .GetRequiredService<ISession>()
-            .QueryIndex<ArchiveLaterPartIndex>(index => index.Latest && index.Published && index.ScheduledArchiveDateTimeUtc < _clock.UtcNow)
+            .QueryIndex<ArchiveLaterPartIndex>(index => index.Latest && index.Published && index.ScheduledArchiveDateTimeUtc < now)
             .ListAsync(cancellationToken);
 
         if (itemsToArchive.Count == 0)
@@ -37,24 +44,30 @@ public sealed class ScheduledArchivingBackgroundTask : IBackgroundTask
             return;
         }
 
+        var jobManager = serviceProvider.GetRequiredService<IJobManager>();
         var contentManager = serviceProvider.GetRequiredService<IContentManager>();
 
         foreach (var item in itemsToArchive)
         {
+            var last = await jobManager.FindLastAsync(ArchiveLaterJob.Name, item.ContentItemId);
+
+            if (last is not null && (!last.IsCompleted || (last.Status == JobRunStatus.Failed && last.CompletedUtc > now - _retryAfter)))
+            {
+                continue;
+            }
+
             var contentItem = await contentManager.GetAsync(item.ContentItemId);
 
-            if (contentItem.TryGet<ArchiveLaterPart>(out var part))
+            // The same key makes the servers that find the content item at the same time queue a single run, and
+            // makes two runs for the same content item execute one after the other.
+            await jobManager.EnqueueAsync<ArchiveLaterJob>(new ArchiveLaterJobParameters { ContentItemId = item.ContentItemId }, request =>
             {
-                part.ScheduledArchiveUtc = null;
-                part.Apply();
-            }
-
-            if (_logger.IsEnabled(LogLevel.Debug))
-            {
-                _logger.LogDebug("Archiving scheduled content item {ContentItemId}.", contentItem.ContentItemId);
-            }
-
-            await contentManager.UnpublishAsync(contentItem);
+                request.Title = contentItem?.DisplayText ?? item.ContentItemId;
+                request.Trigger = JobTriggers.Schedule;
+                request.DeduplicationKey = item.ContentItemId;
+                request.ConcurrencyKey = $"{ArchiveLaterJob.Name}:{item.ContentItemId}";
+                request.CorrelationId = item.ContentItemId;
+            });
         }
     }
 }

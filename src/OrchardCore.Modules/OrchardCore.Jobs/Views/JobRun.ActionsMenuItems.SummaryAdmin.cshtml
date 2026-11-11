@@ -1,0 +1,15 @@
+@model JobRunRowViewModel
+
+@* Bare items, never wrapped in <li>: AdminListActions renders the menu in a <div class="dropdown-menu">. *@
+@if (!Model.Run.IsCompleted)
+{
+    <a asp-action="Cancel" asp-controller="JobRun" asp-route-area="OrchardCore.Jobs" asp-route-runId="@Model.Run.RunId" asp-route-returnUrl="@FullRequestPath" class="dropdown-item" data-title="@T["Cancel"]" data-message="@T["Are you sure you want to cancel this run?"]" data-url-af="RemoveUrl UnsafeUrl">@T["Cancel"]</a>
+}
+else
+{
+    if (Model.IsJobRegistered)
+    {
+        <a asp-action="Rerun" asp-controller="JobRun" asp-route-area="OrchardCore.Jobs" asp-route-runId="@Model.Run.RunId" asp-route-returnUrl="@FullRequestPath" class="dropdown-item" data-url-af="UnsafeUrl">@T["Run again"]</a>
+    }
+    <a asp-action="Delete" asp-controller="JobRun" asp-route-area="OrchardCore.Jobs" asp-route-runId="@Model.Run.RunId" asp-route-returnUrl="@FullRequestPath" class="dropdown-item text-danger" data-title="@T["Delete"]" data-message="@T["Are you sure you want to delete this run?"]" data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+}

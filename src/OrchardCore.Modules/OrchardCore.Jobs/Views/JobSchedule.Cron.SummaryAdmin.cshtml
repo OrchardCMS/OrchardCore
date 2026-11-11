@@ -1,0 +1,21 @@
+@model JobScheduleRowViewModel
+
+<span class="badge ta-badge fw-normal" title="@T["The cron expression of the schedule, in the time zone of the site"]">
+    <i class="fa-regular fa-calendar" aria-hidden="true"></i> <code>@Model.Schedule.Cron</code>
+</span>
+
+@if (Model.Schedule.IsEnabled)
+{
+    <span class="badge fw-normal text-success-emphasis bg-success-subtle border border-success-subtle">@T["Enabled"]</span>
+}
+else
+{
+    <span class="badge fw-normal ta-badge">@T["Disabled"]</span>
+}
+
+@if (Model.Schedule.IsDeclared)
+{
+    <span class="badge ta-badge fw-normal" title="@T["The job declares this schedule: it can be changed and disabled, but not deleted."]">
+        <i class="fa-solid fa-lock" aria-hidden="true"></i> @T["Built-in"]
+    </span>
+}

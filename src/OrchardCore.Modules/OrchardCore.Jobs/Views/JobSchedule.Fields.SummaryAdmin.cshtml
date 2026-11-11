@@ -1,0 +1,15 @@
+@model JobScheduleRowViewModel
+
+@{
+    var name = string.IsNullOrEmpty(Model.Schedule.Name) ? Model.JobTitle : Model.Schedule.Name;
+}
+
+@* Plain link, like the title of a content item in the Manage Content list. *@
+@if (Model.CanManage)
+{
+    <a asp-action="Edit" asp-controller="JobSchedule" asp-route-area="OrchardCore.Jobs" asp-route-scheduleId="@Model.Schedule.ScheduleId">@name</a>
+}
+else
+{
+    @name
+}

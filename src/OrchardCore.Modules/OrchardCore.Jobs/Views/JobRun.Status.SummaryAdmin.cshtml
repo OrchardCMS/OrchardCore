@@ -1,0 +1,10 @@
+@model JobRunRowViewModel
+
+<partial name="_JobRunStatus" model="Model.Run" />
+
+@if (Model.Run.MaxAttempts > 1 && Model.Run.Attempt > 1)
+{
+    <span class="badge ta-badge fw-normal" title="@T["The attempts the run made, of the attempts it may make"]">
+        <i class="fa-solid fa-rotate-right" aria-hidden="true"></i> @T["Attempt {0} of {1}", Model.Run.Attempt, Model.Run.MaxAttempts]
+    </span>
+}

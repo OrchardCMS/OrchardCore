@@ -6,6 +6,16 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-OrchardCore-Catalog-Schema: 1\n"
 
+#: AuditTrailLocalizationSources.cs
+msgctxt "OrchardCore.AuditTrail.AuditTrailLocalizationSources"
+msgid "Audit Trail Trimming"
+msgstr ""
+
+#: AuditTrailLocalizationSources.cs
+msgctxt "OrchardCore.AuditTrail.AuditTrailLocalizationSources"
+msgid "Deletes the audit trail events older than the retention period of the audit trail settings."
+msgstr ""
+
 #: Startup.cs
 msgctxt "OrchardCore.AuditTrail.DeploymentStartup"
 msgid "Audit Trail Trimming settings"

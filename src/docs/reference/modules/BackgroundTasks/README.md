@@ -46,7 +46,7 @@ The **Run now** item of the **Actions** menu of a task, available in the list an
 
 ## Running in a Web Farm
 
-When the application runs on several servers, each server runs its own background service, which runs the tasks of the tenants independently of the other servers:
+When the application runs on several servers, each server runs its own background service, which runs the tasks of the tenants independently of the other servers. A background task is meant for what every server has to do, such as cleaning its local files. For work that has to be done once whatever the number of servers, such as sending emails, write a [job](../Jobs/README.md) instead: a single server executes each of its runs, and its admin pages show the same from any server.
 
 - A scheduled task runs on every server, each one following its own copy of the schedule. For instance, with three servers, a task scheduled every day at midnight runs three times every day, once per server.
 - By default, these runs can happen at the same time. To prevent two servers from running a task at the same time, make the task atomic by setting its lock timeout and lock expiration, in its `[BackgroundTask]` attribute or in the **Advanced** tab of its settings, and enable a distributed lock feature such as **Redis Lock** (`OrchardCore.Redis.Lock`). Without a distributed lock, these settings are ignored.

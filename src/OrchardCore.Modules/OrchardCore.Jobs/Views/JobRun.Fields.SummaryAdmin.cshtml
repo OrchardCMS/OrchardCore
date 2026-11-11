@@ -1,0 +1,7 @@
+@model JobRunRowViewModel
+
+@* Plain link, like the title of a content item in the Manage Content list. *@
+<a asp-action="Details" asp-controller="JobRun" asp-route-area="OrchardCore.Jobs" asp-route-runId="@Model.Run.RunId">@Model.JobTitle@if (!string.IsNullOrEmpty(Model.Run.Title))
+    {
+        <text>: @Model.Run.Title</text>
+    }</a>

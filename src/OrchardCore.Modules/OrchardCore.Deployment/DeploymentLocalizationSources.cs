@@ -24,4 +24,10 @@ internal static class DeploymentLocalizationSources
 
     /// <summary>Gets the "Recipe File" text.</summary>
     public static readonly LocalizationSource RecipeFile = LocalizationSource.Create("Recipe File", typeof(DeploymentLocalizationSources));
+
+    /// <summary>Gets the title of the job that imports a deployment package.</summary>
+    public static readonly LocalizationSource ImportJobTitle = LocalizationSource.Create("Deployment Package Import", typeof(DeploymentLocalizationSources));
+
+    /// <summary>Gets the description of the job that imports a deployment package.</summary>
+    public static readonly LocalizationSource ImportJobDescription = LocalizationSource.Create("Imports a deployment package uploaded from the admin.", typeof(DeploymentLocalizationSources));
 }

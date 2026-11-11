@@ -64,8 +64,8 @@ public class TimerEvent : EventActivity, IActivityProvidedValues, IActivityDescr
 
     public override ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        // The timer starts when the workflow starts waiting on it, not when the background task first looks at it, so the
-        // first run of the task after the timer is due resumes the workflow, and a run before that has nothing to save.
+        // The timer starts when the workflow starts waiting on it, not when the timers job first looks at it, so the
+        // first run of the job after the timer is due resumes the workflow, and a run before that has nothing to save.
         StartedUtc ??= _clock.UtcNow;
 
         return base.Execute(workflowContext, activityContext);

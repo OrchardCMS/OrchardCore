@@ -1,0 +1,5 @@
+@model JobRunRowViewModel
+
+<span class="badge ta-badge fw-normal" title="@(string.IsNullOrEmpty(Model.Run.TriggeredBy) ? T["What started the run"] : T["Started by {0}", Model.Run.TriggeredBy])">
+    <partial name="_JobRunTrigger" model="Model.Run" />
+</span>

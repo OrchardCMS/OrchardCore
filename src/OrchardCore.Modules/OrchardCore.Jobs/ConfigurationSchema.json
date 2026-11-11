@@ -1,0 +1,46 @@
+{
+  "type": "object",
+  "properties": {
+    "OrchardCore": {
+      "type": "object",
+      "properties": {
+        "Jobs": {
+          "type": "object",
+          "description": "Configures how the runs of jobs execute, used by the 'OrchardCore.Jobs' feature. Can be set for all tenants or per tenant. See https://docs.orchardcore.net/en/latest/reference/modules/Jobs/.",
+          "properties": {
+            "MaxConcurrentRuns": {
+              "type": "integer",
+              "description": "The number of runs of a tenant a server executes at the same time. The other runs wait, queued, for one to end, or for another server.",
+              "minimum": 1,
+              "default": 4
+            },
+            "MaxConcurrentRunsPerServer": {
+              "type": "integer",
+              "description": "The number of runs a server executes at the same time for all its tenants. 0 doesn't limit them. Set it in the application configuration, as the value of the first tenant that executes a run applies.",
+              "minimum": 0,
+              "default": 0
+            },
+            "HeartbeatSeconds": {
+              "type": "integer",
+              "description": "How often, in seconds, a server reports that a run is still executing, and saves its progress and its log. A cancellation requested from another server is seen at that time.",
+              "minimum": 1,
+              "default": 10
+            },
+            "AbandonedAfterMinutes": {
+              "type": "integer",
+              "description": "The number of minutes after which a running run that stopped reporting is considered abandoned by its server. It is queued again when it has attempts left, and fails otherwise.",
+              "minimum": 1,
+              "default": 5
+            },
+            "RunRetentionDays": {
+              "type": "integer",
+              "description": "The number of days the runs that ended are kept; older runs are deleted. 0 keeps them.",
+              "minimum": 0,
+              "default": 30
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -3,11 +3,15 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Jobs;
+using OrchardCore.Jobs.Models;
 using OrchardCore.Modules;
+using OrchardCore.Recipes.Jobs;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.DisplayManagement;
@@ -28,6 +32,8 @@ public sealed class AdminController : Controller
     private readonly IEnumerable<IRecipeEnvironmentProvider> _environmentProviders;
     private readonly INotifier _notifier;
     private readonly ILogger _logger;
+    private readonly IEnumerable<IJobManager> _jobManagers;
+    private readonly JobOptions _jobOptions;
 
     internal readonly IHtmlLocalizer H;
     internal readonly IStringLocalizer S;
@@ -42,6 +48,8 @@ public sealed class AdminController : Controller
         IEnumerable<IRecipeEnvironmentProvider> environmentProviders,
         INotifier notifier,
         ILogger<AdminController> logger,
+        IEnumerable<IJobManager> jobManagers,
+        IOptions<JobOptions> jobOptions,
         IHtmlLocalizer<AdminController> htmlLocalizer,
         IStringLocalizer<AdminController> stringLocalizer)
     {
@@ -54,6 +62,10 @@ public sealed class AdminController : Controller
         _environmentProviders = environmentProviders;
         _notifier = notifier;
         _logger = logger;
+
+        // The Jobs feature is optional: without it, no job manager is registered.
+        _jobManagers = jobManagers;
+        _jobOptions = jobOptions.Value;
         H = htmlLocalizer;
         S = stringLocalizer;
     }
@@ -125,6 +137,22 @@ public sealed class AdminController : Controller
         if (recipe == null)
         {
             await _notifier.ErrorAsync(H["Recipe was not found."]);
+            return RedirectToAction(nameof(Index));
+        }
+
+        // With the Jobs feature, the recipe runs in the background: a long recipe doesn't make the request wait, a
+        // recipe that is already running is not started again, and its run tells how it went.
+        if (_jobManagers.LastOrDefault() is { } jobManager && _jobOptions.Find(RecipeExecutionJob.Name) is not null)
+        {
+            var run = await jobManager.EnqueueAsync<RecipeExecutionJob>(new RecipeExecutionJobParameters { BasePath = basePath, FileName = fileName }, request =>
+            {
+                request.Title = recipe.DisplayName;
+                request.Trigger = JobTriggers.Manual;
+                request.DeduplicationKey = $"{basePath}/{fileName}";
+            });
+
+            await _notifier.SuccessAsync(H["The recipe '{0}' runs in the background. <a href=\"{1}\">View its run</a>.", recipe.DisplayName, Url.Action("Details", "JobRun", new { area = "OrchardCore.Jobs", runId = run.RunId })]);
+
             return RedirectToAction(nameof(Index));
         }
 

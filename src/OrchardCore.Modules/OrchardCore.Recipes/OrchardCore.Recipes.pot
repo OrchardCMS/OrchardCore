@@ -87,6 +87,13 @@ msgctxt "OrchardCore.Recipes.Controllers.AdminController"
 msgid "The recipe '{0}' has been run successfully."
 msgstr ""
 
+#. Format arguments: {0}: recipe.DisplayName; {1}: Url.Action("Details", "JobRun", new { area = "OrchardCore.Jobs", runId = run.RunId })
+#: Controllers/AdminController.cs
+#, csharp-format
+msgctxt "OrchardCore.Recipes.Controllers.AdminController"
+msgid "The recipe '{0}' runs in the background. <a href=\"{1}\">View its run</a>."
+msgstr ""
+
 #. Format arguments: {0}: recipe.DisplayName
 #: Controllers/AdminController.cs
 #, csharp-format
@@ -99,6 +106,16 @@ msgstr ""
 #, csharp-format
 msgctxt "OrchardCore.Recipes.RecipeSteps.RecipesStep"
 msgid "No recipe named '{0}' was found."
+msgstr ""
+
+#: RecipesLocalizationSources.cs
+msgctxt "OrchardCore.Recipes.RecipesLocalizationSources"
+msgid "Recipe"
+msgstr ""
+
+#: RecipesLocalizationSources.cs
+msgctxt "OrchardCore.Recipes.RecipesLocalizationSources"
+msgid "Runs a recipe from the list of recipes of the admin."
 msgstr ""
 
 #: Views/Admin/Index.cshtml

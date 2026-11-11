@@ -14,7 +14,7 @@ Although often used to index content items, the system is **not limited to conte
 Starting with Orchard Core version 3, the module provides a unified user interface under **Search** > **Indexes** in the admin dashboard. This UI supports the creation, configuration, and lifecycle management of indexes. You can:
 
 * Create and configure index profiles
-* Reset or rebuild existing indexes
+* Reset or rebuild existing indexes. The synchronization that follows runs in the background as a run of the **Index Synchronization** [job](../Jobs/README.md), listed with its outcome under **Tools** > **Jobs** > **Runs**. It runs on the server that handled the request when each server keeps its own copy of the index, as with Lucene, and on any server otherwise.
 * View provider-specific options
 * Configure which data types to index (for example, content types, if applicable)
 
@@ -29,6 +29,26 @@ When enabled, content item indexing uses the append-only task log to track chang
 * Integrate with analytics, auditing, or event-driven workflows
 
 This event-log-style system encourages loose coupling between the indexing infrastructure and content consumers.
+
+### Keeping the Indexes up to Date on Several Servers
+
+The **Indexing Worker** feature keeps the content indexes up to date with its **Indexes Content Updater** background task, which runs every minute on each server. What it does depends on where the provider of an index keeps it:
+
+| Provider | Where the index is | Who updates it |
+|---|---|---|
+| Lucene | On the disk of each server, with the position it reached in the task log. | Each server updates its own copy, in the background task. |
+| Elasticsearch, Azure AI Search | In a remote service all the servers share. | A single server at a time, as a run of the **Content Indexing** [job](../Jobs/README.md). |
+
+The background task queues a run of the **Content Indexing** job when a shared index has changes to index, and nothing while the indexes are up to date. Two runs are never executed at the same time, whatever the number of servers, and without requiring a distributed lock. A run that succeeds is not kept in the list of runs, as there can be one per minute; a run that fails is listed under **Tools** > **Jobs** > **Runs**.
+
+A provider tells that each server keeps its own copy of its indexes when it is registered:
+
+```csharp
+services.Configure<IndexingOptions>(options =>
+    options.AddIndexingProvider("ProviderName", provider => provider.IsLocal = true));
+```
+
+The indexes of a provider that doesn't are considered shared.
 
 ## Indexing Other Data (Custom Sources)
 

@@ -1,0 +1,26 @@
+@model JobRun
+
+@* What started a run. A module can use a trigger of its own, which is shown as it is. *@
+@switch (Model.Trigger)
+{
+    case JobTriggers.Manual:
+        <i class="fa-solid fa-user" aria-hidden="true"></i> @T["Manual"]
+        break;
+    case JobTriggers.Schedule:
+        <i class="fa-regular fa-calendar" aria-hidden="true"></i> @T["Schedule"]
+        break;
+    case JobTriggers.Parent:
+        <i class="fa-solid fa-diagram-next" aria-hidden="true"></i> @T["Parent run"]
+        break;
+    case JobTriggers.Workflow:
+        <i class="fa-solid fa-diagram-project" aria-hidden="true"></i> @T["Workflow"]
+        break;
+    case JobTriggers.Code:
+    case null:
+    case "":
+        <i class="fa-solid fa-code" aria-hidden="true"></i> @T["Application"]
+        break;
+    default:
+        <i class="fa-solid fa-bolt" aria-hidden="true"></i> @Model.Trigger
+        break;
+}

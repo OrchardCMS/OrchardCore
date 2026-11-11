@@ -29,6 +29,12 @@ public sealed class Startup : StartupBase
         services.AddScoped<IScopedIndexProvider>(sp => sp.GetRequiredService<ArchiveLaterPartIndexProvider>());
         services.AddScoped<IContentHandler>(sp => sp.GetRequiredService<ArchiveLaterPartIndexProvider>());
 
+        // The background task finds the content items that are due on every server; the job handles each of them once.
         services.AddSingleton<IBackgroundTask, ScheduledArchivingBackgroundTask>();
+        services.AddJob<ArchiveLaterJob>(ArchiveLaterJob.Name, job =>
+        {
+            job.Title = ArchiveLaterLocalizationSources.JobTitle;
+            job.Description = ArchiveLaterLocalizationSources.JobDescription;
+        });
     }
 }

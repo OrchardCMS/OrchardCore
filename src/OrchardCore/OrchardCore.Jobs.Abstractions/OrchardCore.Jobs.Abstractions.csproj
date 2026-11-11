@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>OrchardCore.Jobs</RootNamespace>
+    <!-- NuGet properties-->
+    <Title>OrchardCore Jobs Abstractions</Title>
+    <Description>$(OCFrameworkDescription)
+
+      Abstractions to define jobs, which run once whatever the number of servers, and to queue, schedule and follow
+      their runs.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreFramework Jobs</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OrchardCore.Infrastructure.Abstractions\OrchardCore.Infrastructure.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

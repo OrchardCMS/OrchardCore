@@ -6,6 +6,16 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-OrchardCore-Catalog-Schema: 1\n"
 
+#: ArchiveLaterLocalizationSources.cs
+msgctxt "OrchardCore.ArchiveLater.ArchiveLaterLocalizationSources"
+msgid "Archive Later"
+msgstr ""
+
+#: ArchiveLaterLocalizationSources.cs
+msgctxt "OrchardCore.ArchiveLater.ArchiveLaterLocalizationSources"
+msgid "Archives a content item whose scheduled archive date and time arrived."
+msgstr ""
+
 #: Views/ArchiveLaterPart.Edit.cshtml
 msgctxt "OrchardCore.ArchiveLater.Views.ArchiveLaterPart.Edit"
 msgid "Archive Later"

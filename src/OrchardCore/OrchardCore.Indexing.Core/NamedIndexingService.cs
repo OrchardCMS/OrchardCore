@@ -61,6 +61,45 @@ public abstract class NamedIndexingService
         await ProcessRecordsAsync(indexProfiles.Where(x => indexIds.Contains(x.Id)));
     }
 
+    /// <summary>
+    /// Returns whether one of the given indexes has indexing tasks it didn't process yet, without processing them.
+    /// An index whose provider is not available, or that doesn't exist, is ignored.
+    /// </summary>
+    /// <param name="indexIds">The identifiers of the indexes to check.</param>
+    public async Task<bool> HasPendingTasksAsync(IEnumerable<string> indexIds)
+    {
+        ArgumentNullException.ThrowIfNull(indexIds);
+
+        if (!indexIds.Any())
+        {
+            return false;
+        }
+
+        var indexProfiles = (await _indexProfileStore.GetByTypeAsync(Name)).Where(x => indexIds.Contains(x.Id));
+        var lastTaskId = long.MaxValue;
+
+        // Find the lowest task id that was processed.
+        foreach (var indexProfile in indexProfiles)
+        {
+            var documentIndexManager = _serviceProvider.GetKeyedService<IDocumentIndexManager>(indexProfile.ProviderName);
+            var indexManager = _serviceProvider.GetKeyedService<IIndexManager>(indexProfile.ProviderName);
+
+            if (documentIndexManager is null || indexManager is null || !await indexManager.ExistsAsync(indexProfile.IndexFullName))
+            {
+                continue;
+            }
+
+            lastTaskId = Math.Min(lastTaskId, await documentIndexManager.GetLastTaskIdAsync(indexProfile));
+        }
+
+        if (lastTaskId == long.MaxValue)
+        {
+            return false;
+        }
+
+        return (await _indexingTaskManager.GetIndexingTasksAsync(lastTaskId, 1, Name)).Any();
+    }
+
     private async Task ProcessRecordsAsync(IEnumerable<IndexProfile> indexProfiles)
     {
         if (!indexProfiles.Any())

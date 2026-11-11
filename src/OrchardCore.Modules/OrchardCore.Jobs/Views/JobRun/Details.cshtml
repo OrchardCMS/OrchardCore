@@ -1,0 +1,317 @@
+@using System.Text.Json
+@using Microsoft.Extensions.Logging
+@using OrchardCore.Jobs.Services
+
+@model JobRunDetailsViewModel
+
+@{
+    var run = Model.Run;
+    var title = string.IsNullOrEmpty(run.Title) ? Model.JobTitle : $"{Model.JobTitle}: {run.Title}";
+    var indented = new JsonSerializerOptions { WriteIndented = true };
+}
+
+<zone Name="Title">
+    <breadcrumb name="JobRunsDetails" title="@(new OrchardCore.DisplayManagement.Html.HtmlContentString(title))">
+        <breadcrumb-item id="JobRuns" action="Index" controller="JobRun" area="OrchardCore.Jobs" permission="@JobsPermissions.ViewJobs.Name">@T["Job Runs"]</breadcrumb-item>
+    </breadcrumb>
+</zone>
+
+<div data-job-runs-states-url="@Url.Action("States")">
+    <div data-job-run-id="@run.RunId" data-job-run-signature="@JobDisplayService.GetSignature(run)" data-job-run-active="@(run.IsCompleted ? "false" : "true")" class="job-run-details">
+
+        @* The actions are posted with the antiforgery token of the page. *@
+        @Html.AntiForgeryToken()
+
+        <div class="d-flex flex-wrap align-items-start gap-2 mb-3">
+            <div class="me-auto">
+                <partial name="_JobRunStatus" model="run" />
+                @if (!run.IsCompleted && !string.IsNullOrEmpty(run.ProgressMessage))
+                {
+                    <span class="text-muted ms-1">@run.ProgressMessage</span>
+                }
+            </div>
+            @if (Model.CanManage)
+            {
+                <div class="d-flex gap-1 ms-auto">
+                    @if (!run.IsCompleted)
+                    {
+                        <a asp-action="Cancel" asp-route-runId="@run.RunId" asp-route-returnUrl="@FullRequestPath" class="btn btn-warning btn-sm" data-title="@T["Cancel"]" data-message="@T["Are you sure you want to cancel this run?"]" data-url-af="RemoveUrl UnsafeUrl">@T["Cancel"]</a>
+                    }
+                    else
+                    {
+                        if (Model.IsJobRegistered)
+                        {
+                            <a asp-action="Rerun" asp-route-runId="@run.RunId" class="btn btn-primary btn-sm" data-url-af="UnsafeUrl">@T["Run again"]</a>
+                        }
+                        <a asp-action="Delete" asp-route-runId="@run.RunId" class="btn btn-danger btn-sm" data-title="@T["Delete"]" data-message="@T["Are you sure you want to delete this run?"]" data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+                    }
+                </div>
+            }
+        </div>
+
+        @if (run.Status == JobRunStatus.Running && run.Progress is { } progress)
+        {
+            <div class="progress mb-3" role="progressbar" aria-label="@T["Progress of the run"]" aria-valuenow="@progress" aria-valuemin="0" aria-valuemax="100">
+                <div class="progress-bar" style="width: @(progress)%">@T["{0}%", progress]</div>
+            </div>
+        }
+
+        @if (!Model.IsJobRegistered)
+        {
+            <div class="alert alert-warning" role="alert">
+                @T["The job of this run is not available, such as when its feature is disabled. A run that didn't start waits for it."]
+            </div>
+        }
+
+        @if (!string.IsNullOrEmpty(run.Error))
+        {
+            <div class="alert @(run.Status == JobRunStatus.Failed ? "alert-danger" : "alert-secondary")" role="alert">
+                <div>@run.Error</div>
+                @* The details of the exception, such as its stack trace, tell about the server: they are only for those who manage the jobs. *@
+                @if (Model.CanManage && !string.IsNullOrEmpty(run.ErrorDetails))
+                {
+                    <details class="mt-2">
+                        <summary>@T["Details"]</summary>
+                        <pre class="mb-0 mt-2 small text-wrap">@run.ErrorDetails</pre>
+                    </details>
+                }
+            </div>
+        }
+
+        <div class="row g-3 mb-3">
+            <div class="col-12 col-lg-6">
+                <div class="card h-100">
+                    <div class="card-header">@T["Run"]</div>
+                    <div class="card-body">
+                        <dl class="row mb-0">
+                            <dt class="col-sm-5">@T["Job"]</dt>
+                            <dd class="col-sm-7">
+                                <a asp-action="Index" asp-route-Options.JobName="@run.JobName">@Model.JobTitle</a>
+                            </dd>
+
+                            <dt class="col-sm-5">@T["Trigger"]</dt>
+                            <dd class="col-sm-7">
+                                <partial name="_JobRunTrigger" model="run" />
+                                @if (!string.IsNullOrEmpty(run.TriggeredBy))
+                                {
+                                    <span class="text-muted">@T["by {0}", run.TriggeredBy]</span>
+                                }
+                            </dd>
+
+                            @if (Model.Schedule is not null)
+                            {
+                                <dt class="col-sm-5">@T["Schedule"]</dt>
+                                <dd class="col-sm-7">
+                                    <a asp-action="Index" asp-controller="JobSchedule">@(string.IsNullOrEmpty(Model.Schedule.Name) ? Model.Schedule.Cron : Model.Schedule.Name)</a>
+                                </dd>
+                            }
+
+                            @if (Model.Parent is not null)
+                            {
+                                <dt class="col-sm-5">@T["Parent run"]</dt>
+                                <dd class="col-sm-7">
+                                    <a asp-action="Details" asp-route-runId="@Model.Parent.RunId">@Model.Parent.RunId</a>
+                                </dd>
+                            }
+
+                            <dt class="col-sm-5">@T["Attempt"]</dt>
+                            <dd class="col-sm-7">@T["{0} of {1}", run.Attempt, run.MaxAttempts]</dd>
+
+                            <dt class="col-sm-5">@T["Server"]</dt>
+                            <dd class="col-sm-7">
+                                @if (!string.IsNullOrEmpty(run.NodeId))
+                                {
+                                    @run.NodeId
+                                }
+                                else if (!string.IsNullOrEmpty(run.RequiredNodeId))
+                                {
+                                    @T["Only {0}", run.RequiredNodeId]
+                                }
+                                else
+                                {
+                                    <span class="text-muted">@T["Any server"]</span>
+                                }
+                            </dd>
+
+                            @if (!string.IsNullOrEmpty(run.CorrelationId))
+                            {
+                                <dt class="col-sm-5">@T["Correlation"]</dt>
+                                <dd class="col-sm-7"><code>@run.CorrelationId</code></dd>
+                            }
+
+                            <dt class="col-sm-5">@T["Identifier"]</dt>
+                            <dd class="col-sm-7 mb-0"><code>@run.RunId</code></dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-6">
+                <div class="card h-100">
+                    <div class="card-header">@T["Timeline"]</div>
+                    <div class="card-body">
+                        <dl class="row mb-0">
+                            <dt class="col-sm-5">@T["Queued"]</dt>
+                            <dd class="col-sm-7">@await DisplayAsync(await New.DateTime(Utc: run.CreatedUtc, Format: "G"))</dd>
+
+                            @if (run.DueUtc > run.CreatedUtc.AddSeconds(1))
+                            {
+                                <dt class="col-sm-5">@T["Due"]</dt>
+                                <dd class="col-sm-7">@await DisplayAsync(await New.DateTime(Utc: run.DueUtc, Format: "G"))</dd>
+                            }
+
+                            <dt class="col-sm-5">@T["Started"]</dt>
+                            <dd class="col-sm-7">
+                                @if (run.StartedUtc is { } started)
+                                {
+                                    @await DisplayAsync(await New.DateTime(Utc: started, Format: "G"))
+                                }
+                                else
+                                {
+                                    <span class="text-muted">&mdash;</span>
+                                }
+                            </dd>
+
+                            <dt class="col-sm-5">@T["Ended"]</dt>
+                            <dd class="col-sm-7">
+                                @if (run.CompletedUtc is { } completed)
+                                {
+                                    @await DisplayAsync(await New.DateTime(Utc: completed, Format: "G"))
+                                }
+                                else
+                                {
+                                    <span class="text-muted">&mdash;</span>
+                                }
+                            </dd>
+
+                            <dt class="col-sm-5">@T["Duration"]</dt>
+                            <dd class="col-sm-7">
+                                @if (run.IsCompleted && run.GetDuration() is { } duration)
+                                {
+                                    <partial name="_JobRunDuration" model="duration" />
+                                }
+                                else
+                                {
+                                    <span class="text-muted">&mdash;</span>
+                                }
+                            </dd>
+
+                            @if (run.Status == JobRunStatus.Running && run.HeartbeatUtc is { } heartbeat)
+                            {
+                                <dt class="col-sm-5">@T["Last report"]</dt>
+                                <dd class="col-sm-7 mb-0">@await DisplayAsync(await New.TimeSpan(Utc: heartbeat))</dd>
+                            }
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @if (Model.Children.Count > 0)
+        {
+            <div class="card mb-3">
+                <div class="card-header">@T["Child runs"]</div>
+                <div class="table-responsive">
+                    <table class="table table-sm mb-0 align-middle">
+                        <thead>
+                            <tr>
+                                <th scope="col">@T["Run"]</th>
+                                <th scope="col">@T["Status"]</th>
+                                <th scope="col">@T["Server"]</th>
+                                <th scope="col">@T["Duration"]</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var child in Model.Children)
+                            {
+                                <tr>
+                                    <td><a asp-action="Details" asp-route-runId="@child.RunId">@(string.IsNullOrEmpty(child.Title) ? child.RunId : child.Title)</a></td>
+                                    <td><partial name="_JobRunStatus" model="child" /></td>
+                                    <td>@child.NodeId</td>
+                                    <td>
+                                        @if (child.IsCompleted && child.GetDuration() is { } childDuration)
+                                        {
+                                            <partial name="_JobRunDuration" model="childDuration" />
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+
+        <div class="card mb-3">
+            <div class="card-header">@T["Log"]</div>
+            @if (run.Log.Count == 0)
+            {
+                <div class="card-body text-muted">@T["The run didn't log anything."]</div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-sm mb-0 font-monospace small">
+                        <tbody>
+                            @foreach (var entry in run.Log)
+                            {
+                                var rowClass = entry.Level switch
+                                {
+                                    >= LogLevel.Error => "table-danger",
+                                    LogLevel.Warning => "table-warning",
+                                    _ => null,
+                                };
+
+                                <tr class="@rowClass">
+                                    <td class="text-nowrap text-muted">@await DisplayAsync(await New.DateTime(Utc: entry.Utc, Format: "T"))</td>
+                                    <td class="text-nowrap">@entry.Level</td>
+                                    <td class="w-100 text-break">@entry.Message</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                @if (run.Log.Count >= JobRun.MaxLogEntries)
+                {
+                    <div class="card-footer text-muted small">@T["Only the first {0} messages of a run are kept.", JobRun.MaxLogEntries]</div>
+                }
+            }
+        </div>
+
+        <div class="row g-3">
+            <div class="col-12 col-lg-6">
+                <div class="card h-100">
+                    <div class="card-header">@T["Parameters"]</div>
+                    <div class="card-body">
+                        @if (run.Parameters is null)
+                        {
+                            <span class="text-muted">@T["None"]</span>
+                        }
+                        else
+                        {
+                            <pre class="mb-0 small">@run.Parameters.ToJsonString(indented)</pre>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-6">
+                <div class="card h-100">
+                    <div class="card-header">@T["Result"]</div>
+                    <div class="card-body">
+                        @if (run.Result is null)
+                        {
+                            <span class="text-muted">@T["None"]</span>
+                        }
+                        else
+                        {
+                            <pre class="mb-0 small">@run.Result.ToJsonString(indented)</pre>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script asp-src="~/OrchardCore.Jobs/Scripts/jobs/job-run-state.min.js" debug-src="~/OrchardCore.Jobs/Scripts/jobs/job-run-state.js" at="Foot" type="module"></script>

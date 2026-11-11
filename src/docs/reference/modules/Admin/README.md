@@ -737,6 +737,9 @@ The columns of a list are declared in its rendering view.
 | `FeatureProfiles` | `FeatureProfileEntry` | `OrchardCore.Tenants` |
 | `Features` | `FeatureEntry` | `OrchardCore.Features` |
 | `Indexes` | `IndexProfile` | `OrchardCore.Indexing` |
+| `JobRuns` | `JobRun` | `OrchardCore.Jobs` |
+| `JobSchedules` | `JobSchedule` | `OrchardCore.Jobs` |
+| `Jobs` | `JobEntry` | `OrchardCore.Jobs` |
 | `Layers` | `Layer` | `OrchardCore.Layers` |
 | `ListPartContents` | `ListPartAdminListEntry` | `OrchardCore.Lists` |
 | `MediaProfiles` | `MediaProfileEntry` | `OrchardCore.Media` |

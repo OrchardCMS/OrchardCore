@@ -1,5 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.BackgroundTasks;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.DataPipelines.Services;
@@ -35,7 +34,15 @@ public sealed class CoreStartup : StartupBase
         services.AddScoped<ISharedLinkManager>(serviceProvider => serviceProvider.GetRequiredService<SharedLinkManager>());
         services.AddPermissionProvider<SharedLinkPermissionsProvider>();
         services.AddNavigationProvider<SharedLinksAdminMenu>();
-        services.AddSingleton<IBackgroundTask, SharedLinksBackgroundTask>();
+        services.AddJob<SharedLinksCleanupJob>(SharedLinksCleanupJob.Name, job =>
+        {
+            job.Title = DataPipelinesLocalizationSources.SharedLinksCleanupJobTitle;
+            job.Description = DataPipelinesLocalizationSources.SharedLinksCleanupJobDescription;
+            job.Schedule = "*/15 * * * *";
+
+            // It runs often, and only its failures are worth keeping.
+            job.KeepSucceededRuns = false;
+        });
     }
 }
 

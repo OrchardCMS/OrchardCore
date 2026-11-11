@@ -28,6 +28,12 @@ public sealed class Startup : StartupBase
         services.AddScoped<IScopedIndexProvider>(sp => sp.GetRequiredService<PublishLaterPartIndexProvider>());
         services.AddScoped<IContentHandler>(sp => sp.GetRequiredService<PublishLaterPartIndexProvider>());
 
+        // The background task finds the content items that are due on every server; the job handles each of them once.
         services.AddSingleton<IBackgroundTask, ScheduledPublishingBackgroundTask>();
+        services.AddJob<PublishLaterJob>(PublishLaterJob.Name, job =>
+        {
+            job.Title = PublishLaterLocalizationSources.JobTitle;
+            job.Description = PublishLaterLocalizationSources.JobDescription;
+        });
     }
 }

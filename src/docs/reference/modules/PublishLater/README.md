@@ -40,12 +40,19 @@ The editor does not require the value to be in the future. A time already in the
 
 ## Background publication
 
-The **Scheduled Content Items Publisher** background task is enabled by default and uses the cron schedule `* * * * *`, which checks for due items every minute. Each run:
+The **Scheduled Content Items Publisher** background task is enabled by default and uses the cron schedule `* * * * *`, which checks for due items every minute. Each time it runs, it:
 
 1. Queries scheduled versions that are both the latest version and unpublished.
 2. Selects schedules earlier than the current UTC time.
-3. Clears `ScheduledPublishUtc`.
-4. Publishes each content item through `IContentManager.PublishAsync`.
+3. Queues a run of the **Publish Later** [job](../Jobs/README.md) for each of these content items.
+
+The run of the job then:
+
+1. Checks that the content item is still due, as its schedule may have been changed or cancelled in between.
+2. Clears `ScheduledPublishUtc`.
+3. Publishes the content item through `IContentManager.PublishAsync`.
+
+A single server executes the run, whatever their number, so a content item is published once. The runs are listed under **Tools → Jobs → Runs**, with their outcome: a publication that fails is shown as a failed run with its error, and is tried again an hour later.
 
 Publication can therefore happen after, but not before, the requested time. The exact delay depends on the task schedule, host availability, and processing time.
 

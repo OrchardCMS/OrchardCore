@@ -19,7 +19,7 @@ public sealed class ContentVersionPruningSettings
     public string[] ContentTypes { get; set; } = [];
 
     /// <summary>
-    /// Whether the pruning background task is disabled.
+    /// Whether the pruning job is disabled.
     /// </summary>
     public bool Disabled { get; set; }
 }

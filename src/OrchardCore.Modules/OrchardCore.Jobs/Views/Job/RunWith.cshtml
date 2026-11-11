@@ -1,0 +1,48 @@
+@model JobRunNowViewModel
+
+<zone Name="Title">
+    <breadcrumb name="JobsRunWith" title="@T["Run with Parameters"]">
+        <breadcrumb-item id="Jobs" action="Index" controller="Job" area="OrchardCore.Jobs" permission="@JobsPermissions.ViewJobs.Name">@T["Jobs"]</breadcrumb-item>
+    </breadcrumb>
+</zone>
+
+<div asp-validation-summary="ModelOnly"></div>
+<form asp-action="RunWith" asp-route-name="@Model.Name" method="post" class="no-multisubmit">
+    <input asp-for="Name" type="hidden" />
+
+    <div class="ocat-wrapper">
+        <label for="JobTitle" class="ocat-label">@T["Job"]</label>
+        <div class="ocat-end">
+            <input type="text" id="JobTitle" class="form-control-plaintext" readonly value="@Model.JobTitle" />
+            @if (!string.IsNullOrWhiteSpace(Model.JobDescription))
+            {
+                <span class="hint">@Model.JobDescription</span>
+            }
+        </div>
+    </div>
+
+    <div class="ocat-wrapper" asp-validation-class-for="Title">
+        <label asp-for="Title" class="ocat-label">@T["Title"]</label>
+        <div class="ocat-end">
+            <input asp-for="Title" class="form-control" />
+            <span asp-validation-for="Title"></span>
+            <span class="hint">@T["What this run is about, shown next to the title of the job in the list of runs. It is optional."]</span>
+        </div>
+    </div>
+
+    <div class="ocat-wrapper" asp-validation-class-for="Parameters">
+        <label asp-for="Parameters" class="ocat-label">@T["Parameters"]</label>
+        <div class="ocat-end">
+            <textarea asp-for="Parameters" class="form-control font-monospace" rows="8" spellcheck="false"></textarea>
+            <span asp-validation-for="Parameters"></span>
+            <span class="hint">@T["The parameters of the run, as a JSON object. Leave empty for a job that takes none."]</span>
+        </div>
+    </div>
+
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
+            <button class="btn btn-primary save" type="submit">@T["Run"]</button>
+            <a class="btn btn-secondary cancel" role="button" asp-action="Index">@T["Cancel"]</a>
+        </div>
+    </div>
+</form>

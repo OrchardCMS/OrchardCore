@@ -207,6 +207,26 @@ msgctxt "OrchardCore.Indexing.Drivers.IndexProfileDisplayDriver"
 msgid "There is already another index with the same name."
 msgstr ""
 
+#: IndexingJobsLocalizationSources.cs
+msgctxt "OrchardCore.Indexing.IndexingJobsLocalizationSources"
+msgid "Content Indexing"
+msgstr ""
+
+#: IndexingJobsLocalizationSources.cs
+msgctxt "OrchardCore.Indexing.IndexingJobsLocalizationSources"
+msgid "Index Synchronization"
+msgstr ""
+
+#: IndexingJobsLocalizationSources.cs
+msgctxt "OrchardCore.Indexing.IndexingJobsLocalizationSources"
+msgid "Synchronizes an index with its source, such as after it was reset or rebuilt."
+msgstr ""
+
+#: IndexingJobsLocalizationSources.cs
+msgctxt "OrchardCore.Indexing.IndexingJobsLocalizationSources"
+msgid "Updates the content indexes that all the servers share, such as the ones of a remote search service, with the content items that changed."
+msgstr ""
+
 #: Views/Admin/Create.cshtml
 msgctxt "OrchardCore.Indexing.Views.Admin.Create"
 msgid "Cancel"

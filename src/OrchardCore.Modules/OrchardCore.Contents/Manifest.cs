@@ -30,8 +30,8 @@ using OrchardCore.Modules.Manifest;
 [assembly: Feature(
     Id = "OrchardCore.Contents.VersionPruning",
     Name = "Content Version Pruning",
-    Description = "Provides a background task to prune old content item versions.",
-    Dependencies = ["OrchardCore.Contents"],
+    Description = "Provides a job to prune old content item versions.",
+    Dependencies = ["OrchardCore.Contents", "OrchardCore.Jobs"],
     Category = "Content Management"
 )]
 

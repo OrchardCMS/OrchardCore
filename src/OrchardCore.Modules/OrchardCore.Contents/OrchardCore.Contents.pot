@@ -148,6 +148,16 @@ msgstr ""
 
 #: ContentsLocalizationSources.cs
 msgctxt "OrchardCore.Contents.ContentsLocalizationSources"
+msgid "Content Version Pruning"
+msgstr ""
+
+#: ContentsLocalizationSources.cs
+msgctxt "OrchardCore.Contents.ContentsLocalizationSources"
+msgid "Deletes the old versions of content items that are neither the latest nor the published one."
+msgstr ""
+
+#: ContentsLocalizationSources.cs
+msgctxt "OrchardCore.Contents.ContentsLocalizationSources"
 msgid "Export Content To Deployment Target"
 msgstr ""
 

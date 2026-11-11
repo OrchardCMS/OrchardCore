@@ -1,0 +1,27 @@
+@using OrchardCore.DisplayManagement.Views
+
+@model ShapeViewModel<JobEntry>
+
+@{
+    var inGrid = Model.Metadata.DisplayType == OrchardCoreConstants.DisplayType.SummaryAdminGrid;
+}
+
+@foreach (var schedule in Model.Value.Schedules)
+{
+    <span class="badge ta-badge fw-normal" title="@(schedule.IsEnabled ? T["The cron expression of a schedule of the job"] : T["A schedule of the job, which is disabled"])">
+        <i class="fa-regular fa-calendar" aria-hidden="true"></i>
+        @if (schedule.IsEnabled)
+        {
+            <code>@schedule.Cron</code>
+        }
+        else
+        {
+            <code class="text-decoration-line-through">@schedule.Cron</code> @T["Disabled"]
+        }
+    </span>
+}
+
+@if (Model.Value.Schedules.Count == 0 && inGrid)
+{
+    <span class="text-muted">&mdash;</span>
+}
