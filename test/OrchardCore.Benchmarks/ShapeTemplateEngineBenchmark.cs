@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
 using Microsoft.AspNetCore.Html;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Benchmarks.Support;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Tests.Apis.Context;
@@ -69,14 +68,9 @@ public class ShapeTemplateEngineBenchmark
     private static ValueTask<IShape> CreateCodeShape(IShapeFactory factory)
         => factory.CreateAsync("DateTime", Arguments.From(new { Utc = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) }));
 
-    // A call to 'CreateAsync<TitlePartViewModel>()' would be intercepted by the shape source generator, which would emit
-    // in this assembly the same generated shape type as the one of OrchardCore.Title (CS0436). Through a delegate, the
-    // runtime path creates a proxy of the model instead, which costs about 70 ns more, negligible for this measure.
-    private static readonly Func<IShapeFactory, string, Action<TitlePartViewModel>, ValueTask<IShape>> s_createTitlePartShape = ShapeFactoryRuntimePath.GetCreateAsync<TitlePartViewModel>();
-
     // 'TitlePart.cshtml' of OrchardCore.Title: '<h1>@Model.Title</h1>', the smallest Razor template.
     private static ValueTask<IShape> CreateRazorShape(IShapeFactory factory)
-        => s_createTitlePartShape(factory, "TitlePart", static m => m.Title = "Hello");
+        => factory.CreateAsync<TitlePartViewModel>("TitlePart", static m => m.Title = "Hello");
 
     // 'Search-Form.liquid' of TheBlogTheme: a form reading three properties of the shape.
     private static ValueTask<IShape> CreateLiquidShape(IShapeFactory factory)
