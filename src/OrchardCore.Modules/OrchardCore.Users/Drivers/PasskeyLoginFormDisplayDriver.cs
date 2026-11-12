@@ -4,7 +4,7 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Drivers;
 
-public sealed class PasskeyLoginFormDisplayDriver : DisplayDriver<LoginForm>
+internal sealed class PasskeyLoginFormDisplayDriver : DisplayDriver<LoginForm>
 {
     public override IDisplayResult Edit(LoginForm model, BuildEditorContext context)
     {

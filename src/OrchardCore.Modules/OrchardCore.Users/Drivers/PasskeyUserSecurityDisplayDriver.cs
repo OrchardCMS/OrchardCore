@@ -9,7 +9,7 @@ using OrchardCore.Users.ViewModels;
 
 namespace OrchardCore.Users.Drivers;
 
-public sealed class PasskeyUserSecurityDisplayDriver : DisplayDriver<UserSecurity>
+internal sealed class PasskeyUserSecurityDisplayDriver : DisplayDriver<UserSecurity>
 {
     private readonly PasskeyService _passkeyService;
     private readonly ISiteService _siteService;

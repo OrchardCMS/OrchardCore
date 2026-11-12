@@ -4,7 +4,7 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Drivers;
 
-public sealed class SecurityUserMenuDisplayDriver : DisplayDriver<UserMenu>
+internal sealed class SecurityUserMenuDisplayDriver : DisplayDriver<UserMenu>
 {
     public override IDisplayResult Display(UserMenu model, BuildDisplayContext context)
     {

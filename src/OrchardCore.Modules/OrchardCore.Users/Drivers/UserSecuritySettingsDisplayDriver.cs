@@ -8,7 +8,7 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Drivers;
 
-public sealed class UserSecuritySettingsDisplayDriver : SiteDisplayDriver<UserSecuritySettings>
+internal sealed class UserSecuritySettingsDisplayDriver : SiteDisplayDriver<UserSecuritySettings>
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;

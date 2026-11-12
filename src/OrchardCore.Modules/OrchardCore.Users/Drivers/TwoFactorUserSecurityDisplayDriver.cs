@@ -11,7 +11,7 @@ using OrchardCore.Users.ViewModels;
 
 namespace OrchardCore.Users.Drivers;
 
-public sealed class TwoFactorUserSecurityDisplayDriver : DisplayDriver<UserSecurity>
+internal sealed class TwoFactorUserSecurityDisplayDriver : DisplayDriver<UserSecurity>
 {
     private readonly UserManager<IUser> _userManager;
     private readonly SignInManager<IUser> _signInManager;

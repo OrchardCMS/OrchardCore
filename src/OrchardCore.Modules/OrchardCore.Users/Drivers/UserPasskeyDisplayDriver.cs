@@ -5,7 +5,7 @@ using OrchardCore.Users.ViewModels;
 
 namespace OrchardCore.Users.Drivers;
 
-public sealed class UserPasskeyDisplayDriver : DisplayDriver<User>
+internal sealed class UserPasskeyDisplayDriver : DisplayDriver<User>
 {
     public override IDisplayResult Display(User user, BuildDisplayContext context)
     {
