@@ -104,7 +104,7 @@
             "PollingTime": {
               "type": "string",
               "default": "00:01:00",
-              "description": "The time to wait between two executions of all the background tasks of a given tenant, in the 'hh:mm:ss' format."
+              "description": "The time to wait between two executions of all the background tasks of a given tenant, in the 'hh:mm:ss' format. It also bounds how long the background service waits for a task before running the others."
             },
             "MinimumIdleTime": {
               "type": "string",
