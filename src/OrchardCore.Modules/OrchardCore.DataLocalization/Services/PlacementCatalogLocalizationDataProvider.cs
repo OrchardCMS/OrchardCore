@@ -2,19 +2,20 @@ using System.Reflection;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Localization.Data;
 
 namespace OrchardCore.DataLocalization.Services;
 
 /// <summary>
-/// Lists the tab and card names of the placement catalogs generated at build time, for the types of the enabled
-/// features and the types they derive from.
+/// Provides the tab and card names of the placement catalogs generated at build time, for the types of the enabled
+/// features and the types they derive from, and the default group that shapes placed in no tab or card share.
 /// </summary>
-public sealed class PlacementCatalogTabAndCardNameContributor : ITabAndCardNameContributor
+internal sealed class PlacementCatalogLocalizationDataProvider : ILocalizationDataProvider
 {
     private readonly IShellFeaturesManager _shellFeaturesManager;
     private readonly ITypeFeatureProvider _typeFeatureProvider;
 
-    public PlacementCatalogTabAndCardNameContributor(
+    public PlacementCatalogLocalizationDataProvider(
         IShellFeaturesManager shellFeaturesManager,
         ITypeFeatureProvider typeFeatureProvider)
     {
@@ -22,7 +23,7 @@ public sealed class PlacementCatalogTabAndCardNameContributor : ITabAndCardNameC
         _typeFeatureProvider = typeFeatureProvider;
     }
 
-    public async Task<IEnumerable<string>> GetNamesAsync()
+    public async Task<IEnumerable<DataLocalizedString>> GetDescriptorsAsync()
     {
         // A location that a base type sets counts for the enabled types derived from it, whatever their feature.
         var types = new HashSet<Type>();
@@ -38,7 +39,8 @@ public sealed class PlacementCatalogTabAndCardNameContributor : ITabAndCardNameC
             }
         }
 
-        var names = new List<string>();
+        // The group of the shapes placed in no tab or card is named implicitly.
+        var names = new List<string> { TabAndCardNames.Default };
 
         foreach (var assembly in types.Select(type => type.Assembly).Distinct())
         {
@@ -64,6 +66,9 @@ public sealed class PlacementCatalogTabAndCardNameContributor : ITabAndCardNameC
             }
         }
 
-        return names;
+        return names
+            .Where(name => !string.IsNullOrWhiteSpace(name))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .Select(name => new DataLocalizedString(TabAndCardNames.DataLocalizationContext, name, string.Empty));
     }
 }

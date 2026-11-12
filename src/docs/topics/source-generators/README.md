@@ -136,7 +136,7 @@ A location built only from text without `#` or `%` and from numbers, such as `"A
 
 - Pass a constant.
 - Declare the possible locations on the driver with `[PlacementLocation]`, referencing the same constants. A type is covered by the declarations of its base types.
-- For names that come from data, list them with an `ITabAndCardNameContributor`, and disable the rule around the call with `#pragma warning disable OCSG003`.
+- For names that come from data, list them with an `ILocalizationDataProvider` under the `Tabs and Cards` context (`TabAndCardNames.DataLocalizationContext`), and disable the rule around the call with `#pragma warning disable OCSG003`.
 
 
 ## Real-World Examples

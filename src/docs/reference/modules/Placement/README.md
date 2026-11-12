@@ -561,15 +561,29 @@ public class ProfileToolsDisplayDriver : DisplayDriver<Profile>
 }
 ```
 
-When the names come from data, list them with an `ITabAndCardNameContributor` registered when the `OrchardCore.DataLocalization` feature is enabled, and disable the rule around the call with `#pragma warning disable OCSG003`.
+When the names come from data, list them with an `ILocalizationDataProvider` under the `Tabs and Cards` context, registered when the `OrchardCore.DataLocalization` feature is enabled, and disable the rule around the call with `#pragma warning disable OCSG003`. A name that several providers list is shown once in the translation editor.
 
 ```csharp
+internal sealed class ProfileTabLocalizationDataProvider : ILocalizationDataProvider
+{
+    private readonly ProfileService _profileService;
+
+    public ProfileTabLocalizationDataProvider(ProfileService profileService)
+    {
+        _profileService = profileService;
+    }
+
+    public async Task<IEnumerable<DataLocalizedString>> GetDescriptorsAsync()
+        => (await _profileService.GetSectionNamesAsync())
+            .Select(name => new DataLocalizedString(TabAndCardNames.DataLocalizationContext, name, string.Empty));
+}
+
 [RequireFeatures("OrchardCore.DataLocalization")]
 public sealed class DataLocalizationStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<ITabAndCardNameContributor, ProfileTabNameContributor>();
+        services.AddScoped<ILocalizationDataProvider, ProfileTabLocalizationDataProvider>();
     }
 }
 ```

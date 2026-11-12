@@ -8,7 +8,7 @@ namespace OrchardCore.DisplayManagement.Descriptors;
 /// The tab and card names of constant locations are discovered at build time. Declare the location on the driver
 /// that sets it, for instance one returned by a virtual property, by referencing the same constant. A derived driver
 /// that sets another location declares its own. Names that come from data are listed by an
-/// <see cref="ITabAndCardNameContributor"/>.
+/// <c>ILocalizationDataProvider</c> under the <see cref="TabAndCardNames.DataLocalizationContext"/> context.
 /// </remarks>
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
 public sealed class PlacementLocationAttribute : Attribute

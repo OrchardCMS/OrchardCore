@@ -30,7 +30,7 @@ public sealed class PlacementLocationAnalyzer : DiagnosticAnalyzer
         Category,
         DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
-        description: "The tab and card names of placement locations are listed for translation from the constants read at build time. Pass a constant, or declare the possible locations on the type with [PlacementLocation], referencing the same constants. For names that come from data, list them with an ITabAndCardNameContributor and disable the rule around the call with #pragma warning disable OCSG003.",
+        description: "The tab and card names of placement locations are listed for translation from the constants read at build time. Pass a constant, or declare the possible locations on the type with [PlacementLocation], referencing the same constants. For names that come from data, list them with an ILocalizationDataProvider under the \"Tabs and Cards\" context and disable the rule around the call with #pragma warning disable OCSG003.",
         helpLinkUri: HelpLinkUri);
 
     /// <inheritdoc />

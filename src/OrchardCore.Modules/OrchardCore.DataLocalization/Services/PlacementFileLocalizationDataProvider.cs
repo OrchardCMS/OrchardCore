@@ -4,21 +4,22 @@ using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Localization.Data;
 
 namespace OrchardCore.DataLocalization.Services;
 
 /// <summary>
-/// Lists the tab and card names of the <c>placement.json</c> rules of the enabled modules and themes, whatever their
-/// filters.
+/// Provides the tab and card names of the <c>placement.json</c> rules of the enabled modules and themes, whatever
+/// their filters.
 /// </summary>
-public sealed class PlacementFileTabAndCardNameContributor : ITabAndCardNameContributor
+internal sealed class PlacementFileLocalizationDataProvider : ILocalizationDataProvider
 {
     private const string PlacementFileName = "placement.json";
 
     private readonly IHostEnvironment _hostEnvironment;
     private readonly IShellFeaturesManager _shellFeaturesManager;
 
-    public PlacementFileTabAndCardNameContributor(
+    public PlacementFileLocalizationDataProvider(
         IHostEnvironment hostEnvironment,
         IShellFeaturesManager shellFeaturesManager)
     {
@@ -26,7 +27,7 @@ public sealed class PlacementFileTabAndCardNameContributor : ITabAndCardNameCont
         _shellFeaturesManager = shellFeaturesManager;
     }
 
-    public async Task<IEnumerable<string>> GetNamesAsync()
+    public async Task<IEnumerable<DataLocalizedString>> GetDescriptorsAsync()
     {
         var names = new List<string>();
         var extensions = (await _shellFeaturesManager.GetEnabledFeaturesAsync())
@@ -53,6 +54,9 @@ public sealed class PlacementFileTabAndCardNameContributor : ITabAndCardNameCont
             }
         }
 
-        return names;
+        return names
+            .Where(name => !string.IsNullOrWhiteSpace(name))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .Select(name => new DataLocalizedString(TabAndCardNames.DataLocalizationContext, name, string.Empty));
     }
 }

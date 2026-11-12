@@ -5,6 +5,7 @@ using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Localization.Data;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Placements.Deployment;
@@ -59,7 +60,7 @@ public sealed class DataLocalizationStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<ITabAndCardNameContributor, PlacementsTabAndCardNameContributor>();
+        services.AddScoped<ILocalizationDataProvider, PlacementsLocalizationDataProvider>();
     }
 }
 

@@ -1,20 +1,21 @@
 using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.Localization.Data;
 
 namespace OrchardCore.Placements.Services;
 
 /// <summary>
-/// Lists the tab and card names of the stored placement rules, whatever their filters.
+/// Provides the tab and card names of the stored placement rules, whatever their filters.
 /// </summary>
-internal sealed class PlacementsTabAndCardNameContributor : ITabAndCardNameContributor
+internal sealed class PlacementsLocalizationDataProvider : ILocalizationDataProvider
 {
     private readonly PlacementsManager _placementsManager;
 
-    public PlacementsTabAndCardNameContributor(PlacementsManager placementsManager)
+    public PlacementsLocalizationDataProvider(PlacementsManager placementsManager)
     {
         _placementsManager = placementsManager;
     }
 
-    public async Task<IEnumerable<string>> GetNamesAsync()
+    public async Task<IEnumerable<DataLocalizedString>> GetDescriptorsAsync()
     {
         var placements = await _placementsManager.ListShapePlacementsAsync();
 
@@ -22,6 +23,8 @@ internal sealed class PlacementsTabAndCardNameContributor : ITabAndCardNameContr
             .SelectMany(nodes => nodes ?? [])
             .Where(node => !string.IsNullOrEmpty(node.Location))
             .SelectMany(node => TabAndCardNames.FromLocation(node.Location))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .Select(name => new DataLocalizedString(TabAndCardNames.DataLocalizationContext, name, string.Empty))
             .ToArray();
     }
 }

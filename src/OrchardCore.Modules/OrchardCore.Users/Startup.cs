@@ -19,7 +19,6 @@ using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement;
-using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Environment.Commands;
@@ -28,6 +27,7 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Liquid;
+using OrchardCore.Localization.Data;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
@@ -702,7 +702,7 @@ public sealed class CustomUserSettingsDataLocalizationStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<ITabAndCardNameContributor, CustomUserSettingsTabAndCardNameContributor>();
+        services.AddScoped<ILocalizationDataProvider, CustomUserSettingsTabLocalizationDataProvider>();
     }
 }
 
