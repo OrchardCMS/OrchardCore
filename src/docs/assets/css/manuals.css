@@ -9,38 +9,29 @@
 }
 
 .md-typeset .oc-manual {
-  --oc-accent: #00897b;
-  --oc-accent-text: #00796b;
+  --oc-accent: var(--oc-teal);
+  --oc-accent-text: var(--oc-teal-text);
   display: flex;
   flex-direction: column;
   padding: 1.2rem 1.3rem 1.3rem;
-  border: 1px solid color-mix(in srgb, var(--oc-accent) 25%, transparent);
-  border-top: 0.25rem solid var(--oc-accent);
-  border-radius: 0.5rem;
+  border: 0.05rem solid color-mix(in srgb, var(--oc-accent) 30%, transparent);
+  border-radius: var(--oc-radius);
   background: color-mix(in srgb, var(--oc-accent) 7%, var(--md-default-bg-color));
-  box-shadow: var(--md-shadow-z1);
-  transition: box-shadow 0.25s, transform 0.25s;
+  transition: border-color 0.25s;
 }
 
 .md-typeset .oc-manual:hover,
 .md-typeset .oc-manual:focus-within {
-  box-shadow: var(--md-shadow-z2);
-  transform: translateY(-0.1rem);
+  border-color: var(--oc-accent);
 }
 
 .md-typeset .oc-manual--tech {
-  --oc-accent: #3f51b5;
-  --oc-accent-text: #3949ab;
+  --oc-accent: var(--oc-indigo);
+  --oc-accent-text: var(--oc-indigo-text);
 }
 
 [data-md-color-scheme="slate"] .md-typeset .oc-manual {
-  --oc-accent-text: #4db6ac;
   background: color-mix(in srgb, var(--oc-accent) 14%, var(--md-default-bg-color));
-}
-
-[data-md-color-scheme="slate"] .md-typeset .oc-manual--tech {
-  --oc-accent: #5c6bc0;
-  --oc-accent-text: #9fa8da;
 }
 
 /* Icon and title, vertically centered on one line. */
@@ -58,9 +49,9 @@
   justify-content: center;
   width: 2.6rem;
   height: 2.6rem;
-  border-radius: 0.5rem;
+  border-radius: var(--oc-radius);
   background: var(--oc-accent);
-  color: #fff;
+  color: var(--oc-on-accent);
 }
 
 .md-typeset .oc-manual__icon svg {
@@ -73,11 +64,9 @@
   white-space: nowrap;
   margin: 0;
   color: var(--oc-accent-text);
-  font-size: 0.65rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
+  font-size: 0.7rem;
+  font-weight: 600;
   line-height: 1.4;
-  text-transform: uppercase;
 }
 
 .md-typeset .oc-manual__title {
@@ -94,26 +83,14 @@
 
 .md-typeset .oc-manual > ul {
   margin: 0 0 0.4rem;
-  padding: 0;
-  list-style: none;
 }
 
 .md-typeset .oc-manual > ul li {
-  position: relative;
   margin: 0.25rem 0;
-  padding-left: 1.3rem;
 }
 
-.md-typeset .oc-manual > ul li::before {
-  content: "";
-  position: absolute;
-  top: 0.45em;
-  left: 0.15rem;
-  width: 0.35rem;
-  height: 0.6rem;
-  border: solid var(--oc-accent);
-  border-width: 0 0.12rem 0.12rem 0;
-  transform: rotate(45deg);
+.md-typeset .oc-manual > ul > li::marker {
+  color: var(--oc-accent);
 }
 
 /* Buttons pinned to the bottom, so both cards line up. */
@@ -134,21 +111,21 @@
   margin: 0;
   padding: 0.45em 1.2em;
   border-color: var(--oc-accent);
-  border-radius: 0.3rem;
+  border-radius: var(--oc-radius-small);
   color: var(--oc-accent-text);
   font-size: 0.75rem;
 }
 
 .md-typeset .oc-manual .md-button--primary {
   background: var(--oc-accent);
-  color: #fff;
+  color: var(--oc-on-accent);
 }
 
 .md-typeset .oc-manual .md-button:hover,
 .md-typeset .oc-manual .md-button:focus {
   border-color: var(--oc-accent);
   background: color-mix(in srgb, var(--oc-accent) 85%, #000);
-  color: #fff;
+  color: var(--oc-on-accent);
 }
 
 /* Two-column "label | value" tables, such as the Menu / Permission / Feature table, have an empty header row (both cells empty): hide it. */
@@ -206,8 +183,6 @@
 
 .oc-search-filter__label {
   font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
 }
 
 .oc-search-filter__option {
@@ -224,11 +199,6 @@
   margin: 0;
   accent-color: var(--md-primary-fg-color);
   cursor: pointer;
-}
-
-.oc-search-filter__note {
-  color: var(--md-default-fg-color--light);
-  font-style: italic;
 }
 
 .md-search-result__item.oc-search-result--hidden {

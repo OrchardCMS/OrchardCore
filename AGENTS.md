@@ -301,6 +301,7 @@ The documentation site has two manuals, and both must stay accurate as the code 
 - **Don't hand-write the links between the manuals.** The build hook `.scripts/docs/manuals.py` reads `technical_manual` and adds the boxes that link the two manuals.
 - **Don't move or rename existing pages.** Their URLs are public; add a `redirect_maps` entry in `mkdocs.yml` when a move can't be avoided.
 - Describe the current behavior, without "new", "now" or version wording; changes between versions go in the release notes.
+- **Changing the docs theme** (`src/docs/theme/`, `src/docs/assets/`)? Take colors and radii from the tokens in `assets/css/theme.css`, and follow the design rules in the `orchardcore-docs-writer` skill: no thick colored borders for emphasis, no emoji, icons or ALL-CAPS labels on every item, no hover effects that move the layout.
 - Build the docs before pushing (`pip install -r src/docs/requirements.txt`, then `python -m mkdocs build`) and fix every warning: broken links and anchors are reported there.
 
 ### Translation Templates

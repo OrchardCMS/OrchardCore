@@ -154,6 +154,31 @@ Always tag the language: ` ```csharp `, ` ```json `, ` ```bash `, ` ```liquid `.
 
 Host videos on YouTube, and never commit a video or its assets to the repository. Use privacy mode — `https://www.youtube-nocookie.com/embed/<id>`.
 
+## Docs theme
+
+The docs theme lives in `src/docs/theme/` (template overrides), `src/docs/assets/css/` and `src/docs/assets/js/`. `assets/css/theme.css` holds its tokens: every color and radius is a `--oc-*` custom property defined there for the light and dark (`slate`) schemes, and the other stylesheets use the tokens.
+
+When you change the theme, or the HTML of a page such as the cards on the home page, avoid the habits that make a design look generated:
+
+1. No thick colored left (or top) border on cards, callouts or tables for emphasis: use a plain border, a light tint or a stronger heading.
+2. No dotted or dashed dividers or borders added for decoration.
+3. No gradient text, and no purple-to-blue gradient.
+4. No sparkles as shorthand for AI.
+5. No emoji in the theme, headings or buttons.
+6. No badges or pills unless they carry a status the reader acts on.
+7. No row of stat cards at the top of a page.
+8. No cards inside cards, and don't wrap every section in a card.
+9. No icon in front of every heading or list item.
+10. No glassmorphism, heavy blur, glow or colored shadows.
+11. No labels, captions or helper text that restate the obvious.
+12. No grid of identical cards for content that isn't a collection.
+13. Sentence case headings, and no ALL-CAPS eyebrow or label above a section.
+14. No hover effect that moves the layout (scale or shift).
+15. Colors, type and radii come from the tokens in `theme.css`, never one-off values or inline styles.
+16. No fake live indicators, such as pulsing dots, for things that aren't real-time.
+
+Check the result at phone and desktop widths, in light and dark mode.
+
 ## Moving / renaming a page
 
 Add a redirect so old links survive. In `mkdocs.yml` under `plugins: redirects: redirect_maps:`:

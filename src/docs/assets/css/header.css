@@ -7,7 +7,7 @@
   padding: 0.5rem 0.6rem 0;
   background-color: var(--md-default-bg-color);
   box-shadow: none;
-  color: #fff;
+  color: var(--oc-on-accent);
 }
 
 .md-header.oc-header.md-header--hidden {
@@ -21,13 +21,8 @@
   height: 3rem;
   padding: 0 0.4rem;
   border-radius: 0.75rem;
-  background: linear-gradient(100deg, #00695c 0%, #00897b 45%, #009688 100%);
-  box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.16);
-}
-
-[data-md-color-scheme="slate"] .oc-header .md-header__inner {
-  background: linear-gradient(100deg, #004d40 0%, #00695c 45%, #00796b 100%);
-  box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.45);
+  background: linear-gradient(100deg, var(--oc-header-start) 0%, var(--oc-header-middle) 45%, var(--oc-header-end) 100%);
+  box-shadow: 0 0.25rem 1rem var(--oc-header-shadow);
 }
 
 /* Abstract shapes behind the logo, fading out to the right. */
@@ -62,7 +57,7 @@
   width: 1px;
   height: 1.4rem;
   margin: 0 0.5rem;
-  background: rgba(255, 255, 255, 0.3);
+  background: var(--oc-header-divider);
 }
 
 .oc-header .oc-header__title {
@@ -109,7 +104,7 @@
   position: relative;
   margin: 0;
   padding: 0.35rem 0;
-  color: #fff;
+  color: var(--oc-on-accent);
   font-size: 0.7rem;
   opacity: 0.82;
   transition: opacity 0.2s;
@@ -117,7 +112,7 @@
 
 .oc-header__tabs .md-tabs__link:hover,
 .oc-header__tabs .md-tabs__link:focus {
-  color: #fff;
+  color: var(--oc-on-accent);
   opacity: 1;
 }
 
@@ -134,7 +129,7 @@
   left: 0;
   height: 0.12rem;
   border-radius: 0.1rem;
-  background: #fff;
+  background: var(--oc-on-accent);
 }
 
 /* Search box as a pill. */
@@ -142,11 +137,11 @@
   .oc-header .md-search__form {
     height: 1.8rem;
     border-radius: 0.9rem;
-    background-color: rgba(0, 0, 0, 0.22);
+    background-color: var(--oc-header-overlay);
   }
 
   .oc-header .md-search__form:hover {
-    background-color: rgba(0, 0, 0, 0.3);
+    background-color: var(--oc-header-overlay-strong);
   }
 
   .oc-header .md-search__input {

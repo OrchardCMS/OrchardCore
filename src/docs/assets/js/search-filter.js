@@ -4,7 +4,6 @@
   "use strict";
 
   var storageKey = "oc-search-manuals";
-  var names = { user: "User Manual", technical: "Technical Manual" };
 
   function load() {
     try {
@@ -41,13 +40,6 @@
     document.querySelectorAll("[data-oc-manual]").forEach(function (checkbox) {
       checkbox.checked = state[checkbox.getAttribute("data-oc-manual")];
     });
-
-    var note = document.querySelector(".oc-search-filter__note");
-    var text = state.user && state.technical ? "" : "Showing " + names[state.user ? "user" : "technical"] + " results only";
-    // Only write when it changes: writing the text is itself a change the observer below reacts to.
-    if (note && note.textContent !== text) {
-      note.textContent = text;
-    }
 
     var list = document.querySelector(".md-search-result__list");
     if (!list) {

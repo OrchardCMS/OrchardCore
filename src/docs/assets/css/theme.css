@@ -1,5 +1,7 @@
-/* Color accents for tables, headings, cards, steps and the sidebar, in both light and dark mode. */
-
+/*
+ * Color accents for tables, headings, cards, steps and the sidebar, in both light and dark mode.
+ * The tokens below hold every color and radius of the docs theme: header.css and manuals.css use them too.
+ */
 :root {
   --oc-teal: #00897b;
   --oc-teal-strong: #00695c;
@@ -7,6 +9,18 @@
   --oc-teal-soft: #e0f2f1;
   --oc-teal-softer: #f2faf9;
   --oc-table-border: #cfe7e4;
+  --oc-indigo: #3f51b5;
+  --oc-indigo-text: #3949ab;
+  --oc-header-start: #00695c;
+  --oc-header-middle: #00897b;
+  --oc-header-end: #009688;
+  --oc-header-shadow: rgba(0, 0, 0, 0.16);
+  --oc-on-accent: #fff;
+  --oc-header-divider: rgba(255, 255, 255, 0.3);
+  --oc-header-overlay: rgba(0, 0, 0, 0.2);
+  --oc-header-overlay-strong: rgba(0, 0, 0, 0.3);
+  --oc-radius: 0.5rem;
+  --oc-radius-small: 0.3rem;
 }
 
 [data-md-color-scheme="slate"] {
@@ -16,6 +30,12 @@
   --oc-teal-soft: rgba(38, 166, 154, 0.16);
   --oc-teal-softer: rgba(38, 166, 154, 0.06);
   --oc-table-border: rgba(77, 182, 172, 0.28);
+  --oc-indigo: #5c6bc0;
+  --oc-indigo-text: #9fa8da;
+  --oc-header-start: #004d40;
+  --oc-header-middle: #00695c;
+  --oc-header-end: #00796b;
+  --oc-header-shadow: rgba(0, 0, 0, 0.45);
 }
 
 /* Headings. */
@@ -41,13 +61,13 @@
 .md-typeset table:not([class]) {
   overflow: hidden;
   border: 0.05rem solid var(--oc-table-border);
-  border-radius: 0.4rem;
+  border-radius: var(--oc-radius);
   box-shadow: none;
 }
 
 .md-typeset table:not([class]) th {
   background-color: var(--oc-teal);
-  color: #fff;
+  color: var(--oc-on-accent);
   font-weight: 600;
 }
 
@@ -69,14 +89,10 @@
   box-shadow: none;
 }
 
-/* Label tables (empty header row), such as Menu / Permission / Feature: a colored label column. */
+/* Label tables (empty header row), such as Menu / Permission / Feature: a tinted label column. */
 .md-typeset table:not([class]):has(thead th:first-child:empty + th:last-child:empty) tbody tr:nth-child(even),
 .md-typeset table:not([class]):has(thead th:first-child:empty + th:last-child:empty) tbody tr:hover {
   background-color: transparent;
-}
-
-.md-typeset table:not([class]):has(thead th:first-child:empty + th:last-child:empty) {
-  border-left: 0.2rem solid var(--oc-teal);
 }
 
 .md-typeset table:not([class]):has(thead th:first-child:empty + th:last-child:empty) td:first-child {
@@ -103,17 +119,15 @@
 .md-typeset .grid.cards > ol > li,
 .md-typeset .grid > .card {
   border: 0.05rem solid var(--oc-table-border);
-  border-top: 0.2rem solid var(--oc-teal);
-  border-radius: 0.5rem;
+  border-radius: var(--oc-radius);
   background-color: var(--oc-teal-softer);
 }
 
 .md-typeset .grid.cards > ul > li:hover,
 .md-typeset .grid.cards > ol > li:hover,
 .md-typeset .grid > .card:hover {
-  border-color: var(--oc-table-border);
-  border-top-color: var(--oc-teal);
-  box-shadow: var(--md-shadow-z2);
+  border-color: var(--oc-teal);
+  box-shadow: none;
 }
 
 .md-typeset .grid.cards > ul > li > p:first-child strong,
@@ -132,22 +146,12 @@
   font-weight: 700;
 }
 
-/* A marker on the left of the current page only (not on the expand arrow of a section). */
 @media screen and (min-width: 76.25em) {
-  .md-sidebar--primary a.md-nav__link--active {
-    margin-left: -0.6rem;
-    padding-left: 0.5rem;
-    border-left: 0.1rem solid var(--oc-teal);
-  }
-
   /* The top entry of the sidebar (User Manual, Technical Manual) is a heading, not a selected page. */
   .md-sidebar--primary .md-nav__item--section > .md-nav__link,
   .md-sidebar--primary .md-nav__item--section > .md-nav__link > a.md-nav__link {
     color: var(--md-default-fg-color--light);
-    font-size: 0.62rem;
     font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
   }
 
   .md-sidebar--primary .md-nav__item--section > .md-nav__link > a.md-nav__link--active {
@@ -170,5 +174,5 @@
 }
 
 .md-footer-meta {
-  background-color: rgba(0, 0, 0, 0.18);
+  background-color: var(--oc-header-overlay);
 }
