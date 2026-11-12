@@ -128,9 +128,9 @@ public sealed class LiquidStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.Configure<TemplateOptions>(o =>
+        services.Configure<TemplateOptionsBuilder>(o =>
         {
-            o.Scope.SetValue(nameof(Navbar), new FunctionValue(async (args, ctx) =>
+            o.WithGlobalValue(nameof(Navbar), FunctionValue.Create(async (args, ctx) =>
             {
                 if (ctx is LiquidTemplateContext context)
                 {

@@ -1,4 +1,3 @@
-using System.Globalization;
 using System.Text.Encodings.Web;
 using Fluid;
 using Fluid.Values;
@@ -45,7 +44,7 @@ internal sealed class StringValuesValue : FluidValue
         }
         else if (other.Type == FluidValues.String)
         {
-            return ToStringValue() == other.ToStringValue();
+            return ToStringValue(null) == other.ToStringValue(null);
         }
         else if (other is ArrayValue arrayValue)
         {
@@ -61,7 +60,7 @@ internal sealed class StringValuesValue : FluidValue
 
                 if (otherItem.Type == FluidValues.String)
                 {
-                    if (item != otherItem.ToStringValue())
+                    if (item != otherItem.ToStringValue(null))
                     {
                         return false;
                     }
@@ -85,20 +84,20 @@ internal sealed class StringValuesValue : FluidValue
         return false;
     }
 
-    public override bool Contains(FluidValue value)
+    public override ValueTask<bool> ContainsAsync(FluidValue value, TemplateContext context)
     {
         if (value is null || value.IsNil())
         {
-            return false;
+            return new ValueTask<bool>(false);
         }
 
         if (_stringValues.Count == 0)
         {
-            return false;
+            return new ValueTask<bool>(false);
         }
 
-        var str = value.ToStringValue();
-        return _stringValues.Contains(str);
+        var str = value.ToStringValue(context);
+        return new ValueTask<bool>(_stringValues.Contains(str));
     }
 
     public override int GetHashCode()
@@ -116,14 +115,14 @@ internal sealed class StringValuesValue : FluidValue
             case "first":
                 if (_stringValues.Count > 0)
                 {
-                    return StringValue.Create(_stringValues[0]);
+                    return StringValue.Create(_stringValues[0] ?? string.Empty);
                 }
                 break;
 
             case "last":
                 if (_stringValues.Count > 0)
                 {
-                    return StringValue.Create(_stringValues[_stringValues.Count - 1]);
+                    return StringValue.Create(_stringValues[_stringValues.Count - 1] ?? string.Empty);
                 }
                 break;
         }
@@ -131,31 +130,25 @@ internal sealed class StringValuesValue : FluidValue
         return NilValue.Instance;
     }
 
-    [Obsolete("This method has been deprecated, please use GetIndexAsync() instead.")]
-    protected override FluidValue GetIndex(FluidValue index, TemplateContext context)
+    public override ValueTask<FluidValue> GetIndexAsync(FluidValue index, TemplateContext context)
     {
-        var i = (int)index.ToNumberValue();
+        var i = (int)index.ToNumberValue(context);
 
         if (i >= 0 && i < _stringValues.Count)
         {
-            return StringValue.Create(_stringValues[i]);
+            return StringValue.Create(_stringValues[i] ?? string.Empty);
         }
 
         return NilValue.Instance;
     }
 
-    // Using the original method for backward compatibility.
-#pragma warning disable CS0618 // Type or member is obsolete
-    public override ValueTask<FluidValue> GetIndexAsync(FluidValue index, TemplateContext context) => GetIndex(index, context);
-#pragma warning restore CS0618 // Type or member is obsolete
-
-    public override bool ToBooleanValue()
+    public override bool ToBooleanValue(TemplateContext context)
         => true;
 
-    public override decimal ToNumberValue()
+    public override decimal ToNumberValue(TemplateContext context)
         => _stringValues.Count;
 
-    public override object ToObjectValue()
+    public override object ToObjectValue(TemplateContext context)
     {
         if (_stringValues.Count == 0)
         {
@@ -169,7 +162,7 @@ internal sealed class StringValuesValue : FluidValue
         return _stringValues.ToArray();
     }
 
-    public override string ToStringValue()
+    public override string ToStringValue(TemplateContext context)
     {
         if (_stringValues.Count == 0)
         {
@@ -184,53 +177,27 @@ internal sealed class StringValuesValue : FluidValue
     }
 
     public IReadOnlyList<FluidValue> Values
-        => _stringValues.Select(s => new StringValue(s)).ToArray();
+        => _stringValues.Select(s => StringValue.Create(s ?? string.Empty)).ToArray();
 
-    public override IEnumerable<FluidValue> Enumerate(TemplateContext context)
+    public override async IAsyncEnumerable<FluidValue> EnumerateAsync(TemplateContext context)
     {
-        return Values;
-    }
+        await Task.CompletedTask;
 
-    [Obsolete("WriteTo is obsolete, prefer the WriteToAsync method.")]
-    public override void WriteTo(TextWriter writer, TextEncoder encoder, CultureInfo cultureInfo)
-    {
-        AssertWriteToParameters(writer, encoder, cultureInfo);
-
-        if (_stringValues.Count == 0)
+        foreach (var value in _stringValues)
         {
-            return;
-        }
-        else if (_stringValues.Count == 1)
-        {
-            writer.Write(encoder.Encode(_stringValues[0]));
-        }
-        else
-        {
-            foreach (var v in _stringValues)
-            {
-                writer.Write(encoder.Encode(v));
-            }
+            yield return StringValue.Create(value ?? string.Empty);
         }
     }
 
-    public override async ValueTask WriteToAsync(TextWriter writer, TextEncoder encoder, CultureInfo cultureInfo)
+    public override ValueTask WriteToAsync(IFluidOutput output, TextEncoder encoder, TemplateContext context)
     {
-        AssertWriteToParameters(writer, encoder, cultureInfo);
+        AssertWriteToParameters(output, encoder, context);
 
-        if (_stringValues.Count == 0)
+        foreach (var value in _stringValues)
         {
-            return;
+            output.Write(encoder.Encode(value));
         }
-        else if (_stringValues.Count == 1)
-        {
-            await writer.WriteAsync(encoder.Encode(_stringValues[0]));
-        }
-        else
-        {
-            foreach (var v in _stringValues)
-            {
-                await writer.WriteAsync(encoder.Encode(v));
-            }
-        }
+
+        return ValueTask.CompletedTask;
     }
 }

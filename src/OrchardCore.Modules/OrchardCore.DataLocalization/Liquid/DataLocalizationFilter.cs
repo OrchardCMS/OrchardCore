@@ -16,9 +16,9 @@ public class DataLocalizationFilter : ILiquidFilter
 
     public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext templateContext)
     {
-        var name = input.ToStringValue();
+        var name = input.ToStringValue(templateContext);
 
-        var context = arguments.At(0).ToStringValue();
+        var context = arguments.At(0).ToStringValue(templateContext);
 
         if (string.IsNullOrEmpty(context))
         {
@@ -30,14 +30,14 @@ public class DataLocalizationFilter : ILiquidFilter
             var parameters = new object[arguments.Count - 1];
             for (var i = 0; i < arguments.Count - 1; i++)
             {
-                parameters[i] = arguments.At(i + 1).ToObjectValue();
+                parameters[i] = arguments.At(i + 1).ToObjectValue(templateContext);
             }
 
-            return ValueTask.FromResult<FluidValue>(new StringValue(D[name, context, parameters]));
+            return ValueTask.FromResult<FluidValue>(StringValue.Create(D[name, context, parameters]));
         }
         else
         {
-            return ValueTask.FromResult<FluidValue>(new StringValue(D[name, context]));
+            return ValueTask.FromResult<FluidValue>(StringValue.Create(D[name, context]));
         }
     }
 }

@@ -17,6 +17,21 @@ public class AutoroutePartHandlerUniquePathTests : IAsyncLifetime
 {
     private const string ContentItemId = "item";
 
+    [Theory]
+    [InlineData("😀")]
+    [InlineData("e\u0301")]
+    [InlineData("🇺🇸")]
+    [InlineData("👩‍💻")]
+    public async Task GenerateUniqueAbsolutePathAsync_VersionCutsTextElement_PreservesWholeElements(string element)
+    {
+        var prefix = new string('a', AutoroutePart.MaxPathLength - 3);
+
+        var (actual, _) = await GenerateUniqueAbsolutePathAsync(prefix + element + "more");
+
+        Assert.Equal(prefix + "-1", actual);
+        Assert.True(actual.Length <= AutoroutePart.MaxPathLength);
+    }
+
     private readonly IndexQueryCounter _indexQueries = new();
     private IStore _store;
     private string _databasePath;

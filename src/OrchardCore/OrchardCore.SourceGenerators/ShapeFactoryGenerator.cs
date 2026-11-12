@@ -36,8 +36,9 @@ public class ShapeFactoryGenerator : IIncrementalGenerator
             .Where(static type => type is not null);
 
         context.RegisterSourceOutput(
-            invocations.Collect(),
-            static (spc, invocations) => Execute(invocations!, spc));
+            invocations.Collect().Combine(context.CompilationProvider.Select(
+                static (compilation, _) => compilation.Assembly.Identity.ToString())),
+            static (spc, source) => Execute(source.Left!, source.Right, spc));
 
         context.RegisterSourceOutput(
             attributedTypes.Collect(),
@@ -373,7 +374,7 @@ public class ShapeFactoryGenerator : IIncrementalGenerator
             ctor.DeclaredAccessibility is Accessibility.Public or Accessibility.Internal or Accessibility.Protected or Accessibility.ProtectedOrInternal);
     }
 
-    private static void Execute(ImmutableArray<InvocationInfo> invocations, SourceProductionContext context)
+    private static void Execute(ImmutableArray<InvocationInfo> invocations, string assemblyIdentity, SourceProductionContext context)
     {
         if (invocations.IsDefaultOrEmpty)
         {
@@ -441,12 +442,12 @@ public class ShapeFactoryGenerator : IIncrementalGenerator
 
         foreach (var modelType in modelTypes)
         {
-            GenerateShapeType(sb, modelType);
+            GenerateShapeType(sb, modelType, assemblyIdentity);
         }
 
         foreach (var invocation in validInvocations)
         {
-            GenerateInterceptor(sb, invocation);
+            GenerateInterceptor(sb, invocation, assemblyIdentity);
         }
 
         sb.AppendLine("}");
@@ -475,10 +476,10 @@ public class ShapeFactoryGenerator : IIncrementalGenerator
         }
     }
 
-    private static void GenerateShapeType(StringBuilder sb, INamedTypeSymbol modelType)
+    private static void GenerateShapeType(StringBuilder sb, INamedTypeSymbol modelType, string assemblyIdentity)
     {
         var baseTypeName = modelType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
-        var generatedTypeName = GetGeneratedTypeName(modelType);
+        var generatedTypeName = GetGeneratedTypeName(modelType, assemblyIdentity);
 
         sb.AppendLine($"    public sealed class {generatedTypeName} : {baseTypeName}, global::OrchardCore.DisplayManagement.IShape, global::OrchardCore.DisplayManagement.IPositioned");
         sb.AppendLine("    {");
@@ -869,10 +870,10 @@ public class ShapeFactoryGenerator : IIncrementalGenerator
         sb.AppendLine($"                {GetDisplayDriverInitializerStateExpression(invocation)});");
     }
 
-    private static void GenerateInterceptor(StringBuilder sb, InvocationInfo invocation)
+    private static void GenerateInterceptor(StringBuilder sb, InvocationInfo invocation, string assemblyIdentity)
     {
         var interceptorClassName = $"Interceptor_{GetStableId(invocation.Location.Data)}";
-        var generatedTypeName = GetGeneratedTypeName(invocation.ModelType);
+        var generatedTypeName = GetGeneratedTypeName(invocation.ModelType, assemblyIdentity);
         var modelTypeName = invocation.ModelType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
         sb.AppendLine($"    file static class {interceptorClassName}");
         sb.AppendLine("    {");
@@ -1025,8 +1026,8 @@ public class ShapeFactoryGenerator : IIncrementalGenerator
         sb.AppendLine();
     }
 
-    private static string GetGeneratedTypeName(INamedTypeSymbol typeSymbol)
-        => $"GeneratedShape_{GetStableId(typeSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat))}";
+    private static string GetGeneratedTypeName(INamedTypeSymbol typeSymbol, string assemblyIdentity)
+        => $"GeneratedShape_{GetStableId(assemblyIdentity + ":" + typeSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat))}";
 
     private static string GetStableId(string value)
     {

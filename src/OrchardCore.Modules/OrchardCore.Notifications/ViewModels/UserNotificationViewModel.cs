@@ -11,6 +11,25 @@ public class UserNotificationViewModel
 
     public string[] Optout { get; set; }
 
+    /// <summary>
+    /// The methods turned on per type of notification, by type name.
+    /// </summary>
+    public Dictionary<string, string[]> TypeMethods { get; set; }
+
     [BindNever]
     public IEnumerable<SelectListItem> AvailableMethods { get; set; }
+
+    [BindNever]
+    public IList<NotificationTypePreferenceViewModel> TypePreferences { get; set; } = [];
+}
+
+public class NotificationTypePreferenceViewModel
+{
+    public string Name { get; set; }
+
+    public string DisplayName { get; set; }
+
+    public string Description { get; set; }
+
+    public IList<string> EnabledMethods { get; set; } = [];
 }

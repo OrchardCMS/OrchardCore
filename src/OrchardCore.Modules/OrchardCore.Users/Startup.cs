@@ -389,45 +389,45 @@ public sealed class LiquidStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.Configure<TemplateOptions>(o =>
+        services.Configure<TemplateOptionsBuilder>(o =>
         {
-            o.Filters.AddFilter("has_claim", UserFilters.HasClaim);
-            o.Filters.AddFilter("user_id", UserFilters.UserId);
+            o.AddFilter("has_claim", UserFilters.HasClaim);
+            o.AddFilter("user_id", UserFilters.UserId);
 
-            o.MemberAccessStrategy.Register<ClaimsPrincipal>();
-            o.MemberAccessStrategy.Register<ClaimsIdentity>();
-
-            o.Scope.SetValue("User", new ObjectValue(new LiquidUserAccessor()));
-            o.MemberAccessStrategy.Register<LiquidUserAccessor, FluidValue>((obj, name, ctx) =>
+            o.WithGlobalValue("User", ObjectValue.Create(new LiquidUserAccessor()));
+            o.ConfigureMemberAccess(strategy =>
             {
-                var user = ((LiquidTemplateContext)ctx).Services.GetRequiredService<IHttpContextAccessor>().HttpContext?.User;
-                if (user != null)
+                strategy.Register<LiquidUserAccessor, FluidValue>((obj, name, ctx) =>
+                {
+                    var user = ((LiquidTemplateContext)ctx).Services.GetRequiredService<IHttpContextAccessor>().HttpContext?.User;
+                    if (user != null)
+                    {
+                        return name switch
+                        {
+                            nameof(ClaimsPrincipal.Identity) => ObjectValue.Create(user.Identity),
+                            _ => NilValue.Instance
+                        };
+                    }
+
+                    return NilValue.Instance;
+                });
+
+                strategy.Register<User, FluidValue>((user, name, context) =>
                 {
                     return name switch
                     {
-                        nameof(ClaimsPrincipal.Identity) => new ObjectValue(user.Identity),
+                        nameof(User.UserId) => StringValue.Create(user.UserId ?? string.Empty),
+                        nameof(User.UserName) => StringValue.Create(user.UserName ?? string.Empty),
+                        nameof(User.NormalizedUserName) => StringValue.Create(user.NormalizedUserName ?? string.Empty),
+                        nameof(User.Email) => StringValue.Create(user.Email ?? string.Empty),
+                        nameof(User.NormalizedEmail) => StringValue.Create(user.NormalizedEmail ?? string.Empty),
+                        nameof(User.EmailConfirmed) => user.EmailConfirmed ? BooleanValue.True : BooleanValue.False,
+                        nameof(User.IsEnabled) => user.IsEnabled ? BooleanValue.True : BooleanValue.False,
+                        nameof(User.RoleNames) => ArrayValue.Create(user.RoleNames.Select(x => StringValue.Create(x)).ToArray()),
+                        nameof(User.Properties) => ObjectValue.Create(user.Properties),
                         _ => NilValue.Instance
                     };
-                }
-
-                return NilValue.Instance;
-            });
-
-            o.MemberAccessStrategy.Register<User, FluidValue>((user, name, context) =>
-            {
-                return name switch
-                {
-                    nameof(User.UserId) => new StringValue(user.UserId),
-                    nameof(User.UserName) => new StringValue(user.UserName),
-                    nameof(User.NormalizedUserName) => new StringValue(user.NormalizedUserName),
-                    nameof(User.Email) => new StringValue(user.Email),
-                    nameof(User.NormalizedEmail) => new StringValue(user.NormalizedEmail),
-                    nameof(User.EmailConfirmed) => user.EmailConfirmed ? BooleanValue.True : BooleanValue.False,
-                    nameof(User.IsEnabled) => user.IsEnabled ? BooleanValue.True : BooleanValue.False,
-                    nameof(User.RoleNames) => new ArrayValue(user.RoleNames.Select(x => new StringValue(x)).ToArray()),
-                    nameof(User.Properties) => new ObjectValue(user.Properties),
-                    _ => NilValue.Instance
-                };
+                });
             });
         })
        .AddLiquidFilter<UsersByIdFilter>("users_by_id")
@@ -485,11 +485,6 @@ public sealed class ChangeEmailStartup : StartupBase
             .AddTransient<ChangeEmailTokenProvider>()
             .AddOptions<ChangeEmailTokenProviderOptions>();
 
-        services.Configure<TemplateOptions>(o =>
-        {
-            o.MemberAccessStrategy.Register<ChangeEmailViewModel>();
-        });
-
         services.AddSiteDisplayDriver<ChangeEmailSettingsDisplayDriver>();
         services.AddNavigationProvider<ChangeEmailAdminMenu>();
         services.AddDisplayDriver<UserMenu, ChangeEmailUserMenuDisplayDriver>();
@@ -516,11 +511,6 @@ public sealed class RegistrationStartup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.Configure<TemplateOptions>(o =>
-        {
-            o.MemberAccessStrategy.Register<ConfirmEmailViewModel>();
-        });
-
         services.AddDisplayDriver<User, UserRegistrationAdminDisplayDriver>();
         services.AddSiteDisplayDriver<RegistrationSettingsDisplayDriver>();
         services.AddNavigationProvider<RegistrationAdminMenu>();
@@ -605,11 +595,6 @@ public sealed class ResetPasswordStartup : StartupBase
         services.AddTransient<IConfigureOptions<IdentityOptions>, PasswordResetIdentityOptionsConfigurations>()
             .AddTransient<PasswordResetTokenProvider>()
             .AddOptions<PasswordResetTokenProviderOptions>();
-
-        services.Configure<TemplateOptions>(o =>
-        {
-            o.MemberAccessStrategy.Register<LostPasswordViewModel>();
-        });
 
         services.AddSiteDisplayDriver<ResetPasswordSettingsDisplayDriver>();
         services.AddNavigationProvider<ResetPasswordAdminMenu>();

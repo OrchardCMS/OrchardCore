@@ -221,10 +221,10 @@ internal sealed class MediaImageProcessingMiddleware : IMiddleware
     private static string ExtensionToFormat(string ext) => ext.TrimStart('.').ToLowerInvariant() switch
     {
         "jpeg" => "jpg",
-        "png"  => "png",
-        "gif"  => "gif",
+        "png" => "png",
+        "gif" => "gif",
         "webp" => "webp",
-        _      => "jpg",
+        _ => "jpg",
     };
 
     // Maps the validated, string-based request commands to the engine-agnostic, typed command set

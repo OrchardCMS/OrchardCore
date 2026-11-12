@@ -248,6 +248,10 @@ available on the `MenuItem` shape are still available.
     }
     ```
 
+## Menu item identifiers
+
+The menu editor finds a menu item by its `ContentItemId`, so every menu item needs one that is unique in its menu. A menu item without one cannot be edited or deleted: **Edit** and **Delete** return _Not Found_. Menu items in a recipe must set `ContentItemId`, for example to `"[js: uuid()]"`.
+
 ## Mark active item in a menu
 
 Some times you need to set a menu item as active if it is the currently displayed one.

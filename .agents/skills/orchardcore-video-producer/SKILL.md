@@ -114,15 +114,12 @@ and look at them: a recording, a slide with code, and a card.
 
 ### 6. Publish
 
-- **Documentation**: put `<name>.mp4`, `<name>.vtt` and a poster (`build/<opening card>.png` saved as JPEG) in a
-  `videos/` folder next to the page, and embed it under the introduction of the page:
+- **Documentation**: never commit the video or its assets to the repository. Publish `<name>.mp4` on the Orchard Core
+  YouTube channel, with `<name>.vtt` as its captions and a thumbnail (`build/<opening card>.png` saved as JPEG). Ask
+  the user to upload it and to give you its id, then embed it in privacy mode under the introduction of the page:
 
   ```html
-  <video controls preload="metadata" width="100%" poster="videos/<name>.jpg">
-      <source src="videos/<name>.mp4" type="video/mp4">
-      <track kind="captions" src="videos/<name>.vtt" srclang="en" label="English">
-      Your browser does not support embedded videos. <a href="videos/<name>.mp4">Download the video</a>.
-  </video>
+  <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/<id>" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
   ```
 
   Introduce it with one sentence that says what it covers, without "new". Check the page with `mkdocs build`.

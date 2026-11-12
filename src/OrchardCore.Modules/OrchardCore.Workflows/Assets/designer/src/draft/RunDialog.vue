@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref, useId } from "vue";
 import ModalDialog from "@bloom/designer/ui/ModalDialog.vue";
+import { truncateText } from "@bloom/helpers/text";
 import NameValueRows, { type NameValueRow } from "./NameValueRows.vue";
 import type { DesignerApi } from "../api/designerApi";
 import { DesignerApiError } from "../api/designerApi";
@@ -162,7 +163,7 @@ const statusClass = (status: string | null | undefined) =>
 const responseBody = computed(() => {
     const text = response.value?.body ?? "";
 
-    return text.length > MAX_BODY_LENGTH ? `${text.slice(0, MAX_BODY_LENGTH)}…` : text;
+    return text.length > MAX_BODY_LENGTH ? `${truncateText(text, MAX_BODY_LENGTH)}…` : text;
 });
 
 const outputs = computed(() => Object.entries(result.value?.outputs ?? {}));

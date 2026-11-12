@@ -23,7 +23,7 @@
                     {
                         Text = redactor == nameof(RemoveRedactor)
                             ? string.Empty
-                            : (redactor == nameof(NullRedactor) ? T.GetString("Store") : redactor),
+                            : (redactor == nameof(NullRedactor) ? T.Note("Redaction option that stores the value of a user property as is, without redacting it.").GetString("Store") : redactor),
                         Value = redactor,
                         Selected = redactor == value,
                     })

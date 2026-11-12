@@ -1,10 +1,9 @@
 using Fluid;
-using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
 
 namespace OrchardCore.DisplayManagement.Liquid;
 
-public sealed class TemplateOptionsFileProviderSetup : IConfigureOptions<TemplateOptions>
+public sealed class TemplateOptionsFileProviderSetup : IConfigureOptions<TemplateOptionsBuilder>
 {
     private readonly LiquidViewOptions _liquidViewOptions;
 
@@ -13,21 +12,8 @@ public sealed class TemplateOptionsFileProviderSetup : IConfigureOptions<Templat
         _liquidViewOptions = liquidViewOptions.Value;
     }
 
-    public void Configure(TemplateOptions options)
+    public void Configure(TemplateOptionsBuilder options)
     {
-        var fileProviders = _liquidViewOptions.FileProviders;
-
-        if (fileProviders.Count == 0)
-        {
-            options.FileProvider = new NullFileProvider();
-        }
-        else if (fileProviders.Count == 1)
-        {
-            options.FileProvider = fileProviders[0];
-        }
-        else
-        {
-            options.FileProvider = new CompositeFileProvider(fileProviders);
-        }
+        options.WithFileProvider(new FileProviderTemplateFileProvider(_liquidViewOptions.FileProvider));
     }
 }

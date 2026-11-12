@@ -84,7 +84,7 @@ public class MultiTextFieldIndexProvider : ContentFieldIndexProvider
                             ContentType = contentItem.ContentType,
                             ContentPart = pair.Definition.ContentTypePartDefinition.Name,
                             ContentField = pair.Definition.Name,
-                            Value = pair.Value?[..Math.Min(pair.Value.Length, MultiTextFieldIndex.MaxValueSize)],
+                            Value = TextHelper.Truncate(pair.Value, MultiTextFieldIndex.MaxValueSize),
                             BigValue = pair.Value,
                         });
             });

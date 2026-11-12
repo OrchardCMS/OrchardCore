@@ -1,8 +1,8 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Net;
-using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Html;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Descriptors;
@@ -10,6 +10,7 @@ using OrchardCore.DisplayManagement.Html;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Modules;
+using OrchardCore.Telemetry;
 
 namespace OrchardCore.DisplayManagement.Implementation;
 
@@ -25,6 +26,7 @@ public class DefaultHtmlDisplay : IHtmlDisplay
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger _logger;
     private readonly IOptionsMonitor<ShapeRenderingOptions> _shapeRenderingOptions;
+    private TimeSpan? _slowShapeThreshold;
 
     public DefaultHtmlDisplay(
         IEnumerable<IShapeDisplayEvents> shapeDisplayEvents,
@@ -84,14 +86,26 @@ public class DefaultHtmlDisplay : IHtmlDisplay
             activity.SetTag("orchardcore.shape.type", shapeMetadata.Type);
         }
 
-        var startTimestamp = DisplayManagementDiagnostics.ShapeRenderDuration.Enabled ? Stopwatch.GetTimestamp() : 0;
+        var startTimestamp = DisplayManagementDiagnostics.ShapeRenderDuration.Enabled || ShapeTelemetry.IsEnabled ? Stopwatch.GetTimestamp() : 0;
 
-        // Copy the current context such that the rendering can customize it if necessary,
-        // for instance to change the HtmlFieldPrefix.
-        var localContext = new DisplayContext(context)
+        // The display helper creates a context for each shape it executes, so it is reused unless the rendering
+        // needs to customize it, for instance to change the HtmlFieldPrefix.
+        var htmlFieldPrefix = shapeMetadata.Prefix ?? string.Empty;
+
+        DisplayContext localContext;
+
+        if (ReferenceEquals(context.Value, shape) && string.Equals(context.HtmlFieldPrefix ?? string.Empty, htmlFieldPrefix, StringComparison.Ordinal))
         {
-            HtmlFieldPrefix = shapeMetadata.Prefix ?? string.Empty,
-        };
+            context.HtmlFieldPrefix = htmlFieldPrefix;
+            localContext = context;
+        }
+        else
+        {
+            localContext = new DisplayContext(context)
+            {
+                HtmlFieldPrefix = htmlFieldPrefix,
+            };
+        }
 
         var displayContext = new ShapeDisplayContext
         {
@@ -205,9 +219,20 @@ public class DefaultHtmlDisplay : IHtmlDisplay
 
             if (startTimestamp != 0)
             {
-                DisplayManagementDiagnostics.ShapeRenderDuration.Record(
-                    Stopwatch.GetElapsedTime(startTimestamp).TotalSeconds,
-                    new KeyValuePair<string, object>("orchardcore.shape.type", shapeMetadata.Type));
+                var elapsed = Stopwatch.GetElapsedTime(startTimestamp);
+
+                if (DisplayManagementDiagnostics.ShapeRenderDuration.Enabled)
+                {
+                    DisplayManagementDiagnostics.ShapeRenderDuration.Record(
+                        elapsed.TotalSeconds,
+                        new KeyValuePair<string, object>("orchardcore.shape.type", shapeMetadata.Type));
+                }
+
+                // A shape already traced by the display management source isn't traced twice.
+                if (activity is null)
+                {
+                    ShapeTelemetry.RecordSlow(shapeMetadata, actualBinding, elapsed, GetSlowShapeThreshold());
+                }
             }
 
             if (activity is not null && actualBinding is not null)
@@ -222,6 +247,12 @@ public class DefaultHtmlDisplay : IHtmlDisplay
         }
 
         return shapeMetadata.ChildContent;
+    }
+
+    private TimeSpan GetSlowShapeThreshold()
+    {
+        return _slowShapeThreshold ??= _serviceProvider.GetService<IOptions<OrchardCoreTelemetryOptions>>()?.Value.SlowShapeThreshold
+            ?? new OrchardCoreTelemetryOptions().SlowShapeThreshold;
     }
 
     private static IHtmlContent AddShapeDebugInformation(IHtmlContent childContent, string shapeType, ShapeBinding actualBinding, List<ShapeBinding> wrapperBindings)
