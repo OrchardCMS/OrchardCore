@@ -664,11 +664,6 @@ msgstr ""
 
 #: Controllers/SmsAuthenticatorController.cs
 msgctxt "OrchardCore.Users.Controllers.SmsAuthenticatorController"
-msgid "Invalid phone number used."
-msgstr ""
-
-#: Controllers/SmsAuthenticatorController.cs
-msgctxt "OrchardCore.Users.Controllers.SmsAuthenticatorController"
 msgid "Invalid verification code."
 msgstr ""
 
@@ -824,9 +819,9 @@ msgctxt "OrchardCore.Users.Drivers.UserDisplayDriver"
 msgid "The password and the password confirmation fields must match."
 msgstr ""
 
-#: Drivers/UserInformationDisplayDriver.cs
-msgctxt "OrchardCore.Users.Drivers.UserInformationDisplayDriver"
-msgid "Please provide a valid phone number."
+#: Drivers/UserPhoneNumberDisplayDriver.cs
+msgctxt "OrchardCore.Users.Drivers.UserPhoneNumberDisplayDriver"
+msgid "A phone number is required."
 msgstr ""
 
 #. Format arguments: {0}: OrchardCoreConstants.Roles.Administrator
@@ -2069,11 +2064,6 @@ msgstr ""
 
 #: Views/LoginSettings.Edit.cshtml
 msgctxt "OrchardCore.Users.Views.LoginSettings.Edit"
-msgid "Allow user to change their phone number"
-msgstr ""
-
-#: Views/LoginSettings.Edit.cshtml
-msgctxt "OrchardCore.Users.Views.LoginSettings.Edit"
 msgid "Allow user to change their username"
 msgstr ""
 
@@ -2120,6 +2110,11 @@ msgstr ""
 #: Views/PasskeyValidation.cshtml
 msgctxt "OrchardCore.Users.Views.PasskeyValidation"
 msgid "Use one of your passkeys to confirm it's you."
+msgstr ""
+
+#: Views/PhoneLoginSettings.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.PhoneLoginSettings.Edit"
+msgid "Allow user to change their phone number"
 msgstr ""
 
 #: Views/RegisterUserForm.Edit.cshtml
@@ -2280,11 +2275,6 @@ msgstr ""
 #: Views/SmsAuthenticator/Index.cshtml
 msgctxt "OrchardCore.Users.Views.SmsAuthenticator.Index"
 msgid "Phone Number"
-msgstr ""
-
-#: Views/SmsAuthenticator/Index.cshtml
-msgctxt "OrchardCore.Users.Views.SmsAuthenticator.Index"
-msgid "Phone number must include a country code. For example, +1 for United States."
 msgstr ""
 
 #: Views/SmsAuthenticator/Index.cshtml
@@ -2837,21 +2827,6 @@ msgstr ""
 #: Views/UserPhoneNumber.Edit.cshtml
 msgctxt "OrchardCore.Users.Views.UserPhoneNumber.Edit"
 msgid "Phone Number"
-msgstr ""
-
-#: Views/UserPhoneNumber.Edit.cshtml
-msgctxt "OrchardCore.Users.Views.UserPhoneNumber.Edit"
-msgid "Phone number must include a country code. For example, +1 for United States."
-msgstr ""
-
-#: Views/UserPhoneNumber.Edit.cshtml
-msgctxt "OrchardCore.Users.Views.UserPhoneNumber.Edit"
-msgid "Unverified"
-msgstr ""
-
-#: Views/UserPhoneNumber.Edit.cshtml
-msgctxt "OrchardCore.Users.Views.UserPhoneNumber.Edit"
-msgid "Verified"
 msgstr ""
 
 #: Views/UserRoleFields.Edit.cshtml
