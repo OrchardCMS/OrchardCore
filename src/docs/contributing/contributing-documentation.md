@@ -10,6 +10,70 @@ The [Orchard Core documentation site](https://docs.orchardcore.net/) is built wi
 !!! tip
     If you're looking for ideas on what to improve in the Orchard Core documentation, check out the [documentation issues](https://github.com/OrchardCMS/OrchardCore/labels/documentation).
 
+## The User Manual and the Technical Manual
+
+The documentation has two manuals, for two kinds of readers. Before you write, decide which one your change belongs to; a change to Orchard Core often needs both.
+
+| | User Manual | Technical Manual |
+| --- | --- | --- |
+| **Reader** | Editors, content managers, site builders and administrators who work in the admin screens in the browser. | Developers and IT teams who install, configure, host and extend Orchard Core. |
+| **Folder** | `src/docs/user-manual/` | Everything else: `getting-started/`, `guides/`, `topics/`, `reference/`, `releases/`, `contributing/`, `community/` |
+| **Content** | One task at a time: where the screen is in the admin menu, numbered steps with the exact labels shown on screen, what each field does, the permission and the feature it needs. | Modules and features, configuration (`appsettings.json`, environment variables), recipes and recipe steps, APIs, extension points, code samples, deployment and hosting. |
+| **Never** | Code, JSON, `appsettings.json`, recipes or command lines. When a task needs a developer or IT, say so in one sentence and link the Technical Manual. | Step-by-step admin instructions that duplicate the User Manual: link to it instead. |
+
+### Keep the docs honest
+
+Both manuals describe the current code, not memory or older docs. Before you write or change a page:
+
+- Take menu paths from the module's `AdminMenu.cs` and button and field labels from its Razor views (the text in `T["..."]`), and copy them exactly, case included.
+- Take permission names from the module's permission provider: the role editor shows each permission's description, so write the description.
+- Take feature names and ids from the module's `Manifest.cs`, as shown in **Tools > Features**.
+- Check defaults, required fields and behavior in the drivers, controllers and settings classes, and on a locally running site when in doubt.
+- Describe the current behavior, without "new", "now" or version wording. What changed between versions belongs in the [release notes](../releases/3.0.1.md).
+
+### When you change code
+
+Update the docs in the same pull request as the code:
+
+1. **Admin screens, menus, labels, settings, permissions or features changed?** Update the User Manual page that covers them. `user-manual/getting-started/features.md` lists every feature with its User Manual page; a new feature needs a row there and a section on the right page.
+2. **Configuration, APIs, recipes, extension points or behavior for developers changed?** Update the module's page under `reference/modules/` or the matching guide or topic.
+3. **A new module or feature?** Document it in both manuals: the Technical Manual page (see [Adding docs for a new extension or topic](#adding-docs-for-a-new-extension-or-topic)) and the User Manual task pages for its admin screens.
+4. **Something removed or renamed?** Search both manuals for the old name, menu path and label, and fix every page.
+
+### Writing a User Manual page
+
+Each page starts with front matter, then a title equal to the `title`, a short introduction, and a **Menu / Permission / Feature** table:
+
+```markdown
+---
+title: Users
+description: Add people to the site, reset their passwords, and give them roles.
+technical_manual:
+  - reference/modules/Users/README.md
+---
+
+# Users
+
+Every person who signs in has a user account. This page explains how to add and manage them.
+
+| | |
+| --- | --- |
+| **Menu** | **Access Control > Users** |
+| **Permission** | *Manage security settings and all users* |
+| **Feature** | **Users** (`OrchardCore.Users`) |
+
+## Add a user
+
+1. Open **Access Control > Users** and click **Add User**.
+2. Type the **User name** and the **Email**.
+3. Click **Save**.
+```
+
+- Use task headings that start with a verb, such as "Add a user", in sentence case.
+- Write one action per step, and bold the exact labels shown on screen. Use **Click** for buttons, **Choose** for lists and menus, **Tick** and **Clear** for checkboxes, and **Type** for text.
+- List the related Technical Manual pages in `technical_manual`, as paths relative to `src/docs/`. A build hook (`.scripts/docs/manuals.py`) adds a "For developers and IT" box to the page, a box linking back to it at the top of each of those Technical Manual pages, and a short line about missing menus under the Menu / Permission / Feature table. Don't write these boxes yourself.
+- Add the page to the `User Manual` section of the `nav` in `mkdocs.yml`, in the section that matches the job, and use the page title as its nav title.
+
 ## Editing documentation pages
 
 First, clone the repository using the command `git clone https://github.com/OrchardCMS/OrchardCore.git` and checkout the `main` branch. You can find the documentation files under the `src/docs` folder.

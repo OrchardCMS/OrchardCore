@@ -169,7 +169,7 @@ The following skills are available in `.agents/skills/` for guided workflows:
 | `orchardcore-localization` | Localize apps & content | IStringLocalizer S/T/H, PO files, content translation, cultures |
 | `orchardcore-tenants` | Multi-tenancy | Shells, creating tenants, tenant scopes, feature profiles, isolation |
 | `orchardcore-unit-test` | Write & run tests | xUnit, SiteContext integration, Moq, Playwright functional |
-| `orchardcore-docs-writer` | Author docs | MkDocs pages, module README, nav, admonitions, redirects |
+| `orchardcore-docs-writer` | Author docs | User Manual and Technical Manual pages, module README, nav, admonitions, redirects |
 | `orchardcore-tester` | Browser-based testing | Testing features via Playwright automation |
 | `orchardcore-nswag-regenerate` | Regenerate NSwag API clients | Updating `Services/OpenApiClient.cs`/`OpenApiClient.ts`, noisy NSwag regeneration diffs |
 | `orchardcore-video-producer` | Produce narrated videos | Feature walkthroughs, module overviews, PR demos, videos in the docs |
@@ -282,10 +282,28 @@ The project uses:
 
 ### Documentation
 
-- Update the canonical page under `src\docs` whenever a change affects user-facing behavior, configuration, setup, public APIs, stereotypes, or extension points.
+- Update the canonical page under `src\docs` whenever a change affects user-facing behavior, configuration, setup, public APIs, stereotypes, or extension points. The docs have two manuals, and a change often needs both: see [User Manual and Technical Manual](#user-manual-and-technical-manual).
 - Add or update XML `<summary>` documentation for new or modified public interfaces, domain models, enums, and other public members that are part of the change.
 - Document each enum member individually when its behavior is relevant to users or downstream developers.
 - When XML documentation already exists, revise the existing block in place and keep `<param>` tags accurate and in signature order.
+
+### User Manual and Technical Manual
+
+The documentation site has two manuals, and both must stay accurate as the code changes. Update them in the same pull request as the code, never later.
+
+| Manual | Folder | Reader | Update it when a change affects |
+|---|---|---|---|
+| User Manual | `src/docs/user-manual/` | Editors, site builders and administrators working in the admin, no code | Admin menus, screens, buttons, field labels, options, defaults, validation, permissions, features, or what a user sees on the site |
+| Technical Manual | every other folder under `src/docs/` | Developers and IT teams | Configuration, recipes and recipe steps, APIs, extension points, stereotypes, services, deployment and hosting |
+
+- **Keep it honest.** Write only what the code does. Take menu paths from `AdminMenu.cs`, labels from the Razor views (`T["..."]`, copied exactly), permission descriptions from the permission provider, and feature names and ids from `Manifest.cs`. Check defaults, required fields and behavior in drivers, controllers and settings classes, and on a running site when in doubt. Never describe a screen from memory or from older docs.
+- **When a screen, label, menu, setting, permission or feature changes**, search `src/docs/user-manual/` for the old menu path, label and feature name, and fix every page that mentions it. When a feature is added, give it a row in `user-manual/getting-started/features.md` and document its admin screens on the matching User Manual page, adding a page and a `nav` entry in `mkdocs.yml` when no page fits.
+- **User Manual pages** follow the template in `src/docs/contributing/contributing-documentation.md`: front matter with `title`, `description` and `technical_manual` (the related Technical Manual pages, relative to `src/docs/`), a title equal to `title`, a **Menu / Permission / Feature** table, task headings in sentence case, and numbered steps with one action each and the exact labels in bold. No code, JSON, `appsettings.json` or recipes: when a task needs a developer, say so and list the technical page in `technical_manual`.
+- **Don't hand-write the links between the manuals.** The build hook `.scripts/docs/manuals.py` reads `technical_manual` and adds the boxes that link the two manuals.
+- **Don't move or rename existing pages.** Their URLs are public; add a `redirect_maps` entry in `mkdocs.yml` when a move can't be avoided.
+- Describe the current behavior, without "new", "now" or version wording; changes between versions go in the release notes.
+- **Changing the docs theme** (`src/docs/theme/`, `src/docs/assets/`)? Take colors and radii from the tokens in `assets/css/theme.css`, and follow the design rules in the `orchardcore-docs-writer` skill: no thick colored borders for emphasis, no emoji, icons or ALL-CAPS labels on every item, no hover effects that move the layout.
+- Build the docs before pushing (`pip install -r src/docs/requirements.txt`, then `python -m mkdocs build`) and fix every warning: broken links and anchors are reported there.
 
 ### Translation Templates
 
@@ -525,7 +543,7 @@ public sealed class AdminMenu : AdminNavigationProvider
 
 1. Follow existing code style and conventions
 2. Include unit tests for new functionality
-3. Update the canonical documentation page when adding or changing user-facing features, public APIs, configuration, stereotypes, or extension points, and keep the docs aligned with the shipped code and behavior
+3. Update the canonical documentation page when adding or changing user-facing features, public APIs, configuration, stereotypes, or extension points, and keep the docs aligned with the shipped code and behavior: the User Manual for admin screens, menus, labels, settings, permissions and features, and the Technical Manual for configuration, APIs and extension points (see [User Manual and Technical Manual](#user-manual-and-technical-manual))
 4. Run asset build if modifying CSS/JS: `yarn build`
 5. Regenerate the translation templates if localized strings changed: `dotnet build OrchardCore.slnx -p:UpdateLocalizationCatalogs=true` (see [Translation Templates](#translation-templates))
 6. Ensure all tests pass: `dotnet test`

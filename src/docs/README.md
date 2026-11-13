@@ -1,6 +1,62 @@
+---
+hide:
+  - navigation
+  - toc
+---
+
 # Orchard Core
 
 Orchard Core is an open-source, modular, multi-tenant application framework and CMS for ASP.NET Core. It's a redevelopment of [Orchard CMS](https://github.com/OrchardCMS/Orchard) on [ASP.NET Core](https://docs.microsoft.com/aspnet/core/).
+
+## Choose your manual
+
+The documentation is written for two kinds of readers. Pick the one that fits what you do.
+
+<div class="oc-manuals" markdown>
+
+<div class="oc-manual oc-manual--user" markdown>
+
+<div class="oc-manual__header">
+<span class="oc-manual__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm0 2c-4.42 0-8 2.24-8 5v1h16v-1c0-2.76-3.58-5-8-5Z"/></svg></span>
+<div><p class="oc-manual__eyebrow">For admin users</p><p class="oc-manual__title">User Manual</p></div>
+</div>
+
+For editors, content managers, site builders and administrators who work in the admin screens of an Orchard Core site. Step by step, one task at a time, with no code.
+
+- Write, publish and organize content and media
+- Design pages with themes, widgets and menus
+- Manage users, roles, features and settings
+
+<div class="oc-manual__actions" markdown>
+
+[Open the User Manual](user-manual/index.md){ .md-button .md-button--primary } [Use cases](user-manual/use-cases/index.md){ .md-button }
+
+</div>
+
+</div>
+
+<div class="oc-manual oc-manual--tech" markdown>
+
+<div class="oc-manual__header">
+<span class="oc-manual__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.7 16.6 4.1 12l4.6-4.6L7.3 6l-6 6 6 6 1.4-1.4Zm6.6 0 4.6-4.6-4.6-4.6L16.7 6l6 6-6 6-1.4-1.4Z"/></svg></span>
+<div><p class="oc-manual__eyebrow">For developers and IT</p><p class="oc-manual__title">Technical Manual</p></div>
+</div>
+
+For developers and IT teams who install, configure, host and extend Orchard Core.
+
+- Create a CMS or modular application
+- Build modules and themes
+- Configuration, APIs, hosting and deployment
+
+<div class="oc-manual__actions" markdown>
+
+[Open the Technical Manual](technical-manual/index.md){ .md-button .md-button--primary } [Module reference](reference/README.md){ .md-button }
+
+</div>
+
+</div>
+
+</div>
 
 Orchard Core consists of two different targets:
 
@@ -71,3 +127,13 @@ The latest released version of Orchard Core is `3.0.1`. The release notes can be
 ## Showcasing Orchard Core CMS
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/Gfy5SCACyL8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+## How these docs are maintained
+
+The documentation lives in the [`src/docs`](https://github.com/OrchardCMS/OrchardCore/tree/main/src/docs) folder of the repository and changes with the code, in the same pull requests.
+
+- The **User Manual** (`src/docs/user-manual/`) is updated whenever a change affects what people see or do in the admin: menus, screens, labels, settings, permissions or features. It explains each task step by step, without code.
+- The **Technical Manual** (every other folder) is updated whenever a change affects how developers and IT teams install, configure or extend Orchard Core: configuration, recipes, APIs and extension points.
+- Both manuals describe the current code: menu paths, labels, permissions and behavior are checked against the source before they are written.
+
+See [Contributing to the documentation](contributing/contributing-documentation.md#the-user-manual-and-the-technical-manual) for the rules, the User Manual page template, and how to run the site locally.

@@ -1,0 +1,65 @@
+{#-
+  Header with the logo, the site name, the top-level tabs, the theme toggle, the search box and the repository on one row.
+  Based on Material's partials/header.html. The tabs are rendered here instead of in a bar below the header (see the empty
+  "tabs" block in main.html).
+-#}
+{% import "partials/tabs-item.html" as item with context %}
+<header class="md-header oc-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="{{ lang.t('header') }}">
+    <span class="oc-header__decor" aria-hidden="true"></span>
+    <a href="{{ config.extra.homepage | d(nav.homepage.url, true) | url }}" title="{{ config.site_name | e }}" class="md-header__button md-logo" aria-label="{{ config.site_name }}" data-md-component="logo">
+      {% include "partials/logo.html" %}
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      {% set icon = config.theme.icon.menu or "material/menu" %}
+      {% include ".icons/" ~ icon ~ ".svg" %}
+    </label>
+    <span class="oc-header__divider oc-header__divider--logo" aria-hidden="true"></span>
+    <div class="md-header__title oc-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            {{ config.site_name }}
+          </span>
+        </div>
+      </div>
+    </div>
+    {% if "navigation.tabs" in features %}
+      <div class="oc-header__tabs">
+        <ul class="md-tabs__list">
+          {% for nav_item in nav.items %}
+            {{ item.render(nav_item) }}
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+    <span class="oc-header__divider oc-header__divider--tools" aria-hidden="true"></span>
+    {% if config.theme.palette %}
+      {% if not config.theme.palette is mapping %}
+        {% include "partials/palette.html" %}
+      {% endif %}
+    {% endif %}
+    {% if not config.theme.palette is mapping %}
+      {% include "partials/javascripts/palette.html" %}
+    {% endif %}
+    {% if config.extra.alternate %}
+      {% include "partials/alternate.html" %}
+    {% endif %}
+    {% if "material/search" in config.plugins %}
+      {% set search = config.plugins["material/search"] | attr("config") %}
+      {% if search.enabled %}
+        <label class="md-header__button md-icon" for="__search">
+          {% set icon = config.theme.icon.search or "material/magnify" %}
+          {% include ".icons/" ~ icon ~ ".svg" %}
+        </label>
+        {% include "partials/search.html" %}
+      {% endif %}
+    {% endif %}
+    {% if config.repo_url %}
+      <span class="oc-header__divider oc-header__divider--source" aria-hidden="true"></span>
+      <div class="md-header__source">
+        {% include "partials/source.html" %}
+      </div>
+    {% endif %}
+  </nav>
+</header>

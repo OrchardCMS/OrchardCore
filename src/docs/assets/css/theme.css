@@ -1,0 +1,178 @@
+/*
+ * Color accents for tables, headings, cards, steps and the sidebar, in both light and dark mode.
+ * The tokens below hold every color and radius of the docs theme: header.css and manuals.css use them too.
+ */
+:root {
+  --oc-teal: #00897b;
+  --oc-teal-strong: #00695c;
+  --oc-teal-text: #00695c;
+  --oc-teal-soft: #e0f2f1;
+  --oc-teal-softer: #f2faf9;
+  --oc-table-border: #cfe7e4;
+  --oc-indigo: #3f51b5;
+  --oc-indigo-text: #3949ab;
+  --oc-header-start: #00695c;
+  --oc-header-middle: #00897b;
+  --oc-header-end: #009688;
+  --oc-header-shadow: rgba(0, 0, 0, 0.16);
+  --oc-on-accent: #fff;
+  --oc-header-divider: rgba(255, 255, 255, 0.3);
+  --oc-header-overlay: rgba(0, 0, 0, 0.2);
+  --oc-header-overlay-strong: rgba(0, 0, 0, 0.3);
+  --oc-radius: 0.5rem;
+  --oc-radius-small: 0.3rem;
+}
+
+[data-md-color-scheme="slate"] {
+  --oc-teal: #26a69a;
+  --oc-teal-strong: #00796b;
+  --oc-teal-text: #4db6ac;
+  --oc-teal-soft: rgba(38, 166, 154, 0.16);
+  --oc-teal-softer: rgba(38, 166, 154, 0.06);
+  --oc-table-border: rgba(77, 182, 172, 0.28);
+  --oc-indigo: #5c6bc0;
+  --oc-indigo-text: #9fa8da;
+  --oc-header-start: #004d40;
+  --oc-header-middle: #00695c;
+  --oc-header-end: #00796b;
+  --oc-header-shadow: rgba(0, 0, 0, 0.45);
+}
+
+/* Headings. */
+.md-typeset h1 {
+  color: var(--md-default-fg-color);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.md-typeset h2 {
+  padding-bottom: 0.25em;
+  border-bottom: 0.1rem solid var(--oc-teal-soft);
+  color: var(--oc-teal-text);
+  font-weight: 600;
+}
+
+.md-typeset h3 {
+  color: var(--md-default-fg-color);
+  font-weight: 600;
+}
+
+/* Tables with a header row. */
+.md-typeset table:not([class]) {
+  overflow: hidden;
+  border: 0.05rem solid var(--oc-table-border);
+  border-radius: var(--oc-radius);
+  box-shadow: none;
+}
+
+.md-typeset table:not([class]) th {
+  background-color: var(--oc-teal);
+  color: var(--oc-on-accent);
+  font-weight: 600;
+}
+
+.md-typeset table:not([class]) th a {
+  color: inherit;
+  text-decoration: underline;
+}
+
+.md-typeset table:not([class]) td {
+  border-top: 0.05rem solid var(--oc-table-border);
+}
+
+.md-typeset table:not([class]) tbody tr:nth-child(even) {
+  background-color: var(--oc-teal-softer);
+}
+
+.md-typeset table:not([class]) tbody tr:hover {
+  background-color: var(--oc-teal-soft);
+  box-shadow: none;
+}
+
+/* Label tables (empty header row), such as Menu / Permission / Feature: a tinted label column. */
+.md-typeset table:not([class]):has(thead th:first-child:empty + th:last-child:empty) tbody tr:nth-child(even),
+.md-typeset table:not([class]):has(thead th:first-child:empty + th:last-child:empty) tbody tr:hover {
+  background-color: transparent;
+}
+
+.md-typeset table:not([class]):has(thead th:first-child:empty + th:last-child:empty) td:first-child {
+  background-color: var(--oc-teal-soft);
+  color: var(--oc-teal-text);
+}
+
+.md-typeset table:not([class]):has(thead th:first-child:empty + th:last-child:empty) tr:first-child td {
+  border-top: 0;
+}
+
+/* Numbered steps. */
+.md-typeset ol > li::marker {
+  color: var(--oc-teal);
+  font-weight: 700;
+}
+
+.md-typeset ul > li::marker {
+  color: var(--oc-teal);
+}
+
+/* Cards (Material "grid cards"), used on landing pages. */
+.md-typeset .grid.cards > ul > li,
+.md-typeset .grid.cards > ol > li,
+.md-typeset .grid > .card {
+  border: 0.05rem solid var(--oc-table-border);
+  border-radius: var(--oc-radius);
+  background-color: var(--oc-teal-softer);
+}
+
+.md-typeset .grid.cards > ul > li:hover,
+.md-typeset .grid.cards > ol > li:hover,
+.md-typeset .grid > .card:hover {
+  border-color: var(--oc-teal);
+  box-shadow: none;
+}
+
+.md-typeset .grid.cards > ul > li > p:first-child strong,
+.md-typeset .grid.cards > ul > li > p:first-child strong a {
+  color: var(--oc-teal-text);
+}
+
+.md-typeset .grid.cards > ul > li > hr {
+  border-bottom-color: var(--oc-table-border);
+}
+
+/* Sidebar: the current page stands out. */
+.md-nav--primary a.md-nav__link--active,
+.md-nav--secondary a.md-nav__link--active {
+  color: var(--oc-teal-text);
+  font-weight: 700;
+}
+
+@media screen and (min-width: 76.25em) {
+  /* The top entry of the sidebar (User Manual, Technical Manual) is a heading, not a selected page. */
+  .md-sidebar--primary .md-nav__item--section > .md-nav__link,
+  .md-sidebar--primary .md-nav__item--section > .md-nav__link > a.md-nav__link {
+    color: var(--md-default-fg-color--light);
+    font-weight: 700;
+  }
+
+  .md-sidebar--primary .md-nav__item--section > .md-nav__link > a.md-nav__link--active {
+    color: var(--oc-teal-text);
+  }
+
+  .md-sidebar--primary .md-nav__item--section > .md-nav__link > a.md-nav__link:hover {
+    color: var(--oc-teal-text);
+  }
+}
+
+.md-nav__link:hover,
+.md-nav__link:focus {
+  color: var(--oc-teal-text);
+}
+
+/* Footer previous / next links. */
+.md-footer {
+  background-color: var(--oc-teal-strong);
+}
+
+.md-footer-meta {
+  background-color: var(--oc-header-overlay);
+}

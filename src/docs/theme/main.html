@@ -1,5 +1,16 @@
 {% extends "base.html" %}
 
+{% block htmltitle %}
+  {% if page and page.meta and page.meta.manual == "user" and page.title != "User Manual" %}
+    <title>{{ page.title | striptags }} - User Manual - {{ config.site_name }}</title>
+  {% else %}
+    {{ super() }}
+  {% endif %}
+{% endblock %}
+
+{# The tabs are rendered inside the header, see partials/header.html. #}
+{% block tabs %}{% endblock %}
+
 {% block extrahead %}
 <link rel="help" type="text/plain" href="/llms.txt">
 {% endblock %}
