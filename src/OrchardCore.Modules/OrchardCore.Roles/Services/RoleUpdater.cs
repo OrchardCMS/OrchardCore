@@ -144,9 +144,9 @@ public class RoleUpdater : FeatureEventHandler, IRoleCreatedEventHandler, IRoleR
             .Except(_shellDescriptor.Features)
             .Select(feature => feature.Id);
 
-        // And defining at least one 'IPermissionProvider'.
+        // The permission providers of these features are resolved when they are enabled again. They can't be detected
+        // now, as the 'ITypeFeatureProvider' doesn't know the internal types of features that are not enabled.
         rolesDocument.MissingFeaturesByRole[roleName] = (await _extensionManager.LoadFeaturesAsync(missingFeatures))
-            .Where(entry => _typeFeatureProvider.GetTypesForFeature(entry).Any(type => type.IsAssignableTo(typeof(IPermissionProvider))))
             .Select(entry => entry.Id)
             .ToList();
 
