@@ -27,6 +27,7 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Liquid;
+using OrchardCore.Localization.Data;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
@@ -692,6 +693,16 @@ public sealed class CustomUserSettingsStartup : StartupBase
                 ShowVersionable = false,
             });
         });
+    }
+}
+
+[Feature("OrchardCore.Users.CustomUserSettings")]
+[RequireFeatures("OrchardCore.DataLocalization")]
+public sealed class CustomUserSettingsDataLocalizationStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddScoped<ILocalizationDataProvider, CustomUserSettingsTabLocalizationDataProvider>();
     }
 }
 

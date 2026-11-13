@@ -246,6 +246,9 @@ public class AdminController : Controller
             ? translations.ToDictionary(t => $"{t.Context}|{t.Key}", t => t.Value, StringComparer.OrdinalIgnoreCase)
             : [];
 
+        // Several providers can list the same string, for instance a tab name that both a display driver and a
+        // placement file set. It is listed once, as translations are keyed by context and name, ignoring the case.
+        var listedKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         var groups = new List<TranslatableStringGroupViewModel>();
         foreach (var provider in _localizationDataProviders)
         {
@@ -293,6 +296,11 @@ public class AdminController : Controller
                     foreach (var descriptor in subGroup)
                     {
                         var key = $"{descriptor.Context}|{descriptor.Name}";
+                        if (!listedKeys.Add(key))
+                        {
+                            continue;
+                        }
+
                         existingTranslations.TryGetValue(key, out var translatedValue);
 
                         var stringViewModel = new TranslatableStringViewModel
@@ -327,13 +335,17 @@ public class AdminController : Controller
         var supportedCultures = await _localizationService.GetSupportedCulturesAsync();
         var translationsDocument = await _translationsManager.GetTranslationsDocumentAsync();
 
-        // Get all translatable strings.
+        // Get all translatable strings, each once, as the editor lists them.
         var allDescriptors = new List<DataLocalizedString>();
         foreach (var provider in _localizationDataProviders)
         {
             var descriptors = await provider.GetDescriptorsAsync();
             allDescriptors.AddRange(descriptors);
         }
+
+        allDescriptors = allDescriptors
+            .DistinctBy(descriptor => $"{descriptor.Context}|{descriptor.Name}", StringComparer.OrdinalIgnoreCase)
+            .ToList();
 
         var totalStrings = allDescriptors.Count;
         var totalTranslated = 0;

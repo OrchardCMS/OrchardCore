@@ -5,6 +5,7 @@ using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Localization.Data;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Placements.Deployment;
@@ -51,6 +52,15 @@ public class FileContentDefinitionStartup : StartupBase
     {
         services.RemoveAll<IPlacementStore>();
         services.AddScoped<IPlacementStore, FilePlacementsStore>();
+    }
+}
+
+[RequireFeatures("OrchardCore.DataLocalization")]
+public sealed class DataLocalizationStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddScoped<ILocalizationDataProvider, PlacementsLocalizationDataProvider>();
     }
 }
 

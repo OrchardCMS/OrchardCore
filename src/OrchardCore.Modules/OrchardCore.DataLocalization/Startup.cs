@@ -36,5 +36,8 @@ public class Startup : StartupBase
 
         services.AddDataLocalization();
         services.AddSingleton<IDataTranslationProvider, DataTranslationProvider>();
+
+        services.AddScoped<ILocalizationDataProvider, PlacementCatalogLocalizationDataProvider>();
+        services.AddScoped<ILocalizationDataProvider, PlacementFileLocalizationDataProvider>();
     }
 }
