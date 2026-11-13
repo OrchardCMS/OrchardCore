@@ -227,13 +227,30 @@ public sealed class BuildIntegrationTests
             Assert.DoesNotContain(manifest.Descendants(), element => element.Name.LocalName == "dependencies");
         }
 
+        workspace.Write("Consumer/NuGet.config", $$"""
+            <configuration>
+              <packageSources>
+                <clear />
+                <add key="LocalizationTest" value="{{SecurityElement.Escape(feed)}}" />
+                <add key="NuGet" value="https://api.nuget.org/v3/index.json" />
+              </packageSources>
+              <packageSourceMapping>
+                <clear />
+                <packageSource key="LocalizationTest">
+                  <package pattern="OrchardCore.Localization.Build" />
+                </packageSource>
+                <packageSource key="NuGet">
+                  <package pattern="*" />
+                </packageSource>
+              </packageSourceMapping>
+            </configuration>
+            """);
         var cache = System.Environment.GetEnvironmentVariable("NUGET_PACKAGES") ?? Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.UserProfile), ".nuget/packages");
         var consumer = workspace.Write("Consumer/Consumer.csproj", $$"""
             <Project Sdk="Microsoft.NET.Sdk">
               <PropertyGroup>
                 <TargetFrameworks>netstandard2.0;net11.0</TargetFrameworks>
                 <LangVersion>14.0</LangVersion>
-                <RestoreAdditionalProjectSources>{{SecurityElement.Escape(feed)}}</RestoreAdditionalProjectSources>
                 <RestorePackagesPath>{{SecurityElement.Escape(Path.Combine(workspace.DirectoryPath, "packages"))}}</RestorePackagesPath>
                 <RestoreFallbackFolders>{{SecurityElement.Escape(cache)}}</RestoreFallbackFolders>
               </PropertyGroup>

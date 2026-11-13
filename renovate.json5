@@ -11,6 +11,7 @@
     ],
     // See https://docs.renovatebot.com/configuration-options/#configmigration.
     configMigration: true,
+    baseBranchPatterns: ['main'],
     packageRules: [
         // Such updates should never break, so are usually safe to automerge (unless another group below overrides it
         // for a given dependency).
@@ -179,6 +180,25 @@
             matchPackageNames: [
                 '/^YesSql.*$/',
             ],
+        },
+        {
+            // Release branches select stable translations explicitly during release preparation.
+            matchPackageNames: ['OrchardCore.Translations.All'],
+            enabled: false,
+        },
+        {
+            matchBaseBranches: ['main'],
+            matchPackageNames: ['OrchardCore.Translations.All'],
+            enabled: true,
+            registryUrls: ['https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json'],
+            allowedVersions: '/^[0-9]+\\.[0-9]+\\.[0-9]+-preview-[0-9]+$/',
+            ignoreUnstable: false,
+            respectLatest: false,
+            rangeStrategy: 'pin',
+            minimumReleaseAge: '0 days',
+            schedule: ['at any time'],
+            groupName: null,
+            automerge: true,
         },
     ],
     // Delay updates to try to avoid supply chain attacks by increasing the chance they're discovered.

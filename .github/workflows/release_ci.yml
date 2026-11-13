@@ -54,6 +54,11 @@ jobs:
           Write-Error "CI must use exact SDK version from global.json."
           exit 1
         }
+    - name: Validate release translations
+      shell: pwsh
+      run: ./.github/scripts/Test-TranslationsPackage.ps1
+    - name: Disable the translation preview source
+      run: dotnet nuget disable source OrchardCoreTranslations --configfile NuGet.config
     - name: Set build number 
       if: matrix.os == 'ubuntu-24.04'
       run: echo "BuildNumber=$(( $GITHUB_RUN_NUMBER + 15471 ))" >> $GITHUB_ENV

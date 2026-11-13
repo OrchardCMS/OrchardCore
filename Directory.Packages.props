@@ -68,7 +68,7 @@
     <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.20.1" />
     <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.20.1" />
     <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.20.1" />
-    <PackageVersion Include="OrchardCore.Translations.All" Version="3.0.0" />
+    <PackageVersion Include="OrchardCore.Translations.All" Version="[3.0.0-preview-20094]" />
     <PackageVersion Include="PdfPig" Version="0.1.16" />
     <PackageVersion Include="Scalar.AspNetCore" Version="2.18.3" />
     <PackageVersion Include="Shortcodes" Version="1.4.0" />
