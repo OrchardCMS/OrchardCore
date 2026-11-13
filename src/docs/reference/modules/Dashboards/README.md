@@ -36,6 +36,9 @@ On a `User` dashboard, users manage their widgets without content permissions on
 
 ### Registering a dashboard type
 
+!!! tip
+    The [Creating a Dashboard Type](../../../guides/create-dashboard-type/README.md) guide walks through a module that registers a shared and a per-user dashboard, with their permissions, admin menu items, a widget type of their own and default widgets.
+
 Register a type from the `Startup` of your feature with `AddDashboardType()`, from the `OrchardCore.Dashboards.Abstractions` package, and make your module depend on the `OrchardCore.Dashboards` feature:
 
 ```csharp
@@ -85,7 +88,7 @@ builder.Add(S["Sales Dashboard"], dashboard => dashboard
 
 ### Using the dashboards from code
 
-The `IDashboardManager` service returns the registered types (`GetType()`, `GetTypes()`), checks the access of a user to a dashboard (`CanViewAsync()`, `CanManageAsync()`), and returns the widgets a user sees on a dashboard, ordered by position (`GetWidgetsAsync()`).
+The `IDashboardManager` service, from the `OrchardCore.Dashboards` package, returns the registered types (`GetType()`, `GetTypes()`), checks the access of a user to a dashboard (`CanViewAsync()`, `CanManageAsync()`), and returns the widgets a user sees on a dashboard, ordered by position (`GetWidgetsAsync()`).
 
 ## Widgets
 
