@@ -54,15 +54,14 @@ public class UsersThemeSelector : IThemeSelector
                         }
                         else
                         {
-                            useSiteTheme = (await _siteService.GetSettingsAsync<TwoFactorLoginSettings>()).UseSiteTheme;
+                            useSiteTheme = (await _siteService.GetSettingsAsync<UserSecuritySettings>()).UseSiteTheme;
                         }
                     }
                     break;
+                case "Security":
                 case "SmsAuthenticator":
                 case "AuthenticatorApp":
-                    {
-                        useSiteTheme = (await _siteService.GetSettingsAsync<TwoFactorLoginSettings>()).UseSiteTheme;
-                    }
+                    useSiteTheme = (await _siteService.GetSettingsAsync<UserSecuritySettings>()).UseSiteTheme;
                     break;
                 case "Registration":
                     useSiteTheme = (await _siteService.GetSettingsAsync<RegistrationSettings>()).UseSiteTheme;

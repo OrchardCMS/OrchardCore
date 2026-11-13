@@ -235,6 +235,7 @@ For detailed patterns including Content Parts, Content Part Drivers, Content Fie
 
 - Follow [ASP.NET Core Engineering guidelines](https://github.com/dotnet/aspnetcore/wiki/Engineering-guidelines)
 - Use `sealed` for classes that should not be inherited
+- Declare display drivers `internal sealed` by default. Make a driver `public` only when another assembly has to reference its type, for example to remove or replace the driver, or to use it in a test
 - Use file-scoped namespaces
 - Prefer collection expressions (`[]`) over `new List<T>()`
 - Avoid use of primary constructors

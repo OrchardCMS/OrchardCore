@@ -30,7 +30,8 @@ public class UserEventHandler : UserEventHandlerBase, ILoginFormEvent
         [
             nameof(User.PasswordHash),
             nameof(User.ResetToken),
-            nameof(User.UserTokens)
+            nameof(User.UserTokens),
+            nameof(User.Passkeys)
         ],
         StringComparer.OrdinalIgnoreCase);
 

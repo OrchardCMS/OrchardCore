@@ -8,6 +8,7 @@ public class UserOptions
     private string _changePasswordConfirmationUrl = "ChangePasswordConfirmation";
     private string _externalLoginsUrl = "ExternalLogins";
     private string _twoFactorAuthenticationPath = "TwoFactor";
+    private string _securityPath = "Security";
 
     public string LoginPath
     {
@@ -39,9 +40,21 @@ public class UserOptions
         set => _externalLoginsUrl = value.Trim(' ', '/');
     }
 
+    /// <summary>
+    /// Gets or sets the path of the former two-factor authentication page, which redirects to the <see cref="SecurityPath"/> page.
+    /// </summary>
     public string TwoFactorAuthenticationPath
     {
         get => _twoFactorAuthenticationPath;
         set => _twoFactorAuthenticationPath = value.Trim(' ', '/');
+    }
+
+    /// <summary>
+    /// Gets or sets the path of the page where users manage their two-factor authentication and their passkeys.
+    /// </summary>
+    public string SecurityPath
+    {
+        get => _securityPath;
+        set => _securityPath = value.Trim(' ', '/');
     }
 }
