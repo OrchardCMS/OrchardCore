@@ -48,7 +48,7 @@
     <li class="list-group-item text-bg-theme">
         <div class="row gx-3 align-items-center">
             <div class="col">
-                @T.Plural(Model.Runs.Count, "{0} item", "{0} items")<span class="text-muted">@T.Plural(Model.TotalCount, " / {0} item in total", " / {0} items in total")</span>
+                @T.Plural(Model.Runs.Count, "{0} item", "{0} items")<span>@T.Plural(Model.TotalCount, " / {0} item in total", " / {0} items in total")</span>
             </div>
             <div class="col-auto">
                 <div class="dropdown">
