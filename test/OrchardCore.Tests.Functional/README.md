@@ -159,4 +159,6 @@ When `PLAYWRIGHT_TRACING` is set, traces are saved to `test/OrchardCore.Tests.Fu
 
 ## CI
 
-The `functional_all_db.yml` workflow runs these tests against SQLite, PostgreSQL, MySQL, and SQL Server. Tracing is enabled by default in CI, and trace files are uploaded as artifacts on failure.
+The `pr_ci.yml` and `main_ci.yml` workflows run the baseline MVC and CMS/SQLite tests. The CMS runs enable YesSql thread-safety checks and include `BulkSelectListTests` and `TenantsBulkSelectTests`, so these need no separate workflow.
+
+The `functional_all_db.yml` workflow adds PostgreSQL, MySQL, SQL Server, and Redis/Azurite coverage on review submission, main/release pushes, and manual dispatch without repeating the baseline MVC and CMS/SQLite jobs. Tracing is enabled by default in CI, and trace files are uploaded as artifacts on failure.
