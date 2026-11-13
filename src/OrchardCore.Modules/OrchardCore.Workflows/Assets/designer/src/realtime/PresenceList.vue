@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
+import { firstTextElement } from "@bloom/helpers/text";
 import type { Presence } from "./realtime";
 import { t } from "../i18n";
 
@@ -23,7 +24,7 @@ const initialsOf = (presence: Presence) =>
         .split(/[\s._@-]+/)
         .filter(Boolean)
         .slice(0, 2)
-        .map((part) => part[0]?.toUpperCase())
+        .map((part) => firstTextElement(part).toUpperCase())
         .join("");
 </script>
 

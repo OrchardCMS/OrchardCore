@@ -180,6 +180,9 @@ public sealed class OrchardTestServer : IAsyncDisposable
         // The background tasks tests run a task that fails on purpose to check how its error is shown.
         || (record.Category == "OrchardCore.Modules.ModularBackgroundService"
             && record.Message.Contains(Tests.Cms.FailingTestBackgroundTask.TaskName))
+        // They also run a task longer than their polling time on purpose, so the background service stops waiting for it.
+        || (record.Category == "OrchardCore.Modules.ModularBackgroundService"
+            && record.Message.Contains(Tests.Cms.SlowTestBackgroundTask.TaskName))
         // The Transient failure activity of the WorkflowsSample test module faults its instance on purpose.
         || (record.Category == "OrchardCore.Workflows.Services.WorkflowManager"
             && record.Exception is WorkflowsSample.TransientFailureException)

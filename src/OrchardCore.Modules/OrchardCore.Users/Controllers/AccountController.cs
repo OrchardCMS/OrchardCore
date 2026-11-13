@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -155,7 +154,7 @@ public sealed class AccountController : AccountBaseController
                             if (loginResult is EmailConfirmationRequiredResult)
                             {
                                 // The password has been verified, so the user can request a new confirmation email.
-                                await SignInEmailConfirmationUserAsync(user);
+                                await SignInEmailConfirmationUserAsync(await _userManager.GetUserIdAsync(user));
                             }
 
                             return loginResult;
@@ -279,14 +278,4 @@ public sealed class AccountController : AccountBaseController
     [HttpGet]
     public IActionResult ChangePasswordConfirmation()
         => View();
-
-    private async Task SignInEmailConfirmationUserAsync(IUser user)
-    {
-        var identity = new ClaimsIdentity(UserConstants.EmailConfirmationAuthenticationScheme);
-        identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, await _userManager.GetUserIdAsync(user)));
-
-        await HttpContext.SignInAsync(
-            UserConstants.EmailConfirmationAuthenticationScheme,
-            new ClaimsPrincipal(identity));
-    }
 }

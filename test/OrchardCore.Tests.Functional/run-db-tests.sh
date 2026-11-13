@@ -26,7 +26,7 @@ build() {
     echo "Building..."
     dotnet build -c Release "$PROJECT"
 
-    local build_dir="$SCRIPT_DIR/bin/Release/net10.0"
+    local build_dir="$SCRIPT_DIR/bin/Release/net11.0"
     local playwright_dll="$build_dir/Microsoft.Playwright.dll"
     if [ -f "$playwright_dll" ]; then
         echo "Installing Playwright browsers..."

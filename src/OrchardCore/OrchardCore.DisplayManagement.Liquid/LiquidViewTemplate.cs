@@ -288,7 +288,7 @@ public static class LiquidTemplateContextExtensions
             {
                 viewContext = LiquidViewTemplateExtensions.GetViewContext(actionContext);
             }
-            
+
             var localClock = context.Services.GetRequiredService<ILocalClock>();
 
             // Configure Fluid with the time zone to represent local date and times

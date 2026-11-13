@@ -16,6 +16,28 @@ public class LocalizationSourceAnalyzerTests
     private static readonly MetadataReference[] s_metadataReferences = GetMetadataReferences();
 
     [Theory]
+    [InlineData("😀")]
+    [InlineData("e\u0301")]
+    [InlineData("👩‍💻")]
+    [InlineData("🇺🇸")]
+    public async Task Analyze_PreviewCutsTextElement_PreservesWholeElements(string element)
+    {
+        var prefix = new string('a', 38);
+        var source = $$"""
+            using OrchardCore.Localization;
+            namespace Example;
+            public class Permissions
+            {
+                public static readonly LocalizationSource Source = LocalizationSource.Create("{{prefix}}{{element}}more");
+            }
+            """;
+
+        var diagnostic = Assert.Single(await GetDiagnosticsAsync(source));
+
+        Assert.Contains($"'{prefix}…'", diagnostic.GetMessage(), StringComparison.Ordinal);
+    }
+
+    [Theory]
     [InlineData("LocalizationSource.Create(\"Manage settings\")")]
     [InlineData("LocalizationSource.Create(\"Manage settings\", null)")]
     [InlineData("LocalizationSource.Create(value: \"Manage settings\", type: null)")]

@@ -5,7 +5,6 @@ using Amazon.S3.Model;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.FileStorage.AmazonS3;
-using OrchardCore.Media;
 
 namespace OrchardCore.Media.AmazonS3.Services;
 

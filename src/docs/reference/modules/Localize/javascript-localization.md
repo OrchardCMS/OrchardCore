@@ -246,7 +246,7 @@ Outside the Orchard Core source tree, reference `OrchardCore.Localization.Build`
 dotnet build src/MyModule/MyModule.csproj -p:LocalizationCatalogOutputPath="$PWD/artifacts/localization"
 ```
 
-The exported template is written to `<output>/<TargetFramework>/<AssemblyName>.pot`, for example `artifacts/localization/net10.0/MyModule.pot`. Build the solution or application with the same property to collect templates from all participating projects built through that entry point. Without the property, templates are generated and embedded but not copied into an export directory.
+The exported template is written to `<output>/<TargetFramework>/<AssemblyName>.pot`, for example `artifacts/localization/net11.0/MyModule.pot`. Build the solution or application with the same property to collect templates from all participating projects built through that entry point. Without the property, templates are generated and embedded but not copied into an export directory.
 
 This is the recommended successor to POExtractor. Follow the [build-time POT export workflow](README.md#export-translation-templates-for-localization-platforms) to produce a fresh snapshot, upload source templates, and download translated PO files for deployment.
 

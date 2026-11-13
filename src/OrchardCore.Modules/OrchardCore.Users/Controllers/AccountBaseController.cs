@@ -1,3 +1,5 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
@@ -39,6 +41,16 @@ public abstract class AccountBaseController : Controller
         }
 
         return Redirect("~/");
+    }
+
+    protected Task SignInEmailConfirmationUserAsync(string userId)
+    {
+        var identity = new ClaimsIdentity(UserConstants.EmailConfirmationAuthenticationScheme);
+        identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, userId));
+
+        return HttpContext.SignInAsync(
+            UserConstants.EmailConfirmationAuthenticationScheme,
+            new ClaimsPrincipal(identity));
     }
 
     protected void CopyTempDataErrorsToModelState()

@@ -36,7 +36,7 @@ Testing an OrchardCore feature follows these steps:
 
 ```bash
 # 1. build
-dotnet build src/OrchardCore.Cms.Web -c Debug -f net10.0
+dotnet build src/OrchardCore.Cms.Web -c Debug -f net11.0
 
 # 2. fresh state + pick a port
 rm -rf src/OrchardCore.Cms.Web/App_Data
@@ -53,7 +53,7 @@ OrchardCore__AutoSetup__Tenants__0__AdminEmail=admin@test.com \
 OrchardCore__AutoSetup__Tenants__0__AdminPassword=Password1! \
 OrchardCore__AutoSetup__Tenants__0__DatabaseProvider=Sqlite \
 OrchardCore__AutoSetup__Tenants__0__RecipeName=Blog \
-dotnet run -f net10.0 --no-build --urls "http://localhost:$PORT" > autosetup-console.log 2>&1 &
+dotnet run -f net11.0 --no-build --urls "http://localhost:$PORT" > autosetup-console.log 2>&1 &
 cd ../..
 
 # 4. trigger + confirm
@@ -67,7 +67,7 @@ workaround). Full AutoSetup details and gotchas: `references/autosetup.md`.
 ## Step 1: Build
 
 ```powershell
-dotnet build src/OrchardCore.Cms.Web/OrchardCore.Cms.Web.csproj -c Debug -f net10.0
+dotnet build src/OrchardCore.Cms.Web/OrchardCore.Cms.Web.csproj -c Debug -f net11.0
 ```
 
 ## Step 2: Run Application (Background)
@@ -93,7 +93,7 @@ Write-Host "Using port: $port"
 ```powershell
 # Start OrchardCore in background process
 $proc = Start-Process dotnet `
-    -ArgumentList "run","-f","net10.0","--no-build","--urls","http://localhost:$port" `
+    -ArgumentList "run","-f","net11.0","--no-build","--urls","http://localhost:$port" `
     -WorkingDirectory "src/OrchardCore.Cms.Web" `
     -PassThru -NoNewWindow
 

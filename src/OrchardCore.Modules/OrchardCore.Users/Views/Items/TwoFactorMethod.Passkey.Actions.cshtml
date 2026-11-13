@@ -1,0 +1,16 @@
+@using OrchardCore.Users.Models
+
+@model TwoFactorMethod
+
+@* A passkey is a two-factor method as soon as the user has one, so this only reports it. The passkeys are added in their own section of the Security page. *@
+@if (Model.IsEnabled)
+{
+    <div class="btn btn-sm btn-success disabled">@T["Ready"]</div>
+
+    return;
+}
+
+<div class="text-end text-body-secondary small py-2" style="max-width: 20rem;">
+    <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+    @T["Add a passkey below to use passkeys as a two-factor method."]
+</div>
