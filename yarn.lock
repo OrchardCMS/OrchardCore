@@ -2606,15 +2606,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@orchardcore/admindashboard@workspace:src/OrchardCore.Modules/OrchardCore.AdminDashboard/Assets":
-  version: 0.0.0-use.local
-  resolution: "@orchardcore/admindashboard@workspace:src/OrchardCore.Modules/OrchardCore.AdminDashboard/Assets"
-  dependencies:
-    "@popperjs/core": "npm:2.11.8"
-    bootstrap: "npm:5.3.8"
-  languageName: unknown
-  linkType: soft
-
 "@orchardcore/adminmenu@workspace:src/OrchardCore.Modules/OrchardCore.AdminMenu/Assets":
   version: 0.0.0-use.local
   resolution: "@orchardcore/adminmenu@workspace:src/OrchardCore.Modules/OrchardCore.AdminMenu/Assets"
@@ -2816,6 +2807,15 @@ __metadata:
 "@orchardcore/customsettings@workspace:src/OrchardCore.Modules/OrchardCore.CustomSettings/Assets":
   version: 0.0.0-use.local
   resolution: "@orchardcore/customsettings@workspace:src/OrchardCore.Modules/OrchardCore.CustomSettings/Assets"
+  languageName: unknown
+  linkType: soft
+
+"@orchardcore/dashboards@workspace:src/OrchardCore.Modules/OrchardCore.Dashboards/Assets":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/dashboards@workspace:src/OrchardCore.Modules/OrchardCore.Dashboards/Assets"
+  dependencies:
+    "@popperjs/core": "npm:2.11.8"
+    bootstrap: "npm:5.3.8"
   languageName: unknown
   linkType: soft
 

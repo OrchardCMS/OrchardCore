@@ -1,0 +1,42 @@
+@model DashboardPartViewModel
+
+@if (Model.IsNew)
+{
+    <input type="hidden" asp-for="DashboardType" />
+}
+
+@if (Model.DashboardTypeDisplayName is not null)
+{
+    <div class="ocat-wrapper">
+        <label class="ocat-label">@T["Dashboard"]</label>
+        <div class="ocat-end">
+            <input type="text" class="form-control-plaintext" value="@Model.DashboardTypeDisplayName" readonly />
+        </div>
+    </div>
+}
+
+<div class="ocat-limited-wrapper" asp-validation-class-for="Position">
+    <label asp-for="Position" class="ocat-label">@T["Position"]</label>
+    <div class="ocat-limited">
+        <input asp-for="Position" type="number" step="any" class="form-control" />
+        <span asp-validation-for="Position"></span>
+    </div>
+</div>
+
+<div class="ocat-limited-wrapper" asp-validation-class-for="Width">
+    <label asp-for="Width" class="ocat-label">@T["Width"]</label>
+    <div class="ocat-limited">
+        <input asp-for="Width" type="number" step="any" min="1" class="form-control" />
+        <span asp-validation-for="Width"></span>
+    </div>
+</div>
+
+<div class="ocat-limited-wrapper" asp-validation-class-for="Height">
+    <label asp-for="Height" class="ocat-label">@T["Height"]</label>
+    <div class="ocat-limited">
+        <input asp-for="Height" type="number" step="any" min="1" class="form-control" />
+        <span asp-validation-for="Height"></span>
+    </div>
+</div>
+
+<span asp-validation-for="DashboardType"></span>

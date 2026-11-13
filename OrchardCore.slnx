@@ -95,6 +95,7 @@
     <Project Path="src/OrchardCore.Cms.Web/OrchardCore.Cms.Web.csproj" />
   </Folder>
   <Folder Name="/src/OrchardCore.Frameworks/">
+    <Project Path="src/OrchardCore/OrchardCore.Dashboards.Abstractions/OrchardCore.Dashboards.Abstractions.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Mvc.Core/OrchardCore.Mvc.Core.csproj" />
   </Folder>
   <Folder Name="/src/OrchardCore.Modules.Cms/">
@@ -109,6 +110,7 @@
     <Project Path="src/OrchardCore.Modules/OrchardCore.Contents/OrchardCore.Contents.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.ContentTypes/OrchardCore.ContentTypes.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.CustomSettings/OrchardCore.CustomSettings.csproj" />
+    <Project Path="src/OrchardCore.Modules/OrchardCore.Dashboards/OrchardCore.Dashboards.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Demo/OrchardCore.Demo.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Elasticsearch/OrchardCore.Elasticsearch.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Feeds/OrchardCore.Feeds.csproj" />

@@ -1,0 +1,15 @@
+@* Rendered in place of a dashboard the user can't view, or that has no widgets they can see.
+   Override it for a type of dashboard with DashboardUnavailable-{Type}.cshtml. *@
+
+@if (Model.CanView)
+{
+    <div class="alert alert-info" role="alert">
+        @T["This dashboard has no widgets yet."]
+    </div>
+}
+else
+{
+    <div class="alert alert-warning" role="alert">
+        @T["You are not allowed to view this dashboard."]
+    </div>
+}

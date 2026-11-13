@@ -257,6 +257,7 @@ nav:
               - Navigation: reference/modules/Navigation/README.md
               - Admin: reference/modules/Admin/README.md
               - Admin Dashboard: reference/modules/AdminDashboard/README.md
+              - Dashboards: reference/modules/Dashboards/README.md
               - Admin Menu: reference/modules/AdminMenu/README.md
               - Taxonomies: reference/modules/Taxonomies/README.md
               - Authentication:
