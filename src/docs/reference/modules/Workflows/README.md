@@ -210,7 +210,7 @@ A task can be retried by itself when it fails, for example when a service it cal
 How it runs:
 
 - **At once.** Without a delay, the task runs again right away, until it succeeds or the retries are spent.
-- **Later.** With a delay, the instance is faulted with a retry due, and its page says when the next retry is due. The **Workflow Retries** background task, which runs every minute on one node of a farm at a time, retries the due instances from the task, with their state, on the version they run on. A retry is due at the earliest when its delay is over, and runs within a minute of it. Waiting doesn't hold anything in memory, and survives a restart.
+- **Later.** With a delay, the instance is faulted with a retry due, and its page says when the next retry is due. The **Workflow Retries** background task looks every minute for the instances whose retry is due, and queues a run of the **Workflow Retry** [job](../Jobs/README.md) for each of them, which a single server of a farm executes: it retries the instance from the task, with its state, on the version it runs on. A retry is due at the earliest when its delay is over, and runs within a minute or two of it. Waiting doesn't hold anything in memory, and survives a restart.
 - **Spent.** Once the retries are spent, the instance is faulted as without retries: the workflows that start with a **Catch Workflow Fault Event** run then, not at each failed attempt, and the instance can be [retried by hand](#retrying-a-faulted-instance), which starts the retries again. With **Follow the Failed outcome**, the task shows a **Failed** outcome on the canvas instead, and the instance goes on with it, for example to notify someone or to call another service; the error is the task's [last result](#last-result).
 - **Journal.** Each failed attempt that is retried is recorded as **Retrying**, with its error, and a failure that follows the outcome as **Failed**. The card of a task that is retried shows how many times.
 
@@ -830,7 +830,7 @@ The following activities are available with any default Orchard installation:
 | **Email**                     | *     | *                                                                                   | * |
 | Send Email                    | Task  | Send an email.                                                                      |
 | **Timer Workflow Activities** | *     | *                                                                                   | * |
-| Timer                         | Event | Executes repeatedly according to a specified CRON expression.                       |
+| Timer                         | Event | Executes repeatedly according to a specified CRON expression. The timers are evaluated every minute by the **Workflow Timers** [job](../Jobs/README.md), on a single server whatever their number. |
 | **Contents**                  | *     | *                                                                                   | * |
 | Content Created               | Event | Executes when content is created.                                                   |
 | Content Deleted               | Event | Executes when content is deleted.                                                   |
@@ -1171,7 +1171,7 @@ Workflow trimming settings can be configured using the `Settings` recipe step:
 
 Old workflow instances can be automatically deleted with the Trimming feature. This is enabled by default and you can configure it (including disabling it) in Settings → Workflow Trimming. Without trimming, workflow instances remain in the database indefinitely.
 
-By default, the trimming background task runs once a day and removes at most 5000 workflow instances. You can change the frequency of the background task via [the `OrchardCore.BackgroundTasks` configuration](../BackgroundTasks/README.md), and the batch size via the `OrchardCore:Workflows` configuration from e.g. an `appsettings` file:
+By default, the **Workflow Trimming** [job](../Jobs/README.md) runs once a day, on a single server whatever their number, and removes at most 5000 workflow instances. You can change its schedule, or run it at once, under **Tools → Jobs → Schedules**, and the batch size via the `OrchardCore:Workflows` configuration from e.g. an `appsettings` file:
 
 ```json
 {

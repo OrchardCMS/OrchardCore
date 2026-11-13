@@ -799,6 +799,65 @@ msgctxt "OrchardCore.Workflows.Http.Services.HttpWorkflowGlobalValueProvider"
 msgid "Writes text to the response."
 msgstr ""
 
+#: Jobs/JobRunCompletedEvent.cs
+msgctxt "OrchardCore.Workflows.Jobs.JobRunCompletedEvent"
+msgid "Done"
+msgstr ""
+
+#: Jobs/JobRunCompletedEvent.cs
+msgctxt "OrchardCore.Workflows.Jobs.JobRunCompletedEvent"
+msgid "Job Run Completed Event"
+msgstr ""
+
+#: Jobs/RunJobTask.cs
+msgctxt "OrchardCore.Workflows.Jobs.RunJobTask"
+msgid "Failed"
+msgstr ""
+
+#: Jobs/RunJobTask.cs
+msgctxt "OrchardCore.Workflows.Jobs.RunJobTask"
+msgid "Queued"
+msgstr ""
+
+#: Jobs/RunJobTask.cs
+msgctxt "OrchardCore.Workflows.Jobs.RunJobTask"
+msgid "Run Job Task"
+msgstr ""
+
+#: Jobs/RunJobTask.cs
+msgctxt "OrchardCore.Workflows.Jobs.RunJobTask"
+msgid "Succeeded"
+msgstr ""
+
+#. Format arguments: {0}: JobName
+#: Jobs/RunJobTask.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Jobs.RunJobTask"
+msgid "The job '{0}' can't be run from a workflow."
+msgstr ""
+
+#. Format arguments: {0}: JobName
+#: Jobs/RunJobTask.cs
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Jobs.RunJobTask"
+msgid "The job '{0}' doesn't exist, such as when its feature is disabled."
+msgstr ""
+
+#: Jobs/RunJobTask.cs
+msgctxt "OrchardCore.Workflows.Jobs.RunJobTask"
+msgid "The parameters of the job aren't a JSON object."
+msgstr ""
+
+#: Jobs/JobActivityDisplayDrivers.cs
+msgctxt "OrchardCore.Workflows.Jobs.RunJobTaskDisplayDriver"
+msgid "A job is required."
+msgstr ""
+
+#: Jobs/JobActivityDisplayDrivers.cs
+msgctxt "OrchardCore.Workflows.Jobs.RunJobTaskDisplayDriver"
+msgid "The job doesn't exist, such as when its feature is disabled, or can't be run from a workflow."
+msgstr ""
+
 #: Services/DefaultWorkflowGlobalValueProvider.cs
 msgctxt "OrchardCore.Workflows.Services.DefaultWorkflowGlobalValueProvider"
 msgid "Decodes Base64 text."
@@ -3676,6 +3735,68 @@ msgctxt "OrchardCore.Workflows.Views.Items.IfElseTask.Fields.Thumbnail"
 msgid "If/Else"
 msgstr ""
 
+#: Views/Items/JobRunCompletedEvent.Fields.Design.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.JobRunCompletedEvent.Fields.Design"
+msgid "Any run"
+msgstr ""
+
+#: Views/Items/JobRunCompletedEvent.Fields.Design.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.JobRunCompletedEvent.Fields.Design"
+msgid "Job Run Completed"
+msgstr ""
+
+#. Format arguments: {0}: Model.Activity.Status
+#: Views/Items/JobRunCompletedEvent.Fields.Design.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Views.Items.JobRunCompletedEvent.Fields.Design"
+msgid "{0} runs"
+msgstr ""
+
+#: Views/Items/JobRunCompletedEvent.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.JobRunCompletedEvent.Fields.Edit"
+msgid "Any job"
+msgstr ""
+
+#: Views/Items/JobRunCompletedEvent.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.JobRunCompletedEvent.Fields.Edit"
+msgid "Every run"
+msgstr ""
+
+#: Views/Items/JobRunCompletedEvent.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.JobRunCompletedEvent.Fields.Edit"
+msgid "Job"
+msgstr ""
+
+#: Views/Items/JobRunCompletedEvent.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.JobRunCompletedEvent.Fields.Edit"
+msgid "Runs"
+msgstr ""
+
+#: Views/Items/JobRunCompletedEvent.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.JobRunCompletedEvent.Fields.Edit"
+msgid "Runs that failed or were canceled"
+msgstr ""
+
+#: Views/Items/JobRunCompletedEvent.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.JobRunCompletedEvent.Fields.Edit"
+msgid "Runs that succeeded"
+msgstr ""
+
+#: Views/Items/JobRunCompletedEvent.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.JobRunCompletedEvent.Fields.Edit"
+msgid "The run is the last result: its RunId, JobName, Title, Status, Error and Result."
+msgstr ""
+
+#: Views/Items/JobRunCompletedEvent.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.JobRunCompletedEvent.Fields.Thumbnail"
+msgid "Executes when a run of a job ends."
+msgstr ""
+
+#: Views/Items/JobRunCompletedEvent.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.JobRunCompletedEvent.Fields.Thumbnail"
+msgid "Job Run Completed"
+msgstr ""
+
 #: Views/Items/JoinTask.Fields.Design.cshtml
 msgctxt "OrchardCore.Workflows.Views.Items.JoinTask.Fields.Design"
 msgid "Await <strong>all</strong> inbound activities before joining execution into a single path."
@@ -3820,6 +3941,76 @@ msgstr ""
 #: Views/Items/NotifyTask.Fields.Thumbnail.cshtml
 msgctxt "OrchardCore.Workflows.Views.Items.NotifyTask.Fields.Thumbnail"
 msgid "Notify"
+msgstr ""
+
+#: Views/Items/RunJobTask.Fields.Design.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.RunJobTask.Fields.Design"
+msgid "Doesn't wait for the run"
+msgstr ""
+
+#: Views/Items/RunJobTask.Fields.Design.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.RunJobTask.Fields.Design"
+msgid "Run Job"
+msgstr ""
+
+#: Views/Items/RunJobTask.Fields.Design.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.RunJobTask.Fields.Design"
+msgid "Waits for the run"
+msgstr ""
+
+#: Views/Items/RunJobTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.RunJobTask.Fields.Edit"
+msgid "Choose a job"
+msgstr ""
+
+#: Views/Items/RunJobTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.RunJobTask.Fields.Edit"
+msgid "Job"
+msgstr ""
+
+#: Views/Items/RunJobTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.RunJobTask.Fields.Edit"
+msgid "Parameters"
+msgstr ""
+
+#: Views/Items/RunJobTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.RunJobTask.Fields.Edit"
+msgid "The jobs that can be run from the admin. The run is queued when the workflow is saved, and executed in the background by a single server, whatever their number."
+msgstr ""
+
+#: Views/Items/RunJobTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.RunJobTask.Fields.Edit"
+msgid "The parameters of the run, as a JSON object, with Liquid. Leave empty for a job that takes none."
+msgstr ""
+
+#: Views/Items/RunJobTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.RunJobTask.Fields.Edit"
+msgid "The workflow then continues with the Succeeded or Failed outcome, and the run as its last result and its JobRun output. Otherwise it continues at once with the Queued outcome."
+msgstr ""
+
+#: Views/Items/RunJobTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.RunJobTask.Fields.Edit"
+msgid "Title"
+msgstr ""
+
+#: Views/Items/RunJobTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.RunJobTask.Fields.Edit"
+msgid "Wait for the run to end"
+msgstr ""
+
+#: Views/Items/RunJobTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.RunJobTask.Fields.Edit"
+msgid "What the run is about, shown next to the title of the job in the list of runs, with Liquid. It is optional."
+msgstr ""
+
+#: Views/Items/RunJobTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.RunJobTask.Fields.Thumbnail"
+msgid "Queues a run of a job, which a single server executes in the background, and can wait for the run to end."
+msgstr ""
+
+#: Views/Items/RunJobTask.Fields.Thumbnail.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.RunJobTask.Fields.Thumbnail"
+msgid "Run Job"
 msgstr ""
 
 #: Views/Items/ScriptTask.Fields.Design.cshtml
@@ -4015,16 +4206,14 @@ msgctxt "OrchardCore.Workflows.Views.Items.StartedByWorkflowEvent.Fields.Thumbna
 msgid "Starts this workflow when another workflow runs it with the Execute Workflow task."
 msgstr ""
 
-#. Format arguments: {0}: Model.Activity.CronExpression
-#: Views/Items/TimerEvent.Fields.Design.cshtml
-#, csharp-format
-msgctxt "OrchardCore.Workflows.Views.Items.TimerEvent.Fields.Design"
-msgid "<em>{0}</em>"
-msgstr ""
-
 #: Views/Items/TimerEvent.Fields.Design.cshtml
 msgctxt "OrchardCore.Workflows.Views.Items.TimerEvent.Fields.Design"
 msgid "Timer"
+msgstr ""
+
+#: Views/Items/TimerEvent.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.TimerEvent.Fields.Edit"
+msgid "A CRON expression with five fields: minute, hour, day of the month, month, day of the week."
 msgstr ""
 
 #: Views/Items/TimerEvent.Fields.Edit.cshtml
@@ -4035,11 +4224,6 @@ msgstr ""
 #: Views/Items/TimerEvent.Fields.Edit.cshtml
 msgctxt "OrchardCore.Workflows.Views.Items.TimerEvent.Fields.Edit"
 msgid "The CRON expression uses UTC by default. Check this box to use the site's time zone instead."
-msgstr ""
-
-#: Views/Items/TimerEvent.Fields.Edit.cshtml
-msgctxt "OrchardCore.Workflows.Views.Items.TimerEvent.Fields.Edit"
-msgid "The CRON expression."
 msgstr ""
 
 #: Views/Items/TimerEvent.Fields.Edit.cshtml
@@ -5146,6 +5330,46 @@ msgstr ""
 #: WorkflowsLocalizationSources.cs
 msgctxt "OrchardCore.Workflows.WorkflowsLocalizationSources"
 msgid "All Workflow Types"
+msgstr ""
+
+#: WorkflowsLocalizationSources.cs
+msgctxt "OrchardCore.Workflows.WorkflowsLocalizationSources"
+msgid "Deletes the workflow instances older than the retention period of the workflow trimming settings."
+msgstr ""
+
+#: WorkflowsLocalizationSources.cs
+msgctxt "OrchardCore.Workflows.WorkflowsLocalizationSources"
+msgid "Retries the task of a workflow instance that faulted, when the delay of its retry policy is over."
+msgstr ""
+
+#: WorkflowsLocalizationSources.cs
+msgctxt "OrchardCore.Workflows.WorkflowsLocalizationSources"
+msgid "Run Workflow"
+msgstr ""
+
+#: WorkflowsLocalizationSources.cs
+msgctxt "OrchardCore.Workflows.WorkflowsLocalizationSources"
+msgid "Starts an instance of a workflow. Its parameters are the WorkflowTypeId of the workflow, and optionally the Inputs of its input variables and a CorrelationId."
+msgstr ""
+
+#: WorkflowsLocalizationSources.cs
+msgctxt "OrchardCore.Workflows.WorkflowsLocalizationSources"
+msgid "Starts the workflows that begin with a timer event, and resumes the ones waiting on a timer that is due."
+msgstr ""
+
+#: WorkflowsLocalizationSources.cs
+msgctxt "OrchardCore.Workflows.WorkflowsLocalizationSources"
+msgid "Workflow Retry"
+msgstr ""
+
+#: WorkflowsLocalizationSources.cs
+msgctxt "OrchardCore.Workflows.WorkflowsLocalizationSources"
+msgid "Workflow Timers"
+msgstr ""
+
+#: WorkflowsLocalizationSources.cs
+msgctxt "OrchardCore.Workflows.WorkflowsLocalizationSources"
+msgid "Workflow Trimming"
 msgstr ""
 
 #: WorkflowsLocalizationSources.cs

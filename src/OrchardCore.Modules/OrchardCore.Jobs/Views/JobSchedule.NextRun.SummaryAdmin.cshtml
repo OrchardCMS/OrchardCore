@@ -1,0 +1,17 @@
+@model JobScheduleRowViewModel
+
+@if (Model.Schedule.IsEnabled && Model.IsJobRegistered && Model.Schedule.NextOccurrenceUtc is { } next)
+{
+    <span class="badge ta-badge fw-normal" title="@T["When the schedule queues its next run"]">
+        <i class="fa-solid fa-forward" aria-hidden="true"></i>
+        @if (!Model.InGrid)
+        {
+            <span class="fw-bold">@T["Next run"]</span>
+        }
+        @await DisplayAsync(await New.DateTime(Utc: next, Format: "g"))
+    </span>
+}
+else if (Model.InGrid)
+{
+    <span class="text-muted">&mdash;</span>
+}

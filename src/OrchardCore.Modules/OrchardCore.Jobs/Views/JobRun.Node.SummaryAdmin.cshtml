@@ -1,0 +1,12 @@
+@model JobRunRowViewModel
+
+@if (!string.IsNullOrEmpty(Model.Run.NodeId))
+{
+    <span class="badge ta-badge fw-normal" title="@T["The server that executes the run, or executed its last attempt"]">
+        <i class="fa-solid fa-server" aria-hidden="true"></i> @Model.Run.NodeId
+    </span>
+}
+else if (Model.InGrid)
+{
+    <span class="text-muted">&mdash;</span>
+}

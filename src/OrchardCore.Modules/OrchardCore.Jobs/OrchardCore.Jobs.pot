@@ -1,0 +1,1041 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Jobs\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Jobs.AdminMenu"
+msgid "Jobs"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Jobs.AdminMenu"
+msgid "Runs"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Jobs.AdminMenu"
+msgid "Schedules"
+msgstr ""
+
+#: AdminMenu.cs
+msgctxt "OrchardCore.Jobs.AdminMenu"
+msgid "Tools"
+msgstr ""
+
+#: Controllers/JobController.cs
+msgctxt "OrchardCore.Jobs.Controllers.JobController"
+msgid "A run of the job was queued."
+msgstr ""
+
+#. Format arguments: {0}: Url.Action(nameof(JobRunController.Details), "JobRun", new { runId = run.RunId })
+#: Controllers/JobController.cs
+#, csharp-format
+msgctxt "OrchardCore.Jobs.Controllers.JobController"
+msgid "A run of the job was queued. <a href=\"{0}\">View the run</a>."
+msgstr ""
+
+#. Format arguments: {0}: "{ \"name\": \"value\" }"
+#: Controllers/JobController.cs
+#, csharp-format
+msgctxt "OrchardCore.Jobs.Controllers.JobController"
+msgid "The parameters must be a JSON object, such as {0}."
+msgstr ""
+
+#. Format arguments: {0}: count
+#: Controllers/JobRunController.cs
+#, csharp-format
+msgctxt "OrchardCore.Jobs.Controllers.JobRunController"
+msgid "1 run was canceled."
+msgid_plural "{0} runs were canceled."
+msgstr[0] ""
+msgstr[1] ""
+
+#. Format arguments: {0}: count
+#: Controllers/JobRunController.cs
+#, csharp-format
+msgctxt "OrchardCore.Jobs.Controllers.JobRunController"
+msgid "1 run was deleted."
+msgid_plural "{0} runs were deleted."
+msgstr[0] ""
+msgstr[1] ""
+
+#. Format arguments: {0}: count
+#: Controllers/JobRunController.cs
+#, csharp-format
+msgctxt "OrchardCore.Jobs.Controllers.JobRunController"
+msgid "1 run was queued again."
+msgid_plural "{0} runs were queued again."
+msgstr[0] ""
+msgstr[1] ""
+
+#: Controllers/JobRunController.cs
+msgctxt "OrchardCore.Jobs.Controllers.JobRunController"
+msgid "A new run was queued."
+msgstr ""
+
+#: Controllers/JobRunController.cs
+msgctxt "OrchardCore.Jobs.Controllers.JobRunController"
+msgid "Active"
+msgstr ""
+
+#: Controllers/JobRunController.cs
+msgctxt "OrchardCore.Jobs.Controllers.JobRunController"
+msgid "All"
+msgstr ""
+
+#: Controllers/JobRunController.cs
+msgctxt "OrchardCore.Jobs.Controllers.JobRunController"
+msgid "All jobs"
+msgstr ""
+
+#: Controllers/JobRunController.cs
+msgctxt "OrchardCore.Jobs.Controllers.JobRunController"
+msgid "Cancel"
+msgstr ""
+
+#: Controllers/JobRunController.cs
+msgctxt "OrchardCore.Jobs.Controllers.JobRunController"
+msgid "Canceled"
+msgstr ""
+
+#: Controllers/JobRunController.cs
+msgctxt "OrchardCore.Jobs.Controllers.JobRunController"
+msgid "Delete"
+msgstr ""
+
+#: Controllers/JobRunController.cs
+msgctxt "OrchardCore.Jobs.Controllers.JobRunController"
+msgid "Failed"
+msgstr ""
+
+#: Controllers/JobRunController.cs
+msgctxt "OrchardCore.Jobs.Controllers.JobRunController"
+msgid "Please select one or more runs."
+msgstr ""
+
+#: Controllers/JobRunController.cs
+msgctxt "OrchardCore.Jobs.Controllers.JobRunController"
+msgid "Queued"
+msgstr ""
+
+#: Controllers/JobRunController.cs
+msgctxt "OrchardCore.Jobs.Controllers.JobRunController"
+msgid "Run again"
+msgstr ""
+
+#: Controllers/JobRunController.cs
+msgctxt "OrchardCore.Jobs.Controllers.JobRunController"
+msgid "Running"
+msgstr ""
+
+#: Controllers/JobRunController.cs
+msgctxt "OrchardCore.Jobs.Controllers.JobRunController"
+msgid "Some of the selected runs were left as they are: a run that ended can't be canceled, and a run that didn't end can't be run again or deleted."
+msgstr ""
+
+#: Controllers/JobRunController.cs
+msgctxt "OrchardCore.Jobs.Controllers.JobRunController"
+msgid "Succeeded"
+msgstr ""
+
+#: Controllers/JobRunController.cs
+msgctxt "OrchardCore.Jobs.Controllers.JobRunController"
+msgid "The cancellation of the run was requested. A running run stops within a few seconds."
+msgstr ""
+
+#: Controllers/JobRunController.cs
+msgctxt "OrchardCore.Jobs.Controllers.JobRunController"
+msgid "The run can't be canceled, as it already ended."
+msgstr ""
+
+#: Controllers/JobRunController.cs
+msgctxt "OrchardCore.Jobs.Controllers.JobRunController"
+msgid "The run can't be deleted, as it didn't end yet. Cancel it first."
+msgstr ""
+
+#: Controllers/JobRunController.cs
+msgctxt "OrchardCore.Jobs.Controllers.JobRunController"
+msgid "The run can't be run again: it didn't end yet, or its job is not available anymore."
+msgstr ""
+
+#: Controllers/JobRunController.cs
+msgctxt "OrchardCore.Jobs.Controllers.JobRunController"
+msgid "The run was deleted."
+msgstr ""
+
+#: Controllers/JobRunController.cs
+msgctxt "OrchardCore.Jobs.Controllers.JobRunController"
+msgid "Waiting for child runs"
+msgstr ""
+
+#. Format arguments: {0}: Url.Action(nameof(JobRunController.Details), "JobRun", new { runId = run.RunId })
+#: Controllers/JobScheduleController.cs
+#, csharp-format
+msgctxt "OrchardCore.Jobs.Controllers.JobScheduleController"
+msgid "A run of the job was queued. <a href=\"{0}\">View the run</a>."
+msgstr ""
+
+#: Controllers/JobScheduleController.cs
+msgctxt "OrchardCore.Jobs.Controllers.JobScheduleController"
+msgid "The job can't be scheduled."
+msgstr ""
+
+#: Controllers/JobScheduleController.cs
+msgctxt "OrchardCore.Jobs.Controllers.JobScheduleController"
+msgid "The job of this schedule is not available anymore, such as when its feature is disabled."
+msgstr ""
+
+#. Format arguments: {0}: "{ \"name\": \"value\" }"
+#: Controllers/JobScheduleController.cs
+#, csharp-format
+msgctxt "OrchardCore.Jobs.Controllers.JobScheduleController"
+msgid "The parameters must be a JSON object, such as {0}."
+msgstr ""
+
+#: Controllers/JobScheduleController.cs
+msgctxt "OrchardCore.Jobs.Controllers.JobScheduleController"
+msgid "The schedule can't be deleted, as its job declares it. Disable it instead."
+msgstr ""
+
+#: Controllers/JobScheduleController.cs
+msgctxt "OrchardCore.Jobs.Controllers.JobScheduleController"
+msgid "The schedule is not a valid cron expression with five fields."
+msgstr ""
+
+#: Controllers/JobScheduleController.cs
+msgctxt "OrchardCore.Jobs.Controllers.JobScheduleController"
+msgid "The schedule was created."
+msgstr ""
+
+#: Controllers/JobScheduleController.cs
+msgctxt "OrchardCore.Jobs.Controllers.JobScheduleController"
+msgid "The schedule was deleted."
+msgstr ""
+
+#: Controllers/JobScheduleController.cs
+msgctxt "OrchardCore.Jobs.Controllers.JobScheduleController"
+msgid "The schedule was disabled."
+msgstr ""
+
+#: Controllers/JobScheduleController.cs
+msgctxt "OrchardCore.Jobs.Controllers.JobScheduleController"
+msgid "The schedule was enabled."
+msgstr ""
+
+#: Controllers/JobScheduleController.cs
+msgctxt "OrchardCore.Jobs.Controllers.JobScheduleController"
+msgid "The schedule was saved."
+msgstr ""
+
+#: Controllers/JobScheduleController.cs
+msgctxt "OrchardCore.Jobs.Controllers.JobScheduleController"
+msgid "The time zone is not a known one."
+msgstr ""
+
+#. Format arguments: {0}: siteTimeZone.TimeZoneId
+#: Controllers/JobScheduleController.cs
+#, csharp-format
+msgctxt "OrchardCore.Jobs.Controllers.JobScheduleController"
+msgid "Time zone of the site, currently {0}"
+msgstr ""
+
+#: JobsPermissions.cs
+msgctxt "OrchardCore.Jobs.JobsPermissions"
+msgid "Manage jobs: run them, cancel and delete their runs, and change their schedules"
+msgstr ""
+
+#: JobsPermissions.cs
+msgctxt "OrchardCore.Jobs.JobsPermissions"
+msgid "View jobs, their runs and their schedules"
+msgstr ""
+
+#: Views/Job/Index.cshtml
+msgctxt "OrchardCore.Jobs.Views.Job.Index"
+msgid "<strong>Nothing here!</strong> No enabled feature provides a job for the moment."
+msgstr ""
+
+#: Views/Job/Index.cshtml
+msgctxt "OrchardCore.Jobs.Views.Job.Index"
+msgid "Actions"
+msgstr ""
+
+#: Views/Job/Index.cshtml
+msgctxt "OrchardCore.Jobs.Views.Job.Index"
+msgid "Job"
+msgstr ""
+
+#: Views/Job/Index.cshtml
+msgctxt "OrchardCore.Jobs.Views.Job.Index"
+msgid "Jobs"
+msgstr ""
+
+#: Views/Job/Index.cshtml
+msgctxt "OrchardCore.Jobs.Views.Job.Index"
+msgid "Last run"
+msgstr ""
+
+#: Views/Job/Index.cshtml
+msgctxt "OrchardCore.Jobs.Views.Job.Index"
+msgid "Schedule"
+msgstr ""
+
+#: Views/Job/Index.cshtml
+msgctxt "OrchardCore.Jobs.Views.Job.Index"
+msgid "Search"
+msgstr ""
+
+#: Views/Job/RunWith.cshtml
+msgctxt "OrchardCore.Jobs.Views.Job.RunWith"
+msgid "Cancel"
+msgstr ""
+
+#: Views/Job/RunWith.cshtml
+msgctxt "OrchardCore.Jobs.Views.Job.RunWith"
+msgid "Job"
+msgstr ""
+
+#: Views/Job/RunWith.cshtml
+msgctxt "OrchardCore.Jobs.Views.Job.RunWith"
+msgid "Jobs"
+msgstr ""
+
+#: Views/Job/RunWith.cshtml
+msgctxt "OrchardCore.Jobs.Views.Job.RunWith"
+msgid "Parameters"
+msgstr ""
+
+#: Views/Job/RunWith.cshtml
+msgctxt "OrchardCore.Jobs.Views.Job.RunWith"
+msgid "Run"
+msgstr ""
+
+#: Views/Job/RunWith.cshtml
+msgctxt "OrchardCore.Jobs.Views.Job.RunWith"
+msgid "Run with Parameters"
+msgstr ""
+
+#: Views/Job/RunWith.cshtml
+msgctxt "OrchardCore.Jobs.Views.Job.RunWith"
+msgid "The parameters of the run, as a JSON object. Leave empty for a job that takes none."
+msgstr ""
+
+#: Views/Job/RunWith.cshtml
+msgctxt "OrchardCore.Jobs.Views.Job.RunWith"
+msgid "Title"
+msgstr ""
+
+#: Views/Job/RunWith.cshtml
+msgctxt "OrchardCore.Jobs.Views.Job.RunWith"
+msgid "What this run is about, shown next to the title of the job in the list of runs. It is optional."
+msgstr ""
+
+#: Views/JobEntry.ActionsMenuItems.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobEntry.ActionsMenuItems.SummaryAdmin"
+msgid "Add a schedule"
+msgstr ""
+
+#: Views/JobEntry.ActionsMenuItems.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobEntry.ActionsMenuItems.SummaryAdmin"
+msgid "Run now"
+msgstr ""
+
+#: Views/JobEntry.ActionsMenuItems.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobEntry.ActionsMenuItems.SummaryAdmin"
+msgid "Run with parameters"
+msgstr ""
+
+#: Views/JobEntry.ActionsMenuItems.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobEntry.ActionsMenuItems.SummaryAdmin"
+msgid "The runs of this job are queued by its feature."
+msgstr ""
+
+#: Views/JobEntry.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobEntry.Buttons.SummaryAdmin"
+msgid "Runs"
+msgstr ""
+
+#: Views/JobEntry.LastRun.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobEntry.LastRun.SummaryAdmin"
+msgid "Last run"
+msgstr ""
+
+#: Views/JobEntry.LastRun.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobEntry.LastRun.SummaryAdmin"
+msgid "never"
+msgstr ""
+
+#: Views/JobEntry.Schedule.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobEntry.Schedule.SummaryAdmin"
+msgid "Disabled"
+msgstr ""
+
+#: Views/JobRun.ActionsMenuItems.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobRun.ActionsMenuItems.SummaryAdmin"
+msgid "Are you sure you want to cancel this run?"
+msgstr ""
+
+#: Views/JobRun.ActionsMenuItems.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobRun.ActionsMenuItems.SummaryAdmin"
+msgid "Are you sure you want to delete this run?"
+msgstr ""
+
+#: Views/JobRun.ActionsMenuItems.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobRun.ActionsMenuItems.SummaryAdmin"
+msgid "Cancel"
+msgstr ""
+
+#: Views/JobRun.ActionsMenuItems.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobRun.ActionsMenuItems.SummaryAdmin"
+msgid "Delete"
+msgstr ""
+
+#: Views/JobRun.ActionsMenuItems.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobRun.ActionsMenuItems.SummaryAdmin"
+msgid "Run again"
+msgstr ""
+
+#: Views/JobRun.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobRun.Buttons.SummaryAdmin"
+msgid "Details"
+msgstr ""
+
+#: Views/JobRun.Description.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobRun.Description.SummaryAdmin"
+msgid "The job of this run is not available, such as when its feature is disabled. The run waits for it."
+msgstr ""
+
+#: Views/JobRun/Details.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobRun.Details"
+msgid "Any server"
+msgstr ""
+
+#: Views/JobRun/Details.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobRun.Details"
+msgid "Are you sure you want to cancel this run?"
+msgstr ""
+
+#: Views/JobRun/Details.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobRun.Details"
+msgid "Are you sure you want to delete this run?"
+msgstr ""
+
+#: Views/JobRun/Details.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobRun.Details"
+msgid "Attempt"
+msgstr ""
+
+#: Views/JobRun/Details.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobRun.Details"
+msgid "Cancel"
+msgstr ""
+
+#: Views/JobRun/Details.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobRun.Details"
+msgid "Child runs"
+msgstr ""
+
+#: Views/JobRun/Details.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobRun.Details"
+msgid "Correlation"
+msgstr ""
+
+#: Views/JobRun/Details.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobRun.Details"
+msgid "Delete"
+msgstr ""
+
+#: Views/JobRun/Details.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobRun.Details"
+msgid "Details"
+msgstr ""
+
+#: Views/JobRun/Details.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobRun.Details"
+msgid "Due"
+msgstr ""
+
+#: Views/JobRun/Details.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobRun.Details"
+msgid "Duration"
+msgstr ""
+
+#: Views/JobRun/Details.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobRun.Details"
+msgid "Ended"
+msgstr ""
+
+#: Views/JobRun/Details.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobRun.Details"
+msgid "Identifier"
+msgstr ""
+
+#: Views/JobRun/Details.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobRun.Details"
+msgid "Job"
+msgstr ""
+
+#: Views/JobRun/Details.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobRun.Details"
+msgid "Job Runs"
+msgstr ""
+
+#: Views/JobRun/Details.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobRun.Details"
+msgid "Last report"
+msgstr ""
+
+#: Views/JobRun/Details.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobRun.Details"
+msgid "Log"
+msgstr ""
+
+#: Views/JobRun/Details.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobRun.Details"
+msgid "None"
+msgstr ""
+
+#. Format arguments: {0}: JobRun.MaxLogEntries
+#: Views/JobRun/Details.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Jobs.Views.JobRun.Details"
+msgid "Only the first {0} messages of a run are kept."
+msgstr ""
+
+#. Format arguments: {0}: run.RequiredNodeId
+#: Views/JobRun/Details.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Jobs.Views.JobRun.Details"
+msgid "Only {0}"
+msgstr ""
+
+#: Views/JobRun/Details.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobRun.Details"
+msgid "Parameters"
+msgstr ""
+
+#: Views/JobRun/Details.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobRun.Details"
+msgid "Parent run"
+msgstr ""
+
+#: Views/JobRun/Details.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobRun.Details"
+msgid "Progress of the run"
+msgstr ""
+
+#: Views/JobRun/Details.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobRun.Details"
+msgid "Queued"
+msgstr ""
+
+#: Views/JobRun/Details.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobRun.Details"
+msgid "Result"
+msgstr ""
+
+#: Views/JobRun/Details.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobRun.Details"
+msgid "Run"
+msgstr ""
+
+#: Views/JobRun/Details.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobRun.Details"
+msgid "Run again"
+msgstr ""
+
+#: Views/JobRun/Details.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobRun.Details"
+msgid "Schedule"
+msgstr ""
+
+#: Views/JobRun/Details.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobRun.Details"
+msgid "Server"
+msgstr ""
+
+#: Views/JobRun/Details.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobRun.Details"
+msgid "Started"
+msgstr ""
+
+#: Views/JobRun/Details.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobRun.Details"
+msgid "Status"
+msgstr ""
+
+#: Views/JobRun/Details.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobRun.Details"
+msgid "The job of this run is not available, such as when its feature is disabled. A run that didn't start waits for it."
+msgstr ""
+
+#: Views/JobRun/Details.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobRun.Details"
+msgid "The run didn't log anything."
+msgstr ""
+
+#: Views/JobRun/Details.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobRun.Details"
+msgid "Timeline"
+msgstr ""
+
+#: Views/JobRun/Details.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobRun.Details"
+msgid "Trigger"
+msgstr ""
+
+#. Format arguments: {0}: run.TriggeredBy
+#: Views/JobRun/Details.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Jobs.Views.JobRun.Details"
+msgid "by {0}"
+msgstr ""
+
+#. Format arguments: {0}: run.Attempt; {1}: run.MaxAttempts
+#: Views/JobRun/Details.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Jobs.Views.JobRun.Details"
+msgid "{0} of {1}"
+msgstr ""
+
+#. Format arguments: {0}: progress
+#: Views/JobRun/Details.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Jobs.Views.JobRun.Details"
+msgid "{0}%"
+msgstr ""
+
+#: Views/JobRun.Duration.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobRun.Duration.SummaryAdmin"
+msgid "How long the last attempt of the run took"
+msgstr ""
+
+#: Views/JobRun/Index.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobRun.Index"
+msgid "<strong>Nothing here!</strong> There are no runs for the moment."
+msgstr ""
+
+#: Views/JobRun/Index.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobRun.Index"
+msgid "Actions"
+msgstr ""
+
+#: Views/JobRun/Index.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobRun.Index"
+msgid "Duration"
+msgstr ""
+
+#: Views/JobRun/Index.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobRun.Index"
+msgid "Job"
+msgstr ""
+
+#: Views/JobRun/Index.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobRun.Index"
+msgid "Job Runs"
+msgstr ""
+
+#: Views/JobRun/Index.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobRun.Index"
+msgid "Server"
+msgstr ""
+
+#: Views/JobRun/Index.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobRun.Index"
+msgid "Started"
+msgstr ""
+
+#: Views/JobRun/Index.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobRun.Index"
+msgid "Status"
+msgstr ""
+
+#: Views/JobRun/Index.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobRun.Index"
+msgid "Trigger"
+msgstr ""
+
+#: Views/JobRun/Index.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobRun.Index"
+msgid "selected"
+msgstr ""
+
+#: Views/JobRun.Node.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobRun.Node.SummaryAdmin"
+msgid "The server that executes the run, or executed its last attempt"
+msgstr ""
+
+#: Views/JobRun.Started.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobRun.Started.SummaryAdmin"
+msgid "Due"
+msgstr ""
+
+#: Views/JobRun.Started.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobRun.Started.SummaryAdmin"
+msgid "Queued"
+msgstr ""
+
+#: Views/JobRun.Started.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobRun.Started.SummaryAdmin"
+msgid "Started"
+msgstr ""
+
+#. Format arguments: {0}: Model.Run.Attempt; {1}: Model.Run.MaxAttempts
+#: Views/JobRun.Status.SummaryAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Jobs.Views.JobRun.Status.SummaryAdmin"
+msgid "Attempt {0} of {1}"
+msgstr ""
+
+#: Views/JobRun.Status.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobRun.Status.SummaryAdmin"
+msgid "The attempts the run made, of the attempts it may make"
+msgstr ""
+
+#. Format arguments: {0}: Model.Run.TriggeredBy
+#: Views/JobRun.Trigger.SummaryAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Jobs.Views.JobRun.Trigger.SummaryAdmin"
+msgid "Started by {0}"
+msgstr ""
+
+#: Views/JobRun.Trigger.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobRun.Trigger.SummaryAdmin"
+msgid "What started the run"
+msgstr ""
+
+#: Views/JobRunsFilters.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobRunsFilters"
+msgid "Filter by job"
+msgstr ""
+
+#: Views/JobRunsFilters.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobRunsFilters"
+msgid "Filter by status"
+msgstr ""
+
+#: Views/JobRunsFilters.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobRunsFilters"
+msgid "Job"
+msgstr ""
+
+#: Views/JobRunsFilters.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobRunsFilters"
+msgid "Status"
+msgstr ""
+
+#: Views/JobSchedule.ActionsMenuItems.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobSchedule.ActionsMenuItems.SummaryAdmin"
+msgid "Are you sure you want to delete this schedule?"
+msgstr ""
+
+#: Views/JobSchedule.ActionsMenuItems.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobSchedule.ActionsMenuItems.SummaryAdmin"
+msgid "Delete"
+msgstr ""
+
+#: Views/JobSchedule.ActionsMenuItems.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobSchedule.ActionsMenuItems.SummaryAdmin"
+msgid "Run now"
+msgstr ""
+
+#: Views/JobSchedule.ActionsMenuItems.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobSchedule.ActionsMenuItems.SummaryAdmin"
+msgid "Runs"
+msgstr ""
+
+#: Views/JobSchedule.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobSchedule.Buttons.SummaryAdmin"
+msgid "Disable"
+msgstr ""
+
+#: Views/JobSchedule.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobSchedule.Buttons.SummaryAdmin"
+msgid "Edit"
+msgstr ""
+
+#: Views/JobSchedule.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobSchedule.Buttons.SummaryAdmin"
+msgid "Enable"
+msgstr ""
+
+#: Views/JobSchedule.Cron.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobSchedule.Cron.SummaryAdmin"
+msgid "Built-in"
+msgstr ""
+
+#: Views/JobSchedule.Cron.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobSchedule.Cron.SummaryAdmin"
+msgid "Disabled"
+msgstr ""
+
+#: Views/JobSchedule.Cron.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobSchedule.Cron.SummaryAdmin"
+msgid "Enabled"
+msgstr ""
+
+#: Views/JobSchedule.Cron.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobSchedule.Cron.SummaryAdmin"
+msgid "The job declares this schedule: it can be changed and disabled, but not deleted."
+msgstr ""
+
+#. Format arguments: {0}: "0 3 * * *"
+#: Views/JobSchedule/Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Jobs.Views.JobSchedule.Edit"
+msgid "A cron expression with five fields (minute, hour, day of the month, month, day of the week), in the time zone of the schedule. For example, {0} runs the job every day at 3:00."
+msgstr ""
+
+#: Views/JobSchedule/Edit.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobSchedule.Edit"
+msgid "Add Schedule"
+msgstr ""
+
+#: Views/JobSchedule/Edit.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobSchedule.Edit"
+msgid "Cancel"
+msgstr ""
+
+#: Views/JobSchedule/Edit.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobSchedule.Edit"
+msgid "Edit Schedule"
+msgstr ""
+
+#: Views/JobSchedule/Edit.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobSchedule.Edit"
+msgid "Enabled"
+msgstr ""
+
+#: Views/JobSchedule/Edit.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobSchedule.Edit"
+msgid "Job"
+msgstr ""
+
+#: Views/JobSchedule/Edit.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobSchedule.Edit"
+msgid "Job Schedules"
+msgstr ""
+
+#: Views/JobSchedule/Edit.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobSchedule.Edit"
+msgid "Name"
+msgstr ""
+
+#: Views/JobSchedule/Edit.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobSchedule.Edit"
+msgid "Parameters"
+msgstr ""
+
+#: Views/JobSchedule/Edit.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobSchedule.Edit"
+msgid "Save"
+msgstr ""
+
+#: Views/JobSchedule/Edit.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobSchedule.Edit"
+msgid "Schedule"
+msgstr ""
+
+#: Views/JobSchedule/Edit.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobSchedule.Edit"
+msgid "Select a job"
+msgstr ""
+
+#: Views/JobSchedule/Edit.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobSchedule.Edit"
+msgid "The job the schedule runs. Only the jobs that can be run from the admin are listed."
+msgstr ""
+
+#: Views/JobSchedule/Edit.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobSchedule.Edit"
+msgid "The name of the schedule, also shown next to the title of the job on its runs. It is optional."
+msgstr ""
+
+#: Views/JobSchedule/Edit.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobSchedule.Edit"
+msgid "The parameters of the runs, as a JSON object. Leave empty for a job that takes none."
+msgstr ""
+
+#: Views/JobSchedule/Edit.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobSchedule.Edit"
+msgid "The time zone the schedule applies to. With the time zone of the site, the schedule follows it when it changes. Select a time zone, which can be the same one, to keep the schedule in it."
+msgstr ""
+
+#: Views/JobSchedule/Edit.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobSchedule.Edit"
+msgid "Time zone"
+msgstr ""
+
+#: Views/JobSchedule/Edit.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobSchedule.Edit"
+msgid "Whether the schedule queues runs. While the run of an occurrence didn't end, the following occurrences don't queue another one."
+msgstr ""
+
+#: Views/JobSchedule/Index.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobSchedule.Index"
+msgid "<strong>Nothing here!</strong> There are no schedules for the moment."
+msgstr ""
+
+#: Views/JobSchedule/Index.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobSchedule.Index"
+msgid "Actions"
+msgstr ""
+
+#: Views/JobSchedule/Index.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobSchedule.Index"
+msgid "Add Schedule"
+msgstr ""
+
+#: Views/JobSchedule/Index.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobSchedule.Index"
+msgid "Job"
+msgstr ""
+
+#: Views/JobSchedule/Index.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobSchedule.Index"
+msgid "Job Schedules"
+msgstr ""
+
+#: Views/JobSchedule/Index.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobSchedule.Index"
+msgid "Last run"
+msgstr ""
+
+#: Views/JobSchedule/Index.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobSchedule.Index"
+msgid "Name"
+msgstr ""
+
+#: Views/JobSchedule/Index.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobSchedule.Index"
+msgid "Next run"
+msgstr ""
+
+#: Views/JobSchedule/Index.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobSchedule.Index"
+msgid "Schedule"
+msgstr ""
+
+#: Views/JobSchedule.Job.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobSchedule.Job.SummaryAdmin"
+msgid "The job is not available, such as when its feature is disabled. The schedule doesn't queue runs."
+msgstr ""
+
+#: Views/JobSchedule.Job.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobSchedule.Job.SummaryAdmin"
+msgid "The job the schedule runs"
+msgstr ""
+
+#: Views/JobSchedule.Job.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobSchedule.Job.SummaryAdmin"
+msgid "Unavailable"
+msgstr ""
+
+#: Views/JobSchedule.LastRun.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobSchedule.LastRun.SummaryAdmin"
+msgid "Last run"
+msgstr ""
+
+#: Views/JobSchedule.LastRun.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobSchedule.LastRun.SummaryAdmin"
+msgid "never"
+msgstr ""
+
+#: Views/JobSchedule.NextRun.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobSchedule.NextRun.SummaryAdmin"
+msgid "Next run"
+msgstr ""
+
+#: Views/JobSchedule.NextRun.SummaryAdmin.cshtml
+msgctxt "OrchardCore.Jobs.Views.JobSchedule.NextRun.SummaryAdmin"
+msgid "When the schedule queues its next run"
+msgstr ""
+
+#. Format arguments: {0}: Model.TotalMilliseconds
+#: Views/Shared/_JobRunDuration.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Jobs.Views.Shared._JobRunDuration"
+msgid "{0} ms"
+msgstr ""
+
+#. Format arguments: {0}: Math.Round(Model.TotalSeconds, 1)
+#: Views/Shared/_JobRunDuration.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Jobs.Views.Shared._JobRunDuration"
+msgid "{0} s"
+msgstr ""
+
+#: Views/Shared/_JobRunStatus.cshtml
+msgctxt "OrchardCore.Jobs.Views.Shared._JobRunStatus"
+msgid "Canceled"
+msgstr ""
+
+#: Views/Shared/_JobRunStatus.cshtml
+msgctxt "OrchardCore.Jobs.Views.Shared._JobRunStatus"
+msgid "Canceling"
+msgstr ""
+
+#: Views/Shared/_JobRunStatus.cshtml
+msgctxt "OrchardCore.Jobs.Views.Shared._JobRunStatus"
+msgid "Failed"
+msgstr ""
+
+#: Views/Shared/_JobRunStatus.cshtml
+msgctxt "OrchardCore.Jobs.Views.Shared._JobRunStatus"
+msgid "Queued"
+msgstr ""
+
+#: Views/Shared/_JobRunStatus.cshtml
+msgctxt "OrchardCore.Jobs.Views.Shared._JobRunStatus"
+msgid "Running"
+msgstr ""
+
+#: Views/Shared/_JobRunStatus.cshtml
+msgctxt "OrchardCore.Jobs.Views.Shared._JobRunStatus"
+msgid "Scheduled"
+msgstr ""
+
+#: Views/Shared/_JobRunStatus.cshtml
+msgctxt "OrchardCore.Jobs.Views.Shared._JobRunStatus"
+msgid "Succeeded"
+msgstr ""
+
+#: Views/Shared/_JobRunStatus.cshtml
+msgctxt "OrchardCore.Jobs.Views.Shared._JobRunStatus"
+msgid "Waiting for child runs"
+msgstr ""
+
+#. Format arguments: {0}: progress
+#: Views/Shared/_JobRunStatus.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Jobs.Views.Shared._JobRunStatus"
+msgid "{0}%"
+msgstr ""
+
+#: Views/Shared/_JobRunTrigger.cshtml
+msgctxt "OrchardCore.Jobs.Views.Shared._JobRunTrigger"
+msgid "Application"
+msgstr ""
+
+#: Views/Shared/_JobRunTrigger.cshtml
+msgctxt "OrchardCore.Jobs.Views.Shared._JobRunTrigger"
+msgid "Manual"
+msgstr ""
+
+#: Views/Shared/_JobRunTrigger.cshtml
+msgctxt "OrchardCore.Jobs.Views.Shared._JobRunTrigger"
+msgid "Parent run"
+msgstr ""
+
+#: Views/Shared/_JobRunTrigger.cshtml
+msgctxt "OrchardCore.Jobs.Views.Shared._JobRunTrigger"
+msgid "Schedule"
+msgstr ""
+
+#: Views/Shared/_JobRunTrigger.cshtml
+msgctxt "OrchardCore.Jobs.Views.Shared._JobRunTrigger"
+msgid "Workflow"
+msgstr ""

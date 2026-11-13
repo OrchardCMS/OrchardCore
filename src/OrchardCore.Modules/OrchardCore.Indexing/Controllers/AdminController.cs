@@ -12,9 +12,12 @@ using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Indexing.Core;
+using OrchardCore.Indexing.Jobs;
 using OrchardCore.Indexing.Models;
 using OrchardCore.Indexing.ViewModels;
 using OrchardCore.Infrastructure.Entities;
+using OrchardCore.Jobs;
+using OrchardCore.Jobs.Models;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
 
@@ -31,6 +34,7 @@ public sealed class AdminController : Controller
     private readonly IDisplayManager<IndexProfile> _displayManager;
     private readonly IServiceProvider _serviceProvider;
     private readonly INotifier _notifier;
+    private readonly IJobManager _jobManager;
 
     internal readonly IHtmlLocalizer H;
     internal readonly IStringLocalizer S;
@@ -43,6 +47,7 @@ public sealed class AdminController : Controller
         IOptions<IndexingOptions> indexingOptions,
         IServiceProvider serviceProvider,
         INotifier notifier,
+        IJobManager jobManager,
         IHtmlLocalizer<AdminController> htmlLocalizer,
         IStringLocalizer<AdminController> stringLocalizer)
     {
@@ -53,6 +58,7 @@ public sealed class AdminController : Controller
         _serviceProvider = serviceProvider;
         _indexingOptions = indexingOptions.Value;
         _notifier = notifier;
+        _jobManager = jobManager;
         H = htmlLocalizer;
         S = stringLocalizer;
     }
@@ -252,7 +258,7 @@ public sealed class AdminController : Controller
                 return View(model);
             }
 
-            await _indexProfileManager.SynchronizeAsync(indexProfile);
+            await QueueSynchronizeAsync(indexProfile);
 
             await _notifier.SuccessAsync(H["An index has been created successfully. The synchronizing process was triggered in the background."]);
 
@@ -415,7 +421,7 @@ public sealed class AdminController : Controller
 
         await _indexProfileManager.ResetAsync(indexProfile);
         await _indexProfileManager.UpdateAsync(indexProfile);
-        await _indexProfileManager.SynchronizeAsync(indexProfile);
+        await QueueSynchronizeAsync(indexProfile);
 
         await _notifier.SuccessAsync(H["An index has been reset successfully. The synchronizing process was triggered in the background."]);
 
@@ -438,7 +444,7 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        await _indexProfileManager.SynchronizeAsync(indexProfile);
+        await QueueSynchronizeAsync(indexProfile);
 
         await _notifier.SuccessAsync(H["The synchronizing process was triggered in the background."]);
 
@@ -475,7 +481,7 @@ public sealed class AdminController : Controller
 
         if (await indexManager.RebuildAsync(indexProfile))
         {
-            await _indexProfileManager.SynchronizeAsync(indexProfile);
+            await QueueSynchronizeAsync(indexProfile);
 
             await _notifier.SuccessAsync(H["An index has been rebuilt successfully. The synchronizing process was triggered in the background."]);
         }
@@ -565,7 +571,7 @@ public sealed class AdminController : Controller
 
                         await _indexProfileManager.ResetAsync(indexProfile);
                         await _indexProfileManager.UpdateAsync(indexProfile);
-                        await _indexProfileManager.SynchronizeAsync(indexProfile);
+                        await QueueSynchronizeAsync(indexProfile);
 
                         resetCounter++;
                     }
@@ -592,7 +598,7 @@ public sealed class AdminController : Controller
                             continue;
                         }
 
-                        await _indexProfileManager.SynchronizeAsync(index);
+                        await QueueSynchronizeAsync(index);
 
                         synchronizedCounter++;
                     }
@@ -637,7 +643,7 @@ public sealed class AdminController : Controller
 
                         await _indexProfileManager.ResetAsync(indexProfile);
                         await _indexProfileManager.UpdateAsync(indexProfile);
-                        await _indexProfileManager.SynchronizeAsync(indexProfile);
+                        await QueueSynchronizeAsync(indexProfile);
                     }
 
                     if (rebuildCounter == 0)
@@ -655,5 +661,19 @@ public sealed class AdminController : Controller
         }
 
         return RedirectToAction(nameof(Index));
+    }
+
+    // Queues the synchronization of an index as a job, so that it is recorded with its outcome, and not started
+    // twice while it runs. It runs on this server when the index of its provider is kept by each server.
+    private Task<JobRun> QueueSynchronizeAsync(IndexProfile indexProfile)
+    {
+        return _jobManager.EnqueueAsync<IndexProfileSynchronizeJob>(new IndexProfileSynchronizeJobParameters { IndexProfileId = indexProfile.Id }, request =>
+        {
+            request.Title = indexProfile.Name;
+            request.Trigger = JobTriggers.Manual;
+            request.DeduplicationKey = indexProfile.Id;
+            request.CorrelationId = indexProfile.Id;
+            request.RequireCurrentNode = _indexingOptions.IsLocalProvider(indexProfile.ProviderName);
+        });
     }
 }

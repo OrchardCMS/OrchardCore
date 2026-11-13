@@ -37,6 +37,8 @@ In the admin, go to **Tools** > **Deployments** and use one of these options:
 
 Importing a package executes its recipe immediately. The steps run in the order in which they appear in `Recipe.json`.
 
+When the [Jobs](../Jobs/README.md) feature is enabled, **Package Import** imports the package in the background, as a run of the **Deployment Package Import** job, so a large package doesn't make the request wait. The page links to the run, which tells how the import went. The run executes on the server that received the package.
+
 !!! warning
     Import only packages and JSON from trusted sources. Recipe steps can change site configuration, features, content definitions, and content. The **Import Data** permission is security-critical and should be granted only to trusted roles.
 

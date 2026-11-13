@@ -1,7 +1,6 @@
 using System.Diagnostics;
 using System.Text.Json.Nodes;
 using OrchardCore.BackgroundTasks;
-using OrchardCore.DataPipelines.BackgroundTasks;
 using OrchardCore.DataPipelines.Models;
 using OrchardCore.DataPipelines.Services;
 using OrchardCore.DataPipelines.Steps;
@@ -9,6 +8,9 @@ using OrchardCore.DataPipelines.Workflows;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Scope;
+using OrchardCore.Jobs;
+using OrchardCore.Jobs.BackgroundTasks;
+using OrchardCore.Jobs.Models;
 using OrchardCore.Tests.Apis.Context;
 using OrchardCore.Users;
 using OrchardCore.Workflows.Models;
@@ -88,17 +90,26 @@ public sealed class DataPipelineWorkflowTests
         var pipelineId = await CreatePublishedPipelineAsync(context);
         var workflowTypeId = await CreateWorkflowTypeAsync(context, RunActivity(pipelineId));
 
-        // The run looks like it was running when the site stopped.
+        // The run, and the job run that executes it, look like they were running on a server that stopped.
         var workflowId = await StartWorkflowAsync(context, workflowTypeId, async (scope, runId) =>
         {
+            var session = scope.ServiceProvider.GetRequiredService<YesSql.ISession>();
             var run = await scope.ServiceProvider.GetRequiredService<DataPipelineRunManager>().GetAsync(runId);
             run.Status = DataPipelineRunStatus.Running;
             run.HeartbeatUtc = DateTime.UtcNow.AddHours(-1);
-            await scope.ServiceProvider.GetRequiredService<YesSql.ISession>().SaveAsync(run);
+            await session.SaveAsync(run);
+
+            var jobRun = await scope.ServiceProvider.GetRequiredService<IJobManager>().GetAsync(run.JobRunId);
+            jobRun.Status = JobRunStatus.Running;
+            jobRun.NodeId = "another-server";
+            jobRun.Attempt = 1;
+            jobRun.StartedUtc = DateTime.UtcNow.AddHours(-2);
+            jobRun.HeartbeatUtc = DateTime.UtcNow.AddHours(-1);
+            await session.SaveAsync(jobRun, collection: JobRun.Collection);
         });
 
-        // Act
-        await context.UsingTenantScopeAsync(scope => new DataPipelineRunsBackgroundTask().DoWorkAsync(scope.ServiceProvider, TestContext.Current.CancellationToken));
+        // Act: the background task of the jobs fails the job run of the stopped server, which fails the run.
+        await context.UsingTenantScopeAsync(scope => new JobsBackgroundTask().DoWorkAsync(scope.ServiceProvider, TestContext.Current.CancellationToken));
 
         // Assert
         var run = await WaitForResumedRunAsync(context, workflowTypeId, workflowId);

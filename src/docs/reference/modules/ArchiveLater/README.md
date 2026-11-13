@@ -13,7 +13,7 @@ The `OrchardCore.ArchiveLater` module adds the ability to schedule a published c
 
 The part stores a single value, `ScheduledArchiveUtc`, on the content item via the `ArchiveLaterPart`.
 
-A background task (`Content Items Archiver`) runs every minute. It finds published items whose scheduled archive time has passed, clears their schedule, and unpublishes them. Because it relies on a background task, the scheduled archiving only runs while the tenant is active.
+A background task (`Content Items Archiver`) runs every minute. It finds published items whose scheduled archive time has passed, and queues a run of the **Archive Later** [job](../Jobs/README.md) for each of them, which clears its schedule and unpublishes it. A single server executes the run, whatever their number, so an item is archived once, and the run is listed under **Tools → Jobs → Runs** with its outcome. Because it relies on a background task, the scheduled archiving only runs while the tenant is active.
 
 !!! note
     Archiving here means the item is **unpublished** — it is removed from the published frontend while its latest draft is preserved.

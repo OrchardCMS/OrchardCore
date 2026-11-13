@@ -16,6 +16,12 @@ internal static class ContentsLocalizationSources
     /// <summary>Gets the "Content Types" text.</summary>
     public static readonly LocalizationSource ContentTypes = LocalizationSource.Create("Content Types", typeof(ContentsLocalizationSources));
 
+    /// <summary>Gets the title of the content version pruning job.</summary>
+    public static readonly LocalizationSource ContentVersionPruningJobTitle = LocalizationSource.Create("Content Version Pruning", typeof(ContentsLocalizationSources));
+
+    /// <summary>Gets the description of the content version pruning job.</summary>
+    public static readonly LocalizationSource ContentVersionPruningJobDescription = LocalizationSource.Create("Deletes the old versions of content items that are neither the latest nor the published one.", typeof(ContentsLocalizationSources));
+
     /// <summary>Gets the "Export Content To Deployment Target" text.</summary>
     public static readonly LocalizationSource ExportContentToDeploymentTarget = LocalizationSource.Create("Export Content To Deployment Target", typeof(ContentsLocalizationSources));
 }

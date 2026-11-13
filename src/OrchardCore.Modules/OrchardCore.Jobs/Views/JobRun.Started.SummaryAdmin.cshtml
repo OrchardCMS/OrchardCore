@@ -1,0 +1,28 @@
+@using OrchardCore.Modules
+
+@inject IClock Clock
+
+@model JobRunRowViewModel
+
+@{
+    var run = Model.Run;
+    var scheduled = run.Status == JobRunStatus.Queued && run.DueUtc > Clock.UtcNow.AddSeconds(30);
+    var date = scheduled ? run.DueUtc : run.StartedUtc ?? run.CreatedUtc;
+}
+
+<span class="badge ta-badge fw-normal" title="@await DisplayAsync(await New.DateTime(Utc: date, Format: "G"))">
+    <i class="fa-regular fa-clock" aria-hidden="true"></i>
+    @if (scheduled)
+    {
+        <span class="fw-bold">@T["Due"]</span>
+        @await DisplayAsync(await New.DateTime(Utc: date, Format: "g"))
+    }
+    else
+    {
+        if (!Model.InGrid)
+        {
+            <span class="fw-bold">@(run.StartedUtc is null ? T["Queued"] : T["Started"])</span>
+        }
+        @await DisplayAsync(await New.TimeSpan(Utc: date))
+    }
+</span>

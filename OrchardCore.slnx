@@ -170,6 +170,7 @@
     <Project Path="src/OrchardCore.Modules/OrchardCore.Google/OrchardCore.Google.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.HealthChecks/OrchardCore.HealthChecks.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Https/OrchardCore.Https.csproj" />
+    <Project Path="src/OrchardCore.Modules/OrchardCore.Jobs/OrchardCore.Jobs.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Localization/OrchardCore.Localization.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Microsoft.Authentication/OrchardCore.Microsoft.Authentication.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.MiniProfiler/OrchardCore.MiniProfiler.csproj" />
@@ -269,6 +270,7 @@
     <Project Path="src/OrchardCore/OrchardCore.Indexing.Core/OrchardCore.Indexing.Core.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Infrastructure.Abstractions/OrchardCore.Infrastructure.Abstractions.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Infrastructure/OrchardCore.Infrastructure.csproj" />
+    <Project Path="src/OrchardCore/OrchardCore.Jobs.Abstractions/OrchardCore.Jobs.Abstractions.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Liquid.Abstractions/OrchardCore.Liquid.Abstractions.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Localization.Abstractions/OrchardCore.Localization.Abstractions.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Localization.Analyzers/OrchardCore.Localization.Analyzers.csproj" />

@@ -8,6 +8,7 @@ using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Shell.Configuration;
+using OrchardCore.Jobs;
 using OrchardCore.Liquid;
 using OrchardCore.Localization;
 using OrchardCore.Modules;
@@ -26,6 +27,7 @@ using OrchardCore.Workflows.Expressions;
 using OrchardCore.Workflows.Handlers;
 using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Indexes;
+using OrchardCore.Workflows.Jobs;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Recipes;
 using OrchardCore.Workflows.Services;
@@ -98,7 +100,29 @@ public sealed class Startup : StartupBase
         services.AddPermissionProvider<Permissions>();
         services.AddDisplayDriver<IActivity, MissingActivityDisplayDriver>();
         services.AddDisplayDriver<IActivity, ActivityRetryPolicyDisplayDriver>();
+        // The background task finds the instances to retry on every server; the job retries each of them once.
         services.AddSingleton<IBackgroundTask, WorkflowRetryBackgroundTask>();
+        services.AddJob<WorkflowRetryJob>(WorkflowRetryJob.Name, job =>
+        {
+            job.Title = WorkflowsLocalizationSources.RetryJobTitle;
+            job.Description = WorkflowsLocalizationSources.RetryJobDescription;
+
+            // A retry is only worth keeping when it couldn't run: the instance tells how it went.
+            job.KeepSucceededRuns = false;
+        });
+
+        // Runs a workflow in the background, on a single server, at once or on a schedule.
+        services.AddJob<RunWorkflowJob>(RunWorkflowJob.Name, job =>
+        {
+            job.Title = WorkflowsLocalizationSources.RunWorkflowJobTitle;
+            job.Description = WorkflowsLocalizationSources.RunWorkflowJobDescription;
+            job.AllowManualRun = true;
+        });
+
+        // Lets a workflow queue a run of any job, wait for it, and follow the runs of the jobs.
+        services.AddActivity<RunJobTask, RunJobTaskDisplayDriver>(activity => activity.Icon = "fa-solid fa-gears");
+        services.AddActivity<JobRunCompletedEvent, JobRunCompletedEventDisplayDriver>(activity => activity.Icon = "fa-solid fa-flag-checkered");
+        services.AddScoped<IJobRunHandler, WorkflowJobRunHandler>();
         services.AddIndexProvider<WorkflowTypeIndexProvider>();
         services.AddIndexProvider<WorkflowIndexProvider>();
         services.AddIndexProvider<WorkflowTypeDraftIndexProvider>();

@@ -408,11 +408,6 @@ msgstr ""
 
 #: Views/BackgroundTask/Edit.cshtml
 msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Edit"
-msgid "Reset Schedule"
-msgstr ""
-
-#: Views/BackgroundTask/Edit.cshtml
-msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Edit"
 msgid "Save"
 msgstr ""
 
@@ -428,7 +423,7 @@ msgstr ""
 
 #: Views/BackgroundTask/Edit.cshtml
 msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Edit"
-msgid "The task schedule as a cron expression."
+msgid "The task schedule as a cron expression with five fields (minute, hour, day of the month, month, day of the week), in the time zone of the site."
 msgstr ""
 
 #: Views/BackgroundTask/Edit.cshtml

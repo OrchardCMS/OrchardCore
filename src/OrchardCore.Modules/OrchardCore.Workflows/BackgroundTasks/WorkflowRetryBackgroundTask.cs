@@ -1,55 +1,66 @@
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using OrchardCore.BackgroundTasks;
+using OrchardCore.Jobs;
+using OrchardCore.Jobs.Models;
 using OrchardCore.Modules;
+using OrchardCore.Workflows.Jobs;
 using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.BackgroundTasks;
 
 /// <summary>
-/// Runs the due retries of the tasks that faulted and are retried later by their retry policy. The task runs
-/// atomically: on a farm, the node that acquires its distributed lock runs the retries, and the others skip the run.
+/// Finds the workflow instances whose task faulted and whose retry is due, and queues a run of
+/// <see cref="WorkflowRetryJob"/> for each of them. Every server looks for them, which only reads the database; the
+/// runs are what retries, and a run is executed by a single server.
 /// </summary>
 [BackgroundTask(
     Title = "Workflow Retries",
     Schedule = "* * * * *",
-    Description = "Retries the workflow tasks that faulted, when their retry policy's delay is over.",
-    LockTimeout = 3_000,
-    LockExpiration = 300_000)]
+    Description = "Queues the retry of the workflow tasks that faulted, when their retry policy's delay is over.")]
 public sealed class WorkflowRetryBackgroundTask : IBackgroundTask
 {
-    // The most instances retried in a run; the others are retried in the next runs.
+    // The most instances queued in a run of the task; the others are queued in the next ones.
     private const int BatchSize = 50;
 
-    private readonly IClock _clock;
-    private readonly ILogger _logger;
+    // After a retry couldn't run, the instance is tried again after this delay, not every minute.
+    private static readonly TimeSpan _retryAfter = TimeSpan.FromMinutes(15);
 
-    public WorkflowRetryBackgroundTask(IClock clock, ILogger<WorkflowRetryBackgroundTask> logger)
+    private readonly IClock _clock;
+
+    public WorkflowRetryBackgroundTask(IClock clock)
     {
         _clock = clock;
-        _logger = logger;
     }
 
     public async Task DoWorkAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken)
     {
         var workflowStore = serviceProvider.GetRequiredService<IWorkflowStore>();
-        var workflowManager = serviceProvider.GetRequiredService<IWorkflowManager>();
+        var jobManager = serviceProvider.GetRequiredService<IJobManager>();
+        var now = _clock.UtcNow;
 
-        foreach (var workflow in await workflowStore.ListDueRetriesAsync(_clock.UtcNow, BatchSize))
+        foreach (var workflow in await workflowStore.ListDueRetriesAsync(now, BatchSize))
         {
             if (cancellationToken.IsCancellationRequested)
             {
                 return;
             }
 
-            try
+            var last = await jobManager.FindLastAsync(WorkflowRetryJob.Name, workflow.WorkflowId);
+
+            if (last is not null && (!last.IsCompleted || (last.Status == JobRunStatus.Failed && last.CompletedUtc > now - _retryAfter)))
             {
-                await workflowManager.RunDueRetryAsync(workflow);
+                continue;
             }
-            catch (Exception ex) when (!ex.IsFatal())
+
+            // The same key makes the servers that find the instance at the same time queue a single run, and makes
+            // two runs for the same instance execute one after the other.
+            await jobManager.EnqueueAsync<WorkflowRetryJob>(new WorkflowRetryJobParameters { WorkflowId = workflow.WorkflowId }, request =>
             {
-                _logger.LogError(ex, "The retry of the workflow '{WorkflowId}' failed.", workflow.WorkflowId);
-            }
+                request.Trigger = JobTriggers.Schedule;
+                request.DeduplicationKey = workflow.WorkflowId;
+                request.ConcurrencyKey = $"{WorkflowRetryJob.Name}:{workflow.WorkflowId}";
+                request.CorrelationId = workflow.WorkflowId;
+            });
         }
     }
 }

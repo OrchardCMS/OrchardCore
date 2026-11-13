@@ -1,0 +1,60 @@
+@using OrchardCore.Modules
+
+@inject IClock Clock
+
+@model JobRun
+
+@* The status of a run, as a badge. A queued run whose due date is in the future is shown as scheduled. *@
+@switch (Model.Status)
+{
+    case JobRunStatus.Queued when Model.DueUtc > Clock.UtcNow.AddSeconds(30):
+        <span class="badge fw-normal ta-badge" data-job-run-status="Scheduled">
+            <i class="fa-regular fa-clock" aria-hidden="true"></i> @T["Scheduled"]
+        </span>
+        break;
+
+    case JobRunStatus.Queued:
+        <span class="badge text-bg-warning" data-job-run-status="@Model.Status">
+            <i class="fa-solid fa-hourglass-half me-1" aria-hidden="true"></i>@T["Queued"]
+        </span>
+        break;
+
+    case JobRunStatus.Running when Model.CancellationRequested:
+        <span class="badge text-bg-warning" data-job-run-status="@Model.Status">
+            <span class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span>@T["Canceling"]
+        </span>
+        break;
+
+    case JobRunStatus.Running:
+        <span class="badge text-bg-info" data-job-run-status="@Model.Status">
+            <span class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span>@T["Running"]@if (Model.Progress is { } progress)
+            {
+                <text> @T["{0}%", progress]</text>
+            }
+        </span>
+        break;
+
+    case JobRunStatus.Waiting:
+        <span class="badge text-bg-info" data-job-run-status="@Model.Status">
+            <span class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span>@T["Waiting for child runs"]
+        </span>
+        break;
+
+    case JobRunStatus.Succeeded:
+        <span class="badge fw-normal text-success-emphasis bg-success-subtle border border-success-subtle" data-job-run-status="@Model.Status">
+            <i class="fa-solid fa-circle-check" aria-hidden="true"></i> @T["Succeeded"]
+        </span>
+        break;
+
+    case JobRunStatus.Failed:
+        <span class="badge fw-normal text-danger-emphasis bg-danger-subtle border border-danger-subtle" data-job-run-status="@Model.Status">
+            <i class="fa-solid fa-circle-xmark" aria-hidden="true"></i> @T["Failed"]
+        </span>
+        break;
+
+    case JobRunStatus.Canceled:
+        <span class="badge fw-normal ta-badge" data-job-run-status="@Model.Status">
+            <i class="fa-solid fa-circle-stop" aria-hidden="true"></i> @T["Canceled"]
+        </span>
+        break;
+}

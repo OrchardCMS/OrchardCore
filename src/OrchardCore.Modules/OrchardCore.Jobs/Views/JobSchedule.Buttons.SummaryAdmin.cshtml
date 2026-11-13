@@ -1,0 +1,12 @@
+@model JobScheduleRowViewModel
+
+<a asp-action="Edit" asp-controller="JobSchedule" asp-route-area="OrchardCore.Jobs" asp-route-scheduleId="@Model.Schedule.ScheduleId" class="btn btn-primary btn-sm">@T["Edit"]</a>
+
+@if (Model.Schedule.IsEnabled)
+{
+    <a asp-action="Disable" asp-controller="JobSchedule" asp-route-area="OrchardCore.Jobs" asp-route-scheduleId="@Model.Schedule.ScheduleId" class="btn btn-sm btn-danger" data-url-af="UnsafeUrl">@T["Disable"]</a>
+}
+else if (Model.IsJobRegistered)
+{
+    <a asp-action="Enable" asp-controller="JobSchedule" asp-route-area="OrchardCore.Jobs" asp-route-scheduleId="@Model.Schedule.ScheduleId" class="btn btn-sm btn-success" data-url-af="UnsafeUrl">@T["Enable"]</a>
+}
