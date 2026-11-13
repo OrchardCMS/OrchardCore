@@ -58,6 +58,7 @@ public class ContentTypesAdminNodeNavigationBuilder : IAdminNodeNavigationBuilde
                     contentTypeId = ctd.Name,
                 }));
 
+                itemBuilder.Id($"{node.UniqueId}-{ctd.Name}");
                 itemBuilder.MenuName(node.MenuName);
                 itemBuilder.Priority(node.Priority);
                 itemBuilder.Position(node.Position);
