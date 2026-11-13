@@ -1,4 +1,8 @@
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Playwright;
+using OrchardCore.BackgroundTasks;
+using OrchardCore.Modules;
 using OrchardCore.Tests.Functional.Helpers;
 
 namespace OrchardCore.Tests.Functional.Tests.Cms;
@@ -13,9 +17,9 @@ public abstract class CmsRecipeFixture : IAsyncLifetime
     public IBrowser Browser => _testFixture.Browser;
     public string BaseUrl => _testFixture.BaseUrl;
 
-    protected CmsRecipeFixture()
+    protected CmsRecipeFixture(Action<WebApplicationBuilder> configure = null)
     {
-        _testFixture = new OrchardTestFixture(instanceId: $"{GetType().Name}_{s_instanceCounter++}");
+        _testFixture = new OrchardTestFixture(instanceId: $"{GetType().Name}_{Interlocked.Increment(ref s_instanceCounter)}", configure: configure);
     }
 
     public async ValueTask InitializeAsync()
@@ -166,3 +170,38 @@ public sealed class PredefinedListEditorTestsFixture : CmsRecipeFixture
     protected override string RecipeName => "PredefinedListEditorTests";
 }
 
+public sealed class BackgroundTasksTestsFixture : CmsRecipeFixture
+{
+    public BackgroundTasksTestsFixture()
+        : base(builder =>
+        {
+            // Load the tasks of the tenant soon after it is set up, and pick up the requested runs quickly.
+            builder.Services.PostConfigure<BackgroundServiceOptions>(options =>
+            {
+                options.PollingTime = TimeSpan.FromSeconds(5);
+                options.MinimumIdleTime = TimeSpan.FromSeconds(1);
+            });
+
+            builder.Services.AddOrchardCore().ConfigureServices(services =>
+            {
+                services.AddSingleton<IBackgroundTask, SucceedingTestBackgroundTask>();
+                services.AddSingleton<IBackgroundTask, FailingTestBackgroundTask>();
+                services.AddSingleton<IBackgroundTask, SlowTestBackgroundTask>();
+                services.AddSingleton<IBackgroundTask, NeverOccurringTestBackgroundTask>();
+            });
+        })
+    {
+    }
+
+    protected override string RecipeName => "BackgroundTasksTests";
+}
+
+public sealed class WorkflowsDesignerTestsFixture : CmsRecipeFixture
+{
+    protected override string RecipeName => "WorkflowsDesignerTests";
+}
+
+public sealed class PartToggleEditorTestsFixture : CmsRecipeFixture
+{
+    protected override string RecipeName => "PartToggleEditorTests";
+}

@@ -72,11 +72,13 @@
       ref="pickerModalRef"
       :field-id="inputName"
       :allowed-extensions="config.allowedExtensions"
+      :max-file-size="config.maxFileSize"
       :allow-multiple="multiple"
       :media-app-translations="config.mediaAppTranslations || ''"
       :base-path="config.basePath || ''"
       :upload-files-url="config.uploadFilesUrl || ''"
       :signalr-enabled="config.signalrEnabled === true"
+      :disable-thumbnails="config.disableThumbnails ?? false"
       @select="onPickerSelect"
     />
 

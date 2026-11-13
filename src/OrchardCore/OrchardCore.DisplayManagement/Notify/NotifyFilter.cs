@@ -157,7 +157,7 @@ public sealed class NotifyFilter : IActionFilter, IAsyncResultFilter, IPageFilte
         if (messagesZone is IShape zone)
         {
             // Also retrieve the actual zone in case it was only a temporary empty zone created on demand.
-            zone = await zone.AddAsync(await _shapeFactory.CreateAsync("NotifyMessages", new { Entries = _existingEntries }));
+            await zone.AddAsync(await _shapeFactory.CreateAsync("NotifyMessages", new { Entries = _existingEntries }));
         }
 
         DeleteCookies(filterContext);
@@ -205,6 +205,7 @@ public sealed class NotifyFilter : IActionFilter, IAsyncResultFilter, IPageFilte
         var cookieOptions = new CookieOptions
         {
             HttpOnly = true,
+            Secure = httpContext.Request.IsHttps,
         };
 
         if (httpContext.Request.PathBase.HasValue)

@@ -6,6 +6,8 @@ The **Menus** admin navigation item is available to users who can list `Menu` co
 
 Menus can be rendered in your theme using either Razor tag helpers or Liquid. This section describes how to render a menu on the frontend of your site.
 
+Link menu items and HTML menu items validate their URLs when rendered, including items created through APIs or imported from older content. Unsafe URLs, such as `javascript:` links, are replaced with an empty URL on a rendering-only copy; the stored content item is not changed.
+
 ### Razor Tag Helper
 
 In Razor views, you can use the `<menu>` tag helper to render a menu:
@@ -245,6 +247,10 @@ available on the `MenuItem` shape are still available.
         <a class="nav-link" href="@Url.Content((string)link.Url)">@link.Name</a>
     }
     ```
+
+## Menu item identifiers
+
+The menu editor finds a menu item by its `ContentItemId`, so every menu item needs one that is unique in its menu. A menu item without one cannot be edited or deleted: **Edit** and **Delete** return _Not Found_. Menu items in a recipe must set `ContentItemId`, for example to `"[js: uuid()]"`.
 
 ## Mark active item in a menu
 

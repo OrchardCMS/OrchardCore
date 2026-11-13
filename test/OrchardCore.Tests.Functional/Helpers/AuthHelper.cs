@@ -18,6 +18,14 @@ public static class AuthHelper
         await page.Locator("#LoginForm_UserName").FillAsync(config.Username);
         await page.Locator("#LoginForm_Password").FillAsync(config.Password);
         await page.Locator("button[type=\"submit\"]").ClickAsync();
-        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+
+        // Widen past Playwright's 30s default: observed live on CI (job 109531180853,
+        // Redis + Azurite backend) timing out here under heavy runner contention, even
+        // though this is just the login redirect + its page assets settling - the same
+        // class of runner-contention margin other tests in this suite have needed (see
+        // ShortcodeModalTests/PredefinedListEditorTests history). This helper is used by
+        // nearly every test, so a login-page timeout here is a single point of failure
+        // for the whole suite regardless of what any individual test is actually about.
+        await page.WaitForLoadStateAsync(LoadState.NetworkIdle, new PageWaitForLoadStateOptions { Timeout = 60_000 });
     }
 }

@@ -64,6 +64,12 @@ function createWrapper(configOverrides: Record<string, unknown> = {}, propsOverr
 }
 
 describe("MediaFieldBasic", () => {
+  it("passes the configured upload size to its picker", () => {
+    const wrapper = createWrapper({ maxFileSize: 1234567 });
+    expect(wrapper.findComponent({ name: "MediaPickerModal" }).props("maxFileSize")).toBe(1234567);
+    wrapper.unmount();
+  });
+
   beforeEach(() => {
     setupTranslations();
     localStorage.clear();

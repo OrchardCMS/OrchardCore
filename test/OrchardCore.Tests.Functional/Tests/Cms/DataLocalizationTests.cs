@@ -22,6 +22,47 @@ public sealed class DataLocalizationTests : CmsTestBase<DataLocalizationTestsFix
     public DataLocalizationTests(DataLocalizationTestsFixture fixture) : base(fixture) { }
 
     [Fact]
+    public async Task TranslationEditor_IsHiddenUntilVueMounts()
+    {
+        var page = await Fixture.CreatePageAsync();
+        await page.LoginAsync();
+        var consoleErrors = page.CollectConsoleErrors();
+        var loadEditor = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        // Delay the editor module to expose the server-rendered template before Vue mounts.
+        await page.RouteAsync("**/OrchardCore.DataLocalization/Scripts/translation-editor/*.js*", async route =>
+        {
+            await loadEditor.Task;
+            await route.ContinueAsync();
+        });
+
+        try
+        {
+            // DOMContentLoaded waits for module scripts, so only wait for navigation to commit.
+            var response = await page.GotoAsync("/Admin/DataLocalization/Index", new() { WaitUntil = WaitUntilState.Commit });
+            Assert.NotNull(response);
+            Assert.True(response.Ok);
+
+            var editor = page.Locator("#translation-editor");
+            await Assertions.Expect(page.Locator("#translation-editor[v-cloak]")).ToHaveCountAsync(1);
+            await Assertions.Expect(editor).ToBeHiddenAsync();
+
+            loadEditor.TrySetResult();
+
+            await Assertions.Expect(editor).ToBeVisibleAsync();
+            await Assertions.Expect(page.Locator("#translation-editor[v-cloak]")).ToHaveCountAsync(0);
+            await Assertions.Expect(editor.Locator("table tbody tr").First).ToBeVisibleAsync();
+            await Assertions.Expect(editor).Not.ToContainTextAsync("{{");
+            Assert.Empty(consoleErrors);
+        }
+        finally
+        {
+            loadEditor.TrySetResult();
+            await page.CloseAsync();
+        }
+    }
+
+    [Fact]
     public async Task EditTranslation_Save_PersistsOnReload()
     {
         var page = await Fixture.CreatePageAsync();
@@ -73,7 +114,40 @@ public sealed class DataLocalizationTests : CmsTestBase<DataLocalizationTestsFix
         var editedRow = page.Locator("#translation-editor table tbody tr")
             .Filter(new LocatorFilterOptions { HasText = originalKey });
         await Assertions.Expect(editedRow).ToHaveCountAsync(1);
-        await Assertions.Expect(editedRow.Locator("input[type='text']")).ToHaveValueAsync("Test Translated Value");
+
+        // Retry the reload itself, not just the locator assertion: on a distributed
+        // cache backend (Redis), the POST /Save response already completed the write
+        // AND its own cache invalidation before returning 200 (DocumentManager commits
+        // synchronously on shell-scope dispose, before the HTTP response is sent), but
+        // this reload's own GET /Admin/DataLocalization/Index runs in a brand new shell
+        // scope that reads via GetOrCreateImmutableAsync - which serves from Redis. A
+        // Playwright locator assertion only retries reading the CURRENT page's DOM; it
+        // can't recover from a page that was rendered server-side with stale data in
+        // the first place. Observed live on CI (Redis + Azurite backend only, never
+        // Sqlite/Postgres/MySql/SqlServer): "But was: ''" - the reloaded page's input
+        // was rendered empty, meaning the server itself briefly served the pre-save
+        // value across a page load that started right after the save request settled.
+        var editedInput = editedRow.Locator("input[type='text']");
+        const int maxReloadAttempts = 5;
+
+        for (var attempt = 1; attempt <= maxReloadAttempts; attempt++)
+        {
+            var currentValue = await editedInput.InputValueAsync();
+
+            if (currentValue == "Test Translated Value")
+            {
+                break;
+            }
+
+            if (attempt == maxReloadAttempts)
+            {
+                await Assertions.Expect(editedInput).ToHaveValueAsync("Test Translated Value");
+                break;
+            }
+
+            await page.ReloadAsync();
+            await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        }
 
         Assert.Empty(consoleErrors);
         await page.CloseAsync();

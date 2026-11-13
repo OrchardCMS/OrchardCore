@@ -24,6 +24,9 @@ public class DocumentManager<TDocument> : IDocumentManager<TDocument> where TDoc
     protected readonly bool _isDistributed;
     protected bool _isVolatile;
 
+    // The completed task of the last document returned from the local cache, reused while it is still cached.
+    private Task<TDocument> _cachedDocumentTask;
+
     public DocumentManager(
         IDistributedCache distributedCache,
         IMemoryCache memoryCache,
@@ -96,7 +99,26 @@ public class DocumentManager<TDocument> : IDocumentManager<TDocument> where TDoc
         return document;
     }
 
-    public async Task<TDocument> GetOrCreateImmutableAsync(Func<Task<TDocument>> factoryAsync = null)
+    public Task<TDocument> GetOrCreateImmutableAsync(Func<Task<TDocument>> factoryAsync = null)
+    {
+        // Fast path when the document is in the local cache, without a distributed cache, which is the case of most calls.
+        // It doesn't allocate, as the same completed task is returned while the same document is cached.
+        if (!_isDistributed && TryGetFromMemoryCache(out var cachedDocument))
+        {
+            var task = _cachedDocumentTask;
+
+            if (task is null || !ReferenceEquals(task.Result, cachedDocument))
+            {
+                _cachedDocumentTask = task = Task.FromResult(cachedDocument);
+            }
+
+            return task;
+        }
+
+        return GetOrCreateImmutableInternalAsync(factoryAsync);
+    }
+
+    private async Task<TDocument> GetOrCreateImmutableInternalAsync(Func<Task<TDocument>> factoryAsync)
     {
         // If called from a constructor, e.g. through an 'IConfigureOptions', the 'IDocumentStore' should
         // be resolved before any async IO operation to prevent a DI dead lock. So, only if the store may
@@ -301,6 +323,27 @@ public class DocumentManager<TDocument> : IDocumentManager<TDocument> where TDoc
         _memoryCache.Remove(_options.CacheIdKey);
 
         return document;
+    }
+
+    /// <summary>
+    /// Gets the document from the local cache, as <see cref="GetInternalAsync(bool)"/> does without a distributed cache.
+    /// </summary>
+    private bool TryGetFromMemoryCache(out TDocument document)
+    {
+        var id = _memoryCache.Get<string>(_options.CacheIdKey);
+
+        if (id is null)
+        {
+            document = null;
+            return false;
+        }
+
+        if (id == "NULL")
+        {
+            id = null;
+        }
+
+        return _memoryCache.TryGetValue(_options.CacheKey, out document) && document.Identifier == id;
     }
 
     protected async Task SetInternalAsync(TDocument document, bool failover = false)

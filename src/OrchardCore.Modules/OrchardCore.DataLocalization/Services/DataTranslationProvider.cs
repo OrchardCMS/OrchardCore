@@ -16,18 +16,16 @@ public class DataTranslationProvider : IDataTranslationProvider
     /// <inheritdoc/>
     public void LoadTranslations(string cultureName, CultureDictionary dictionary)
     {
-        using (var scope = _scopeFactory.CreateScope())
+        using var scope = _scopeFactory.CreateScope();
+        var translationsManager = scope.ServiceProvider.GetService<TranslationsManager>();
+
+        var translationsDocument = translationsManager.GetTranslationsDocumentAsync().Result;
+
+        if (translationsDocument.Translations.TryGetValue(cultureName, out var translations))
         {
-            var translationsManager = scope.ServiceProvider.GetService<TranslationsManager>();
+            var records = translations.Select(t => new CultureDictionaryRecord(t.Key, t.Context, [t.Value]));
 
-            var translationsDocument = translationsManager.GetTranslationsDocumentAsync().Result;
-
-            if (translationsDocument.Translations.TryGetValue(cultureName, out var translations))
-            {
-                var records = translations.Select(t => new CultureDictionaryRecord(t.Key, t.Context, [t.Value]));
-
-                dictionary.MergeTranslations(records);
-            }
+            dictionary.MergeTranslations(records);
         }
     }
 }

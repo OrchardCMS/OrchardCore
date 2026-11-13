@@ -3,6 +3,8 @@ export type MediaPickerConfig = {
     basePath: string;
     uploadFilesUrl: string;
     allowedExtensions?: string;
+    /** Maximum upload size in bytes; defaults to the rendered picker configuration. */
+    maxFileSize?: number;
     allowMultiple?: boolean;
     maxUploadChunkSize?: number;
 };
@@ -19,6 +21,7 @@ type OpenMediaPickerFn = (
     uploadFilesUrl: string,
     allowedExtensions?: string,
     allowMultiple?: boolean,
+    maxFileSize?: number,
 ) => Promise<{ mediaPath?: string; name?: string; url?: string }[]>;
 
 type MediaPickerConfigElement = HTMLElement & {
@@ -40,6 +43,7 @@ export async function openMediaPicker(config: MediaPickerConfig): Promise<MediaP
         config.uploadFilesUrl,
         config.allowedExtensions ?? '',
         config.allowMultiple ?? true,
+        config.maxFileSize,
     );
 
     return items.map((item) => ({

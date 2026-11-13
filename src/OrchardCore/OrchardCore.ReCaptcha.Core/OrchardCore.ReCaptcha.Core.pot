@@ -1,0 +1,22 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.ReCaptcha.Core\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: ReCaptchaPermissions.cs
+msgctxt "OrchardCore.ReCaptcha.ReCaptchaPermissions"
+msgid "Manage ReCaptcha Settings"
+msgstr ""
+
+#: Services/ReCaptchaService.cs
+msgctxt "OrchardCore.ReCaptcha.Services.ReCaptchaService"
+msgid "Failed to validate ReCaptcha"
+msgstr ""
+
+#: ActionFilters/ValidateReCaptchaAttribute.cs
+msgctxt "OrchardCore.ReCaptcha.Services.ReCaptchaService"
+msgid "Failed to validate captcha"
+msgstr ""

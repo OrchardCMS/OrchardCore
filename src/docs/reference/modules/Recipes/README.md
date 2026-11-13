@@ -52,19 +52,24 @@ A recipe is a `.recipe.json` file placed in a Recipes folder within your module 
 
 ## Recipe Helpers
 
-These helpers allow dynamic expressions inside recipe values using a special syntax.
+These helpers allow dynamic expressions inside recipe values using the `[prefix:script]` syntax. Only the `js` and `file` scripting engines are available. An expression with any other prefix is not evaluated, and is stored as a literal string without its surrounding brackets.
 
-| Helper         | Example Usage                                                                       | Description                                                                                                            |
-|----------------|-------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------|
-| `js`           | `"ContentItemId": "[js:variables('homePageId')]"`                                   | Evaluates a JavaScript expression. Common for referencing `variables`.                                                 |
-| `file`         | `"Content": "[file:text('Snippets/homepage.liquid')]"`                              | Loads content from an external file. Often used for Liquid templates.                                                  |
-| `env`          | `"value": "[env:MyEnvironmentVariable]"`                                            | Injects values from environment variables.                                                                             |
-| `appsettings`  | `"value": "[appsettings:OrchardCore:SiteName]"`                                     | Reads configuration from `appsettings.json`.                                                                           |
-| `localization` | `"value": "[localization:WelcomeTitle]"`                                            | Retrieves localized strings by key.                                                                                    |
-| `uuid`         | `"Id": "[js:uuid()]"`                                                               | Generates a new unique identifier (UUID/GUID).                                                                         |
-| `base64`       | `"data": "[js:base64('ew0KICAgICJ0eXBlIjogIkNvbnRlbnRJdGVtL0Jsb2dQb3N0Ig0KfQ==')]"` | Decodes the specified string from Base64 encoding. Use https://www.base64-image.de/ to convert your files to base64.   |
-| `html`         | `"html": "[js:html('&lt;p&gt;Hello &amp; welcome&lt;/p&gt;')]"`                     | Decodes the specified string from HTML encoding.                                                                       |
-| `gzip`         | `"data": "[js:gzip('data')]"`                                                       | Decodes the specified string from gzip/base64 encoding. Use http://www.txtwizard.net/compression to gzip your strings. |
+| Prefix | Example Usage                                          | Description                                                           |
+|--------|--------------------------------------------------------|-----------------------------------------------------------------------|
+| `js`   | `"ContentItemId": "[js:variables('homePageId')]"`      | Evaluates a JavaScript expression. Common for referencing `variables`. |
+| `file` | `"Content": "[file:text('Snippets/homepage.liquid')]"` | Loads content from an external file. Often used for Liquid templates. |
+
+The following methods are commonly used in `js` expressions. They are JavaScript methods, not prefixes, see the [Scripting](../Scripting/README.md) documentation for the full list:
+
+| Method          | Example Usage                                                                       | Description                                                                                                            |
+|-----------------|-------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------|
+| `configuration` | `"value": "[js:configuration('SiteName', 'fallback')]"`                             | Reads a tenant configuration value, with an optional default. Keys are relative to the `OrchardCore` section.          |
+| `uuid`          | `"Id": "[js:uuid()]"`                                                               | Generates a new unique identifier (UUID/GUID).                                                                         |
+| `base64`        | `"data": "[js:base64('ew0KICAgICJ0eXBlIjogIkNvbnRlbnRJdGVtL0Jsb2dQb3N0Ig0KfQ==')]"` | Decodes the specified string from Base64 encoding. Use https://www.base64-image.de/ to convert your files to base64.   |
+| `html`          | `"html": "[js:html('&lt;p&gt;Hello &amp; welcome&lt;/p&gt;')]"`                     | Decodes the specified string from HTML encoding.                                                                       |
+| `gzip`          | `"data": "[js:gzip('data')]"`                                                       | Decodes the specified string from gzip/base64 encoding. Use http://www.txtwizard.net/compression to gzip your strings. |
+
+Environment variables are only available through `configuration` when they are part of the `OrchardCore` section. For example, an `OrchardCore__MY_ENV_VAR` environment variable can be read with `[js:configuration('MY_ENV_VAR')]`, but a root-level `MY_ENV_VAR` variable is not exposed to the tenant configuration. See the [Configuration](../Configuration/README.md) documentation for more details.
 
 ---
 

@@ -11,7 +11,6 @@ using OrchardCore.ContentLocalization.Liquid;
 using OrchardCore.ContentLocalization.Security;
 using OrchardCore.ContentLocalization.Services;
 using OrchardCore.ContentLocalization.Sitemaps;
-using OrchardCore.ContentLocalization.ViewModels;
 using OrchardCore.Contents.Services;
 using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement.Handlers;
@@ -29,9 +28,8 @@ public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.Configure<TemplateOptions>(o =>
+        services.Configure<TemplateOptionsBuilder>(o =>
         {
-            o.MemberAccessStrategy.Register<LocalizationPartViewModel>();
         })
         .AddLiquidFilter<ContentLocalizationFilter>("localization_set");
 
@@ -69,7 +67,8 @@ public sealed class ContentPickerStartup : StartupBase
         services.AddSiteDisplayDriver<ContentRequestCultureProviderSettingsDriver>();
 
         services.Configure<RequestLocalizationOptions>(options => options.AddInitialRequestCultureProvider(new ContentRequestCultureProvider()));
-        services.Configure<CulturePickerOptions>(_shellConfiguration.GetSection("OrchardCore_ContentLocalization_CulturePickerOptions"));
+        // The 'OrchardCore_ContentLocalization_CulturePickerOptions' section is deprecated and will be removed in a future major version, use 'ContentLocalization:CulturePickerOptions' instead.
+        services.Configure<CulturePickerOptions>(_shellConfiguration.GetSectionCompat("ContentLocalization:CulturePickerOptions", "OrchardCore_ContentLocalization_CulturePickerOptions"));
     }
 
     public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

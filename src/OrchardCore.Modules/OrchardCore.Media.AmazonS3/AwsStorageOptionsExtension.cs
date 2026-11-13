@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using Amazon.Extensions.NETCore.Setup;
 using Amazon.Runtime;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -8,7 +7,7 @@ using OrchardCore.FileStorage.AmazonS3;
 
 namespace OrchardCore.Media.AmazonS3;
 
-public static class AwsStorageOptionsExtension
+internal static class AwsStorageOptionsExtension
 {
     public static IEnumerable<ValidationResult> Validate(this AwsStorageOptionsBase options)
     {
@@ -26,29 +25,48 @@ public static class AwsStorageOptionsExtension
         }
     }
 
-    public static AwsStorageOptionsBase BindConfiguration(this AwsStorageOptionsBase options, string configSection, IShellConfiguration shellConfiguration, ILogger logger)
+    /// <summary>
+    /// Binds the options from a configuration section that is still supported under a legacy name, the values of the
+    /// section winning over the same values of the legacy section. When neither section exists, the options are left
+    /// unset, which fails the validation.
+    /// </summary>
+    /// <typeparam name="TOptions">The type of the options to bind.</typeparam>
+    /// <param name="options">The bound options, or <see langword="null"/> if a configured value can't be bound.</param>
+    /// <returns><see langword="false"/> if a configured value can't be bound, after logging the error.</returns>
+    public static bool TryBindConfiguration<TOptions>(this IShellConfiguration shellConfiguration, string configSection, string legacyConfigSection, ILogger logger, out TOptions options)
+        where TOptions : AwsStorageOptionsBase, new()
+        => shellConfiguration.TryBindConfiguration(shellConfiguration.GetSectionCompat(configSection, legacyConfigSection), logger, out options);
+
+    private static bool TryBindConfiguration<TOptions>(this IShellConfiguration shellConfiguration, IConfigurationSection section, ILogger logger, out TOptions options)
+        where TOptions : AwsStorageOptionsBase, new()
     {
-        var section = shellConfiguration.GetSection(configSection);
+        options = new TOptions();
 
         if (!section.Exists())
         {
-            return options;
+            return true;
         }
-
-        options.BucketName = section.GetValue(nameof(options.BucketName), string.Empty);
-        options.BasePath = section.GetValue(nameof(options.BasePath), string.Empty);
-        options.CreateBucket = section.GetValue(nameof(options.CreateBucket), false);
-        options.RemoveBucket = section.GetValue(nameof(options.RemoveBucket), false);
 
         try
         {
+            options.BucketName = section.GetValue(nameof(options.BucketName), string.Empty);
+            options.BasePath = section.GetValue(nameof(options.BasePath), string.Empty);
+            options.CreateBucket = section.GetValue(nameof(options.CreateBucket), false);
+            options.RemoveBucket = section.GetValue(nameof(options.RemoveBucket), false);
+
             // Binding AWS Options. Using the AmazonS3Config type parameter is necessary to be able to configure
             // S3-specific properties like ForcePathStyle via the configuration provider.
-            options.AwsOptions = shellConfiguration.GetAWSOptions("OrchardCore_Media_AmazonS3");
+            var awsSection = shellConfiguration.GetSectionCompat(AmazonS3Constants.ConfigSections.AmazonS3, AmazonS3Constants.ConfigSections.LegacyAmazonS3);
+            options.AwsOptions = awsSection.GetAWSOptions(string.Empty);
 
             // In case Credentials sections was specified, trying to add BasicAWSCredential to AWSOptions
             // since by design GetAWSOptions skips Credential section while parsing config.
             var credentials = section.GetSection("Credentials");
+            if (!credentials.Exists())
+            {
+                credentials = awsSection.GetSection("Credentials");
+            }
+
             if (credentials.Exists())
             {
                 var secretKey = credentials.GetValue(AmazonS3Constants.AwsCredentialParamNames.SecretKey, string.Empty);
@@ -61,13 +79,18 @@ public static class AwsStorageOptionsExtension
                     options.AwsOptions.Credentials = awsCredentials;
                 }
             }
-
-            return options;
         }
-        catch (ConfigurationException ex)
+        catch (Exception ex)
         {
+            // A malformed value shouldn't prevent the tenant from starting: the features using these options keep the
+            // local file storage.
             logger.LogCritical(ex, "Failed to configure AWS options.");
-            throw;
+
+            options = null;
+
+            return false;
         }
+
+        return true;
     }
 }

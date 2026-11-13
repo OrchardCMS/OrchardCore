@@ -123,4 +123,37 @@ describe("LocalStorage", () => {
       expect(typeof gridView.value).toBe("boolean");
     });
   });
+
+  // Disabling the grid view is one-way for the lifetime of the module (it mirrors the
+  // OrchardCore_Media:DisableThumbnails option), so these tests must run last in this file.
+  describe("disableGridView", () => {
+    it("turns off an already active grid view", () => {
+      const { gridView, disableGridView } = useLocalStorage();
+      gridView.value = true;
+
+      disableGridView();
+
+      expect(gridView.value).toBe(false);
+    });
+
+    it("ignores a persisted grid preference on restore", () => {
+      const { setLocalStorage, gridView, disableGridView } = useLocalStorage();
+
+      localStorage.setItem(
+        LS_ID,
+        JSON.stringify({
+          smallThumbs: false,
+          selectedDirectory: imagesDir,
+          gridView: true,
+        }),
+      );
+
+      disableGridView();
+      setLocalStorage();
+
+      expect(gridView.value).toBe(false);
+      // Other preferences are still restored.
+      expect(selectedDirectory.value.directoryPath).toBe("/Images");
+    });
+  });
 });

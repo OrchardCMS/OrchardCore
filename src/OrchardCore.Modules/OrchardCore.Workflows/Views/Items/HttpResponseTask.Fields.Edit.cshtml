@@ -26,21 +26,23 @@
 </div>
 
 @*TODO: Only display Content field when appropriate for the selected HTTP status code.*@
-<div class="ocat-wrapper" asp-validation-class-for="Content">
-    <label asp-for="Content" class="ocat-label">@T["Content"]</label>
-    <div class="ocat-end">
-        <textarea asp-for="Content"></textarea>
-        <span asp-validation-for="Content"></span>
-        <span class="hint">@T["The body to send back. With Liquid support."]</span>
+<div data-task-editor="http-response" data-content-id="@Html.IdFor(m => m.Content)" data-headers-id="@Html.IdFor(m => m.Headers)">
+    <div class="ocat-wrapper" asp-validation-class-for="Content">
+        <label asp-for="Content" class="ocat-label">@T["Content"]</label>
+        <div class="ocat-end">
+            <textarea asp-for="Content"></textarea>
+            <span asp-validation-for="Content"></span>
+            <span class="hint">@T["The body to send back. With Liquid support."]</span>
+        </div>
     </div>
-</div>
 
-<div class="ocat-wrapper" asp-validation-class-for="Headers">
-    <label asp-for="Headers" class="ocat-label">@T["Headers"] </label>
-    <div class="ocat-end">
-        <textarea asp-for="Headers"></textarea>
-        <span asp-validation-for="Headers"></span>
-        <span class="hint">@T["Provide additional HTTP response headers. Enter one key/value pair per line. For example: \"X-MyHeader: Foo\". With Liquid support."]</span>
+    <div class="ocat-wrapper" asp-validation-class-for="Headers">
+        <label asp-for="Headers" class="ocat-label">@T["Headers"] </label>
+        <div class="ocat-end">
+            <textarea asp-for="Headers"></textarea>
+            <span asp-validation-for="Headers"></span>
+            <span class="hint">@T["Provide additional HTTP response headers. Enter one key/value pair per line. For example: \"X-MyHeader: Foo\". With Liquid support."]</span>
+        </div>
     </div>
 </div>
 

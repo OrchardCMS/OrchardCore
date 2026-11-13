@@ -37,9 +37,9 @@ public sealed class VipsImageProcessingEngineTests
     }
 
     [Theory]
-    [InlineData(200, 100, 100, null,  100, 50)]  // width-only constraint
-    [InlineData(200, 100, null,  50,  100, 50)]  // height-only constraint
-    [InlineData(200, 100, 80,  80,  80,  40)]    // both constraints, narrower axis wins
+    [InlineData(200, 100, 100, null, 100, 50)]  // width-only constraint
+    [InlineData(200, 100, null, 50, 100, 50)]  // height-only constraint
+    [InlineData(200, 100, 80, 80, 80, 40)]    // both constraints, narrower axis wins
     public async Task Process_MaxMode_FitsWithinBoundsProportionally(
         int srcW, int srcH, int? reqW, int? reqH, int expW, int expH)
     {

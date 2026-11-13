@@ -1,0 +1,109 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Sms.Azure\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: Drivers/AzureSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Sms.Azure.Drivers.AzureSettingsDisplayDriver"
+msgid "Connection string is required."
+msgstr ""
+
+#: Drivers/AzureSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Sms.Azure.Drivers.AzureSettingsDisplayDriver"
+msgid "Invalid phone number."
+msgstr ""
+
+#: Drivers/AzureSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Sms.Azure.Drivers.AzureSettingsDisplayDriver"
+msgid "The phone number is a required."
+msgstr ""
+
+#: Drivers/AzureSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Sms.Azure.Drivers.AzureSettingsDisplayDriver"
+msgid "You have successfully disabled the default SMS provider. The SMS service is now disable and will remain disabled until you designate a new default provider."
+msgstr ""
+
+#: Drivers/AzureSmsSecretMigrationDisplayDriver.cs
+msgctxt "OrchardCore.Sms.Azure.Drivers.AzureSmsSecretMigrationDisplayDriver"
+msgid "Azure Communication Services SMS"
+msgstr ""
+
+#: Drivers/AzureSmsSecretMigrationDisplayDriver.cs
+msgctxt "OrchardCore.Sms.Azure.Drivers.AzureSmsSecretMigrationDisplayDriver"
+msgid "Azure Communication Services SMS: Connection string"
+msgstr ""
+
+#: Drivers/AzureSmsSecretMigrationDisplayDriver.cs
+msgctxt "OrchardCore.Sms.Azure.Drivers.AzureSmsSecretMigrationDisplayDriver"
+msgid "Connection string"
+msgstr ""
+
+#: Services/AzureSmsProvider.cs
+msgctxt "OrchardCore.Sms.Azure.Services.AzureSmsProvider"
+msgid "Azure Communication Services"
+msgstr ""
+
+#: Services/AzureSmsProviderBase.cs
+msgctxt "OrchardCore.Sms.Azure.Services.AzureSmsProviderBase"
+msgid "A phone number is required for the recipient."
+msgstr ""
+
+#: Services/AzureSmsProviderBase.cs
+msgctxt "OrchardCore.Sms.Azure.Services.AzureSmsProviderBase"
+msgid "An error occurred while sending an SMS."
+msgstr ""
+
+#. Format arguments: {0}: message.To
+#: Services/AzureSmsProviderBase.cs
+#, csharp-format
+msgctxt "OrchardCore.Sms.Azure.Services.AzureSmsProviderBase"
+msgid "Invalid phone number format for the recipient: '{0}'."
+msgstr ""
+
+#: Services/AzureSmsProviderBase.cs
+msgctxt "OrchardCore.Sms.Azure.Services.AzureSmsProviderBase"
+msgid "The Azure Communication Provider is disabled."
+msgstr ""
+
+#: Services/AzureSmsProviderBase.cs
+msgctxt "OrchardCore.Sms.Azure.Services.AzureSmsProviderBase"
+msgid "The SMS message has not been sent."
+msgstr ""
+
+#: Services/AzureSmsProviderBase.cs
+msgctxt "OrchardCore.Sms.Azure.Services.AzureSmsProviderBase"
+msgid "The message body is required."
+msgstr ""
+
+#: Services/DefaultAzureSmsProvider.cs
+msgctxt "OrchardCore.Sms.Azure.Services.DefaultAzureSmsProvider"
+msgid "Default Azure Communication Services"
+msgstr ""
+
+#: Views/AzureSmsSettings.Edit.cshtml
+msgctxt "OrchardCore.Sms.Azure.Views.AzureSmsSettings.Edit"
+msgid "Connection String"
+msgstr ""
+
+#: Views/AzureSmsSettings.Edit.cshtml
+msgctxt "OrchardCore.Sms.Azure.Views.AzureSmsSettings.Edit"
+msgid "Enable"
+msgstr ""
+
+#: Views/AzureSmsSettings.Edit.cshtml
+msgctxt "OrchardCore.Sms.Azure.Views.AzureSmsSettings.Edit"
+msgid "Enter the connection string"
+msgstr ""
+
+#: Views/AzureSmsSettings.Edit.cshtml
+msgctxt "OrchardCore.Sms.Azure.Views.AzureSmsSettings.Edit"
+msgid "Phone Number"
+msgstr ""
+
+#: Views/AzureSmsSettings.Edit.cshtml
+msgctxt "OrchardCore.Sms.Azure.Views.AzureSmsSettings.Edit"
+msgid "The default phone number to use as a sender. Phone number must include a country code. For example, +1 for United States."
+msgstr ""

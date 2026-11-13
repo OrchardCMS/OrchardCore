@@ -1,0 +1,10 @@
+@using OrchardCore.AdminMenu.ViewModels
+@using OrchardCore.DisplayManagement.Views
+
+@model ShapeViewModel<AdminMenuEntry>
+
+<a asp-controller="Node" asp-action="List" asp-route-id="@Model.Value.AdminMenu.Id" class="btn btn-secondary btn-sm">@T["Edit Nodes"]</a>
+
+<a asp-controller="Menu" asp-action="Edit" asp-route-id="@Model.Value.AdminMenu.Id" class="btn btn-primary btn-sm">@T["Edit"]</a>
+
+<a asp-controller="Menu" asp-action="Delete" asp-route-id="@Model.Value.AdminMenu.Id" class="btn btn-danger btn-sm" data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>

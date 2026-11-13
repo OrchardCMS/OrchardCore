@@ -29,7 +29,11 @@
 
 <style asp-name="codemirror"></style>
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["SQL Query"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="QueriesRun" title="@T["SQL Query"]">
+        <breadcrumb-item id="Queries" action="Index" controller="Admin" area="OrchardCore.Queries" permission="@QueryPermissions.ManageQueries.Name">@T["Queries"]</breadcrumb-item>
+    </breadcrumb>
+</zone>
 
 <div asp-validation-summary="ModelOnly"></div>
 
@@ -52,10 +56,8 @@
         </div>
     </div>
 
-    <div class="ocat-wrapper">
-        <div class="ocat-end-offset">
-            <button type="submit" class="btn btn-primary">@T["Query"]</button>
-        </div>
+    <div class="action-bar-bottom">
+        <button type="submit" class="btn btn-primary">@T["Query"]</button>
     </div>
 </form>
 @if (Model.Elapsed != TimeSpan.Zero)
@@ -70,7 +72,7 @@
 
     <div class="ocat-wrapper">
         <div class="ocat-end-offset">
-            <a href="@Url.Action("Create", "Admin", new { area = "OrchardCore.Queries", id = "Sql", query = Model.DecodedQuery })" class="btn btn-success">@T["Create"]</a>
+            <a href="@Url.Action("Create", "Admin", new { area = "OrchardCore.Queries", id = "Sql", query = Model.DecodedQuery })" class="btn btn-success action-bar-secondary">@T["Create"]</a>
         </div>
     </div>
 }

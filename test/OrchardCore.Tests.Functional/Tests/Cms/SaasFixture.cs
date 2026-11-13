@@ -42,6 +42,8 @@ public sealed class SaasFixture : IAsyncLifetime
             await page.CreateTenantAsync(Tenant);
             await page.VisitTenantSetupPageAsync(Tenant);
             await page.SiteSetupAsync(Tenant);
+            await page.LoginAsync($"/{Tenant.Prefix}");
+            await page.SetLocalizationCultureAsync($"/{Tenant.Prefix}", "en-US");
         }
         finally
         {

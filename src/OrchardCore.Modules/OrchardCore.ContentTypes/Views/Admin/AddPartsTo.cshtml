@@ -6,7 +6,12 @@
     var hasSelectedParts = Model.PartSelections.Any(x => x.IsSelected);
     string localizedTypeName = D[Model.Type.DisplayName, "Content Types"];
 }
-<zone Name="Title"><h1>@T["Add Parts To \"{0}\"", localizedTypeName]</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="ContentTypesAddParts" title="@T["Add Parts"]">
+        <breadcrumb-item id="ContentTypes" action="List" controller="Admin" area="OrchardCore.ContentTypes" permission="@ContentTypesPermissions.ViewContentTypes.Name">@T["Content Types"]</breadcrumb-item>
+        <breadcrumb-item id="ContentType" action="Edit" controller="Admin" area="OrchardCore.ContentTypes" route-id="@Model.Type.Name" permission="@ContentTypesPermissions.EditContentTypes.Name">@T["Edit Content Type - {0}", localizedTypeName]</breadcrumb-item>
+    </breadcrumb>
+</zone>
 
 <div class="ocat-wrapper">
     <div class="ocat-end-offset">
@@ -38,11 +43,9 @@
             </ul>
         </div>
     </div>
-    <div class="ocat-wrapper">
-        <div class="ocat-end-offset">
-            <button id="add-selected-parts-button" class="btn btn-primary save" type="submit" name="submit.Save" value="Save" hidden="@(!hasSelectedParts)">@T["Add Selected Parts"]</button>
-            <a class="btn btn-secondary cancel" role="button" asp-route-action="Edit" asp-route-id="@Model.Type.Name">@T["Cancel"]</a>
-        </div>
+    <div class="action-bar-bottom">
+        <button id="add-selected-parts-button" class="btn btn-primary save" type="submit" name="submit.Save" value="Save" hidden="@(!hasSelectedParts)">@T["Add Selected Parts"]</button>
+        <a class="btn btn-secondary cancel" role="button" asp-route-action="Edit" asp-route-id="@Model.Type.Name">@T["Cancel"]</a>
     </div>
 </form>
 

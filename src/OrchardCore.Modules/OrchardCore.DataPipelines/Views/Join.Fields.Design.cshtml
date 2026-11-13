@@ -1,0 +1,10 @@
+@model JoinStepViewModel
+
+@if (Model.Keys.Count == 0)
+{
+    <span class="text-muted">@T["Choose the fields to match on"]</span>
+}
+else
+{
+    <span class="text-break">@(Model.JoinType switch { DataJoinType.Left => T["Left join"], DataJoinType.Right => T["Right join"], DataJoinType.Full => T["Full join"], _ => T["Inner join"] }) · @string.Join(", ", Model.Keys.Select(key => $"{key.LeftField} = {key.RightField}"))</span>
+}

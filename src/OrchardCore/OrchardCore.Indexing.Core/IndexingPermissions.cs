@@ -1,3 +1,4 @@
+using OrchardCore.Localization;
 using System.Collections.Concurrent;
 using OrchardCore.Indexing.Models;
 using OrchardCore.Security.Permissions;
@@ -6,12 +7,12 @@ namespace OrchardCore.Indexing.Core;
 
 public static class IndexingPermissions
 {
-    public static readonly Permission QuerySearchIndex = new("QuerySearchIndex", "Query any index");
+    public static readonly Permission QuerySearchIndex = new("QuerySearchIndex", LocalizationSource.Create("Query any index", typeof(IndexingPermissions)));
 
-    public static readonly Permission ManageIndexes = new("ManageIndexes", "Manage Indexes");
+    public static readonly Permission ManageIndexes = new("ManageIndexes", LocalizationSource.Create("Manage Indexes", typeof(IndexingPermissions)));
 
-    private static readonly Permission s_indexPermissionTemplate =
-        new("QueryIndex_{0}", "Query '{0}' Index", [ManageIndexes, QuerySearchIndex]);
+    private static readonly PermissionTemplate s_indexPermissionTemplate =
+        new("QueryIndex_{0}", LocalizationSource.Create("Query '{0}' Index", typeof(IndexingPermissions)), ManageIndexes, QuerySearchIndex);
 
     private static readonly ConcurrentDictionary<string, Permission> s_permissions = [];
 
@@ -19,9 +20,8 @@ public static class IndexingPermissions
     {
         ArgumentNullException.ThrowIfNull(indexProfile);
 
-        return s_permissions.GetOrAdd(indexProfile.Id, indexId => new Permission(
-            string.Format(s_indexPermissionTemplate.Name, indexProfile.Name),
-            string.Format(s_indexPermissionTemplate.Description, indexProfile.Name),
-            s_indexPermissionTemplate.ImpliedBy));
+        return s_permissions.GetOrAdd(
+            indexProfile.Id,
+            _ => s_indexPermissionTemplate.CreateDynamicPermission(indexProfile.Name));
     }
 }

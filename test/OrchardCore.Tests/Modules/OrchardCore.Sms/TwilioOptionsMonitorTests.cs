@@ -5,6 +5,7 @@ using OrchardCore.Entities;
 using OrchardCore.Environment.Options;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Settings;
+using OrchardCore.Secrets;
 using OrchardCore.Sms;
 using OrchardCore.Sms.Models;
 using OrchardCore.Sms.Services;
@@ -14,8 +15,10 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Sms;
 
 public class TwilioOptionsMonitorTests
 {
-    [Fact]
-    public async Task RequestUpdate_ShouldRefreshTwilioOptionsWithoutReleasingTenant()
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task RequestUpdate_ShouldRefreshTwilioOptionsWithoutReleasingTenant(bool useSecret)
     {
         using var context = new SiteContext()
             .WithRecipe("SaaS");
@@ -26,7 +29,8 @@ public class TwilioOptionsMonitorTests
         {
             var shellFeaturesManager = scope.ServiceProvider.GetRequiredService<IShellFeaturesManager>();
             var availableFeatures = await shellFeaturesManager.GetAvailableFeaturesAsync();
-            var featuresToEnable = availableFeatures.Where(feature => feature.Id == "OrchardCore.Sms");
+            // The Secrets feature is optional: it is only enabled to store the auth token as a secret.
+            var featuresToEnable = availableFeatures.Where(feature => feature.Id == "OrchardCore.Sms" || (useSecret && feature.Id == "OrchardCore.Secrets"));
 
             await shellFeaturesManager.EnableFeaturesAsync(featuresToEnable, force: true);
         });
@@ -51,6 +55,12 @@ public class TwilioOptionsMonitorTests
             var dataProtectionProvider = scope.ServiceProvider.GetRequiredService<IDataProtectionProvider>();
             var protector = dataProtectionProvider.CreateProtector(TwilioSmsProvider.ProtectorName);
 
+            if (useSecret)
+            {
+                var secretManager = scope.ServiceProvider.GetRequiredService<ISecretManager>();
+                await secretManager.SaveSecretAsync("Twilio.AuthToken", new TextSecret { Text = "auth-token" });
+            }
+
             var site = await siteService.LoadSiteSettingsAsync();
             site.Put(new SmsSettings
             {
@@ -61,7 +71,8 @@ public class TwilioOptionsMonitorTests
                 IsEnabled = true,
                 PhoneNumber = "+15555555555",
                 AccountSID = "account-sid",
-                AuthToken = protector.Protect("auth-token"),
+                AuthToken = useSecret ? null : protector.Protect("auth-token"),
+                AuthTokenSecretName = useSecret ? "Twilio.AuthToken" : null,
             });
 
             notifier

@@ -1,0 +1,18 @@
+@model (IReadOnlyList<DataField> LeftFields, IReadOnlyList<DataField> RightFields, JoinKey Key, string Index)
+@{
+    // The full name, such as "DataPipelineStep.Keys[0]", so the row binds to the step's editor.
+    var prefix = Html.Name($"Keys[{Model.Index}]");
+}
+
+<div class="input-group input-group-sm mb-2" data-dp-row>
+    <span class="input-group-text">@T["Left"]</span>
+    <select name="@(prefix).LeftField" class="form-select" aria-label="@T["Left field"]">
+        <partial name="DataPipelineFieldOptions" model="@((Model.LeftFields, Model.Key.LeftField, true))" />
+    </select>
+    <span class="input-group-text">=</span>
+    <span class="input-group-text">@T["Right"]</span>
+    <select name="@(prefix).RightField" class="form-select" aria-label="@T["Right field"]">
+        <partial name="DataPipelineFieldOptions" model="@((Model.RightFields, Model.Key.RightField, true))" />
+    </select>
+    <button type="button" class="btn btn-outline-danger" data-dp-remove title="@T["Remove"]"><i class="fa-solid fa-trash" aria-hidden="true"></i></button>
+</div>

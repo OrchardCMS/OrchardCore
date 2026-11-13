@@ -2,6 +2,29 @@
 
 This module provides Content Management services.
 
+## Content Quick Navigation
+
+Enable **Content Quick Navigation** (`OrchardCore.Contents.QuickNavigation`) from **Configuration → Features** to add recently updated content items to the [admin quick navigation palette](../Admin/README.md#quick-navigation). This feature is opt-in and depends on `OrchardCore.Contents` and `OrchardCore.Admin`.
+
+The `ContentItemNavigationSource` contributes the **50 most recently updated content items** by default. Each destination uses the item's full display text and opens its **Edit** view. Only items that the current user can edit are displayed, using the same content-item authorization as the edit page.
+
+Configure **Recent content items in quick navigation** under **Configuration → Settings → Admin**. The count must be at least 1 and defaults to 50. This field appears only while the feature is enabled and requires the **Manage Admin Settings** permission. Quick navigation itself must also be enabled in the Admin settings.
+
+The source queries the latest content item versions, ordered by `ModifiedUtc` descending and then by content item ID for consistent ordering. This includes drafts and unpublished items, but not removed items or older versions. The limit is applied before filtering out items the user cannot edit or whose display text is empty, so fewer destinations may be displayed. Content translations remain separate content items with their own display text; the **Content** breadcrumb is localized for the current UI culture.
+
+The source queries recent items and refreshes its contribution on each palette load rather than caching content objects or rendered results. Updates, removals, permission changes, and count changes are reflected on the next palette open. The JSON response is not cached by the browser, and the source performs no queries when the feature is disabled.
+
+The count can also be configured through a `settings` recipe step:
+
+```json
+{
+  "name": "settings",
+  "ContentQuickNavigationSettings": {
+    "MaxItems": 50
+  }
+}
+```
+
 ## Content Life Cycle
 
 The content life cycle is managed through different content item versions. In Orchard Core, the content item could be:
@@ -261,7 +284,7 @@ We can also query a specific `BlogPost` content item using the `blogPost` query.
 
 ```graphql
 query {
-  blosPost(where: {
+  blogPost(where: {
     contentItemId: "417qsjrgv97e74wvp149h4da53"
   }) {
     contentItemId
@@ -405,7 +428,7 @@ Query all `BlogPost` content items whose creation date is less than a specific d
 ```graphql
 query {
   blogPost(where: {
-    creationgUtc_lt: "2011-11-13T07:45:00"
+    createdUtc_lt: "2011-11-13T07:45:00"
   }) {
     contentItemId
     displayText
@@ -581,6 +604,33 @@ With the newly added options, we can now allow searching for products based on e
 Now, when a user searches for a product's serial number in the administration UI, we will utilize the `producttext` filter instead of the default `text` filter to perform the search.
 
 The `UseExactMatch` option in the `ContentsAdminListFilterOptions` class modifies the default search behavior by enclosing searched terms within quotation marks, creating an exact match search by default, this unless if the search text explicitly uses 'OR' or 'AND' operators.
+
+## Filters and Duplicate Items in the Admin UI
+
+`ContentItemIndex` has a single record per content item version, which its index provider declares with YesSql's `SingleRecordPerDocument()`. A query that only joins indexes declaring it doesn't need to remove the content items it would return several times, so it doesn't group its matches by document. The content items admin list, sorted by modified date as it is by default, then reads the matches in the order of the `IDX_ContentItemIndex_ModifiedUtc` or `IDX_ContentItemIndex_ContentType_ModifiedUtc` index, and stops as soon as the page is full. `ContainedPartIndex` and `LocalizedContentItemIndex` have the same declaration, so filtering the list on a list or a culture keeps it.
+
+A search text keeps the grouping, with YesSql's `NoIndexOptimizations()`: a text can't seek, and without it the database could walk the index of the order looking for the few items containing the text, all of it when none does. The content pickers do the same when searching.
+
+An index can have several records per document, for example `TaxonomyIndex` has one per term. When a filter joins such an index, or any index that doesn't declare a single record per document, YesSql groups the matches by document to return each content item once, and a page reads every match.
+
+A filter that joins an index of your own keeps the list from stopping early, unless its index provider declares a single record per document:
+
+```csharp
+public sealed class ProductIndexProvider : IndexProvider<ContentItem>
+{
+    public override void Describe(DescribeContext<ContentItem> context)
+    {
+        context.For<ProductIndex>()
+            .ExclusiveToDocumentType()
+            .SingleRecordPerDocument()
+            .Map(contentItem => contentItem.TryGet<ProductPart>(out var part)
+                ? new ProductIndex { SerialNumber = part.SerialNumber }
+                : null);
+    }
+}
+```
+
+Saving a document whose map returns several records then throws. `ExclusiveToDocumentType()` declares that only content items have records in the index, so that the count of the list reads the index tables without joining the `Document` table. Both declarations change every query on the index, not only the admin list, and YesSql can't verify the records that are already in the table. See the YesSql documentation of these methods before adding them to an existing index.
 
 ## Documenting Filters in the Admin UI
 

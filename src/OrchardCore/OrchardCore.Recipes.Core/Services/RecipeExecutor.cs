@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Runtime.ExceptionServices;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -10,6 +11,7 @@ using OrchardCore.Modules;
 using OrchardCore.Recipes.Events;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Scripting;
+using OrchardCore.Telemetry;
 
 namespace OrchardCore.Recipes.Services;
 
@@ -39,6 +41,10 @@ public class RecipeExecutor : IRecipeExecutor
 
     public async Task<string> ExecuteAsync(string executionId, RecipeDescriptor recipeDescriptor, IDictionary<string, object> environment, CancellationToken cancellationToken)
     {
+        using var activity = OrchardCoreTelemetry.ActivitySource.StartActivity(GetActivityName("Execute recipe", recipeDescriptor.Name));
+        activity?.SetTag(OrchardCoreTelemetryConstants.Attributes.TenantName, _shellSettings.Name);
+        activity?.SetTag(OrchardCoreTelemetryConstants.Attributes.RecipeName, recipeDescriptor.Name);
+
         await _recipeEventHandlers.InvokeAsync((handler, executionId, recipeDescriptor) => handler.RecipeExecutingAsync(executionId, recipeDescriptor), executionId, recipeDescriptor, _logger);
 
         try
@@ -95,7 +101,7 @@ public class RecipeExecutor : IRecipeExecutor
                             ExceptionDispatchInfo capturedException = null;
                             try
                             {
-                                await ExecuteStepAsync(recipeStep);
+                                await ExecuteStepAsync(recipeStep, cancellationToken);
 
                                 if (recipeStep.Errors.Count > 0)
                                 {
@@ -145,8 +151,10 @@ public class RecipeExecutor : IRecipeExecutor
 
             return executionId;
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            OrchardCoreTelemetry.RecordException(activity, ex);
+
             await _recipeEventHandlers.InvokeAsync((handler, executionId, recipeDescriptor) => handler.ExecutionFailedAsync(executionId, recipeDescriptor), executionId, recipeDescriptor, _logger);
 
             throw;
@@ -157,7 +165,33 @@ public class RecipeExecutor : IRecipeExecutor
         }
     }
 
-    private async Task ExecuteStepAsync(RecipeExecutionContext recipeStep)
+    private async Task ExecuteStepAsync(RecipeExecutionContext recipeStep, CancellationToken cancellationToken)
+    {
+        using var activity = OrchardCoreTelemetry.ActivitySource.StartActivity(GetActivityName("Execute recipe step", recipeStep.Name));
+        activity?.SetTag(OrchardCoreTelemetryConstants.Attributes.TenantName, _shellSettings.Name);
+        activity?.SetTag(OrchardCoreTelemetryConstants.Attributes.RecipeName, recipeStep.RecipeDescriptor.Name);
+        activity?.SetTag(OrchardCoreTelemetryConstants.Attributes.RecipeStepName, recipeStep.Name);
+
+        try
+        {
+            await ExecuteStepInternalAsync(recipeStep, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            OrchardCoreTelemetry.RecordException(activity, ex);
+
+            throw;
+        }
+
+        if (recipeStep.Errors.Count > 0)
+        {
+            // The errors of a step make the recipe fail with this exception once the step is completed.
+            activity?.SetStatus(ActivityStatusCode.Error, string.Join(' ', recipeStep.Errors));
+            activity?.SetTag(OrchardCoreTelemetryConstants.Attributes.ErrorType, typeof(RecipeExecutionException).FullName);
+        }
+    }
+
+    private async Task ExecuteStepInternalAsync(RecipeExecutionContext recipeStep, CancellationToken cancellationToken)
     {
         var shellScope = recipeStep.RecipeDescriptor.RequireNewScope
             ? await _shellHost.GetScopeAsync(_shellSettings)
@@ -169,7 +203,7 @@ public class RecipeExecutor : IRecipeExecutor
             var scriptingManager = scope.ServiceProvider.GetRequiredService<IScriptingManager>();
 
             // Substitutes the script elements by their actual values.
-            await EvaluateJsonTreeAsync(scriptingManager, recipeStep, recipeStep.Step);
+            await EvaluateJsonTreeAsync(scriptingManager, recipeStep, recipeStep.Step, cancellationToken);
 
             if (_logger.IsEnabled(LogLevel.Information))
             {
@@ -192,10 +226,15 @@ public class RecipeExecutor : IRecipeExecutor
         });
     }
 
+    private static string GetActivityName(string operation, string name)
+    {
+        return string.IsNullOrEmpty(name) ? operation : $"{operation} {name}";
+    }
+
     /// <summary>
     /// Traverse all the nodes of the json document and replaces their value if they are scripted.
     /// </summary>
-    private async Task<JsonNode> EvaluateJsonTreeAsync(IScriptingManager scriptingManager, RecipeExecutionContext context, JsonNode node)
+    private async Task<JsonNode> EvaluateJsonTreeAsync(IScriptingManager scriptingManager, RecipeExecutionContext context, JsonNode node, CancellationToken cancellationToken)
     {
         if (node is null)
         {
@@ -208,7 +247,7 @@ public class RecipeExecutor : IRecipeExecutor
                 var array = node.AsArray();
                 for (var i = 0; i < array.Count; i++)
                 {
-                    var item = await EvaluateJsonTreeAsync(scriptingManager, context, array[i]);
+                    var item = await EvaluateJsonTreeAsync(scriptingManager, context, array[i], cancellationToken);
                     if (item is JsonValue && item != array[i])
                     {
                         array[i] = item;
@@ -221,7 +260,7 @@ public class RecipeExecutor : IRecipeExecutor
                 var properties = node.AsObject();
                 foreach (var property in properties.ToArray())
                 {
-                    var newProperty = await EvaluateJsonTreeAsync(scriptingManager, context, property.Value);
+                    var newProperty = await EvaluateJsonTreeAsync(scriptingManager, context, property.Value, cancellationToken);
                     if (newProperty is JsonValue && newProperty != property.Value)
                     {
                         properties[property.Key] = newProperty;
@@ -251,7 +290,8 @@ public class RecipeExecutor : IRecipeExecutor
                         value,
                         context.RecipeDescriptor.FileProvider,
                         context.RecipeDescriptor.BasePath,
-                        _methodProviders[context.ExecutionId])
+                        _methodProviders[context.ExecutionId],
+                        cancellationToken)
                         ?? string.Empty).ToString();
                 }
 

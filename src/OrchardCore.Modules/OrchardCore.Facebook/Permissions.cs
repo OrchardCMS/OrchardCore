@@ -1,10 +1,11 @@
+using OrchardCore.Localization;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Facebook;
 
 public sealed class Permissions : IPermissionProvider
 {
-    public static readonly Permission ManageFacebookApp = new("ManageFacebookApp", "View and edit the Facebook app.");
+    public static readonly Permission ManageFacebookApp = new("ManageFacebookApp", LocalizationSource.Create<Permissions>("View and edit the Facebook app."));
 
     private readonly IEnumerable<Permission> _allPermissions =
     [

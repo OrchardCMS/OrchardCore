@@ -6,6 +6,8 @@ internal static class RateLimitRouteNames
 
     internal const string Login = "Login";
 
+    internal const string PasskeyLogin = "PasskeyLogin";
+
     internal const string LoginWithRecoveryCode = nameof(Controllers.TwoFactorAuthenticationController.LoginWithRecoveryCode);
 
     internal const string LoginWithTwoFactorAuthentication = nameof(Controllers.TwoFactorAuthenticationController.LoginWithTwoFactorAuthentication);
@@ -13,6 +15,8 @@ internal static class RateLimitRouteNames
     internal const string Register = nameof(Controllers.RegistrationController.Register);
 
     internal const string RegisterExternalLogin = nameof(Controllers.ExternalAuthenticationsController.RegisterExternalLogin);
+
+    internal const string ResendEmailConfirmation = nameof(Controllers.EmailConfirmationController.ResendEmailConfirmation);
 
     internal const string ResetPassword = nameof(Controllers.ResetPasswordController.ResetPassword);
 

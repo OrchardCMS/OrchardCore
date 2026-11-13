@@ -1,0 +1,148 @@
+using Xunit;
+
+namespace OrchardCore.Localization.Extraction.Tests;
+
+public sealed class RazorLocalizationExtractorTests
+{
+    [Fact]
+    public void Extract_DeferredSourceInRazor_UsesResourceTypeAndMappedLocation()
+    {
+        using var workspace = new TestWorkspace();
+        var options = workspace.Options();
+        options.References.Add(typeof(OrchardCore.Localization.LocalizationSource).Assembly.Location);
+        var resource = workspace.Write("Resources.cs", "namespace Example { public class Resources { } }");
+        var view = workspace.Write("Views/Index.cshtml", """
+            @using OrchardCore.Localization
+            @using Microsoft.Extensions.Localization
+            @inject Microsoft.Extensions.Localization.IStringLocalizerFactory factory
+            <p>@factory.Localize(LocalizationSource.Create<Example.Resources>("Deferred Razor")).Value</p>
+            """);
+        options.Sources.Add(new ExtractionFile(resource, "Resources.cs"));
+        options.RazorFiles.Add(new ExtractionFile(view, "Views/Index.cshtml"));
+
+        var catalog = LocalizationExtractor.Extract(options, TestContext.Current.CancellationToken);
+
+        Assert.Empty(catalog.Diagnostics);
+        var message = Assert.Single(catalog.Messages);
+        Assert.Equal("Example.Resources", message.Context);
+        Assert.Equal("Deferred Razor", message.Text);
+        Assert.Equal("Views/Index.cshtml", Assert.Single(message.References).Path);
+        Assert.Equal(4, message.References[0].Line);
+    }
+
+    [Fact]
+    public void Extract_ImportsAndLinkedView_PreservesContextAndSourceMapping()
+    {
+        using var workspace = new TestWorkspace();
+        var options = workspace.Options("Module");
+        var imports = workspace.Write("Views/_ViewImports.cshtml", "@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer arbitrary");
+        var view = workspace.Write("Shared/Physical.cshtml", "<p>@arbitrary[\"A Razor message {0}\", 42]</p>");
+        options.RazorFiles.Add(new ExtractionFile(imports, "Views/_ViewImports.cshtml"));
+        options.RazorFiles.Add(new ExtractionFile(view, "Views/Linked.cshtml"));
+        var catalog = LocalizationExtractor.Extract(options, TestContext.Current.CancellationToken);
+        Assert.Empty(catalog.Diagnostics);
+        var message = Assert.Single(catalog.Messages);
+        Assert.Equal("Module.Views.Linked", message.Context);
+        Assert.Equal("A Razor message {0}", message.Text);
+        Assert.Equal("Shared/Physical.cshtml", Assert.Single(message.References).Path);
+        Assert.Equal(1, message.References[0].Line);
+    }
+
+    [Fact]
+    public void Extract_RazorPageWithTypedHtmlLocalizer_UsesResourceType()
+    {
+        using var workspace = new TestWorkspace();
+        var options = workspace.Options();
+        var resource = workspace.Write("Resources.cs", "namespace Example { public class Resources { } }");
+        var page = workspace.Write("Pages/Index.cshtml", """
+            @page
+            @inject Microsoft.AspNetCore.Mvc.Localization.IHtmlLocalizer<Example.Resources> markup
+            <p>@markup["<strong>Page message</strong>"]</p>
+            """);
+        options.Sources.Add(new ExtractionFile(resource, "Resources.cs"));
+        options.RazorFiles.Add(new ExtractionFile(page, "Pages/Index.cshtml"));
+        var catalog = LocalizationExtractor.Extract(options, TestContext.Current.CancellationToken);
+        Assert.Empty(catalog.Diagnostics);
+        var message = Assert.Single(catalog.Messages);
+        Assert.Equal("Example.Resources", message.Context);
+        Assert.Equal("<strong>Page message</strong>", message.Text);
+        Assert.Equal(3, Assert.Single(message.References).Line);
+    }
+
+    [Fact]
+    public void Extract_PreprocessorSymbols_UsesEvaluatedCompilationOptions()
+    {
+        using var workspace = new TestWorkspace();
+        var options = workspace.Options();
+        options.Defines.Add("INCLUDED");
+        var path = workspace.Write("Messages.cs", """
+            using Microsoft.Extensions.Localization;
+            public class Owner
+            {
+                public string Get(IStringLocalizer<Owner> words)
+                {
+            #if INCLUDED
+                    return words["Active branch"];
+            #else
+                    return words["Inactive branch"];
+            #endif
+                }
+            }
+            """);
+        options.Sources.Add(new ExtractionFile(path, "Messages.cs"));
+        var catalog = LocalizationExtractor.Extract(options, TestContext.Current.CancellationToken);
+        Assert.Empty(catalog.Diagnostics);
+        Assert.Equal("Active branch", Assert.Single(catalog.Messages).Text);
+    }
+
+    [Fact]
+    public void Extract_NoteAndArgumentNamesInRazor_DescribeMessages()
+    {
+        using var workspace = new TestWorkspace();
+        var options = workspace.Options("Module");
+        options.References.Add(typeof(LocalizationMetadata).Assembly.Location);
+        options.References.Add(typeof(PluralizationArgument).Assembly.Location);
+        var view = workspace.Write("Views/Index.cshtml", """
+            @using Microsoft.AspNetCore.Mvc.Localization
+            @using static OrchardCore.Localization.LocalizationMetadata
+            @inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer T
+            @{ var years = 2; var user = "Ada"; }
+            <p>@T.Plural(note: "Relative date shown for future dates.", count: Arg("years", years), singular: "in 1 year", plural: "in {0} years")</p>
+            <p>@T.Note("Greeting shown on the dashboard.")["Hello {0}", Arg("user name", user)]</p>
+            """);
+        options.RazorFiles.Add(new ExtractionFile(view, "Views/Index.cshtml"));
+
+        var catalog = LocalizationExtractor.Extract(options, TestContext.Current.CancellationToken);
+
+        Assert.Empty(catalog.Diagnostics);
+        Assert.Equal(2, catalog.Messages.Count);
+        Assert.All(catalog.Messages, message => Assert.Equal("Module.Views.Index", message.Context));
+        var output = PotWriter.Write(catalog, "Module");
+        Assert.Contains("#. Relative date shown for future dates.\n#. Format arguments: {0}: years\n", output);
+        Assert.Contains("#. Greeting shown on the dashboard.\n#. Format arguments: {0}: user name\n", output);
+    }
+
+    [Fact]
+    public void Extract_PluralRangeInRazor_WritesRangeFlag()
+    {
+        using var workspace = new TestWorkspace();
+        var options = workspace.Options("Module");
+        options.References.Add(typeof(LocalizationMetadata).Assembly.Location);
+        options.References.Add(typeof(PluralizationArgument).Assembly.Location);
+        var view = workspace.Write("Views/Index.cshtml", """
+            @using Microsoft.AspNetCore.Mvc.Localization
+            @using static OrchardCore.Localization.LocalizationMetadata
+            @inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer T
+            @{ var hours = 2; }
+            <p>@T.Plural(Arg("hours", hours, 0, 23), "1 hour", "{0} hours")</p>
+            """);
+        options.RazorFiles.Add(new ExtractionFile(view, "Views/Index.cshtml"));
+
+        var catalog = LocalizationExtractor.Extract(options, TestContext.Current.CancellationToken);
+
+        Assert.Empty(catalog.Diagnostics);
+        var output = PotWriter.Write(catalog, "Module");
+        Assert.Contains("#. Format arguments: {0}: hours\n", output);
+        Assert.Contains("#, csharp-format, range: 0..23\n", output);
+    }
+}

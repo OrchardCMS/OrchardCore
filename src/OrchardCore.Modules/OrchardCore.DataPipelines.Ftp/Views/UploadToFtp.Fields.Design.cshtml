@@ -1,0 +1,7 @@
+@model UploadToFtpStepViewModel
+
+<span class="text-break">@Model.Summary</span>
+@if (Model.Encryption == DataPipelineFtpEncryption.None && !string.IsNullOrEmpty(Model.Summary))
+{
+    <span class="text-warning d-block"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> @T["Not encrypted"]</span>
+}

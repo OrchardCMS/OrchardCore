@@ -9,6 +9,7 @@
 
 @inject IThemeManager ThemeManager
 @inject OrchardCore.DisplayManagement.Descriptors.IShapeTableManager ShapeTableManager
+@inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
 @inject IDataLocalizer D
 
 @{
@@ -19,15 +20,32 @@
     var fieldContext = $"Content Fields{Constants.ContextSeparator}{Model.PartFieldDefinition.PartDefinition.Name}";
     string localizedFieldName = D[Model.DisplayName, fieldContext];
     string localizedPartName = D[Model.PartFieldDefinition.PartDefinition.DisplayName(), "Content Types"];
+
+    // A part named after a content type holds that type's own fields, which are edited from the type editor, so the
+    // trail leads back through the type rather than through the list of parts.
+    var typeDefinition = await ContentDefinitionManager.GetTypeDefinitionAsync(Model.PartFieldDefinition.PartDefinition.Name);
 }
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["\"{0}\" settings for \"{1}\"", localizedFieldName, localizedPartName])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="ContentPartsEditField" title="@T["\"{0}\" settings", localizedFieldName]">
+        @if (typeDefinition is not null)
+        {
+            <breadcrumb-item id="ContentTypes" action="List" controller="Admin" area="OrchardCore.ContentTypes" permission="@ContentTypesPermissions.ViewContentTypes.Name">@T["Content Types"]</breadcrumb-item>
+            <breadcrumb-item id="ContentType" action="Edit" controller="Admin" area="OrchardCore.ContentTypes" route-id="@typeDefinition.Name" permission="@ContentTypesPermissions.EditContentTypes.Name">@T["Edit Content Type - {0}", D[typeDefinition.DisplayName, "Content Types"]]</breadcrumb-item>
+        }
+        else
+        {
+            <breadcrumb-item id="ContentParts" action="ListParts" controller="Admin" area="OrchardCore.ContentTypes" permission="@ContentTypesPermissions.ViewContentTypes.Name">@T["Content Parts"]</breadcrumb-item>
+            <breadcrumb-item id="ContentPart" action="EditPart" controller="Admin" area="OrchardCore.ContentTypes" route-id="@Model.PartFieldDefinition.PartDefinition.Name" permission="@ContentTypesPermissions.EditContentTypes.Name">@T["Edit Content Part - {0}", localizedPartName]</breadcrumb-item>
+        }
+    </breadcrumb>
+</zone>
 
 <form asp-action="EditField" asp-route-returnUrl="@ViewData["returnUrl"]">
     @Html.ValidationSummary()
 
     <div class="ocat-limited-wrapper">
-        <label asp-for="DisplayName" class="ocat-label">@T["Display Name"]</label>
+        <label asp-for="DisplayName" class="ocat-label ocat-label-required">@T["Display Name"]</label>
         <div class="ocat-limited">
             <input asp-for="DisplayName" autofocus class="form-control" />
             <span class="hint">@T["Name of the field as it will be displayed in screens."]</span>
@@ -60,7 +78,7 @@
             <div class="ocat-wrapper">
                 <label asp-for="Editor" class="ocat-label">@T["What type of editor should be used?"]</label>
                 <div class="ocat-end">
-                    <select asp-for="Editor" class="form-select" id="field-editor-select">
+                    <select asp-for="Editor" class="form-select" data-field-editor-select>
                         @foreach (var editorShape in editorShapes)
                         {
                             var shape = await Factory.CreateAsync(editorShape);
@@ -81,7 +99,7 @@
             <div class="ocat-wrapper">
                 <label asp-for="DisplayMode" class="ocat-label">@T["What type of display mode should be used?"]</label>
                 <div class="ocat-end">
-                    <select asp-for="DisplayMode" class="form-select" id="field-display-select">
+                    <select asp-for="DisplayMode" class="form-select" data-field-display-select>
                         @foreach (var displayShape in displayShapes)
                         {
                             var shape = await Factory.CreateAsync(displayShape);
@@ -98,14 +116,12 @@
         </div>
     }
 
-    <div class="ocat-wrapper">
-        <div class="ocat-end-offset">
-            <button class="btn btn-primary save" type="submit" name="submit.Save" value="Save">@T["Save"]</button>
-            @if (Url.IsLocalUrl(returnUrl))
-            {
-                <a class="btn btn-secondary cancel" role="button" href="@returnUrl">@T["Cancel"]</a>
-            }
-        </div>
+    <div class="action-bar-bottom">
+        <button class="btn btn-primary save" type="submit" name="submit.Save" value="Save">@T["Save"]</button>
+        @if (Url.IsLocalUrl(returnUrl))
+        {
+            <a class="btn btn-secondary cancel" role="button" href="@returnUrl">@T["Cancel"]</a>
+        }
     </div>
 </form>
 

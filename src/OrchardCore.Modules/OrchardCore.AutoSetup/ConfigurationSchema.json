@@ -1,0 +1,142 @@
+{
+  "type": "object",
+  "properties": {
+    "OrchardCore": {
+      "type": "object",
+      "properties": {
+        "AutoSetup": {
+          "type": "object",
+          "description": "Configures the automatic setup of the application and its tenants on their first request. The section should contain sensitive values such as admin passwords and connection strings, so prefer providing it from environment variables or user secrets. See https://docs.orchardcore.net/en/latest/reference/modules/AutoSetup/.",
+          "properties": {
+            "AutoSetupPath": {
+              "type": "string",
+              "description": "The URL path that triggers the auto setup of each tenant, e.g. '/autosetup' for the Default tenant and '/{tenant-prefix}/autosetup' for other tenants. When empty, the auto setup is triggered by the first request of each tenant. When not empty, it must start with '/'."
+            },
+            "LockOptions": {
+              "type": "object",
+              "description": "The options of the distributed lock used to make the auto setup atomic when multiple instances share the same database. Only used when a distributed lock feature such as 'OrchardCore.Redis.Lock' is enabled.",
+              "properties": {
+                "LockTimeout": {
+                  "type": "integer",
+                  "description": "The timeout in milliseconds to acquire the distributed auto setup lock. Must be greater than zero when defined. Defaults to 60000 (60 seconds).",
+                  "minimum": 1
+                },
+                "LockExpiration": {
+                  "type": "integer",
+                  "description": "The expiration in milliseconds of the distributed auto setup lock. Must be greater than zero when defined. Defaults to 60000 (60 seconds).",
+                  "minimum": 1
+                }
+              }
+            },
+            "Tenants": {
+              "type": "array",
+              "description": "The tenants to install. Must contain exactly one tenant whose 'ShellName' is 'Default'. Each tenant is installed on its first request.",
+              "items": {
+                "type": "object",
+                "description": "The setup parameters of a tenant.",
+                "properties": {
+                  "ShellName": {
+                    "type": "string",
+                    "description": "The technical name of the tenant. Cannot be empty and must only contain letters, digits or underscores. Use 'Default' for the Default tenant."
+                  },
+                  "SiteName": {
+                    "type": "string",
+                    "description": "The name of the site. Required."
+                  },
+                  "AdminUsername": {
+                    "type": "string",
+                    "description": "The username of the super user of the tenant. Required."
+                  },
+                  "AdminEmail": {
+                    "type": "string",
+                    "description": "The email of the super user of the tenant. Required."
+                  },
+                  "AdminPassword": {
+                    "type": "string",
+                    "description": "The password of the super user of the tenant. Required. This is a sensitive value that should be provided from environment variables or user secrets rather than committed in an appsettings file."
+                  },
+                  "DatabaseProvider": {
+                    "type": "string",
+                    "enum": [
+                      "Sqlite",
+                      "SqlConnection",
+                      "MySql",
+                      "Postgres"
+                    ],
+                    "description": "The database provider of the tenant, e.g. 'Sqlite', 'SqlConnection', 'MySql' or 'Postgres'. Required."
+                  },
+                  "DatabaseConnectionString": {
+                    "type": "string",
+                    "description": "The database connection string of the tenant. Required by the database providers that use a connection string. This is a sensitive value that should be provided from environment variables or user secrets rather than committed in an appsettings file."
+                  },
+                  "DatabaseTablePrefix": {
+                    "type": "string",
+                    "description": "The database table prefix of the tenant. Can be used to install multiple tenants in the same database."
+                  },
+                  "DatabaseSchema": {
+                    "type": "string",
+                    "description": "The database schema of the tenant, for the database providers that support schemas."
+                  },
+                  "RecipeName": {
+                    "type": "string",
+                    "examples": [
+                      "Agency",
+                      "Blank",
+                      "Blog",
+                      "ComingSoon",
+                      "Headless",
+                      "SaaS"
+                    ],
+                    "description": "The name of the setup recipe used to install the tenant, e.g. 'SaaS' or 'Agency'. Required."
+                  },
+                  "SiteTimeZone": {
+                    "type": "string",
+                    "examples": [
+                      "Etc/UTC",
+                      "America/New_York",
+                      "America/Chicago",
+                      "America/Denver",
+                      "America/Los_Angeles",
+                      "America/Sao_Paulo",
+                      "Europe/London",
+                      "Europe/Paris",
+                      "Europe/Amsterdam",
+                      "Europe/Berlin",
+                      "Africa/Johannesburg",
+                      "Asia/Dubai",
+                      "Asia/Kolkata",
+                      "Asia/Singapore",
+                      "Asia/Shanghai",
+                      "Asia/Tokyo",
+                      "Australia/Sydney"
+                    ],
+                    "description": "The time zone of the site, e.g. 'Europe/Amsterdam'. Required."
+                  },
+                  "RequestUrlHost": {
+                    "type": "string",
+                    "description": "The host name(s) used to route requests to the tenant."
+                  },
+                  "RequestUrlPrefix": {
+                    "type": "string",
+                    "description": "The URL prefix used to route requests to the tenant, e.g. 'tenant'. Cannot contain more than one segment."
+                  },
+                  "FeatureProfile": {
+                    "type": "string",
+                    "description": "The name of the feature profile applied to the tenant. Only applicable when the 'Feature Profiles' feature is used."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "OrchardCore_AutoSetup": {
+          "type": "object",
+          "deprecated": true,
+          "deprecationMessage": "The 'OrchardCore_AutoSetup' section is deprecated. Use 'OrchardCore:AutoSetup' instead.",
+          "description": "Deprecated. Use 'OrchardCore:AutoSetup' instead.",
+          "doNotSuggest": true
+        }
+      }
+    }
+  }
+}

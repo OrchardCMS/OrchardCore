@@ -36,8 +36,10 @@ In the root web application's `appsettings.json`, configure the option under the
 ```json
 {
   "OrchardCore": {
-    "OrchardCore_Data_Sqlite": {
-      "UseConnectionPooling": false
+    "Data": {
+      "Sqlite": {
+        "UseConnectionPooling": false
+      }
     }
   }
 }
@@ -47,7 +49,7 @@ See the [`Microsoft.Data.Sqlite` connection string documentation](https://learn.
 
 ## YesSql options
 
-Orchard Core binds the `OrchardCore_YesSql` configuration section to `YesSqlOptions`.
+Orchard Core binds the `OrchardCore:YesSql` configuration section to `YesSqlOptions`.
 
 | Setting | Default | Description |
 | --- | --- | --- |
@@ -55,17 +57,21 @@ Orchard Core binds the `OrchardCore_YesSql` configuration section to `YesSqlOpti
 | `QueryGatingEnabled` | `true` | Coalesces identical concurrent query work so YesSql executes it once and shares the result. |
 | `EnableThreadSafetyChecks` | `false` | Enables checks that help diagnose concurrent use of a YesSql session. |
 | `IsolationLevel` | `ReadCommitted` | Sets the default transaction isolation level passed to the configured provider. |
+| `ConcurrentIndexCreationEnabled` | `true` | Creates the indexes that a data migration adds to an existing table without blocking the writes to that table: online on SQL Server editions that support online index operations (Enterprise, Developer, Azure SQL Database and Azure SQL Managed Instance), and with `ALGORITHM=INPLACE, LOCK=NONE` on MySQL. PostgreSQL can't create an index concurrently in a transaction, and data migrations run in one, so it still blocks the writes. SQLite always creates indexes the regular way. |
+| `IncludeQueryTextInTelemetry` | `false` | Adds the SQL text to the spans of the commands, in `db.query.text`, when the `YesSql` telemetry is collected. See [Other libraries](../OpenTelemetry/README.md#other-libraries). Raw SQL fragments given to a query are included as they are, so they can expose data to the receiver of the telemetry. |
 
 Configure these values through any supported tenant configuration source. For example:
 
 ```json
 {
   "OrchardCore": {
-    "OrchardCore_YesSql": {
+    "YesSql": {
       "CommandsPageSize": 1000,
       "QueryGatingEnabled": true,
       "EnableThreadSafetyChecks": false,
-      "IsolationLevel": "ReadCommitted"
+      "IsolationLevel": "ReadCommitted",
+      "ConcurrentIndexCreationEnabled": true,
+      "IncludeQueryTextInTelemetry": false
     }
   }
 }
@@ -84,7 +90,7 @@ services.Configure<YesSqlOptions>(options =>
 
 ## Table naming presets
 
-The `OrchardCore_Data_TableOptions` section defines presets that Orchard Core copies into a tenant's shell settings during initial setup.
+The `OrchardCore:Data:TableOptions` section defines presets that Orchard Core copies into a tenant's shell settings during initial setup.
 
 | Setting | Default for a new tenant | Description |
 | --- | --- | --- |
@@ -95,10 +101,12 @@ The `OrchardCore_Data_TableOptions` section defines presets that Orchard Core co
 ```json
 {
   "OrchardCore": {
-    "OrchardCore_Data_TableOptions": {
-      "DefaultDocumentTable": "Document",
-      "DefaultTableNameSeparator": "_",
-      "DefaultIdentityColumnSize": "Int64"
+    "Data": {
+      "TableOptions": {
+        "DefaultDocumentTable": "Document",
+        "DefaultTableNameSeparator": "_",
+        "DefaultIdentityColumnSize": "Int64"
+      }
     }
   }
 }

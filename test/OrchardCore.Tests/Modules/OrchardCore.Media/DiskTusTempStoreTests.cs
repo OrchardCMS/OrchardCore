@@ -26,7 +26,7 @@ public sealed class DiskTusTempStoreTests : IDisposable
             tempDirectoryProvider,
             NullLogger<DiskTusTempStore>.Instance);
         var data = "partial upload"u8.ToArray();
-        var reader = new CanceledPipeReader(data);
+        var reader = new ClientDisconnectAwarePipeReader(new CanceledPipeReader(data));
         var cancellationToken = TestContext.Current.CancellationToken;
 
         await store.CreateFileAsync("file", cancellationToken);

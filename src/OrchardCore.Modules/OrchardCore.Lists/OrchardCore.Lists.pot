@@ -1,0 +1,383 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Lists\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: AdminNodes/ListsAdminNodeDriver.cs
+msgctxt "OrchardCore.Lists.AdminNodes.ListsAdminNodeDriver"
+msgid "Content type field is required."
+msgstr ""
+
+#: AdminNodes/ListsAdminNodeDriver.cs
+msgctxt "OrchardCore.Lists.AdminNodes.ListsAdminNodeDriver"
+msgid "Invalid Content type provided."
+msgstr ""
+
+#: GraphQL/ContainedInputObjectType.cs
+msgctxt "OrchardCore.Lists.GraphQL.ContainedInputObjectType"
+msgid "the content item id of the parent list of the content item to filter"
+msgstr ""
+
+#: GraphQL/ContainedInputObjectType.cs
+msgctxt "OrchardCore.Lists.GraphQL.ContainedInputObjectType"
+msgid "the list part of the content item"
+msgstr ""
+
+#. Format arguments: {0}: type.Name
+#: GraphQL/ContainedPartContentItemTypeInitializer.cs
+#, csharp-format
+msgctxt "OrchardCore.Lists.GraphQL.ContainedPartContentItemTypeInitializer"
+msgid "The parent content item of type {0}."
+msgstr ""
+
+#: GraphQL/ContainedQueryObjectType.cs
+msgctxt "OrchardCore.Lists.GraphQL.ContainedQueryObjectType"
+msgid "Represents a link to the parent content item and the order in which the current content item is represented."
+msgstr ""
+
+#: GraphQL/ContainedQueryObjectType.cs
+msgctxt "OrchardCore.Lists.GraphQL.ContainedQueryObjectType"
+msgid "the content type of the list owning the current content item."
+msgstr ""
+
+#: GraphQL/ContainedQueryObjectType.cs
+msgctxt "OrchardCore.Lists.GraphQL.ContainedQueryObjectType"
+msgid "the order of the current content item in the list."
+msgstr ""
+
+#: GraphQL/ContainedQueryObjectType.cs
+msgctxt "OrchardCore.Lists.GraphQL.ContainedQueryObjectType"
+msgid "the parent list content item"
+msgstr ""
+
+#: GraphQL/ListQueryObjectType.cs
+msgctxt "OrchardCore.Lists.GraphQL.ListQueryObjectType"
+msgid "Represents a collection of content items."
+msgstr ""
+
+#: GraphQL/ListQueryObjectType.cs
+msgctxt "OrchardCore.Lists.GraphQL.ListQueryObjectType"
+msgid "the content items"
+msgstr ""
+
+#: GraphQL/ListQueryObjectType.cs
+msgctxt "OrchardCore.Lists.GraphQL.ListQueryObjectType"
+msgid "the first n elements (10 by default)"
+msgstr ""
+
+#: GraphQL/ListQueryObjectType.cs
+msgctxt "OrchardCore.Lists.GraphQL.ListQueryObjectType"
+msgid "the number of elements to skip"
+msgstr ""
+
+#. Format arguments: {0}: contentType
+#: Handlers/ContainedPartHandler.cs
+#, csharp-format
+msgctxt "OrchardCore.Lists.Handlers.ContainedPartHandler"
+msgid "The content item of type '{0}' must have a valid ListContentItemId as it is contained by a list."
+msgstr ""
+
+#: RemotePublishing/MetaWeblogHandler.cs
+msgctxt "OrchardCore.Lists.RemotePublishing.MetaWeblogHandler"
+msgid "Not authorized to delete this content"
+msgstr ""
+
+#: RemotePublishing/MetaWeblogHandler.cs
+msgctxt "OrchardCore.Lists.RemotePublishing.MetaWeblogHandler"
+msgid "Not authorized to edit this content"
+msgstr ""
+
+#: RemotePublishing/MetaWeblogHandler.cs
+msgctxt "OrchardCore.Lists.RemotePublishing.MetaWeblogHandler"
+msgid "Not authorized to upload media."
+msgstr ""
+
+#: RemotePublishing/MetaWeblogHandler.cs
+msgctxt "OrchardCore.Lists.RemotePublishing.MetaWeblogHandler"
+msgid "The media path is invalid."
+msgstr ""
+
+#: RemotePublishing/MetaWeblogHandler.cs
+msgctxt "OrchardCore.Lists.RemotePublishing.MetaWeblogHandler"
+msgid "The specified Blog Post doesn't exist anymore. Please create a new Blog Post."
+msgstr ""
+
+#: RemotePublishing/MetaWeblogHandler.cs
+msgctxt "OrchardCore.Lists.RemotePublishing.MetaWeblogHandler"
+msgid "The username or e-mail or password provided is incorrect."
+msgstr ""
+
+#. Format arguments: {0}: extension
+#: RemotePublishing/MetaWeblogHandler.cs
+#, csharp-format
+msgctxt "OrchardCore.Lists.RemotePublishing.MetaWeblogHandler"
+msgid "This file extension is not allowed: {0}"
+msgstr ""
+
+#: Settings/ListPartSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Lists.Settings.ListPartSettingsDisplayDriver"
+msgid "At least one content type must be selected."
+msgstr ""
+
+#: Views/Items/ListsAdminNode.Fields.TreeEdit.cshtml
+msgctxt "OrchardCore.Lists.Views.Items.ListsAdminNode.Fields.TreeEdit"
+msgid "Add parent menu item"
+msgstr ""
+
+#: Views/Items/ListsAdminNode.Fields.TreeEdit.cshtml
+msgctxt "OrchardCore.Lists.Views.Items.ListsAdminNode.Fields.TreeEdit"
+msgid "Content type"
+msgstr ""
+
+#: Views/Items/ListsAdminNode.Fields.TreeEdit.cshtml
+msgctxt "OrchardCore.Lists.Views.Items.ListsAdminNode.Fields.TreeEdit"
+msgid "Determines if there will be a parent item containing the content item links."
+msgstr ""
+
+#: Views/Items/ListsAdminNode.Fields.TreeEdit.cshtml
+msgctxt "OrchardCore.Lists.Views.Items.ListsAdminNode.Fields.TreeEdit"
+msgid "Icon"
+msgstr ""
+
+#: Views/Items/ListsAdminNode.Fields.TreeEdit.cshtml
+msgctxt "OrchardCore.Lists.Views.Items.ListsAdminNode.Fields.TreeEdit"
+msgid "Icon for the content items"
+msgstr ""
+
+#: Views/Items/ListsAdminNode.Fields.TreeEdit.cshtml
+msgctxt "OrchardCore.Lists.Views.Items.ListsAdminNode.Fields.TreeEdit"
+msgid "Icon for the parent menu item"
+msgstr ""
+
+#: Views/Items/ListsAdminNode.Fields.TreeEdit.cshtml
+msgctxt "OrchardCore.Lists.Views.Items.ListsAdminNode.Fields.TreeEdit"
+msgid "Lists"
+msgstr ""
+
+#: Views/Items/ListsAdminNode.Fields.TreeEdit.cshtml
+msgctxt "OrchardCore.Lists.Views.Items.ListsAdminNode.Fields.TreeEdit"
+msgid "Pick an icon"
+msgstr ""
+
+#: Views/Items/ListsAdminNode.Fields.TreeEdit.cshtml
+msgctxt "OrchardCore.Lists.Views.Items.ListsAdminNode.Fields.TreeEdit"
+msgid "Select a content type"
+msgstr ""
+
+#: Views/Items/ListsAdminNode.Fields.TreeSummary.cshtml
+msgctxt "OrchardCore.Lists.Views.Items.ListsAdminNode.Fields.TreeSummary"
+msgid "Lists"
+msgstr ""
+
+#: Views/Items/ListsAdminNode.Fields.TreeThumbnail.cshtml
+msgctxt "OrchardCore.Lists.Views.Items.ListsAdminNode.Fields.TreeThumbnail"
+msgid "Adds links for list content items"
+msgstr ""
+
+#: Views/Items/ListsAdminNode.Fields.TreeThumbnail.cshtml
+msgctxt "OrchardCore.Lists.Views.Items.ListsAdminNode.Fields.TreeThumbnail"
+msgid "Lists"
+msgstr ""
+
+#: Views/ListPart.cshtml
+msgctxt "OrchardCore.Lists.Views.ListPart"
+msgid "The list is empty"
+msgstr ""
+
+#: Views/ListPart.DisplayOption.cshtml
+msgctxt "OrchardCore.Lists.Views.ListPart.DisplayOption"
+msgid "Standard"
+msgstr ""
+
+#: Views/ListPartDetailAdmin.cshtml
+msgctxt "OrchardCore.Lists.Views.ListPartDetailAdmin"
+msgid "Actions"
+msgstr ""
+
+#: Views/ListPartDetailAdmin.cshtml
+msgctxt "OrchardCore.Lists.Views.ListPartDetailAdmin"
+msgid "Last modified"
+msgstr ""
+
+#: Views/ListPartDetailAdmin.cshtml
+msgctxt "OrchardCore.Lists.Views.ListPartDetailAdmin"
+msgid "Please specify at least one contained content type."
+msgstr ""
+
+#: Views/ListPartDetailAdmin.cshtml
+msgctxt "OrchardCore.Lists.Views.ListPartDetailAdmin"
+msgid "Status"
+msgstr ""
+
+#: Views/ListPartDetailAdmin.cshtml
+msgctxt "OrchardCore.Lists.Views.ListPartDetailAdmin"
+msgid "The list is empty."
+msgstr ""
+
+#: Views/ListPartDetailAdmin.cshtml
+msgctxt "OrchardCore.Lists.Views.ListPartDetailAdmin"
+msgid "There was an error when updating the order of the items."
+msgstr ""
+
+#: Views/ListPartDetailAdmin.cshtml
+msgctxt "OrchardCore.Lists.Views.ListPartDetailAdmin"
+msgid "Title"
+msgstr ""
+
+#: Views/ListPartDetailAdmin.cshtml
+msgctxt "OrchardCore.Lists.Views.ListPartDetailAdmin"
+msgid "Type"
+msgstr ""
+
+#: Views/ListPartDetailAdminSearchPanel.cshtml
+msgctxt "OrchardCore.Lists.Views.ListPartDetailAdminSearchPanel"
+msgid "Filters"
+msgstr ""
+
+#: Views/ListPartDetailAdminSearchPanel.cshtml
+msgctxt "OrchardCore.Lists.Views.ListPartDetailAdminSearchPanel"
+msgid "Only draft items"
+msgstr ""
+
+#: Views/ListPartDetailAdminSearchPanel.cshtml
+msgctxt "OrchardCore.Lists.Views.ListPartDetailAdminSearchPanel"
+msgid "Only published items"
+msgstr ""
+
+#: Views/ListPartDetailAdminSearchPanel.cshtml
+msgctxt "OrchardCore.Lists.Views.ListPartDetailAdminSearchPanel"
+msgid "Owned by me"
+msgstr ""
+
+#: Views/ListPartDetailAdminSearchPanel.cshtml
+msgctxt "OrchardCore.Lists.Views.ListPartDetailAdminSearchPanel"
+msgid "Search"
+msgstr ""
+
+#: Views/ListPartFeed.Edit.cshtml
+msgctxt "OrchardCore.Lists.Views.ListPartFeed.Edit"
+msgid "Disable RSS feed link generation."
+msgstr ""
+
+#: Views/ListPartFeed.Edit.cshtml
+msgctxt "OrchardCore.Lists.Views.ListPartFeed.Edit"
+msgid "Feed items count"
+msgstr ""
+
+#: Views/ListPartFeed.Edit.cshtml
+msgctxt "OrchardCore.Lists.Views.ListPartFeed.Edit"
+msgid "Feed proxy Url"
+msgstr ""
+
+#: Views/ListPartFeed.Edit.cshtml
+msgctxt "OrchardCore.Lists.Views.ListPartFeed.Edit"
+msgid "Provide a custom public url which will be used to proxy the local rss feed."
+msgstr ""
+
+#. Format arguments: {0}: Url.Action("Index", "Feed", new { area = "OrchardCore.Feeds", ContentItemId = Model.ContentItem.ContentItemId }, Context.Request.Scheme)
+#: Views/ListPartFeed.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Lists.Views.ListPartFeed.Edit"
+msgid "The current feed is available at <a href='{0}' target='_blank'>{0}</a>."
+msgstr ""
+
+#: Views/ListPartFeed.Edit.cshtml
+msgctxt "OrchardCore.Lists.Views.ListPartFeed.Edit"
+msgid "The number of elements to display in the feed."
+msgstr ""
+
+#. Format arguments: {0}: D[contentTypeDefinition.DisplayName, DataLocalizationContext.ContentType]
+#: Views/ListPartNavigationAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Lists.Views.ListPartNavigationAdmin"
+msgid "Create {0}"
+msgstr ""
+
+#. Format arguments: {0}: D[Model.ContainerContentTypeDefinition?.DisplayName, DataLocalizationContext.ContentType]
+#: Views/ListPartNavigationAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Lists.Views.ListPartNavigationAdmin"
+msgid "Edit {0}"
+msgstr ""
+
+#: Views/ListPartNavigationAdmin.cshtml
+msgctxt "OrchardCore.Lists.Views.ListPartNavigationAdmin"
+msgid "List Items"
+msgstr ""
+
+#. Format arguments: {0}: D[Model.ContainedContentTypeDefinitions[0].DisplayName, DataLocalizationContext.ContentType]
+#: Views/ListPartNavigationAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Lists.Views.ListPartNavigationAdmin"
+msgid "List {0} Items"
+msgstr ""
+
+#: Views/ListPartNavigationAdmin.cshtml
+msgctxt "OrchardCore.Lists.Views.ListPartNavigationAdmin"
+msgid "New"
+msgstr ""
+
+#: Views/ListPartSettings.Edit.cshtml
+msgctxt "OrchardCore.Lists.Views.ListPartSettings.Edit"
+msgid "Check this option to enable manual ordering of items."
+msgstr ""
+
+#: Views/ListPartSettings.Edit.cshtml
+msgctxt "OrchardCore.Lists.Views.ListPartSettings.Edit"
+msgid "Check this option to show a header for the owning content."
+msgstr ""
+
+#: Views/ListPartSettings.Edit.cshtml
+msgctxt "OrchardCore.Lists.Views.ListPartSettings.Edit"
+msgid "Contained Content Types"
+msgstr ""
+
+#: Views/ListPartSettings.Edit.cshtml
+msgctxt "OrchardCore.Lists.Views.ListPartSettings.Edit"
+msgid "Enable Ordering"
+msgstr ""
+
+#: Views/ListPartSettings.Edit.cshtml
+msgctxt "OrchardCore.Lists.Views.ListPartSettings.Edit"
+msgid "Page Size"
+msgstr ""
+
+#: Views/ListPartSettings.Edit.cshtml
+msgctxt "OrchardCore.Lists.Views.ListPartSettings.Edit"
+msgid "Show container's header"
+msgstr ""
+
+#: Views/ListPartSettings.Edit.cshtml
+msgctxt "OrchardCore.Lists.Views.ListPartSettings.Edit"
+msgid "Show full pager"
+msgstr ""
+
+#: Views/ListPartSettings.Edit.cshtml
+msgctxt "OrchardCore.Lists.Views.ListPartSettings.Edit"
+msgid "The content types that this list can contain, e.g. Blog Post for a Blog."
+msgstr ""
+
+#: Views/ListPartSettings.Edit.cshtml
+msgctxt "OrchardCore.Lists.Views.ListPartSettings.Edit"
+msgid "The number of items to display per page."
+msgstr ""
+
+#: Views/ListPartSettings.Edit.cshtml
+msgctxt "OrchardCore.Lists.Views.ListPartSettings.Edit"
+msgid "When enabled, the list uses a full pager with numbered pages. Note: This requires an additional database query to determine the total item count."
+msgstr ""
+
+#: Views/ListPartSummaryAdmin.cshtml
+msgctxt "OrchardCore.Lists.Views.ListPartSummaryAdmin"
+msgid "List Items"
+msgstr ""
+
+#. Format arguments: {0}: D[Model.ContainedContentTypes[0], DataLocalizationContext.ContentType]
+#: Views/ListPartSummaryAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Lists.Views.ListPartSummaryAdmin"
+msgid "List {0} Items"
+msgstr ""

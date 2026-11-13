@@ -1,18 +1,13 @@
-using Microsoft.Extensions.Localization;
+using System.Text.Json.Serialization;
 using OrchardCore.Deployment;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Tenants.Deployment;
 
 public class AllFeatureProfilesDeploymentStep : DeploymentStep
 {
-    public AllFeatureProfilesDeploymentStep()
-    {
-        Name = "AllFeatureProfiles";
-    }
+    public override string Name => "AllFeatureProfiles";
 
-    public AllFeatureProfilesDeploymentStep(IStringLocalizer<AllFeatureProfilesDeploymentStep> S)
-        : this()
-    {
-        Category = S["Infrastructure"];
-    }
+    [JsonIgnore]
+    public override LocalizationSource Category => CommonLocalizationSources.Infrastructure;
 }

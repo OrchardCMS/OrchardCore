@@ -9,7 +9,7 @@ namespace OrchardCore.CustomSettings;
 
 public sealed class AdminMenu : AdminNavigationProvider
 {
-    private static readonly ConcurrentDictionary<string, RouteValueDictionary> _routeValues = [];
+    private static readonly ConcurrentDictionary<string, RouteValueDictionary> s_routeValues = [];
 
     private readonly CustomSettingsService _customSettingsService;
 
@@ -27,7 +27,7 @@ public sealed class AdminMenu : AdminNavigationProvider
     {
         foreach (var type in await _customSettingsService.GetAllSettingsTypesAsync())
         {
-            if (!_routeValues.TryGetValue(type.Name, out var routeValues))
+            if (!s_routeValues.TryGetValue(type.Name, out var routeValues))
             {
                 routeValues = new RouteValueDictionary()
                 {
@@ -35,29 +35,10 @@ public sealed class AdminMenu : AdminNavigationProvider
                      { "groupId", type.Name },
                 };
 
-                _routeValues[type.Name] = routeValues;
+                s_routeValues[type.Name] = routeValues;
             }
 
             var htmlName = type.Name.HtmlClassify();
-
-            if (NavigationHelper.UseLegacyFormat())
-            {
-                builder
-                .Add(S["Configuration"], configuration => configuration
-                    .Add(S["Settings"], settings => settings
-                        .Add(new LocalizedString(type.DisplayName, type.DisplayName), type.DisplayName.PrefixPosition(), customSettings => customSettings
-                            .Action("Index", "Admin", routeValues)
-                            .AddClass(htmlName)
-                            .Id(htmlName)
-                            .Permission(Permissions.CreatePermissionForType(type))
-                            .Resource(type.Name)
-                            .LocalNav()
-                        )
-                    )
-                );
-
-                continue;
-            }
 
             builder
                 .Add(S["Settings"], settings => settings

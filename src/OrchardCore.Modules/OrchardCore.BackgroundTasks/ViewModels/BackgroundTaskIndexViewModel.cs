@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using OrchardCore.Admin;
+using OrchardCore.DisplayManagement;
 
 namespace OrchardCore.BackgroundTasks.ViewModels;
 
@@ -10,7 +12,19 @@ public class BackgroundTaskIndexViewModel
     public IList<BackgroundTaskEntry> Tasks { get; set; }
 
     [BindNever]
-    public dynamic Pager { get; set; }
+    public IShape Pager { get; set; }
+
+    /// <summary>
+    /// The data context for rendering the tasks, the toolbar and the pager in the configured layout.
+    /// </summary>
+    [BindNever]
+    public AdminListContext List { get; set; }
+
+    /// <summary>
+    /// Whether the execution state of the tasks is available, i.e. whether the background service is registered.
+    /// </summary>
+    [BindNever]
+    public bool IsMonitored { get; set; }
 }
 
 public class BackgroundTaskEntry
@@ -22,4 +36,14 @@ public class BackgroundTaskEntry
     public bool Enable { get; set; }
 
     public string Description { get; set; }
+
+    /// <summary>
+    /// Whether the execution state of the task is available, i.e. whether the background service is registered.
+    /// </summary>
+    public bool IsMonitored { get; set; }
+
+    /// <summary>
+    /// The execution state of the task, or <see langword="null"/> if the background service didn't load it yet.
+    /// </summary>
+    public BackgroundTaskState State { get; set; }
 }

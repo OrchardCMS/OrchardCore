@@ -48,6 +48,28 @@ The gallery supports the following operations on files:
 - **Sort** — Sort by name, size, MIME type, or last modified date in ascending or descending order.
 - **Pagination** — The file list is paginated. Page size can be configured via the settings popover.
 
+## Display Modes
+
+The gallery opens in the **list view** by default: a table showing a file-type icon, name, last modified date and size, without downloading or rendering the media files themselves. The toolbar toggle switches to the **grid view**, which renders thumbnails for images (other file types show an icon with the file extension). The chosen view and the thumbnail size (from the settings popover) are persisted in the browser (per device/profile) using local storage.
+
+### Disabling thumbnails
+
+The grid (thumbnails) view can be disabled site-wide, e.g. for security or performance reasons, with the `DisableThumbnails` option in the [`OrchardCore:Media` configuration](README.md#configuration) section of `appsettings.json`:
+
+```json
+{
+  "OrchardCore": {
+    "Media": {
+      "DisableThumbnails": true
+    }
+  }
+}
+```
+
+When enabled, the gallery always uses the list view: the grid/list toggle and the thumbnail size setting are hidden, and any grid view preference persisted from a previous session is ignored. The default is `false`.
+
+The option applies to every media browsing surface: the Media Library admin page, the media picker modal opened from media fields and from the HTML/Markdown editors, and the media field gallery editor (whose own grid/list toggle is hidden and locked to the list view as well).
+
 ## Storage Information
 
 The storage info popover (accessible from the toolbar) displays information about the configured storage provider:
@@ -98,6 +120,8 @@ The TUS endpoint is available at `/api/media/tus`.
 
 !!! warning
     TUS stores partial upload data on local disk by default. In multi-instance deployments, you must ensure that all upload chunks for a given file reach the same server instance. This can be achieved by configuring the temporary file location (`OrchardCore:TempDirectory:Path`) to a **shared filesystem** path accessible from all instances, or by enabling **sticky sessions** (session affinity) on your load balancer. Without this, a chunked upload that spans multiple instances will fail because the second instance cannot find the partial file created by the first.
+
+When Azure Media Storage or Amazon Media Storage is enabled and configured, TUS stores partial upload data in its container or bucket instead. Without a valid configuration, TUS keeps using the local disk.
 
 To configure a shared temporary file location (used by TUS and all other temporary files):
 
@@ -158,12 +182,14 @@ For multi-instance deployments, a backplane is required. The backplane is provid
 
 ### Backplane Configuration
 
-The Redis backplane reuses the same connection string as the `OrchardCore.Redis` module (`OrchardCore_Redis:Configuration`), so a single Redis instance can serve the backplane and the other Redis-backed features (cache, lock, Data Protection):
+The Redis backplane reuses the same connection string as the `OrchardCore.Redis` module (`OrchardCore:Redis:Configuration`), so a single Redis instance can serve the backplane and the other Redis-backed features (cache, lock, Data Protection):
 
 ```json
 {
-  "OrchardCore_Redis": {
-    "Configuration": "your-redis-host:6379,password=...,ssl=true"
+  "OrchardCore": {
+    "Redis": {
+      "Configuration": "your-redis-host:6379,password=...,ssl=true"
+    }
   }
 }
 ```
@@ -172,10 +198,12 @@ The Azure SignalR Service backplane is configured with its own connection string
 
 ```json
 {
-  "SignalR": {
-    "Azure": {
-      "ConnectionString": "Endpoint=https://<your-service>.service.signalr.net;AccessKey=...;Version=1.0;",
-      "ApplicationName": "OrchardCore"
+  "OrchardCore": {
+    "SignalR": {
+      "Azure": {
+        "ConnectionString": "Endpoint=https://<your-service>.service.signalr.net;AccessKey=...;Version=1.0;",
+        "ApplicationName": "OrchardCore"
+      }
     }
   }
 }
@@ -208,11 +236,13 @@ A single Redis instance can carry the whole cross-instance coordination load. En
 
 ```json
 {
-  "OrchardCore_Redis": {
-    "Configuration": "your-redis-host:6379,password=...,ssl=true"
-  },
-  "TempDirectory": {
-    "Path": "/mnt/shared/temp"
+  "OrchardCore": {
+    "Redis": {
+      "Configuration": "your-redis-host:6379,password=...,ssl=true"
+    },
+    "TempDirectory": {
+      "Path": "/mnt/shared/temp"
+    }
   }
 }
 ```

@@ -12,7 +12,7 @@ namespace OrchardCore.DisplayManagement.Liquid;
 public class ModuleProjectLiquidFileProvider : IFileProvider
 {
     private static Dictionary<string, string> s_paths;
-    private static readonly object s_synLock = new();
+    private static readonly System.Threading.Lock s_synLock = new();
 
     public ModuleProjectLiquidFileProvider(IApplicationContext applicationContext)
     {

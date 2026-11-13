@@ -10,15 +10,6 @@
     </div>
 </div>
 
-@if (Model.HasDecryptionError)
-{
-    <div class="ocat-wrapper">
-        <div class="ocat-end-offset">
-            <p class="alert alert-danger">@T["An error occurred while decrypting a setting. Please apply and save."]</p>
-        </div>
-    </div>
-}
-
 <div class="ocat-wrapper">
     <div class="ocat-end-offset">
         <h3>@T["Meta Integration"]</h3>
@@ -26,7 +17,7 @@
 </div>
 
 <div class="ocat-wrapper" asp-validation-class-for="AppId">
-    <label asp-for="AppId" class="ocat-label">@T["Application Identifier"]</label>
+    <label asp-for="AppId" class="ocat-label ocat-label-required">@T["Application Identifier"]</label>
     <div class="ocat-end">
         <input asp-for="AppId" class="form-control" autocomplete="off" />
         <span asp-validation-for="AppId"></span>
@@ -37,8 +28,7 @@
 <div class="ocat-wrapper" asp-validation-class-for="AppSecret">
     <label asp-for="AppSecret" class="ocat-label">@T["Secret Key"]</label>
     <div class="ocat-end">
-        <input asp-for="AppSecret" class="form-control" type="password" value="@Model.AppSecret" autocomplete="off" />
-        <span asp-validation-for="AppSecret"></span>
+        <secret-input asp-for="AppSecret" secret-name="@FacebookConstants.SecretNames.AppSecret" />
         <span class="hint">@T["The Application secret key found on the Meta developer portal parameters."]</span>
     </div>
 </div>
@@ -53,7 +43,7 @@
 </div>
 
 <div class="ocat-limited-wrapper" asp-validation-class-for="SdkJs">
-    <label asp-for="SdkJs" class="ocat-label">@T["Javascript Sdk js"]</label>
+    <label asp-for="SdkJs" class="ocat-label ocat-label-required">@T["Javascript Sdk js"]</label>
     <div class="ocat-limited">
         <input asp-for="SdkJs" class="form-control" value="@Model.SdkJs" />
         <span asp-validation-for="SdkJs"></span>

@@ -9,7 +9,34 @@ When the feature is enabled, it can:
 - enable or disable one or many policies with a single tenant reload;
 - keep feature-contributed named-route and endpoint-group limits active as read-only built-in limits.
 
-Static assets are intentionally excluded because Orchard registers static-file middleware before `UseRateLimiter()`. Scripts, stylesheets, and images therefore do not consume request budgets.
+Static assets are intentionally excluded because Orchard registers static-file middleware before `UseRateLimiter()`. Scripts, stylesheets, and images therefore do not consume request budgets. Media files are served after the rate limiter, so the Media module excludes its request path (`/media` by default) from global policies instead: the images of a page don't consume the budget of the visitor. An endpoint policy can still target the media path.
+
+## Who shares a budget
+
+A rate limit counts requests per client, and each client has its own budget:
+
+- the requests of a signed-in user are counted against that user;
+- the requests of an anonymous visitor are counted against the remote IP address.
+
+So a policy that allows `1000` requests per minute allows `1000` requests per minute to each signed-in user, and `1000` requests per minute to all the anonymous visitors who share an IP address.
+
+The sign-in steps that follow the password check, such as entering a two-factor authentication code or requesting a new confirmation email, are counted against the user who passed the password check.
+
+### Shared networks
+
+Many legitimate users can share a single IP address, for example:
+
+- the employees of an office, a school, or a call center that reach the internet through a single gateway;
+- mobile users behind the carrier-grade NAT of their carrier;
+- the visitors of a site that is reached through a VPN or a corporate proxy.
+
+Signed-in users are not affected, as each of them has their own budget. Anonymous visitors and the users who are signing in share the budget of their IP address, so the default limits leave room for many of them. Raise the limits of a global or endpoint policy when many anonymous visitors of your site share an IP address.
+
+### Reverse proxies and load balancers
+
+When the site runs behind a reverse proxy, a load balancer, or a CDN, the remote IP address of every request is the address of the proxy, unless the forwarded headers are processed. All the anonymous visitors then share a single budget, and the limits apply to the whole site instead of each visitor.
+
+Enable the [Reverse Proxy](../ReverseProxy/README.md) feature with the `X-Forwarded-For` header, or configure the ASP.NET Core forwarded headers middleware, so that the rate limits see the address of each client. Only trust the forwarded headers sent by your own proxies, otherwise clients can choose the address they are counted against.
 
 ## Tenant policies
 
@@ -101,7 +128,7 @@ Example uses:
 
 - allow `5` password reset submissions every `60` seconds;
 - allow `20` login attempts every `5` minutes;
-- apply a simple tenant-wide cap such as `150` requests every `60` seconds.
+- apply a baseline cap such as `1000` requests every `60` seconds to each client.
 
 Example behavior:
 
@@ -239,9 +266,9 @@ Use an endpoint policy for `/api` and attach:
 - **Concurrency** if each request is expensive;
 - optionally a second limiter when you want both burst control and concurrency control.
 
-### Add a tenant-wide baseline
+### Add a baseline for every client
 
-Use a **Global** policy with a fixed-window limiter so every dynamic tenant request shares the same baseline budget.
+Use a **Global** policy with a fixed-window limiter so that every client gets the same baseline budget for the dynamic requests of the tenant. Each signed-in user, and each IP address for anonymous visitors, has its own budget.
 
 ## Built-in route limits
 
@@ -255,7 +282,39 @@ services.Configure<RateLimitsOptions>(options =>
         httpMethod: HttpMethods.Post,
         partitioner: RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(
             policyName: "password-authentication",
-            permitLimit: 10));
+            permitLimit: 100));
+});
+```
+
+`RateLimitPartitionHelpers` provides the partition strategies:
+
+| Helper | Counts requests against |
+|---|---|
+| `CreateSlidingWindowPerIpPolicy()`, `CreateFixedWindowPerIpPolicy()` | The remote IP address. |
+| `CreateSlidingWindowPolicy()`, `CreateFixedWindowPolicy()` | The key returned by a partition key selector, such as `RateLimitPartitionHelpers.GetClientPartitionKey`, which returns the signed-in user, otherwise the remote IP address. |
+
+Prefer a per-user key whenever the endpoint knows the user, so that the users who share an IP address don't share a budget. Keep per-IP limits for anonymous endpoints, and set them high enough for the users of a shared network.
+
+```csharp
+services.Configure<RateLimitsOptions>(options =>
+{
+    options.AddRouteRateLimit(
+        routeName: "ExportReport",
+        httpMethod: HttpMethods.Post,
+        partitioner: RateLimitPartitionHelpers.CreateFixedWindowPolicy(
+            policyName: "report-export",
+            permitLimit: 5,
+            window: TimeSpan.FromMinutes(1),
+            partitionKeySelector: RateLimitPartitionHelpers.GetClientPartitionKey));
+});
+```
+
+A feature that serves files after the rate limiter can exclude their path from global policies, as the Media module does:
+
+```csharp
+services.Configure<RateLimitsOptions>(options =>
+{
+    options.ExcludePathFromGlobalPolicies("/media");
 });
 ```
 
@@ -283,13 +342,53 @@ Built-in group limits are matched by:
 
 If an endpoint belongs to multiple groups, every matching built-in group limit and every matching enabled tenant group policy is combined with the rest of the active limiters for that request.
 
+### Rejection responses
+
+A rejected request gets a `429 Too Many Requests` response with no body. An endpoint whose clients expect errors in another format can register a rejection handler for its route name, which writes the response of every rejected request to that route, whichever limiter rejected it:
+
+```csharp
+services.Configure<RateLimitsOptions>(options =>
+{
+    options.AddRouteRejectionHandler("ExportReport", async (context, cancellationToken) =>
+    {
+        await context.HttpContext.Response.WriteAsJsonAsync(new { error = "too_many_requests" }, cancellationToken);
+    });
+});
+```
+
+The status code is set to `429` before the handler runs, and the handler can change it. The OpenID token endpoint uses a rejection handler to return an OAuth 2.0 `slow_down` error, with a `Retry-After` header, so that token clients can handle it.
+
+### Limits registered by Orchard Core features
+
+| Feature | Endpoint | Limit | Counted against |
+|---|---|---|---|
+| Users | `POST` login | 100 per minute | IP address, shared with the external login linking and the OpenID password grant |
+| Users: External Authentication | `POST` external login linking | 100 per minute | IP address, shared with the login |
+| Users: External Authentication | `POST` external registration | 20 per minute | IP address, shared with the registration |
+| Users: User Registration | `POST` registration | 20 per minute | IP address |
+| Users: Reset Password | `POST` forgot password, `POST` reset password | 20 per minute | IP address, shared by both endpoints |
+| Users | `POST` resend confirmation email | 2 per minute | User who passed the password check |
+| Users: Two-Factor Authentication | `POST` two-factor code | 5 per minute | User who passed the password check |
+| Users: Two-Factor Authentication | `POST` recovery code | 3 per minute | User who passed the password check |
+| Users: Email and SMS Authenticators | `POST` send code | 2 per minute | User who passed the password check, shared by both authenticators |
+| OpenID: Authorization Server | `POST` token, password grant only | 100 per minute | IP address, shared with the login. A rejected request gets an OAuth 2.0 `slow_down` error |
+
+The login, registration, and password recovery limits apply to anonymous requests, so they can only be counted per IP address. They stop a single host from sending a flood of requests while leaving room for the users of a shared network, and other protections cover each account:
+
+- an account is locked out after repeated failed password checks;
+- a user can receive at most one password reset email, and one confirmation email, per minute.
+
+The OpenID token endpoint only limits the password grant, the only grant that checks user credentials. The other grants exchange codes, refresh tokens, or client secrets that can't be guessed, and a single server often requests tokens for many users.
+
 ## Seeding the default global policy
 
 When the feature runs with this policy-based model for the first time, Orchard seeds an enabled **Default Global Policy** with a fixed-window limiter using these defaults:
 
-- permit limit: `150`
+- permit limit: `1000`
 - window seconds: `60`
 - queue limit: `0`
+
+Each signed-in user, and each IP address for anonymous visitors, can send `1000` dynamic requests per minute. This stops a single client from flooding the site, such as a misbehaving crawler or script, while leaving room for the anonymous visitors of a shared network. Static and media files are not counted.
 
 After the seed runs, tenant administrators can edit, enable, disable, or replace that policy in the UI.
 

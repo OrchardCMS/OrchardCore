@@ -36,7 +36,7 @@ Testing an OrchardCore feature follows these steps:
 
 ```bash
 # 1. build
-dotnet build src/OrchardCore.Cms.Web -c Debug -f net10.0
+dotnet build src/OrchardCore.Cms.Web -c Debug -f net11.0
 
 # 2. fresh state + pick a port
 rm -rf src/OrchardCore.Cms.Web/App_Data
@@ -44,16 +44,16 @@ PORT=$(( (RANDOM % 1000) + 5000 )); echo -n $PORT > .orchardcore-port
 
 # 3. run with AutoSetup (provisions Default tenant on first request, no wizard)
 cd src/OrchardCore.Cms.Web
-OrchardCore__OrchardCore_AutoSetup__AutoSetupPath= \
-OrchardCore__OrchardCore_AutoSetup__Tenants__0__ShellName=Default \
-OrchardCore__OrchardCore_AutoSetup__Tenants__0__SiteName=TestSite \
-OrchardCore__OrchardCore_AutoSetup__Tenants__0__SiteTimeZone=America/Los_Angeles \
-OrchardCore__OrchardCore_AutoSetup__Tenants__0__AdminUsername=admin \
-OrchardCore__OrchardCore_AutoSetup__Tenants__0__AdminEmail=admin@test.com \
-OrchardCore__OrchardCore_AutoSetup__Tenants__0__AdminPassword=Password1! \
-OrchardCore__OrchardCore_AutoSetup__Tenants__0__DatabaseProvider=Sqlite \
-OrchardCore__OrchardCore_AutoSetup__Tenants__0__RecipeName=Blog \
-dotnet run -f net10.0 --no-build --urls "http://localhost:$PORT" > autosetup-console.log 2>&1 &
+OrchardCore__AutoSetup__AutoSetupPath= \
+OrchardCore__AutoSetup__Tenants__0__ShellName=Default \
+OrchardCore__AutoSetup__Tenants__0__SiteName=TestSite \
+OrchardCore__AutoSetup__Tenants__0__SiteTimeZone=America/Los_Angeles \
+OrchardCore__AutoSetup__Tenants__0__AdminUsername=admin \
+OrchardCore__AutoSetup__Tenants__0__AdminEmail=admin@test.com \
+OrchardCore__AutoSetup__Tenants__0__AdminPassword=Password1! \
+OrchardCore__AutoSetup__Tenants__0__DatabaseProvider=Sqlite \
+OrchardCore__AutoSetup__Tenants__0__RecipeName=Blog \
+dotnet run -f net11.0 --no-build --urls "http://localhost:$PORT" > autosetup-console.log 2>&1 &
 cd ../..
 
 # 4. trigger + confirm
@@ -67,7 +67,7 @@ workaround). Full AutoSetup details and gotchas: `references/autosetup.md`.
 ## Step 1: Build
 
 ```powershell
-dotnet build src/OrchardCore.Cms.Web/OrchardCore.Cms.Web.csproj -c Debug -f net10.0
+dotnet build src/OrchardCore.Cms.Web/OrchardCore.Cms.Web.csproj -c Debug -f net11.0
 ```
 
 ## Step 2: Run Application (Background)
@@ -93,7 +93,7 @@ Write-Host "Using port: $port"
 ```powershell
 # Start OrchardCore in background process
 $proc = Start-Process dotnet `
-    -ArgumentList "run","-f","net10.0","--no-build","--urls","http://localhost:$port" `
+    -ArgumentList "run","-f","net11.0","--no-build","--urls","http://localhost:$port" `
     -WorkingDirectory "src/OrchardCore.Cms.Web" `
     -PassThru -NoNewWindow
 
@@ -156,8 +156,8 @@ env vars when starting the app (see the TL;DR above, or run them inline with
 
 Key rules (full details in `references/autosetup.md`):
 
-- Prefix is `OrchardCore__OrchardCore_AutoSetup__Tenants__0__<Option>` — `__` is
-  the separator, the single `_` in `OrchardCore_AutoSetup` is **literal**.
+- Prefix is `OrchardCore__AutoSetup__Tenants__0__<Option>` — `__` is the
+  separator between each level of the `OrchardCore:AutoSetup` section.
 - **No quotes around values** in bash inline-env form (quotes become part of the
   value and corrupt the admin password/email).
 - `SiteTimeZone` is **required** (e.g. `America/Los_Angeles`).

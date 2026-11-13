@@ -1,7 +1,8 @@
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Net;
-using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Html;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Descriptors;
@@ -9,6 +10,7 @@ using OrchardCore.DisplayManagement.Html;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Modules;
+using OrchardCore.Telemetry;
 
 namespace OrchardCore.DisplayManagement.Implementation;
 
@@ -18,12 +20,13 @@ public class DefaultHtmlDisplay : IHtmlDisplay
     private static readonly ConcurrentDictionary<string, List<string>> s_alternateShapeTypes = [];
 
     private readonly IShapeTableManager _shapeTableManager;
-    private readonly IEnumerable<IShapeDisplayEvents> _shapeDisplayEvents;
-    private readonly IEnumerable<IShapeBindingResolver> _shapeBindingResolvers;
+    private readonly IShapeDisplayEvents[] _shapeDisplayEvents;
+    private readonly IShapeBindingResolver[] _shapeBindingResolvers;
     private readonly IThemeManager _themeManager;
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger _logger;
     private readonly IOptionsMonitor<ShapeRenderingOptions> _shapeRenderingOptions;
+    private TimeSpan? _slowShapeThreshold;
 
     public DefaultHtmlDisplay(
         IEnumerable<IShapeDisplayEvents> shapeDisplayEvents,
@@ -35,8 +38,9 @@ public class DefaultHtmlDisplay : IHtmlDisplay
         IThemeManager themeManager)
     {
         _shapeTableManager = shapeTableManager;
-        _shapeDisplayEvents = shapeDisplayEvents;
-        _shapeBindingResolvers = shapeBindingResolvers;
+        // Arrays are iterated without allocating enumerators, this is done for each rendered shape.
+        _shapeDisplayEvents = shapeDisplayEvents as IShapeDisplayEvents[] ?? shapeDisplayEvents.ToArray();
+        _shapeBindingResolvers = shapeBindingResolvers as IShapeBindingResolver[] ?? shapeBindingResolvers.ToArray();
         _themeManager = themeManager;
         _serviceProvider = serviceProvider;
         _logger = logger;
@@ -73,12 +77,35 @@ public class DefaultHtmlDisplay : IHtmlDisplay
             return new HtmlContentString(context.Value.ToString());
         }
 
-        // Copy the current context such that the rendering can customize it if necessary,
-        // for instance to change the HtmlFieldPrefix.
-        var localContext = new DisplayContext(context)
+        DisplayManagementDiagnostics.ShapesRendered.Add(1);
+
+        using var activity = DisplayManagementDiagnostics.ActivitySource.StartActivity("Render shape");
+        if (activity is not null)
         {
-            HtmlFieldPrefix = shapeMetadata.Prefix ?? string.Empty,
-        };
+            activity.DisplayName = $"Render shape {shapeMetadata.Type}";
+            activity.SetTag("orchardcore.shape.type", shapeMetadata.Type);
+        }
+
+        var startTimestamp = DisplayManagementDiagnostics.ShapeRenderDuration.Enabled || ShapeTelemetry.IsEnabled ? Stopwatch.GetTimestamp() : 0;
+
+        // The display helper creates a context for each shape it executes, so it is reused unless the rendering
+        // needs to customize it, for instance to change the HtmlFieldPrefix.
+        var htmlFieldPrefix = shapeMetadata.Prefix ?? string.Empty;
+
+        DisplayContext localContext;
+
+        if (ReferenceEquals(context.Value, shape) && string.Equals(context.HtmlFieldPrefix ?? string.Empty, htmlFieldPrefix, StringComparison.Ordinal))
+        {
+            context.HtmlFieldPrefix = htmlFieldPrefix;
+            localContext = context;
+        }
+        else
+        {
+            localContext = new DisplayContext(context)
+            {
+                HtmlFieldPrefix = htmlFieldPrefix,
+            };
+        }
 
         var displayContext = new ShapeDisplayContext
         {
@@ -123,7 +150,7 @@ public class DefaultHtmlDisplay : IHtmlDisplay
                 }
 
                 // Now find the actual binding to render, taking alternates into account.
-                actualBinding = await GetShapeBindingAsync(shapeMetadata.Type, shapeMetadata.Alternates, shapeTable);
+                actualBinding = await GetShapeBindingAsync(shapeMetadata.Type, shapeMetadata.HasAlternates ? shapeMetadata.Alternates : AlternatesCollection.Empty, shapeTable);
 
                 if (actualBinding == null)
                 {
@@ -137,7 +164,7 @@ public class DefaultHtmlDisplay : IHtmlDisplay
             }
 
             // Process wrappers.
-            if (shapeMetadata.Wrappers.Count > 0)
+            if (shapeMetadata.HasWrappers)
             {
                 foreach (var frameType in shapeMetadata.Wrappers)
                 {
@@ -189,6 +216,29 @@ public class DefaultHtmlDisplay : IHtmlDisplay
         finally
         {
             await _shapeDisplayEvents.InvokeAsync((e, displayContext) => e.DisplayingFinalizedAsync(displayContext), displayContext, _logger);
+
+            if (startTimestamp != 0)
+            {
+                var elapsed = Stopwatch.GetElapsedTime(startTimestamp);
+
+                if (DisplayManagementDiagnostics.ShapeRenderDuration.Enabled)
+                {
+                    DisplayManagementDiagnostics.ShapeRenderDuration.Record(
+                        elapsed.TotalSeconds,
+                        new KeyValuePair<string, object>("orchardcore.shape.type", shapeMetadata.Type));
+                }
+
+                // A shape already traced by the display management source isn't traced twice.
+                if (activity is null)
+                {
+                    ShapeTelemetry.RecordSlow(shapeMetadata, actualBinding, elapsed, GetSlowShapeThreshold());
+                }
+            }
+
+            if (activity is not null && actualBinding is not null)
+            {
+                activity.SetTag("orchardcore.shape.binding", actualBinding.BindingSource);
+            }
         }
 
         if (_shapeRenderingOptions.CurrentValue.WriteShapeDebugInformation)
@@ -197,6 +247,12 @@ public class DefaultHtmlDisplay : IHtmlDisplay
         }
 
         return shapeMetadata.ChildContent;
+    }
+
+    private TimeSpan GetSlowShapeThreshold()
+    {
+        return _slowShapeThreshold ??= _serviceProvider.GetService<IOptions<OrchardCoreTelemetryOptions>>()?.Value.SlowShapeThreshold
+            ?? new OrchardCoreTelemetryOptions().SlowShapeThreshold;
     }
 
     private static IHtmlContent AddShapeDebugInformation(IHtmlContent childContent, string shapeType, ShapeBinding actualBinding, List<ShapeBinding> wrapperBindings)

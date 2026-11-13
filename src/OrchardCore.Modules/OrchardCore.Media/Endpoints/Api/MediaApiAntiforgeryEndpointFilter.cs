@@ -16,7 +16,7 @@ public sealed class MediaApiAntiforgeryEndpointFilter : IEndpointFilter
     public async ValueTask<object> InvokeAsync(EndpointFilterInvocationContext context, EndpointFilterDelegate next)
     {
         var httpContext = context.HttpContext;
-        var settings = httpContext.RequestServices.GetRequiredService<ISiteService>().GetSettings<MediaApiSettings>();
+        var settings = await httpContext.RequestServices.GetRequiredService<ISiteService>().GetSettingsAsync<MediaApiSettings>();
 
         if (settings.AuthenticationScheme == MediaApiAuthenticationScheme.Cookie)
         {

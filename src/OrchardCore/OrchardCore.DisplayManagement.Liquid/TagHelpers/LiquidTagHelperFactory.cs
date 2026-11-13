@@ -21,6 +21,7 @@ public class LiquidTagHelperFactory
     private List<LiquidTagHelperMatching> _matchings;
     private readonly ApplicationPartManager _partManager;
     private readonly ITagHelperFactory _factory;
+    private readonly Lock _lock = new();
 
     public LiquidTagHelperFactory(ApplicationPartManager partManager, ITagHelperFactory factory)
     {
@@ -35,7 +36,7 @@ public class LiquidTagHelperFactory
             return;
         }
 
-        lock (this)
+        lock (_lock)
         {
             if (_matchings == null)
             {
@@ -84,10 +85,10 @@ public class LiquidTagHelperFactory
         return LiquidTagHelperActivator.None;
     }
 
-    public ITagHelper CreateTagHelper(LiquidTagHelperActivator activator, ViewContext context, FilterArguments arguments,
+    public ITagHelper CreateTagHelper(LiquidTagHelperActivator activator, ViewContext context, TemplateContext templateContext, FilterArguments arguments,
         out TagHelperAttributeList contextAttributes, out TagHelperAttributeList outputAttributes)
     {
-        return activator.Create(_factory, context, arguments, out contextAttributes, out outputAttributes);
+        return activator.Create(_factory, context, templateContext, arguments, out contextAttributes, out outputAttributes);
     }
 
     private static void AddTagMatchingRules(Type type, TagHelperDescriptorBuilder descriptorBuilder)

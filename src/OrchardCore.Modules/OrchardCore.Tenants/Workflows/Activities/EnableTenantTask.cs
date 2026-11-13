@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Scope;
+using OrchardCore.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
@@ -8,18 +9,18 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Tenants.Workflows.Activities;
 
-public class EnableTenantTask : TenantTask
+public class EnableTenantTask : TenantTask, IActivityDescription
 {
-    public EnableTenantTask(IShellSettingsManager shellSettingsManager, IShellHost shellHost, IWorkflowExpressionEvaluator expressionEvaluator, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<EnableTenantTask> localizer)
-        : base(shellSettingsManager, shellHost, expressionEvaluator, scriptEvaluator, localizer)
+    public EnableTenantTask(IShellSettingsManager shellSettingsManager, IShellHost shellHost, IWorkflowExpressionEvaluator expressionEvaluator, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizerFactory localizerFactory, IStringLocalizer<EnableTenantTask> localizer)
+        : base(shellSettingsManager, shellHost, expressionEvaluator, scriptEvaluator, localizerFactory, localizer)
     {
     }
 
     public override string Name => nameof(EnableTenantTask);
 
-    public override LocalizedString Category => S["Tenant"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<EnableTenantTask>("Enable Tenant Task");
 
-    public override LocalizedString DisplayText => S["Enable Tenant Task"];
+    public override LocalizedString DisplayText => LocalizerFactory.Localize(DisplayName);
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {

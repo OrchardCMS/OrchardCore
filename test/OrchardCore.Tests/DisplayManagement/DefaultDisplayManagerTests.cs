@@ -1,3 +1,5 @@
+using System.Diagnostics;
+using System.Diagnostics.Metrics;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Implementation;
@@ -5,6 +7,7 @@ using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Localization;
+using OrchardCore.Telemetry;
 using OrchardCore.Tests.Stubs;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -110,6 +113,166 @@ public class DefaultDisplayManagerTests
 
         var result = await displayManager.ExecuteAsync(CreateDisplayContext(shape));
         Assert.Equal("Hi there!", result.ToString());
+    }
+
+    [Fact]
+    public async Task RenderShape_DiagnosticsListened_RecordsActivityAndMetrics()
+    {
+        var displayManager = _serviceProvider.GetService<IHtmlDisplay>();
+
+        // A shape type only rendered by this test, as the listeners also observe the shapes rendered by other tests.
+        const string shapeType = "DiagnosticsFoo";
+
+        var shape = new Shape();
+        shape.Metadata.Type = shapeType;
+
+        var descriptor = new ShapeDescriptor
+        {
+            ShapeType = shapeType,
+        };
+        descriptor.Bindings[shapeType] = new ShapeBinding
+        {
+            BindingName = shapeType,
+            BindingSource = "Views/DiagnosticsFoo.cshtml",
+            BindingAsync = ctx => Task.FromResult<IHtmlContent>(new HtmlString("Hi there!")),
+        };
+        AddShapeDescriptor(descriptor);
+
+        var activities = new List<Activity>();
+        using var activityListener = new ActivityListener
+        {
+            ShouldListenTo = source => source.Name == DisplayManagementDiagnostics.ActivitySourceName,
+            Sample = (ref ActivityCreationOptions<ActivityContext> _) => ActivitySamplingResult.AllDataAndRecorded,
+            ActivityStopped = activity =>
+            {
+                if (activity.GetTagItem("orchardcore.shape.type") as string == shapeType)
+                {
+                    lock (activities)
+                    {
+                        activities.Add(activity);
+                    }
+                }
+            },
+        };
+        ActivitySource.AddActivityListener(activityListener);
+
+        long renderedShapes = 0;
+        var durations = new List<double>();
+        using var meterListener = new MeterListener
+        {
+            InstrumentPublished = (instrument, listener) =>
+            {
+                if (instrument.Meter.Name == DisplayManagementDiagnostics.MeterName)
+                {
+                    listener.EnableMeasurementEvents(instrument);
+                }
+            },
+        };
+        meterListener.SetMeasurementEventCallback<long>((instrument, value, tags, state) => Interlocked.Add(ref renderedShapes, value));
+        meterListener.SetMeasurementEventCallback<double>((instrument, value, tags, state) =>
+        {
+            foreach (var tag in tags)
+            {
+                if (tag.Key == "orchardcore.shape.type" && tag.Value as string == shapeType)
+                {
+                    lock (durations)
+                    {
+                        durations.Add(value);
+                    }
+                }
+            }
+        });
+        meterListener.Start();
+
+        var result = await displayManager.ExecuteAsync(CreateDisplayContext(shape));
+
+        Assert.Equal("Hi there!", result.ToString());
+        var activity = Assert.Single(activities);
+        Assert.Equal($"Render shape {shapeType}", activity.DisplayName);
+        Assert.Equal("Views/DiagnosticsFoo.cshtml", activity.GetTagItem("orchardcore.shape.binding"));
+        Assert.True(Interlocked.Read(ref renderedShapes) >= 1);
+        Assert.True(Assert.Single(durations) >= 0);
+    }
+
+    [Fact]
+    public async Task RenderShape_SlowerThanThreshold_TracesShapeWithItsBinding()
+    {
+        var shapeType = $"SlowFoo{Guid.NewGuid():n}";
+        var activities = await RenderTracedShapeAsync(shapeType, TimeSpan.FromMilliseconds(100), OrchardCoreTelemetryConstants.ActivitySourceName);
+
+        var activity = Assert.Single(activities);
+        Assert.Equal(OrchardCoreTelemetryConstants.ActivitySourceName, activity.Source.Name);
+        Assert.Equal("Views/SlowFoo.cshtml", activity.GetTagItem("orchardcore.shape.binding"));
+    }
+
+    [Fact]
+    public async Task RenderShape_FasterThanThreshold_DoesNotTraceShape()
+    {
+        var shapeType = $"FastFoo{Guid.NewGuid():n}";
+        var activities = await RenderTracedShapeAsync(shapeType, TimeSpan.Zero, OrchardCoreTelemetryConstants.ActivitySourceName);
+
+        Assert.Empty(activities);
+    }
+
+    [Fact]
+    public async Task RenderShape_SlowAndTracedByDisplayManagement_TracesShapeOnce()
+    {
+        var shapeType = $"SlowFoo{Guid.NewGuid():n}";
+        var activities = await RenderTracedShapeAsync(
+            shapeType,
+            TimeSpan.FromMilliseconds(100),
+            OrchardCoreTelemetryConstants.ActivitySourceName,
+            DisplayManagementDiagnostics.ActivitySourceName);
+
+        var activity = Assert.Single(activities);
+        Assert.Equal(DisplayManagementDiagnostics.ActivitySourceName, activity.Source.Name);
+    }
+
+    private async Task<List<Activity>> RenderTracedShapeAsync(string shapeType, TimeSpan renderingDuration, params string[] sourceNames)
+    {
+        var displayManager = _serviceProvider.GetService<IHtmlDisplay>();
+
+        var shape = new Shape();
+        shape.Metadata.Type = shapeType;
+
+        var descriptor = new ShapeDescriptor
+        {
+            ShapeType = shapeType,
+        };
+        descriptor.Bindings[shapeType] = new ShapeBinding
+        {
+            BindingName = shapeType,
+            BindingSource = "Views/SlowFoo.cshtml",
+            BindingAsync = async ctx =>
+            {
+                await Task.Delay(renderingDuration);
+
+                return new HtmlString("Hi there!");
+            },
+        };
+        AddShapeDescriptor(descriptor);
+
+        var activities = new List<Activity>();
+        using var listener = new ActivityListener
+        {
+            ShouldListenTo = source => sourceNames.Contains(source.Name),
+            Sample = (ref ActivityCreationOptions<ActivityContext> _) => ActivitySamplingResult.AllDataAndRecorded,
+            ActivityStopped = activity =>
+            {
+                if (activity.GetTagItem("orchardcore.shape.type") as string == shapeType)
+                {
+                    lock (activities)
+                    {
+                        activities.Add(activity);
+                    }
+                }
+            },
+        };
+        ActivitySource.AddActivityListener(listener);
+
+        await displayManager.ExecuteAsync(CreateDisplayContext(shape));
+
+        return activities;
     }
 
     [Fact]

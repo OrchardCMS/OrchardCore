@@ -27,6 +27,11 @@ window.notificationManager = function () {
         if (unreadBadgeSelector) {
             unreadElement = document.querySelector(unreadBadgeSelector);
 
+            // A capped count, such as '100+', is only a lower bound: it can't be decremented.
+            if (unreadElement?.dataset.capped === 'true') {
+                unreadElement = null;
+            }
+
             if (unreadElement) {
                 totalUnread = parseInt(unreadElement.innerText)
             }
@@ -62,7 +67,13 @@ window.notificationManager = function () {
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({ messageId: messageId })
-                    }).then(response => response.json())
+                    }).then(response => {
+                        if (!response.ok) {
+                            throw new Error('Failed to mark the notification as read (HTTP ' + response.status + ').');
+                        }
+
+                        return response.json();
+                    })
                         .then(result => {
                             if (result.updated) {
 
@@ -95,6 +106,11 @@ window.notificationManager = function () {
                             if (targetUrl) {
                                 window.location.href = targetUrl;
                             }
+                        })
+                        .catch(error => {
+                            // Allow the message to be marked as read again on the next click.
+                            removeItem(reading, messageId);
+                            console.error(error);
                         });
                 });
             });

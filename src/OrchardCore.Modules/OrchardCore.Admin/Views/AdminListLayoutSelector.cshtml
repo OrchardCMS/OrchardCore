@@ -1,0 +1,18 @@
+@using OrchardCore.Admin
+@{
+    var showSelector = Model.ShowSelector != null && (bool)Model.ShowSelector;
+    var isList = Model.Current == AdminListLayout.List;
+    var isGrid = Model.Current == AdminListLayout.Grid;
+}
+
+@if (showSelector)
+{
+    <div class="btn-group admin-list-layout-selector" role="group" aria-label="@T["Layout"]">
+        <a href="@Model.ListUrl" class="btn btn-sm @(isList ? "btn-primary active" : "btn-outline-secondary")" title="@T["List"]" aria-label="@T["List"]" aria-pressed="@isList">
+            <i class="fa-solid fa-list" aria-hidden="true"></i>
+        </a>
+        <a href="@Model.GridUrl" class="btn btn-sm @(isGrid ? "btn-primary active" : "btn-outline-secondary")" title="@T["Grid"]" aria-label="@T["Grid"]" aria-pressed="@isGrid">
+            <i class="fa-solid fa-table-cells-large" aria-hidden="true"></i>
+        </a>
+    </div>
+}

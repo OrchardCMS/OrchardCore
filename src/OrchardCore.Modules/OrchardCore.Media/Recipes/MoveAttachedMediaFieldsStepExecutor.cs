@@ -81,17 +81,16 @@ public sealed class MoveAttachedMediaFieldsStepExecutor
     {
         var documentId = 0L;
 
-        for (var skip = 0; ; skip += BatchSize)
+        while (true)
         {
             using var session = _store.CreateSession();
 
             var latestIndexes = await session.QueryIndex<ContentItemIndex>(x => x.ContentType == contentType && x.DocumentId > documentId && (x.Latest || x.Published))
                 .OrderBy(x => x.DocumentId)
-                .Skip(skip)
                 .Take(BatchSize)
                 .ListAsync();
 
-            if (!latestIndexes.Any())
+            if (latestIndexes.Count == 0)
             {
                 break;
             }

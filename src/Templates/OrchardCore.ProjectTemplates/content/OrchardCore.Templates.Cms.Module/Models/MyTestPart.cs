@@ -1,4 +1,4 @@
-﻿using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Templates.Cms.Module.Models
 {

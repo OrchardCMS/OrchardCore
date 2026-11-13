@@ -1,20 +1,18 @@
-using Microsoft.Extensions.Localization;
+using System.Text.Json.Serialization;
 using OrchardCore.Deployment;
+using OrchardCore.Localization;
 
 namespace OrchardCore.ContentTypes.Deployment;
 
 public class ReplaceContentDefinitionDeploymentStep : DeploymentStep
 {
-    public ReplaceContentDefinitionDeploymentStep()
-    {
-        Name = "ReplaceContentDefinition";
-    }
+    public override string Name => "ReplaceContentDefinition";
 
-    public ReplaceContentDefinitionDeploymentStep(IStringLocalizer<ReplaceContentDefinitionDeploymentStep> S)
-        : this()
-    {
-        Category = S["Content Management"];
-    }
+    [JsonIgnore]
+    public override LocalizationSource Category => CommonLocalizationSources.ContentManagement;
+
+    [JsonIgnore]
+    public override LocalizationSource Title => ContentTypesLocalizationSources.ReplaceContentDefinitions;
 
     public bool IncludeAll { get; set; }
 

@@ -1,7 +1,11 @@
 @using OrchardCore.Mvc.Utilities
 @using OrchardCore.ContentManagement
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["View User"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="UsersDisplay" title="@T["View User"]">
+        <breadcrumb-item id="Users" action="Index" controller="Admin" area="OrchardCore.Users" permission="@UsersPermissions.ListUsers.Name">@T["Users"]</breadcrumb-item>
+    </breadcrumb>
+</zone>
 
 <article>
     <header>

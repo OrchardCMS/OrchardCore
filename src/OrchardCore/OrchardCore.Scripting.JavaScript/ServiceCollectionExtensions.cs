@@ -55,15 +55,21 @@ public static class ServiceCollectionExtensions
             // members resolved against one type and invoked on another. Nothing declares a member as a
             // JsonDynamic type today - they surface as dynamic, which Jint maps back to the runtime type -
             // so passing no type at all is what keeps that unreachable rather than merely unlikely: the
-            // wrapper then describes the node it actually holds. StringValues is left as it is, because
-            // there the exposed type is one a member really can declare, so dropping it would change what
-            // a script sees rather than only close a hole.
+            // wrapper then describes the node it actually holds.
+            //
+            // StringValues is substituted the same way, by the string or the string array it carries, and has
+            // to be wrapped without a type for the same reason. Exposed as StringValues, a wrapped string had
+            // its members resolved against StringValues and invoked on a string, so comparing it with == or
+            // concatenating it threw instead of using the value. The result is still an object rather than a
+            // JavaScript string - a wrap handler can only return objects - which is why the scripting methods
+            // that read the request, such as queryString() and deserializeRequestData(), convert the values
+            // themselves before a script sees them.
             option.SetWrapObjectHandler(static (e, target, type) => target switch
             {
                 JsonDynamicObject dynamicObject => ObjectWrapper.Create(e, (JsonObject)dynamicObject),
                 JsonDynamicArray dynamicArray => ObjectWrapper.Create(e, (JsonArray)dynamicArray),
                 JsonDynamicValue dynamicValue => ObjectWrapper.Create(e, (JsonValue)dynamicValue),
-                StringValues stringValues => ObjectWrapper.Create(e, stringValues.Count <= 1 ? stringValues.ToString() : stringValues.ToArray(), type),
+                StringValues stringValues => ObjectWrapper.Create(e, stringValues.Count <= 1 ? stringValues.ToString() : stringValues.ToArray()),
                 _ => ObjectWrapper.Create(e, target, type)
             });
         });

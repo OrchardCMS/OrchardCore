@@ -8,7 +8,6 @@ using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Indexing.Models;
 using OrchardCore.Modules;
-using OrchardCore.Lucene;
 using OrchardCore.Lucene.Models;
 using OrchardCore.Lucene.Services;
 using Directory = System.IO.Directory;
@@ -24,7 +23,7 @@ public sealed class LuceneIndexStore : ILuceneIndexStore, IDisposable
     private readonly ConcurrentDictionary<string, IndexWriterWrapper> _writers = new();
     private readonly ConcurrentDictionary<string, DateTime> _timestamps = new();
 
-    private readonly object _lock = new();
+    private readonly System.Threading.Lock _lock = new();
 
     private readonly string _rootPath;
     private readonly IClock _clock;
@@ -167,14 +166,14 @@ public sealed class LuceneIndexStore : ILuceneIndexStore, IDisposable
                         if (action is not null)
                         {
                             action.Invoke(writer);
+                        }
 
-                            writer.Commit();
+                        writer.Commit();
 
-                            if (_indexPools.TryRemove(index.Id, out var pool))
-                            {
-                                pool.MakeDirty();
-                                pool.Release();
-                            }
+                        if (_indexPools.TryRemove(index.Id, out var pool))
+                        {
+                            pool.MakeDirty();
+                            pool.Release();
                         }
 
                         writer.Dispose();
@@ -231,7 +230,17 @@ public sealed class LuceneIndexStore : ILuceneIndexStore, IDisposable
     }
 
     private string GetFullPath(string indexFullName)
-        => PathExtensions.Combine(_rootPath, indexFullName);
+    {
+        // Encode illegal filesystem name characters (e.g. "/" becomes "_47"), to prevent unwanted subdirectory creation
+        // or path traversal attacks. This way each index is one-to-one mapped to a single directory directly inside the
+        // root path.
+        var charactersToReplace = Path.GetInvalidFileNameChars();
+        var safeNameCharacters = indexFullName
+            .Select(character => charactersToReplace.Contains(character) ? $"_{(int)character}" : character.ToString());
+        var safeName = string.Join(string.Empty, safeNameCharacters);
+
+        return PathExtensions.Combine(_rootPath, safeName);
+    }
 
     private FSDirectory CreateDirectory(string indexFullName)
     {

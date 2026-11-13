@@ -198,11 +198,9 @@ const policyDetailsComponent = {
                     </div>
                 </div>
             </div>
-            <div class="mb-3">
-                <div>
-                    <button type="button" class="btn btn-primary" v-on:click="$emit('ok', policy, $event)">{{ t.Save }}</button>
-                    <button type="button" class="btn btn-secondary" v-on:click="$emit('back')">{{ t.Cancel }}</button>
-                </div>
+            <div class="action-bar-bottom">
+                <button type="button" class="btn btn-primary" v-on:click="$emit('ok', policy, $event)">{{ t.Save }}</button>
+                <button type="button" class="btn btn-secondary" v-on:click="$emit('back')">{{ t.Cancel }}</button>
             </div>
         </div>
     `,
@@ -333,10 +331,9 @@ if (corsSettingsElement && corsFormElement && corsAdminElement && translationsEl
             <div v-if="!selectedPolicy">
                 <div class="card mb-3 text-bg-theme position-sticky action-bar">
                     <div class="card-body">
-                        <div class="row gx-3">
+                        <div class="row gx-2">
                             <div class="col">
-                                <div class="has-search">
-                                    <i class="fa-solid fa-search form-control-feedback" aria-hidden="true"></i>
+                                <div>
                                     <input id="search-box" class="form-control" :placeholder="t.Search" type="search" autofocus />
                                 </div>
                             </div>

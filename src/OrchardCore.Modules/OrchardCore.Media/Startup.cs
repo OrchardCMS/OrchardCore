@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -49,6 +50,7 @@ using OrchardCore.Media.ViewModels;
 using OrchardCore.Modules;
 using OrchardCore.Modules.FileProviders;
 using OrchardCore.Navigation;
+using OrchardCore.RateLimits;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
@@ -76,12 +78,9 @@ public sealed class Startup : StartupBase
         services.AddSingleton<IBackgroundTask, RemoteMediaCacheBackgroundTask>();
 
         services
-            .Configure<TemplateOptions>(o =>
+            .Configure<TemplateOptionsBuilder>(o =>
             {
-                o.MemberAccessStrategy.Register<DisplayMediaFieldViewModel>();
-                o.MemberAccessStrategy.Register<Anchor>();
-
-                o.Filters.AddFilter("img_tag", MediaFilters.ImgTag);
+                o.AddFilter("img_tag", MediaFilters.ImgTag);
             })
             .AddLiquidFilter<AssetUrlFilter>("asset_url")
             .AddLiquidFilter<ResizeUrlFilter>("resize_url");
@@ -217,6 +216,9 @@ public sealed class Startup : StartupBase
 
         // Media Profiles
         services.AddScoped<MediaProfilesManager>();
+
+        // Builds the rows of the media profiles admin list.
+        services.AddDisplayDriver<MediaProfileEntry, MediaProfileEntryDisplayDriver>();
         services.AddScoped<IMediaProfileService, MediaProfileService>();
         services.AddRecipeExecutionStep<MediaProfileStep>();
 
@@ -225,6 +227,7 @@ public sealed class Startup : StartupBase
 
         services.AddScoped<IUserAssetFolderNameProvider, DefaultUserAssetFolderNameProvider>();
         services.AddChunkFileUploadServices();
+
     }
 
     public override void Configure(
@@ -285,12 +288,31 @@ public sealed class Startup : StartupBase
             throw new ArgumentException("The media assets path must be a relative subdirectory of the tenant's data directory.", nameof(assetsPath));
         }
 
-        return Path.GetFullPath(Path.Combine(
+        // The tenant name is a path segment too. It is validated when a tenant is created, but not every
+        // code path that can create one is guaranteed to do so, so don't trust it to stay in its container.
+        var tenantsPath = Path.GetFullPath(Path.Combine(
             shellOptions.ShellsApplicationDataPath,
-            shellOptions.ShellsContainerName,
-            shellSettings.Name,
+            shellOptions.ShellsContainerName
+        ));
+
+        var tenantPath = Path.GetFullPath(Path.Combine(tenantsPath, shellSettings.Name ?? string.Empty));
+
+        if (!MediaFileStorePathHelper.IsWithinDirectory(tenantsPath, tenantPath))
+        {
+            throw new ArgumentException("The tenant name must resolve to a subdirectory of the tenants directory.", nameof(shellSettings));
+        }
+
+        var mediaPath = Path.GetFullPath(Path.Combine(
+            tenantPath,
             assetsPath.Replace('\\', Path.DirectorySeparatorChar).Replace('/', Path.DirectorySeparatorChar)
         ));
+
+        if (!MediaFileStorePathHelper.IsWithinDirectory(tenantPath, mediaPath))
+        {
+            throw new ArgumentException("The media assets path must be a relative subdirectory of the tenant's data directory.", nameof(assetsPath));
+        }
+
+        return mediaPath;
     }
 }
 
@@ -313,6 +335,15 @@ public sealed class MediaSlugifyStartup : StartupBase
 
         // Media Name Normalizer
         services.AddScoped<IMediaNameNormalizerService, SlugifyMediaNameNormalizerService>();
+    }
+}
+
+[RequireFeatures("OrchardCore.RateLimits")]
+public sealed class RateLimitsStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddTransient<IConfigureOptions<RateLimitsOptions>, MediaRateLimitsOptionsConfiguration>();
     }
 }
 

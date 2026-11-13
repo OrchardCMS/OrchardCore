@@ -1,0 +1,100 @@
+{
+  "type": "object",
+  "properties": {
+    "OrchardCore": {
+      "type": "object",
+      "properties": {
+        "Users": {
+          "type": "object",
+          "description": "Paths of the authentication related pages, relative to the tenant base path. Leading and trailing '/' characters are ignored. See https://docs.orchardcore.net/en/latest/reference/modules/Users/.",
+          "properties": {
+            "LoginPath": {
+              "type": "string",
+              "description": "The path of the login page.",
+              "default": "Login"
+            },
+            "LogoffPath": {
+              "type": "string",
+              "description": "The path used to log off.",
+              "default": "Users/LogOff"
+            },
+            "ChangePasswordUrl": {
+              "type": "string",
+              "description": "The path of the change password page.",
+              "default": "ChangePassword"
+            },
+            "ChangePasswordConfirmationUrl": {
+              "type": "string",
+              "description": "The path of the page displayed after the password is changed.",
+              "default": "ChangePasswordConfirmation"
+            },
+            "ExternalLoginsUrl": {
+              "type": "string",
+              "description": "The path of the page used to manage the external logins of the current user.",
+              "default": "ExternalLogins"
+            },
+            "TwoFactorAuthenticationPath": {
+              "type": "string",
+              "description": "The path of the former two-factor authentication page, which redirects to the Security page.",
+              "default": "TwoFactor"
+            },
+            "SecurityPath": {
+              "type": "string",
+              "description": "The path of the page where users manage their two-factor authentication and their passkeys.",
+              "default": "Security"
+            },
+            "Passkeys": {
+              "type": "object",
+              "description": "The options of the passkeys used to sign in, available when the 'Passkeys' feature is enabled.",
+              "properties": {
+                "ServerDomain": {
+                  "type": "string",
+                  "description": "The domain the passkeys are bound to, also known as the relying party ID. Defaults to the host of the request. Changing it invalidates the passkeys that were already registered."
+                },
+                "AuthenticatorTimeout": {
+                  "type": "string",
+                  "description": "How long the browser waits for the user to use their passkey, as a time span.",
+                  "default": "00:05:00"
+                },
+                "ChallengeSize": {
+                  "type": "integer",
+                  "description": "The size, in bytes, of the random challenge signed by the passkey.",
+                  "default": 32
+                },
+                "UserVerificationRequirement": {
+                  "type": "string",
+                  "description": "Whether the user must be verified with a biometric or a PIN. A passkey sign-in only counts as multi-factor when it is 'required'.",
+                  "enum": [ "required", "preferred", "discouraged" ],
+                  "default": "required"
+                },
+                "ResidentKeyRequirement": {
+                  "type": "string",
+                  "description": "Whether new passkeys must be discoverable, so that users can sign in without typing their username.",
+                  "enum": [ "required", "preferred", "discouraged" ],
+                  "default": "preferred"
+                },
+                "AttestationConveyancePreference": {
+                  "type": "string",
+                  "description": "Whether the authenticator should provide an attestation of its make and model when a passkey is registered.",
+                  "enum": [ "none", "indirect", "direct", "enterprise" ]
+                },
+                "AuthenticatorAttachment": {
+                  "type": "string",
+                  "description": "Limits new passkeys to the authenticator of the device ('platform') or to roaming authenticators such as security keys ('cross-platform'). Any authenticator is allowed when not set.",
+                  "enum": [ "platform", "cross-platform" ]
+                }
+              }
+            }
+          }
+        },
+        "OrchardCore_Users": {
+          "type": "object",
+          "deprecated": true,
+          "deprecationMessage": "The 'OrchardCore_Users' section is deprecated. Use 'OrchardCore:Users' instead.",
+          "description": "Deprecated. Use 'OrchardCore:Users' instead.",
+          "doNotSuggest": true
+        }
+      }
+    }
+  }
+}

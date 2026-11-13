@@ -1,5 +1,8 @@
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using OrchardCore.Admin;
+using OrchardCore.DisplayManagement;
+using OrchardCore.RateLimits.Models;
 
 namespace OrchardCore.RateLimits.ViewModels;
 
@@ -9,7 +12,10 @@ public class RateLimitsIndexViewModel
 
     public RateLimitPolicyBulkAction BulkAction { get; set; }
 
-    public IList<RateLimitPolicyEntryViewModel> Policies { get; set; } = [];
+    /// <summary>
+    /// The queried policies on this page, before their row shapes are built.
+    /// </summary>
+    public IList<RateLimitPolicy> Policies { get; set; } = [];
 
     public IList<BuiltInRouteRateLimitViewModel> BuiltInRouteLimits { get; set; } = [];
 
@@ -18,5 +24,11 @@ public class RateLimitsIndexViewModel
     public IList<SelectListItem> BulkActions { get; set; } = [];
 
     [BindNever]
-    public dynamic Pager { get; set; }
+    public IShape Pager { get; set; }
+
+    /// <summary>
+    /// The data context for rendering the policies, the toolbar and the pager in the configured layout.
+    /// </summary>
+    [BindNever]
+    public AdminListContext List { get; set; }
 }

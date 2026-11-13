@@ -4,12 +4,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Admin;
 using OrchardCore.AdminMenu;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
-using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Routing;
 using OrchardCore.Contents.AdminNodes;
 using OrchardCore.Contents.AuditTrail.Settings;
@@ -37,7 +37,6 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Liquid;
 using OrchardCore.DisplayManagement.Liquid.Tags;
-using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Feeds;
 using OrchardCore.Indexing;
 using OrchardCore.Liquid;
@@ -69,54 +68,49 @@ public sealed class Startup : StartupBase
             o.LiquidViewParserConfiguration.Add(parser => parser.RegisterParserTag("contentitem", parser.ArgumentsListParser, ContentItemTag.WriteToAsync));
         });
 
-        services.Configure<TemplateOptions>(o =>
+        services.Configure<TemplateOptionsBuilder>(o =>
         {
-            o.MemberAccessStrategy.Register<ContentItem>();
-            o.MemberAccessStrategy.Register<ContentElement>();
-            o.MemberAccessStrategy.Register<ShapeViewModel<ContentItem>>();
-            o.MemberAccessStrategy.Register<ContentTypePartDefinition>();
-            o.MemberAccessStrategy.Register<ContentPartFieldDefinition>();
-            o.MemberAccessStrategy.Register<ContentFieldDefinition>();
-            o.MemberAccessStrategy.Register<ContentPartDefinition>();
+            o.AddFilter("display_text", DisplayTextFilter.DisplayText);
 
-            o.Filters.AddFilter("display_text", DisplayTextFilter.DisplayText);
-
-            o.Scope.SetValue("Content", new ObjectValue(new LiquidContentAccessor()));
-            o.MemberAccessStrategy.Register<LiquidContentAccessor, LiquidPropertyAccessor>("ContentItemId", (obj, context) =>
+            o.WithGlobalValue("Content", ObjectValue.Create(new LiquidContentAccessor()));
+            o.ConfigureMemberAccess(strategy =>
             {
-                var liquidTemplateContext = (LiquidTemplateContext)context;
-
-                return new LiquidPropertyAccessor(liquidTemplateContext, async (contentItemId, context) =>
+                strategy.Register<LiquidContentAccessor, LiquidPropertyAccessor>("ContentItemId", (obj, context) =>
                 {
-                    var contentManager = context.Services.GetRequiredService<IContentManager>();
+                    var liquidTemplateContext = (LiquidTemplateContext)context;
 
-                    return FluidValue.Create(await contentManager.GetAsync(contentItemId), context.Options);
+                    return new LiquidPropertyAccessor(liquidTemplateContext, async (contentItemId, context) =>
+                    {
+                        var contentManager = context.Services.GetRequiredService<IContentManager>();
+
+                        return FluidValue.Create(await contentManager.GetAsync(contentItemId), context.Options);
+                    });
                 });
-            });
 
-            o.MemberAccessStrategy.Register<LiquidContentAccessor, LiquidPropertyAccessor>("ContentItemVersionId", (obj, context) =>
-            {
-                var liquidTemplateContext = (LiquidTemplateContext)context;
-
-                return new LiquidPropertyAccessor(liquidTemplateContext, async (contentItemVersionId, context) =>
+                strategy.Register<LiquidContentAccessor, LiquidPropertyAccessor>("ContentItemVersionId", (obj, context) =>
                 {
-                    var contentManager = context.Services.GetRequiredService<IContentManager>();
+                    var liquidTemplateContext = (LiquidTemplateContext)context;
 
-                    return FluidValue.Create(await contentManager.GetVersionAsync(contentItemVersionId), context.Options);
+                    return new LiquidPropertyAccessor(liquidTemplateContext, async (contentItemVersionId, context) =>
+                    {
+                        var contentManager = context.Services.GetRequiredService<IContentManager>();
+
+                        return FluidValue.Create(await contentManager.GetVersionAsync(contentItemVersionId), context.Options);
+                    });
                 });
-            });
 
-            o.MemberAccessStrategy.Register<LiquidContentAccessor, LiquidPropertyAccessor>("Latest", (obj, context) =>
-            {
-                var liquidTemplateContext = (LiquidTemplateContext)context;
-
-                return new LiquidPropertyAccessor(liquidTemplateContext, (name, context) =>
+                strategy.Register<LiquidContentAccessor, LiquidPropertyAccessor>("Latest", (obj, context) =>
                 {
-                    return GetContentByHandleAsync(context, name, true);
-                });
-            });
+                    var liquidTemplateContext = (LiquidTemplateContext)context;
 
-            o.MemberAccessStrategy.Register<LiquidContentAccessor, FluidValue>((obj, name, context) => GetContentByHandleAsync((LiquidTemplateContext)context, name));
+                    return new LiquidPropertyAccessor(liquidTemplateContext, (name, context) =>
+                    {
+                        return GetContentByHandleAsync(context, name, true);
+                    });
+                });
+
+                strategy.Register<LiquidContentAccessor, FluidValue>((obj, name, context) => GetContentByHandleAsync((LiquidTemplateContext)context, name));
+            });
 
             static async Task<FluidValue> GetContentByHandleAsync(LiquidTemplateContext context, string handle, bool latest = false)
             {
@@ -149,6 +143,7 @@ public sealed class Startup : StartupBase
         services.AddShapeTableProvider<AdminDashboardShapeTableProvider>();
         services.AddNavigationProvider<AdminMenu>();
         services.AddScoped<IContentDisplayDriver, ContentsDriver>();
+        services.AddScoped<IAdminListItemDisplayManager<ContentItem>, ContentItemAdminListDisplayManager>();
         services.AddScoped<IContentHandler, ContentsHandler>();
         services.AddRecipeExecutionStep<ContentStep>();
 
@@ -211,6 +206,7 @@ public sealed class Startup : StartupBase
         });
 
         services.AddTransient<IContentsAdminListFilterProvider, DefaultContentsAdminListFilterProvider>();
+
     }
 
     public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

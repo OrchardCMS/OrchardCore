@@ -2,7 +2,7 @@
 
 An HTML Sanitizer is available as part of the Orchard Core Infrastructure.
 
-The Sanitizer cleans user input that could lead to XSS attacks.
+The Sanitizer cleans final rendered HTML that could lead to XSS attacks. Authored HTML and Markdown source is stored unchanged.
 
 It is used by default for the following parts and fields:
 
@@ -13,7 +13,10 @@ It is used by default for the following parts and fields:
 - Markdown Field
 
 !!! note
-    To disable sanitization on these fields disable the `Sanitize Html` option in the field or part settings.
+    To disable final-output sanitization for trusted content, disable the `Sanitize Html` option in the field or part settings.
+
+!!! info
+    The content is sanitized each time it is displayed. As the configuration of the sanitizer doesn't change during the lifetime of a tenant, the sanitized result of an HTML fragment up to 64K characters is cached, and reused by the same tenant when the same fragment is sanitized again, which saves parsing it again on each request. The cache is shared by all the tenants, so its size (about 8 MB at most) doesn't depend on the number of tenants, and the entries that aren't read for 10 minutes are evicted. So the sanitizer event handlers that are configured with `ConfigureHtmlSanitizer()` must return the same result for the same fragment.
 
 ## Razor Helper
 

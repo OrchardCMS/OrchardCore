@@ -11,7 +11,10 @@ public class Shape : Composite, IShape, IPositioned, IEnumerable<object>
 {
     private bool _sorted;
 
-    public ShapeMetadata Metadata { get; } = new ShapeMetadata();
+    private ShapeMetadata _metadata;
+
+    // Allocated on first use, as some shapes like the zones placeholders never use their metadata.
+    public ShapeMetadata Metadata => _metadata ??= new ShapeMetadata();
 
     public string Id { get; set; }
     public string TagName { get; set; }
@@ -31,7 +34,7 @@ public class Shape : Composite, IShape, IPositioned, IEnumerable<object>
 
             if (!_sorted && _items.Count > 0)
             {
-                _items = _items.OrderBy(x => x, FlatPositionComparer.Instance).ToList();
+                _items.SortByPosition();
                 _sorted = true;
             }
 
@@ -131,7 +134,7 @@ public class Shape : Composite, IShape, IPositioned, IEnumerable<object>
 
         if (!_sorted && _items.Count > 0)
         {
-            _items = _items.OrderBy(x => x, FlatPositionComparer.Instance).ToList();
+            _items.SortByPosition();
             _sorted = true;
         }
 
@@ -147,7 +150,7 @@ public class Shape : Composite, IShape, IPositioned, IEnumerable<object>
 
         if (!_sorted && _items.Count > 0)
         {
-            _items = _items.OrderBy(x => x, FlatPositionComparer.Instance).ToList();
+            _items.SortByPosition();
             _sorted = true;
         }
 

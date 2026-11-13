@@ -27,9 +27,8 @@ public static class BlobShellsOrchardCoreBuilderExtensions
         {
             var configuration = sp.GetRequiredService<IConfiguration>();
 
-            var blobOptions = configuration.GetSectionCompat("OrchardCore:OrchardCore_Shells_Azure")
-                .Get<BlobShellStorageOptions>()
-                ?? throw new Exception("The 'OrchardCore.Shells.Azure' configuration section must be defined");
+            var blobOptions = GetBlobShellStorageOptions(configuration)
+                ?? throw new Exception("The 'OrchardCore:Shells:Azure' configuration section must be defined");
 
             var clock = sp.GetRequiredService<IClock>();
             var contentTypeProvider = sp.GetRequiredService<IContentTypeProvider>();
@@ -43,7 +42,7 @@ public static class BlobShellsOrchardCoreBuilderExtensions
         {
             var shellsFileStore = sp.GetRequiredService<IShellsFileStore>();
             var configuration = sp.GetRequiredService<IConfiguration>();
-            var blobOptions = configuration.GetSectionCompat("OrchardCore:OrchardCore_Shells_Azure").Get<BlobShellStorageOptions>();
+            var blobOptions = GetBlobShellStorageOptions(configuration);
             var shellOptions = sp.GetRequiredService<IOptions<ShellOptions>>();
 
             return new BlobShellsSettingsSources(shellsFileStore, blobOptions, shellOptions);
@@ -53,7 +52,7 @@ public static class BlobShellsOrchardCoreBuilderExtensions
         {
             var shellsFileStore = sp.GetRequiredService<IShellsFileStore>();
             var configuration = sp.GetRequiredService<IConfiguration>();
-            var blobOptions = configuration.GetSectionCompat("OrchardCore:OrchardCore_Shells_Azure").Get<BlobShellStorageOptions>();
+            var blobOptions = GetBlobShellStorageOptions(configuration);
             var shellOptions = sp.GetRequiredService<IOptions<ShellOptions>>();
 
             return new BlobShellConfigurationSources(shellsFileStore, blobOptions, shellOptions);
@@ -64,7 +63,7 @@ public static class BlobShellsOrchardCoreBuilderExtensions
             var shellsFileStore = sp.GetRequiredService<IShellsFileStore>();
             var environment = sp.GetRequiredService<IHostEnvironment>();
             var configuration = sp.GetRequiredService<IConfiguration>();
-            var blobOptions = configuration.GetSectionCompat("OrchardCore:OrchardCore_Shells_Azure").Get<BlobShellStorageOptions>();
+            var blobOptions = GetBlobShellStorageOptions(configuration);
             var shellOptions = sp.GetRequiredService<IOptions<ShellOptions>>();
 
             return new BlobShellsConfigurationSources(shellsFileStore, environment, blobOptions, shellOptions);
@@ -72,4 +71,10 @@ public static class BlobShellsOrchardCoreBuilderExtensions
 
         return builder;
     }
+
+    // The 'OrchardCore:OrchardCore_Shells_Azure' section is deprecated and will be removed in a future major version, use 'OrchardCore:Shells:Azure' instead.
+    private static BlobShellStorageOptions GetBlobShellStorageOptions(IConfiguration configuration)
+        => configuration
+            .GetSectionCompat("OrchardCore:Shells:Azure", "OrchardCore:OrchardCore_Shells_Azure")
+            .Get<BlobShellStorageOptions>();
 }

@@ -6,7 +6,9 @@
 }
 
 <zone Name="Title">
-    <h1>@RenderTitleSegments(T["Dynamic Translation Statistics"])</h1>
+    <breadcrumb name="DynamicTranslationsStatistics" title="@T["Statistics"]">
+        <breadcrumb-item id="DynamicTranslations" action="Index" controller="Admin" area="OrchardCore.DataLocalization" permission="@DataLocalizationPermissions.ViewDynamicTranslations.Name">@T["Dynamic Translations"]</breadcrumb-item>
+    </breadcrumb>
 </zone>
 
 <div id="translation-statistics" data-stats="@statisticsJson" data-editor-base-url="@Url.Action("Index", "Admin", new { area = "OrchardCore.DataLocalization" })">

@@ -1,0 +1,37 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrchardCore.Diagnostics\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#: Views/HttpError.cshtml
+msgctxt "OrchardCore.Diagnostics.Views.HttpError"
+msgid "An error occurred while executing this request."
+msgstr ""
+
+#: Views/HttpError-BadRequest.cshtml
+msgctxt "OrchardCore.Diagnostics.Views.HttpError-BadRequest"
+msgid "Your browser sent a request that this server could not understand."
+msgstr ""
+
+#: Views/HttpError-Forbidden.cshtml
+msgctxt "OrchardCore.Diagnostics.Views.HttpError-Forbidden"
+msgid "You do not have access to this resource."
+msgstr ""
+
+#: Views/HttpError-NotFound.cshtml
+msgctxt "OrchardCore.Diagnostics.Views.HttpError-NotFound"
+msgid "The page could not be found."
+msgstr ""
+
+#: Views/HttpError-TooManyRequests.cshtml
+msgctxt "OrchardCore.Diagnostics.Views.HttpError-TooManyRequests"
+msgid "You have sent too many requests within a specified time frame."
+msgstr ""
+
+#: Views/HttpError-Unauthorized.cshtml
+msgctxt "OrchardCore.Diagnostics.Views.HttpError-Unauthorized"
+msgid "You are not authorized to view this content."
+msgstr ""

@@ -1,0 +1,391 @@
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
+using OrchardCore.DataSources.Operations;
+using OrchardCore.DataSources;
+using OrchardCore.Localization;
+
+namespace OrchardCore.DataPipelines.Steps;
+
+/// <summary>
+/// Reads the rows of a data set of any registered data source, such as the content items of a content type, the
+/// users, or the results of a saved query. It reads with the access of the user the run is for, keeps the selected
+/// fields, and keeps the rows that match its filters. Dates in filters are compared in UTC. With an
+/// <see cref="DataSourceStepSettings.IncrementalField"/>, a run reads only the rows whose value of that field is larger
+/// than the largest value the last successful run read, which it keeps in the state of the pipeline.
+/// </summary>
+public sealed class DataSourceStep : DataPipelineStepType<DataSourceStep, DataSourceStepSettings>, IDataPipelineStepType
+{
+    /// <summary>
+    /// The name of the step type.
+    /// </summary>
+    public const string StepName = "DataSource";
+
+    /// <summary>
+    /// The key of the largest value of the incremental field the step read, in the state of the step.
+    /// </summary>
+    public const string WatermarkStateKey = "watermark";
+
+    /// <summary>
+    /// The key of the data source, data set and field the saved value was read on, in the state of the step. The step
+    /// starts over when they change.
+    /// </summary>
+    public const string WatermarkFieldStateKey = "watermarkField";
+
+    private readonly IStringLocalizer S;
+
+    public DataSourceStep(IStringLocalizer<DataSourceStep> localizer)
+    {
+        S = localizer;
+    }
+
+    public static string Name => StepName;
+
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<DataSourceStep>("Read a data source");
+
+    public static LocalizationSource Description { get; } = LocalizationSource.Create<DataSourceStep>("Reads content items, users, query results or any other data set.");
+
+    public static DataPipelineStepCategory Category => DataPipelineStepCategory.Source;
+
+    public override async Task DescribeAsync(DataPipelineDescribeContext context)
+    {
+        ArgumentNullException.ThrowIfNull(context);
+
+        var settings = GetSettings(context.Step);
+        var (_, schema, error) = await GetSchemaAsync(settings, context.Services, context.User, context.CancellationToken);
+
+        if (error is not null)
+        {
+            context.AddError(error);
+            context.SetOutputFields([]);
+
+            return;
+        }
+
+        var plan = BuildPlan(schema, settings, out var errors);
+
+        foreach (var message in errors)
+        {
+            context.AddError(message);
+        }
+
+        context.SetOutputFields(plan.Fields);
+    }
+
+    public override async Task ExecuteAsync(DataPipelineStepContext context)
+    {
+        ArgumentNullException.ThrowIfNull(context);
+
+        var settings = GetSettings(context.Step);
+        var (dataSource, schema, error) = await GetSchemaAsync(settings, context.Services, context.Run.User, context.CancellationToken);
+
+        if (error is not null)
+        {
+            throw new InvalidOperationException(error);
+        }
+
+        var plan = BuildPlan(schema, settings, out var errors);
+
+        if (errors.Count > 0)
+        {
+            throw new InvalidOperationException(errors[0]);
+        }
+
+        var today = DateTime.UtcNow.Date;
+        var now = await DataPipelineFormulas.GetRunTimeAsync(context.Run);
+        var maxRows = context.Run.IsPreview
+            ? (settings.MaxRows > 0 ? Math.Min(settings.MaxRows, context.Run.PreviewRowLimit) : context.Run.PreviewRowLimit)
+            : Math.Max(0, settings.MaxRows);
+        var query = new DataSourceQuery
+        {
+            DataSet = settings.DataSet,
+            Context = new DataSourceContext
+            {
+                User = context.Run.User,
+
+                // A data source can keep a position for each step of each pipeline that reads it.
+                ConsumerId = context.Run.IsPreview ? null : $"{context.Run.PipelineId}/{context.Step.StepId}",
+            },
+        };
+
+        foreach (var field in plan.ReadFields)
+        {
+            query.Fields.Add(field);
+        }
+
+        // Parameter values and filter values can hold placeholders, such as {Parameter:Since} for a value a workflow passes.
+        foreach (var (name, value) in settings.Parameters ?? [])
+        {
+            query.Parameters[name] = DataPipelineTemplate.Render(value, context.Run, now);
+        }
+
+        var predicates = new List<(string Field, Func<object, bool> Predicate)>();
+
+        foreach (var filter in settings.Filters)
+        {
+            var field = schema.FindField(filter.Field);
+            var values = filter.Values.SelectMany(value => RenderValues(filter.Operator, value, context.Run, now)).ToArray();
+            var predicate = DataFilterPredicates.Build(filter.Operator, field.Type, values, today);
+
+            if (predicate is null)
+            {
+                continue;
+            }
+
+            predicates.Add((field.Name, predicate));
+
+            if (DataFilterPredicates.BuildCondition(field.Name, filter.Operator, field.Type, values, value => value, today) is { } condition)
+            {
+                query.Conditions.Add(condition);
+            }
+        }
+
+        // Read only the rows after the largest value the last successful run read. A preview reads as a first run.
+        var incremental = plan.IncrementalField;
+        var incrementalKey = incremental is null ? null : $"{settings.Source}/{settings.DataSet}/{incremental.Name}";
+        object watermark = null;
+
+        if (incremental is not null && !context.Run.IsPreview &&
+            context.GetState<string>(WatermarkFieldStateKey) == incrementalKey &&
+            context.GetState<string>(WatermarkStateKey) is { } saved)
+        {
+            watermark = DataValues.Coerce(saved, incremental.Type);
+        }
+
+        if (watermark is not null)
+        {
+            var after = watermark;
+            predicates.Add((incremental.Name, value => !DataValues.IsEmpty(value) && DataValues.Compare(value, after) > 0));
+            query.Conditions.Add(new DataCondition { Field = incremental.Name, Operator = DataFilterOperator.GreaterThan, Values = [after] });
+            context.LogInformation(S["Reads the rows whose '{0}' is after {1}.", incremental.Name, DataValues.ToText(after)]);
+        }
+
+        // The rows are filtered again here, as a source may ignore conditions: it can only stop at the most rows when
+        // every row it reads is kept.
+        query.MaxRows = predicates.Count == 0 ? maxRows : 0;
+
+        var output = context.GetOutput();
+        var remaining = maxRows > 0 ? maxRows : long.MaxValue;
+        object largest = null;
+
+        await foreach (var batch in dataSource.ReadAsync(query, context.CancellationToken))
+        {
+            if (output.IsClosed)
+            {
+                // The rows that were not read are read again by the next run.
+                return;
+            }
+
+            var indexes = plan.Fields.Select(field => batch.IndexOf(field.Name)).ToArray();
+            var filters = predicates.Select(filter => (Index: batch.IndexOf(filter.Field), filter.Predicate)).ToArray();
+            var incrementalIndex = incremental is null ? -1 : batch.IndexOf(incremental.Name);
+            var rows = new List<object[]>(batch.Count);
+
+            foreach (var source in batch.Rows)
+            {
+                // The rows the filters exclude count too: the next run doesn't need to read them again.
+                if (incrementalIndex >= 0 && source[incrementalIndex] is { } value && !DataValues.IsEmpty(value) &&
+                    (largest is null || DataValues.Compare(value, largest) > 0))
+                {
+                    largest = value;
+                }
+
+                if (filters.Any(filter => filter.Index < 0 || !filter.Predicate(source[filter.Index])))
+                {
+                    continue;
+                }
+
+                var row = new object[indexes.Length];
+
+                for (var index = 0; index < indexes.Length; index++)
+                {
+                    row[index] = indexes[index] >= 0 ? source[indexes[index]] : null;
+                }
+
+                rows.Add(row);
+
+                if (--remaining == 0)
+                {
+                    break;
+                }
+            }
+
+            if (rows.Count > 0)
+            {
+                await output.WriteAsync(new DataBatch(plan.Fields, rows), context.CancellationToken);
+            }
+
+            if (remaining <= 0)
+            {
+                return;
+            }
+        }
+
+        // Every row was read: what the data source asked to confirm is confirmed when the run succeeds.
+        foreach (var action in query.Context.SucceededActions)
+        {
+            context.Run.OnSucceeded(action);
+        }
+
+        // Every row was read: the next run starts after the largest value.
+        if (incremental is not null && largest is not null && !context.Run.IsPreview)
+        {
+            context.SetState(WatermarkStateKey, ToWatermark(DataValues.Coerce(largest, incremental.Type)));
+            context.SetState(WatermarkFieldStateKey, incrementalKey);
+        }
+    }
+
+    private async Task<SourceSchema> GetSchemaAsync(
+        DataSourceStepSettings settings,
+        IServiceProvider services,
+        System.Security.Claims.ClaimsPrincipal user,
+        CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrEmpty(settings.Source) || string.IsNullOrEmpty(settings.DataSet))
+        {
+            return new(null, null, S["Choose the data source and the data set to read."]);
+        }
+
+        var dataSource = services?.GetService<IDataSourceManager>()?.GetDataSource(settings.Source);
+
+        if (dataSource is null)
+        {
+            return new(null, null, S["The data source '{0}' is not available. The feature that provides it may be disabled.", settings.Source]);
+        }
+
+        var schema = await dataSource.GetSchemaAsync(settings.DataSet, new DataSourceContext { User = user }, cancellationToken);
+
+        if (schema is null)
+        {
+            return new(dataSource, null, S["The data set '{0}' doesn't exist, or the user the pipeline runs for may not read it.", settings.DataSet]);
+        }
+
+        return new(dataSource, schema, null);
+    }
+
+    // A class rather than a tuple: a data source has static members, so it can't be the type argument of a tuple.
+    private sealed class SourceSchema
+    {
+        public SourceSchema(IDataSource dataSource, DataSetSchema schema, string error)
+        {
+            DataSource = dataSource;
+            Schema = schema;
+            Error = error;
+        }
+
+        public IDataSource DataSource { get; }
+
+        public DataSetSchema Schema { get; }
+
+        public string Error { get; }
+
+        public void Deconstruct(out IDataSource dataSource, out DataSetSchema schema, out string error)
+        {
+            dataSource = DataSource;
+            schema = Schema;
+            error = Error;
+        }
+    }
+
+    private Plan BuildPlan(DataSetSchema schema, DataSourceStepSettings settings, out List<string> errors)
+    {
+        errors = [];
+
+        var fields = new List<DataField>();
+
+        if (settings.Fields.Count == 0)
+        {
+            fields.AddRange(schema.Fields);
+        }
+        else
+        {
+            foreach (var name in settings.Fields)
+            {
+                var field = schema.FindField(name);
+
+                if (field is null)
+                {
+                    errors.Add(S["The data set has no field named '{0}'.", name ?? string.Empty]);
+
+                    continue;
+                }
+
+                fields.Add(field);
+            }
+        }
+
+        var read = new HashSet<string>(fields.Select(field => field.Name), StringComparer.Ordinal);
+
+        foreach (var filter in settings.Filters)
+        {
+            var field = schema.FindField(filter.Field);
+
+            if (field is null)
+            {
+                errors.Add(S["The data set has no field named '{0}' to filter on.", filter.Field ?? string.Empty]);
+
+                continue;
+            }
+
+            if (!filter.Operator.AppliesTo(field.Type))
+            {
+                errors.Add(S["The filter on '{0}' can't use the {1} comparison on a {2} field. Choose another comparison.", field.Name, filter.Operator, field.Type]);
+            }
+
+            read.Add(filter.Field);
+        }
+
+        if (settings.MaxRows < 0)
+        {
+            errors.Add(S["The maximum number of rows to read can't be negative."]);
+        }
+
+        DataField incremental = null;
+
+        if (!string.IsNullOrEmpty(settings.IncrementalField))
+        {
+            incremental = schema.FindField(settings.IncrementalField);
+
+            if (incremental is null)
+            {
+                errors.Add(S["The data set has no field named '{0}' to read the new rows by.", settings.IncrementalField]);
+            }
+            else if (!DataValues.IsNumeric(incremental.Type) && !DataValues.IsTemporal(incremental.Type))
+            {
+                errors.Add(S["The new rows are read by a number or a date, and '{0}' is neither.", incremental.Name]);
+                incremental = null;
+            }
+            else
+            {
+                read.Add(incremental.Name);
+            }
+
+            if (settings.MaxRows > 0)
+            {
+                errors.Add(S["A step that reads only the new rows reads all of them: set the maximum number of rows to 0."]);
+            }
+        }
+
+        return new Plan(fields.ToArray(), settings.Fields.Count == 0 ? [] : read, incremental);
+    }
+
+    // A placeholder in a list of values, such as {Parameter:Regions} for "is one of", can give several values,
+    // separated by commas.
+    private static List<string> RenderValues(DataFilterOperator filterOperator, string value, DataPipelineRunContext run, DateTime now)
+    {
+        var rendered = DataPipelineTemplate.Render(value, run, now);
+
+        return filterOperator is DataFilterOperator.In or DataFilterOperator.NotIn && rendered != value
+            ? DataFilterValueList.Parse(rendered)
+            : [rendered];
+    }
+
+    // Keeps every tick of a date, so the next run doesn't read the last row again.
+    private static string ToWatermark(object value)
+    {
+        return value is DateTime date
+            ? date.ToString("O", System.Globalization.CultureInfo.InvariantCulture)
+            : DataValues.ToText(value);
+    }
+
+    private sealed record Plan(DataField[] Fields, IEnumerable<string> ReadFields, DataField IncrementalField);
+}

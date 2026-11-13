@@ -2,6 +2,21 @@ namespace OrchardCore.ContentManagement.Utilities.Tests;
 
 public class StringExtensionsTests
 {
+    [Theory]
+    [InlineData("ab😀cd", 3)]
+    [InlineData("abe\u0301cd", 3)]
+    [InlineData("ab👩‍💻cd", 6)]
+    [InlineData("ab🇺🇸cd", 4)]
+    [InlineData("ab👍🏽cd", 4)]
+    public void Ellipsize_InsideTextElement_KeepsWholeElements(string text, int limit)
+    {
+#pragma warning disable CS0618 // Test the obsolete compatibility overloads.
+        Assert.Equal("ab" + DefaultEllipsis, StringExtensions.Ellipsize(text, limit));
+        Assert.Equal("ab...", StringExtensions.Ellipsize(text, limit, "..."));
+        Assert.Equal("ab...", StringExtensions.Ellipsize(text, limit, "...", wordBoundary: true));
+#pragma warning restore CS0618
+    }
+
     private const string DefaultEllipsis = "\u00A0\u2026";
     private const string CustomEllipsis = " >>>";
 
@@ -26,10 +41,15 @@ public class StringExtensionsTests
     [InlineData("Orchard Core", 70, "Orchard Core")]
     [InlineData("Orchard Core", 4, $"Orch{DefaultEllipsis}")]
     [InlineData("Orchard Core", 7, $"Orchard{DefaultEllipsis}")]
+    [InlineData("Orchard Core Framework", 12, $"Orchard Core{DefaultEllipsis}")]
+    [InlineData("Orchard Core Framework", 13, $"Orchard Core{DefaultEllipsis}")]
+    [InlineData("Orchard Core Framework", 14, $"Orchard Core{DefaultEllipsis}")]
     public void Ellipsize_Default_TrimsString(string text, int characterCount, string expected)
     {
         // Arrange & Act
+#pragma warning disable CS0618 // Type or member is obsolete
         var result = StringExtensions.Ellipsize(text, characterCount);
+#pragma warning restore CS0618 // Type or member is obsolete
 
         // Assert
         Assert.Equal(expected, result);
@@ -43,13 +63,16 @@ public class StringExtensionsTests
     [InlineData(null, 10, DefaultEllipsis, true, "")]
     [InlineData("", 10, DefaultEllipsis, true, "")]
     [InlineData("Orchard Core", 70, DefaultEllipsis, true, "Orchard Core")]
-    [InlineData("Orchard Core", 7, DefaultEllipsis, true, DefaultEllipsis)]
-    [InlineData("Orchard Core", 7, CustomEllipsis, true, CustomEllipsis)]
+    [InlineData("Orchard Core", 4, DefaultEllipsis, true, DefaultEllipsis)]
+    [InlineData("Orchard Core", 7, DefaultEllipsis, true, $"Orchard{DefaultEllipsis}")]
+    [InlineData("Orchard Core", 7, CustomEllipsis, true, $"Orchard{CustomEllipsis}")]
     [InlineData("Orchard Core", 10, CustomEllipsis, true, $"Orchard{CustomEllipsis}")]
     public void Ellipsize_CustomEllipsisString_TrimssString(string text, int characterCount, string ellipsis, bool wordBoundary, string expected)
     {
         // Arrange & Act
+#pragma warning disable CS0618 // Type or member is obsolete
         var result = StringExtensions.Ellipsize(text, characterCount, ellipsis, wordBoundary);
+#pragma warning restore CS0618 // Type or member is obsolete
 
         // Assert
         Assert.Equal(expected, result);

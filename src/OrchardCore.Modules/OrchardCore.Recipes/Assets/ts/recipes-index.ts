@@ -13,6 +13,8 @@ if (searchBox) {
             elementsToFilter.forEach((element) => {
                 element.style.display = "";
             });
+
+            document.getElementById("list-alert")?.classList.add("d-none");
         } else {
             elementsToFilter.forEach((element) => {
                 const text = (element.dataset.filterValue ?? "").toLowerCase();
@@ -21,9 +23,9 @@ if (searchBox) {
                 element.style.display = found ? "" : "none";
             });
 
-            const visible = Array.from(document.querySelectorAll<HTMLElement>(".recipe-group > ul > li")).filter(
-                isVisible,
-            );
+            const visible = Array.from(
+                document.querySelectorAll<HTMLElement>(".recipe-group [data-filter-value]"),
+            ).filter(isVisible);
             const listAlert = document.getElementById("list-alert");
 
             if (listAlert) {

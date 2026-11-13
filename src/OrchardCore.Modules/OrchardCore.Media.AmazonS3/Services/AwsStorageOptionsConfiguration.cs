@@ -29,7 +29,16 @@ internal sealed class AwsStorageOptionsConfiguration : IConfigureOptions<AwsStor
 
     public void Configure(AwsStorageOptions options)
     {
-        options.BindConfiguration(AmazonS3Constants.ConfigSections.AmazonS3, _shellConfiguration, _logger);
+        if (!_shellConfiguration.TryBindConfiguration<AwsStorageOptions>(AmazonS3Constants.ConfigSections.AmazonS3, AmazonS3Constants.ConfigSections.LegacyAmazonS3, _logger, out var rawOptions))
+        {
+            return;
+        }
+
+        options.BucketName = rawOptions.BucketName;
+        options.BasePath = rawOptions.BasePath;
+        options.CreateBucket = rawOptions.CreateBucket;
+        options.RemoveBucket = rawOptions.RemoveBucket;
+        options.AwsOptions = rawOptions.AwsOptions;
 
         var parser = new FluidOptionsParser<AwsStorageOptions>(_fluidParser, _shellSettings);
 

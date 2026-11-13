@@ -1,10 +1,5 @@
 @model CustomFileDeploymentStepViewModel
 
-<div class="ocat-wrapper">
-    <div class="ocat-end-offset">
-        <h5>@T["Custom File"]</h5>
-    </div>
-</div>
 
 <div class="ocat-wrapper">
     <div class="ocat-end-offset">
@@ -13,7 +8,7 @@
 </div>
 
 <div class="ocat-wrapper" asp-validation-class-for="FileName">
-    <label asp-for="FileName" class="ocat-label">@T["File Name"]</label>
+    <label asp-for="FileName" class="ocat-label ocat-label-required">@T["File Name"]</label>
     <div class="ocat-end">
         <input asp-for="FileName" class="form-control" />
         <span asp-validation-for="FileName"></span>

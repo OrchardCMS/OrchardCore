@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using Microsoft.Playwright;
 using OrchardCore.Tests.Functional.Helpers;
 
@@ -46,21 +47,24 @@ public sealed class TaxonomyHierarchyTests : CmsTestBase<BlogFixture>, IClassFix
     // after another root item, it re-nests under that item automatically) - no
     // explicit sideways gesture, and no intermediate outdent step, needed.
     //
-    // SKIPPED: intermittently flaky in CI across every DB backend (Redis+Azurite,
-    // Postgres, MySql), independent of runner speed - not merely a
-    // one-shot-assertion race (a fix waiting for the DOM to settle plus retrying
-    // assertions reduced but did not eliminate the failure rate; one CI run
-    // afterward showed the menu list collapsed to a single <li> instead of
-    // three, pointing at a deeper issue in the drag sequencing itself under
-    // load rather than a simple timing gap). Skipped to keep main green while
-    // this is investigated properly in a follow-up branch rather than landing
-    // an unproven fix.
-    [Fact(Skip = "Flaky under CI load across all DB backends - see comment above; tracked for a follow-up fix.")]
+    // SKIPPED-then-fixed: intermittently flaky in CI across every DB backend (Redis+Azurite,
+    // Postgres, MySql), independent of runner speed. The first fix attempt (an auto-retrying
+    // wait BETWEEN the two drags) reduced but did not eliminate the failure rate, because the
+    // final order/depth checks AFTER the second drag were still plain, non-retrying reads
+    // (Assert.Equal / AllTextContentsAsync) - exactly the same race, just one step later:
+    // under a CPU-starved runner, SortableJS's onEnd handler (and the resulting re-render) can
+    // still be mid-flight when those reads fire. Replaced with Playwright's own auto-retrying
+    // locator assertions (ToHaveAttributeAsync / ToHaveTextAsync), which wait for the DOM to
+    // actually reach the expected state instead of assuming it already has by the time the
+    // read happens.
+    [Fact]
     public async Task TaxonomyHierarchy_MoveNestedTermNearDifferentSibling_ReparentsInOneDragAndPersists()
     {
         var page = await Fixture.CreatePageAsync();
         await page.LoginAsync();
         await OpenTagsAsync(page);
+
+        var menuItems = page.Locator("#menu li.menu-item");
 
         await page.DragMenuItemSidewaysAsync("Exploration", 70); // nest under Earth
 
@@ -68,26 +72,26 @@ public sealed class TaxonomyHierarchyTests : CmsTestBase<BlogFixture>, IClassFix
         // a fixed sleep inside DragMenuItemSidewaysAsync isn't always enough
         // headroom on a slower CI runner, and starting the second drag before
         // the first one's DOM update has fully applied races the two together.
-        await Assertions.Expect(page.Locator("#menu li.menu-item").Filter(new LocatorFilterOptions { HasText = "Exploration" }).First)
+        await Assertions.Expect(menuItems.Filter(new LocatorFilterOptions { HasText = "Exploration" }).First)
             .ToHaveAttributeAsync("data-depth", "1");
 
         await page.DragMenuItemJustAfterAsync("Exploration", "Space");
 
-        Assert.Equal("1", await page.GetMenuItemDepthAsync("Exploration"));
-
-        var order = await page.Locator("#menu li.menu-item").AllTextContentsAsync();
-        Assert.Contains("Earth", order[0]);
-        Assert.Contains("Space", order[1]);
-        Assert.Contains("Exploration", order[2]);
+        // Same race, one step later: wait for the second drag's DOM update to actually
+        // settle (auto-retrying) rather than reading depth/order once and assuming it's
+        // already final.
+        await Assertions.Expect(menuItems.Filter(new LocatorFilterOptions { HasText = "Exploration" }).First)
+            .ToHaveAttributeAsync("data-depth", "1");
+        await Assertions.Expect(menuItems).ToHaveTextAsync(
+            [new Regex("Earth"), new Regex("Space"), new Regex("Exploration")]);
 
         await SaveDraftAsync(page);
 
-        Assert.Equal("1", await page.GetMenuItemDepthAsync("Exploration"));
-
-        var reloadedOrder = await page.Locator("#menu li.menu-item").AllTextContentsAsync();
-        Assert.Contains("Earth", reloadedOrder[0]);
-        Assert.Contains("Space", reloadedOrder[1]);
-        Assert.Contains("Exploration", reloadedOrder[2]);
+        var reloadedMenuItems = page.Locator("#menu li.menu-item");
+        await Assertions.Expect(reloadedMenuItems.Filter(new LocatorFilterOptions { HasText = "Exploration" }).First)
+            .ToHaveAttributeAsync("data-depth", "1");
+        await Assertions.Expect(reloadedMenuItems).ToHaveTextAsync(
+            [new Regex("Earth"), new Regex("Space"), new Regex("Exploration")]);
 
         await page.CloseAsync();
     }

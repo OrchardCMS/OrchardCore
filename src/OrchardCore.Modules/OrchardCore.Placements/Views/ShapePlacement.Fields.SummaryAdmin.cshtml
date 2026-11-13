@@ -1,0 +1,10 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.Placements.Models
+
+@model ShapeViewModel<ShapePlacement>
+
+@* Plain link, like the title of a content item in the Manage Content list. *@
+<a asp-action="Edit"
+   asp-controller="Admin"
+   asp-route-shapeType="@Model.Value.ShapeType"
+   asp-route-returnUrl="@FullRequestPath">@Model.Value.ShapeType</a>

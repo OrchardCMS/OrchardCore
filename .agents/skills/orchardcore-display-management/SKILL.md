@@ -124,7 +124,7 @@ See `references/drivers.md` for shape-type helpers, the fluent `.Location` API, 
 | Key | Purpose |
 |-----|---------|
 | `place` | `Zone:Position`. `-` hides, `/Zone` targets a layout zone |
-| `displayType` | Match `Detail`, `Summary`, `SummaryAdmin`, `DetailAdmin`, `Edit` |
+| `displayType` | Match `Detail`, `Summary`, `SummaryAdmin`, `SummaryAdminGrid`, `DetailAdmin`, `Edit` |
 | `differentiator` | Distinguish reused shapes (field/part name) |
 | `contentType` | Match content type / stereotype (`Art*` wildcard, or array) |
 | `contentPart` | Match content items containing a part |
@@ -153,7 +153,7 @@ See `references/drivers.md` for shape-type helpers, the fluent `.Location` API, 
 |------|---------|
 | `Content` | Main content shapes |
 | `Header` / `Footer` | Layout regions |
-| `Actions` | Admin list row buttons |
+| `Actions` | Admin list row buttons (`SummaryAdmin` and `SummaryAdminGrid`) |
 | `Parts` | Editor parts container |
 | `Meta` | Metadata block |
 
@@ -163,6 +163,7 @@ See `references/drivers.md` for shape-type helpers, the fluent `.Location` API, 
 - Shape type ≠ part type. No driver → shape is `ContentPart`. Summary display of a dynamic part → `ContentPart_Summary`.
 - Field display modes are stricter: shape type needs `_Display`, differentiator is `{Part}-{Field}-{FieldType}_Display__{Mode}`.
 - Placement precedence: startup project → active theme → modules (by dependency). A theme can override any module's placement.
+- Admin list rows use `SummaryAdmin` in the List layout and `SummaryAdminGrid` in the Grid layout, where each zone is a column. Display types do not inherit placement, so a rule or a driver location for `SummaryAdmin` does not reach the grid; see `orchardcore-admin-index-views`.
 - Same position value → registration order decides; use distinct positions when order matters.
 
 ## References

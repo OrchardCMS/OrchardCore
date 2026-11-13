@@ -1,5 +1,6 @@
-using Microsoft.Extensions.Localization;
+using System.Text.Json.Serialization;
 using OrchardCore.Deployment;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Layers.Deployment;
 
@@ -8,14 +9,8 @@ namespace OrchardCore.Layers.Deployment;
 /// </summary>
 public class AllLayersDeploymentStep : DeploymentStep
 {
-    public AllLayersDeploymentStep()
-    {
-        Name = "AllLayers";
-    }
+    public override string Name => "AllLayers";
 
-    public AllLayersDeploymentStep(IStringLocalizer<AllLayersDeploymentStep> S)
-        : this()
-    {
-        Category = S["Content"];
-    }
+    [JsonIgnore]
+    public override LocalizationSource Category => CommonLocalizationSources.Content;
 }

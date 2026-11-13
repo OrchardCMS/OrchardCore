@@ -1,0 +1,31 @@
+{
+  "type": "object",
+  "properties": {
+    "OrchardCore": {
+      "type": "object",
+      "properties": {
+        "SignalR": {
+          "type": "object",
+          "description": "SignalR settings.",
+          "properties": {
+            "Azure": {
+              "type": "object",
+              "description": "Azure SignalR Service backplane settings, used by the 'OrchardCore.SignalR.Azure' feature to route SignalR messages across application instances. When 'ConnectionString' is not set, a warning is logged and SignalR keeps working in single-instance mode. See https://docs.orchardcore.net/en/latest/reference/modules/SignalR/.",
+              "properties": {
+                "ConnectionString": {
+                  "type": "string",
+                  "description": "The Azure SignalR Service connection string (required), e.g. 'Endpoint=https://<your-service>.service.signalr.net;AccessKey=...;Version=1.0;'."
+                },
+                "ApplicationName": {
+                  "type": "string",
+                  "description": "An optional application name, to set to a unique value when multiple deployments share the same Azure SignalR Service. Must start with a letter and contain only letters, numbers, and underscores. A stable tenant identifier is appended so that hubs remain isolated between tenants.",
+                  "default": "OrchardCore"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

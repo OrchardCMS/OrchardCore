@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-401-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-408-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key))!
@@ -553,6 +553,15 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="16.66%"><a href="http://techiu.epizy.com/"><img src="https://avatars.githubusercontent.com/u/49456702?v=4?s=100" width="100px;" alt="Rajeev Kumar"/><br /><sub><b>Rajeev Kumar</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=RAJEEV2510" title="Code">💻</a></td>
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/vlad2kgithub"><img src="https://avatars.githubusercontent.com/u/62915530?v=4?s=100" width="100px;" alt="VladAffable"/><br /><sub><b>VladAffable</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=vlad2kgithub" title="Code">💻</a></td>
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/yogixlogic"><img src="https://avatars.githubusercontent.com/u/68509860?v=4?s=100" width="100px;" alt="YOGESH CHANDEWAR "/><br /><sub><b>YOGESH CHANDEWAR </b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=yogixlogic" title="Code">💻</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/nurullahturkoglu"><img src="https://avatars.githubusercontent.com/u/73299153?v=4?s=100" width="100px;" alt="Nurullah Türkoğlu"/><br /><sub><b>Nurullah Türkoğlu</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=nurullahturkoglu" title="Code">💻</a></td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="16.66%"><a href="https://www.raftel-software.com/"><img src="https://avatars.githubusercontent.com/u/81477606?v=4?s=100" width="100px;" alt="Rafael Hernández Silva"/><br /><sub><b>Rafael Hernández Silva</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=Raf-Hs" title="Code">💻</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/johnkaram02"><img src="https://avatars.githubusercontent.com/u/168653085?v=4?s=100" width="100px;" alt="John Karam"/><br /><sub><b>John Karam</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=johnkaram02" title="Code">💻</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/JohnyKid123"><img src="https://avatars.githubusercontent.com/u/97468479?v=4?s=100" width="100px;" alt="Alex Venkov"/><br /><sub><b>Alex Venkov</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=JohnyKid123" title="Code">💻</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="https://www.markstudios.com"><img src="https://avatars.githubusercontent.com/u/24554186?v=4?s=100" width="100px;" alt="Mark Santos"/><br /><sub><b>Mark Santos</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=markksantos" title="Code">💻</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/efeesrefinal"><img src="https://avatars.githubusercontent.com/u/87021466?v=4?s=100" width="100px;" alt="Efe İnal"/><br /><sub><b>Efe İnal</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=efeesrefinal" title="Code">💻</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/szepeviktor/debian-server-tools/blob/master/CV.md"><img src="https://avatars.githubusercontent.com/u/952007?v=4?s=100" width="100px;" alt="Viktor Szépe"/><br /><sub><b>Viktor Szépe</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=szepeviktor" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>

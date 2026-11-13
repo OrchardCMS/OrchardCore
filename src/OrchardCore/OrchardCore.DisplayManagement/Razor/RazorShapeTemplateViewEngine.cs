@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using Cysharp.Text;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
@@ -16,6 +17,9 @@ namespace OrchardCore.DisplayManagement.Razor;
 
 public class RazorShapeTemplateViewEngine : IShapeTemplateViewEngine
 {
+    // Maps the relative paths of the shape templates to their view names, to not allocate them on each rendering.
+    private static readonly ConcurrentDictionary<string, string> s_viewNames = new(StringComparer.Ordinal);
+
     private readonly IOptions<MvcViewOptions> _options;
     private readonly IEnumerable<IRazorViewExtensionProvider> _viewExtensionProviders;
     private readonly IHttpContextAccessor _httpContextAccessor;
@@ -53,15 +57,21 @@ public class RazorShapeTemplateViewEngine : IShapeTemplateViewEngine
 
     public Task<IHtmlContent> RenderAsync(string relativePath, DisplayContext displayContext)
     {
-        var viewName = "/" + relativePath;
-        viewName = Path.ChangeExtension(viewName, RazorViewEngine.ViewExtension);
+        var viewName = s_viewNames.GetOrAdd(relativePath, static path => Path.ChangeExtension("/" + path, RazorViewEngine.ViewExtension));
 
         var viewContext = _viewContextAccessor.ViewContext;
 
         if (viewContext?.View != null)
         {
-            var viewData = new ViewDataDictionary(viewContext.ViewData);
-            viewData.TemplateInfo.HtmlFieldPrefix = displayContext.HtmlFieldPrefix;
+            // The partial view gets its own copy of the view data, so a copy with a different 'HtmlFieldPrefix'
+            // is only needed when the prefix changes, which is not the case of most displayed shapes.
+            var viewData = viewContext.ViewData;
+
+            if (!string.Equals(viewData.TemplateInfo.HtmlFieldPrefix, displayContext.HtmlFieldPrefix ?? string.Empty, StringComparison.Ordinal))
+            {
+                viewData = new ViewDataDictionary(viewContext.ViewData);
+                viewData.TemplateInfo.HtmlFieldPrefix = displayContext.HtmlFieldPrefix;
+            }
 
             var htmlHelper = MakeHtmlHelper(viewContext, viewData);
             return htmlHelper.PartialAsync(viewName, displayContext.Value);
@@ -143,7 +153,10 @@ public class RazorShapeTemplateViewEngine : IShapeTemplateViewEngine
     {
         if (_htmlHelper is IViewContextAware contextAwareHelper)
         {
-            var newViewContext = new ViewContext(viewContext, viewContext.View, viewData, viewContext.Writer);
+            var newViewContext = viewData == viewContext.ViewData
+                ? viewContext
+                : new ViewContext(viewContext, viewContext.View, viewData, viewContext.Writer);
+
             contextAwareHelper.Contextualize(newViewContext);
         }
 

@@ -1,34 +1,32 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Liquid;
-using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Display;
 using OrchardCore.Workflows.Models;
+using OrchardCore.Workflows.Services;
 using OrchardCore.Workflows.ViewModels;
 
 namespace OrchardCore.Workflows.Drivers;
 
 public sealed class ForEachTaskDisplayDriver : ActivityDisplayDriver<ForEachTask, ForEachTaskViewModel>
 {
-    private readonly ILiquidTemplateManager _templateManager;
-    private readonly IStringLocalizer S;
+    private readonly WorkflowExpressionInputValidator _expressionValidator;
+
+    internal readonly IStringLocalizer S;
 
     public ForEachTaskDisplayDriver(
-        ILiquidTemplateManager templateManager,
+        WorkflowExpressionInputValidator expressionValidator,
         IStringLocalizer<ForEachTaskDisplayDriver> stringLocalizer)
     {
-        _templateManager = templateManager;
+        _expressionValidator = expressionValidator;
         S = stringLocalizer;
     }
 
     protected override void EditActivity(ForEachTask activity, ForEachTaskViewModel model)
     {
-        model.EnumerableExpression = activity.Enumerable.Expression;
-        model.LiquidEnumerableExpression = activity.LiquidEnumerable.Expression;
+        model.Enumerable = WorkflowExpressionInput.From(WorkflowExpressionSyntaxes.Resolve(activity.Enumerable, activity.LiquidEnumerable.Expression, activity.Syntax));
         model.LoopVariableName = activity.LoopVariableName;
-        model.Syntax = activity.Syntax;
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ForEachTask activity, UpdateEditorContext context)
@@ -38,28 +36,11 @@ public sealed class ForEachTaskDisplayDriver : ActivityDisplayDriver<ForEachTask
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
         activity.LoopVariableName = model.LoopVariableName?.Trim();
-        activity.Enumerable = new WorkflowExpression<IEnumerable<object>>(model.EnumerableExpression);
-        activity.LiquidEnumerable = new WorkflowExpression<object>(model.LiquidEnumerableExpression);
-        activity.Syntax = model.Syntax;
+        activity.Enumerable = _expressionValidator.Validate<IEnumerable<object>>(model.Enumerable, context.Updater.ModelState, Prefix, nameof(model.Enumerable), new() { Label = S["Items"], Required = true });
 
-        if (model.Syntax == WorkflowScriptSyntax.Liquid)
-        {
-            if (string.IsNullOrWhiteSpace(model.LiquidEnumerableExpression))
-            {
-                context.Updater.ModelState.AddModelError(Prefix, nameof(model.LiquidEnumerableExpression), S["Enumerable is required field."]);
-            }
-            else if (!_templateManager.Validate(model.LiquidEnumerableExpression, out var errors))
-            {
-                context.Updater.ModelState.AddModelError(Prefix, nameof(model.LiquidEnumerableExpression), S["Enumerable doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
-            }
-        }
-        else if (model.Syntax == WorkflowScriptSyntax.JavaScript)
-        {
-            if (string.IsNullOrWhiteSpace(model.EnumerableExpression))
-            {
-                context.Updater.ModelState.AddModelError(Prefix, nameof(model.EnumerableExpression), S["Enumerable is required field."]);
-            }
-        }
+        // The expressions carry their syntax now, so the properties of the former syntax setting go.
+        activity.Properties.Remove(nameof(ForEachTask.LiquidEnumerable));
+        activity.Properties.Remove(nameof(ForEachTask.Syntax));
 
         return Edit(activity, context);
     }

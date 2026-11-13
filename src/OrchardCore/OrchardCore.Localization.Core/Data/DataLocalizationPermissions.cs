@@ -10,27 +10,31 @@ public class DataLocalizationPermissions
     /// Permission to manage all dynamic translations.
     /// </summary>
     public static readonly Permission ManageTranslations =
-        new("ManageTranslations", "Manage all dynamic translations");
+        new("ManageTranslations", LocalizationSource.Create<DataLocalizationPermissions>("Manage all dynamic translations"));
 
     /// <summary>
     /// Read-only permission to view translations and statistics.
     /// Implied by <see cref="ManageTranslations"/>.
     /// </summary>
     public static readonly Permission ViewDynamicTranslations =
-        new("ViewDynamicTranslations", "View dynamic translations and statistics", [ManageTranslations]);
+        new("ViewDynamicTranslations", LocalizationSource.Create<DataLocalizationPermissions>("View dynamic translations and statistics"), [ManageTranslations]);
 
     /// <summary>
     /// Legacy permission for managing dynamic localizations.
     /// Kept for backward compatibility; use <see cref="ManageTranslations"/> instead.
     /// </summary>
     public static readonly Permission ManageLocalization =
-        new("ManageLocalization", "Manage dynamic localizations", [ManageTranslations]);
+        new("ManageLocalization", LocalizationSource.Create<DataLocalizationPermissions>("Manage dynamic localizations"), [ManageTranslations]);
 
     // Declared after ManageTranslations so its ImpliedBy list captures the real instance
     // rather than the default null a forward reference would read from a static field
     // initializer that hasn't run yet.
-    private static readonly Permission s_manageTranslationsForCulture =
-        new("ManageTranslations_{0}", "Manage {0} translations", [ManageTranslations]);
+    private static readonly PermissionTemplate s_manageTranslationsForCulture =
+        new(
+            "ManageTranslations_{0}",
+            LocalizationSource.Create<DataLocalizationPermissions>("Manage {0} translations"),
+            "Data Localization",
+            ManageTranslations);
 
     /// <summary>
     /// Creates a dynamic permission for managing translations in a specific culture.
@@ -47,14 +51,7 @@ public class DataLocalizationPermissions
             return existingPermission;
         }
 
-        var permission = new Permission(
-            string.Format(s_manageTranslationsForCulture.Name, cultureName),
-            string.Format(s_manageTranslationsForCulture.Description, cultureDisplayName),
-            s_manageTranslationsForCulture.ImpliedBy)
-        {
-            Category = "Data Localization",
-        };
-
+        var permission = s_manageTranslationsForCulture.CreateDynamicPermission(cultureName, cultureDisplayName);
         s_culturePermissions[cultureName] = permission;
 
         return permission;

@@ -45,7 +45,8 @@ public sealed class Startup : Modules.StartupBase
         services.AddTransient<IConfigureOptions<MediaBlobStorageOptions>, MediaBlobStorageOptionsConfiguration>();
 
         // Only replace default implementation if options are valid.
-        var section = _configuration.GetSection("OrchardCore_Media_Azure");
+        // The 'OrchardCore_Media_Azure' section is deprecated and will be removed in a future major version, use 'Media:Azure' instead.
+        var section = _configuration.GetSectionCompat("Media:Azure", "OrchardCore_Media_Azure");
         var connectionString = section.GetValue<string>(nameof(MediaBlobStorageOptions.ConnectionString));
         var containerName = section.GetValue<string>(nameof(MediaBlobStorageOptions.ContainerName));
 
@@ -55,11 +56,6 @@ public sealed class Startup : Modules.StartupBase
             services.AddSingleton<IMediaFileStoreCacheFileProvider>(serviceProvider =>
             {
                 var hostingEnvironment = serviceProvider.GetRequiredService<IWebHostEnvironment>();
-
-                if (string.IsNullOrWhiteSpace(hostingEnvironment.WebRootPath))
-                {
-                    throw new MediaConfigurationException("The wwwroot folder for serving cache media files is missing.");
-                }
 
                 var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>().Value;
                 var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
@@ -137,7 +133,7 @@ public sealed class Startup : Modules.StartupBase
     }
 
     private static string GetMediaCachePath(IWebHostEnvironment hostingEnvironment, ShellSettings shellSettings, string assetsPath)
-        => PathExtensions.Combine(hostingEnvironment.WebRootPath, shellSettings.Name, assetsPath);
+        => PathExtensions.Combine(hostingEnvironment.GetWebRootPathOrDefault(), shellSettings.Name, assetsPath);
 
     private static bool CheckOptions(string connectionString, string containerName, ILogger logger)
     {
@@ -178,7 +174,8 @@ public sealed class MediaAzureImageCacheStartup : Modules.StartupBase
         services.AddTransient<IConfigureOptions<MediaBlobImageCacheOptions>, MediaBlobImageCacheOptionsConfiguration>();
 
         // Only replace the default local cache implementation if options are valid.
-        var section = _configuration.GetSection("OrchardCore_Media_Azure_Image_Cache");
+        // The 'OrchardCore_Media_Azure_ImageSharp_Cache' section is deprecated and will be removed in a future major version, use 'Media:Azure:ImageCache' instead.
+        var section = _configuration.GetSectionCompat("Media:Azure:ImageCache", "OrchardCore_Media_Azure_ImageSharp_Cache");
         var connectionString = section.GetValue<string>(nameof(MediaBlobStorageOptions.ConnectionString));
         var containerName = section.GetValue<string>(nameof(MediaBlobStorageOptions.ContainerName));
 
@@ -199,14 +196,14 @@ public sealed class MediaAzureImageCacheStartup : Modules.StartupBase
         if (string.IsNullOrWhiteSpace(connectionString))
         {
             _logger.LogError(
-                "Azure Media ImageSharp Image Cache is enabled but not active because the 'ConnectionString' is missing or empty in application configuration.");
+                "Azure Media Image Cache is enabled but not active because the 'ConnectionString' is missing or empty in application configuration.");
             optionsAreValid = false;
         }
 
         if (string.IsNullOrWhiteSpace(containerName))
         {
             _logger.LogError(
-                "Azure Media ImageSharp Image Cache is enabled but not active because the 'ContainerName' is missing or empty in application configuration.");
+                "Azure Media Image Cache is enabled but not active because the 'ContainerName' is missing or empty in application configuration.");
             optionsAreValid = false;
         }
 
@@ -218,9 +215,25 @@ public sealed class MediaAzureImageCacheStartup : Modules.StartupBase
 [RequireFeatures("OrchardCore.Media.Tus")]
 public sealed class MediaAzureTusStartup : Modules.StartupBase
 {
+    private readonly IShellConfiguration _configuration;
+
+    public MediaAzureTusStartup(IShellConfiguration configuration)
+    {
+        _configuration = configuration;
+    }
+
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.Replace(ServiceDescriptor.Singleton<ITusTempStore, AzureBlobTusTempStore>());
+        // Only replace the default local store if options are valid.
+        // The 'OrchardCore_Media_Azure' section is deprecated and will be removed in a future major version, use 'Media:Azure' instead.
+        var section = _configuration.GetSectionCompat("Media:Azure", "OrchardCore_Media_Azure");
+        var connectionString = section.GetValue<string>(nameof(MediaBlobStorageOptions.ConnectionString));
+        var containerName = section.GetValue<string>(nameof(MediaBlobStorageOptions.ContainerName));
+
+        if (!string.IsNullOrWhiteSpace(connectionString) && !string.IsNullOrWhiteSpace(containerName))
+        {
+            services.Replace(ServiceDescriptor.Singleton<ITusTempStore, AzureBlobTusTempStore>());
+        }
     }
 }
 

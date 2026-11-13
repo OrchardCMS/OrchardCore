@@ -12,6 +12,7 @@ public sealed class UserTwoFactorDisplayDriver : DisplayDriver<User>
         return CombineAsync(
             Initialize<SummaryAdminUserViewModel>("UserTwoFactorActionsMenu", model => model.User = user)
             .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "ActionsMenu:10")
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "ActionsMenu:10")
         );
     }
 }
