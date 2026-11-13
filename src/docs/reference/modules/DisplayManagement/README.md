@@ -102,6 +102,16 @@ Properties can be passed to a shape by adding attributes to the shape tag helper
 
 This is the same as `<shape type="MyShape" prop-foo="1" prop-bar="a" prop-content="@someHtmlContentVariable" />` where you'd have to construct `someHtmlContentVariable` separately. Of course, you can mix and match the different formats, for example, to only use `<add-property>` when you want to pass HTML content as property.
 
+### Layout recovery during error handling
+
+If adding the view body or rendering the zones or layout fails in `ThemeLayout`, it resets the layout's zones and rethrows the original exception. An error handler can then render using the same layout without reusing the failed body, partially rendered zones, or widgets. This does not depend on the middleware used to handle the exception.
+
+The reset preserves the layout shape itself, its metadata and alternates, and non-shape properties. It clears cached layout output and every `IShape`-valued property, treating these properties as zones just as layout rendering does. This includes rendered zones, zones assigned directly through `Properties`, and zones created by dynamic access such as `Layout.Footer`. Other scoped services, including the page title builder and resource manager, retain their state. A reset does not repair a layout template or a widget that also fails when rendering the error page.
+
+Custom rendering code can call `IZoneHolding.ResetZones()` to discard a shape's zones without replacing the shape or its zone factory. Retrieve zone shapes again through `Zones` after a reset; previously retrieved zone shapes are detached.
+
+Failures before `ThemeLayout` starts (including shapes rendered in the view body), failures while writing the rendered output, and successful request re-executions do not trigger this reset.
+
 ### Shape debug information
 
 You can instruct Orchard Core to write HTML comments around rendered shapes. This makes it easier to determine which Razor or Liquid template produced a specific fragment in the final page output.

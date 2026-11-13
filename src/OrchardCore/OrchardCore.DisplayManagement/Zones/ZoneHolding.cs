@@ -20,6 +20,8 @@ public class ZoneHolding : Shape, IZoneHolding
     private readonly Func<ValueTask<IShape>> _zoneFactory;
     private Zones _zones;
 
+    internal int ZoneVersion { get; private set; }
+
     public ZoneHolding(Func<ValueTask<IShape>> zoneFactory)
     {
         _zoneFactory = zoneFactory;
@@ -30,6 +32,21 @@ public class ZoneHolding : Shape, IZoneHolding
     }
 
     public Zones Zones => _zones ??= new Zones(this);
+
+    /// <inheritdoc />
+    public void ResetZones()
+    {
+        foreach (var property in Properties.ToArray())
+        {
+            if (property.Value is IShape)
+            {
+                Properties.Remove(property.Key);
+            }
+        }
+
+        Metadata.ChildContent = null;
+        ZoneVersion++;
+    }
 
     public override bool TryGetMember(System.Dynamic.GetMemberBinder binder, out object result)
     {
