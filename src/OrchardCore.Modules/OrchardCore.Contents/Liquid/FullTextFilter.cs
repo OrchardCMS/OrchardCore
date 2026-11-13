@@ -25,9 +25,9 @@ public class FullTextFilter : ILiquidFilter
         if (input.Type == FluidValues.Array)
         {
             var contentItems = new List<ContentItem>();
-            foreach (var objValue in input.Enumerate(ctx))
+            await foreach (var objValue in input.EnumerateAsync(ctx))
             {
-                var contentItem = GetContentItem(objValue);
+                var contentItem = GetContentItem(objValue, ctx);
                 if (contentItem != null)
                 {
                     if (!_fullTextRecursionHelper.IsRecursive(contentItem))
@@ -50,11 +50,11 @@ public class FullTextFilter : ILiquidFilter
             }
 
             // When returning segments separate them so multiple segments are indexed individually.
-            return new ArrayValue(aspects.SelectMany(x => x.Segments).Where(x => !string.IsNullOrEmpty(x)).Select(x => new StringValue(x + ' ')).ToArray());
+            return ArrayValue.Create(aspects.SelectMany(x => x.Segments).Where(x => !string.IsNullOrEmpty(x)).Select(x => StringValue.Create(x + ' ')).ToArray());
         }
         else
         {
-            var contentItem = GetContentItem(input);
+            var contentItem = GetContentItem(input, ctx);
 
             if (contentItem == null || _fullTextRecursionHelper.IsRecursive(contentItem))
             {
@@ -64,13 +64,13 @@ public class FullTextFilter : ILiquidFilter
             var fullTextAspect = await _contentManager.PopulateAspectAsync<FullTextAspect>(contentItem);
 
             // Remove empty strings as display text is often unused in contained content items.
-            return new ArrayValue(fullTextAspect.Segments.Where(x => !string.IsNullOrEmpty(x)).Select(x => new StringValue(x)).ToArray());
+            return ArrayValue.Create(fullTextAspect.Segments.Where(x => !string.IsNullOrEmpty(x)).Select(x => StringValue.Create(x)).ToArray());
         }
     }
 
-    private static ContentItem GetContentItem(FluidValue input)
+    private static ContentItem GetContentItem(FluidValue input, LiquidTemplateContext ctx)
     {
-        var obj = input.ToObjectValue();
+        var obj = input.ToObjectValue(ctx);
 
         if (obj is not ContentItem contentItem)
         {

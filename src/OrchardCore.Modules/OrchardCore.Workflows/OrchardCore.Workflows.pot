@@ -2046,6 +2046,11 @@ msgstr ""
 
 #: Services/WorkflowsDesignerJSLocalizer.cs
 msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
+msgid "Saved!"
+msgstr ""
+
+#: Services/WorkflowsDesignerJSLocalizer.cs
+msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
 msgid "Saving…"
 msgstr ""
 

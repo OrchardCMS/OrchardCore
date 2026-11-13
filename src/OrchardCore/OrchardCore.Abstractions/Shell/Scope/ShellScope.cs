@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Modules;
+using OrchardCore.Telemetry;
 
 namespace OrchardCore.Environment.Shell.Scope;
 
@@ -331,19 +332,23 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
         // The tenant gets activated here.
         if (!ShellContext.IsActivated)
         {
-            await new ShellScope(ShellContext).UsingAsync(async scope =>
-            {
-                var tenantEvents = scope.ServiceProvider.GetServices<IModularTenantEvents>();
-                foreach (var tenantEvent in tenantEvents)
+            await OrchardCoreTelemetry.MeasureTenantOperationAsync(
+                "Activate tenant",
+                OrchardCoreTelemetry.TenantActivationDuration,
+                ShellContext.Settings.Name,
+                () => new ShellScope(ShellContext).UsingAsync(async scope =>
                 {
-                    await tenantEvent.ActivatingAsync();
-                }
+                    var tenantEvents = scope.ServiceProvider.GetServices<IModularTenantEvents>();
+                    foreach (var tenantEvent in tenantEvents)
+                    {
+                        await tenantEvent.ActivatingAsync();
+                    }
 
-                foreach (var tenantEvent in tenantEvents.Reverse())
-                {
-                    await tenantEvent.ActivatedAsync();
-                }
-            }, activateShell: false);
+                    foreach (var tenantEvent in tenantEvents.Reverse())
+                    {
+                        await tenantEvent.ActivatedAsync();
+                    }
+                }, activateShell: false));
 
             ShellContext.IsActivated = true;
         }

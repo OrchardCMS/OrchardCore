@@ -33,7 +33,7 @@ public class ContentAnchorTag : IAnchorTag
         return false;
     }
 
-    public async ValueTask<Completion> WriteToAsync(IReadOnlyList<FilterArgument> argumentsList, IReadOnlyList<Statement> statements, TextWriter writer, TextEncoder encoder, LiquidTemplateContext context)
+    public async ValueTask<Completion> WriteToAsync(IReadOnlyList<FilterArgument> argumentsList, IReadOnlyList<Statement> statements, IFluidOutput output, TextEncoder encoder, LiquidTemplateContext context)
     {
         var services = context.Services;
         var viewContext = context.ViewContext;
@@ -53,22 +53,22 @@ public class ContentAnchorTag : IAnchorTag
         {
             switch (argument.Name)
             {
-                case "admin_for": adminFor = (await argument.Expression.EvaluateAsync(context)).ToObjectValue() as ContentItem; break;
-                case "display_for": displayFor = (await argument.Expression.EvaluateAsync(context)).ToObjectValue() as ContentItem; break;
-                case "edit_for": editFor = (await argument.Expression.EvaluateAsync(context)).ToObjectValue() as ContentItem; break;
-                case "remove_for": removeFor = (await argument.Expression.EvaluateAsync(context)).ToObjectValue() as ContentItem; break;
-                case "create_for": createFor = (await argument.Expression.EvaluateAsync(context)).ToObjectValue() as ContentItem; break;
+                case "admin_for": adminFor = (await argument.Expression.EvaluateAsync(context)).ToObjectValue(context) as ContentItem; break;
+                case "display_for": displayFor = (await argument.Expression.EvaluateAsync(context)).ToObjectValue(context) as ContentItem; break;
+                case "edit_for": editFor = (await argument.Expression.EvaluateAsync(context)).ToObjectValue(context) as ContentItem; break;
+                case "remove_for": removeFor = (await argument.Expression.EvaluateAsync(context)).ToObjectValue(context) as ContentItem; break;
+                case "create_for": createFor = (await argument.Expression.EvaluateAsync(context)).ToObjectValue(context) as ContentItem; break;
 
                 default:
 
                     if (argument.Name.StartsWith("route_", StringComparison.OrdinalIgnoreCase))
                     {
                         routeValues ??= [];
-                        routeValues[argument.Name[6..]] = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                        routeValues[argument.Name[6..]] = (await argument.Expression.EvaluateAsync(context)).ToStringValue(context);
                     }
                     else
                     {
-                        customAttributes[argument.Name] = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                        customAttributes[argument.Name] = (await argument.Expression.EvaluateAsync(context)).ToStringValue(context);
                     }
 
                     break;
@@ -200,11 +200,11 @@ public class ContentAnchorTag : IAnchorTag
             tagBuilder.Attributes[attribute.Key] = attribute.Value;
         }
 
-        tagBuilder.RenderStartTag().WriteTo(writer, (HtmlEncoder)encoder);
+        output.Write(tagBuilder.RenderStartTag(), (HtmlEncoder)encoder);
 
         if (statements != null && statements.Count > 0)
         {
-            var completion = await statements.RenderStatementsAsync(writer, encoder, context);
+            var completion = await statements.RenderStatementsAsync(output, encoder, context);
 
             if (completion != Completion.Normal)
             {
@@ -213,16 +213,16 @@ public class ContentAnchorTag : IAnchorTag
         }
         else if (!string.IsNullOrEmpty(contentItem.DisplayText))
         {
-            writer.Write(encoder.Encode(contentItem.DisplayText));
+            output.Write(encoder.Encode(contentItem.DisplayText));
         }
         else
         {
             var contentDefinitionManager = services.GetRequiredService<IContentDefinitionManager>();
             var typeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
-            writer.Write(encoder.Encode(typeDefinition.ToString()));
+            output.Write(encoder.Encode(typeDefinition.ToString()));
         }
 
-        tagBuilder.RenderEndTag().WriteTo(writer, (HtmlEncoder)encoder);
+        output.Write(tagBuilder.RenderEndTag(), (HtmlEncoder)encoder);
 
         return Completion.Normal;
 

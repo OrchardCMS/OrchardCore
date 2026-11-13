@@ -120,10 +120,23 @@ using OrchardCore.Users;
 )]
 
 [assembly: Feature(
+    Id = UserConstants.Features.UserSecurity,
+    Name = "User Security",
+    Description = "Provides the page where users manage their two-factor authentication and their passkeys.",
+    Dependencies = [UserConstants.Features.Users],
+    EnabledByDependencyOnly = true,
+    Category = "Security"
+)]
+
+[assembly: Feature(
     Id = UserConstants.Features.TwoFactorAuthentication,
     Name = "Two-Factor Authentication Services",
     Description = "Provides Two-factor core services.",
-    Dependencies = [UserConstants.Features.Users],
+    Dependencies =
+    [
+        UserConstants.Features.Users,
+        UserConstants.Features.UserSecurity,
+    ],
     EnabledByDependencyOnly = true,
     Category = "Security"
 )]
@@ -164,6 +177,18 @@ using OrchardCore.Users;
         UserConstants.Features.TwoFactorAuthentication,
         "OrchardCore.Liquid",
         "OrchardCore.Sms",
+    ],
+    Category = "Security"
+)]
+
+[assembly: Feature(
+    Id = UserConstants.Features.Passkeys,
+    Name = "Passkeys",
+    Description = "Lets users sign in with a passkey, and use it as a two-factor authentication method.",
+    Dependencies =
+    [
+        UserConstants.Features.Users,
+        UserConstants.Features.UserSecurity,
     ],
     Category = "Security"
 )]

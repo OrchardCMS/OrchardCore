@@ -49,6 +49,8 @@ public class DynamicCacheShapeDisplayEvents : IShapeDisplayEvents
 
             var cachedContent = await _dynamicCacheService.GetCachedValueAsync(cacheContext);
 
+            DynamicCacheTelemetry.RecordLookup(context.Shape.Metadata.Type, found: cachedContent != null);
+
             if (cachedContent != null)
             {
                 // The contents of this shape was found in the cache.

@@ -11,6 +11,7 @@ using OrchardCore.Environment.Shell.Removing;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Json;
 using OrchardCore.Modules;
+using OrchardCore.Telemetry;
 using YesSql;
 using YesSql.Indexes;
 using YesSql.Provider.MySql;
@@ -109,6 +110,12 @@ public static class OrchardCoreBuilderExtensions
                     storeConfiguration.SetTablePrefix(tablePrefix);
                 }
 
+                storeConfiguration.ConfigureTelemetry(telemetry =>
+                {
+                    telemetry.IncludeQueryText = yesSqlOptions.IncludeQueryTextInTelemetry;
+                    telemetry.Tags.Add(new(OrchardCoreTelemetryConstants.Attributes.TenantName, shellSettings.Name));
+                });
+
                 var store = StoreFactory.Create(storeConfiguration);
 
                 var indexes = sp.GetServices<IIndexProvider>();
@@ -198,6 +205,7 @@ public static class OrchardCoreBuilderExtensions
             Logger = loggerFactory.CreateLogger("YesSql"),
             ContentSerializer = new DefaultContentJsonSerializer(serializerOptions.Value.SerializerOptions),
             IsolationLevel = yesSqlOptions.IsolationLevel,
+            ConcurrentIndexCreationEnabled = yesSqlOptions.ConcurrentIndexCreationEnabled,
         };
 
         if (yesSqlOptions.IdGenerator != null)

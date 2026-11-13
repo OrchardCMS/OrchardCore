@@ -12,7 +12,7 @@ public static class ContentExtensions
     /// <summary>
     /// These settings instruct merge to replace current value, even for null values.
     /// </summary>
-    private static readonly JsonMergeSettings _jsonMergeSettings = new()
+    private static readonly JsonMergeSettings s_jsonMergeSettings = new()
     {
         MergeArrayHandling = MergeArrayHandling.Replace,
         MergeNullValueHandling = MergeNullValueHandling.Merge,
@@ -222,7 +222,7 @@ public static class ContentExtensions
         var elementData = contentElement.Data[name] as JsonObject;
         if (elementData is not null)
         {
-            elementData.Merge(JObject.FromObject(element, s_jsonReadExistingObjectSettings), _jsonMergeSettings);
+            elementData.Merge(JObject.FromObject(element, s_jsonReadExistingObjectSettings), s_jsonMergeSettings);
         }
         else
         {
@@ -254,7 +254,7 @@ public static class ContentExtensions
     {
         if (contentElement.Data is not null)
         {
-            contentElement.Data.Merge(JObject.FromObject(element.Data), _jsonMergeSettings);
+            contentElement.Data.Merge(JObject.FromObject(element.Data), s_jsonMergeSettings);
             contentElement.Elements.Clear();
         }
         else

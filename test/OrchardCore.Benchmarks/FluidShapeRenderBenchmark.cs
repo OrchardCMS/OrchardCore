@@ -19,8 +19,8 @@ namespace OrchardCore.Benchmarks;
 [MemoryDiagnoser]
 public class FluidShapeRenderBenchmark
 {
-    private static readonly FilterArguments s_filterArguments = new FilterArguments().Add("utc", new DateTimeValue(DateTime.UtcNow)).Add("format", StringValue.Create("MMMM dd, yyyy"));
-    private static readonly FluidValue s_input = ObjectValue.Create(HtmlString.Empty, new TemplateOptions());
+    private static readonly FilterArguments s_filterArguments = new FilterArguments().Add("utc", DateTimeValue.Create(DateTime.UtcNow)).Add("format", StringValue.Create("MMMM dd, yyyy"));
+    private static readonly FluidValue s_input = ObjectValue.Create(HtmlString.Empty, TemplateOptions.Default);
     private static readonly LiquidFilterDelegateResolver<ShapeRenderFilter> s_liquidFilterDelegateResolver;
     private static readonly IServiceProvider s_serviceProvider;
 
@@ -48,7 +48,7 @@ public class FluidShapeRenderBenchmark
 #pragma warning disable CA1822 // Mark members as static
     public async Task OriginalShapeRenderDynamic()
     {
-        var templateContext = new LiquidTemplateContext(s_serviceProvider, new TemplateOptions());
+        var templateContext = new LiquidTemplateContext(s_serviceProvider, TemplateOptions.Default);
         var displayHelper = s_serviceProvider.GetRequiredService<IDisplayHelper>();
         templateContext.AmbientValues["DisplayHelper"] = displayHelper;
         await OriginalShapeRenderDynamic(s_input, s_filterArguments, templateContext);
@@ -57,7 +57,7 @@ public class FluidShapeRenderBenchmark
     [Benchmark]
     public async Task ShapeRenderWithAmbientValues()
     {
-        var templateContext = new LiquidTemplateContext(s_serviceProvider, new TemplateOptions());
+        var templateContext = new LiquidTemplateContext(s_serviceProvider, TemplateOptions.Default);
         var displayHelper = s_serviceProvider.GetRequiredService<IDisplayHelper>();
         templateContext.AmbientValues["DisplayHelper"] = displayHelper;
         await ShapeRenderWithAmbientValues(s_input, s_filterArguments, templateContext);
@@ -66,7 +66,7 @@ public class FluidShapeRenderBenchmark
     [Benchmark]
     public async Task ShapeRenderStatic()
     {
-        var templateContext = new LiquidTemplateContext(s_serviceProvider, new TemplateOptions());
+        var templateContext = new LiquidTemplateContext(s_serviceProvider, TemplateOptions.Default);
         await ShapeRenderStatic(s_input, s_filterArguments, templateContext);
     }
 
@@ -74,7 +74,7 @@ public class FluidShapeRenderBenchmark
     public async Task ShapeRenderWithResolver()
 #pragma warning restore CA1822 // Mark members as static
     {
-        var templateContext = new LiquidTemplateContext(s_serviceProvider, new TemplateOptions());
+        var templateContext = new LiquidTemplateContext(s_serviceProvider, TemplateOptions.Default);
         await s_liquidFilterDelegateResolver.ResolveAsync(s_input, s_filterArguments, templateContext);
     }
 
@@ -103,7 +103,7 @@ public class FluidShapeRenderBenchmark
             return new HtmlContentValue(await task);
         }
 
-        if (input.ToObjectValue() is IShape shape)
+        if (input.ToObjectValue(context) is IShape shape)
         {
             if (!context.AmbientValues.TryGetValue("DisplayHelper", out var item) || item is not IDisplayHelper displayHelper)
             {
@@ -128,7 +128,7 @@ public class FluidShapeRenderBenchmark
             return new HtmlContentValue(await task);
         }
 
-        if (input.ToObjectValue() is IShape shape)
+        if (input.ToObjectValue(context) is IShape shape)
         {
             var services = ((LiquidTemplateContext)context).Services;
 

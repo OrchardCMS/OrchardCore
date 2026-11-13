@@ -27,6 +27,11 @@ window.notificationManager = function () {
         if (unreadBadgeSelector) {
             unreadElement = document.querySelector(unreadBadgeSelector);
 
+            // A capped count, such as '100+', is only a lower bound: it can't be decremented.
+            if (unreadElement?.dataset.capped === 'true') {
+                unreadElement = null;
+            }
+
             if (unreadElement) {
                 totalUnread = parseInt(unreadElement.innerText)
             }

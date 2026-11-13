@@ -17,7 +17,6 @@ using OrchardCore.Markdown.Indexing;
 using OrchardCore.Markdown.Models;
 using OrchardCore.Markdown.Services;
 using OrchardCore.Markdown.Settings;
-using OrchardCore.Markdown.ViewModels;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Markdown;
@@ -35,10 +34,8 @@ public sealed class Startup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.Configure<TemplateOptions>(o =>
+        services.Configure<TemplateOptionsBuilder>(o =>
         {
-            o.MemberAccessStrategy.Register<MarkdownBodyPartViewModel>();
-            o.MemberAccessStrategy.Register<MarkdownFieldViewModel>();
         })
         .AddLiquidFilter<Markdownify>("markdownify");
 

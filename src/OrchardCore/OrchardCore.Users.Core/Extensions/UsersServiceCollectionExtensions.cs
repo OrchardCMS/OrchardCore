@@ -38,6 +38,7 @@ public static class UsersServiceCollectionExtensions
         services.TryAddScoped<IUserAuthenticatorKeyStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
         services.TryAddScoped<IUserAuthenticationTokenStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
         services.TryAddScoped<IUserPhoneNumberStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
+        services.TryAddScoped<IUserPasskeyStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
 
         services.AddScoped<NullRoleStore>();
         services.TryAddScoped<IRoleClaimStore<IRole>>(sp => sp.GetRequiredService<NullRoleStore>());
@@ -49,6 +50,7 @@ public static class UsersServiceCollectionExtensions
         services.AddIndexProvider<UserIndexProvider>();
         services.AddIndexProvider<UserByLoginInfoIndexProvider>();
         services.AddIndexProvider<UserByClaimIndexProvider>();
+        services.AddIndexProvider<UserByPasskeyIndexProvider>();
 
         services.AddSingleton<PasswordTimingNormalizationService>();
         services.AddScoped<IUserService, UserService>();

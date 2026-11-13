@@ -197,12 +197,12 @@ public class ScriptingBenchmark
     /// </summary>
     private sealed class TokenMethodProvider : IGlobalMethodProvider
     {
-        private static readonly GlobalMethod _token = new()
+        private static readonly GlobalMethod s_token = new()
         {
             Name = "token",
             Method = _ => (Func<string>)(() => "token"),
         };
 
-        public IEnumerable<GlobalMethod> GetMethods() => [_token];
+        public IEnumerable<GlobalMethod> GetMethods() => [s_token];
     }
 }

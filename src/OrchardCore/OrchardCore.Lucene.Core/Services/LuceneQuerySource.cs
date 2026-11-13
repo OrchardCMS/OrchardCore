@@ -109,7 +109,7 @@ public sealed class LuceneQuerySource : IQuerySource
                 var dbContentItems = await _session.Query<ContentItem, ContentItemIndex>(x => x.ContentItemVersionId.IsIn(indexedContentItemVersionIds)).ListAsync();
 
                 // Reorder the result to preserve the one from the Lucene query.
-                if (dbContentItems.Any())
+                if (dbContentItems.Count > 0)
                 {
                     var dbContentItemVersionIds = dbContentItems.ToDictionary(x => x.ContentItemVersionId, x => x);
                     var indexedAndInDB = indexedContentItemVersionIds.Where(dbContentItemVersionIds.ContainsKey);

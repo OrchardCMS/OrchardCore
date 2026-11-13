@@ -57,11 +57,6 @@ public sealed class Startup : Modules.StartupBase
             {
                 var hostingEnvironment = serviceProvider.GetRequiredService<IWebHostEnvironment>();
 
-                if (string.IsNullOrWhiteSpace(hostingEnvironment.WebRootPath))
-                {
-                    throw new MediaConfigurationException("The wwwroot folder for serving cache media files is missing.");
-                }
-
                 var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>().Value;
                 var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
                 var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
@@ -138,7 +133,7 @@ public sealed class Startup : Modules.StartupBase
     }
 
     private static string GetMediaCachePath(IWebHostEnvironment hostingEnvironment, ShellSettings shellSettings, string assetsPath)
-        => PathExtensions.Combine(hostingEnvironment.WebRootPath, shellSettings.Name, assetsPath);
+        => PathExtensions.Combine(hostingEnvironment.GetWebRootPathOrDefault(), shellSettings.Name, assetsPath);
 
     private static bool CheckOptions(string connectionString, string containerName, ILogger logger)
     {
@@ -220,9 +215,25 @@ public sealed class MediaAzureImageCacheStartup : Modules.StartupBase
 [RequireFeatures("OrchardCore.Media.Tus")]
 public sealed class MediaAzureTusStartup : Modules.StartupBase
 {
+    private readonly IShellConfiguration _configuration;
+
+    public MediaAzureTusStartup(IShellConfiguration configuration)
+    {
+        _configuration = configuration;
+    }
+
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.Replace(ServiceDescriptor.Singleton<ITusTempStore, AzureBlobTusTempStore>());
+        // Only replace the default local store if options are valid.
+        // The 'OrchardCore_Media_Azure' section is deprecated and will be removed in a future major version, use 'Media:Azure' instead.
+        var section = _configuration.GetSectionCompat("Media:Azure", "OrchardCore_Media_Azure");
+        var connectionString = section.GetValue<string>(nameof(MediaBlobStorageOptions.ConnectionString));
+        var containerName = section.GetValue<string>(nameof(MediaBlobStorageOptions.ContainerName));
+
+        if (!string.IsNullOrWhiteSpace(connectionString) && !string.IsNullOrWhiteSpace(containerName))
+        {
+            services.Replace(ServiceDescriptor.Singleton<ITusTempStore, AzureBlobTusTempStore>());
+        }
     }
 }
 

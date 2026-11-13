@@ -202,6 +202,22 @@ public class PoParserTests
     }
 
     [Fact]
+    public async Task ParseAsync_Default_DoesNotReuseContextOfEntryWithoutTranslation()
+    {
+        // msgctxt "OrchardCore.Users.Controllers.AccountController"
+        // msgid "Invalid login attempt."
+        // msgstr ""
+
+        // msgid "Unknown system error"
+        // msgstr "Error desconegut del sistema"
+        var entries = await ParseTextAsync("EntryAfterUntranslatedEntryWithContext");
+
+        Assert.Single(entries);
+        Assert.Equal("Unknown system error", entries[0].Key);
+        Assert.Equal("Error desconegut del sistema", entries[0].Translations[0]);
+    }
+
+    [Fact]
     public void Parse_Default_ReturnsSimpleEntry()
     {
         // msgid "Unknown system error"
@@ -475,6 +491,22 @@ public class PoParserTests
                 Assert.Equal(PluralizationRule.Czech(n), entry.PluralRule(n));
             }
         }
+    }
+
+    [Fact]
+    public void Parse_Default_DoesNotReuseContextOfEntryWithoutTranslation()
+    {
+        // msgctxt "OrchardCore.Users.Controllers.AccountController"
+        // msgid "Invalid login attempt."
+        // msgstr ""
+
+        // msgid "Unknown system error"
+        // msgstr "Error desconegut del sistema"
+        var entries = ParseText("EntryAfterUntranslatedEntryWithContext");
+
+        Assert.Single(entries);
+        Assert.Equal("Unknown system error", entries[0].Key);
+        Assert.Equal("Error desconegut del sistema", entries[0].Translations[0]);
     }
 
     private static async Task<CultureDictionaryRecord[]> ParseTextAsync(string resourceName)

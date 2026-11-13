@@ -104,12 +104,18 @@
             "PollingTime": {
               "type": "string",
               "default": "00:01:00",
-              "description": "The time to wait between two executions of all the background tasks of a given tenant, in the 'hh:mm:ss' format."
+              "description": "The time to wait between two executions of all the background tasks of a given tenant, in the 'hh:mm:ss' format. It also bounds how long the background service waits for a task before running the others."
             },
             "MinimumIdleTime": {
               "type": "string",
               "default": "00:00:10",
               "description": "The minimum idle time before the background tasks of a tenant are triggered, as well as between tasks, in the 'hh:mm:ss' format."
+            },
+            "MaxRecentRuns": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 10,
+              "description": "The number of completed runs kept in memory for each background task, to be shown with its execution state in the admin."
             }
           }
         },

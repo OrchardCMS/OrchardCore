@@ -1,0 +1,51 @@
+@using OrchardCore
+@using OrchardCore.BackgroundTasks.ViewModels
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.Modules
+
+@inject IClock Clock
+
+@model ShapeViewModel<BackgroundTaskEntry>
+
+@{
+    var state = Model.Value.State;
+
+    // Whether the task is enabled comes from its settings, which the background service only picks up on its next polling.
+    var nextStartTime = Model.Value.Enable ? state?.NextStartTime : null;
+
+    // In the grid, the header of the column already names the value.
+    var showLabel = Model.Metadata.DisplayType != OrchardCoreConstants.DisplayType.SummaryAdminGrid;
+}
+
+@if (state is not null)
+{
+    <span class="badge ta-badge fw-normal" data-next-run title="@(nextStartTime is null ? null : await DisplayAsync(await New.DateTime(Utc: nextStartTime.Value, Format: "G")))">
+        <i class="fa-regular fa-clock text-secondary" aria-hidden="true"></i>
+        @if (showLabel)
+        {
+            <span class="fw-bold">@T["Next run"]</span>
+        }
+        @if (nextStartTime <= Clock.UtcNow)
+        {
+            @* The background service picks it up on its next polling, or once the tasks being run complete. *@
+            @T["due"]
+        }
+        else if (nextStartTime is not null)
+        {
+            @await DisplayAsync(await New.TimeSpan(Utc: nextStartTime.Value))
+        }
+        else if (Model.Value.Enable)
+        {
+            @T["never"]
+        }
+        else
+        {
+            @T["not scheduled"]
+        }
+    </span>
+}
+else if (!showLabel)
+{
+    @* The background service didn't load the task yet, as the status column tells. *@
+    <span class="text-muted">&mdash;</span>
+}

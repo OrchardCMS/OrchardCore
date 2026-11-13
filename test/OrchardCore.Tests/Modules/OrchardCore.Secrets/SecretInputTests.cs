@@ -1,6 +1,7 @@
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using OrchardCore.Secrets;
+using Secret = OrchardCore.Secrets.Secret;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Secrets;
 
@@ -107,7 +108,7 @@ public class SecretInputTests
     [Fact]
     public async Task GetSecretValueAsync_PrefersTheReferencedSecret()
     {
-        _secretManager.Setup(m => m.GetSecretAsync<TextSecret>("Existing")).ReturnsAsync(new TextSecret { Text = "from-secret" });
+        _secretManager.Setup(m => m.GetSecretAsync("Existing")).ReturnsAsync(new TextSecret { Text = "from-secret" });
 
         var value = await CreateServices(withSecrets: true).GetSecretValueAsync("Existing", _protector.Protect("from-settings"), _protector);
 
@@ -146,7 +147,7 @@ public class SecretInputTests
 
         Assert.True(moved);
         Assert.True(Assert.Single(migration.Results).Succeeded);
-        _secretManager.Verify(m => m.SaveSecretAsync("New", It.Is<TextSecret>(s => s.Text == "stored"), "Vault", It.IsAny<SecretSaveOptions>()), Times.Once);
+        _secretManager.Verify(m => m.SaveSecretAsync("New", It.Is<Secret>(s => s.Value is TextSecret && ((TextSecret)s.Value).Text == "stored"), "Vault", It.IsAny<SecretSaveOptions>()), Times.Once);
 
         // The settings reference the secret only once every secret is saved.
         Assert.Null(referenced);
@@ -178,13 +179,13 @@ public class SecretInputTests
         Assert.Equal(
             new[] { SecretMigrationError.AlreadyExists, SecretMigrationError.DecryptionFailed, SecretMigrationError.MissingName },
             migration.Results.Select(result => result.Error));
-        _secretManager.Verify(m => m.SaveSecretAsync(It.IsAny<string>(), It.IsAny<TextSecret>(), It.IsAny<string>(), It.IsAny<SecretSaveOptions>()), Times.Never);
+        _secretManager.Verify(m => m.SaveSecretAsync(It.IsAny<string>(), It.IsAny<Secret>(), It.IsAny<string>(), It.IsAny<SecretSaveOptions>()), Times.Never);
     }
 
     [Fact]
     public async Task MoveToSecretAsync_WhenTheStoreFails_ReportsStoreFailed()
     {
-        _secretManager.Setup(m => m.SaveSecretAsync(It.IsAny<string>(), It.IsAny<TextSecret>(), It.IsAny<string>(), It.IsAny<SecretSaveOptions>()))
+        _secretManager.Setup(m => m.SaveSecretAsync(It.IsAny<string>(), It.IsAny<Secret>(), It.IsAny<string>(), It.IsAny<SecretSaveOptions>()))
             .ThrowsAsync(new InvalidOperationException("Store unavailable"));
         var migration = new SecretMigration { Store = "Vault" };
 

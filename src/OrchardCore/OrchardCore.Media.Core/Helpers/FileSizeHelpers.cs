@@ -3,7 +3,7 @@ namespace OrchardCore.Media.Core.Helpers;
 [Obsolete($"This class is deprecated. Use {nameof(FileSizeHelper)} instead.")]
 public static class FileSizeHelpers
 {
-    private static string[] s_fileSizeUnits = ["KB", "MB", "GB", "TB", "PB", "EB"];
+    private static readonly string[] s_fileSizeUnits = ["KB", "MB", "GB", "TB", "PB", "EB"];
 
     /// <summary>
     /// Formats <paramref name="bytes"/> as text, matching the closest byte unit. For example "1050" becomes "1.02 KB". 

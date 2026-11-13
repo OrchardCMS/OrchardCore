@@ -81,6 +81,30 @@ public sealed class DefaultNotificationsAdminListFilterProvider : INotificationA
                 })
                 .AlwaysRun()
             )
+            .WithNamedTerm("type", builder => builder
+                .OneCondition((val, query, ctx) =>
+                {
+                    if (!string.IsNullOrEmpty(val))
+                    {
+                        query.With<NotificationIndex>(x => x.Type == val);
+                    }
+
+                    return ValueTask.FromResult(query);
+                })
+                .MapTo<ListNotificationOptions>((val, model) =>
+                {
+                    model.Type = val;
+                })
+                .MapFrom<ListNotificationOptions>((model) =>
+                {
+                    if (!string.IsNullOrEmpty(model.Type))
+                    {
+                        return (true, model.Type);
+                    }
+
+                    return (false, string.Empty);
+                })
+            )
             .WithDefaultTerm("text", builder => builder
                 .ManyCondition(
                         (val, query) => query.With<NotificationIndex>(x => x.Content.Contains(val)),

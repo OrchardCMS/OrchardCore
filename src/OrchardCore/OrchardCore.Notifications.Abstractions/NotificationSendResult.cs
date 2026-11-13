@@ -6,6 +6,11 @@ namespace OrchardCore.Notifications;
 public sealed class NotificationSendResult
 {
     /// <summary>
+    /// Gets or sets the notification stored in the notification center of the recipient.
+    /// </summary>
+    public Notification Notification { get; set; }
+
+    /// <summary>
     /// Gets or sets the number of notification methods that sent the notification successfully.
     /// </summary>
     public int SuccessfulCount { get; set; }

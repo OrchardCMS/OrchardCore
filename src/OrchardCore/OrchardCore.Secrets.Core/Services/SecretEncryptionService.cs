@@ -23,9 +23,9 @@ public class SecretEncryptionService : ISecretEncryptionService
     }
 
     /// <inheritdoc />
-    public async Task<EncryptedSecretData> EncryptAsync(ISecret secret, string encryptionKeyName, SecretInfo info)
+    public async Task<EncryptedSecretData> EncryptAsync(Secret secret, string encryptionKeyName, SecretInfo info)
     {
-        ArgumentNullException.ThrowIfNull(secret);
+        ArgumentNullException.ThrowIfNull(secret.Value, nameof(secret));
         ArgumentException.ThrowIfNullOrWhiteSpace(encryptionKeyName);
         ArgumentNullException.ThrowIfNull(info);
 
@@ -33,7 +33,7 @@ public class SecretEncryptionService : ISecretEncryptionService
         using var rsa = await GetRsaForEncryptionAsync(encryptionKeyName);
 
         var provider = GetProvider(info.Type);
-        if (secret.GetType() != provider.SecretType)
+        if (secret.Value.GetType() != provider.SecretType)
         {
             throw new InvalidOperationException("The secret type does not match the export metadata.");
         }
@@ -66,7 +66,7 @@ public class SecretEncryptionService : ISecretEncryptionService
     }
 
     /// <inheritdoc />
-    public async Task<ISecret> DecryptAsync(EncryptedSecretData encryptedData, string decryptionKeyName, SecretInfo info)
+    public async Task<Secret> DecryptAsync(EncryptedSecretData encryptedData, string decryptionKeyName, SecretInfo info)
     {
         ArgumentNullException.ThrowIfNull(encryptedData);
         ArgumentException.ThrowIfNullOrWhiteSpace(decryptionKeyName);
@@ -103,89 +103,79 @@ public class SecretEncryptionService : ISecretEncryptionService
 
     private async Task<RSA> GetRsaForEncryptionAsync(string keyName)
     {
-        // Try RsaKeySecret first
-        var rsaSecret = await _secretManager.GetSecretAsync<RsaKeySecret>(keyName);
-        if (rsaSecret != null)
+        switch (await _secretManager.GetSecretAsync(keyName))
         {
-            if (string.IsNullOrEmpty(rsaSecret.PublicKey))
-            {
-                throw new InvalidOperationException($"RSA key '{keyName}' does not have a public key.");
-            }
+            case RsaKeySecret rsaSecret:
+                if (string.IsNullOrEmpty(rsaSecret.PublicKey))
+                {
+                    throw new InvalidOperationException($"RSA key '{keyName}' does not have a public key.");
+                }
 
-            var rsa = RSA.Create();
-            rsa.ImportRSAPublicKey(Convert.FromBase64String(rsaSecret.PublicKey), out _);
-            return rsa;
+                var rsa = RSA.Create();
+                rsa.ImportRSAPublicKey(Convert.FromBase64String(rsaSecret.PublicKey), out _);
+                return rsa;
+
+            case X509Secret x509Secret:
+                using (var cert = x509Secret.GetCertificate())
+                {
+                    if (cert == null)
+                    {
+                        throw new InvalidOperationException($"Certificate for '{keyName}' could not be loaded.");
+                    }
+
+                    using var certificateRsa = cert.GetRSAPublicKey()
+                        ?? throw new InvalidOperationException($"Certificate '{keyName}' does not have an RSA public key.");
+
+                    // Create a copy since the cert's RSA key is tied to the cert's lifetime
+                    var rsaCopy = RSA.Create();
+                    rsaCopy.ImportRSAPublicKey(certificateRsa.ExportRSAPublicKey(), out _);
+                    return rsaCopy;
+                }
+
+            default:
+                throw new InvalidOperationException($"Encryption key '{keyName}' was not found. Expected RsaKeySecret or X509Secret.");
         }
-
-        // Try X509Secret
-        var x509Secret = await _secretManager.GetSecretAsync<X509Secret>(keyName);
-        if (x509Secret != null)
-        {
-            using var cert = x509Secret.GetCertificate();
-            if (cert == null)
-            {
-                throw new InvalidOperationException($"Certificate for '{keyName}' could not be loaded.");
-            }
-
-            using var rsa = cert.GetRSAPublicKey();
-            if (rsa == null)
-            {
-                throw new InvalidOperationException($"Certificate '{keyName}' does not have an RSA public key.");
-            }
-
-            // Create a copy since the cert's RSA key is tied to the cert's lifetime
-            var rsaCopy = RSA.Create();
-            rsaCopy.ImportRSAPublicKey(rsa.ExportRSAPublicKey(), out _);
-            return rsaCopy;
-        }
-
-        throw new InvalidOperationException($"Encryption key '{keyName}' was not found. Expected RsaKeySecret or X509Secret.");
     }
 
     private async Task<RSA> GetRsaForDecryptionAsync(string keyName)
     {
-        // Try RsaKeySecret first
-        var rsaSecret = await _secretManager.GetSecretAsync<RsaKeySecret>(keyName);
-        if (rsaSecret != null)
+        switch (await _secretManager.GetSecretAsync(keyName))
         {
-            if (!rsaSecret.IncludesPrivateKey || string.IsNullOrEmpty(rsaSecret.PrivateKey))
-            {
-                throw new InvalidOperationException($"RSA key '{keyName}' does not have a private key for decryption.");
-            }
+            case RsaKeySecret rsaSecret:
+                if (!rsaSecret.IncludesPrivateKey || string.IsNullOrEmpty(rsaSecret.PrivateKey))
+                {
+                    throw new InvalidOperationException($"RSA key '{keyName}' does not have a private key for decryption.");
+                }
 
-            var rsa = RSA.Create();
-            rsa.ImportRSAPrivateKey(Convert.FromBase64String(rsaSecret.PrivateKey), out _);
-            return rsa;
+                var rsa = RSA.Create();
+                rsa.ImportRSAPrivateKey(Convert.FromBase64String(rsaSecret.PrivateKey), out _);
+                return rsa;
+
+            case X509Secret x509Secret:
+                using (var cert = x509Secret.GetCertificate())
+                {
+                    if (cert == null)
+                    {
+                        throw new InvalidOperationException($"Certificate for '{keyName}' could not be loaded.");
+                    }
+
+                    if (!cert.HasPrivateKey)
+                    {
+                        throw new InvalidOperationException($"Certificate '{keyName}' does not have a private key for decryption.");
+                    }
+
+                    using var certificateRsa = cert.GetRSAPrivateKey()
+                        ?? throw new InvalidOperationException($"Certificate '{keyName}' does not have an RSA private key.");
+
+                    // Create a copy since the cert's RSA key is tied to the cert's lifetime
+                    var rsaCopy = RSA.Create();
+                    rsaCopy.ImportRSAPrivateKey(certificateRsa.ExportRSAPrivateKey(), out _);
+                    return rsaCopy;
+                }
+
+            default:
+                throw new InvalidOperationException($"Decryption key '{keyName}' was not found. Expected RsaKeySecret or X509Secret.");
         }
-
-        // Try X509Secret
-        var x509Secret = await _secretManager.GetSecretAsync<X509Secret>(keyName);
-        if (x509Secret != null)
-        {
-            using var cert = x509Secret.GetCertificate();
-            if (cert == null)
-            {
-                throw new InvalidOperationException($"Certificate for '{keyName}' could not be loaded.");
-            }
-
-            if (!cert.HasPrivateKey)
-            {
-                throw new InvalidOperationException($"Certificate '{keyName}' does not have a private key for decryption.");
-            }
-
-            using var rsa = cert.GetRSAPrivateKey();
-            if (rsa == null)
-            {
-                throw new InvalidOperationException($"Certificate '{keyName}' does not have an RSA private key.");
-            }
-
-            // Create a copy since the cert's RSA key is tied to the cert's lifetime
-            var rsaCopy = RSA.Create();
-            rsaCopy.ImportRSAPrivateKey(rsa.ExportRSAPrivateKey(), out _);
-            return rsaCopy;
-        }
-
-        throw new InvalidOperationException($"Decryption key '{keyName}' was not found. Expected RsaKeySecret or X509Secret.");
     }
 
     private ISecretTypeProvider GetProvider(string typeName) =>
