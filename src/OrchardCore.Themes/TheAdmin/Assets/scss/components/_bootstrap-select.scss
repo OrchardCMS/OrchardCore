@@ -1,0 +1,18 @@
+/*
+ Filters of the admin lists rendered with bootstrap-select.
+
+ bootstrap-select greys the toggle out (.bs-placeholder) while nothing is selected, which is right for a form field
+ whose title is a placeholder, but not for a filter: its title is the name of the filter whatever is selected, e.g.
+ a multiple "Visibility" filter with options selected next to a "Status" filter without, so the filters of a list
+ looked different from each other. Filters, in an admin list or showing a static title, keep the color of their
+ button.
+*/
+.admin-list .bootstrap-select > .btn.dropdown-toggle.bs-placeholder,
+.bootstrap-select > select[data-selected-text-format="static"] + .btn.dropdown-toggle.bs-placeholder {
+    &,
+    &:hover,
+    &:focus,
+    &:active {
+        color: var(--bs-btn-color);
+    }
+}
