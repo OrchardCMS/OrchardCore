@@ -327,7 +327,9 @@ public class ShapePipelineBenchmark
         public ShapeResult Build(string shapeType, string location)
         {
             return Initialize<TitlePartViewModel>(shapeType, static m => m.Title = "Hello")
+#pragma warning disable OCSG003 // The callers pass constant locations, none with a tab or a card.
                 .Location(location)
+#pragma warning restore OCSG003
                 .Differentiator(shapeType)
                 .Displaying(static ctx => ctx.Shape.Metadata.Alternates.AddRange(s_partAlternates));
         }
