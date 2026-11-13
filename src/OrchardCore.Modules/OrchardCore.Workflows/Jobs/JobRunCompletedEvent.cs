@@ -66,10 +66,13 @@ public sealed class JobRunCompletedEvent : EventActivity, IActivityDescription
         var jobName = run.TryGetValue("JobName", out var name) ? name?.ToString() : null;
         var status = run.TryGetValue("Status", out var runStatus) ? runStatus?.ToString() : null;
 
+        // A run that a more recent run replaced was canceled, which is not a failure of its work.
+        var superseded = run.TryGetValue("Superseded", out var replaced) && replaced is true;
+
         var jobMatches = string.IsNullOrEmpty(JobName) || string.Equals(jobName, JobName, StringComparison.OrdinalIgnoreCase);
         var statusMatches = string.IsNullOrEmpty(Status) ||
             (Status == FailedStatus
-                ? status is nameof(JobRunStatus.Failed) or nameof(JobRunStatus.Canceled)
+                ? status is nameof(JobRunStatus.Failed) || (status is nameof(JobRunStatus.Canceled) && !superseded)
                 : status == Status);
 
         return Task.FromResult(jobMatches && statusMatches);

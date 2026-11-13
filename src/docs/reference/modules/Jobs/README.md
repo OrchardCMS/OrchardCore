@@ -212,11 +212,31 @@ var run = await _jobManager.EnqueueAsync<SendNewsletterJob>(
 | `DueUtc` | When the run may start. Without it, the run starts as soon as a server is available. |
 | `DeduplicationKey` | Prevents the same work from being queued twice: while a run of the job with this key didn't end, queuing another one returns that run. With `ReplaceQueued`, a run that didn't start gets the parameters and the due date of the request, which reschedules it. |
 | `ConcurrencyKey` | Makes the runs with the same key execute one at a time, on any server. |
+| `CancelInProgress` | Makes the run replace the runs with the same `ConcurrencyKey` that were queued before it and didn't end, see [Replacing the runs in progress](#replacing-the-runs-in-progress). |
 | `CorrelationId` | Links the run to what queues it, such as a content item. |
 | `MaxAttempts` | Replaces the number of attempts of the job for this run. |
 | `RequireCurrentNode` | Makes the server that queues the run the only one that may execute it, for a run that needs something only this server has, such as a file it just received. Such a run fails when this server stops before executing it. |
 
 `IJobManager` also finds a run (`GetAsync`, `FindActiveAsync`, `FindLastAsync`), cancels it (`CancelAsync`), queues it again (`RerunAsync`) and deletes it (`DeleteAsync`).
+
+### Replacing the Runs in Progress
+
+By default, a run waits for the runs with the same `ConcurrencyKey` to end. When a more recent request makes the work of the previous ones useless, such as generating again a file that is being generated, set `CancelInProgress` as well:
+
+```csharp
+await _jobManager.EnqueueAsync<GenerateCatalogJob>(parameters, request =>
+{
+    request.ConcurrencyKey = $"Catalog:{catalog.Id}";
+    request.CancelInProgress = true;
+});
+```
+
+- The runs with the same key that didn't start are canceled.
+- The ones that execute are asked to stop. The job has to observe its cancellation token for that: a job that doesn't runs to its end.
+- The new run starts once they ended, so two runs with the same key never execute at the same time.
+- Among runs that are queued at the same time, the most recent one does the work.
+
+A run that was replaced is shown as canceled, with an error telling it was superseded by a more recent run, and its `Superseded` property is `true`.
 
 ### Splitting Work in Child Runs
 
@@ -268,7 +288,7 @@ services.AddScoped<IJobRunHandler, NewsletterJobRunHandler>();
 With the [Workflows](../Workflows/README.md) feature:
 
 - The **Run Job** task queues a run of a job that can be run from the admin, with a title and parameters written with Liquid, and can wait for the run to end. The workflow then continues with the **Succeeded** or **Failed** outcome, and the run as its last result and its `JobRun` output.
-- The **Job Run Completed** event starts or resumes a workflow when a run ends, for one job or for all of them, and for the runs that succeeded or failed.
+- The **Job Run Completed** event starts or resumes a workflow when a run ends, for one job or for all of them, and for the runs that succeeded or failed. A run that a more recent run replaced is not a failed run for this event.
 - The **Run Workflow** job starts an instance of a workflow. Its parameters are the `WorkflowTypeId` of the workflow, and optionally the `Inputs` of its input variables and a `CorrelationId`. Schedule it to run a workflow at the occurrences of a cron expression on a single server.
 
 ## Jobs of the Built-in Features

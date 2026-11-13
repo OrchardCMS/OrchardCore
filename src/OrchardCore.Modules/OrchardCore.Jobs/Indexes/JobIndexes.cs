@@ -40,6 +40,11 @@ public sealed class JobRunIndex : MapIndex
 
     public string ConcurrencyKey { get; set; }
 
+    /// <summary>
+    /// Whether the run replaces the runs with the same concurrency key that were queued before it.
+    /// </summary>
+    public bool CancelInProgress { get; set; }
+
     public string ParentRunId { get; set; }
 
     public string ScheduleId { get; set; }
@@ -86,6 +91,7 @@ public sealed class JobRunIndexProvider : IndexProvider<JobRun>
                 CorrelationId = Truncate(run.CorrelationId, JobRunIndex.MaxKeyLength),
                 DeduplicationKey = Truncate(run.DeduplicationKey, JobRunIndex.MaxKeyLength),
                 ConcurrencyKey = Truncate(run.ConcurrencyKey, JobRunIndex.MaxKeyLength),
+                CancelInProgress = run.CancelInProgress,
                 ParentRunId = run.ParentRunId,
                 ScheduleId = Truncate(run.ScheduleId, JobRunIndex.MaxKeyLength),
             });

@@ -84,8 +84,11 @@ public sealed class JobsBackgroundTask : IBackgroundTask
         }
 
         // A run that stopped reporting was abandoned by its server, such as when it restarted.
-        var staleBefore = now - options.AbandonedAfter;
-        var orphanedBefore = now - _orphanedAfter;
+        // A run misses several heartbeats before it is considered abandoned, whatever their interval: a run can
+        // still execute in the previous context of a tenant that was reloaded, which this context doesn't track.
+        var missedHeartbeats = options.HeartbeatInterval * 3;
+        var staleBefore = now - (options.AbandonedAfter > missedHeartbeats ? options.AbandonedAfter : missedHeartbeats);
+        var orphanedBefore = now - (_orphanedAfter > missedHeartbeats ? _orphanedAfter : missedHeartbeats);
         var stale = await session.QueryIndex<JobRunIndex>(index => index.Status == running && (index.HeartbeatUtc < staleBefore || (index.NodeId == nodeId && index.HeartbeatUtc < orphanedBefore)), collection: JobRun.Collection)
             .Take(BatchSize)
             .ListAsync(cancellationToken);
@@ -139,7 +142,15 @@ public sealed class JobsBackgroundTask : IBackgroundTask
 
                 const string message = "The server that was executing the run stopped.";
 
-                if (run.Attempt < run.MaxAttempts)
+                if (run.CancellationRequested)
+                {
+                    // Its cancellation was requested, which its server didn't record: it isn't tried again.
+                    run.Status = JobRunStatus.Canceled;
+                    run.CompletedUtc = now;
+                    run.Error = run.Superseded ? JobRunCoordinator.SupersededError : "The run was canceled.";
+                    requeued = false;
+                }
+                else if (run.Attempt < run.MaxAttempts)
                 {
                     run.Status = JobRunStatus.Queued;
                     run.DueUtc = now;
@@ -164,7 +175,7 @@ public sealed class JobsBackgroundTask : IBackgroundTask
                 return;
             }
 
-            logger.LogWarning("The job run '{RunId}' stopped reporting and was {Outcome}.", runId, requeued ? "queued again" : "marked as failed");
+            logger.LogWarning("The job run '{RunId}' stopped reporting and was {Outcome}.", runId, requeued ? "queued again" : run.Status == JobRunStatus.Canceled ? "canceled" : "marked as failed");
 
             if (requeued)
             {

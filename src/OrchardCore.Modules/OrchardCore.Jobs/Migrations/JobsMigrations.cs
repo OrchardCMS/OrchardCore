@@ -22,6 +22,7 @@ public sealed class JobsMigrations : DataMigration
             .Column<string>(nameof(JobRunIndex.CorrelationId), column => column.Nullable().WithLength(JobRunIndex.MaxKeyLength))
             .Column<string>(nameof(JobRunIndex.DeduplicationKey), column => column.Nullable().WithLength(JobRunIndex.MaxKeyLength))
             .Column<string>(nameof(JobRunIndex.ConcurrencyKey), column => column.Nullable().WithLength(JobRunIndex.MaxKeyLength))
+            .Column<bool>(nameof(JobRunIndex.CancelInProgress))
             .Column<string>(nameof(JobRunIndex.ParentRunId), column => column.Nullable().WithLength(JobRunIndex.MaxIdLength))
             .Column<string>(nameof(JobRunIndex.ScheduleId), column => column.Nullable().WithLength(JobRunIndex.MaxKeyLength)),
             collection: JobRun.Collection);

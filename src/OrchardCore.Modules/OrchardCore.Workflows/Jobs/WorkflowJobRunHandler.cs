@@ -2,6 +2,7 @@ using System.Text.Json.Nodes;
 using OrchardCore.Jobs;
 using OrchardCore.Jobs.Models;
 using OrchardCore.Workflows.Services;
+using OrchardCore.Workflows.Timers;
 
 namespace OrchardCore.Workflows.Jobs;
 
@@ -38,9 +39,9 @@ public sealed class WorkflowJobRunHandler : IJobRunHandler
             }
         }
 
-        // The runs of the jobs of this module don't trigger the event: a workflow that follows the runs of every
-        // job would otherwise run for each of its own retries.
-        if (run.JobName is WorkflowRetryJob.Name)
+        // The runs that only keep the workflows going don't trigger the event: a workflow that follows the runs of
+        // every job would otherwise run for each of its own retries, and every minute with the timers.
+        if (run.JobName is WorkflowRetryJob.Name or WorkflowTimerJob.Name)
         {
             return;
         }
@@ -57,6 +58,7 @@ public sealed class WorkflowJobRunHandler : IJobRunHandler
             ["Title"] = run.Title,
             ["Status"] = run.Status.ToString(),
             ["Error"] = run.Error,
+            ["Superseded"] = run.Superseded,
             ["Trigger"] = run.Trigger,
             ["Attempt"] = run.Attempt,
             ["StartedUtc"] = run.StartedUtc,

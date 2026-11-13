@@ -226,6 +226,7 @@ public sealed class JobScheduleManager : IJobScheduleManager
         }
 
         var schedules = await _session.Query<JobSchedule, JobScheduleIndex>(collection: JobRun.Collection).ListAsync();
+        var refreshed = true;
 
         foreach (var schedule in schedules)
         {
@@ -243,10 +244,15 @@ public sealed class JobScheduleManager : IJobScheduleManager
             catch (Exception ex) when (!ex.IsFatal())
             {
                 _logger.LogError(ex, "The next occurrence of the job schedule '{ScheduleId}' couldn't be computed again.", scheduleId);
+                refreshed = false;
             }
         }
 
-        _state.SiteTimeZoneId = siteTimeZoneId;
+        // A schedule that couldn't be refreshed is tried again the next time.
+        if (refreshed)
+        {
+            _state.SiteTimeZoneId = siteTimeZoneId;
+        }
     }
 
     private async Task<bool> HasCurrentNextOccurrenceAsync(JobSchedule schedule)

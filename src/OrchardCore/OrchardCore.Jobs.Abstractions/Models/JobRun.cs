@@ -173,6 +173,19 @@ public sealed class JobRun : Entity
     public bool CancellationRequested { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the run replaces the runs with the same
+    /// <see cref="ConcurrencyKey"/> that were queued before it and didn't end, see
+    /// <see cref="JobRequest.CancelInProgress"/>.
+    /// </summary>
+    public bool CancelInProgress { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the run was canceled because a more recent run with the same
+    /// <see cref="ConcurrencyKey"/> replaced it, and not because someone canceled it.
+    /// </summary>
+    public bool Superseded { get; set; }
+
+    /// <summary>
     /// Gets or sets the messages recorded during the run, the oldest first, up to <see cref="MaxLogEntries"/>.
     /// </summary>
     public List<JobLogEntry> Log { get; set; } = [];

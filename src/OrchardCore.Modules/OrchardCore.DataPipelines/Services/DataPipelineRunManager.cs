@@ -216,9 +216,13 @@ public sealed class DataPipelineRunManager
         await _session.SaveAsync(run);
 
         // The server that executes the run stops it, at once when it is this one, within a few seconds otherwise.
+        // Its job run is only cancelled once this scope committed the run: the run that stops records how it ended,
+        // which this scope would otherwise overwrite with the run as it was read here.
         if (!string.IsNullOrEmpty(run.JobRunId))
         {
-            await _jobManager.CancelAsync(run.JobRunId, canceledBy);
+            var jobRunId = run.JobRunId;
+
+            ShellScope.AddDeferredTask(scope => scope.ServiceProvider.GetRequiredService<IJobManager>().CancelAsync(jobRunId, canceledBy));
         }
 
         return true;

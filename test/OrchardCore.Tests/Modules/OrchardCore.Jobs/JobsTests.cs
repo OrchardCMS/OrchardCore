@@ -228,6 +228,227 @@ public sealed class JobsTests
     }
 
     [Fact]
+    public async Task Execute_RunsQueuedAtOnceWithTheSameDeduplicationKey_ExecutesOne()
+    {
+        // Arrange: servers that queue the same work at the same time don't see the run of the others, so each of
+        // them saved one.
+        using var context = await CreateContextAsync();
+        var key = NewKey();
+        var runIds = new List<string>();
+
+        for (var i = 0; i < 3; i++)
+        {
+            runIds.Add(await CreateRunAsync(context, new TestJobParameters { Key = key, DelayMilliseconds = 200 }, run => run.DeduplicationKey = key));
+        }
+
+        // Act: several servers each try to execute every run at the same time.
+        await Task.WhenAll(runIds.SelectMany(runId => Enumerable.Range(0, 2).Select(_ => Task.Run(() =>
+            context.UsingTenantScopeAsync(scope => scope.ServiceProvider.GetRequiredService<JobRunExecutor>().ExecuteAsync(runId))))));
+
+        // Assert: a single run did the work, and the others are removed as if they had not been queued.
+        var remaining = new List<JobRun>();
+
+        foreach (var runId in runIds)
+        {
+            if (await GetRunAsync(context, runId) is { } run)
+            {
+                remaining.Add(run);
+            }
+        }
+
+        var executed = Assert.Single(remaining);
+        Assert.True(executed.Status == JobRunStatus.Succeeded, executed.Error);
+        Assert.Equal(1, TestJob.GetState(key).Executions);
+    }
+
+    [Fact]
+    public async Task Enqueue_CancelInProgressWhileARunWithTheKeyExecutes_ReplacesIt()
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+        var key = NewKey();
+        var concurrencyKey = NewKey();
+        var runningId = await EnqueueAsync(context, new TestJobParameters { Key = key, WaitForCancellation = true }, request => request.ConcurrencyKey = concurrencyKey);
+        await WaitForRunAsync(context, runningId, run => run.Status == JobRunStatus.Running && TestJob.GetState(key).Executions == 1);
+
+        // Act
+        var newKey = NewKey();
+        var newId = await EnqueueAsync(context, new TestJobParameters { Key = newKey }, request =>
+        {
+            request.ConcurrencyKey = concurrencyKey;
+            request.CancelInProgress = true;
+        });
+
+        var replaced = await WaitForRunAsync(context, runningId);
+        var replacing = await WaitForRunAsync(context, newId, dispatch: true);
+
+        // Assert: the run that executed stopped, and the new one started once it ended.
+        Assert.Equal(JobRunStatus.Canceled, replaced.Status);
+        Assert.True(replaced.Superseded);
+        Assert.Contains("superseded", replaced.Error, StringComparison.Ordinal);
+        Assert.Equal(1, TestJob.GetState(key).Canceled);
+
+        Assert.True(replacing.Status == JobRunStatus.Succeeded, replacing.Error);
+        Assert.False(replacing.Superseded);
+        Assert.True(replacing.StartedUtc >= replaced.CompletedUtc);
+        Assert.Equal(1, TestJob.GetState(newKey).Executions);
+    }
+
+    [Fact]
+    public async Task Enqueue_CancelInProgress_CancelsTheRunsWithTheKeyThatDidNotStart()
+    {
+        // Arrange: a run that is due later, and a run with another key.
+        using var context = await CreateContextAsync();
+        var key = NewKey();
+        var concurrencyKey = NewKey();
+
+        var laterId = await EnqueueAsync(context, new TestJobParameters { Key = key }, request =>
+        {
+            request.ConcurrencyKey = concurrencyKey;
+            request.DueUtc = DateTime.UtcNow.AddHours(1);
+        });
+
+        var otherId = await EnqueueAsync(context, new TestJobParameters { Key = key }, request =>
+        {
+            request.ConcurrencyKey = NewKey();
+            request.DueUtc = DateTime.UtcNow.AddHours(1);
+        });
+
+        // Act
+        var newId = await EnqueueAsync(context, new TestJobParameters { Key = key }, request =>
+        {
+            request.ConcurrencyKey = concurrencyKey;
+            request.CancelInProgress = true;
+        });
+
+        var replacing = await WaitForRunAsync(context, newId);
+        var replaced = await WaitForRunAsync(context, laterId);
+
+        // Assert
+        Assert.True(replacing.Status == JobRunStatus.Succeeded, replacing.Error);
+        Assert.Equal(JobRunStatus.Canceled, replaced.Status);
+        Assert.True(replaced.Superseded);
+        Assert.Equal(1, TestJob.GetState(key).Executions);
+
+        // The runs with another key are not its concern.
+        Assert.Equal(JobRunStatus.Queued, (await GetRunAsync(context, otherId)).Status);
+    }
+
+    [Fact]
+    public async Task Enqueue_CancelInProgressWithoutAConcurrencyKey_Throws()
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+
+        // Act & Assert
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var manager = scope.ServiceProvider.GetRequiredService<IJobManager>();
+
+            await Assert.ThrowsAsync<InvalidOperationException>(() => manager.EnqueueAsync<TestJob>(new TestJobParameters { Key = NewKey() }, request => request.CancelInProgress = true));
+        });
+    }
+
+    [Fact]
+    public async Task Execute_RunsThatCancelInProgressQueuedAtOnce_ExecutesTheMostRecent()
+    {
+        // Arrange: servers that queue runs at the same time don't see the run of the others.
+        using var context = await CreateContextAsync();
+        var key = NewKey();
+        var concurrencyKey = NewKey();
+        var now = DateTime.UtcNow;
+        var runIds = new List<string>();
+
+        for (var i = 3; i >= 1; i--)
+        {
+            var created = now.AddSeconds(-i);
+
+            runIds.Add(await CreateRunAsync(context, new TestJobParameters { Key = key, DelayMilliseconds = 200 }, run =>
+            {
+                run.ConcurrencyKey = concurrencyKey;
+                run.CancelInProgress = true;
+                run.CreatedUtc = created;
+            }));
+        }
+
+        // Act: several servers each try to execute every run at the same time.
+        await Task.WhenAll(runIds.SelectMany(runId => Enumerable.Range(0, 2).Select(_ => Task.Run(() =>
+            context.UsingTenantScopeAsync(scope => scope.ServiceProvider.GetRequiredService<JobRunExecutor>().ExecuteAsync(runId))))));
+
+        // Assert: whichever server looked at whichever run first, the most recent one does the work.
+        var mostRecent = await WaitForRunAsync(context, runIds[^1], dispatch: true);
+        Assert.True(mostRecent.Status == JobRunStatus.Succeeded, mostRecent.Error);
+
+        foreach (var runId in runIds[..^1])
+        {
+            var replaced = await WaitForRunAsync(context, runId);
+
+            Assert.Equal(JobRunStatus.Canceled, replaced.Status);
+            Assert.True(replaced.Superseded);
+        }
+
+        Assert.Equal(1, TestJob.GetState(key).Executions);
+    }
+
+    [Fact]
+    public async Task BackgroundTask_AbandonedRunThatWasAskedToStop_IsCanceledAndNotRunAgain()
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+        var key = NewKey();
+        var runId = await CreateRunAsync(context, new TestJobParameters { Key = key }, run =>
+        {
+            run.Status = JobRunStatus.Running;
+            run.NodeId = "another-server";
+            run.Attempt = 1;
+            run.MaxAttempts = 2;
+            run.CancellationRequested = true;
+            run.StartedUtc = DateTime.UtcNow.AddHours(-2);
+            run.HeartbeatUtc = DateTime.UtcNow.AddHours(-1);
+        });
+
+        // Act
+        await context.UsingTenantScopeAsync(scope => new JobsBackgroundTask().DoWorkAsync(scope.ServiceProvider, CancellationToken.None));
+        var run = await WaitForRunAsync(context, runId);
+
+        // Assert
+        Assert.Equal(JobRunStatus.Canceled, run.Status);
+        Assert.Equal(1, run.Attempt);
+        Assert.Equal(0, TestJob.GetState(key).Executions);
+    }
+
+    [Fact]
+    public async Task Delete_RunWhoseChildRunsQueuedRuns_DeletesThemAll()
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+        var completed = DateTime.UtcNow;
+
+        var parentId = await CreateRunAsync(context, new TestJobParameters { Key = NewKey() }, run => Complete(run, null));
+        var childId = await CreateRunAsync(context, new TestJobParameters { Key = NewKey() }, run => Complete(run, parentId));
+        var grandchildId = await CreateRunAsync(context, new TestJobParameters { Key = NewKey() }, run => Complete(run, childId));
+        var otherId = await CreateRunAsync(context, new TestJobParameters { Key = NewKey() }, run => Complete(run, null));
+
+        // Act
+        var deleted = false;
+        await context.UsingTenantScopeAsync(async scope => deleted = await scope.ServiceProvider.GetRequiredService<IJobManager>().DeleteAsync(parentId));
+
+        // Assert
+        Assert.True(deleted);
+        Assert.Null(await GetRunAsync(context, parentId));
+        Assert.Null(await GetRunAsync(context, childId));
+        Assert.Null(await GetRunAsync(context, grandchildId));
+        Assert.NotNull(await GetRunAsync(context, otherId));
+
+        void Complete(JobRun run, string parentRunId)
+        {
+            run.Status = JobRunStatus.Succeeded;
+            run.CompletedUtc = completed;
+            run.ParentRunId = parentRunId;
+        }
+    }
+
+    [Fact]
     public async Task Execute_SameConcurrencyKey_RunsOneAtATime()
     {
         // Arrange

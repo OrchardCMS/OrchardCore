@@ -77,10 +77,19 @@ public sealed class JobRunExecutor
     private async Task<(JobRun Run, DateTime? RetryUtc)> ClaimAsync(string runId)
     {
         var now = _clock.UtcNow;
+        var queued = nameof(JobRunStatus.Queued);
         var running = nameof(JobRunStatus.Running);
+        var waiting = nameof(JobRunStatus.Waiting);
+        var duplicate = false;
+        JobRun candidate = null;
+        JobRun supersededBy = null;
+        IReadOnlyList<string> replacedIds = [];
 
         var (run, outcome) = await JobRunStore.TryUpdateAsync(runId, async (session, run) =>
         {
+            duplicate = false;
+            candidate = run;
+
             if (run.Status != JobRunStatus.Queued
                 || run.DueUtc > now.AddSeconds(1)
                 || (run.RequiredNodeId is not null && run.RequiredNodeId != _nodeId)
@@ -89,9 +98,33 @@ public sealed class JobRunExecutor
                 return false;
             }
 
-            if (!string.IsNullOrEmpty(run.ConcurrencyKey) && await IsKeyRunningAsync(session, run))
+            if (!string.IsNullOrEmpty(run.DeduplicationKey) && await IsDuplicateAsync(session, run))
             {
+                duplicate = true;
+
                 return false;
+            }
+
+            if (!string.IsNullOrEmpty(run.ConcurrencyKey))
+            {
+                // A more recent run that cancels the runs in progress replaces this one.
+                supersededBy = await FindSupersedingAsync(session, run);
+
+                if (supersededBy is not null)
+                {
+                    return false;
+                }
+
+                if (run.CancelInProgress)
+                {
+                    replacedIds = await FindOthersAsync(session, run);
+                }
+
+                // A run that is asked to stop still executes: this one starts once it ended.
+                if (await IsKeyRunningAsync(session, run))
+                {
+                    return false;
+                }
             }
 
             run.Status = JobRunStatus.Running;
@@ -106,6 +139,35 @@ public sealed class JobRunExecutor
 
             return true;
         });
+
+        if (duplicate)
+        {
+            // Queuing a run with the key of an active run returns that run, which a server can't see while the
+            // server that queues it didn't commit it. The run that was queued in the meantime is the same work, and
+            // is removed as if it had not been queued.
+            await JobRunStore.DeleteAsync(runId);
+
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("The job run '{RunId}' was removed: another run of the job '{JobName}' with the same deduplication key was queued at the same time.", runId, run.JobName);
+            }
+
+            return (null, null);
+        }
+
+        if (supersededBy is not null)
+        {
+            await _coordinator.CancelAsync(runId, supersededBy: supersededBy);
+
+            return (null, null);
+        }
+
+        // Whether or not this run could start, the runs that were queued before it stop. Each of them is checked
+        // again as it is changed, so a run that was queued after this one is left alone.
+        foreach (var replacedId in replacedIds)
+        {
+            await _coordinator.CancelAsync(replacedId, supersededBy: candidate);
+        }
 
         if (outcome != JobRunUpdateOutcome.Saved)
         {
@@ -149,6 +211,50 @@ public sealed class JobRunExecutor
         });
 
         return (null, released == JobRunUpdateOutcome.Saved ? _clock.UtcNow.AddSeconds(Random.Shared.Next(2, 15)) : null);
+
+        // Among the runs of a job with the same deduplication key that didn't end, a single one executes: the one
+        // that already started, or the first one that was saved. Whichever server asks, the answer is the same.
+        async Task<bool> IsDuplicateAsync(ISession session, JobRun candidate)
+        {
+            var key = JobRunIndexProvider.Truncate(candidate.DeduplicationKey, JobRunIndex.MaxKeyLength);
+            var jobName = JobRunIndexProvider.Truncate(candidate.JobName, JobRunIndex.MaxJobNameLength);
+            var candidateId = candidate.RunId;
+            var documentId = candidate.Id;
+
+            return await session.QueryIndex<JobRunIndex>(index => index.DeduplicationKey == key && index.JobName == jobName && index.RunId != candidateId
+                    && (index.Status == running || index.Status == waiting || (index.Status == queued && index.DocumentId < documentId)), collection: JobRun.Collection)
+                .FirstOrDefaultAsync() is not null;
+        }
+
+        // Finds a run that didn't end, cancels the runs in progress with the same concurrency key, and was queued
+        // after a run. There are few such runs, as each of them cancels the previous ones.
+        async Task<JobRun> FindSupersedingAsync(ISession session, JobRun candidate)
+        {
+            var key = JobRunIndexProvider.Truncate(candidate.ConcurrencyKey, JobRunIndex.MaxKeyLength);
+            var candidateId = candidate.RunId;
+
+            var others = await session.Query<JobRun, JobRunIndex>(index => index.ConcurrencyKey == key && index.CancelInProgress && index.RunId != candidateId
+                    && (index.Status == queued || index.Status == running || index.Status == waiting), collection: JobRun.Collection)
+                .ListAsync();
+
+            return others.FirstOrDefault(other => JobRunStore.IsMoreRecent(other, candidate));
+        }
+
+        // Lists the other runs with the same concurrency key that didn't end.
+        async Task<IReadOnlyList<string>> FindOthersAsync(ISession session, JobRun candidate)
+        {
+            const int maxReplacedRuns = 100;
+
+            var key = JobRunIndexProvider.Truncate(candidate.ConcurrencyKey, JobRunIndex.MaxKeyLength);
+            var candidateId = candidate.RunId;
+
+            var others = await session.QueryIndex<JobRunIndex>(index => index.ConcurrencyKey == key && index.RunId != candidateId
+                    && (index.Status == queued || index.Status == running || index.Status == waiting), collection: JobRun.Collection)
+                .Take(maxReplacedRuns)
+                .ListAsync();
+
+            return others.Select(other => other.RunId).ToArray();
+        }
 
         async Task<bool> IsKeyRunningAsync(ISession session, JobRun candidate)
         {
@@ -239,6 +345,11 @@ public sealed class JobRunExecutor
                 return true;
             });
 
+            if (outcome == JobRunUpdateOutcome.Saved)
+            {
+                context.Saved();
+            }
+
             if (outcome is JobRunUpdateOutcome.NotFound or JobRunUpdateOutcome.Refused)
             {
                 _logger.LogWarning("The job run '{RunId}' doesn't belong to this server anymore, and is stopped.", runId);
@@ -327,7 +438,7 @@ public sealed class JobRunExecutor
             {
                 run.Status = JobRunStatus.Canceled;
                 run.CompletedUtc = now;
-                run.Error = "The run was canceled.";
+                run.Error = run.Superseded ? JobRunCoordinator.SupersededError : "The run was canceled.";
 
                 return true;
             }

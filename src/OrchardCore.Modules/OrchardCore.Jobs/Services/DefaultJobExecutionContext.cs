@@ -1,4 +1,3 @@
-using System.Collections.Concurrent;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,11 +14,14 @@ namespace OrchardCore.Jobs.Services;
 internal sealed class DefaultJobExecutionContext : JobExecutionContext
 {
     private readonly IClock _clock;
-    private readonly ConcurrentQueue<JobLogEntry> _log = new();
-    private readonly Lock _progressLock = new();
+    private readonly Lock _lock = new();
+    private readonly List<JobLogEntry> _pendingLog = [];
     private IServiceProvider _serviceProvider;
     private int _logCount;
-    private bool _progressChanged;
+    private int _appliedLogCount;
+    private int _progressVersion;
+    private int _appliedProgressVersion;
+    private int _savedProgressVersion;
     private int? _progress;
     private string _progressMessage;
 
@@ -54,16 +56,21 @@ internal sealed class DefaultJobExecutionContext : JobExecutionContext
             return;
         }
 
-        _log.Enqueue(new JobLogEntry { Utc = _clock.UtcNow, Level = level, Message = message });
+        var entry = new JobLogEntry { Utc = _clock.UtcNow, Level = level, Message = message };
+
+        lock (_lock)
+        {
+            _pendingLog.Add(entry);
+        }
     }
 
     public override void ReportProgress(int? percent, string message = null)
     {
-        lock (_progressLock)
+        lock (_lock)
         {
             _progress = percent is null ? null : Math.Clamp(percent.Value, 0, 100);
             _progressMessage = message;
-            _progressChanged = true;
+            _progressVersion++;
         }
     }
 
@@ -91,26 +98,44 @@ internal sealed class DefaultJobExecutionContext : JobExecutionContext
     }
 
     /// <summary>
-    /// Copies to a run what the job reported since the last call.
+    /// Copies to a run what the job reported and that is not saved yet. What is copied stays pending until
+    /// <see cref="Saved"/> is called, so it is copied again to the run as it is read again when its save conflicts
+    /// with another change, or fails.
     /// </summary>
     public void Apply(JobRun run)
     {
-        while (_log.TryDequeue(out var entry))
+        lock (_lock)
         {
-            if (run.Log.Count < JobRun.MaxLogEntries)
+            foreach (var entry in _pendingLog)
             {
-                run.Log.Add(entry);
+                if (run.Log.Count < JobRun.MaxLogEntries)
+                {
+                    run.Log.Add(entry);
+                }
             }
-        }
 
-        lock (_progressLock)
-        {
-            if (_progressChanged)
+            _appliedLogCount = _pendingLog.Count;
+
+            if (_progressVersion != _savedProgressVersion)
             {
                 run.Progress = _progress;
                 run.ProgressMessage = _progressMessage;
-                _progressChanged = false;
             }
+
+            _appliedProgressVersion = _progressVersion;
+        }
+    }
+
+    /// <summary>
+    /// Tells that the run the job's reports were last copied to was saved, so they are not pending anymore.
+    /// </summary>
+    public void Saved()
+    {
+        lock (_lock)
+        {
+            _pendingLog.RemoveRange(0, _appliedLogCount);
+            _appliedLogCount = 0;
+            _savedProgressVersion = _appliedProgressVersion;
         }
     }
 }

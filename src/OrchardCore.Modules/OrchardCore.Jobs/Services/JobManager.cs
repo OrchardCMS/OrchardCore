@@ -24,7 +24,6 @@ public sealed class JobManager : IJobManager
     private readonly IIdGenerator _idGenerator;
     private readonly IClock _clock;
     private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly JobRunTracker _tracker;
     private readonly JobRunCoordinator _coordinator;
     private readonly JobOptions _jobOptions;
     private readonly string _nodeId;
@@ -34,7 +33,6 @@ public sealed class JobManager : IJobManager
         IIdGenerator idGenerator,
         IClock clock,
         IHttpContextAccessor httpContextAccessor,
-        JobRunTracker tracker,
         JobRunCoordinator coordinator,
         IOptions<JobOptions> jobOptions,
         IOptions<NodeOptions> nodeOptions)
@@ -43,7 +41,6 @@ public sealed class JobManager : IJobManager
         _idGenerator = idGenerator;
         _clock = clock;
         _httpContextAccessor = httpContextAccessor;
-        _tracker = tracker;
         _coordinator = coordinator;
         _jobOptions = jobOptions.Value;
         _nodeId = nodeOptions.Value.Id;
@@ -69,6 +66,11 @@ public sealed class JobManager : IJobManager
 
         var request = new JobRequest();
         configure?.Invoke(request);
+
+        if (request.CancelInProgress && string.IsNullOrEmpty(request.ConcurrencyKey))
+        {
+            throw new InvalidOperationException($"A run that cancels the runs in progress needs a '{nameof(JobRequest.ConcurrencyKey)}', which tells the runs it replaces.");
+        }
 
         var now = _clock.UtcNow;
         var dueUtc = request.DueUtc ?? now;
@@ -118,6 +120,7 @@ public sealed class JobManager : IJobManager
             CorrelationId = request.CorrelationId,
             DeduplicationKey = request.DeduplicationKey,
             ConcurrencyKey = request.ConcurrencyKey,
+            CancelInProgress = request.CancelInProgress,
             ParentRunId = request.ParentRunId,
             ScheduleId = request.ScheduleId,
             RequiredNodeId = request.RequireCurrentNode ? _nodeId : null,
@@ -195,66 +198,9 @@ public sealed class JobManager : IJobManager
     }
 
     /// <inheritdoc />
-    public async Task<bool> CancelAsync(string runId, string canceledBy = null)
+    public Task<bool> CancelAsync(string runId, string canceledBy = null)
     {
-        if (string.IsNullOrEmpty(runId))
-        {
-            return false;
-        }
-
-        var now = _clock.UtcNow;
-        var completed = false;
-
-        var (run, outcome) = await JobRunStore.UpdateAsync(runId, run =>
-        {
-            if (run.IsCompleted)
-            {
-                return false;
-            }
-
-            completed = false;
-            JobRunStore.AddLog(run, now, LogLevel.Warning, $"Cancellation requested by {canceledBy ?? "the system"}.");
-
-            if (run.Status == JobRunStatus.Running)
-            {
-                // Its server stops it at its next heartbeat, and records its end.
-                run.CancellationRequested = true;
-            }
-            else
-            {
-                run.Error = run.Status == JobRunStatus.Waiting
-                    ? "The run was canceled while it waited for its child runs."
-                    : "The run was canceled before it started.";
-                run.Status = JobRunStatus.Canceled;
-                run.CompletedUtc = now;
-                completed = true;
-            }
-
-            return true;
-        });
-
-        if (outcome != JobRunUpdateOutcome.Saved)
-        {
-            return false;
-        }
-
-        // A run that executes on this server stops at once.
-        _tracker.TryCancel(runId);
-
-        foreach (var child in await JobRunStore.LoadChildrenAsync(runId))
-        {
-            if (!child.IsCompleted)
-            {
-                await CancelAsync(child.RunId, canceledBy);
-            }
-        }
-
-        if (completed)
-        {
-            await _coordinator.OnCompletedAsync(run);
-        }
-
-        return true;
+        return _coordinator.CancelAsync(runId, canceledBy);
     }
 
     /// <inheritdoc />
@@ -274,6 +220,7 @@ public sealed class JobManager : IJobManager
             request.TriggeredBy = triggeredBy;
             request.DeduplicationKey = run.DeduplicationKey;
             request.ConcurrencyKey = run.ConcurrencyKey;
+            request.CancelInProgress = run.CancelInProgress;
             request.MaxAttempts = run.MaxAttempts;
             request.RequireCurrentNode = run.RequiredNodeId is not null;
         });
@@ -289,9 +236,10 @@ public sealed class JobManager : IJobManager
             return false;
         }
 
-        foreach (var child in await JobRunStore.QueryChildrenAsync(_session, runId))
+        // The runs it queued are deleted with it, as are the ones they queued.
+        foreach (var descendant in await JobRunStore.QueryDescendantsAsync(_session, runId))
         {
-            _session.Delete(child, collection: JobRun.Collection);
+            _session.Delete(descendant, collection: JobRun.Collection);
         }
 
         _session.Delete(run, collection: JobRun.Collection);

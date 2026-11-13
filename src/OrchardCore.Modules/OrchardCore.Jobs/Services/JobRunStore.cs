@@ -3,6 +3,7 @@ using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Jobs.Indexes;
 using OrchardCore.Jobs.Models;
 using YesSql;
+using YesSql.Services;
 
 namespace OrchardCore.Jobs.Services;
 
@@ -96,6 +97,35 @@ internal static class JobRunStore
     }
 
     /// <summary>
+    /// Lists the runs a run queued, and the ones they queued in turn, with a session. Each level is read in batches.
+    /// </summary>
+    public static async Task<IReadOnlyList<JobRun>> QueryDescendantsAsync(ISession session, string runId)
+    {
+        const int batchSize = 100;
+
+        var descendants = new List<JobRun>();
+        var parents = new List<string> { runId };
+
+        while (parents.Count > 0)
+        {
+            var next = new List<string>();
+
+            foreach (var batch in parents.Chunk(batchSize))
+            {
+                foreach (var child in await session.Query<JobRun, JobRunIndex>(index => index.ParentRunId.IsIn(batch), collection: JobRun.Collection).ListAsync())
+                {
+                    descendants.Add(child);
+                    next.Add(child.RunId);
+                }
+            }
+
+            parents = next;
+        }
+
+        return descendants;
+    }
+
+    /// <summary>
     /// Changes a run in a scope of its own, and tries again when another scope changed it at the same time.
     /// </summary>
     /// <param name="runId">The run.</param>
@@ -173,6 +203,15 @@ internal static class JobRunStore
                 session.Delete(run, collection: JobRun.Collection);
             }
         });
+    }
+
+    /// <summary>
+    /// Tells whether a run was queued after another one. The answer is the same on every server, for two runs that
+    /// were queued at the same time as well.
+    /// </summary>
+    public static bool IsMoreRecent(JobRun run, JobRun other)
+    {
+        return run.CreatedUtc > other.CreatedUtc || (run.CreatedUtc == other.CreatedUtc && run.Id > other.Id);
     }
 
     /// <summary>

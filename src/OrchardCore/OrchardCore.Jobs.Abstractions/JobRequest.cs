@@ -37,6 +37,14 @@ public sealed class JobRequest
     public string ConcurrencyKey { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the run replaces the runs with the same <see cref="ConcurrencyKey"/>
+    /// that were queued before it and didn't end: the ones that didn't start are canceled, and the ones that
+    /// execute are asked to stop, which their job has to observe. The run starts once they ended. Use it when a
+    /// more recent request makes the work of the previous ones useless. It requires a <see cref="ConcurrencyKey"/>.
+    /// </summary>
+    public bool CancelInProgress { get; set; }
+
+    /// <summary>
     /// Gets or sets an identifier that links the run to what queues it, such as a workflow instance.
     /// </summary>
     public string CorrelationId { get; set; }
