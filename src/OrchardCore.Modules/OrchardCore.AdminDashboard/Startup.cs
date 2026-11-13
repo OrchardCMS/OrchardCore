@@ -3,19 +3,12 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
-using OrchardCore.AdminDashboard.Controllers;
-using OrchardCore.AdminDashboard.Drivers;
-using OrchardCore.AdminDashboard.Indexes;
-using OrchardCore.AdminDashboard.Models;
 using OrchardCore.AdminDashboard.Services;
-using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.ContentTypes.Events;
-using OrchardCore.Data;
+using OrchardCore.Dashboards;
 using OrchardCore.Data.Migration;
+using OrchardCore.Localization;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
-using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.AdminDashboard;
@@ -34,30 +27,37 @@ public sealed class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddPermissionProvider<Permissions>();
-
-        services.AddScoped<IAdminDashboardService, AdminDashboardService>();
         services.AddBreadcrumbProvider<DashboardBreadcrumbProvider>();
-        services.AddIndexProvider<DashboardPartIndexProvider>();
 
-        services.AddContentPart<DashboardPart>()
-            .UseDisplayDriver<DashboardPartDisplayDriver>();
+        services.AddDashboardType(AdminDashboardConstants.DashboardType, LocalizationSource.Create<Startup>("Dashboard"), type =>
+        {
+            type.ViewPermission = Permissions.AccessAdminDashboard;
+            type.ManagePermission = Permissions.ManageAdminDashboard;
+        });
 
-        services.AddScoped<IContentDisplayDriver, DashboardContentDisplayDriver>();
+        // The widgets saved without a dashboard, for example by a recipe, are on the admin dashboard.
+        services.Configure<DashboardOptions>(options => options.DefaultType = AdminDashboardConstants.DashboardType);
 
         services.AddDataMigration<Migrations>();
-        services.AddScoped<IContentDefinitionHandler, DashboardPartContentTypeDefinitionHandler>();
     }
 
     public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
     {
-        // Dashboard
-        var dashboardControllerName = typeof(DashboardController).ControllerName();
+        // The admin dashboard is served by the dashboard controller of the Dashboards feature, at the root of the admin.
+        const string dashboardControllerName = "Dashboard";
 
         routes.MapAreaControllerRoute(
             name: "AdminDashboard",
-            areaName: "OrchardCore.AdminDashboard",
+            areaName: DashboardConstants.Features.Dashboards,
             pattern: _adminOptions.AdminUrlPrefix,
-            defaults: new { controller = dashboardControllerName, action = nameof(DashboardController.Index) }
+            defaults: new { controller = dashboardControllerName, action = "Index", type = AdminDashboardConstants.DashboardType }
+        );
+
+        routes.MapAreaControllerRoute(
+            name: "AdminDashboardManage",
+            areaName: DashboardConstants.Features.Dashboards,
+            pattern: $"{_adminOptions.AdminUrlPrefix}/dashboard/manage",
+            defaults: new { controller = dashboardControllerName, action = "Manage", type = AdminDashboardConstants.DashboardType }
         );
     }
 }

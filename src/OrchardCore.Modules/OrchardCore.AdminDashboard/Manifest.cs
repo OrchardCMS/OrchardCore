@@ -9,9 +9,7 @@ using OrchardCore.Modules.Manifest;
     Dependencies =
     [
         "OrchardCore.Admin",
-        "OrchardCore.Html",
-        "OrchardCore.Title",
-        "OrchardCore.Recipes.Core",
+        "OrchardCore.Dashboards",
     ],
     Category = "Content Management"
 )]

@@ -147,6 +147,7 @@ nav:
       - Create a Decoupled CMS site with a .NET Blazor Application (Server Side): guides/create-blazor-cms/README.md
       - Create a webshop using the Commerce module: https://commerce.orchardcore.net/en/latest/guides/create-webshop/
       - Add an admin menu: guides/add-admin-menu/README.md
+      - Create a dashboard type: guides/create-dashboard-type/README.md
       - Implement Full Text search: guides/implement-fulltext-search/README.md
       - Install localization files: guides/install-localization-files/README.md
       - Integrate Facebook plugins: guides/integrate-facebook-plugins/README.md
@@ -257,6 +258,7 @@ nav:
               - Navigation: reference/modules/Navigation/README.md
               - Admin: reference/modules/Admin/README.md
               - Admin Dashboard: reference/modules/AdminDashboard/README.md
+              - Dashboards: reference/modules/Dashboards/README.md
               - Admin Menu: reference/modules/AdminMenu/README.md
               - Taxonomies: reference/modules/Taxonomies/README.md
               - Authentication:

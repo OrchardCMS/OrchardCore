@@ -1,0 +1,15 @@
+[
+  {
+    "action": "sass",
+    "name": "dashboards",
+    "source": "Assets/scss/dashboard.scss",
+    "tags": ["admin", "dashboards", "css"]
+  },
+  {
+    "action": "parcel",
+    "name": "dashboards",
+    "source": "Assets/ts/dashboard.ts",
+    "dest": "wwwroot/Scripts/dashboard/",
+    "tags": ["admin", "dashboards", "js"]
+  }
+]
