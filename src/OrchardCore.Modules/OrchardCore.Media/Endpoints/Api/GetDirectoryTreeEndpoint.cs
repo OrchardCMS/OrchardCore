@@ -30,6 +30,7 @@ public static class GetDirectoryTreeEndpoint
     private static async Task<IResult> HandleAsync(
         HttpContext httpContext,
         IAuthorizationService authorizationService,
+        MediaPathResolutionCache pathCache,
         IMediaFileStore mediaFileStore,
         IOptions<MediaOptions> options,
         IUserAssetFolderNameProvider userAssetFolderNameProvider,
@@ -52,6 +53,6 @@ public static class GetDirectoryTreeEndpoint
 
         var cached = await directoryTreeCache.GetTreeAsync();
 
-        return TypedResults.Ok(await MediaEndpointHelpers.ToDtoAsync(authorizationService, httpContext.User, cached));
+        return TypedResults.Ok(await MediaEndpointHelpers.ToDtoAsync(authorizationService, httpContext.User, cached, pathCache));
     }
 }

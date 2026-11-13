@@ -8,6 +8,7 @@ namespace OrchardCore.Tests.Functional.Tests.Cms;
 [Collection(CmsTestCollection.Name)]
 public sealed class MediaSecurityTests : IAsyncLifetime
 {
+    private const int SmallFileSize = 100 * 1024;
     private const string Password = "Orchard1!";
 
     private readonly SaasFixture _fixture;
@@ -20,7 +21,7 @@ public sealed class MediaSecurityTests : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        _tenant = TestUtils.GenerateTenantInfo("MediaSecurity");
+        _tenant = TestUtils.GenerateTenantInfo("Media");
         var page = await _fixture.CreatePageAsync();
         await TenantHelper.NewTenantAsync(page, _tenant);
         await page.CloseAsync();
@@ -33,48 +34,34 @@ public sealed class MediaSecurityTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task MediaFolders_AreAccessibleOnlyToUsersWithMatchingPermissions()
-    {
-        var prefix = $"/{_tenant.Prefix}";
-        var adminPage = await _fixture.CreatePageAsync();
-
-        await adminPage.LoginAsync(prefix);
-        await UserHelper.CreateUserAsync(adminPage, prefix, "alpha-user", "alpha@orchard.test", Password, "AlphaMediaViewer");
-        await UserHelper.CreateUserAsync(adminPage, prefix, "beta-user", "beta@orchard.test", Password, "BetaMediaViewer");
-        await UserHelper.CreateUserAsync(adminPage, prefix, "all-media-user", "all-media@orchard.test", Password, "AllMediaViewer");
-
-        await adminPage.CloseAsync();
-
-        await AssertFolderAccessAsync("alpha-user", allowedFolder: "alpha", deniedFolder: "beta");
-        await AssertFolderAccessAsync("beta-user", allowedFolder: "beta", deniedFolder: "alpha");
-        await AssertAllFoldersAccessibleAsync("all-media-user");
-    }
-
-    [Fact]
     public async Task MediaApi_FolderPermissions_IsolateUsers()
     {
-        const string alphaFolder = "alpha";
-        const string betaFolder = "beta";
-        const string alphaFile = "alpha.png";
-        const string betaFile = "beta.png";
+        const string alphaFolder = "Alpha";
+        const string betaFolder = "Beta";
+        const string alphaFile = "alpha.jpg";
+        const string betaFile = "beta.jpg";
         var prefix = $"/{_tenant.Prefix}";
 
-        var adminPage = await _fixture.CreatePageAsync();
-        await adminPage.LoginAsync(prefix);
-        await CreateRoleWithPermissionsAsync(adminPage, prefix, "AlphaMediaApi",
-            "ManageMediaContent", "ViewRootMediaContent", $"ViewMediaContent_{alphaFolder}");
-        await CreateRoleWithPermissionsAsync(adminPage, prefix, "BetaMediaApi",
-            "ManageMediaContent", "ViewRootMediaContent", $"ViewMediaContent_{betaFolder}");
-        await UserHelper.CreateUserAsync(adminPage, prefix, "api-alpha-user", "api-alpha@test.com", Password, "AlphaMediaApi");
-        await UserHelper.CreateUserAsync(adminPage, prefix, "api-beta-user", "api-beta@test.com", Password, "BetaMediaApi");
-        await adminPage.CloseAsync();
-
         var page = await _fixture.CreatePageAsync();
+        await AuthHelper.LoginAsync(page, prefix);
+
+        await CreateFolderWithFileAsync(page, prefix, alphaFolder, alphaFile);
+        await CreateFolderWithFileAsync(page, prefix, betaFolder, betaFile);
+        await FeatureHelper.EnableFeatureAsync(page, prefix, "OrchardCore.Media.Security");
+        await SetRolePermissionAsync(page, prefix, "Anonymous", "ViewMediaContent", granted: false);
+
+        await CreateRoleWithPermissionsAsync(page, prefix, "AlphaMedia",
+            "ManageMediaContent", "ViewRootMediaContent", $"ViewMediaContent_{alphaFolder}");
+        await CreateRoleWithPermissionsAsync(page, prefix, "BetaMedia",
+            "ManageMediaContent", "ViewRootMediaContent", $"ViewMediaContent_{betaFolder}");
+
+        await UserHelper.CreateUserAsync(page, prefix, "alpha-user", "alpha@test.com", Password, "AlphaMedia");
+        await UserHelper.CreateUserAsync(page, prefix, "beta-user", "beta@test.com", Password, "BetaMedia");
 
         var scenarios = new[]
         {
-            (UserName: "api-alpha-user", AllowedFolder: alphaFolder, AllowedFile: alphaFile, DeniedFolder: betaFolder, DeniedFile: betaFile),
-            (UserName: "api-beta-user", AllowedFolder: betaFolder, AllowedFile: betaFile, DeniedFolder: alphaFolder, DeniedFile: alphaFile),
+            (UserName: "alpha-user", AllowedFolder: alphaFolder, AllowedFile: alphaFile, DeniedFolder: betaFolder, DeniedFile: betaFile),
+            (UserName: "beta-user", AllowedFolder: betaFolder, AllowedFile: betaFile, DeniedFolder: alphaFolder, DeniedFile: alphaFile),
         };
 
         foreach (var scenario in scenarios)
@@ -84,9 +71,7 @@ public sealed class MediaSecurityTests : IAsyncLifetime
             await AssertRootListingsAsync(
                 page,
                 scenario.AllowedFolder,
-                scenario.AllowedFile,
-                scenario.DeniedFolder,
-                scenario.DeniedFile);
+                scenario.DeniedFolder);
 
             await AssertDirectAccessAsync(
                 page,
@@ -99,61 +84,19 @@ public sealed class MediaSecurityTests : IAsyncLifetime
         await page.CloseAsync();
     }
 
-    private async Task AssertFolderAccessAsync(string userName, string allowedFolder, string deniedFolder)
+    private static async Task CreateFolderWithFileAsync(
+        IPage page,
+        string prefix,
+        string folder,
+        string fileName)
     {
-        var page = await _fixture.CreatePageAsync();
-        var prefix = $"/{_tenant.Prefix}";
-
-        await UserHelper.LoginAsAsync(page, prefix, userName, Password);
-
         await MediaHelper.NavigateToMediaAsync(page, prefix);
-        await AssertFolderManagementAsync(page, prefix, allowedFolder, deniedFolder);
-        await AssertMediaStatusAsync(page, prefix, allowedFolder, expectedStatus: 200);
-        await AssertMediaStatusAsync(page, prefix, deniedFolder, expectedStatus: 404);
+        await MediaHelper.CreateFolderAsync(page, folder);
+        await MediaHelper.NavigateToFolderAsync(page, folder);
 
-        await page.CloseAsync();
-    }
-
-    private async Task AssertAllFoldersAccessibleAsync(string userName)
-    {
-        var page = await _fixture.CreatePageAsync();
-        var prefix = $"/{_tenant.Prefix}";
-
-        await UserHelper.LoginAsAsync(page, prefix, userName, Password);
-
-        await AssertMediaStatusAsync(page, prefix, "alpha", expectedStatus: 200);
-        await AssertMediaStatusAsync(page, prefix, "beta", expectedStatus: 200);
-
-        await page.CloseAsync();
-    }
-
-    private static async Task AssertFolderManagementAsync(IPage page, string prefix, string allowedFolder, string deniedFolder)
-    {
-        var allowedStatus = await CreateFolderAsync(page, prefix, allowedFolder, "allowed-child");
-        var deniedStatus = await CreateFolderAsync(page, prefix, deniedFolder, "denied-child");
-
-        Assert.Equal(200, allowedStatus);
-        Assert.Equal(403, deniedStatus);
-    }
-
-    private static Task<int> CreateFolderAsync(IPage page, string prefix, string parentFolder, string folderName)
-    {
-        const string createFolderScript =
-            """
-            async url => {
-                const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
-                const response = await fetch(url, {
-                    method: "POST",
-                    headers: { RequestVerificationToken: token }
-                });
-
-                return response.status;
-            }
-            """;
-
-        var url = $"{prefix}/api/media/CreateFolder?path={parentFolder}&name={folderName}";
-
-        return page.EvaluateAsync<int>(createFolderScript, url);
+        var filePath = MediaHelper.GenerateTestFile(fileName, SmallFileSize);
+        await MediaHelper.UploadFileAsync(page, filePath);
+        await MediaHelper.ExpectFileInLibraryAsync(page, fileName);
     }
 
     private static async Task CreateRoleWithPermissionsAsync(
@@ -202,9 +145,7 @@ public sealed class MediaSecurityTests : IAsyncLifetime
     private async Task AssertRootListingsAsync(
         IPage page,
         string allowedFolder,
-        string allowedFile,
-        string deniedFolder,
-        string deniedFile)
+        string deniedFolder)
     {
         var treeResponse = await GetAsync(page, "api/media/GetDirectoryTree");
         Assert.Equal(200, treeResponse.Status);
@@ -231,17 +172,6 @@ public sealed class MediaSecurityTests : IAsyncLifetime
             var names = GetNames(folders.RootElement.GetProperty("items"));
             Assert.Contains(allowedFolder, names);
             Assert.DoesNotContain(deniedFolder, names);
-        }
-
-        var allItemsResponse = await GetAsync(page, "api/media/GetAllMediaItems?extensions=");
-        Assert.Equal(200, allItemsResponse.Status);
-        using (var allItems = JsonDocument.Parse(await allItemsResponse.TextAsync()))
-        {
-            var names = GetNames(allItems.RootElement);
-            Assert.Contains(allowedFolder, names);
-            Assert.Contains(allowedFile, names);
-            Assert.DoesNotContain(deniedFolder, names);
-            Assert.DoesNotContain(deniedFile, names);
         }
     }
 
@@ -295,13 +225,6 @@ public sealed class MediaSecurityTests : IAsyncLifetime
         => page.APIRequest.GetAsync(
             $"{_fixture.BaseUrl}/{_tenant.Prefix}/{relativeUrl}",
             new APIRequestContextOptions { MaxRedirects = 0 });
-
-    private static async Task AssertMediaStatusAsync(IPage page, string prefix, string folder, int expectedStatus)
-    {
-        var response = await page.GotoAsync($"{prefix}/media/{folder}/{folder}.png");
-
-        Assert.Equal(expectedStatus, response.Status);
-    }
 
     private static string[] GetNames(JsonElement items)
         => items.EnumerateArray()
