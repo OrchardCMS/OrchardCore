@@ -44,7 +44,9 @@ internal sealed class UITranslationsManager : IUITranslationsManager
     {
         var rule = _localizationManager.GetDictionary(CultureInfo.GetCultureInfo(culture)).PluralRule;
         var examples = new Dictionary<int, int>();
-        foreach (var count in new[] { 1, 2, 0 }.Concat(Enumerable.Range(3, 998)))
+        // Powers of ten find forms selected only by large counts, e.g. 'many' for multiples of one million in French.
+        foreach (var count in new[] { 1, 2, 0 }.Concat(Enumerable.Range(3, 998))
+            .Concat([10_000, 100_000, 1_000_000, 10_000_000, 100_000_000, 1_000_000_000]))
         {
             examples.TryAdd(rule(count), count);
         }

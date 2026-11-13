@@ -168,7 +168,8 @@ public sealed class UILocalizationTests
 
 
     [Theory]
-    [InlineData("fr", new[] { 1, 2 })]
+    [InlineData("fr", new[] { 1, 2, 1_000_000 })]
+    [InlineData("es", new[] { 1, 2, 1_000_000 })]
     [InlineData("ja", new[] { 1 })]
     [InlineData("ru", new[] { 1, 2, 0 })]
     [InlineData("ar", new[] { 0, 1, 2, 3, 11, 100 })]
@@ -179,19 +180,21 @@ public sealed class UILocalizationTests
     }
 
     [Fact]
-    public async Task GetPluralFormExamplesAndImport_PoPluralFormsHeader_UseCultureRule()
+    public async Task GetPluralFormExamplesAndImport_OutdatedPoPluralFormsHeader_UseCultureRule()
     {
+        // Crowdin PO files use the older two-form French rule, Orchard's rule adds 'many' for millions.
+        PluralizationRuleDelegate poRule = count => count > 1 ? 1 : 0;
         var po = new Mock<ITranslationProvider>();
         po.Setup(provider => provider.LoadTranslations("fr", It.IsAny<CultureDictionary>()))
             .Callback<string, CultureDictionary>((_, dictionary) => dictionary.MergeTranslations([
-                new CultureDictionaryRecord("{0} item", "Context", ["None", "One", "Many"], count => count == 0 ? 0 : count == 1 ? 1 : 2),
+                new CultureDictionaryRecord("{0} item", "Context", ["One", "Many"], poRule),
             ]));
         var (manager, documents) = CreateManager(po.Object);
         documents.Setup(value => value.GetOrCreateMutableAsync(null)).ReturnsAsync(new UITranslationsDocument());
         const string header = """
             msgid ""
             msgstr ""
-            "Plural-Forms: nplurals=3; plural=(n==0 ? 0 : n==1 ? 1 : 2);\n"
+            "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
             msgctxt "Context"
             msgid "{0} item"
@@ -199,11 +202,11 @@ public sealed class UILocalizationTests
 
             """;
 
-        Assert.Equal([1, 2], manager.GetPluralFormExamples("fr"));
-        using var threeForms = new StringReader(header + "msgstr[0] \"Zero\"\nmsgstr[1] \"One\"\nmsgstr[2] \"Many\"");
-        await Assert.ThrowsAsync<ArgumentException>(() => manager.ImportAsync("fr", "po", threeForms));
-        using var twoForms = new StringReader(header + "msgstr[0] \"One\"\nmsgstr[1] \"Many\"");
-        await manager.ImportAsync("fr", "po", twoForms);
+        Assert.Equal([1, 2, 1_000_000], manager.GetPluralFormExamples("fr"));
+        using var twoForms = new StringReader(header + "msgstr[0] \"One\"\nmsgstr[1] \"Other\"");
+        await Assert.ThrowsAsync<ArgumentException>(() => manager.ImportAsync("fr", "po", twoForms));
+        using var threeForms = new StringReader(header + "msgstr[0] \"One\"\nmsgstr[1] \"Other\"\nmsgstr[2] \"Many\"");
+        await manager.ImportAsync("fr", "po", threeForms);
         documents.Verify(value => value.UpdateAsync(It.IsAny<UITranslationsDocument>(), null), Times.Once);
     }
 
@@ -240,7 +243,7 @@ public sealed class UILocalizationTests
         documents.Setup(value => value.GetOrCreateImmutableAsync(null)).ReturnsAsync(mutable);
         await manager.UpdateAsync("FR", [
             Singular(value: "Quote \"slash\\\nnext"),
-            new UITranslation { Context = "Context", Key = "{0} item", Plural = "{0} items", Values = ["{0} article", "{0} articles"] },
+            new UITranslation { Context = "Context", Key = "{0} item", Plural = "{0} items", Values = ["{0} article", "{0} articles", "{0} d'articles"] },
         ]);
         using var exported = new StringWriter();
         await manager.ExportAsync("fr", "po", exported);
@@ -252,7 +255,7 @@ public sealed class UILocalizationTests
 
         Assert.Equal(2, imported.Translations["fr"].Count);
         Assert.Equal("Quote \"slash\\\nnext", imported.Translations["fr"].Single(value => value.Key == "Hello").Values[0]);
-        Assert.Equal(["{0} article", "{0} articles"], imported.Translations["fr"].Single(value => value.Plural != null).Values);
+        Assert.Equal(["{0} article", "{0} articles", "{0} d'articles"], imported.Translations["fr"].Single(value => value.Plural != null).Values);
         await manager.UpdateAsync("fr", [new UITranslation { Context = "Context", Key = "Hello", Values = [] }]);
         Assert.Single(mutable.Translations["fr"]);
     }
@@ -283,7 +286,7 @@ public sealed class UILocalizationTests
     {
         var (manager, documents) = CreateManager();
         documents.Setup(document => document.GetOrCreateMutableAsync(null)).ReturnsAsync(new UITranslationsDocument());
-        var translation = new UITranslation { Context = "Context", Key = "{0} item", Plural = "{0} items", Values = [value, value] };
+        var translation = new UITranslation { Context = "Context", Key = "{0} item", Plural = "{0} items", Values = [value, value, value] };
         if (valid)
         {
             await manager.UpdateAsync("fr", [translation]);

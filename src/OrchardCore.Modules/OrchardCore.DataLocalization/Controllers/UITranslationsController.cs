@@ -187,8 +187,10 @@ public sealed class UITranslationsController : Controller
                         FormatArguments = item.Metadata
                             .Where(metadata => metadata.StartsWith("#. Format arguments: ", StringComparison.Ordinal))
                             .Select(metadata => metadata["#. Format arguments: ".Length..]).ToArray(),
-                        Values = translatedValues.TryGetValue((item.Resource.Context, item.Resource.Key), out var values)
-                            ? values : Enumerable.Repeat(string.Empty, item.Resource.Plural == null ? 1 : pluralFormExamples.Length).ToArray(),
+                        // Stored plural values can have fewer forms than the culture rule, e.g. after it gained a form.
+                        Values = Enumerable.Range(0, item.Resource.Plural == null ? 1 : pluralFormExamples.Length)
+                            .Select(form => translatedValues.TryGetValue((item.Resource.Context, item.Resource.Key), out var values)
+                                ? values.ElementAtOrDefault(form) ?? string.Empty : string.Empty).ToArray(),
                     }).ToList(),
                 }).ToList(),
             }).ToList(),
