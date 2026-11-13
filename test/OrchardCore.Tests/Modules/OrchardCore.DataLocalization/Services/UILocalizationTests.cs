@@ -179,6 +179,35 @@ public sealed class UILocalizationTests
     }
 
     [Fact]
+    public async Task GetPluralFormExamplesAndImport_PoPluralFormsHeader_UseCultureRule()
+    {
+        var po = new Mock<ITranslationProvider>();
+        po.Setup(provider => provider.LoadTranslations("fr", It.IsAny<CultureDictionary>()))
+            .Callback<string, CultureDictionary>((_, dictionary) => dictionary.MergeTranslations([
+                new CultureDictionaryRecord("{0} item", "Context", ["None", "One", "Many"], count => count == 0 ? 0 : count == 1 ? 1 : 2),
+            ]));
+        var (manager, documents) = CreateManager(po.Object);
+        documents.Setup(value => value.GetOrCreateMutableAsync(null)).ReturnsAsync(new UITranslationsDocument());
+        const string header = """
+            msgid ""
+            msgstr ""
+            "Plural-Forms: nplurals=3; plural=(n==0 ? 0 : n==1 ? 1 : 2);\n"
+
+            msgctxt "Context"
+            msgid "{0} item"
+            msgid_plural "{0} items"
+
+            """;
+
+        Assert.Equal([1, 2], manager.GetPluralFormExamples("fr"));
+        using var threeForms = new StringReader(header + "msgstr[0] \"Zero\"\nmsgstr[1] \"One\"\nmsgstr[2] \"Many\"");
+        await Assert.ThrowsAsync<ArgumentException>(() => manager.ImportAsync("fr", "po", threeForms));
+        using var twoForms = new StringReader(header + "msgstr[0] \"One\"\nmsgstr[1] \"Many\"");
+        await manager.ImportAsync("fr", "po", twoForms);
+        documents.Verify(value => value.UpdateAsync(It.IsAny<UITranslationsDocument>(), null), Times.Once);
+    }
+
+    [Fact]
     public async Task UpdateAsync_UnknownContextCultureOrPlural_RejectsBeforeLoadingMutableDocument()
     {
         var (manager, documents) = CreateManager();
@@ -273,7 +302,8 @@ public sealed class UILocalizationTests
     private static UITranslation Singular(string context = "Context", string key = "Hello", string value = "Bonjour")
         => new() { Context = context, Key = key, Values = [value] };
 
-    private static (UITranslationsManager Manager, Mock<IDocumentManager<UITranslationsDocument>> Documents) CreateManager()
+    private static (UITranslationsManager Manager, Mock<IDocumentManager<UITranslationsDocument>> Documents) CreateManager(
+        params ITranslationProvider[] translationProviders)
     {
         var singular = new UILocalizationResource { Context = "Context", Key = "Hello" };
         var plural = new UILocalizationResource { Context = "Context", Key = "{0} item", Plural = "{0} items" };
@@ -281,7 +311,7 @@ public sealed class UILocalizationTests
         var localization = new Mock<ILocalizationService>();
         localization.Setup(value => value.GetSupportedCulturesAsync()).ReturnsAsync(["fr", "ja", "ar", "ru"]);
         var documents = new Mock<IDocumentManager<UITranslationsDocument>>();
-        var localizationManager = new LocalizationManager([new DefaultPluralRuleProvider()], [], new MemoryCache(new MemoryCacheOptions()));
+        var localizationManager = new LocalizationManager([new DefaultPluralRuleProvider()], translationProviders, new MemoryCache(new MemoryCacheOptions()));
         return (new UITranslationsManager(documents.Object, new UILocalizationCatalog([singular, plural]), localization.Object, localizationManager), documents);
     }
 }

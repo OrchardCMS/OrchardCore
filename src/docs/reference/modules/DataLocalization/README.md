@@ -63,6 +63,9 @@ Plural entries require all forms selected by Orchard's configured integer plural
 zero-based rule order. The editor provides the culture-specific number of inputs, not the
 two placeholder forms in the POT file. Partial or empty forms are rejected; remove the
 entire override to restore fallback.
+Orchard's plural rule takes precedence over the `Plural-Forms` header of deployed or imported
+PO files, which may be outdated: overrides are edited, imported and selected at runtime with
+Orchard's rule, while entries without an override keep the rule of their PO file.
 Auto-save waits until a changed plural entry has every required form filled, or every form
 cleared for removal. A manual save reports incomplete forms without losing the edits.
 
