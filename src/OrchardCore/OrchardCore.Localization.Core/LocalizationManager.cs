@@ -15,6 +15,7 @@ public class LocalizationManager : ILocalizationManager
     private readonly IList<IPluralRuleProvider> _pluralRuleProviders;
     private readonly IEnumerable<ITranslationProvider> _translationProviders;
     private readonly IMemoryCache _cache;
+    private readonly IEnumerable<ITranslationOverrideProvider> _translationOverrides;
 
     /// <summary>
     /// Creates a new instance of <see cref="LocalizationManager"/>.
@@ -26,10 +27,27 @@ public class LocalizationManager : ILocalizationManager
         IEnumerable<IPluralRuleProvider> pluralRuleProviders,
         IEnumerable<ITranslationProvider> translationProviders,
         IMemoryCache cache)
+        : this(pluralRuleProviders, translationProviders, cache, [])
+    {
+    }
+
+    /// <summary>
+    /// Creates a localization manager with versioned translation overrides.
+    /// </summary>
+    /// <param name="pluralRuleProviders">The available plural rules.</param>
+    /// <param name="translationProviders">The standard translation sources.</param>
+    /// <param name="cache">The culture dictionary cache.</param>
+    /// <param name="translationOverrides">The versioned translation overlays.</param>
+    public LocalizationManager(
+        IEnumerable<IPluralRuleProvider> pluralRuleProviders,
+        IEnumerable<ITranslationProvider> translationProviders,
+        IMemoryCache cache,
+        IEnumerable<ITranslationOverrideProvider> translationOverrides)
     {
         _pluralRuleProviders = pluralRuleProviders.OrderBy(o => o.Order).ToArray();
         _translationProviders = translationProviders;
         _cache = cache;
+        _translationOverrides = translationOverrides ?? [];
     }
 
     /// <inheritdoc />
@@ -56,6 +74,12 @@ public class LocalizationManager : ILocalizationManager
             return dictionary;
         }, LazyThreadSafetyMode.ExecutionAndPublication));
 
-        return cachedDictionary.Value;
+        var dictionary = cachedDictionary.Value;
+        foreach (var provider in _translationOverrides)
+        {
+            dictionary = provider.ApplyTranslations(dictionary);
+        }
+
+        return dictionary;
     }
 }
