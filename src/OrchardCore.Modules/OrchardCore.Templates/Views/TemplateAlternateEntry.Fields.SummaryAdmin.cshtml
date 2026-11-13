@@ -1,0 +1,10 @@
+@using OrchardCore.DisplayManagement.Views
+
+@model ShapeViewModel<TemplateAlternateEntry>
+
+@* Plain link, like the title of a content item in the Manage Content list: to the local template, or to create it. *@
+<a asp-action="@(Model.Value.IsOverridden ? "Edit" : "Create")"
+   asp-controller="Template"
+   asp-route-name="@Model.Value.Alternate.Name"
+   asp-route-admintemplates="@Model.Value.Base.AdminTemplates"
+   asp-route-returnUrl="@FullRequestPath">@Model.Value.Alternate.Name</a>

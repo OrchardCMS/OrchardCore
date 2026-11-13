@@ -1,0 +1,106 @@
+@model SourceTemplateViewModel
+@{
+    var entry = Model.Entry;
+    var template = entry.Template;
+    var returnUrl = ViewData["ReturnUrl"]?.ToString();
+    if (!Url.IsLocalUrl(returnUrl))
+    {
+        returnUrl = Url.Action("Index", "TemplateSource", new Microsoft.AspNetCore.Routing.RouteValueDictionary { ["area"] = "OrchardCore.Templates", ["source"] = entry.Source, ["Options.AdminTemplates"] = entry.AdminTemplates, ["Options.Scope"] = entry.Scope });
+    }
+}
+
+<zone Name="Title">
+    <breadcrumb name="TemplateSourcesDisplay" title="@(new OrchardCore.DisplayManagement.Html.HtmlContentString(template.Name ?? string.Empty))">
+        <breadcrumb-item id="Templates" action="@(entry.AdminTemplates ? "Admin" : "Index")" controller="Template" area="OrchardCore.Templates" permission="@(entry.AdminTemplates ? AdminTemplatesPermissions.ManageAdminTemplates.Name : Permissions.ManageTemplates.Name)">@(entry.AdminTemplates ? T["Admin Templates"] : T["Templates"])</breadcrumb-item>
+        <breadcrumb-item id="TemplateSources" url="@returnUrl" permission="@(entry.AdminTemplates ? AdminTemplatesPermissions.ManageAdminTemplates.Name : Permissions.ManageTemplates.Name)">@Model.Source.DisplayName</breadcrumb-item>
+    </breadcrumb>
+</zone>
+
+@* the form is necessary to generate an antiforgery token for the clone action *@
+<form method="post" class="no-multisubmit">
+    <div class="card text-bg-theme mb-3 position-sticky action-bar">
+        <div class="card-body p-3 text-end">
+            @if (!entry.IsOverridden && template.CanClone)
+            {
+                <a asp-action="Clone" asp-route-source="@entry.Source" asp-route-scope="@entry.Scope" asp-route-name="@template.Name" asp-route-admintemplates="@entry.AdminTemplates" asp-route-returnUrl="@returnUrl" class="btn btn-primary" data-url-af="UnsafeUrl">@T["Clone"]</a>
+            }
+            else if (!entry.IsOverridden && template.IsInUse)
+            {
+                <a asp-action="Create" asp-controller="Template" asp-route-name="@template.Name" asp-route-admintemplates="@entry.AdminTemplates" asp-route-returnUrl="@returnUrl" class="btn btn-primary">@T["Create override"]</a>
+            }
+            else if (entry.IsOverridden)
+            {
+                <a asp-action="Edit" asp-controller="Template" asp-route-name="@template.Name" asp-route-admintemplates="@entry.AdminTemplates" asp-route-returnUrl="@returnUrl" class="btn btn-primary">@T["Edit override"]</a>
+            }
+            @if (entry.HasAlternates)
+            {
+                <a asp-action="Alternates" asp-route-source="@entry.Source" asp-route-scope="@entry.Scope" asp-route-name="@template.Name" asp-route-admintemplates="@entry.AdminTemplates" class="btn btn-secondary">@T["Alternates"]</a>
+            }
+            <a class="btn btn-secondary cancel" role="button" href="@returnUrl">@T["Back"]</a>
+        </div>
+    </div>
+</form>
+
+<div class="ocat-wrapper">
+    <span class="ocat-label">@T["Source"]</span>
+    <div class="ocat-end">
+        @template.ExtensionId <code>@template.RelativePath</code>
+    </div>
+</div>
+
+@if (!template.IsInUse)
+{
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
+            <div class="alert alert-warning mb-0" role="alert">
+                @T["The theme of this template is not active: it can be viewed, but only cloned once its theme is active."]
+            </div>
+        </div>
+    </div>
+}
+else if (!template.IsLiquid)
+{
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
+            <div class="alert alert-info mb-0" role="alert">
+                @T["This is a Razor template: it can't be cloned, as local templates are written in Liquid. Use it as a reference to write a Liquid template with the same name, which overrides it."]
+            </div>
+        </div>
+    </div>
+}
+
+@if (template.OverriddenBy != null)
+{
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
+            <div class="alert alert-info mb-0" role="alert">
+                @T["The template of {0} renders this shape instead of this one. A local template with the same name overrides both.", template.OverriddenBy]
+            </div>
+        </div>
+    </div>
+}
+
+@if (entry.IsSourceChanged)
+{
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
+            <div class="alert alert-warning mb-0" role="alert">
+                @T["This template changed since it was cloned, e.g. after an update. Compare it with the local template, or reset the local template to it from the list."]
+            </div>
+        </div>
+    </div>
+}
+
+<div class="ocat-wrapper">
+    <span class="ocat-label">@T["Content"]</span>
+    <div class="ocat-end">
+        @if (Model.Content == null)
+        {
+            <div class="alert alert-warning mb-0" role="alert">@T["The file of the template could not be read."]</div>
+        }
+        else
+        {
+            <pre class="form-control font-monospace mb-0" style="max-height: 70vh; overflow: auto; white-space: pre;" dir="ltr"><code>@Model.Content</code></pre>
+        }
+    </div>
+</div>

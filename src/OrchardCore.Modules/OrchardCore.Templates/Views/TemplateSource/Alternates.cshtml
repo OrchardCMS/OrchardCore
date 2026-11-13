@@ -1,0 +1,42 @@
+@model SourceTemplateViewModel
+@{
+    var entry = Model.Entry;
+    var template = entry.Template;
+    var listUrl = ViewData["ReturnUrl"]?.ToString();
+    var permission = entry.AdminTemplates ? AdminTemplatesPermissions.ManageAdminTemplates.Name : Permissions.ManageTemplates.Name;
+}
+
+<zone Name="Title">
+    <breadcrumb name="TemplateSourcesAlternates" title="@T["Alternates of {0}", template.Name]">
+        <breadcrumb-item id="Templates" action="@(entry.AdminTemplates ? "Admin" : "Index")" controller="Template" area="OrchardCore.Templates" permission="@permission">@(entry.AdminTemplates ? T["Admin Templates"] : T["Templates"])</breadcrumb-item>
+        <breadcrumb-item id="TemplateSources" url="@listUrl" permission="@permission">@Model.Source.DisplayName</breadcrumb-item>
+    </breadcrumb>
+</zone>
+
+<div class="alert alert-info" role="alert">
+    @T["An alternate is a more specific name of the <code>{0}</code> shape, which renders it only in some cases, e.g. for a content type or a display type. Create a template with one of these names to customize the shape in these cases only; <code>{0}</code> keeps rendering the others.", template.Name]
+    @if (template.CanClone)
+    {
+        @T["Clone <code>{0}</code> to start from its content.", template.Name]
+    }
+</div>
+
+<form asp-action="Alternates" asp-route-source="@entry.Source" method="post" class="no-multisubmit">
+    <input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
+    <input type="hidden" name="name" value="@template.Name" />
+    <input type="hidden" name="adminTemplates" value="@entry.AdminTemplates.ToString()" />
+    <input type="hidden" name="scope" value="@entry.Scope" />
+
+    @* The search bar, the alternates and the pager are rendered by the AdminList shape using the configured layout (List, Grid, ...). *@
+    <admin-list name="TemplateAlternates" context="Model.Alternates"
+                show-select-all="false"
+                empty-message="@T["<strong>Nothing here!</strong> There are no alternates of this template for the content types, or none matching the search."]">
+        <admin-list-list item-css-class="list-group-item" />
+        <admin-list-grid>
+            <admin-list-column name="Name" position="20" title="@T["Name"]" />
+            <admin-list-column name="AppliesTo" position="30" title="@T["Applies to"]" />
+            <admin-list-column name="Status" position="40" title="@T["Status"]" width="auto" />
+            <admin-list-column type="Actions" title="@T["Actions"]" />
+        </admin-list-grid>
+    </admin-list>
+</form>
