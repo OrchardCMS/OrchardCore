@@ -3,7 +3,7 @@ namespace OrchardCore.DataLocalization.Models;
 /// <summary>
 /// A plain-text UI translation identified by its exact gettext context and identifier.
 /// </summary>
-public sealed class UiTranslation
+public sealed class UITranslation
 {
     /// <summary>Gets or sets the gettext context.</summary>
     public string Context { get; set; }

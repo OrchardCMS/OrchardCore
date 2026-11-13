@@ -7,78 +7,61 @@ using OrchardCore.Localization;
 namespace OrchardCore.DataLocalization.Services;
 
 /// <summary>Manages catalog-validated UI overrides using Orchard's versioned document storage.</summary>
-public sealed class UiTranslationsManager : IUiTranslationsManager
+internal sealed class UITranslationsManager : IUITranslationsManager
 {
-    private readonly IDocumentManager<UiTranslationsDocument> _documents;
-    private readonly IUiLocalizationCatalog _catalog;
-    private readonly ILocalizationService _localization;
-    private readonly IEnumerable<IPluralRuleProvider> _pluralRules;
+    // Add a format here to support it for import and export.
+    private static readonly IUITranslationsFormat[] _formats = [new PortableObjectFormat()];
 
-    /// <summary>Creates a catalog-validated tenant translation manager.</summary>
-    /// <param name="documents">The tenant document manager.</param>
-    /// <param name="catalog">The authoritative embedded resources.</param>
-    /// <param name="localization">The site's supported cultures.</param>
-    /// <param name="pluralRules">The runtime's ordered plural rules.</param>
-    public UiTranslationsManager(
-        IDocumentManager<UiTranslationsDocument> documents,
-        IUiLocalizationCatalog catalog,
+    private readonly IDocumentManager<UITranslationsDocument> _documents;
+    private readonly UILocalizationCatalog _catalog;
+    private readonly ILocalizationService _localization;
+    private readonly ILocalizationManager _localizationManager;
+
+    public UITranslationsManager(
+        IDocumentManager<UITranslationsDocument> documents,
+        UILocalizationCatalog catalog,
         ILocalizationService localization,
-        IEnumerable<IPluralRuleProvider> pluralRules)
+        ILocalizationManager localizationManager)
     {
         _documents = documents;
         _catalog = catalog;
         _localization = localization;
-        _pluralRules = pluralRules.OrderBy(provider => provider.Order).ToArray();
+        _localizationManager = localizationManager;
     }
 
     /// <inheritdoc />
-    public Task<UiTranslationsDocument> GetAsync() => _documents.GetOrCreateImmutableAsync();
+    public IReadOnlyList<UILocalizationResource> GetResources() => _catalog.GetResources();
 
     /// <inheritdoc />
-    public int GetPluralFormCount(string culture)
-        => Enumerable.Range(0, 1001).Max(GetPluralRule(culture).Invoke) + 1;
+    public async Task<IReadOnlyList<UITranslation>> GetTranslationsAsync(string culture)
+    {
+        var document = await _documents.GetOrCreateImmutableAsync();
+        return document.Translations.GetValueOrDefault(culture) ?? [];
+    }
 
     /// <inheritdoc />
     public int[] GetPluralFormExamples(string culture)
     {
-        var rule = GetPluralRule(culture);
-        var examples = new int[GetPluralFormCount(culture)];
-        Array.Fill(examples, -1);
+        var rule = _localizationManager.GetDictionary(CultureInfo.GetCultureInfo(culture)).PluralRule;
+        var examples = new Dictionary<int, int>();
         foreach (var count in new[] { 1, 2, 0 }.Concat(Enumerable.Range(3, 998)))
         {
-            var form = rule(count);
-            if (examples[form] == -1)
-            {
-                examples[form] = count;
-            }
+            examples.TryAdd(rule(count), count);
         }
 
-        return examples;
-    }
-
-    private PluralizationRuleDelegate GetPluralRule(string culture)
-    {
-        PluralizationRuleDelegate rule = count => count == 1 ? 0 : 1;
-        foreach (var provider in _pluralRules)
-        {
-            if (provider.TryGetRule(CultureInfo.GetCultureInfo(culture), out var providedRule))
-            {
-                rule = providedRule;
-                break;
-            }
-        }
-
-        return rule;
+        // Forms that no count in the range selects have no example.
+        return Enumerable.Range(0, examples.Keys.Max() + 1).Select(form => examples.GetValueOrDefault(form, -1)).ToArray();
     }
 
     /// <inheritdoc />
-    public async Task UpdateAsync(string culture, IEnumerable<UiTranslation> translations)
+    public async Task UpdateAsync(string culture, IEnumerable<UITranslation> translations)
     {
         culture = await ValidateCultureAsync(culture);
         ArgumentNullException.ThrowIfNull(translations);
         var updates = translations.ToArray();
         var resources = _catalog.GetResources().GroupBy(resource => (resource.Context, resource.Key))
             .ToDictionary(group => group.Key, group => group.First());
+        var formCount = GetPluralFormExamples(culture).Length;
         var keys = new HashSet<(string Context, string Key)>();
         foreach (var update in updates)
         {
@@ -98,7 +81,7 @@ public sealed class UiTranslationsManager : IUiTranslationsManager
                 continue;
             }
 
-            var expected = resource.Plural == null ? 1 : GetPluralFormCount(culture);
+            var expected = resource.Plural == null ? 1 : formCount;
             if (update.Values.Length != expected || update.Values.Any(string.IsNullOrEmpty))
             {
                 throw new ArgumentException("Supply every required plural form, or remove the entire override.", nameof(translations));
@@ -130,7 +113,7 @@ public sealed class UiTranslationsManager : IUiTranslationsManager
             existing.RemoveAll(translation => translation.Context == update.Context && translation.Key == update.Key);
             if (update.Values.Length > 0)
             {
-                existing.Add(new UiTranslation
+                existing.Add(new UITranslation
                 {
                     Context = update.Context,
                     Key = update.Key,
@@ -149,36 +132,28 @@ public sealed class UiTranslationsManager : IUiTranslationsManager
     }
 
     /// <inheritdoc />
-    public Task ImportAsync(string culture, TextReader reader)
+    public Task ImportAsync(string culture, string format, TextReader reader)
     {
-        var resources = UiPortableObject.Read(reader, "");
-        if (resources.Count == 0)
+        var translations = GetFormat(format).Read(reader).ToArray();
+        if (translations.Length == 0)
         {
-            throw new ArgumentException("The PO file contains no translation entries.", nameof(reader));
+            throw new ArgumentException("The file contains no translation entries.", nameof(reader));
         }
 
-        if (resources.Any(resource => resource.Metadata.Any(metadata => metadata.StartsWith("#,", StringComparison.Ordinal) &&
-            metadata.Contains("fuzzy", StringComparison.Ordinal))))
-        {
-            throw new ArgumentException("Fuzzy translations must be reviewed before importing.", nameof(reader));
-        }
-
-        return UpdateAsync(culture, resources.Select(resource => new UiTranslation
-        {
-            Context = resource.Context,
-            Key = resource.Key,
-            Plural = resource.Plural,
-            Values = resource.Values.All(string.IsNullOrEmpty) ? [] : resource.Values.ToArray(),
-        }));
+        return UpdateAsync(culture, translations);
     }
 
     /// <inheritdoc />
-    public async Task<string> ExportAsync(string culture)
+    public async Task ExportAsync(string culture, string format, TextWriter writer)
     {
+        var exporter = GetFormat(format);
         culture = await ValidateCultureAsync(culture);
-        var document = await GetAsync();
-        return UiPortableObject.Write(culture, document.Translations.GetValueOrDefault(culture) ?? []);
+        exporter.Write(writer, culture, await GetTranslationsAsync(culture));
     }
+
+    private static IUITranslationsFormat GetFormat(string format)
+        => _formats.FirstOrDefault(value => string.Equals(value.Extension, format, StringComparison.OrdinalIgnoreCase))
+            ?? throw new ArgumentException("The file format is not supported.", nameof(format));
 
     private async Task<string> ValidateCultureAsync(string culture)
     {

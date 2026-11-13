@@ -5,11 +5,11 @@ namespace OrchardCore.DataLocalization.ViewModels;
 /// <summary>
 /// A batch of changed UI overrides for a single configured culture.
 /// </summary>
-public sealed class UiTranslationUpdateModel
+public sealed class UITranslationUpdateModel
 {
     /// <summary>Gets or sets the target culture.</summary>
     public string Culture { get; set; }
 
     /// <summary>Gets or sets changed entries. Empty values arrays remove overrides.</summary>
-    public UiTranslation[] Translations { get; set; }
+    public UITranslation[] Translations { get; set; }
 }

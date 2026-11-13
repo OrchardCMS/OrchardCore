@@ -3,7 +3,7 @@ namespace OrchardCore.DataLocalization.Models;
 /// <summary>
 /// An authoritative entry discovered in an application's embedded POT catalog.
 /// </summary>
-public sealed class UiLocalizationResource
+public sealed class UILocalizationResource
 {
     /// <summary>Gets or sets the assembly owning the catalog.</summary>
     public string AssemblyName { get; set; }

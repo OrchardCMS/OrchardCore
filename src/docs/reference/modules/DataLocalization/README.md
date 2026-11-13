@@ -8,7 +8,7 @@ This module provides a database-backed localization system for translating dynam
 
 ## Features
 
-- **UI Localization Overrides** (`OrchardCore.DataLocalization.Ui`): Optional database overrides for UI strings discovered from embedded POT catalogs
+- **UI Localization Overrides** (`OrchardCore.DataLocalization.UI`): Optional database overrides for UI strings discovered from embedded POT catalogs
 - **Translation Editor**: Vue3-based admin UI to edit translations per culture
 - **Statistics Dashboard**: Track translation progress by culture and category
 - **Per-Culture Permissions**: Assign translation rights to specific cultures
@@ -92,15 +92,16 @@ resume editing.
 
 ### Storage, caching and extension points
 
-`UiTranslationsDocument` uses Orchard's tenant-scoped document manager, including immutable
+The overrides are stored in a document using Orchard's tenant-scoped document manager, including immutable
 snapshots, concurrency checks and distributed-cache versioning. The runtime pins a committed
 snapshot for each shell scope and caches overlaid dictionaries by snapshot and fallback
 dictionary identity. Subsequent scopes see committed updates and removals through the
 document manager's normal invalidation mechanism; no application restart is required.
 
-Use `IUiLocalizationCatalog` to discover available identifiers and metadata, and
-`IUiTranslationsManager` to validate, update, import and export translations from automation
-or other admin workflows. These services do not bypass catalog validation. The framework's
+Use `IUITranslationsManager` to discover available identifiers and metadata, and to read,
+validate, update, import and export translations from automation or other admin workflows.
+It doesn't bypass catalog validation. Imports and exports use the PO format, identified by its
+`po` extension; the export endpoint accepts it as its `format` parameter. The framework's
 `ITranslationOverrideProvider` hook applies versioned overlays after standard providers
 without modifying shared PO dictionaries or replacing core localizers. Disabling the
 feature leaves the documents stored but stops applying overrides.

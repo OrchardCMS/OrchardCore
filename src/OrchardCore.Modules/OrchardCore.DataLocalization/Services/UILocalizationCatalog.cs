@@ -5,26 +5,29 @@ using OrchardCore.Modules;
 namespace OrchardCore.DataLocalization.Services;
 
 /// <summary>Discovers the build-time POT resources of the application and its referenced assemblies.</summary>
-public sealed class EmbeddedUiLocalizationCatalog : IUiLocalizationCatalog
+internal sealed class UILocalizationCatalog
 {
-    private readonly Lazy<IReadOnlyList<UiLocalizationResource>> _resources;
+    private readonly Lazy<IReadOnlyList<UILocalizationResource>> _resources;
 
-    /// <summary>Creates a catalog for the application and all declared modules.</summary>
-    /// <param name="applicationContext">The application module registry.</param>
-    public EmbeddedUiLocalizationCatalog(IApplicationContext applicationContext)
+    public UILocalizationCatalog(IApplicationContext applicationContext)
     {
-        _resources = new Lazy<IReadOnlyList<UiLocalizationResource>>(() =>
+        _resources = new(() =>
             Discover(applicationContext.Application.Modules.Select(module => module.Assembly).Append(applicationContext.Application.Assembly)));
     }
 
-    /// <inheritdoc />
-    public IReadOnlyList<UiLocalizationResource> GetResources() => _resources.Value;
+    internal UILocalizationCatalog(IReadOnlyList<UILocalizationResource> resources)
+    {
+        _resources = new(resources);
+    }
+
+    /// <summary>Gets the catalog entries, ordered by assembly, context and key.</summary>
+    public IReadOnlyList<UILocalizationResource> GetResources() => _resources.Value;
 
     /// <summary>Discovers catalogs in the given assemblies and their assembly references.</summary>
     /// <param name="assemblies">The application and module assemblies.</param>
-    public static IReadOnlyList<UiLocalizationResource> Discover(IEnumerable<Assembly> assemblies)
+    public static IReadOnlyList<UILocalizationResource> Discover(IEnumerable<Assembly> assemblies)
     {
-        var resources = new List<UiLocalizationResource>();
+        var resources = new List<UILocalizationResource>();
         var visited = new HashSet<string>(StringComparer.Ordinal);
         var queue = new Queue<Assembly>(assemblies);
         while (queue.TryDequeue(out var assembly))
@@ -39,7 +42,7 @@ public sealed class EmbeddedUiLocalizationCatalog : IUiLocalizationCatalog
             if (stream != null)
             {
                 using var reader = new StreamReader(stream);
-                resources.AddRange(UiPortableObject.Read(reader, name));
+                resources.AddRange(PortableObjectFormat.ReadResources(reader, name));
             }
 
             foreach (var reference in assembly.GetReferencedAssemblies())

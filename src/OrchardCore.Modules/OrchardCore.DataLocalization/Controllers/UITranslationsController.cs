@@ -13,23 +13,25 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.DataLocalization.Controllers;
 
-[Admin("Localization/UI/{action}", "UiTranslations{action}")]
-[Feature("OrchardCore.DataLocalization.Ui")]
-public sealed class UiTranslationsController : Controller
+[Admin("Localization/UI/{action}", "UITranslations{action}")]
+[Feature("OrchardCore.DataLocalization.UI")]
+public sealed class UITranslationsController : Controller
 {
+    private const string EditorView = "~/Areas/OrchardCore.DataLocalization/Views/Admin/Index.cshtml";
+
     private readonly IAuthorizationService _authorization;
     private readonly ILocalizationService _localization;
-    private readonly IUiLocalizationCatalog _catalog;
-    private readonly IUiTranslationsManager _manager;
+    private readonly IUITranslationsManager _manager;
     private readonly IStringLocalizer S;
 
-    public UiTranslationsController(IAuthorizationService authorization, ILocalizationService localization,
-        IUiLocalizationCatalog catalog, IUiTranslationsManager manager,
-        IStringLocalizer<UiTranslationsController> localizer)
+    public UITranslationsController(
+        IAuthorizationService authorization,
+        ILocalizationService localization,
+        IUITranslationsManager manager,
+        IStringLocalizer<UITranslationsController> localizer)
     {
         _authorization = authorization;
         _localization = localization;
-        _catalog = catalog;
         _manager = manager;
         S = localizer;
     }
@@ -37,34 +39,36 @@ public sealed class UiTranslationsController : Controller
     [HttpGet]
     public async Task<IActionResult> Index(string culture, string search)
     {
-        if ((await GetAllowedCulturesAsync()).Length == 0)
+        var cultures = await GetAllowedCulturesAsync();
+        if (cultures.Length == 0)
         {
             return Forbid();
         }
 
-        if (culture != null && !(await GetAllowedCulturesAsync()).Contains(culture, StringComparer.OrdinalIgnoreCase))
+        if (culture != null && !cultures.Contains(culture, StringComparer.OrdinalIgnoreCase))
         {
             return BadRequest(S["Select an authorized configured culture."].Value);
         }
 
-        return View(await BuildModelAsync(culture, search));
+        return View(EditorView, await BuildModelAsync(cultures, culture, search));
     }
 
     [HttpGet]
     public async Task<IActionResult> GetStrings(string culture)
     {
-        if (!(await GetAllowedCulturesAsync()).Contains(culture, StringComparer.OrdinalIgnoreCase))
+        var cultures = await GetAllowedCulturesAsync();
+        if (!cultures.Contains(culture, StringComparer.OrdinalIgnoreCase))
         {
             return Forbid();
         }
 
-        var model = await BuildModelAsync(culture);
+        var model = await BuildModelAsync(cultures, culture);
         return Ok(new { culture = model.CurrentCulture, providers = model.Providers, pluralFormExamples = model.PluralFormExamples });
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Save([FromBody] UiTranslationUpdateModel model)
+    public async Task<IActionResult> Save([FromBody] UITranslationUpdateModel model)
     {
         if (model == null || string.IsNullOrEmpty(model.Culture) || model.Translations == null || !ModelState.IsValid)
         {
@@ -100,52 +104,47 @@ public sealed class UiTranslationsController : Controller
 
         if (file == null || file.Length == 0 || file.Length > 2 * 1024 * 1024)
         {
-            ModelState.AddModelError("", S["Select a PO file no larger than 2 MB."]);
-        }
-        else
-        {
-            try
-            {
-                using var reader = new StreamReader(file.OpenReadStream(), new UTF8Encoding(false, true));
-                await _manager.ImportAsync(culture, reader);
-            }
-            catch (Exception exception) when (exception is ArgumentException or FormatException)
-            {
-                return BadRequest(new { message = S["Invalid PO import: {0}", exception.Message].Value });
-            }
+            return BadRequest(new { message = S["Select a PO file no larger than 2 MB."].Value });
         }
 
-        if (!ModelState.IsValid)
+        try
         {
-            return BadRequest(new { message = S["Select a PO file no larger than 2 MB."].Value });
+            using var reader = new StreamReader(file.OpenReadStream(), new UTF8Encoding(false, true));
+            await _manager.ImportAsync(culture, Path.GetExtension(file.FileName).TrimStart('.'), reader);
+        }
+        catch (Exception exception) when (exception is ArgumentException or FormatException)
+        {
+            return BadRequest(new { message = S["Invalid PO import: {0}", exception.Message].Value });
         }
 
         return Ok(new { success = true, message = S["Translations imported successfully."].Value });
     }
 
     [HttpGet]
-    public async Task<IActionResult> Export(string culture)
+    public async Task<IActionResult> Export(string culture, string format = "po")
     {
         if (!(await GetAllowedCulturesAsync()).Contains(culture, StringComparer.OrdinalIgnoreCase))
         {
             return Forbid();
         }
 
-        if (!await IsSupportedAsync(culture))
+        using var writer = new StringWriter(CultureInfo.InvariantCulture);
+        try
         {
-            return BadRequest(S["Select a configured supported culture."].Value);
+            await _manager.ExportAsync(culture, format, writer);
+        }
+        catch (ArgumentException exception)
+        {
+            return BadRequest(exception.Message);
         }
 
-        return File(Encoding.UTF8.GetBytes(await _manager.ExportAsync(culture)), "text/plain; charset=utf-8", culture + ".overrides.po");
+        return File(Encoding.UTF8.GetBytes(writer.ToString()), "text/plain; charset=utf-8", $"{culture}.overrides.{format}");
     }
 
-    private async Task<TranslationEditorViewModel> BuildModelAsync(string culture, string search = null)
+    private async Task<TranslationEditorViewModel> BuildModelAsync(string[] cultures, string culture, string search = null)
     {
-        var cultures = await GetAllowedCulturesAsync();
         culture = cultures.FirstOrDefault(value => string.Equals(value, culture, StringComparison.OrdinalIgnoreCase)) ?? cultures.FirstOrDefault();
-        var all = _catalog.GetResources();
-        var document = await _manager.GetAsync();
-        var overrides = culture == null ? [] : document.Translations.GetValueOrDefault(culture) ?? [];
+        var overrides = culture == null ? [] : await _manager.GetTranslationsAsync(culture);
         var translatedValues = overrides.ToDictionary(translation => (translation.Context, translation.Key), translation => translation.Values);
         var allowedCultures = new List<CultureViewModel>();
         foreach (var name in cultures)
@@ -158,20 +157,20 @@ public sealed class UiTranslationsController : Controller
             });
         }
 
-        var formCount = culture == null ? 0 : _manager.GetPluralFormCount(culture);
+        var pluralFormExamples = culture == null ? [] : _manager.GetPluralFormExamples(culture);
         // A context/key can be extracted by several assemblies; edit it once and retain all metadata.
-        var resources = all.GroupBy(resource => (resource.Context, resource.Key)).Select(group => new
+        var resources = _manager.GetResources().GroupBy(resource => (resource.Context, resource.Key)).Select(group => new
         {
             Resource = group.First(),
             Metadata = group.SelectMany(resource => resource.Metadata).Distinct().ToArray(),
         });
         return new TranslationEditorViewModel
         {
-            IsUiLocalization = true,
+            IsUILocalization = true,
             CurrentCulture = culture,
             AllowedCultures = allowedCultures,
-            IsReadOnly = !await CanEditAsync(culture),
-            PluralFormExamples = culture == null ? [] : _manager.GetPluralFormExamples(culture),
+            IsReadOnly = !allowedCultures.Any(value => value.Name == culture && value.CanEdit),
+            PluralFormExamples = pluralFormExamples,
             Search = search,
             Providers = resources.GroupBy(item => item.Resource.AssemblyName).Select(assembly => new TranslatableStringGroupViewModel
             {
@@ -189,7 +188,7 @@ public sealed class UiTranslationsController : Controller
                             .Where(metadata => metadata.StartsWith("#. Format arguments: ", StringComparison.Ordinal))
                             .Select(metadata => metadata["#. Format arguments: ".Length..]).ToArray(),
                         Values = translatedValues.TryGetValue((item.Resource.Context, item.Resource.Key), out var values)
-                            ? values : Enumerable.Repeat(string.Empty, item.Resource.Plural == null ? 1 : formCount).ToArray(),
+                            ? values : Enumerable.Repeat(string.Empty, item.Resource.Plural == null ? 1 : pluralFormExamples.Length).ToArray(),
                     }).ToList(),
                 }).ToList(),
             }).ToList(),
@@ -215,9 +214,6 @@ public sealed class UiTranslationsController : Controller
 
         return allowed.ToArray();
     }
-
-    private async Task<bool> IsSupportedAsync(string culture)
-        => culture != null && (await _localization.GetSupportedCulturesAsync()).Contains(culture, StringComparer.OrdinalIgnoreCase);
 
     private async Task<bool> CanEditAsync(string culture)
     {

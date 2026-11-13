@@ -23,7 +23,7 @@
 }
 
 <zone Name="Title">
-    @if (Model.IsUiLocalization)
+    @if (Model.IsUILocalization)
     {
         <h1>@T["UI Translations"]</h1>
     }
@@ -36,7 +36,7 @@
 @if (Model.IsReadOnly)
 {
     <div class="alert alert-info" role="alert">
-        @(Model.IsUiLocalization
+        @(Model.IsUILocalization
             ? T["You have read-only access to UI translations. Contact an administrator to request edit permissions."]
             : T["You have read-only access to dynamic translations. Contact an administrator to request edit permissions."])
     </div>
@@ -45,12 +45,12 @@
 <div id="translation-editor" v-cloak
      data-current-culture="@Model.CurrentCulture"
      data-is-read-only="@Model.IsReadOnly.ToString().ToLowerInvariant()"
-     data-ui-localization="@Model.IsUiLocalization.ToString().ToLowerInvariant()"
+     data-ui-localization="@Model.IsUILocalization.ToString().ToLowerInvariant()"
      data-search="@Model.Search"
-     data-save-url="@Url.Action("Save", Model.IsUiLocalization ? "UiTranslations" : "Admin", new { area = "OrchardCore.DataLocalization" })"
-     data-get-strings-url="@Url.Action("GetStrings", Model.IsUiLocalization ? "UiTranslations" : "Admin", new { area = "OrchardCore.DataLocalization" })"
-     data-import-url="@Url.Action("Import", "UiTranslations", new { area = "OrchardCore.DataLocalization" })"
-     data-export-url="@Url.Action("Export", "UiTranslations", new { area = "OrchardCore.DataLocalization" })"
+     data-save-url="@Url.Action("Save", Model.IsUILocalization ? "UITranslations" : "Admin", new { area = "OrchardCore.DataLocalization" })"
+     data-get-strings-url="@Url.Action("GetStrings", Model.IsUILocalization ? "UITranslations" : "Admin", new { area = "OrchardCore.DataLocalization" })"
+     data-import-url="@Url.Action("Import", "UITranslations", new { area = "OrchardCore.DataLocalization" })"
+     data-export-url="@Url.Action("Export", "UITranslations", new { area = "OrchardCore.DataLocalization" })"
      data-cultures="@culturesJson"
      data-providers="@providersJson"
      data-plural-form-examples="@pluralFormExamplesJson"
@@ -77,7 +77,7 @@
                             @T["Actions"]
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="translation-actions">
-                            @if (Model.IsUiLocalization)
+                            @if (Model.IsUILocalization)
                             {
                                 <li>
                                     <a class="dropdown-item" :href="exportUrl + '?culture=' + encodeURIComponent(loadedCulture)"
@@ -134,9 +134,9 @@
                 </div>
                 <div class="col-12 col-sm-6 col-lg-auto">
                     <div class="input-group input-group-sm">
-                        <label class="input-group-text" for="filter-select">@(Model.IsUiLocalization ? T["Assembly"] : T["Category"])</label>
+                        <label class="input-group-text" for="filter-select">@(Model.IsUILocalization ? T["Assembly"] : T["Category"])</label>
                         <select id="filter-select" class="form-select" v-model="categoryFilter">
-                            <option value="">@(Model.IsUiLocalization ? T["All assemblies"] : T["All Categories"])</option>
+                            <option value="">@(Model.IsUILocalization ? T["All assemblies"] : T["All Categories"])</option>
                             <option v-for="provider in providers" :key="provider.name" :value="provider.name">
                                 {{ provider.name }}
                             </option>
@@ -159,7 +159,7 @@
                     {{ summary }}
                 </div>
             </div>
-            @if (Model.IsUiLocalization)
+            @if (Model.IsUILocalization)
             {
                 <div class="form-text mt-2 mb-0">
                     <i class="fa-solid fa-circle-info me-1" aria-hidden="true"></i>@T["Overrides are plain text. HTML is encoded when displayed. Supply every plural form, or restore fallback."]
@@ -216,7 +216,7 @@
                             :class="{ 'translation-row-changed': str.changed }" :data-text="str.key.toLowerCase()">
                             <td class="translation-source">
                                 <code class="text-break">{{ str.key }}</code>
-                                @if (Model.IsUiLocalization)
+                                @if (Model.IsUILocalization)
                                 {
                                     <div v-if="str.plural" class="small text-body-secondary">
                                         <span class="visually-hidden">@T["Plural:"]</span><code class="text-break">{{ str.plural }}</code>
@@ -232,7 +232,7 @@
                                 }
                             </td>
                             <td>
-                                @if (Model.IsUiLocalization)
+                                @if (Model.IsUILocalization)
                                 {
                                     <div v-for="(value, form) in str.values" :key="form" class="translation-form"
                                          :class="{ 'input-group input-group-sm': str.plural }">
@@ -268,7 +268,7 @@
                                     <span v-else class="text-body-tertiary" title="@T["Missing"]">
                                         <i class="fa-regular fa-circle fa-fw" aria-hidden="true"></i><span class="visually-hidden">@T["Missing"]</span>
                                     </span>
-                                    @if (Model.IsUiLocalization)
+                                    @if (Model.IsUILocalization)
                                     {
                                         <button type="button" class="btn btn-sm btn-link text-body-secondary p-0" v-if="!isReadOnly && str.values.some(value => value)"
                                                 :disabled="isImporting || isLoading" @@click="restoreFallback(str)"
@@ -289,7 +289,7 @@
         @T["No translatable strings found matching your criteria."]
     </div>
 
-    @if (Model.IsUiLocalization)
+    @if (Model.IsUILocalization)
     {
         <div class="modal fade" id="import-modal" ref="importModal" tabindex="-1" aria-labelledby="import-modal-title" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">

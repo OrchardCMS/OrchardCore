@@ -156,7 +156,7 @@ public sealed class DataLocalizationTests : CmsTestBase<DataLocalizationTestsFix
     }
 
     [Fact]
-    public async Task UiOverrides_SharedEditor_AutosaveFiltersCultureImportAndRemoval()
+    public async Task UIOverrides_SharedEditor_AutosaveFiltersCultureImportAndRemoval()
     {
         var page = await Fixture.CreatePageAsync();
         page.SetDefaultNavigationTimeout(120000);
@@ -170,7 +170,7 @@ public sealed class DataLocalizationTests : CmsTestBase<DataLocalizationTestsFix
         await Assertions.Expect(editor).ToHaveAttributeAsync("data-ui-localization", "true");
         await Assertions.Expect(editor.Locator("#auto-save-toggle")).ToBeCheckedAsync();
         await Assertions.Expect(editor.Locator(".translations-list")).Not.ToHaveCountAsync(0);
-        var row = UiRow(page, "OrchardCore.DataLocalization.Views.Admin.Index", "UI Translations");
+        var row = UIRow(page, "OrchardCore.DataLocalization.Views.Admin.Index", "UI Translations");
         await Assertions.Expect(row).ToHaveCountAsync(1);
         const string text = "<img src=x onerror=alert(1)>";
         var responseTask = page.WaitForResponseAsync(response => response.Url.Contains("/Localization/UI/Save") && response.Request.Method == "POST");
@@ -295,7 +295,7 @@ public sealed class DataLocalizationTests : CmsTestBase<DataLocalizationTestsFix
             }
             """);
         await editor.Locator("#search-box").FillAsync(source[1]);
-        var plural = UiRow(page, source[0], source[1]);
+        var plural = UIRow(page, source[0], source[1]);
         await Assertions.Expect(plural.Locator("textarea")).ToHaveCountAsync(6);
         await Assertions.Expect(plural.GetByText("Available placeholders:")).ToBeVisibleAsync();
         await Assertions.Expect(plural.Locator("label.plural-form-label")).ToHaveTextAsync([
@@ -345,7 +345,7 @@ public sealed class DataLocalizationTests : CmsTestBase<DataLocalizationTestsFix
         async void AcceptDialog(object sender, IDialog dialog) => await dialog.AcceptAsync();
     }
 
-    private static ILocator UiRow(IPage page, string context, string key)
+    private static ILocator UIRow(IPage page, string context, string key)
         => page.Locator("#translation-editor tbody.translation-group")
             .Filter(new LocatorFilterOptions { Has = page.Locator("th[scope='rowgroup']").Filter(new LocatorFilterOptions { HasText = context }) })
             .Locator("tr.translation-row")

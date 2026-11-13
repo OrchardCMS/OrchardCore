@@ -18,7 +18,7 @@ using OrchardCore.Modules.Manifest;
 )]
 
 [assembly: Feature(
-    Id = "OrchardCore.DataLocalization.Ui",
+    Id = "OrchardCore.DataLocalization.UI",
     Name = "UI Localization Overrides",
     Description = "Manages database UI translations from embedded localization catalogs.",
     Category = "Internationalization",

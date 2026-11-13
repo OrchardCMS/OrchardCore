@@ -28,7 +28,7 @@ public class TranslationEditorViewModel
     /// <summary>
     /// Whether this editor manages catalog-backed UI overrides rather than dynamic data translations.
     /// </summary>
-    public bool IsUiLocalization { get; set; }
+    public bool IsUILocalization { get; set; }
 
     /// <summary>
     /// Example counts for each plural form of the selected UI culture.

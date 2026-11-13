@@ -14,17 +14,17 @@ using OrchardCore.Tests.Modules.OrchardCore.Users;
 
 namespace OrchardCore.DataLocalization.Services.Tests;
 
-public sealed class UiLocalizationIntegrationTests
+public sealed class UILocalizationIntegrationTests
 {
     [Fact]
-    public async Task Feature_EnableUiOverrides_EnablesDynamicLocalizationAndCultures()
+    public async Task Feature_EnableUIOverrides_EnablesDynamicLocalizationAndCultures()
     {
         using var context = new SiteContext();
         await context.InitializeAsync();
         await context.UsingTenantScopeAsync(async scope =>
         {
             var features = scope.ServiceProvider.GetRequiredService<IShellFeaturesManager>();
-            var feature = (await features.GetAvailableFeaturesAsync()).Single(value => value.Id == "OrchardCore.DataLocalization.Ui");
+            var feature = (await features.GetAvailableFeaturesAsync()).Single(value => value.Id == "OrchardCore.DataLocalization.UI");
             await features.EnableFeaturesAsync([feature], force: true);
         });
         await context.WaitForDeferredTasksAsync(TestContext.Current.CancellationToken);
@@ -36,7 +36,7 @@ public sealed class UiLocalizationIntegrationTests
             Assert.Contains(enabled, feature => feature.Id == "OrchardCore.Localization");
             Assert.NotEmpty(scope.ServiceProvider.GetServices<ILocalizationDataProvider>());
             Assert.NotNull(scope.ServiceProvider.GetRequiredService<TranslationsManager>());
-            Assert.NotNull(scope.ServiceProvider.GetRequiredService<IUiTranslationsManager>());
+            Assert.NotNull(scope.ServiceProvider.GetRequiredService<IUITranslationsManager>());
         });
     }
 
@@ -45,9 +45,9 @@ public sealed class UiLocalizationIntegrationTests
     {
         using var context = new SiteContext();
         await context.InitializeAsync();
-        await TenantLocalizationTestHelper.EnableLocalizationAsync(context, ["en", "fr"], "OrchardCore.DataLocalization.Ui");
+        await TenantLocalizationTestHelper.EnableLocalizationAsync(context, ["en", "fr"], "OrchardCore.DataLocalization.UI");
         await TenantLocalizationTestHelper.WritePoFileAsync(context, "fr",
-            ("OrchardCore.DataLocalization.UiLocalizationAdminMenu", "UI Translations", "PO translation"));
+            ("OrchardCore.DataLocalization.UILocalizationAdminMenu", "UI Translations", "PO translation"));
 
         await AssertTranslationAsync("PO translation");
         await SaveAsync(["Database translation"]);
@@ -60,7 +60,7 @@ public sealed class UiLocalizationIntegrationTests
         await context.UsingTenantScopeAsync(async scope =>
         {
             var features = scope.ServiceProvider.GetRequiredService<IShellFeaturesManager>();
-            var feature = (await features.GetAvailableFeaturesAsync()).Single(value => value.Id == "OrchardCore.DataLocalization.Ui");
+            var feature = (await features.GetAvailableFeaturesAsync()).Single(value => value.Id == "OrchardCore.DataLocalization.UI");
             await features.DisableFeaturesAsync([feature], force: true);
         });
         await context.WaitForDeferredTasksAsync(TestContext.Current.CancellationToken);
@@ -70,7 +70,7 @@ public sealed class UiLocalizationIntegrationTests
             => context.UsingTenantScopeAsync(scope =>
             {
                 using var culture = CultureScope.Create("fr");
-                var localizer = scope.ServiceProvider.GetRequiredService<IStringLocalizer<UiLocalizationAdminMenu>>();
+                var localizer = scope.ServiceProvider.GetRequiredService<IStringLocalizer<UILocalizationAdminMenu>>();
                 Assert.Equal(expected, localizer["UI Translations"].Value);
                 return Task.CompletedTask;
             });
@@ -78,8 +78,8 @@ public sealed class UiLocalizationIntegrationTests
         Task SaveAsync(string[] values)
             => context.UsingTenantScopeAsync(async scope =>
             {
-                await scope.ServiceProvider.GetRequiredService<IUiTranslationsManager>().UpdateAsync("fr", [
-                    new UiTranslation { Context = "OrchardCore.DataLocalization.UiLocalizationAdminMenu", Key = "UI Translations", Values = values },
+                await scope.ServiceProvider.GetRequiredService<IUITranslationsManager>().UpdateAsync("fr", [
+                    new UITranslation { Context = "OrchardCore.DataLocalization.UILocalizationAdminMenu", Key = "UI Translations", Values = values },
                 ]);
             });
     }
@@ -93,7 +93,7 @@ public sealed class UiLocalizationIntegrationTests
             AuthorizedPermissions = [AdminPermissions.AccessAdminPanel, DataLocalizationPermissions.ManageTranslations, DataLocalizationPermissions.ViewDynamicTranslations],
         });
         await context.InitializeAsync();
-        await TenantLocalizationTestHelper.EnableLocalizationAsync(context, ["en", "fr"], "OrchardCore.DataLocalization.Ui");
+        await TenantLocalizationTestHelper.EnableLocalizationAsync(context, ["en", "fr"], "OrchardCore.DataLocalization.UI");
         const string sourceContext = "OrchardCore.DataLocalization.Views.Admin.Index";
         const string untrusted = "<img src=x onerror=alert(1)>";
         var page = await GetPageAsync(context,
@@ -104,7 +104,7 @@ public sealed class UiLocalizationIntegrationTests
         Assert.NotNull(editor.QuerySelector("#missing-only-toggle"));
         Assert.NotNull(editor.QuerySelector("button.save"));
         var token = editor.QuerySelector("input[name=__RequestVerificationToken]").GetAttribute("value");
-        var translation = new UiTranslation { Context = sourceContext, Key = "UI Translations", Values = [untrusted] };
+        var translation = new UITranslation { Context = sourceContext, Key = "UI Translations", Values = [untrusted] };
         Assert.Contains(GetEntries(editor), entry => entry.Context == sourceContext && entry.Key == translation.Key);
 
         using (var rejected = await SaveAsync(context, "fr", [translation]))
@@ -155,12 +155,12 @@ public sealed class UiLocalizationIntegrationTests
             AuthorizedPermissions = [AdminPermissions.AccessAdminPanel, DataLocalizationPermissions.ViewDynamicTranslations],
         });
         await context.InitializeAsync();
-        await TenantLocalizationTestHelper.EnableLocalizationAsync(context, ["en", "fr"], "OrchardCore.DataLocalization.Ui");
+        await TenantLocalizationTestHelper.EnableLocalizationAsync(context, ["en", "fr"], "OrchardCore.DataLocalization.UI");
         var page = await GetPageAsync(context, "Admin/Localization/UI/Index", "fr");
         Assert.Equal("true", page.QuerySelector("#translation-editor").GetAttribute("data-is-read-only"));
         var token = page.QuerySelector("input[name=__RequestVerificationToken]").GetAttribute("value");
         using var response = await SaveAsync(context, "fr", [
-            new UiTranslation { Context = "OrchardCore.DataLocalization.UiLocalizationAdminMenu", Key = "UI Translations", Values = ["Unauthorized"] },
+            new UITranslation { Context = "OrchardCore.DataLocalization.UILocalizationAdminMenu", Key = "UI Translations", Values = ["Unauthorized"] },
         ], token);
         AssertAccessDenied(response);
         using var export = await context.Client.GetAsync("Admin/Localization/UI/Export?culture=fr", TestContext.Current.CancellationToken);
@@ -183,7 +183,7 @@ public sealed class UiLocalizationIntegrationTests
             AuthorizedPermissions = [AdminPermissions.AccessAdminPanel, DataLocalizationPermissions.CreateCulturePermission("fr", "French")],
         });
         await context.InitializeAsync();
-        await TenantLocalizationTestHelper.EnableLocalizationAsync(context, ["en", "fr", "ru"], "OrchardCore.DataLocalization.Ui");
+        await TenantLocalizationTestHelper.EnableLocalizationAsync(context, ["en", "fr", "ru"], "OrchardCore.DataLocalization.UI");
         var page = await GetPageAsync(context, "Admin/Localization/UI/Index", "fr");
         var editor = page.QuerySelector("#translation-editor");
         var cultures = JsonSerializer.Deserialize<CultureViewModel[]>(editor.GetAttribute("data-cultures"), JsonOptions);
@@ -200,7 +200,7 @@ public sealed class UiLocalizationIntegrationTests
         using var otherStrings = await context.Client.GetAsync("Admin/Localization/UI/GetStrings?culture=ru", TestContext.Current.CancellationToken);
         AssertAccessDenied(otherStrings);
         using var saved = await SaveAsync(context, "FR", [
-            new UiTranslation { Context = "OrchardCore.DataLocalization.UiLocalizationAdminMenu", Key = "UI Translations", Values = ["Authorized French override"] },
+            new UITranslation { Context = "OrchardCore.DataLocalization.UILocalizationAdminMenu", Key = "UI Translations", Values = ["Authorized French override"] },
         ], page.QuerySelector("input[name=__RequestVerificationToken]").GetAttribute("value"));
         Assert.Equal(HttpStatusCode.OK, saved.StatusCode);
         var export = await context.Client.GetStringAsync("Admin/Localization/UI/Export?culture=fr", TestContext.Current.CancellationToken);
@@ -212,19 +212,19 @@ public sealed class UiLocalizationIntegrationTests
     {
         using var context = new SiteContext();
         await context.InitializeAsync();
-        await TenantLocalizationTestHelper.EnableLocalizationAsync(context, ["en", "fr", "ar"], "OrchardCore.DataLocalization.Ui");
+        await TenantLocalizationTestHelper.EnableLocalizationAsync(context, ["en", "fr", "ar"], "OrchardCore.DataLocalization.UI");
         var page = await GetPageAsync(context, "Admin/Localization/UI/Index", "fr");
         var editor = page.QuerySelector("#translation-editor");
         Assert.Contains(GetEntries(editor), entry => entry.Metadata.Length > 0);
         var token = editor.QuerySelector("input[name=__RequestVerificationToken]").GetAttribute("value");
-        const string menuContext = "OrchardCore.DataLocalization.UiLocalizationAdminMenu";
-        var first = new UiTranslation { Context = menuContext, Key = "UI Translations", Values = ["Keep this"] };
+        const string menuContext = "OrchardCore.DataLocalization.UILocalizationAdminMenu";
+        var first = new UITranslation { Context = menuContext, Key = "UI Translations", Values = ["Keep this"] };
         using (var saved = await SaveAsync(context, "fr", [first], token))
         {
             saved.EnsureSuccessStatusCode();
         }
 
-        var second = new UiTranslation { Context = "OrchardCore.DataLocalization.Views.Admin.Index", Key = "UI Translations", Values = ["Independent context"] };
+        var second = new UITranslation { Context = "OrchardCore.DataLocalization.Views.Admin.Index", Key = "UI Translations", Values = ["Independent context"] };
         using (var saved = await SaveAsync(context, "fr", [second], token))
         {
             saved.EnsureSuccessStatusCode();
@@ -243,7 +243,7 @@ public sealed class UiLocalizationIntegrationTests
         var plural = GetEntries(arabic.RootElement.GetProperty("providers").GetRawText()).First(entry => entry.Plural != null);
         Assert.Equal(6, plural.Values.Length);
         first.Values = ["Should not be saved"];
-        using var invalid = await SaveAsync(context, "fr", [first, new UiTranslation { Context = "Unknown", Key = "Invalid", Values = ["Invalid"] }], token);
+        using var invalid = await SaveAsync(context, "fr", [first, new UITranslation { Context = "Unknown", Key = "Invalid", Values = ["Invalid"] }], token);
         Assert.Equal(HttpStatusCode.BadRequest, invalid.StatusCode);
         var exported = await context.Client.GetStringAsync("Admin/Localization/UI/Export?culture=fr", TestContext.Current.CancellationToken);
         Assert.Contains("Keep this", exported, StringComparison.Ordinal);
@@ -259,11 +259,11 @@ public sealed class UiLocalizationIntegrationTests
         => JsonSerializer.Deserialize<TranslatableStringGroupViewModel[]>(json, JsonOptions)
             .SelectMany(group => group.Strings.Concat(group.SubGroups.SelectMany(subGroup => subGroup.Strings)));
 
-    private static async Task<HttpResponseMessage> SaveAsync(SiteContext context, string culture, UiTranslation[] translations, string token = null)
+    private static async Task<HttpResponseMessage> SaveAsync(SiteContext context, string culture, UITranslation[] translations, string token = null)
     {
         using var request = new HttpRequestMessage(HttpMethod.Post, "Admin/Localization/UI/Save")
         {
-            Content = JsonContent.Create(new UiTranslationUpdateModel { Culture = culture, Translations = translations }),
+            Content = JsonContent.Create(new UITranslationUpdateModel { Culture = culture, Translations = translations }),
         };
         if (token != null)
         {

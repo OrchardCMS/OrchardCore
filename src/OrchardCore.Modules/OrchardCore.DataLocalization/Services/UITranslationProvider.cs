@@ -8,20 +8,20 @@ using OrchardCore.Localization;
 namespace OrchardCore.DataLocalization.Services;
 
 /// <summary>Overlays tenant database translations on cached PO dictionaries.</summary>
-public sealed class UiTranslationProvider : ITranslationOverrideProvider
+internal sealed class UITranslationProvider : ITranslationOverrideProvider
 {
-    private readonly ConditionalWeakTable<UiTranslationsDocument, ConditionalWeakTable<CultureDictionary, CultureDictionary>> _cache = new();
+    private readonly ConditionalWeakTable<UITranslationsDocument, ConditionalWeakTable<CultureDictionary, CultureDictionary>> _cache = new();
 
     /// <inheritdoc />
     public CultureDictionary ApplyTranslations(CultureDictionary dictionary)
     {
-        var document = ShellScope.Get<UiTranslationsDocument>(typeof(UiTranslationProvider));
+        var document = ShellScope.Get<UITranslationsDocument>(typeof(UITranslationProvider));
         if (document == null)
         {
             // DocumentManager performs distributed version checks; pin its immutable snapshot for this request.
-            document = ShellScope.Services.GetRequiredService<IDocumentManager<UiTranslationsDocument>>()
+            document = ShellScope.Services.GetRequiredService<IDocumentManager<UITranslationsDocument>>()
                 .GetOrCreateImmutableAsync().GetAwaiter().GetResult();
-            ShellScope.Set(typeof(UiTranslationProvider), document);
+            ShellScope.Set(typeof(UITranslationProvider), document);
         }
 
         return ApplyTranslations(dictionary, document);
@@ -30,7 +30,7 @@ public sealed class UiTranslationProvider : ITranslationOverrideProvider
     /// <summary>Applies an immutable document snapshot, caching by snapshot and fallback dictionary identity.</summary>
     /// <param name="dictionary">The fallback dictionary.</param>
     /// <param name="document">The committed, immutable document snapshot.</param>
-    public CultureDictionary ApplyTranslations(CultureDictionary dictionary, UiTranslationsDocument document)
+    internal CultureDictionary ApplyTranslations(CultureDictionary dictionary, UITranslationsDocument document)
         => _cache.GetValue(document, _ => new()).GetValue(dictionary, fallback =>
         {
             if (!document.Translations.TryGetValue(fallback.CultureName, out var translations) || translations.Count == 0)

@@ -27,46 +27,41 @@ msgid "Translations saved successfully."
 msgstr ""
 
 #. Format arguments: {0}: exception.Message
-#: Controllers/UiTranslationsController.cs
+#: Controllers/UITranslationsController.cs
 #, csharp-format
-msgctxt "OrchardCore.DataLocalization.Controllers.UiTranslationsController"
+msgctxt "OrchardCore.DataLocalization.Controllers.UITranslationsController"
 msgid "Invalid PO import: {0}"
 msgstr ""
 
-#: Controllers/UiTranslationsController.cs
-msgctxt "OrchardCore.DataLocalization.Controllers.UiTranslationsController"
+#: Controllers/UITranslationsController.cs
+msgctxt "OrchardCore.DataLocalization.Controllers.UITranslationsController"
 msgid "Invalid translation request."
 msgstr ""
 
 #. Format arguments: {0}: exception.Message
-#: Controllers/UiTranslationsController.cs
+#: Controllers/UITranslationsController.cs
 #, csharp-format
-msgctxt "OrchardCore.DataLocalization.Controllers.UiTranslationsController"
+msgctxt "OrchardCore.DataLocalization.Controllers.UITranslationsController"
 msgid "Invalid translation: {0}"
 msgstr ""
 
-#: Controllers/UiTranslationsController.cs
-msgctxt "OrchardCore.DataLocalization.Controllers.UiTranslationsController"
+#: Controllers/UITranslationsController.cs
+msgctxt "OrchardCore.DataLocalization.Controllers.UITranslationsController"
 msgid "Select a PO file no larger than 2 MB."
 msgstr ""
 
-#: Controllers/UiTranslationsController.cs
-msgctxt "OrchardCore.DataLocalization.Controllers.UiTranslationsController"
-msgid "Select a configured supported culture."
-msgstr ""
-
-#: Controllers/UiTranslationsController.cs
-msgctxt "OrchardCore.DataLocalization.Controllers.UiTranslationsController"
+#: Controllers/UITranslationsController.cs
+msgctxt "OrchardCore.DataLocalization.Controllers.UITranslationsController"
 msgid "Select an authorized configured culture."
 msgstr ""
 
-#: Controllers/UiTranslationsController.cs
-msgctxt "OrchardCore.DataLocalization.Controllers.UiTranslationsController"
+#: Controllers/UITranslationsController.cs
+msgctxt "OrchardCore.DataLocalization.Controllers.UITranslationsController"
 msgid "Translations imported successfully."
 msgstr ""
 
-#: Controllers/UiTranslationsController.cs
-msgctxt "OrchardCore.DataLocalization.Controllers.UiTranslationsController"
+#: Controllers/UITranslationsController.cs
+msgctxt "OrchardCore.DataLocalization.Controllers.UITranslationsController"
 msgid "Translations saved successfully."
 msgstr ""
 
@@ -80,18 +75,18 @@ msgctxt "OrchardCore.DataLocalization.Recipes.TranslationsStep"
 msgid "The 'translations' property is required."
 msgstr ""
 
-#: UiLocalizationAdminMenu.cs
-msgctxt "OrchardCore.DataLocalization.UiLocalizationAdminMenu"
+#: UILocalizationAdminMenu.cs
+msgctxt "OrchardCore.DataLocalization.UILocalizationAdminMenu"
 msgid "Localization"
 msgstr ""
 
-#: UiLocalizationAdminMenu.cs
-msgctxt "OrchardCore.DataLocalization.UiLocalizationAdminMenu"
+#: UILocalizationAdminMenu.cs
+msgctxt "OrchardCore.DataLocalization.UILocalizationAdminMenu"
 msgid "Settings"
 msgstr ""
 
-#: UiLocalizationAdminMenu.cs
-msgctxt "OrchardCore.DataLocalization.UiLocalizationAdminMenu"
+#: UILocalizationAdminMenu.cs
+msgctxt "OrchardCore.DataLocalization.UILocalizationAdminMenu"
 msgid "UI Translations"
 msgstr ""
 

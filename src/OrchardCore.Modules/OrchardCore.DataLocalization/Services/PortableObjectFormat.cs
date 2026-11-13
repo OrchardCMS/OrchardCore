@@ -1,23 +1,44 @@
 using System.Globalization;
-using System.Text;
 using System.Text.Json;
 using OrchardCore.DataLocalization.Models;
 
 namespace OrchardCore.DataLocalization.Services;
 
 /// <summary>
-/// Reads catalogs including empty translations and metadata, and writes override PO files.
+/// Reads catalogs including empty translations and metadata, and reads and writes override PO files.
 /// Unlike the runtime PO parser, catalog discovery must retain untranslated identifiers.
 /// </summary>
-public static class UiPortableObject
+internal sealed class PortableObjectFormat : IUITranslationsFormat
 {
+    /// <inheritdoc />
+    public string Extension => "po";
+
+    /// <inheritdoc />
+    public IEnumerable<UITranslation> Read(TextReader reader)
+    {
+        var resources = ReadResources(reader, "");
+        if (resources.Any(resource => resource.Metadata.Any(metadata => metadata.StartsWith("#,", StringComparison.Ordinal) &&
+            metadata.Contains("fuzzy", StringComparison.Ordinal))))
+        {
+            throw new ArgumentException("Fuzzy translations must be reviewed before importing.", nameof(reader));
+        }
+
+        return resources.Select(resource => new UITranslation
+        {
+            Context = resource.Context,
+            Key = resource.Key,
+            Plural = resource.Plural,
+            Values = resource.Values.All(string.IsNullOrEmpty) ? [] : resource.Values.ToArray(),
+        });
+    }
+
     /// <summary>Reads a POT or PO document, rejecting malformed fields and plural indices.</summary>
     /// <param name="reader">The input reader.</param>
     /// <param name="assemblyName">The catalog's source assembly name.</param>
-    public static IReadOnlyList<UiLocalizationResource> Read(TextReader reader, string assemblyName)
+    public static IReadOnlyList<UILocalizationResource> ReadResources(TextReader reader, string assemblyName)
     {
-        var results = new List<UiLocalizationResource>();
-        var entry = new UiLocalizationResource { AssemblyName = assemblyName };
+        var results = new List<UILocalizationResource>();
+        var entry = new UILocalizationResource { AssemblyName = assemblyName };
         string field = null;
         var index = -1;
         var fields = new HashSet<string>(StringComparer.Ordinal);
@@ -149,25 +170,22 @@ public static class UiPortableObject
                 }
             }
 
-            entry = new UiLocalizationResource { AssemblyName = assemblyName };
+            entry = new UILocalizationResource { AssemblyName = assemblyName };
             fields.Clear();
             field = null;
             index = -1;
         }
     }
 
-    /// <summary>Exports only persisted overrides, retaining contexts and plural source identifiers.</summary>
-    /// <param name="culture">The culture name.</param>
-    /// <param name="translations">The overrides.</param>
-    public static string Write(string culture, IEnumerable<UiTranslation> translations)
+    /// <inheritdoc />
+    public void Write(TextWriter writer, string culture, IEnumerable<UITranslation> translations)
     {
-        var output = new StringBuilder();
-        output.Append("msgid \"\"\nmsgstr \"\"\n");
-        output.Append(Quote("Language: " + culture + "\n")).Append('\n');
-        output.Append(Quote("Content-Type: text/plain; charset=UTF-8\n")).Append('\n');
+        writer.Write("msgid \"\"\nmsgstr \"\"\n");
+        writer.Write(Quote("Language: " + culture + "\n") + "\n");
+        writer.Write(Quote("Content-Type: text/plain; charset=UTF-8\n") + "\n");
         foreach (var translation in translations.OrderBy(x => x.Context, StringComparer.Ordinal).ThenBy(x => x.Key, StringComparer.Ordinal))
         {
-            output.Append('\n');
+            writer.Write('\n');
             Field("msgctxt", translation.Context);
             Field("msgid", translation.Key);
             if (translation.Plural != null)
@@ -181,9 +199,7 @@ public static class UiPortableObject
             }
         }
 
-        return output.ToString();
-
-        void Field(string name, string value) => output.Append(name).Append(' ').Append(Quote(value)).Append('\n');
+        void Field(string name, string value) => writer.Write(name + " " + Quote(value) + "\n");
     }
 
     private static string Quote(string value)

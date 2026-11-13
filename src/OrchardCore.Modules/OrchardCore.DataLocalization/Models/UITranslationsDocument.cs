@@ -5,8 +5,8 @@ namespace OrchardCore.DataLocalization.Models;
 /// <summary>
 /// Tenant UI overrides, independently versioned from dynamic data translations.
 /// </summary>
-public sealed class UiTranslationsDocument : Document
+internal sealed class UITranslationsDocument : Document
 {
     /// <summary>Gets the translations by configured culture.</summary>
-    public Dictionary<string, List<UiTranslation>> Translations { get; } = new(StringComparer.OrdinalIgnoreCase);
+    public Dictionary<string, List<UITranslation>> Translations { get; } = new(StringComparer.OrdinalIgnoreCase);
 }

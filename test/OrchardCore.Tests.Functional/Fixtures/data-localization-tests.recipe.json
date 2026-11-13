@@ -27,7 +27,7 @@
         "OrchardCore.Contents",
         "OrchardCore.ContentTypes",
         "OrchardCore.DataLocalization",
-        "OrchardCore.DataLocalization.Ui",
+        "OrchardCore.DataLocalization.UI",
 
         "TheAdmin",
         "SafeMode"

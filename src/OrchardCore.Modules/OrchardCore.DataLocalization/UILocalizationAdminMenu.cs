@@ -9,7 +9,7 @@ using OrchardCore.Navigation;
 namespace OrchardCore.DataLocalization;
 
 /// <summary>Provides UI-translation navigation for authorized site translators.</summary>
-public sealed class UiLocalizationAdminMenu : AdminNavigationProvider
+internal sealed class UILocalizationAdminMenu : AdminNavigationProvider
 {
     private readonly IStringLocalizer S;
     private readonly IAuthorizationService _authorization;
@@ -21,8 +21,8 @@ public sealed class UiLocalizationAdminMenu : AdminNavigationProvider
     /// <param name="authorization">The permission service.</param>
     /// <param name="httpContextAccessor">The current admin request.</param>
     /// <param name="localization">The configured cultures.</param>
-    public UiLocalizationAdminMenu(
-        IStringLocalizer<UiLocalizationAdminMenu> localizer,
+    public UILocalizationAdminMenu(
+        IStringLocalizer<UILocalizationAdminMenu> localizer,
         IAuthorizationService authorization,
         IHttpContextAccessor httpContextAccessor,
         ILocalizationService localization)
@@ -63,7 +63,7 @@ public sealed class UiLocalizationAdminMenu : AdminNavigationProvider
         builder.Add(S["Settings"], settings => settings
             .Add(S["Localization"], S["Localization"].PrefixPosition(), localization => localization
                 .Add(S["UI Translations"], S["UI Translations"].PrefixPosition(), translations => translations
-                    .Action("Index", "UiTranslations", new { area = "OrchardCore.DataLocalization" })
+                    .Action("Index", "UITranslations", new { area = "OrchardCore.DataLocalization" })
                     .LocalNav())));
     }
 }

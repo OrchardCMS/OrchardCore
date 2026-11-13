@@ -9,7 +9,7 @@ using OrchardCore.Localization.PortableObject;
 
 namespace OrchardCore.DataLocalization.Services.Tests;
 
-public sealed class UiLocalizationTests
+public sealed class UILocalizationTests
 {
     [Fact]
     public void ApplyTranslations_OverridesAndRemoval_RestoresUnmodifiedPoFallback()
@@ -19,9 +19,9 @@ public sealed class UiLocalizationTests
             new CultureDictionaryRecord("Hello", "Context", ["PO"]),
             new CultureDictionaryRecord("Other", "OtherContext", ["Unchanged"]),
         ]);
-        var provider = new UiTranslationProvider();
-        var first = new UiTranslationsDocument();
-        first.Translations["fr"] = [new UiTranslation { Context = "Context", Key = "Hello", Values = ["Database"] }];
+        var provider = new UITranslationProvider();
+        var first = new UITranslationsDocument();
+        first.Translations["fr"] = [new UITranslation { Context = "Context", Key = "Hello", Values = ["Database"] }];
         var key = CultureDictionaryRecord.GetKey("Hello", "Context");
 
         var overlaid = provider.ApplyTranslations(fallback, first);
@@ -30,10 +30,10 @@ public sealed class UiLocalizationTests
         Assert.Equal("Unchanged", overlaid[CultureDictionaryRecord.GetKey("Other", "OtherContext")]);
         Assert.Equal("PO", fallback[key]);
         Assert.Same(overlaid, provider.ApplyTranslations(fallback, first));
-        var updated = new UiTranslationsDocument();
-        updated.Translations["fr"] = [new UiTranslation { Context = "Context", Key = "Hello", Values = ["Updated"] }];
+        var updated = new UITranslationsDocument();
+        updated.Translations["fr"] = [new UITranslation { Context = "Context", Key = "Hello", Values = ["Updated"] }];
         Assert.Equal("Updated", provider.ApplyTranslations(fallback, updated)[key]);
-        Assert.Same(fallback, provider.ApplyTranslations(fallback, new UiTranslationsDocument()));
+        Assert.Same(fallback, provider.ApplyTranslations(fallback, new UITranslationsDocument()));
     }
 
     [Fact]
@@ -45,10 +45,10 @@ public sealed class UiLocalizationTests
             new CultureDictionaryRecord("Item", "Context", ["None", "One", "Many"], poRule),
             new CultureDictionaryRecord("Other", "Context", ["None", "One", "Many"], poRule),
         ]);
-        var document = new UiTranslationsDocument();
-        document.Translations["fr"] = [new UiTranslation { Context = "Context", Key = "Item", Values = ["Single", "Plural"] }];
+        var document = new UITranslationsDocument();
+        document.Translations["fr"] = [new UITranslation { Context = "Context", Key = "Item", Values = ["Single", "Plural"] }];
 
-        var overlaid = new UiTranslationProvider().ApplyTranslations(fallback, document);
+        var overlaid = new UITranslationProvider().ApplyTranslations(fallback, document);
 
         Assert.Equal("None", overlaid[CultureDictionaryRecord.GetKey("Other", "Context"), 0]);
         Assert.Equal("Single", overlaid[CultureDictionaryRecord.GetKey("Item", "Context"), 0]);
@@ -63,9 +63,9 @@ public sealed class UiLocalizationTests
         po.Setup(provider => provider.LoadTranslations("fr", It.IsAny<CultureDictionary>()))
             .Callback<string, CultureDictionary>((_, dictionary) =>
                 dictionary.MergeTranslations([new CultureDictionaryRecord("Hello", "Context", ["PO"])]));
-        var documents = new UiTranslationsDocument();
-        documents.Translations["fr"] = [new UiTranslation { Key = "Hello", Context = "Context", Values = ["Override"] }];
-        var provider = new UiTranslationProvider();
+        var documents = new UITranslationsDocument();
+        documents.Translations["fr"] = [new UITranslation { Key = "Hello", Context = "Context", Values = ["Override"] }];
+        var provider = new UITranslationProvider();
         var overrides = new Mock<ITranslationOverrideProvider>();
         overrides.Setup(value => value.ApplyTranslations(It.IsAny<CultureDictionary>()))
             .Returns<CultureDictionary>(dictionary => provider.ApplyTranslations(dictionary, documents));
@@ -73,7 +73,7 @@ public sealed class UiLocalizationTests
         var key = CultureDictionaryRecord.GetKey("Hello", "Context");
 
         Assert.Equal("Override", manager.GetDictionary(CultureInfo.GetCultureInfo("fr"))[key]);
-        documents = new UiTranslationsDocument();
+        documents = new UITranslationsDocument();
         Assert.Equal("PO", manager.GetDictionary(CultureInfo.GetCultureInfo("fr"))[key]);
         po.Verify(value => value.LoadTranslations("fr", It.IsAny<CultureDictionary>()), Times.Once);
     }
@@ -143,7 +143,7 @@ public sealed class UiLocalizationTests
             msgstr ""
             """);
 
-        var resources = UiPortableObject.Read(reader, "Module");
+        var resources = PortableObjectFormat.ReadResources(reader, "Module");
 
         Assert.Equal(2, resources.Count);
         Assert.Equal("Views.Example", resources[0].Context);
@@ -158,24 +158,14 @@ public sealed class UiLocalizationTests
     [Fact]
     public void Discover_ModuleAssembly_FindsGeneratedCatalogIncludingRazor()
     {
-        var resources = EmbeddedUiLocalizationCatalog.Discover([typeof(UiTranslationsManager).Assembly]);
+        var resources = UILocalizationCatalog.Discover([typeof(UITranslationsManager).Assembly]);
 
         Assert.Contains(resources, resource => resource.AssemblyName == "OrchardCore.DataLocalization" &&
             resource.Key == "UI Translations" && resource.Context.Contains("Views.Admin.Index", StringComparison.Ordinal));
         Assert.Contains(resources, resource => resource.Key == "Select a PO file no larger than 2 MB." &&
-            resource.Context == "OrchardCore.DataLocalization.Controllers.UiTranslationsController");
+            resource.Context == "OrchardCore.DataLocalization.Controllers.UITranslationsController");
     }
 
-    [Theory]
-    [InlineData("fr", 2)]
-    [InlineData("ja", 1)]
-    [InlineData("ru", 3)]
-    [InlineData("ar", 6)]
-    public void GetPluralFormCount_ConfiguredRuntimeRules_ReturnsRequiredForms(string culture, int count)
-    {
-        var (manager, _) = CreateManager();
-        Assert.Equal(count, manager.GetPluralFormCount(culture));
-    }
 
     [Theory]
     [InlineData("fr", new[] { 1, 2 })]
@@ -197,9 +187,9 @@ public sealed class UiLocalizationTests
         await Assert.ThrowsAsync<ArgumentException>(() => manager.UpdateAsync("fr", [Singular(key: "Unknown")]));
         await Assert.ThrowsAsync<ArgumentException>(() => manager.UpdateAsync("fr", [Singular(), Singular()]));
         await Assert.ThrowsAsync<ArgumentException>(() => manager.UpdateAsync("fr", [
-            new UiTranslation { Context = "Context", Key = "{0} item", Plural = "Wrong", Values = ["One", "Many"] },
+            new UITranslation { Context = "Context", Key = "{0} item", Plural = "Wrong", Values = ["One", "Many"] },
         ]));
-        documents.Verify(value => value.GetOrCreateMutableAsync(It.IsAny<Func<Task<UiTranslationsDocument>>>()), Times.Never);
+        documents.Verify(value => value.GetOrCreateMutableAsync(It.IsAny<Func<Task<UITranslationsDocument>>>()), Times.Never);
     }
 
     [Theory]
@@ -209,31 +199,32 @@ public sealed class UiLocalizationTests
     public void Read_MalformedPo_Rejects(string po)
     {
         using var reader = new StringReader(po);
-        Assert.Throws<FormatException>(() => UiPortableObject.Read(reader, "Module"));
+        Assert.Throws<FormatException>(() => PortableObjectFormat.ReadResources(reader, "Module"));
     }
 
     [Fact]
     public async Task ImportExport_ContextPluralEscapes_RoundTripsAndRemoves()
     {
         var (manager, documents) = CreateManager();
-        var mutable = new UiTranslationsDocument();
+        var mutable = new UITranslationsDocument();
         documents.Setup(value => value.GetOrCreateMutableAsync(null)).ReturnsAsync(mutable);
         documents.Setup(value => value.GetOrCreateImmutableAsync(null)).ReturnsAsync(mutable);
         await manager.UpdateAsync("FR", [
             Singular(value: "Quote \"slash\\\nnext"),
-            new UiTranslation { Context = "Context", Key = "{0} item", Plural = "{0} items", Values = ["{0} article", "{0} articles"] },
+            new UITranslation { Context = "Context", Key = "{0} item", Plural = "{0} items", Values = ["{0} article", "{0} articles"] },
         ]);
-        var exported = await manager.ExportAsync("fr");
+        using var exported = new StringWriter();
+        await manager.ExportAsync("fr", "po", exported);
         var (importedManager, importedDocuments) = CreateManager();
-        var imported = new UiTranslationsDocument();
+        var imported = new UITranslationsDocument();
         importedDocuments.Setup(value => value.GetOrCreateMutableAsync(null)).ReturnsAsync(imported);
-        using var reader = new StringReader(exported);
-        await importedManager.ImportAsync("fr", reader);
+        using var reader = new StringReader(exported.ToString());
+        await importedManager.ImportAsync("fr", "po", reader);
 
         Assert.Equal(2, imported.Translations["fr"].Count);
         Assert.Equal("Quote \"slash\\\nnext", imported.Translations["fr"].Single(value => value.Key == "Hello").Values[0]);
         Assert.Equal(["{0} article", "{0} articles"], imported.Translations["fr"].Single(value => value.Plural != null).Values);
-        await manager.UpdateAsync("fr", [new UiTranslation { Context = "Context", Key = "Hello", Values = [] }]);
+        await manager.UpdateAsync("fr", [new UITranslation { Context = "Context", Key = "Hello", Values = [] }]);
         Assert.Single(mutable.Translations["fr"]);
     }
 
@@ -250,9 +241,9 @@ public sealed class UiLocalizationTests
             msgid "Unknown"
             msgstr "Invalid"
             """);
-        await Assert.ThrowsAsync<ArgumentException>(() => manager.ImportAsync("fr", reader));
-        documents.Verify(value => value.GetOrCreateMutableAsync(It.IsAny<Func<Task<UiTranslationsDocument>>>()), Times.Never);
-        documents.Verify(value => value.UpdateAsync(It.IsAny<UiTranslationsDocument>(), It.IsAny<Func<UiTranslationsDocument, Task>>()), Times.Never);
+        await Assert.ThrowsAsync<ArgumentException>(() => manager.ImportAsync("fr", "po", reader));
+        documents.Verify(value => value.GetOrCreateMutableAsync(It.IsAny<Func<Task<UITranslationsDocument>>>()), Times.Never);
+        documents.Verify(value => value.UpdateAsync(It.IsAny<UITranslationsDocument>(), It.IsAny<Func<UITranslationsDocument, Task>>()), Times.Never);
     }
 
     [Theory]
@@ -262,12 +253,12 @@ public sealed class UiLocalizationTests
     public async Task UpdateAsync_CompositeFormat_ValidatesArguments(string value, bool valid)
     {
         var (manager, documents) = CreateManager();
-        documents.Setup(document => document.GetOrCreateMutableAsync(null)).ReturnsAsync(new UiTranslationsDocument());
-        var translation = new UiTranslation { Context = "Context", Key = "{0} item", Plural = "{0} items", Values = [value, value] };
+        documents.Setup(document => document.GetOrCreateMutableAsync(null)).ReturnsAsync(new UITranslationsDocument());
+        var translation = new UITranslation { Context = "Context", Key = "{0} item", Plural = "{0} items", Values = [value, value] };
         if (valid)
         {
             await manager.UpdateAsync("fr", [translation]);
-            documents.Verify(document => document.UpdateAsync(It.IsAny<UiTranslationsDocument>(), null), Times.Once);
+            documents.Verify(document => document.UpdateAsync(It.IsAny<UITranslationsDocument>(), null), Times.Once);
         }
         else if (value == "{")
         {
@@ -279,19 +270,18 @@ public sealed class UiLocalizationTests
         }
     }
 
-    private static UiTranslation Singular(string context = "Context", string key = "Hello", string value = "Bonjour")
+    private static UITranslation Singular(string context = "Context", string key = "Hello", string value = "Bonjour")
         => new() { Context = context, Key = key, Values = [value] };
 
-    private static (UiTranslationsManager Manager, Mock<IDocumentManager<UiTranslationsDocument>> Documents) CreateManager()
+    private static (UITranslationsManager Manager, Mock<IDocumentManager<UITranslationsDocument>> Documents) CreateManager()
     {
-        var singular = new UiLocalizationResource { Context = "Context", Key = "Hello" };
-        var plural = new UiLocalizationResource { Context = "Context", Key = "{0} item", Plural = "{0} items" };
+        var singular = new UILocalizationResource { Context = "Context", Key = "Hello" };
+        var plural = new UILocalizationResource { Context = "Context", Key = "{0} item", Plural = "{0} items" };
         plural.Metadata.Add("#, csharp-format");
-        var catalog = new Mock<IUiLocalizationCatalog>();
-        catalog.Setup(value => value.GetResources()).Returns([singular, plural]);
         var localization = new Mock<ILocalizationService>();
         localization.Setup(value => value.GetSupportedCulturesAsync()).ReturnsAsync(["fr", "ja", "ar", "ru"]);
-        var documents = new Mock<IDocumentManager<UiTranslationsDocument>>();
-        return (new UiTranslationsManager(documents.Object, catalog.Object, localization.Object, [new DefaultPluralRuleProvider()]), documents);
+        var documents = new Mock<IDocumentManager<UITranslationsDocument>>();
+        var localizationManager = new LocalizationManager([new DefaultPluralRuleProvider()], [], new MemoryCache(new MemoryCacheOptions()));
+        return (new UITranslationsManager(documents.Object, new UILocalizationCatalog([singular, plural]), localization.Object, localizationManager), documents);
     }
 }
