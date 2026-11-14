@@ -731,6 +731,13 @@ msgctxt "OrchardCore.Sitemaps.Views.SitemapIndexListEntry.Buttons.SummaryAdmin"
 msgid "View"
 msgstr ""
 
+#. Format arguments: {0}: Model.Value.Name
+#: Views/SitemapIndexListEntry.Checkbox.SummaryAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Sitemaps.Views.SitemapIndexListEntry.Checkbox.SummaryAdmin"
+msgid "Select {0}"
+msgstr ""
+
 #: Views/SitemapIndexListEntry.DefaultTags.SummaryAdmin.cshtml
 msgctxt "OrchardCore.Sitemaps.Views.SitemapIndexListEntry.DefaultTags.SummaryAdmin"
 msgid "Disabled"
@@ -774,6 +781,13 @@ msgstr ""
 #: Views/SitemapListEntry.Buttons.SummaryAdmin.cshtml
 msgctxt "OrchardCore.Sitemaps.Views.SitemapListEntry.Buttons.SummaryAdmin"
 msgid "View"
+msgstr ""
+
+#. Format arguments: {0}: Model.Value.Name
+#: Views/SitemapListEntry.Checkbox.SummaryAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Sitemaps.Views.SitemapListEntry.Checkbox.SummaryAdmin"
+msgid "Select {0}"
 msgstr ""
 
 #: Views/SitemapListEntry.DefaultTags.SummaryAdmin.cshtml

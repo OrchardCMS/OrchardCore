@@ -230,6 +230,13 @@ msgctxt "OrchardCore.Features.Views.FeatureEntry.Buttons.SummaryAdmin"
 msgid "Yes"
 msgstr ""
 
+#. Format arguments: {0}: Model.Value.Feature.Descriptor.Name
+#: Views/FeatureEntry.Checkbox.SummaryAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Features.Views.FeatureEntry.Checkbox.SummaryAdmin"
+msgid "Select {0}"
+msgstr ""
+
 #: Views/FeatureEntry.DefaultMeta.SummaryAdmin.cshtml
 msgctxt "OrchardCore.Features.Views.FeatureEntry.DefaultMeta.SummaryAdmin"
 msgid "Disabled"

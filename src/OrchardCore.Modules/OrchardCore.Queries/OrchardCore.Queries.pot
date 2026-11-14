@@ -397,6 +397,13 @@ msgctxt "OrchardCore.Queries.Views.Query.Buttons.SummaryAdmin"
 msgid "Edit"
 msgstr ""
 
+#. Format arguments: {0}: Model.Name
+#: Views/Query.Checkbox.SummaryAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Queries.Views.Query.Checkbox.SummaryAdmin"
+msgid "Select {0}"
+msgstr ""
+
 #: Views/Query.Fields.Buttons.cshtml
 msgctxt "OrchardCore.Queries.Views.Query.Fields.Buttons"
 msgid "Cancel"

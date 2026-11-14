@@ -132,6 +132,11 @@ msgctxt "OrchardCore.Autoroute.Views.AutoroutePart.Edit"
 msgid "This content item is the current homepage"
 msgstr ""
 
+#: Views/AutoroutePart.Edit.cshtml
+msgctxt "OrchardCore.Autoroute.Views.AutoroutePart.Edit"
+msgid "View the published page"
+msgstr ""
+
 #: Views/AutoroutePartSettings.Edit.cshtml
 msgctxt "OrchardCore.Autoroute.Views.AutoroutePartSettings.Edit"
 msgid "Allow absolute path"
