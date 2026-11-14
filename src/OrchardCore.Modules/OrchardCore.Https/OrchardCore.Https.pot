@@ -36,6 +36,11 @@ msgctxt "OrchardCore.Https.Drivers.HttpsSettingsDisplayDriver"
 msgid "For safety, changing HTTPS-only settings over HTTP has been prevented."
 msgstr ""
 
+#: Drivers/HttpsSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Https.Drivers.HttpsSettingsDisplayDriver"
+msgid "General"
+msgstr ""
+
 #: Permissions.cs
 msgctxt "OrchardCore.Https.Permissions"
 msgid "Manage HTTPS"

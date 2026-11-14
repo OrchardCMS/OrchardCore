@@ -26,6 +26,21 @@ msgctxt "OrchardCore.AuditTrail.DeploymentStartup"
 msgid "Exports the audit trail trimming settings."
 msgstr ""
 
+#: Drivers/AuditTrailSettingsDisplayDriver.cs
+msgctxt "OrchardCore.AuditTrail.Drivers.AuditTrailSettingsDisplayDriver"
+msgid "Events"
+msgstr ""
+
+#: Drivers/AuditTrailSettingsDisplayDriver.cs
+msgctxt "OrchardCore.AuditTrail.Drivers.AuditTrailSettingsDisplayDriver"
+msgid "Privacy"
+msgstr ""
+
+#: Drivers/AuditTrailTrimmingSettingsDisplayDriver.cs
+msgctxt "OrchardCore.AuditTrail.Drivers.AuditTrailTrimmingSettingsDisplayDriver"
+msgid "Trimming task"
+msgstr ""
+
 #: Navigation/AuditTrailAdminMenu.cs
 msgctxt "OrchardCore.AuditTrail.Navigation.AuditTrailAdminMenu"
 msgid "Audit Trail"
@@ -453,11 +468,6 @@ msgstr ""
 
 #: Views/AuditTrailSettings.Edit.cshtml
 msgctxt "OrchardCore.AuditTrail.Views.AuditTrailSettings.Edit"
-msgid "Allow client IP address"
-msgstr ""
-
-#: Views/AuditTrailSettings.Edit.cshtml
-msgctxt "OrchardCore.AuditTrail.Views.AuditTrailSettings.Edit"
 msgid "Audit Trail"
 msgstr ""
 
@@ -491,8 +501,13 @@ msgctxt "OrchardCore.AuditTrail.Views.AuditTrailSettings.Edit"
 msgid "Select all"
 msgstr ""
 
-#: Views/AuditTrailSettings.Edit.cshtml
-msgctxt "OrchardCore.AuditTrail.Views.AuditTrailSettings.Edit"
+#: Views/AuditTrailSettingsPrivacy.Edit.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailSettingsPrivacy.Edit"
+msgid "Allow client IP address"
+msgstr ""
+
+#: Views/AuditTrailSettingsPrivacy.Edit.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailSettingsPrivacy.Edit"
 msgid "Whether the client IP address is recorded."
 msgstr ""
 

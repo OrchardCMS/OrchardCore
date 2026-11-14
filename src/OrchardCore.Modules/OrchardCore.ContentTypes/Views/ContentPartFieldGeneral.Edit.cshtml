@@ -1,0 +1,52 @@
+@model EditFieldViewModel
+@using OrchardCore.DisplayManagement
+
+<div class="ocat-limited-wrapper">
+    <label asp-for="DisplayName" class="ocat-label ocat-label-required">@T["Display Name"]</label>
+    <div class="ocat-limited">
+        <input asp-for="DisplayName" autofocus class="form-control" />
+        <span class="hint">@T["Name of the field as it will be displayed in screens."]</span>
+    </div>
+</div>
+
+<div class="ocat-limited-wrapper">
+    <label asp-for="Name" class="ocat-label">@T["Technical Name"]</label>
+    <div class="ocat-limited">
+        <input asp-for="Name" class="form-control" readonly />
+        <span class="hint">@T["Technical name of the field."]</span>
+    </div>
+</div>
+
+@if (Model.EditorShapes.Any())
+{
+    <div class="ocat-wrapper">
+        <label asp-for="Editor" class="ocat-label">@T["What type of editor should be used?"]</label>
+        <div class="ocat-end">
+            <select asp-for="Editor" class="form-select" data-field-editor-select>
+                @foreach (var editorShape in Model.EditorShapes)
+                {
+                    var shape = await Factory.CreateAsync(editorShape);
+                    shape.Properties["Editor"] = Model.Editor;
+                    @await DisplayAsync(shape)
+                }
+            </select>
+        </div>
+    </div>
+}
+
+@if (Model.DisplayShapes.Any())
+{
+    <div class="ocat-wrapper">
+        <label asp-for="DisplayMode" class="ocat-label">@T["What type of display mode should be used?"]</label>
+        <div class="ocat-end">
+            <select asp-for="DisplayMode" class="form-select" data-field-display-select>
+                @foreach (var displayShape in Model.DisplayShapes)
+                {
+                    var shape = await Factory.CreateAsync(displayShape);
+                    shape.Properties["DisplayMode"] = Model.DisplayMode;
+                    @await DisplayAsync(shape)
+                }
+            </select>
+        </div>
+    </div>
+}

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Localization;
 using OrchardCore.AuditTrail;
 using OrchardCore.AuditTrail.Settings;
 using OrchardCore.Contents.AuditTrail.Settings;
@@ -16,12 +17,16 @@ public sealed class ContentAuditTrailSettingsDisplayDriver : SiteDisplayDriver<C
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
 
+    internal readonly IStringLocalizer S;
+
     public ContentAuditTrailSettingsDisplayDriver(
         IHttpContextAccessor httpContextAccessor,
-        IAuthorizationService authorizationService)
+        IAuthorizationService authorizationService,
+        IStringLocalizer<ContentAuditTrailSettingsDisplayDriver> stringLocalizer)
     {
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
+        S = stringLocalizer;
     }
 
     protected override string SettingsGroupId
@@ -38,7 +43,7 @@ public sealed class ContentAuditTrailSettingsDisplayDriver : SiteDisplayDriver<C
         return Initialize<ContentAuditTrailSettingsViewModel>("ContentAuditTrailSettings_Edit", model =>
         {
             model.AllowedContentTypes = section.AllowedContentTypes;
-        }).Location("Content:10#Content;5")
+        }).Location(l => l.Zone("Content", "10").Tab("Content", "5").Card(S["Content types"], "10"))
         .OnGroup(SettingsGroupId);
     }
 

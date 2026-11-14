@@ -63,6 +63,11 @@ msgctxt "OrchardCore.Microsoft.Authentication.AdminMenuMicrosoftAccount"
 msgid "Settings"
 msgstr ""
 
+#: Drivers/AzureADSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Microsoft.Authentication.Drivers.AzureADSettingsDisplayDriver"
+msgid "Application"
+msgstr ""
+
 #: Drivers/MicrosoftAccountSecretMigrationDisplayDriver.cs
 msgctxt "OrchardCore.Microsoft.Authentication.Drivers.MicrosoftAccountSecretMigrationDisplayDriver"
 msgid "App secret"
@@ -76,6 +81,11 @@ msgstr ""
 #: Drivers/MicrosoftAccountSecretMigrationDisplayDriver.cs
 msgctxt "OrchardCore.Microsoft.Authentication.Drivers.MicrosoftAccountSecretMigrationDisplayDriver"
 msgid "Microsoft Account Authentication: App secret"
+msgstr ""
+
+#: Drivers/MicrosoftAccountSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Microsoft.Authentication.Drivers.MicrosoftAccountSettingsDisplayDriver"
+msgid "Application"
 msgstr ""
 
 #: MicrosoftAuthenticationLocalizationSources.cs
@@ -175,11 +185,6 @@ msgstr ""
 
 #: Views/MicrosoftAccountSettings.Edit.cshtml
 msgctxt "OrchardCore.Microsoft.Authentication.Views.MicrosoftAccountSettings.Edit"
-msgid "Microsoft Account Authentication Settings"
-msgstr ""
-
-#: Views/MicrosoftAccountSettings.Edit.cshtml
-msgctxt "OrchardCore.Microsoft.Authentication.Views.MicrosoftAccountSettings.Edit"
 msgid "Secret Key"
 msgstr ""
 
@@ -231,11 +236,6 @@ msgstr ""
 #: Views/MicrosoftEntraIDSettings.Edit.cshtml
 msgctxt "OrchardCore.Microsoft.Authentication.Views.MicrosoftEntraIDSettings.Edit"
 msgid "Display Name"
-msgstr ""
-
-#: Views/MicrosoftEntraIDSettings.Edit.cshtml
-msgctxt "OrchardCore.Microsoft.Authentication.Views.MicrosoftEntraIDSettings.Edit"
-msgid "Microsoft Entra ID Authentication Settings"
 msgstr ""
 
 #: Views/MicrosoftEntraIDSettings.Edit.cshtml

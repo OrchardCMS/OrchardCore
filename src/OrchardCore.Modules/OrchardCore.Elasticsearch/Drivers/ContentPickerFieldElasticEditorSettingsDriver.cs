@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Handlers;
@@ -11,9 +12,12 @@ public sealed class ContentPickerFieldElasticEditorSettingsDriver : ContentPartF
 {
     private readonly IIndexProfileStore _store;
 
-    public ContentPickerFieldElasticEditorSettingsDriver(IIndexProfileStore store)
+    internal readonly IStringLocalizer S;
+
+    public ContentPickerFieldElasticEditorSettingsDriver(IIndexProfileStore store, IStringLocalizer<ContentPickerFieldElasticEditorSettingsDriver> stringLocalizer)
     {
         _store = store;
+        S = stringLocalizer;
     }
 
     public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
@@ -25,7 +29,7 @@ public sealed class ContentPickerFieldElasticEditorSettingsDriver : ContentPartF
             model.Index = settings.Index;
 
             model.Indices = (await _store.GetByProviderAsync(ElasticsearchConstants.ProviderName)).Select(x => x.IndexName).ToArray();
-        }).Location("Editor");
+        }).Location(l => l.Zone("Editor").Card(S["Editor"], "30"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)

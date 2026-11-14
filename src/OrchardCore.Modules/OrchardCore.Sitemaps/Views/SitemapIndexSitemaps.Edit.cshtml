@@ -1,0 +1,21 @@
+@model CreateSitemapIndexViewModel
+
+<div class="ocat-wrapper">
+    <label asp-for="ContainableSitemaps" class="ocat-label">@T["Contained Sitemaps"]</label>
+    <div class="ocat-end">
+        <span class="hint">@T["The sitemaps this index contains."]</span>
+        <div class="row">
+            @for (int i = 0; i < Model.ContainableSitemaps.Length; i++)
+            {
+                <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 col-xl-2">
+                    <input hidden asp-for="@Model.ContainableSitemaps[i].SitemapId" />
+                    <input hidden asp-for="@Model.ContainableSitemaps[i].Name" />
+                    <div class="form-check">
+                        <input asp-for="@Model.ContainableSitemaps[i].IsChecked" class="form-check-input" />
+                        <label asp-for="@Model.ContainableSitemaps[i].IsChecked" class="form-check-label">@Model.ContainableSitemaps[i].Name</label>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

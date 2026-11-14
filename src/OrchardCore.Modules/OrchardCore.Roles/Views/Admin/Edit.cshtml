@@ -13,13 +13,7 @@
 @await Html.PartialAsync("_DuplicatedPermissions")
 
 <form asp-action="Edit" asp-route-id="@ViewContext.HttpContext.Request.RouteValues["id"]" method="post" class="no-multisubmit" data-list-management data-client-side-search="true" data-search-result-selector=".permissions-list > table > tbody > tr" data-search-text-attribute="data-text" data-search-group-selector=".permissions-list" data-search-group-visible-selector="table > tbody > tr">
-    <div class="mb-3" asp-validation-class-for="RoleDescription">
-        <label asp-for="RoleDescription" class="form-label">@T["Description"]</label>
-        <textarea asp-for="RoleDescription" class="form-control"></textarea>
-        <span asp-validation-for="RoleDescription" class="text-danger"></span>
-    </div>
-
-    @await Html.PartialAsync("_RolePermissions", Model.Permissions)
+    @await DisplayAsync(Model.Editor)
 
     <div class="action-bar-bottom">
         <div class="btn-group"

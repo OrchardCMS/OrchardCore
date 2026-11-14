@@ -34,7 +34,7 @@ public sealed class ContentItemDeploymentStepDriver : DisplayDriver<DeploymentSt
         return Initialize<ContentItemDeploymentStepViewModel>("ContentItemDeploymentStep_Fields_Edit", model =>
         {
             model.ContentItemId = step.ContentItemId;
-        }).Location("Content");
+        }).Location(l => l.Zone("Content").Card(S["Content item"], "10"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentItemDeploymentStep step, UpdateEditorContext context)

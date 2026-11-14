@@ -75,7 +75,7 @@ public sealed class AzureAISearchDefaultSettingsDisplayDriver : SiteDisplayDrive
             model.Endpoint = settings.Endpoint;
             model.IdentityClientId = settings.IdentityClientId;
             model.ApiKey = SecretInputViewModel.Create(settings.ApiKey, settings.ApiKeySecretName);
-        }).Location("Content")
+        }).Location(l => l.Zone("Content").Card(S["Connection"], "10"))
         .RenderWhen(static (driver) => driver._authorizationService.AuthorizeAsync(driver._httpContextAccessor.HttpContext.User, AzureAISearchPermissions.ManageAzureAISearchSettings), this)
         .OnGroup(SettingsGroupId);
     }

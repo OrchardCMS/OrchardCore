@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Admin;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Locking.Distributed;
 using OrchardCore.Modules;
@@ -31,7 +32,6 @@ namespace OrchardCore.Workflows.Controllers;
 public sealed class WorkflowDesignerController : Controller
 {
     private const string FragmentViewName = "Fragment";
-    private const string SettingsPartialName = "WorkflowDesignerSettings";
 
     // The number of journal records the instance viewer shows.
     private const int JournalRecordCount = 500;
@@ -54,6 +54,7 @@ public sealed class WorkflowDesignerController : Controller
     private readonly WorkflowDesignerModelBuilder _modelBuilder;
     private readonly IWorkflowManager _workflowManager;
     private readonly IActivityDisplayManager _activityDisplayManager;
+    private readonly IDisplayManager<WorkflowTypePropertiesViewModel> _propertiesDisplayManager;
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly ISession _session;
     private readonly IClock _clock;
@@ -73,6 +74,7 @@ public sealed class WorkflowDesignerController : Controller
         WorkflowDesignerModelBuilder modelBuilder,
         IWorkflowManager workflowManager,
         IActivityDisplayManager activityDisplayManager,
+        IDisplayManager<WorkflowTypePropertiesViewModel> propertiesDisplayManager,
         IUpdateModelAccessor updateModelAccessor,
         ISession session,
         IClock clock,
@@ -90,6 +92,7 @@ public sealed class WorkflowDesignerController : Controller
         _modelBuilder = modelBuilder;
         _workflowManager = workflowManager;
         _activityDisplayManager = activityDisplayManager;
+        _propertiesDisplayManager = propertiesDisplayManager;
         _updateModelAccessor = updateModelAccessor;
         _session = session;
         _clock = clock;
@@ -702,14 +705,14 @@ public sealed class WorkflowDesignerController : Controller
             Id = workflowType.Id,
             Name = source.Name,
             IsEnabled = source.IsEnabled,
+            Page = WorkflowTypePropertiesPage.Designer,
         };
 
         source.CopyExecutionSettingsTo(model);
 
         return Fragment(new WorkflowDesignerFragmentViewModel
         {
-            PartialName = SettingsPartialName,
-            PartialModel = model,
+            Shape = await _propertiesDisplayManager.BuildEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: false),
             WorkflowTypeId = workflowType.Id,
         });
     }
@@ -730,14 +733,19 @@ public sealed class WorkflowDesignerController : Controller
             return this.ApiNotFoundProblem();
         }
 
-        var model = new WorkflowTypePropertiesViewModel { Id = workflowType.Id };
+        var model = new WorkflowTypePropertiesViewModel
+        {
+            Id = workflowType.Id,
+            Page = WorkflowTypePropertiesPage.Designer,
+        };
 
-        if (!await TryUpdateModelAsync(model) || !ModelState.IsValid)
+        var editor = await _propertiesDisplayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: false);
+
+        if (!ModelState.IsValid)
         {
             return Fragment(new WorkflowDesignerFragmentViewModel
             {
-                PartialName = SettingsPartialName,
-                PartialModel = model,
+                Shape = editor,
                 WorkflowTypeId = workflowType.Id,
                 Valid = false,
             });

@@ -81,6 +81,11 @@ msgctxt "OrchardCore.Twitter.Drivers.TwitterSecretMigrationDisplayDriver"
 msgid "X (Twitter): Access token secret"
 msgstr ""
 
+#: Drivers/TwitterSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Twitter.Drivers.TwitterSettingsDisplayDriver"
+msgid "API credentials"
+msgstr ""
+
 #: Permissions.cs
 msgctxt "OrchardCore.Twitter.Permissions"
 msgid "Manage Sign in with X (Twitter) settings"
@@ -109,6 +114,11 @@ msgstr ""
 #: Services/TwitterSettingsService.cs
 msgctxt "OrchardCore.Twitter.Services.TwitterSettingsService"
 msgid "ConsumerSecret is required"
+msgstr ""
+
+#: Signin/Drivers/TwitterSigninSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Twitter.Signin.Drivers.TwitterSigninSettingsDisplayDriver"
+msgid "Sign in"
 msgstr ""
 
 #: TwitterLocalizationSources.cs
@@ -191,11 +201,6 @@ msgctxt "OrchardCore.Twitter.Views.TwitterSettings.Edit"
 msgid "The website might be restarted upon saving the settings, potentially leading to temporary unresponsiveness during the process."
 msgstr ""
 
-#: Views/TwitterSettings.Edit.cshtml
-msgctxt "OrchardCore.Twitter.Views.TwitterSettings.Edit"
-msgid "X (Twitter) Integration Settings"
-msgstr ""
-
 #: Views/TwitterSigninSettings.Edit.cshtml
 msgctxt "OrchardCore.Twitter.Views.TwitterSigninSettings.Edit"
 msgid "CallbackPath"
@@ -204,11 +209,6 @@ msgstr ""
 #: Views/TwitterSigninSettings.Edit.cshtml
 msgctxt "OrchardCore.Twitter.Views.TwitterSigninSettings.Edit"
 msgid "See documentation"
-msgstr ""
-
-#: Views/TwitterSigninSettings.Edit.cshtml
-msgctxt "OrchardCore.Twitter.Views.TwitterSigninSettings.Edit"
-msgid "Sign in with X (Twitter) Settings"
 msgstr ""
 
 #: Views/TwitterSigninSettings.Edit.cshtml

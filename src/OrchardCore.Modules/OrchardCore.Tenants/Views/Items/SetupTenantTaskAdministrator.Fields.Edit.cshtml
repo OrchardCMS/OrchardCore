@@ -1,0 +1,28 @@
+@using OrchardCore.Tenants.Workflows.ViewModels
+@model SetupTenantTaskViewModel
+
+<div data-task-editor="setup-tenant">
+    <div class="ocat-wrapper" asp-validation-class-for="AdminUsernameExpression">
+        <label asp-for="AdminUsernameExpression" class="ocat-label">@T["Admin user name"]</label>
+        <div class="ocat-end">
+            <input type="text" asp-for="AdminUsernameExpression" class="form-control code" />
+            <span asp-validation-for="AdminUsernameExpression"></span>
+        </div>
+    </div>
+
+    <div class="ocat-wrapper" asp-validation-class-for="AdminEmailExpression">
+        <label asp-for="AdminEmailExpression" class="ocat-label">@T["Admin email"]</label>
+        <div class="ocat-end">
+            <input type="text" asp-for="AdminEmailExpression" class="form-control code" />
+            <span asp-validation-for="AdminEmailExpression"></span>
+        </div>
+    </div>
+
+    <div class="ocat-wrapper" asp-validation-class-for="AdminPasswordExpression">
+        <label asp-for="AdminPasswordExpression" class="ocat-label">@T["Admin password"]</label>
+        <div class="ocat-end">
+            <input type="text" asp-for="AdminPasswordExpression" class="form-control code" />
+            <span asp-validation-for="AdminPasswordExpression"></span>
+        </div>
+    </div>
+</div>

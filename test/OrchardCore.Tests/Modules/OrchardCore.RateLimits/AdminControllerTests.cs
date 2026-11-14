@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Shell;
 using OrchardCore.RateLimits.Controllers;
@@ -194,6 +195,8 @@ public class AdminControllerTests
         return new AdminController(
             CreateAuthorizationService().Object,
             Mock.Of<IDisplayManager<RateLimitLimiter>>(),
+            Mock.Of<IDisplayManager<RateLimitPolicyEditViewModel>>(),
+            Mock.Of<IUpdateModelAccessor>(),
             Mock.Of<INotifier>(),
             policyStore,
             new ServiceCollection().BuildServiceProvider(),

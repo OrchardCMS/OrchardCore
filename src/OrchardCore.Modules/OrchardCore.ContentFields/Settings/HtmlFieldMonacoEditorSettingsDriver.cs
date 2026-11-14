@@ -36,7 +36,7 @@ public sealed class HtmlFieldMonacoEditorSettingsDriver : ContentPartFieldDefini
             }
 
             model.Options = settings.Options;
-        }).Location("Editor");
+        }).Location(l => l.Zone("Editor").Card(S["Editor"], "30"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)

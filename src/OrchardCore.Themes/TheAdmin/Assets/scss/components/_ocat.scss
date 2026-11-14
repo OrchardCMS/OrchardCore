@@ -70,3 +70,163 @@
         max-width: 25%;
     }
 }
+
+// Cards group the fields of an admin form logically, e.g. the settings of a feature, a content part of a content
+// item, or a section of a long form. A card is a fieldset, so screen readers announce its title as the name of the
+// group of fields it contains:
+//
+//   <fieldset class="ocat-card">
+//       <legend class="ocat-card-title">Title</legend>
+//       <p class="ocat-card-description">Optional description.</p>
+//       <div class="ocat-card-body">
+//           ...ocat-wrapper rows...
+//       </div>
+//   </fieldset>
+//
+// Override these classes in a custom admin theme to change how the groups look, e.g. to render them as plain
+// sections without a border.
+
+.ocat-card {
+    --ocat-card-spacer-x: 1.25rem;
+    --ocat-card-spacer-y: 1rem;
+    --ocat-card-bg: var(--bs-body-bg);
+    --ocat-card-border-color: var(--bs-border-color);
+    --ocat-card-border-radius: var(--bs-border-radius-lg);
+
+    min-width: 0;
+    margin: 0 0 1.5rem;
+    padding: 0;
+    background-color: var(--ocat-card-bg);
+    border: var(--bs-border-width) solid var(--ocat-card-border-color);
+    border-radius: var(--ocat-card-border-radius);
+    box-shadow: var(--bs-box-shadow-sm);
+}
+
+// A legend, or a heading when the card is not a fieldset. Floating it keeps a legend inside the border of its
+// fieldset instead of on it.
+.ocat-card-title {
+    float: left;
+    width: 100%;
+    margin: 0;
+    padding: var(--ocat-card-spacer-y) var(--ocat-card-spacer-x) 0;
+    font-size: 1.0625rem;
+    font-weight: 600;
+    line-height: 1.5;
+
+    + * {
+        clear: left;
+    }
+}
+
+.ocat-card-description {
+    margin: 0;
+    padding: 0.125rem var(--ocat-card-spacer-x) 0;
+    font-size: 0.875rem;
+    color: var(--bs-secondary-color);
+}
+
+// Elements placed at the end of the header, e.g. a button that adds an item to the card. They come before the title,
+// which then takes the remaining width instead of the whole line.
+.ocat-card-actions {
+    float: right;
+    margin: calc(var(--ocat-card-spacer-y) * 0.75) var(--ocat-card-spacer-x) 0 0;
+
+    + .ocat-card-title {
+        width: auto;
+    }
+}
+
+.ocat-card-body {
+    clear: both;
+    padding: var(--ocat-card-spacer-y) var(--ocat-card-spacer-x);
+
+    // The rows of the last field keep no margin below them: the padding of the card spaces it.
+    > :last-child,
+    > div:last-of-type {
+        margin-bottom: 0;
+    }
+}
+
+.ocat-card-title ~ .ocat-card-body {
+    margin-top: var(--ocat-card-spacer-y);
+    border-top: var(--bs-border-width) solid var(--ocat-card-border-color);
+}
+
+// A part of a card, e.g. a content part grouped with other parts in the same card, titled without a border.
+.ocat-card-section {
+    + .ocat-card-section {
+        margin-top: 1.5rem;
+    }
+}
+
+.ocat-card-section-title {
+    margin-bottom: 0.75rem;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--bs-emphasis-color);
+}
+
+.ocat-card-section > .ocat-card-description {
+    margin-bottom: 0.75rem;
+    padding: 0;
+}
+
+// Cards rendered inside another card or an editor of a nested content item, e.g. the parts of a widget in a flow,
+// are sections: the card around them already groups them.
+.ocat-card .ocat-card,
+.card-body .ocat-card {
+    margin-bottom: 1rem;
+    background-color: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+
+    > .ocat-card-title,
+    > .ocat-card-description {
+        padding-inline: 0;
+    }
+
+    > .ocat-card-title {
+        padding-top: 0;
+        font-size: 0.9375rem;
+    }
+
+    > .ocat-card-body {
+        margin-top: 0.5rem;
+        padding: 0;
+        border-top: 0;
+    }
+}
+
+// A part description at the top of the body of its card.
+.ocat-card-body > .content-part-wrapper > .ocat-card-description:first-child {
+    margin-bottom: 0.75rem;
+    padding: 0;
+}
+
+// Cards in a tab: the tab already frames them, so they are fieldsets titled by their legends, without a box.
+.tab-pane .ocat-card {
+    margin-bottom: 1.5rem;
+    background-color: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+
+    > .ocat-card-title {
+        margin-bottom: 1rem;
+        padding: 0 0 0.5rem;
+        border-bottom: var(--bs-border-width) solid var(--bs-border-color);
+    }
+
+    > .ocat-card-description {
+        margin-top: -0.5rem;
+        margin-bottom: 1rem;
+        padding: 0;
+    }
+
+    > .ocat-card-body {
+        margin-top: 0;
+        padding: 0;
+        border-top: 0;
+    }
+}

@@ -11,12 +11,7 @@
 @Html.ValidationSummary()
 
 <form asp-action="Json">
-    <div class="ocat-wrapper">
-        <label asp-for="Json" class="ocat-label ocat-label-required">@T["JSON"]</label>
-        <div class="ocat-end">
-            <textarea asp-for="Json" class="form-control" rows="20"></textarea>
-        </div>
-    </div>
+    @await DisplayAsync(Model.Editor)
     <div class="action-bar-bottom">
         <button class="btn btn-primary import" type="submit">@T["Import"]</button>
     </div>

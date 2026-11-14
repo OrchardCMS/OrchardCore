@@ -73,6 +73,21 @@ msgctxt "OrchardCore.Layers.Controllers.LayerRuleController"
 msgid "The condition has validation errors."
 msgstr ""
 
+#: Deployment/AllLayersDeploymentStepDriver.cs
+msgctxt "OrchardCore.Layers.Deployment.AllLayersDeploymentStepDriver"
+msgid "Layers"
+msgstr ""
+
+#: Drivers/LayerEditDisplayDriver.cs
+msgctxt "OrchardCore.Layers.Drivers.LayerEditDisplayDriver"
+msgid "General"
+msgstr ""
+
+#: Drivers/LayerEditDisplayDriver.cs
+msgctxt "OrchardCore.Layers.Drivers.LayerEditDisplayDriver"
+msgid "Rules"
+msgstr ""
+
 #: Drivers/LayerMetadataWelder.cs
 msgctxt "OrchardCore.Layers.Drivers.LayerMetadataWelder"
 msgid "Layer is missing field."
@@ -86,6 +101,11 @@ msgstr ""
 #: Drivers/LayerMetadataWelder.cs
 msgctxt "OrchardCore.Layers.Drivers.LayerMetadataWelder"
 msgid "Zone is missing"
+msgstr ""
+
+#: Drivers/LayerSiteSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Layers.Drivers.LayerSiteSettingsDisplayDriver"
+msgid "Zones"
 msgstr ""
 
 #: GraphQL/LayerQueryObjectType.cs
@@ -169,22 +189,7 @@ msgstr ""
 
 #: Views/Admin/Create.cshtml
 msgctxt "OrchardCore.Layers.Views.Admin.Create"
-msgid "Description"
-msgstr ""
-
-#: Views/Admin/Create.cshtml
-msgctxt "OrchardCore.Layers.Views.Admin.Create"
-msgid "Name"
-msgstr ""
-
-#: Views/Admin/Create.cshtml
-msgctxt "OrchardCore.Layers.Views.Admin.Create"
 msgid "Widgets and Layers"
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.Layers.Views.Admin.Edit"
-msgid "Description"
 msgstr ""
 
 #. Format arguments: {0}: Model.Name
@@ -197,11 +202,6 @@ msgstr ""
 #: Views/Admin/Edit.cshtml
 msgctxt "OrchardCore.Layers.Views.Admin.Edit"
 msgid "Error updating rule order"
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.Layers.Views.Admin.Edit"
-msgid "Name"
 msgstr ""
 
 #: Views/Admin/Edit.cshtml
@@ -290,7 +290,7 @@ msgstr ""
 
 #: Views/Items/AllLayersDeploymentStep.Edit.cshtml
 msgctxt "OrchardCore.Layers.Views.Items.AllLayersDeploymentStep.Edit"
-msgid "All Layers"
+msgid "Adds all the layers to the plan."
 msgstr ""
 
 #: Views/Items/AllLayersDeploymentStep.Summary.cshtml
@@ -321,6 +321,16 @@ msgstr ""
 #: Views/Layer.Buttons.SummaryAdmin.cshtml
 msgctxt "OrchardCore.Layers.Views.Layer.Buttons.SummaryAdmin"
 msgid "Edit"
+msgstr ""
+
+#: Views/LayerGeneral.Edit.cshtml
+msgctxt "OrchardCore.Layers.Views.LayerGeneral.Edit"
+msgid "Description"
+msgstr ""
+
+#: Views/LayerGeneral.Edit.cshtml
+msgctxt "OrchardCore.Layers.Views.LayerGeneral.Edit"
+msgid "Name"
 msgstr ""
 
 #: Views/LayerMetadata.Edit.cshtml

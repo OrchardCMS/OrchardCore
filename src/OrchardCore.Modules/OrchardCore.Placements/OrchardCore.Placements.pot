@@ -71,6 +71,16 @@ msgctxt "OrchardCore.Placements.Controllers.AdminController"
 msgid "The Shape type can't be empty."
 msgstr ""
 
+#: Deployment/PlacementsDeploymentStepDriver.cs
+msgctxt "OrchardCore.Placements.Deployment.PlacementsDeploymentStepDriver"
+msgid "Placements"
+msgstr ""
+
+#: Drivers/EditShapePlacementDisplayDriver.cs
+msgctxt "OrchardCore.Placements.Drivers.EditShapePlacementDisplayDriver"
+msgid "Placement"
+msgstr ""
+
 #: Permissions.cs
 msgctxt "OrchardCore.Placements.Permissions"
 msgid "Manage placements"
@@ -182,11 +192,6 @@ msgstr ""
 
 #: Views/Admin/Edit.cshtml
 msgctxt "OrchardCore.Placements.Views.Admin.Edit"
-msgid "Placement rules"
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.Placements.Views.Admin.Edit"
 msgid "Placements"
 msgstr ""
 
@@ -203,16 +208,6 @@ msgstr ""
 #: Views/Admin/Edit.cshtml
 msgctxt "OrchardCore.Placements.Views.Admin.Edit"
 msgid "Save and continue"
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.Placements.Views.Admin.Edit"
-msgid "Shape type"
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.Placements.Views.Admin.Edit"
-msgid "The type of the shape."
 msgstr ""
 
 #: Views/Admin/Edit.cshtml
@@ -262,7 +257,7 @@ msgstr ""
 
 #: Views/Items/PlacementsDeploymentStep.Edit.cshtml
 msgctxt "OrchardCore.Placements.Views.Items.PlacementsDeploymentStep.Edit"
-msgid "Placements"
+msgid "Adds all the placements to the plan."
 msgstr ""
 
 #: Views/Items/PlacementsDeploymentStep.Summary.cshtml
@@ -298,4 +293,19 @@ msgstr ""
 #: Views/ShapePlacement.Buttons.SummaryAdmin.cshtml
 msgctxt "OrchardCore.Placements.Views.ShapePlacement.Buttons.SummaryAdmin"
 msgid "Edit"
+msgstr ""
+
+#: Views/ShapePlacementRules.Edit.cshtml
+msgctxt "OrchardCore.Placements.Views.ShapePlacementRules.Edit"
+msgid "Placement rules"
+msgstr ""
+
+#: Views/ShapePlacementRules.Edit.cshtml
+msgctxt "OrchardCore.Placements.Views.ShapePlacementRules.Edit"
+msgid "Shape type"
+msgstr ""
+
+#: Views/ShapePlacementRules.Edit.cshtml
+msgctxt "OrchardCore.Placements.Views.ShapePlacementRules.Edit"
+msgid "The type of the shape."
 msgstr ""

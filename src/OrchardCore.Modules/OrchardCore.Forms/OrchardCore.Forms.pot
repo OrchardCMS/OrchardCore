@@ -96,6 +96,11 @@ msgctxt "OrchardCore.Forms.Drivers.FormInputElementVisibilityPartDisplayDriver"
 msgid "Starts with"
 msgstr ""
 
+#: Drivers/FormInputElementVisibilityPartDisplayDriver.cs
+msgctxt "OrchardCore.Forms.Drivers.FormInputElementVisibilityPartDisplayDriver"
+msgid "Visibility rules"
+msgstr ""
+
 #: Drivers/SelectPartDisplayDriver.cs
 msgctxt "OrchardCore.Forms.Drivers.SelectPartDisplayDriver"
 msgid "The options are written in an incorrect format."

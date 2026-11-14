@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Localization;
 using OrchardCore.AuditTrail.Settings;
 using OrchardCore.AuditTrail.ViewModels;
 using OrchardCore.DisplayManagement.Entities;
@@ -14,10 +15,16 @@ public sealed class AuditTrailTrimmingSettingsDisplayDriver : SiteDisplayDriver<
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
 
-    public AuditTrailTrimmingSettingsDisplayDriver(IHttpContextAccessor httpContextAccessor, IAuthorizationService authorizationService)
+    internal readonly IStringLocalizer S;
+
+    public AuditTrailTrimmingSettingsDisplayDriver(
+        IHttpContextAccessor httpContextAccessor,
+        IAuthorizationService authorizationService,
+        IStringLocalizer<AuditTrailTrimmingSettingsDisplayDriver> stringLocalizer)
     {
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
+        S = stringLocalizer;
     }
 
     protected override string SettingsGroupId
@@ -36,7 +43,7 @@ public sealed class AuditTrailTrimmingSettingsDisplayDriver : SiteDisplayDriver<
             model.RetentionDays = section.RetentionDays;
             model.LastRunUtc = section.LastRunUtc;
             model.Disabled = section.Disabled;
-        }).Location("Content:10#Trimming;0")
+        }).Location(l => l.Zone("Content", "10").Tab("Trimming", "0").Card(S["Trimming task"], "10"))
         .OnGroup(SettingsGroupId);
     }
 

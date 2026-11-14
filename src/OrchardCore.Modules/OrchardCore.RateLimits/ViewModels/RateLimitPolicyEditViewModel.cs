@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using OrchardCore.DisplayManagement;
 using OrchardCore.Infrastructure.Entities;
 using OrchardCore.RateLimits.Models;
 
@@ -46,4 +47,10 @@ public class RateLimitPolicyEditViewModel
 
     [BindNever]
     public string PublishedPolicyLimiterMessage { get; set; }
+
+    /// <summary>
+    /// Gets or sets the editor of the policy, built by the display drivers of <see cref="RateLimitPolicyEditViewModel"/>.
+    /// </summary>
+    [BindNever]
+    public IShape Editor { get; set; }
 }

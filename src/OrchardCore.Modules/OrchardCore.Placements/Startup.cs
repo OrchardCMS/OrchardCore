@@ -33,6 +33,9 @@ public sealed class Startup : StartupBase
         // Builds the rows of the placements admin list.
         services.AddDisplayDriver<ShapePlacement, ShapePlacementDisplayDriver>();
 
+        // Builds the editor of the page creating and editing the placement rules of a shape.
+        services.AddDisplayDriver<EditShapePlacementViewModel, EditShapePlacementDisplayDriver>();
+
         // Shortcuts in settings
         services.AddScoped<IContentPartDefinitionDisplayDriver, PlacementContentPartDefinitionDriver>();
         services.AddScoped<IContentTypePartDefinitionDisplayDriver, PlacementContentTypePartDefinitionDriver>();

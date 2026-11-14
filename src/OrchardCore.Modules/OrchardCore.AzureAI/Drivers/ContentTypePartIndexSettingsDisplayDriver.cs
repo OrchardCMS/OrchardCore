@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Handlers;
@@ -13,12 +14,16 @@ public sealed class ContentTypePartIndexSettingsDisplayDriver : ContentTypePartD
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
 
+    internal readonly IStringLocalizer S;
+
     public ContentTypePartIndexSettingsDisplayDriver(
         IAuthorizationService authorizationService,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        IStringLocalizer<ContentTypePartIndexSettingsDisplayDriver> stringLocalizer)
     {
         _authorizationService = authorizationService;
         _httpContextAccessor = httpContextAccessor;
+        S = stringLocalizer;
     }
 
     public override async Task<IDisplayResult> EditAsync(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
@@ -31,7 +36,7 @@ public sealed class ContentTypePartIndexSettingsDisplayDriver : ContentTypePartD
         return Initialize<AzureAISearchContentIndexSettings>("AzureAISearchContentIndexSettings_Edit", model =>
         {
             model.Included = contentTypePartDefinition.GetSettings<AzureAISearchContentIndexSettings>().Included;
-        }).Location("Content:10");
+        }).Location(l => l.Zone("Content", "10").Card(S["Indexing"], "40"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)

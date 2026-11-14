@@ -48,11 +48,21 @@ msgctxt "OrchardCore.Taxonomies.Drivers.TaxonomyFieldDisplayDriver"
 msgid "A value is required for {0}."
 msgstr ""
 
+#: Drivers/TaxonomyFieldSettingsDriver.cs
+msgctxt "OrchardCore.Taxonomies.Drivers.TaxonomyFieldSettingsDriver"
+msgid "Settings"
+msgstr ""
+
 #. Format arguments: {0}: context.PartFieldDefinition.DisplayName()
 #: Drivers/TaxonomyFieldTagsDisplayDriver.cs
 #, csharp-format
 msgctxt "OrchardCore.Taxonomies.Drivers.TaxonomyFieldTagsDisplayDriver"
 msgid "A value is required for {0}."
+msgstr ""
+
+#: Drivers/TaxonomyFieldTagsEditorSettingsDriver.cs
+msgctxt "OrchardCore.Taxonomies.Drivers.TaxonomyFieldTagsEditorSettingsDriver"
+msgid "Settings"
 msgstr ""
 
 #: Drivers/TaxonomyPartDisplayDriver.cs
@@ -120,6 +130,11 @@ msgstr ""
 #: Services/TaxonomiesJSLocalizer.cs
 msgctxt "OrchardCore.Taxonomies.Services.TaxonomiesJSLocalizer"
 msgid "Type to search"
+msgstr ""
+
+#: Settings/TaxonomyContentsAdminListSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Taxonomies.Settings.TaxonomyContentsAdminListSettingsDisplayDriver"
+msgid "Taxonomies"
 msgstr ""
 
 #. Format arguments: {0}: taxonomy?.DisplayText

@@ -6,6 +6,7 @@ using System.Text.Json.Nodes;
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -13,6 +14,8 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Entities;
 using OrchardCore.Indexing;
 using OrchardCore.Liquid;
@@ -35,6 +38,8 @@ public sealed class AdminController : Controller
     private readonly JavaScriptEncoder _javaScriptEncoder;
     private readonly ILogger _logger;
     private readonly IOptions<TemplateOptions> _templateOptions;
+    private readonly IDisplayManager<AdminQueryViewModel> _displayManager;
+    private readonly IUpdateModelAccessor _updateModelAccessor;
 
     internal readonly IStringLocalizer S;
     internal readonly IHtmlLocalizer H;
@@ -51,7 +56,9 @@ public sealed class AdminController : Controller
         IStringLocalizer<AdminController> stringLocalizer,
         IHtmlLocalizer<AdminController> htmlLocalizer,
         ILogger<AdminController> logger,
-        IOptions<TemplateOptions> templateOptions)
+        IOptions<TemplateOptions> templateOptions,
+        IDisplayManager<AdminQueryViewModel> displayManager,
+        IUpdateModelAccessor updateModelAccessor)
     {
         _indexManager = indexManager;
         _indexStore = indexStore;
@@ -65,6 +72,8 @@ public sealed class AdminController : Controller
         H = htmlLocalizer;
         _logger = logger;
         _templateOptions = templateOptions;
+        _displayManager = displayManager;
+        _updateModelAccessor = updateModelAccessor;
     }
 
     [Admin("Lucene/query/{indexName}", "LuceneQuery")]
@@ -104,6 +113,8 @@ public sealed class AdminController : Controller
                 .OrderBy(x => x.Text),
         };
 
+        model.Editor = await _displayManager.BuildEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: false);
+
         // Keep the view name here since QueryIndex calls this method directly.
         // Otherwise the view name would be "QueryIndex" instead of "Query" which will be incorrect.
         return View("Query", model);
@@ -123,8 +134,16 @@ public sealed class AdminController : Controller
             .Select(x => new SelectListItem(x.Name, x.Id))
             .OrderBy(x => x.Text);
 
+        // A posted query binds the editor. A query run from the url builds it once run, so that it shows the query it ran.
+        if (HttpMethods.IsPost(Request.Method))
+        {
+            model.Editor = await _displayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: false);
+        }
+
         if (!ModelState.IsValid)
         {
+            model.Editor ??= await _displayManager.BuildEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: false);
+
             return View("Query", model);
         }
 
@@ -201,6 +220,8 @@ public sealed class AdminController : Controller
 
         stopwatch.Stop();
         model.Elapsed = stopwatch.Elapsed;
+
+        model.Editor ??= await _displayManager.BuildEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: false);
 
         // Keep the view name here since QueryIndex calls this method directly.
         // Otherwise the view name would be "QueryIndex" instead of "Query" which will be incorrect.

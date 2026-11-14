@@ -1,0 +1,17 @@
+@model EditOpenIdApplicationViewModel
+@using OrchardCore.OpenId.ViewModels
+
+<div id="RoleGroup" name="RoleGroup" class="collapse">
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
+            @for (var i = 0; i < Model.RoleEntries.Count; i++)
+            {
+                <input type="hidden" asp-for="RoleEntries[i].Name" />
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" asp-for="RoleEntries[i].Selected">
+                    <label class="form-check-label" asp-for="RoleEntries[i].Selected">@Model.RoleEntries[i].Name</label>
+                </div>
+            }
+        </div>
+    </div>
+</div>

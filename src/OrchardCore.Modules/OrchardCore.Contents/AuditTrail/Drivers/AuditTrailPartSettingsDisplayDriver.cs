@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Contents.AuditTrail.Models;
 using OrchardCore.Contents.AuditTrail.Settings;
@@ -10,6 +11,13 @@ namespace OrchardCore.Contents.AuditTrail.Drivers;
 
 public sealed class AuditTrailPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
 {
+    internal readonly IStringLocalizer S;
+
+    public AuditTrailPartSettingsDisplayDriver(IStringLocalizer<AuditTrailPartSettingsDisplayDriver> stringLocalizer)
+    {
+        S = stringLocalizer;
+    }
+
     public override IDisplayResult Edit(ContentTypePartDefinition model, BuildEditorContext context)
     {
         if (!string.Equals(nameof(AuditTrailPart), model.PartDefinition.Name, StringComparison.Ordinal))
@@ -21,7 +29,7 @@ public sealed class AuditTrailPartSettingsDisplayDriver : ContentTypePartDefinit
         {
             var settings = model.GetSettings<AuditTrailPartSettings>();
             viewModel.ShowCommentInput = settings.ShowCommentInput;
-        }).Location("Content");
+        }).Location(l => l.Zone("Content").Card(S["Settings"], "20"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition model, UpdateTypePartEditorContext context)

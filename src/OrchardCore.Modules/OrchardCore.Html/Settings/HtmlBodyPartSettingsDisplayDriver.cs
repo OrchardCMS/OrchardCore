@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Handlers;
@@ -9,6 +10,13 @@ namespace OrchardCore.Html.Settings;
 
 public sealed class HtmlBodyPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<HtmlBodyPart>
 {
+    internal readonly IStringLocalizer S;
+
+    public HtmlBodyPartSettingsDisplayDriver(IStringLocalizer<HtmlBodyPartSettingsDisplayDriver> stringLocalizer)
+    {
+        S = stringLocalizer;
+    }
+
     public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
     {
         return Initialize<HtmlBodyPartSettingsViewModel>("HtmlBodyPartSettings_Edit", model =>
@@ -16,7 +24,7 @@ public sealed class HtmlBodyPartSettingsDisplayDriver : ContentTypePartDefinitio
             var settings = contentTypePartDefinition.GetSettings<HtmlBodyPartSettings>();
 
             model.SanitizeHtml = settings.SanitizeHtml;
-        }).Location("Content:20");
+        }).Location(l => l.Zone("Content", "20").Card(S["Settings"], "20"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)

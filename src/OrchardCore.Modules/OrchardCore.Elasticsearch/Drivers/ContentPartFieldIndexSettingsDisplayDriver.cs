@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Handlers;
@@ -14,12 +15,16 @@ public sealed class ContentPartFieldIndexSettingsDisplayDriver : ContentPartFiel
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
 
+    internal readonly IStringLocalizer S;
+
     public ContentPartFieldIndexSettingsDisplayDriver(
         IAuthorizationService authorizationService,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        IStringLocalizer<ContentPartFieldIndexSettingsDisplayDriver> stringLocalizer)
     {
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
+        S = stringLocalizer;
     }
 
     public override async Task<IDisplayResult> EditAsync(ContentPartFieldDefinition contentPartFieldDefinition, BuildEditorContext context)
@@ -32,7 +37,7 @@ public sealed class ContentPartFieldIndexSettingsDisplayDriver : ContentPartFiel
         return Initialize<ElasticContentIndexSettingsViewModel>("ElasticContentIndexSettings_Edit", model =>
         {
             model.ElasticContentIndexSettings = contentPartFieldDefinition.GetSettings<ElasticContentIndexSettings>();
-        }).Location("Content:10");
+        }).Location(l => l.Zone("Content", "10").Card(S["Indexing"], "40"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition contentPartFieldDefinition, UpdatePartFieldEditorContext context)

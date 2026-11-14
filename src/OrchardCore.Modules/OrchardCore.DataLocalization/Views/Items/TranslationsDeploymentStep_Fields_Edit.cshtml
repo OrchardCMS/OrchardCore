@@ -2,34 +2,40 @@
 @using OrchardCore.DisplayManagement.Views
 @model TranslationsDeploymentStepViewModel
 
-<h5>@T["Translations"]</h5>
-
-<p>@T["Adds translations to the deployment plan."]</p>
-
-<div class="mb-3">
-    <div class="form-check">
-        <input type="checkbox" class="form-check-input translations-include-all" asp-for="IncludeAll" id="@Html.IdFor(m => m.IncludeAll)" />
-        <label class="form-check-label" asp-for="IncludeAll">@T["Include all cultures"]</label>
-        <span class="hint">— @T["When unchecked, you can select specific cultures to export."]</span>
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <span class="hint">@T["Adds translations to the deployment plan."]</span>
     </div>
 </div>
 
-<div class="mb-3" id="cultures-selection" style="display: none;">
-    <label class="form-label">@T["Cultures"]</label>
-    <div>
-        @foreach (var culture in Model.AllCultures)
-        {
-            <div class="form-check">
-                <input type="checkbox" class="form-check-input" name="@Html.NameFor(m => m.Cultures)" value="@culture" id="culture-@culture" @(Model.Cultures.Contains(culture) ? "checked" : "") />
-                <label class="form-check-label" for="culture-@culture">@culture</label>
-            </div>
-        }
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input translations-include-all" asp-for="IncludeAll" id="@Html.IdFor(m => m.IncludeAll)" />
+            <label class="form-check-label" asp-for="IncludeAll">@T["Include all cultures"]</label>
+            <span class="hint">— @T["When unchecked, you can select specific cultures to export."]</span>
+        </div>
     </div>
 </div>
 
-<div class="mb-3">
-    <label class="form-label">@T["Categories"] <span class="hint">— @T["Leave empty to export all categories"]</span></label>
-    <div>
+<div id="cultures-selection" style="display: none;">
+    <div class="ocat-wrapper">
+        <label class="ocat-label">@T["Cultures"]</label>
+        <div class="ocat-end">
+            @foreach (var culture in Model.AllCultures)
+            {
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" name="@Html.NameFor(m => m.Cultures)" value="@culture" id="culture-@culture" @(Model.Cultures.Contains(culture) ? "checked" : "") />
+                    <label class="form-check-label" for="culture-@culture">@culture</label>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="ocat-wrapper">
+    <label class="ocat-label">@T["Categories"]</label>
+    <div class="ocat-end">
         @foreach (var category in Model.AllCategories)
         {
             <div class="form-check">
@@ -37,6 +43,7 @@
                 <label class="form-check-label" for="category-@category.Replace(" ", "-")">@category</label>
             </div>
         }
+        <span class="hint">@T["Leave empty to export all categories"]</span>
     </div>
 </div>
 

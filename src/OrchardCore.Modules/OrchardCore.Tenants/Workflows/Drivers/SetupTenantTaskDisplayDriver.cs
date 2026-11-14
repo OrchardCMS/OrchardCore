@@ -1,3 +1,6 @@
+using Microsoft.Extensions.Localization;
+using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Tenants.Workflows.Activities;
 using OrchardCore.Tenants.Workflows.ViewModels;
 using OrchardCore.Workflows.Models;
@@ -6,6 +9,24 @@ namespace OrchardCore.Tenants.Workflows.Drivers;
 
 public sealed class SetupTenantTaskDisplayDriver : TenantTaskDisplayDriver<SetupTenantTask, SetupTenantTaskViewModel>
 {
+    internal readonly IStringLocalizer S;
+
+    public SetupTenantTaskDisplayDriver(IStringLocalizer<SetupTenantTaskDisplayDriver> stringLocalizer)
+    {
+        S = stringLocalizer;
+    }
+
+    public override IDisplayResult Edit(SetupTenantTask activity, BuildEditorContext context)
+    {
+        return Combine(
+            Initialize<SetupTenantTaskViewModel>("SetupTenantTask_Fields_Edit", model => EditActivityAsync(activity, model))
+                .Location(l => l.Zone("Content", "1").Card(S["General"], "10")),
+            Initialize<SetupTenantTaskViewModel>("SetupTenantTaskAdministrator_Fields_Edit", model => EditActivityAsync(activity, model))
+                .Location(l => l.Zone("Content", "1").Card(S["Administrator"], "20")),
+            Initialize<SetupTenantTaskViewModel>("SetupTenantTaskDatabase_Fields_Edit", model => EditActivityAsync(activity, model))
+                .Location(l => l.Zone("Content", "1").Card(S["Database"], "30")));
+    }
+
     protected override void EditActivity(SetupTenantTask activity, SetupTenantTaskViewModel model)
     {
         model.TenantNameExpression = activity.TenantName.Expression;

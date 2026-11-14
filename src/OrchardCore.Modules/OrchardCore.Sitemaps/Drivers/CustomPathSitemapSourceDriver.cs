@@ -32,7 +32,7 @@ public sealed class CustomPathSitemapSourceDriver : DisplayDriver<SitemapSource,
             model.Priority = sitemapSource.Priority;
             model.ChangeFrequency = sitemapSource.ChangeFrequency;
 
-        }).Location("Content");
+        }).Location(l => l.Zone("Content").Card(S["Custom path"], "10"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(CustomPathSitemapSource sitemap, UpdateEditorContext context)

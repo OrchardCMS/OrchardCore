@@ -28,6 +28,11 @@ msgstr ""
 
 #: Drivers/LocalizationSettingsDisplayDriver.cs
 msgctxt "OrchardCore.Localization.Drivers.LocalizationSettingsDisplayDriver"
+msgid "Cultures"
+msgstr ""
+
+#: Drivers/LocalizationSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Localization.Drivers.LocalizationSettingsDisplayDriver"
 msgid "The site has been restarted for the settings to take effect."
 msgstr ""
 

@@ -1,0 +1,26 @@
+@model OrchardCore.DisplayManagement.ViewModels.GroupViewModel
+@using OrchardCore.DisplayManagement
+
+@*
+    The cards of a content zone, one after the other. The cards of the admin forms are always expanded, so the
+    container is not an accordion.
+
+    The only card of a tab doesn't repeat its title: the tab already names its fields.
+*@
+
+@{
+    var cards = Model.Items.OfType<IShape>().ToList();
+
+    if (cards.Count == 1 &&
+        cards[0].Items.OfType<IShape>().Any(shape => shape.Metadata.TabGrouping.HasValue))
+    {
+        cards[0].Properties["OnlyCardOfTab"] = true;
+    }
+}
+
+<div class="ocat-cards">
+    @foreach (var card in cards)
+    {
+        @await DisplayAsync(card)
+    }
+</div>

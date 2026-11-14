@@ -16,6 +16,11 @@ msgctxt "OrchardCore.Lists.AdminNodes.ListsAdminNodeDriver"
 msgid "Invalid Content type provided."
 msgstr ""
 
+#: AdminNodes/ListsAdminNodeDriver.cs
+msgctxt "OrchardCore.Lists.AdminNodes.ListsAdminNodeDriver"
+msgid "Lists"
+msgstr ""
+
 #: GraphQL/ContainedInputObjectType.cs
 msgctxt "OrchardCore.Lists.GraphQL.ContainedInputObjectType"
 msgid "the content item id of the parent list of the content item to filter"
@@ -122,6 +127,11 @@ msgctxt "OrchardCore.Lists.Settings.ListPartSettingsDisplayDriver"
 msgid "At least one content type must be selected."
 msgstr ""
 
+#: Settings/ListPartSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Lists.Settings.ListPartSettingsDisplayDriver"
+msgid "Settings"
+msgstr ""
+
 #: Views/Items/ListsAdminNode.Fields.TreeEdit.cshtml
 msgctxt "OrchardCore.Lists.Views.Items.ListsAdminNode.Fields.TreeEdit"
 msgid "Add parent menu item"
@@ -150,11 +160,6 @@ msgstr ""
 #: Views/Items/ListsAdminNode.Fields.TreeEdit.cshtml
 msgctxt "OrchardCore.Lists.Views.Items.ListsAdminNode.Fields.TreeEdit"
 msgid "Icon for the parent menu item"
-msgstr ""
-
-#: Views/Items/ListsAdminNode.Fields.TreeEdit.cshtml
-msgctxt "OrchardCore.Lists.Views.Items.ListsAdminNode.Fields.TreeEdit"
-msgid "Lists"
 msgstr ""
 
 #: Views/Items/ListsAdminNode.Fields.TreeEdit.cshtml

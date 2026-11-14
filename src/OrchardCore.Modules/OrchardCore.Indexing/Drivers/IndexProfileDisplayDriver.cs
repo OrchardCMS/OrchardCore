@@ -65,7 +65,7 @@ internal sealed class IndexProfileDisplayDriver : DisplayDriver<IndexProfile>
             model.Name = indexProfile.Name;
             model.IndexName = indexProfile.IndexName;
             model.IsNew = context.IsNew;
-        }).Location("Content:1");
+        }).Location(l => l.Zone("Content", "1").Card(S["General"], "10"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(IndexProfile indexProfile, UpdateEditorContext context)

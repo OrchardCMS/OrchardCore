@@ -41,6 +41,11 @@ public sealed class Startup : StartupBase
         services.AddDisplayDriver<SitemapIndexListEntry, SitemapIndexListEntryDisplayDriver>();
         services.AddDisplayDriver<SitemapCacheEntry, SitemapCacheEntryDisplayDriver>();
 
+        // Build the editors of the pages creating and editing a sitemap or a sitemap index.
+        services.AddDisplayDriver<CreateSitemapViewModel, CreateSitemapDisplayDriver>();
+        services.AddDisplayDriver<EditSitemapViewModel, EditSitemapDisplayDriver>();
+        services.AddDisplayDriver<CreateSitemapIndexViewModel, SitemapIndexDisplayDriver>();
+
         services.Configure<SitemapsOptions>(options =>
         {
             if (options.GlobalRouteValues.Count == 0)

@@ -45,7 +45,7 @@ public sealed class SmsSettingsDisplayDriver : SiteDisplayDriver<SmsSettings>
             .OrderBy(item => item.Text)
             .ToArray();
 
-        }).Location("Content:1#Providers")
+        }).Location(l => l.Zone("Content", "1").Tab(S["Providers"]).Card(S["Default provider"], "10"))
         .RenderWhen(static (driver) => driver._authorizationService.AuthorizeAsync(driver._httpContextAccessor.HttpContext?.User, SmsPermissions.ManageSmsSettings), this)
         .OnGroup(SettingsGroupId);
 

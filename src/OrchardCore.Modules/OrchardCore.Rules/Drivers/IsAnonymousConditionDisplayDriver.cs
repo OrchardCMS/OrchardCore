@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Rules.Models;
@@ -6,6 +7,13 @@ namespace OrchardCore.Rules.Drivers;
 
 public sealed class IsAnonymousConditionDisplayDriver : DisplayDriver<Condition, IsAnonymousCondition>
 {
+    internal readonly IStringLocalizer S;
+
+    public IsAnonymousConditionDisplayDriver(IStringLocalizer<IsAnonymousConditionDisplayDriver> stringLocalizer)
+    {
+        S = stringLocalizer;
+    }
+
     public override Task<IDisplayResult> DisplayAsync(IsAnonymousCondition condition, BuildDisplayContext context)
     {
         return
@@ -17,6 +25,6 @@ public sealed class IsAnonymousConditionDisplayDriver : DisplayDriver<Condition,
 
     public override IDisplayResult Edit(IsAnonymousCondition condition, BuildEditorContext context)
     {
-        return View("IsAnonymousCondition_Fields_Edit", condition).Location("Content");
+        return View("IsAnonymousCondition_Fields_Edit", condition).Location(l => l.Zone("Content").Card(S["Is anonymous"], "10"));
     }
 }

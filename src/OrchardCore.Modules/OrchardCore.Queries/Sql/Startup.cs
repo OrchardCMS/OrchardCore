@@ -6,6 +6,7 @@ using OrchardCore.Navigation;
 using OrchardCore.Queries.Core;
 using OrchardCore.Queries.Sql.Drivers;
 using OrchardCore.Queries.Sql.Migrations;
+using OrchardCore.Queries.Sql.ViewModels;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Queries.Sql;
@@ -21,6 +22,9 @@ public sealed class Startup : StartupBase
         services.AddPermissionProvider<Permissions>();
         services.AddSingleton<SqlLiquidOutputExpressionDetector>();
         services.AddDisplayDriver<Query, SqlQueryDisplayDriver>();
+
+        // Builds the editor of the SQL query runner.
+        services.AddDisplayDriver<AdminQueryViewModel, SqlQueryRunnerDisplayDriver>();
         services.AddQuerySource<SqlQuerySource>(SqlQuerySource.SourceName);
 
         services.AddNavigationProvider<AdminMenu>();

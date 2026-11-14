@@ -2,6 +2,7 @@ using System.Security.Cryptography;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
@@ -19,17 +20,21 @@ public sealed class FacebookPixelSettingsDisplayDriver : SiteDisplayDriver<Faceb
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ILogger _logger;
 
+    internal readonly IStringLocalizer S;
+
     public FacebookPixelSettingsDisplayDriver(
         IAuthorizationService authorizationService,
         IDataProtectionProvider dataProtectionProvider,
         IHttpContextAccessor httpContextAccessor,
         ILogger<FacebookPixelSettingsDisplayDriver> logger
-        )
+        ,
+        IStringLocalizer<FacebookPixelSettingsDisplayDriver> stringLocalizer)
     {
         _authorizationService = authorizationService;
         _dataProtectionProvider = dataProtectionProvider;
         _httpContextAccessor = httpContextAccessor;
         _logger = logger;
+        S = stringLocalizer;
     }
 
     protected override string SettingsGroupId
@@ -43,31 +48,39 @@ public sealed class FacebookPixelSettingsDisplayDriver : SiteDisplayDriver<Faceb
             return null;
         }
 
-        return Initialize<FacebookPixelSettingsViewModel>("FacebookPixelSettings_Edit", model =>
+        var conversionsApiAccessToken = string.Empty;
+        var hasDecryptionError = false;
+
+        if (!string.IsNullOrWhiteSpace(settings.ConversionsApiAccessToken))
+        {
+            try
+            {
+                var protector = _dataProtectionProvider.CreateProtector(FacebookConstants.ConversionsApiProtectorName);
+                conversionsApiAccessToken = protector.Unprotect(settings.ConversionsApiAccessToken);
+            }
+            catch (CryptographicException)
+            {
+                _logger.LogError("The Meta Conversions API access token could not be decrypted. It may have been encrypted using a different key.");
+                hasDecryptionError = true;
+            }
+        }
+
+        void PopulateViewModel(FacebookPixelSettingsViewModel model)
         {
             model.PixelId = settings.PixelId;
             model.ConversionsApiTestEventCode = settings.ConversionsApiTestEventCode;
+            model.ConversionsApiAccessToken = conversionsApiAccessToken;
+            model.HasDecryptionError = hasDecryptionError;
+        }
 
-            if (!string.IsNullOrWhiteSpace(settings.ConversionsApiAccessToken))
-            {
-                try
-                {
-                    var protector = _dataProtectionProvider.CreateProtector(FacebookConstants.ConversionsApiProtectorName);
-                    model.ConversionsApiAccessToken = protector.Unprotect(settings.ConversionsApiAccessToken);
-                }
-                catch (CryptographicException)
-                {
-                    _logger.LogError("The Meta Conversions API access token could not be decrypted. It may have been encrypted using a different key.");
-                    model.ConversionsApiAccessToken = string.Empty;
-                    model.HasDecryptionError = true;
-                }
-            }
-            else
-            {
-                model.ConversionsApiAccessToken = string.Empty;
-            }
-        }).Location("Content:0")
-        .OnGroup(SettingsGroupId);
+        return Combine(
+            Initialize<FacebookPixelSettingsViewModel>("FacebookPixelSettings_Edit", PopulateViewModel)
+                .Location(l => l.Zone("Content", "0").Card(S["Pixel"], "10"))
+                .OnGroup(SettingsGroupId),
+            Initialize<FacebookPixelSettingsViewModel>("FacebookPixelSettings_Edit__ConversionsApi", PopulateViewModel)
+                .Location(l => l.Zone("Content", "0.1").Card(S["Conversions API"], "20"))
+                .OnGroup(SettingsGroupId)
+        );
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, FacebookPixelSettings settings, UpdateEditorContext context)

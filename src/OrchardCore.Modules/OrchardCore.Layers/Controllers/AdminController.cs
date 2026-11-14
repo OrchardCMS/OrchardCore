@@ -37,6 +37,7 @@ public sealed class AdminController : Controller
     private readonly IVolatileDocumentManager<LayerState> _layerStateManager;
     private readonly IDisplayManager<Condition> _conditionDisplayManager;
     private readonly IDisplayManager<Rule> _ruleDisplayManager;
+    private readonly IDisplayManager<LayerEditViewModel> _layerDisplayManager;
     private readonly IConditionIdGenerator _conditionIdGenerator;
     private readonly IEnumerable<IConditionFactory> _conditionFactories;
     private readonly INotifier _notifier;
@@ -57,6 +58,7 @@ public sealed class AdminController : Controller
         IVolatileDocumentManager<LayerState> layerStateManager,
         IDisplayManager<Condition> conditionDisplayManager,
         IDisplayManager<Rule> ruleDisplayManager,
+        IDisplayManager<LayerEditViewModel> layerDisplayManager,
         IConditionIdGenerator conditionIdGenerator,
         IEnumerable<IConditionFactory> conditionFactories,
         IStringLocalizer<AdminController> stringLocalizer,
@@ -75,6 +77,7 @@ public sealed class AdminController : Controller
         _layerStateManager = layerStateManager;
         _conditionDisplayManager = conditionDisplayManager;
         _ruleDisplayManager = ruleDisplayManager;
+        _layerDisplayManager = layerDisplayManager;
         _conditionIdGenerator = conditionIdGenerator;
         _conditionFactories = conditionFactories;
         _notifier = notifier;
@@ -137,7 +140,11 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        return View();
+        var model = new LayerEditViewModel();
+
+        model.Editor = await _layerDisplayManager.BuildEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: true);
+
+        return View(model);
     }
 
     [HttpPost, ActionName("Create")]
@@ -149,6 +156,8 @@ public sealed class AdminController : Controller
         }
 
         var layers = await _layerService.LoadLayersAsync();
+
+        model.Editor = await _layerDisplayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: true);
 
         ValidateViewModel(model, layers, isNew: true);
 
@@ -210,6 +219,8 @@ public sealed class AdminController : Controller
             Thumbnails = thumbnails,
         };
 
+        model.Editor = await _layerDisplayManager.BuildEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: false);
+
         return View(model);
     }
 
@@ -222,6 +233,8 @@ public sealed class AdminController : Controller
         }
 
         var layers = await _layerService.LoadLayersAsync();
+
+        model.Editor = await _layerDisplayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: false);
 
         ValidateViewModel(model, layers, isNew: false);
 

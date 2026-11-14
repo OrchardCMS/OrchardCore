@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.OpenId.Settings;
@@ -12,12 +13,16 @@ public sealed class OpenIdValidationSettingsDisplayDriver : DisplayDriver<OpenId
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
 
+    internal readonly IStringLocalizer S;
+
     public OpenIdValidationSettingsDisplayDriver(
         IHttpContextAccessor httpContextAccessor,
-        IAuthorizationService authorizationService)
+        IAuthorizationService authorizationService,
+        IStringLocalizer<OpenIdValidationSettingsDisplayDriver> stringLocalizer)
     {
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
+        S = stringLocalizer;
     }
 
     public override async Task<IDisplayResult> EditAsync(OpenIdValidationSettings settings, BuildEditorContext context)
@@ -38,7 +43,7 @@ public sealed class OpenIdValidationSettingsDisplayDriver : DisplayDriver<OpenId
             model.Audience = settings.Audience;
             model.DisableTokenTypeValidation = settings.DisableTokenTypeValidation;
             model.Tenant = settings.Tenant;
-        }).Location("Content:2");
+        }).Location(l => l.Zone("Content", "2").Card(S["General"], "10"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(OpenIdValidationSettings settings, UpdateEditorContext context)

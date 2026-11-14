@@ -38,6 +38,11 @@ msgctxt "OrchardCore.Contents.AdminMenu"
 msgid "Settings"
 msgstr ""
 
+#: AdminNodes/ContentTypesAdminNodeDriver.cs
+msgctxt "OrchardCore.Contents.AdminNodes.ContentTypesAdminNodeDriver"
+msgid "Content types"
+msgstr ""
+
 #. Format arguments: {0}: contentItem.DisplayText
 #: AuditTrail/Controllers/AuditTrailContentController.cs
 #, csharp-format
@@ -60,6 +65,16 @@ msgid "'{1}' was not restored, the version is not valid. {2}"
 msgid_plural "'{1}' was not restored, the version is not valid. Errors: {2}"
 msgstr[0] ""
 msgstr[1] ""
+
+#: AuditTrail/Drivers/AuditTrailPartSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Contents.AuditTrail.Drivers.AuditTrailPartSettingsDisplayDriver"
+msgid "Settings"
+msgstr ""
+
+#: AuditTrail/Drivers/ContentAuditTrailSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Contents.AuditTrail.Drivers.ContentAuditTrailSettingsDisplayDriver"
+msgid "Content types"
+msgstr ""
 
 #: AuditTrail/Services/ContentAuditTrailEventConfiguration.cs
 msgctxt "OrchardCore.Contents.AuditTrail.Services.ContentAuditTrailEventConfiguration"
@@ -362,7 +377,32 @@ msgstr ""
 
 #: Deployment/AddToDeploymentPlan/ContentItemDeploymentStepDriver.cs
 msgctxt "OrchardCore.Contents.Deployment.AddToDeploymentPlan.ContentItemDeploymentStepDriver"
+msgid "Content item"
+msgstr ""
+
+#: Deployment/AddToDeploymentPlan/ContentItemDeploymentStepDriver.cs
+msgctxt "OrchardCore.Contents.Deployment.AddToDeploymentPlan.ContentItemDeploymentStepDriver"
 msgid "Your content item does not exist."
+msgstr ""
+
+#: Deployment/AllContentDeploymentStepDriver.cs
+msgctxt "OrchardCore.Contents.Deployment.AllContentDeploymentStepDriver"
+msgid "Export"
+msgstr ""
+
+#: Deployment/ContentDeploymentStepDriver.cs
+msgctxt "OrchardCore.Contents.Deployment.ContentDeploymentStepDriver"
+msgid "Content types"
+msgstr ""
+
+#: Deployment/ContentDeploymentStepDriver.cs
+msgctxt "OrchardCore.Contents.Deployment.ContentDeploymentStepDriver"
+msgid "Export"
+msgstr ""
+
+#: Deployment/ExportContentToDeploymentTarget/ExportContentToDeploymentTargetSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget.ExportContentToDeploymentTargetSettingsDisplayDriver"
+msgid "Deployment plan"
 msgstr ""
 
 #: Deployment/ExportContentToDeploymentTarget/ExportContentToDeploymentTargetStartup.cs
@@ -400,11 +440,26 @@ msgctxt "OrchardCore.Contents.QuickNavigation.ContentItemNavigationSource"
 msgid "Content"
 msgstr ""
 
+#: QuickNavigation/ContentQuickNavigationSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Contents.QuickNavigation.ContentQuickNavigationSettingsDisplayDriver"
+msgid "Quick navigation"
+msgstr ""
+
 #. Format arguments: {0}: string.Join(' ', errors)
 #: Settings/FullTextAspectSettingsDisplayDriver.cs
 #, csharp-format
 msgctxt "OrchardCore.Contents.Settings.FullTextAspectSettingsDisplayDriver"
 msgid "Full-text doesn't contain a valid Liquid expression. Details: {0}"
+msgstr ""
+
+#: Settings/FullTextAspectSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Contents.Settings.FullTextAspectSettingsDisplayDriver"
+msgid "Full-text search"
+msgstr ""
+
+#: Sitemaps/ContentTypesSitemapSourceDriver.cs
+msgctxt "OrchardCore.Contents.Sitemaps.ContentTypesSitemapSourceDriver"
+msgid "Content types"
 msgstr ""
 
 #: VersionPruning/AdminMenu.cs
@@ -420,6 +475,11 @@ msgstr ""
 #: VersionPruning/ContentVersionPruningPermissions.cs
 msgctxt "OrchardCore.Contents.VersionPruning.ContentVersionPruningPermissions"
 msgid "Manage Content Version Pruning settings"
+msgstr ""
+
+#: VersionPruning/Drivers/ContentVersionPruningSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Contents.VersionPruning.Drivers.ContentVersionPruningSettingsDisplayDriver"
+msgid "Pruning"
 msgstr ""
 
 #: Views/Admin/Create.cshtml
@@ -1066,11 +1126,6 @@ msgstr ""
 
 #: Views/FullTextAspectSettings.Edit.cshtml
 msgctxt "OrchardCore.Contents.Views.FullTextAspectSettings.Edit"
-msgid "Full-text"
-msgstr ""
-
-#: Views/FullTextAspectSettings.Edit.cshtml
-msgctxt "OrchardCore.Contents.Views.FullTextAspectSettings.Edit"
 msgid "Include body parts"
 msgstr ""
 
@@ -1371,21 +1426,6 @@ msgstr ""
 
 #: Views/Items/ContentDeploymentStep.Fields.Edit.cshtml
 msgctxt "OrchardCore.Contents.Views.Items.ContentDeploymentStep.Fields.Edit"
-msgid "Check if the data should be exported as a Setup recipe."
-msgstr ""
-
-#: Views/Items/ContentDeploymentStep.Fields.Edit.cshtml
-msgctxt "OrchardCore.Contents.Views.Items.ContentDeploymentStep.Fields.Edit"
-msgid "Export As Setup recipe"
-msgstr ""
-
-#: Views/Items/ContentDeploymentStep.Fields.Edit.cshtml
-msgctxt "OrchardCore.Contents.Views.Items.ContentDeploymentStep.Fields.Edit"
-msgid "If checked, you will have to manually declare variables for the Content Picker fields, Taxonomy fields, Tags fields and List item ids and replace them where needed in the recipe. Any reference to these content items will be lost."
-msgstr ""
-
-#: Views/Items/ContentDeploymentStep.Fields.Edit.cshtml
-msgctxt "OrchardCore.Contents.Views.Items.ContentDeploymentStep.Fields.Edit"
 msgid "The content types to add as part of the plan."
 msgstr ""
 
@@ -1407,6 +1447,21 @@ msgstr ""
 #: Views/Items/ContentDeploymentStep.Fields.Thumbnail.cshtml
 msgctxt "OrchardCore.Contents.Views.Items.ContentDeploymentStep.Fields.Thumbnail"
 msgid "Exports all the content items for the specified content types."
+msgstr ""
+
+#: Views/Items/ContentDeploymentStepExport.Fields.Edit.cshtml
+msgctxt "OrchardCore.Contents.Views.Items.ContentDeploymentStepExport.Fields.Edit"
+msgid "Check if the data should be exported as a Setup recipe."
+msgstr ""
+
+#: Views/Items/ContentDeploymentStepExport.Fields.Edit.cshtml
+msgctxt "OrchardCore.Contents.Views.Items.ContentDeploymentStepExport.Fields.Edit"
+msgid "Export As Setup recipe"
+msgstr ""
+
+#: Views/Items/ContentDeploymentStepExport.Fields.Edit.cshtml
+msgctxt "OrchardCore.Contents.Views.Items.ContentDeploymentStepExport.Fields.Edit"
+msgid "If checked, you will have to manually declare variables for the Content Picker fields, Taxonomy fields, Tags fields and List item ids and replace them where needed in the recipe. Any reference to these content items will be lost."
 msgstr ""
 
 #: Views/Items/ContentDraftSavedEvent.Fields.Design.cshtml
@@ -1501,11 +1556,6 @@ msgstr ""
 
 #: Views/Items/ContentTypesAdminNode.Fields.TreeEdit.cshtml
 msgctxt "OrchardCore.Contents.Views.Items.ContentTypesAdminNode.Fields.TreeEdit"
-msgid "Content Types"
-msgstr ""
-
-#: Views/Items/ContentTypesAdminNode.Fields.TreeEdit.cshtml
-msgctxt "OrchardCore.Contents.Views.Items.ContentTypesAdminNode.Fields.TreeEdit"
 msgid "Content types"
 msgstr ""
 
@@ -1527,11 +1577,6 @@ msgstr ""
 #: Views/Items/ContentTypesAdminNode.Fields.TreeEdit.cshtml
 msgctxt "OrchardCore.Contents.Views.Items.ContentTypesAdminNode.Fields.TreeEdit"
 msgid "Pick an icon"
-msgstr ""
-
-#: Views/Items/ContentTypesAdminNode.Fields.TreeEdit.cshtml
-msgctxt "OrchardCore.Contents.Views.Items.ContentTypesAdminNode.Fields.TreeEdit"
-msgid "Select Content Types"
 msgstr ""
 
 #: Views/Items/ContentTypesAdminNode.Fields.TreeEdit.cshtml
@@ -1641,11 +1686,6 @@ msgstr ""
 
 #: Views/Items/ContentTypesSitemapSource.Edit.cshtml
 msgctxt "OrchardCore.Contents.Views.Items.ContentTypesSitemapSource.Edit"
-msgid "Content Types"
-msgstr ""
-
-#: Views/Items/ContentTypesSitemapSource.Edit.cshtml
-msgctxt "OrchardCore.Contents.Views.Items.ContentTypesSitemapSource.Edit"
 msgid "Index All Content Types"
 msgstr ""
 
@@ -1662,11 +1702,6 @@ msgstr ""
 #: Views/Items/ContentTypesSitemapSource.Edit.cshtml
 msgctxt "OrchardCore.Contents.Views.Items.ContentTypesSitemapSource.Edit"
 msgid "Priority"
-msgstr ""
-
-#: Views/Items/ContentTypesSitemapSource.Edit.cshtml
-msgctxt "OrchardCore.Contents.Views.Items.ContentTypesSitemapSource.Edit"
-msgid "Select Content Types"
 msgstr ""
 
 #: Views/Items/ContentTypesSitemapSource.Edit.cshtml
@@ -2521,9 +2556,79 @@ msgctxt "OrchardCore.Contents.Workflows.ContentWorkflowGlobalValueProvider"
 msgid "The published content items, by handle: Content[\"alias:about\"]."
 msgstr ""
 
+#: Workflows/Drivers/ContentCreatedEventDisplayDriver.cs
+msgctxt "OrchardCore.Contents.Workflows.Drivers.ContentCreatedEventDisplayDriver"
+msgid "Content types"
+msgstr ""
+
+#: Workflows/Drivers/ContentDeletedEventDisplayDriver.cs
+msgctxt "OrchardCore.Contents.Workflows.Drivers.ContentDeletedEventDisplayDriver"
+msgid "Content types"
+msgstr ""
+
+#: Workflows/Drivers/ContentDraftSavedEventDisplayDriver.cs
+msgctxt "OrchardCore.Contents.Workflows.Drivers.ContentDraftSavedEventDisplayDriver"
+msgid "Content types"
+msgstr ""
+
+#: Workflows/Drivers/ContentPublishedEventDisplayDriver.cs
+msgctxt "OrchardCore.Contents.Workflows.Drivers.ContentPublishedEventDisplayDriver"
+msgid "Content types"
+msgstr ""
+
+#: Workflows/Drivers/ContentUnpublishedEventDisplayDriver.cs
+msgctxt "OrchardCore.Contents.Workflows.Drivers.ContentUnpublishedEventDisplayDriver"
+msgid "Content types"
+msgstr ""
+
+#: Workflows/Drivers/ContentUpdatedEventDisplayDriver.cs
+msgctxt "OrchardCore.Contents.Workflows.Drivers.ContentUpdatedEventDisplayDriver"
+msgid "Content types"
+msgstr ""
+
+#: Workflows/Drivers/ContentVersionedEventDisplayDriver.cs
+msgctxt "OrchardCore.Contents.Workflows.Drivers.ContentVersionedEventDisplayDriver"
+msgid "Content types"
+msgstr ""
+
+#: Workflows/Drivers/CreateContentTaskDisplayDriver.cs
+msgctxt "OrchardCore.Contents.Workflows.Drivers.CreateContentTaskDisplayDriver"
+msgid "Content item"
+msgstr ""
+
+#: Workflows/Drivers/DeleteContentTaskDisplayDriver.cs
+msgctxt "OrchardCore.Contents.Workflows.Drivers.DeleteContentTaskDisplayDriver"
+msgid "Content item"
+msgstr ""
+
+#: Workflows/Drivers/PublishContentTaskDisplayDriver.cs
+msgctxt "OrchardCore.Contents.Workflows.Drivers.PublishContentTaskDisplayDriver"
+msgid "Content item"
+msgstr ""
+
+#: Workflows/Drivers/RetrieveContentTaskDisplayDriver.cs
+msgctxt "OrchardCore.Contents.Workflows.Drivers.RetrieveContentTaskDisplayDriver"
+msgid "Content item"
+msgstr ""
+
+#: Workflows/Drivers/UnpublishContentTaskDisplayDriver.cs
+msgctxt "OrchardCore.Contents.Workflows.Drivers.UnpublishContentTaskDisplayDriver"
+msgid "Content item"
+msgstr ""
+
+#: Workflows/Drivers/UpdateContentTaskDisplayDriver.cs
+msgctxt "OrchardCore.Contents.Workflows.Drivers.UpdateContentTaskDisplayDriver"
+msgid "Content item"
+msgstr ""
+
 #: Workflows/Variables/ContentItemVariableType.cs
 msgctxt "OrchardCore.Contents.Workflows.Variables.ContentItemVariableType"
 msgid "Content item"
+msgstr ""
+
+#: Settings/CommonPartSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Lists.Settings.CommonPartSettingsDisplayDriver"
+msgid "Settings"
 msgstr ""
 
 #: QuickNavigation/ContentQuickNavigationSettings.cs

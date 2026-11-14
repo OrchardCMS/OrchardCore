@@ -26,6 +26,21 @@ msgctxt "OrchardCore.Admin.DeploymentStartup"
 msgid "Exports the admin settings."
 msgstr ""
 
+#: Drivers/AdminSiteSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Admin.Drivers.AdminSiteSettingsDisplayDriver"
+msgid "Appearance"
+msgstr ""
+
+#: Drivers/AdminSiteSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Admin.Drivers.AdminSiteSettingsDisplayDriver"
+msgid "Lists"
+msgstr ""
+
+#: Drivers/AdminSiteSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Admin.Drivers.AdminSiteSettingsDisplayDriver"
+msgid "Navigation"
+msgstr ""
+
 #: Views/AdminDashboard.cshtml
 msgctxt "OrchardCore.Admin.Views.AdminDashboard"
 msgid "Welcome to Orchard Core"
@@ -138,19 +153,133 @@ msgid_plural "{0} items"
 msgstr[0] ""
 msgstr[1] ""
 
-#: Views/AdminSettings.Edit.cshtml
-msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
+#: Views/AdminSettings-Lists.Edit.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminSettings-Lists.Edit"
 msgid "Actions layout"
 msgstr ""
 
-#: Views/AdminSettings.Edit.cshtml
-msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
+#: Views/AdminSettings-Lists.Edit.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminSettings-Lists.Edit"
 msgid "Buttons"
 msgstr ""
 
-#: Views/AdminSettings.Edit.cshtml
-msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
+#: Views/AdminSettings-Lists.Edit.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminSettings-Lists.Edit"
+msgid "Grid"
+msgstr ""
+
+#. Format arguments: {0}: "OrchardCore:Admin:List:DefaultActionsLayout"
+#: Views/AdminSettings-Lists.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Admin.Views.AdminSettings-Lists.Edit"
+msgid "How the actions of each list row and the secondary actions of the bottom action bar of edit pages are displayed: as buttons, or in a single compact menu. On small screens the secondary actions of the bottom action bar are always in a menu. Use the configuration default to inherit {0} from appsettings.json."
+msgstr ""
+
+#. Format arguments: {0}: "OrchardCore:Admin:List:DefaultLayout"
+#: Views/AdminSettings-Lists.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Admin.Views.AdminSettings-Lists.Edit"
+msgid "How the admin lists are rendered, e.g. the content items list. Use the configuration default to inherit {0} from appsettings.json."
+msgstr ""
+
+#: Views/AdminSettings-Lists.Edit.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminSettings-Lists.Edit"
+msgid "Let users choose the layout of a list"
+msgstr ""
+
+#: Views/AdminSettings-Lists.Edit.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminSettings-Lists.Edit"
+msgid "List"
+msgstr ""
+
+#: Views/AdminSettings-Lists.Edit.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminSettings-Lists.Edit"
+msgid "List layout"
+msgstr ""
+
+#: Views/AdminSettings-Lists.Edit.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminSettings-Lists.Edit"
+msgid "Menu"
+msgstr ""
+
+#: Views/AdminSettings-Lists.Edit.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminSettings-Lists.Edit"
+msgid "Use configuration default"
+msgstr ""
+
+#: Views/AdminSettings-Lists.Edit.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminSettings-Lists.Edit"
+msgid "Whether each list shows a selector with the available layouts. A user's choice is kept in a cookie, per list, and applies to that user only. The layout above stays the one every list starts from."
+msgstr ""
+
+#: Views/AdminSettings-Navigation.Edit.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminSettings-Navigation.Edit"
 msgid "Display New menu"
+msgstr ""
+
+#: Views/AdminSettings-Navigation.Edit.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminSettings-Navigation.Edit"
+msgid "Enable Admin Menu filter"
+msgstr ""
+
+#: Views/AdminSettings-Navigation.Edit.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminSettings-Navigation.Edit"
+msgid "Enable quick navigation"
+msgstr ""
+
+#: Views/AdminSettings-Navigation.Edit.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminSettings-Navigation.Edit"
+msgid "Focused"
+msgstr ""
+
+#: Views/AdminSettings-Navigation.Edit.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminSettings-Navigation.Edit"
+msgid "Navigation menu behavior"
+msgstr ""
+
+#: Views/AdminSettings-Navigation.Edit.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminSettings-Navigation.Edit"
+msgid "Only the section of the current page is open, and opening a section closes the others."
+msgstr ""
+
+#: Views/AdminSettings-Navigation.Edit.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminSettings-Navigation.Edit"
+msgid "Persistent"
+msgstr ""
+
+#: Views/AdminSettings-Navigation.Edit.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminSettings-Navigation.Edit"
+msgid "Sections stay open until you close them, from page to page, so several can be open at once."
+msgstr ""
+
+#: Views/AdminSettings-Navigation.Edit.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminSettings-Navigation.Edit"
+msgid "Show breadcrumb"
+msgstr ""
+
+#: Views/AdminSettings-Navigation.Edit.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminSettings-Navigation.Edit"
+msgid "The section holding the current page is always open, whichever behavior is chosen."
+msgstr ""
+
+#: Views/AdminSettings-Navigation.Edit.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminSettings-Navigation.Edit"
+msgid "Whether a New menu is displayed in the admin menu."
+msgstr ""
+
+#: Views/AdminSettings-Navigation.Edit.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminSettings-Navigation.Edit"
+msgid "Whether a filter input is displayed above the admin menu."
+msgstr ""
+
+#: Views/AdminSettings-Navigation.Edit.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminSettings-Navigation.Edit"
+msgid "Whether the breadcrumb trail is displayed on admin screens."
+msgstr ""
+
+#: Views/AdminSettings-Navigation.Edit.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminSettings-Navigation.Edit"
+msgid "Whether the quick navigation palette (Ctrl+K / Cmd+K) is displayed."
 msgstr ""
 
 #: Views/AdminSettings.Edit.cshtml
@@ -160,126 +289,12 @@ msgstr ""
 
 #: Views/AdminSettings.Edit.cshtml
 msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
-msgid "Enable Admin Menu filter"
-msgstr ""
-
-#: Views/AdminSettings.Edit.cshtml
-msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
-msgid "Enable quick navigation"
-msgstr ""
-
-#: Views/AdminSettings.Edit.cshtml
-msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
 msgid "Enable theme toggler"
 msgstr ""
 
 #: Views/AdminSettings.Edit.cshtml
 msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
-msgid "Focused"
-msgstr ""
-
-#: Views/AdminSettings.Edit.cshtml
-msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
-msgid "Grid"
-msgstr ""
-
-#. Format arguments: {0}: "OrchardCore:Admin:List:DefaultActionsLayout"
-#: Views/AdminSettings.Edit.cshtml
-#, csharp-format
-msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
-msgid "How the actions of each list row and the secondary actions of the bottom action bar of edit pages are displayed: as buttons, or in a single compact menu. On small screens the secondary actions of the bottom action bar are always in a menu. Use the configuration default to inherit {0} from appsettings.json."
-msgstr ""
-
-#. Format arguments: {0}: "OrchardCore:Admin:List:DefaultLayout"
-#: Views/AdminSettings.Edit.cshtml
-#, csharp-format
-msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
-msgid "How the admin lists are rendered, e.g. the content items list. Use the configuration default to inherit {0} from appsettings.json."
-msgstr ""
-
-#: Views/AdminSettings.Edit.cshtml
-msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
-msgid "Let users choose the layout of a list"
-msgstr ""
-
-#: Views/AdminSettings.Edit.cshtml
-msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
-msgid "List"
-msgstr ""
-
-#: Views/AdminSettings.Edit.cshtml
-msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
-msgid "List layout"
-msgstr ""
-
-#: Views/AdminSettings.Edit.cshtml
-msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
-msgid "Menu"
-msgstr ""
-
-#: Views/AdminSettings.Edit.cshtml
-msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
-msgid "Navigation menu behavior"
-msgstr ""
-
-#: Views/AdminSettings.Edit.cshtml
-msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
-msgid "Only the section of the current page is open, and opening a section closes the others."
-msgstr ""
-
-#: Views/AdminSettings.Edit.cshtml
-msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
-msgid "Persistent"
-msgstr ""
-
-#: Views/AdminSettings.Edit.cshtml
-msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
-msgid "Sections stay open until you close them, from page to page, so several can be open at once."
-msgstr ""
-
-#: Views/AdminSettings.Edit.cshtml
-msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
-msgid "Show breadcrumb"
-msgstr ""
-
-#: Views/AdminSettings.Edit.cshtml
-msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
-msgid "The section holding the current page is always open, whichever behavior is chosen."
-msgstr ""
-
-#: Views/AdminSettings.Edit.cshtml
-msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
-msgid "Use configuration default"
-msgstr ""
-
-#: Views/AdminSettings.Edit.cshtml
-msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
-msgid "Whether a New menu is displayed in the admin menu."
-msgstr ""
-
-#: Views/AdminSettings.Edit.cshtml
-msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
-msgid "Whether a filter input is displayed above the admin menu."
-msgstr ""
-
-#: Views/AdminSettings.Edit.cshtml
-msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
-msgid "Whether each list shows a selector with the available layouts. A user's choice is kept in a cookie, per list, and applies to that user only. The layout above stays the one every list starts from."
-msgstr ""
-
-#: Views/AdminSettings.Edit.cshtml
-msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
 msgid "Whether or not to display a theme toggler."
-msgstr ""
-
-#: Views/AdminSettings.Edit.cshtml
-msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
-msgid "Whether the breadcrumb trail is displayed on admin screens."
-msgstr ""
-
-#: Views/AdminSettings.Edit.cshtml
-msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
-msgid "Whether the quick navigation palette (Ctrl+K / Cmd+K) is displayed."
 msgstr ""
 
 #: Views/AdminSettings.Edit.cshtml

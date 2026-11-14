@@ -246,6 +246,158 @@ a:hover {
   }
 }
 
+.ocat-card {
+  --ocat-card-spacer-x: 1.25rem;
+  --ocat-card-spacer-y: 1rem;
+  --ocat-card-bg: var(--bs-body-bg);
+  --ocat-card-border-color: var(--bs-border-color);
+  --ocat-card-border-radius: var(--bs-border-radius-lg);
+  min-width: 0;
+  margin: 0 0 1.5rem;
+  padding: 0;
+  background-color: var(--ocat-card-bg);
+  border: var(--bs-border-width) solid var(--ocat-card-border-color);
+  border-radius: var(--ocat-card-border-radius);
+  box-shadow: var(--bs-box-shadow-sm);
+}
+
+.ocat-card-title {
+  width: 100%;
+  margin: 0;
+  padding: var(--ocat-card-spacer-y) var(--ocat-card-spacer-x) 0;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+[dir="ltr"] .ocat-card-title {
+  float: left;
+}
+
+[dir="rtl"] .ocat-card-title {
+  float: right;
+}
+
+[dir="ltr"] .ocat-card-title + * {
+  clear: left;
+}
+
+[dir="rtl"] .ocat-card-title + * {
+  clear: right;
+}
+
+.ocat-card-description {
+  margin: 0;
+  padding: 0.125rem var(--ocat-card-spacer-x) 0;
+  font-size: 0.875rem;
+  color: var(--bs-secondary-color);
+}
+
+[dir="ltr"] .ocat-card-actions {
+  float: right;
+  margin: calc(var(--ocat-card-spacer-y) * 0.75) var(--ocat-card-spacer-x) 0 0;
+}
+
+[dir="rtl"] .ocat-card-actions {
+  float: left;
+  margin: calc(var(--ocat-card-spacer-y) * 0.75) 0 0 var(--ocat-card-spacer-x);
+}
+
+.ocat-card-actions + .ocat-card-title {
+  width: auto;
+}
+
+.ocat-card-body {
+  clear: both;
+  padding: var(--ocat-card-spacer-y) var(--ocat-card-spacer-x);
+}
+
+.ocat-card-body > :last-child,
+.ocat-card-body > div:last-of-type {
+  margin-bottom: 0;
+}
+
+.ocat-card-title ~ .ocat-card-body {
+  margin-top: var(--ocat-card-spacer-y);
+  border-top: var(--bs-border-width) solid var(--ocat-card-border-color);
+}
+
+.ocat-card-section + .ocat-card-section {
+  margin-top: 1.5rem;
+}
+
+.ocat-card-section-title {
+  margin-bottom: 0.75rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--bs-emphasis-color);
+}
+
+.ocat-card-section > .ocat-card-description {
+  margin-bottom: 0.75rem;
+  padding: 0;
+}
+
+.ocat-card .ocat-card,
+.card-body .ocat-card {
+  margin-bottom: 1rem;
+  background-color: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.ocat-card .ocat-card > .ocat-card-title,
+.ocat-card .ocat-card > .ocat-card-description,
+.card-body .ocat-card > .ocat-card-title,
+.card-body .ocat-card > .ocat-card-description {
+  padding-inline: 0;
+}
+
+.ocat-card .ocat-card > .ocat-card-title,
+.card-body .ocat-card > .ocat-card-title {
+  padding-top: 0;
+  font-size: 0.9375rem;
+}
+
+.ocat-card .ocat-card > .ocat-card-body,
+.card-body .ocat-card > .ocat-card-body {
+  margin-top: 0.5rem;
+  padding: 0;
+  border-top: 0;
+}
+
+.ocat-card-body > .content-part-wrapper > .ocat-card-description:first-child {
+  margin-bottom: 0.75rem;
+  padding: 0;
+}
+
+.tab-pane .ocat-card {
+  margin-bottom: 1.5rem;
+  background-color: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.tab-pane .ocat-card > .ocat-card-title {
+  margin-bottom: 1rem;
+  padding: 0 0 0.5rem;
+  border-bottom: var(--bs-border-width) solid var(--bs-border-color);
+}
+
+.tab-pane .ocat-card > .ocat-card-description {
+  margin-top: -0.5rem;
+  margin-bottom: 1rem;
+  padding: 0;
+}
+
+.tab-pane .ocat-card > .ocat-card-body {
+  margin-top: 0;
+  padding: 0;
+  border-top: 0;
+}
+
 .action-bar {
   top: var(--oc-top-nav-height);
   z-index: var(--oc-action-bar-zindex);

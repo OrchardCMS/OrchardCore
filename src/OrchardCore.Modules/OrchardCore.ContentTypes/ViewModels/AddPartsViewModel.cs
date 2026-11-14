@@ -1,3 +1,6 @@
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using OrchardCore.DisplayManagement;
+
 namespace OrchardCore.ContentTypes.ViewModels;
 
 public class AddPartsViewModel
@@ -9,6 +12,12 @@ public class AddPartsViewModel
 
     public EditTypeViewModel Type { get; set; }
     public List<PartSelectionViewModel> PartSelections { get; set; }
+
+    /// <summary>
+    /// Gets or sets the editor of the parts to add, built by the display drivers of <see cref="AddPartsViewModel"/>.
+    /// </summary>
+    [BindNever]
+    public IShape Editor { get; set; }
 }
 
 public class AddReusablePartViewModel
@@ -24,6 +33,12 @@ public class AddReusablePartViewModel
     public string Description { get; set; }
     public List<PartSelectionViewModel> PartSelections { get; set; }
     public string SelectedPartName { get; set; }
+
+    /// <summary>
+    /// Gets or sets the editor of the named part to add, built by the display drivers of <see cref="AddReusablePartViewModel"/>.
+    /// </summary>
+    [BindNever]
+    public IShape Editor { get; set; }
 }
 
 public class PartSelectionViewModel

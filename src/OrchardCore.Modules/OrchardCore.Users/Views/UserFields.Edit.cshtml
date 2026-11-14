@@ -14,8 +14,8 @@
                 <div class="input-group">
                     <span class="input-group-text password-toggle-button"><span class="toggle-icon fa-solid fa-eye prefix"></span></span>
                     <input asp-for="Password" type="password" class="form-control password-input-field" placeholder="@T["Password"]" autocomplete="new-password" />
-                    <span asp-validation-for="Password" class="text-danger"></span>
                 </div>
+                <span asp-validation-for="Password" class="text-danger"></span>
             </div>
         </div>
 
@@ -25,8 +25,8 @@
                 <div class="input-group">
                     <span class="input-group-text password-confirmation-toggle-button"><span class="toggle-icon fa-solid fa-eye prefix"></span></span>
                     <input asp-for="PasswordConfirmation" type="password" class="form-control password-confirmation-input-field" autocomplete="new-password" placeholder="@T["Password confirmation"]" />
-                    <span asp-validation-for="PasswordConfirmation" class="text-danger"></span>
                 </div>
+                <span asp-validation-for="PasswordConfirmation" class="text-danger"></span>
 
                 <div class="mt-2">
                     <div class="btn btn-warning btn-sm password-generator-button"

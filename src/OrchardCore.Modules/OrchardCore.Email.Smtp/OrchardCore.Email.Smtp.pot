@@ -23,6 +23,16 @@ msgstr ""
 
 #: Drivers/SmtpSettingsDisplayDriver.cs
 msgctxt "OrchardCore.Email.Smtp.Drivers.SmtpSettingsDisplayDriver"
+msgid "SMTP"
+msgstr ""
+
+#: Drivers/SmtpSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Email.Smtp.Drivers.SmtpSettingsDisplayDriver"
+msgid "SMTP provider"
+msgstr ""
+
+#: Drivers/SmtpSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Email.Smtp.Drivers.SmtpSettingsDisplayDriver"
 msgid "The Default Sender is a required field."
 msgstr ""
 

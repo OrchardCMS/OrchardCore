@@ -50,7 +50,7 @@ public sealed class JsonRecipeDeploymentStepDriver : DisplayDriver<DeploymentSte
         {
             model.Json = step.Json;
             model.Schema = Schema;
-        }).Location("Content");
+        }).Location(l => l.Zone("Content").Card(S["Recipe"], "10"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(JsonRecipeDeploymentStep step, UpdateEditorContext context)

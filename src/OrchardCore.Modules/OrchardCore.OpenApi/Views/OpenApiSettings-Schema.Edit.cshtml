@@ -1,0 +1,12 @@
+@using OrchardCore.OpenApi.ViewModels
+@model OpenApiSettingsViewModel
+
+<div class="ocat-wrapper" asp-validation-class-for="AllowAnonymousSchemaAccess">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input asp-for="AllowAnonymousSchemaAccess" type="checkbox" class="form-check-input" />
+            <label class="form-check-label" asp-for="AllowAnonymousSchemaAccess">@T["Allow anonymous access to the API schema"]</label>
+            <span class="hint dashed">@T["When enabled, the JSON schema endpoints can be accessed without authentication. When disabled (the default), they require the <strong>View OpenAPI Content</strong> permission, and external tools like NSwag must provide authentication."]</span>
+        </div>
+    </div>
+</div>

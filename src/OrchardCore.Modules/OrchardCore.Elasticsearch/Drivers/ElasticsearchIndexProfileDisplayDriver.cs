@@ -58,7 +58,7 @@ internal sealed class ElasticsearchIndexProfileDisplayDriver : DisplayDriver<Ind
             model.StoreSourceData = metadata.StoreSourceData;
             model.AnalyzerName = metadata.AnalyzerName ?? ElasticsearchConstants.DefaultAnalyzer;
             model.Analyzers = _elasticsearchOptions.Analyzers.Select(x => new SelectListItem(x.Key, x.Key));
-        }).Location("Content:5");
+        }).Location(l => l.Zone("Content", "5").Card(S["Index settings"], "30"));
 
         var queryData = Initialize<ElasticsearchDefaultQueryViewModel>("ElasticsearchQuerySettings_Edit", model =>
         {
@@ -95,7 +95,7 @@ internal sealed class ElasticsearchIndexProfileDisplayDriver : DisplayDriver<Ind
                     }).OrderBy(x => x.Text)
                     .ToArray();
             }
-        }).Location("Content:10");
+        }).Location(l => l.Zone("Content", "10").Card(S["Default query"], "40"));
 
         return Combine(data, queryData);
     }

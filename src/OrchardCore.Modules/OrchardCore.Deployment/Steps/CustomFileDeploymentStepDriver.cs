@@ -28,7 +28,7 @@ public sealed class CustomFileDeploymentStepDriver : DisplayDriver<DeploymentSte
         {
             model.FileContent = step.FileContent;
             model.FileName = step.FileName;
-        }).Location("Content");
+        }).Location(l => l.Zone("Content").Card(S["File"], "10"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(CustomFileDeploymentStep step, UpdateEditorContext context)

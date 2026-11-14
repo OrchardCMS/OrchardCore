@@ -15,58 +15,7 @@
 <form asp-action="Edit" method="post" class="no-multisubmit">
     <input type="hidden" asp-for="SitemapId" />
 
-    <div class="ocat-wrapper" asp-validation-class-for="Name">
-        <label asp-for="Name" class="ocat-label ocat-label-required">@T["Name"]</label>
-        <div class="ocat-end">
-        <input asp-for="Name" class="form-control" autofocus />
-        <span asp-validation-for="Name" class="text-danger"></span>
-        </div>
-    </div>
-
-    <div class="ocat-wrapper" asp-validation-class-for="Path">
-        <label asp-for="Path" class="ocat-label ocat-label-required">@T["Permalink"]</label>
-        <div class="ocat-end">
-        <div class="input-group">
-            @if (!string.IsNullOrWhiteSpace(Site.BaseUrl))
-            {
-                <span class="input-group-text">@Site.BaseUrl</span>
-            }
-            <input asp-for="Path" class="form-control" />
-            <span asp-validation-for="Path"></span>
-        </div>
-        <span class="hint">@T["The url of the sitemap index."]</span>
-        </div>
-    </div>
-
-    <div class="ocat-wrapper">
-        <div class="ocat-end-offset">
-            <div class="form-check">
-            <input asp-for="Enabled" class="form-check-input" />
-            <label asp-for="Enabled" class="form-check-label">@T["Enabled"]</label>
-            <span class="hint">@T["Uncheck to disable routing to the sitemap index."]</span>
-            </div>
-        </div>
-    </div>
-
-    <div class="ocat-wrapper">
-        <label asp-for="ContainableSitemaps" class="ocat-label">@T["Contained Sitemaps"]</label>
-        <div class="ocat-end">
-        <span class="hint">@T["The sitemaps this index contains."]</span>
-        <div class="row">
-            @for (int i = 0; i < Model.ContainableSitemaps.Length; i++)
-            {
-                <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 col-xl-2">
-                    <input hidden asp-for="@Model.ContainableSitemaps[i].SitemapId" />
-                    <input hidden asp-for="@Model.ContainableSitemaps[i].Name" />
-                    <div class="form-check">
-                        <input asp-for="@Model.ContainableSitemaps[i].IsChecked" class="form-check-input" />
-                        <label asp-for="@Model.ContainableSitemaps[i].IsChecked" class="form-check-label">@Model.ContainableSitemaps[i].Name</label>
-                    </div>
-                </div>
-            }
-        </div>
-        </div>
-    </div>
+    @await DisplayAsync(Model.Editor)
 
     <div class="action-bar-bottom">
         <button class="btn btn-primary save" type="submit">@T["Save"]</button>

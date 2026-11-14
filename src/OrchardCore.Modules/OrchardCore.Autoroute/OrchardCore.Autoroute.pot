@@ -55,11 +55,21 @@ msgctxt "OrchardCore.Autoroute.Models.AutoroutePartExtensions"
 msgid "Your permalink is too long. The permalink can only be up to {0} characters."
 msgstr ""
 
+#: Settings/AutoroutePartSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Autoroute.Settings.AutoroutePartSettingsDisplayDriver"
+msgid "Contained items"
+msgstr ""
+
 #. Format arguments: {0}: string.Join(" ", errors)
 #: Settings/AutoroutePartSettingsDisplayDriver.cs
 #, csharp-format
 msgctxt "OrchardCore.Autoroute.Settings.AutoroutePartSettingsDisplayDriver"
 msgid "Pattern doesn't contain a valid Liquid expression. Details: {0}"
+msgstr ""
+
+#: Settings/AutoroutePartSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Autoroute.Settings.AutoroutePartSettingsDisplayDriver"
+msgid "Settings"
 msgstr ""
 
 #: Views/AutoroutePart.Edit.cshtml
@@ -134,16 +144,6 @@ msgstr ""
 
 #: Views/AutoroutePartSettings.Edit.cshtml
 msgctxt "OrchardCore.Autoroute.Views.AutoroutePartSettings.Edit"
-msgid "Allow absolute path"
-msgstr ""
-
-#: Views/AutoroutePartSettings.Edit.cshtml
-msgctxt "OrchardCore.Autoroute.Views.AutoroutePartSettings.Edit"
-msgid "Allow contained item routing"
-msgstr ""
-
-#: Views/AutoroutePartSettings.Edit.cshtml
-msgctxt "OrchardCore.Autoroute.Views.AutoroutePartSettings.Edit"
 msgid "Allow custom path"
 msgstr ""
 
@@ -169,21 +169,6 @@ msgstr ""
 
 #: Views/AutoroutePartSettings.Edit.cshtml
 msgctxt "OrchardCore.Autoroute.Views.AutoroutePartSettings.Edit"
-msgid "Check to allow this part to apply routes to child content items. This setting must be applied to the child content item."
-msgstr ""
-
-#: Views/AutoroutePartSettings.Edit.cshtml
-msgctxt "OrchardCore.Autoroute.Views.AutoroutePartSettings.Edit"
-msgid "Check to allow users to enable absolute paths for child content items. When disabled the path is relative to the parents path."
-msgstr ""
-
-#: Views/AutoroutePartSettings.Edit.cshtml
-msgctxt "OrchardCore.Autoroute.Views.AutoroutePartSettings.Edit"
-msgid "Check to allow users to enable routing of child content items. This setting must be applied to the parent content item."
-msgstr ""
-
-#: Views/AutoroutePartSettings.Edit.cshtml
-msgctxt "OrchardCore.Autoroute.Views.AutoroutePartSettings.Edit"
 msgid "Check to allow users to refresh the path once a content item is already published."
 msgstr ""
 
@@ -194,22 +179,7 @@ msgstr ""
 
 #: Views/AutoroutePartSettings.Edit.cshtml
 msgctxt "OrchardCore.Autoroute.Views.AutoroutePartSettings.Edit"
-msgid "Container Settings"
-msgstr ""
-
-#: Views/AutoroutePartSettings.Edit.cshtml
-msgctxt "OrchardCore.Autoroute.Views.AutoroutePartSettings.Edit"
-msgid "Manage contained item routes"
-msgstr ""
-
-#: Views/AutoroutePartSettings.Edit.cshtml
-msgctxt "OrchardCore.Autoroute.Views.AutoroutePartSettings.Edit"
 msgid "Pattern"
-msgstr ""
-
-#: Views/AutoroutePartSettings.Edit.cshtml
-msgctxt "OrchardCore.Autoroute.Views.AutoroutePartSettings.Edit"
-msgid "Settings for parent or child content items."
 msgstr ""
 
 #: Views/AutoroutePartSettings.Edit.cshtml
@@ -222,12 +192,47 @@ msgctxt "OrchardCore.Autoroute.Views.AutoroutePartSettings.Edit"
 msgid "The pattern used to render the custom url of this content type. With Liquid support."
 msgstr ""
 
-#: Views/AutoroutePartSettings.Edit.cshtml
-msgctxt "OrchardCore.Autoroute.Views.AutoroutePartSettings.Edit"
+#: Views/AutoroutePartSettingsContainer.Edit.cshtml
+msgctxt "OrchardCore.Autoroute.Views.AutoroutePartSettingsContainer.Edit"
+msgid "Allow absolute path"
+msgstr ""
+
+#: Views/AutoroutePartSettingsContainer.Edit.cshtml
+msgctxt "OrchardCore.Autoroute.Views.AutoroutePartSettingsContainer.Edit"
+msgid "Allow contained item routing"
+msgstr ""
+
+#: Views/AutoroutePartSettingsContainer.Edit.cshtml
+msgctxt "OrchardCore.Autoroute.Views.AutoroutePartSettingsContainer.Edit"
+msgid "Check to allow this part to apply routes to child content items. This setting must be applied to the child content item."
+msgstr ""
+
+#: Views/AutoroutePartSettingsContainer.Edit.cshtml
+msgctxt "OrchardCore.Autoroute.Views.AutoroutePartSettingsContainer.Edit"
+msgid "Check to allow users to enable absolute paths for child content items. When disabled the path is relative to the parents path."
+msgstr ""
+
+#: Views/AutoroutePartSettingsContainer.Edit.cshtml
+msgctxt "OrchardCore.Autoroute.Views.AutoroutePartSettingsContainer.Edit"
+msgid "Check to allow users to enable routing of child content items. This setting must be applied to the parent content item."
+msgstr ""
+
+#: Views/AutoroutePartSettingsContainer.Edit.cshtml
+msgctxt "OrchardCore.Autoroute.Views.AutoroutePartSettingsContainer.Edit"
+msgid "Manage contained item routes"
+msgstr ""
+
+#: Views/AutoroutePartSettingsContainer.Edit.cshtml
+msgctxt "OrchardCore.Autoroute.Views.AutoroutePartSettingsContainer.Edit"
+msgid "Settings for parent or child content items."
+msgstr ""
+
+#: Views/AutoroutePartSettingsContainer.Edit.cshtml
+msgctxt "OrchardCore.Autoroute.Views.AutoroutePartSettingsContainer.Edit"
 msgid "When absolute : https://mysite.com/my-child-item."
 msgstr ""
 
-#: Views/AutoroutePartSettings.Edit.cshtml
-msgctxt "OrchardCore.Autoroute.Views.AutoroutePartSettings.Edit"
+#: Views/AutoroutePartSettingsContainer.Edit.cshtml
+msgctxt "OrchardCore.Autoroute.Views.AutoroutePartSettingsContainer.Edit"
 msgid "When relative : https://mysite.com/my-parent/my-child-item."
 msgstr ""

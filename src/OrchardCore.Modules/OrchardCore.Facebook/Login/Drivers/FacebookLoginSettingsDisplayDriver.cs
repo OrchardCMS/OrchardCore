@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -16,14 +17,18 @@ public sealed class FacebookLoginSettingsDisplayDriver : SiteDisplayDriver<Faceb
     private readonly IAuthorizationService _authorizationService;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
+    internal readonly IStringLocalizer S;
+
     public FacebookLoginSettingsDisplayDriver(
         IShellReleaseManager shellReleaseManager,
         IAuthorizationService authorizationService,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        IStringLocalizer<FacebookLoginSettingsDisplayDriver> stringLocalizer)
     {
         _shellReleaseManager = shellReleaseManager;
         _authorizationService = authorizationService;
         _httpContextAccessor = httpContextAccessor;
+        S = stringLocalizer;
     }
     protected override string SettingsGroupId
         => FacebookConstants.Features.Login;
@@ -40,7 +45,7 @@ public sealed class FacebookLoginSettingsDisplayDriver : SiteDisplayDriver<Faceb
         {
             model.CallbackPath = settings.CallbackPath.Value;
             model.SaveTokens = settings.SaveTokens;
-        }).Location("Content:5")
+        }).Location(l => l.Zone("Content", "5").Card(S["Login"], "10"))
         .OnGroup(SettingsGroupId);
     }
 

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -10,9 +11,12 @@ public sealed class RoleConditionDisplayDriver : DisplayDriver<Condition, RoleCo
 {
     private readonly ConditionOperatorOptions _options;
 
-    public RoleConditionDisplayDriver(IOptions<ConditionOperatorOptions> options)
+    internal readonly IStringLocalizer S;
+
+    public RoleConditionDisplayDriver(IOptions<ConditionOperatorOptions> options, IStringLocalizer<RoleConditionDisplayDriver> stringLocalizer)
     {
         _options = options.Value;
+        S = stringLocalizer;
     }
 
     public override Task<IDisplayResult> DisplayAsync(RoleCondition condition, BuildDisplayContext context)
@@ -34,7 +38,7 @@ public sealed class RoleConditionDisplayDriver : DisplayDriver<Condition, RoleCo
                 }
                 m.Value = condition.Value;
                 m.Condition = condition;
-            }).Location("Content");
+            }).Location(l => l.Zone("Content").Card(S["Role"], "10"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(RoleCondition condition, UpdateEditorContext context)

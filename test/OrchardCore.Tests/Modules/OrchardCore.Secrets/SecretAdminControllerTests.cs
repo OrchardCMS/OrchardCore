@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using Moq;
 using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
 using OrchardCore.Secrets;
@@ -39,7 +40,8 @@ public class SecretAdminControllerTests
             [new TextSecretTypeProvider(Mock.Of<IStringLocalizer<TextSecretTypeProvider>>()),
                 new X509SecretTypeProvider(Mock.Of<IStringLocalizer<X509SecretTypeProvider>>())],
             authorization.Object, Mock.Of<INotifier>(), Mock.Of<IShapeFactory>(), Options.Create(new PagerOptions()),
-            _localizer.Object, Mock.Of<IHtmlLocalizer<AdminController>>())
+            _localizer.Object, Mock.Of<IHtmlLocalizer<AdminController>>(),
+            Mock.Of<IDisplayManager<SecretEditViewModel>>(), Mock.Of<IUpdateModelAccessor>())
         {
             ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() },
         };

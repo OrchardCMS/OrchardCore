@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.DataLocalization.ViewModels;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
@@ -12,12 +13,16 @@ public sealed class TranslationsDeploymentStepDriver : DisplayDriver<DeploymentS
     private readonly ILocalizationService _localizationService;
     private readonly IEnumerable<ILocalizationDataProvider> _localizationDataProviders;
 
+    internal readonly IStringLocalizer S;
+
     public TranslationsDeploymentStepDriver(
         ILocalizationService localizationService,
-        IEnumerable<ILocalizationDataProvider> localizationDataProviders)
+        IEnumerable<ILocalizationDataProvider> localizationDataProviders,
+        IStringLocalizer<TranslationsDeploymentStepDriver> stringLocalizer)
     {
         _localizationService = localizationService;
         _localizationDataProviders = localizationDataProviders;
+        S = stringLocalizer;
     }
 
     public override Task<IDisplayResult> DisplayAsync(TranslationsDeploymentStep step, BuildDisplayContext context)
@@ -40,7 +45,7 @@ public sealed class TranslationsDeploymentStepDriver : DisplayDriver<DeploymentS
             model.Categories = step.Categories;
             model.AllCultures = supportedCultures;
             model.AllCategories = categories;
-        }).Location("Content");
+        }).Location(l => l.Zone("Content").Card(S["Translations"], "10"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(TranslationsDeploymentStep step, UpdateEditorContext context)

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.CustomSettings.Services;
 using OrchardCore.CustomSettings.ViewModels;
 using OrchardCore.Deployment;
@@ -10,9 +11,14 @@ public sealed class CustomSettingsDeploymentStepDriver : DisplayDriver<Deploymen
 {
     private readonly CustomSettingsService _customSettingsService;
 
-    public CustomSettingsDeploymentStepDriver(CustomSettingsService customSettingsService)
+    internal readonly IStringLocalizer S;
+
+    public CustomSettingsDeploymentStepDriver(
+        CustomSettingsService customSettingsService,
+        IStringLocalizer<CustomSettingsDeploymentStepDriver> stringLocalizer)
     {
         _customSettingsService = customSettingsService;
+        S = stringLocalizer;
     }
 
     public override Task<IDisplayResult> DisplayAsync(CustomSettingsDeploymentStep step, BuildDisplayContext context)
@@ -31,7 +37,7 @@ public sealed class CustomSettingsDeploymentStepDriver : DisplayDriver<Deploymen
             model.IncludeAll = step.IncludeAll;
             model.SettingsTypeNames = step.SettingsTypeNames;
             model.AllSettingsTypeNames = (await _customSettingsService.GetAllSettingsTypeNamesAsync()).ToArray();
-        }).Location("Content");
+        }).Location(l => l.Zone("Content").Card(S["Custom settings"], "10"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(CustomSettingsDeploymentStep step, UpdateEditorContext context)

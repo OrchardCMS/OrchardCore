@@ -1,13 +1,8 @@
 @model LuceneContentIndexSettingsViewModel
 
 <div class="ocat-wrapper">
-    <div class="ocat-end-offset">
-        <h4>Lucene @T["Index settings"]</h4>
-    </div>
-</div>
-
-<div class="ocat-wrapper">
-    <div class="ocat-end-offset">
+    <label class="ocat-label">@T["Lucene"]</label>
+    <div class="ocat-end">
         <div class="form-check">
             <input type="checkbox" class="form-check-input" asp-for="LuceneContentIndexSettings.Included" data-bs-toggle="collapse" data-bs-target="#lucene-index-settings" checked="@Model.LuceneContentIndexSettings.Included" />
             <label class="form-check-label" asp-for="LuceneContentIndexSettings.Included">@T["Include this element in the index"]</label>

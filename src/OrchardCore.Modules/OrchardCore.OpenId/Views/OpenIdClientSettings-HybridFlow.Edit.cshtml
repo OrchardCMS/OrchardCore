@@ -1,0 +1,46 @@
+@using OrchardCore.OpenId.ViewModels
+@model OpenIdClientSettingsViewModel
+
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <p>@T["Click <a href=\"{0}\" target=\"_blank\">here</a> for more information about the Hybrid Flow.", "http://openid.net/specs/openid-connect-core-1_0.html#HybridFlowAuth"]</p>
+    </div>
+</div>
+
+<div class="ocat-wrapper" asp-validation-class-for="UseCodeIdTokenFlow">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input openid-use-code-id-token-flow" asp-for="UseCodeIdTokenFlow">
+            <label class="form-check-label" asp-for="UseCodeIdTokenFlow">@T["Use <code>{0}</code> response type", "code id_token"]</label>
+            <span class="hint dashed">@T["Click <a href=\"{0}\" target=\"_blank\">here</a> for an example.", "http://openid.net/specs/openid-connect-core-1_0.html#code-id_tokenExample"]</span>
+        </div>
+    </div>
+</div>
+
+<div class="ocat-wrapper" asp-validation-class-for="UseCodeIdTokenTokenFlow">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input openid-use-code-id-token-token-flow" asp-for="UseCodeIdTokenTokenFlow">
+            <label class="form-check-label" asp-for="UseCodeIdTokenTokenFlow">@T["Use <code>{0}</code> response type", "code id_token token"]</label>
+            <span class="hint dashed">@T["Click <a href=\"{0}\" target=\"_blank\">here</a> for an example.", "http://openid.net/specs/openid-connect-core-1_0.html#code-id_token-tokenExample"]</span>
+        </div>
+    </div>
+</div>
+
+<div class="ocat-wrapper" asp-validation-class-for="UseCodeTokenFlow">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input openid-use-code-token-flow" asp-for="UseCodeTokenFlow">
+            <label class="form-check-label" asp-for="UseCodeTokenFlow">@T["Use <code>{0}</code> response type", "code token"]</label>
+            <span class="hint dashed">@T["Click <a href=\"{0}\" target=\"_blank\">here</a> for an example.", "http://openid.net/specs/openid-connect-core-1_0.html#code-tokenExample"]</span>
+        </div>
+    </div>
+</div>
+
+<div class="ocat-wrapper collapse openid-client-secret" asp-validation-class-for="ClientSecret">
+    <label asp-for="ClientSecret" class="ocat-label">@T["Client Secret"]</label>
+    <div class="ocat-end">
+        <secret-input asp-for="ClientSecret" secret-name="@OpenIdConstants.SecretNames.ClientSecret" />
+        <span class="hint">@T["The '{0}' assigned by the identity provider.", "client_secret"]</span>
+    </div>
+</div>

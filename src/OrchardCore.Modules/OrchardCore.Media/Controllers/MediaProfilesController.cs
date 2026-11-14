@@ -30,6 +30,8 @@ public sealed class MediaProfilesController : Controller
     private readonly PagerOptions _pagerOptions;
     private readonly INotifier _notifier;
     private readonly IShapeFactory _shapeFactory;
+    private readonly IDisplayManager<MediaProfileViewModel> _displayManager;
+    private readonly IUpdateModelAccessor _updateModelAccessor;
 
     internal readonly IStringLocalizer S;
     internal readonly IHtmlLocalizer H;
@@ -41,6 +43,8 @@ public sealed class MediaProfilesController : Controller
         IOptions<PagerOptions> pagerOptions,
         INotifier notifier,
         IShapeFactory shapeFactory,
+        IDisplayManager<MediaProfileViewModel> displayManager,
+        IUpdateModelAccessor updateModelAccessor,
         IStringLocalizer<MediaProfilesController> stringLocalizer,
         IHtmlLocalizer<MediaProfilesController> htmlLocalizer
         )
@@ -51,6 +55,8 @@ public sealed class MediaProfilesController : Controller
         _pagerOptions = pagerOptions.Value;
         _notifier = notifier;
         _shapeFactory = shapeFactory;
+        _displayManager = displayManager;
+        _updateModelAccessor = updateModelAccessor;
         S = stringLocalizer;
         H = htmlLocalizer;
     }
@@ -133,6 +139,8 @@ public sealed class MediaProfilesController : Controller
 
         BuildViewModel(model);
 
+        model.Editor = await _displayManager.BuildEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: true);
+
         return View(model);
     }
 
@@ -143,6 +151,10 @@ public sealed class MediaProfilesController : Controller
         {
             return Forbid();
         }
+
+        BuildViewModel(model);
+
+        model.Editor = await _displayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: true);
 
         if (ModelState.IsValid)
         {
@@ -191,8 +203,6 @@ public sealed class MediaProfilesController : Controller
         }
 
         // If we got this far, something failed, redisplay form
-        BuildViewModel(model);
-
         return View(model);
     }
 
@@ -231,6 +241,8 @@ public sealed class MediaProfilesController : Controller
 
         BuildViewModel(model);
 
+        model.Editor = await _displayManager.BuildEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: false);
+
         return View(model);
     }
 
@@ -248,6 +260,10 @@ public sealed class MediaProfilesController : Controller
         {
             return NotFound();
         }
+
+        BuildViewModel(model);
+
+        model.Editor = await _displayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: false);
 
         if (ModelState.IsValid)
         {
@@ -284,9 +300,7 @@ public sealed class MediaProfilesController : Controller
             }
         }
 
-        // If we got this far, something failed, redisplay form
-        BuildViewModel(model);
-
+        // If we got this far, something failed, redisplay form.
         // If the name was changed or removed, prevent a 404 or a failure on the next post.
         model.Name = sourceName;
 

@@ -33,7 +33,7 @@ public sealed class FullTextAspectSettingsDisplayDriver : ContentTypeDefinitionD
             model.FullTextTemplate = settings.FullTextTemplate;
             model.IncludeDisplayText = settings.IncludeDisplayText;
             model.IncludeBodyAspect = settings.IncludeBodyAspect;
-        }).Location("Content:6");
+        }).Location(l => l.Zone("Content", "6").Card(S["Full-text search"], "60"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentTypeDefinition contentTypeDefinition, UpdateTypeEditorContext context)

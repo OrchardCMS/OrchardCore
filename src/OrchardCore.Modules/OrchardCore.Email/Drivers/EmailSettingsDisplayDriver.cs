@@ -56,7 +56,7 @@ public sealed class EmailSettingsDisplayDriver : SiteDisplayDriver<EmailSettings
         {
             model.DefaultProvider = settings.DefaultProviderName ?? _emailOptions.CurrentValue.DefaultProviderName;
             model.Providers = await GetProviderOptionsAsync();
-        }).Location("Content:1#Providers")
+        }).Location(l => l.Zone("Content", "1").Tab(S["Providers"]).Card(S["Default provider"], "10"))
         .OnGroup(SettingsGroupId);
     }
 

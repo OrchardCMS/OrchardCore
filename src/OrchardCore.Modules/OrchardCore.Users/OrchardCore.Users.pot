@@ -794,6 +794,61 @@ msgctxt "OrchardCore.Users.CustomUserSettingsPermissions"
 msgid "Manage Own Custom User Settings - {0}"
 msgstr ""
 
+#: Deployment/CustomUserSettingsDeploymentStepDriver.cs
+msgctxt "OrchardCore.Users.Deployment.CustomUserSettingsDeploymentStepDriver"
+msgid "Custom user settings"
+msgstr ""
+
+#: Drivers/AuthenticatorAppLoginSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Users.Drivers.AuthenticatorAppLoginSettingsDisplayDriver"
+msgid "Authenticator app"
+msgstr ""
+
+#: Drivers/ChangeEmailSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Users.Drivers.ChangeEmailSettingsDisplayDriver"
+msgid "Email change"
+msgstr ""
+
+#: Drivers/EditPasswordDisplayDriver.cs
+msgctxt "OrchardCore.Users.Drivers.EditPasswordDisplayDriver"
+msgid "Password"
+msgstr ""
+
+#: Drivers/EmailAuthenticatorLoginSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Users.Drivers.EmailAuthenticatorLoginSettingsDisplayDriver"
+msgid "Email authenticator"
+msgstr ""
+
+#: Drivers/ExternalLoginSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Users.Drivers.ExternalLoginSettingsDisplayDriver"
+msgid "Login"
+msgstr ""
+
+#: Drivers/ExternalLoginSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Users.Drivers.ExternalLoginSettingsDisplayDriver"
+msgid "User synchronization"
+msgstr ""
+
+#: Drivers/ExternalRegistrationSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Users.Drivers.ExternalRegistrationSettingsDisplayDriver"
+msgid "Registration"
+msgstr ""
+
+#: Drivers/ExternalRegistrationSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Users.Drivers.ExternalRegistrationSettingsDisplayDriver"
+msgid "User name generation"
+msgstr ""
+
+#: Drivers/LoginSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Users.Drivers.LoginSettingsDisplayDriver"
+msgid "Account changes"
+msgstr ""
+
+#: Drivers/LoginSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Users.Drivers.LoginSettingsDisplayDriver"
+msgid "Login"
+msgstr ""
+
 #: Drivers/RegisterUserFormDisplayDriver.cs
 msgctxt "OrchardCore.Users.Drivers.RegisterUserFormDisplayDriver"
 msgid "A user with the same email address already exists."
@@ -804,9 +859,34 @@ msgctxt "OrchardCore.Users.Drivers.RegisterUserFormDisplayDriver"
 msgid "A user with the same username already exists."
 msgstr ""
 
+#: Drivers/RegistrationSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Users.Drivers.RegistrationSettingsDisplayDriver"
+msgid "Registration"
+msgstr ""
+
+#: Drivers/ResetPasswordSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Users.Drivers.ResetPasswordSettingsDisplayDriver"
+msgid "Password reset"
+msgstr ""
+
+#: Drivers/RoleLoginSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Users.Drivers.RoleLoginSettingsDisplayDriver"
+msgid "Roles"
+msgstr ""
+
 #: Drivers/RoleLoginSettingsDisplayDriver.cs
 msgctxt "OrchardCore.Users.Drivers.RoleLoginSettingsDisplayDriver"
 msgid "Select at least one role."
+msgstr ""
+
+#: Drivers/SmsAuthenticatorLoginSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Users.Drivers.SmsAuthenticatorLoginSettingsDisplayDriver"
+msgid "SMS authenticator"
+msgstr ""
+
+#: Drivers/TwoFactorLoginSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Users.Drivers.TwoFactorLoginSettingsDisplayDriver"
+msgid "General"
 msgstr ""
 
 #: Drivers/TwoFactorLoginSettingsDisplayDriver.cs
@@ -821,7 +901,17 @@ msgstr ""
 
 #: Drivers/UserDisplayDriver.cs
 msgctxt "OrchardCore.Users.Drivers.UserDisplayDriver"
+msgid "Password"
+msgstr ""
+
+#: Drivers/UserDisplayDriver.cs
+msgctxt "OrchardCore.Users.Drivers.UserDisplayDriver"
 msgid "The password and the password confirmation fields must match."
+msgstr ""
+
+#: Drivers/UserInformationDisplayDriver.cs
+msgctxt "OrchardCore.Users.Drivers.UserInformationDisplayDriver"
+msgid "Account"
 msgstr ""
 
 #: Drivers/UserInformationDisplayDriver.cs
@@ -834,6 +924,16 @@ msgstr ""
 #, csharp-format
 msgctxt "OrchardCore.Users.Drivers.UserRoleDisplayDriver"
 msgid "Cannot remove {0} role from the only enabled administrator."
+msgstr ""
+
+#: Drivers/UserRoleDisplayDriver.cs
+msgctxt "OrchardCore.Users.Drivers.UserRoleDisplayDriver"
+msgid "Roles"
+msgstr ""
+
+#: Drivers/UserSecuritySettingsDisplayDriver.cs
+msgctxt "OrchardCore.Users.Drivers.UserSecuritySettingsDisplayDriver"
+msgid "Theme"
 msgstr ""
 
 #: Endpoints/EmailAuthenticator/SendCode.cs
@@ -884,6 +984,11 @@ msgstr ""
 #: Handlers/DisabledUserLoginFormEvent.cs
 msgctxt "OrchardCore.Users.Handlers.DisabledUserLoginFormEvent"
 msgid "The specified user is not allowed to sign in."
+msgstr ""
+
+#: Localization/Drivers/UserLocalizationDisplayDriver.cs
+msgctxt "OrchardCore.Users.Localization.Drivers.UserLocalizationDisplayDriver"
+msgid "Regional settings"
 msgstr ""
 
 #: Localization/Drivers/UserLocalizationDisplayDriver.cs
@@ -964,6 +1069,11 @@ msgstr ""
 #: Services/UserEmailService.cs
 msgctxt "OrchardCore.Users.Services.UserEmailService"
 msgid "Reset your password"
+msgstr ""
+
+#: TimeZone/Drivers/UserTimeZoneDisplayDriver.cs
+msgctxt "OrchardCore.Users.TimeZone.Drivers.UserTimeZoneDisplayDriver"
+msgid "Regional settings"
 msgstr ""
 
 #: UsersLocalizationSources.cs
@@ -1050,27 +1160,7 @@ msgstr ""
 
 #: Views/Admin/EditPassword.cshtml
 msgctxt "OrchardCore.Users.Views.Admin.EditPassword"
-msgid "Current password"
-msgstr ""
-
-#: Views/Admin/EditPassword.cshtml
-msgctxt "OrchardCore.Users.Views.Admin.EditPassword"
-msgid "New password"
-msgstr ""
-
-#: Views/Admin/EditPassword.cshtml
-msgctxt "OrchardCore.Users.Views.Admin.EditPassword"
-msgid "New password confirmation"
-msgstr ""
-
-#: Views/Admin/EditPassword.cshtml
-msgctxt "OrchardCore.Users.Views.Admin.EditPassword"
 msgid "Submit"
-msgstr ""
-
-#: Views/Admin/EditPassword.cshtml
-msgctxt "OrchardCore.Users.Views.Admin.EditPassword"
-msgid "To confirm the change, please provide your password."
 msgstr ""
 
 #: Views/Admin/EditPassword.cshtml
@@ -1216,11 +1306,6 @@ msgstr ""
 
 #: Views/AuthenticatorAppLoginSettings.Edit.cshtml
 msgctxt "OrchardCore.Users.Views.AuthenticatorAppLoginSettings.Edit"
-msgid "Authenticator App Settings"
-msgstr ""
-
-#: Views/AuthenticatorAppLoginSettings.Edit.cshtml
-msgctxt "OrchardCore.Users.Views.AuthenticatorAppLoginSettings.Edit"
 msgid "Show email address in the app"
 msgstr ""
 
@@ -1264,9 +1349,24 @@ msgctxt "OrchardCore.Users.Views.ChangeEmailSettings.Edit"
 msgid "Allow the users to change their email"
 msgstr ""
 
-#: Views/EmailAuthenticatorLoginSettings.Edit.cshtml
-msgctxt "OrchardCore.Users.Views.EmailAuthenticatorLoginSettings.Edit"
-msgid "Email Authenticator Settings"
+#: Views/EditPasswordFields.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.EditPasswordFields.Edit"
+msgid "Current password"
+msgstr ""
+
+#: Views/EditPasswordFields.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.EditPasswordFields.Edit"
+msgid "New password"
+msgstr ""
+
+#: Views/EditPasswordFields.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.EditPasswordFields.Edit"
+msgid "New password confirmation"
+msgstr ""
+
+#: Views/EditPasswordFields.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.EditPasswordFields.Edit"
+msgid "To confirm the change, please provide your password."
 msgstr ""
 
 #: Views/EmailAuthenticatorLoginSettings.Edit.cshtml
@@ -1408,9 +1508,21 @@ msgctxt "OrchardCore.Users.Views.ExternalAuthentications.RegisterExternalLogin"
 msgid "You've successfully authenticated with <strong>{0}</strong>. Please fill the form below and click the Register button to complete the registration."
 msgstr ""
 
-#: Views/ExternalLoginSettings.Edit.cshtml
-msgctxt "OrchardCore.Users.Views.ExternalLoginSettings.Edit"
-msgid "Configuring External Authentication for User Login with Third-Party Providers"
+#. Format arguments: {0}: nameof(IExternalLoginEventHandler)
+#: Views/ExternalLoginSettings-Script.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Users.Views.ExternalLoginSettings-Script.Edit"
+msgid "If selected, none of the implemented {0}, if any, will be triggered."
+msgstr ""
+
+#: Views/ExternalLoginSettings-Script.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.ExternalLoginSettings-Script.Edit"
+msgid "Reset Script"
+msgstr ""
+
+#: Views/ExternalLoginSettings-Script.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.ExternalLoginSettings-Script.Edit"
+msgid "Use a script to set user roles, user claims and user properties based on external provider claims"
 msgstr ""
 
 #: Views/ExternalLoginSettings.Edit.cshtml
@@ -1418,31 +1530,24 @@ msgctxt "OrchardCore.Users.Views.ExternalLoginSettings.Edit"
 msgid "If only one external provider is defined, auto challenge the provider to login. You should also configure registration options"
 msgstr ""
 
-#. Format arguments: {0}: nameof(IExternalLoginEventHandler)
-#: Views/ExternalLoginSettings.Edit.cshtml
-#, csharp-format
-msgctxt "OrchardCore.Users.Views.ExternalLoginSettings.Edit"
-msgid "If selected, none of the implemented {0}, if any, will be triggered."
-msgstr ""
-
-#: Views/ExternalLoginSettings.Edit.cshtml
-msgctxt "OrchardCore.Users.Views.ExternalLoginSettings.Edit"
-msgid "Reset Script"
-msgstr ""
-
-#: Views/ExternalLoginSettings.Edit.cshtml
-msgctxt "OrchardCore.Users.Views.ExternalLoginSettings.Edit"
-msgid "Use a script to set user roles, user claims and user properties based on external provider claims"
-msgstr ""
-
 #: Views/ExternalLoginSettings.Edit.cshtml
 msgctxt "OrchardCore.Users.Views.ExternalLoginSettings.Edit"
 msgid "Use external provider for login."
 msgstr ""
 
-#: Views/ExternalRegistrationSettings.Edit.cshtml
-msgctxt "OrchardCore.Users.Views.ExternalRegistrationSettings.Edit"
-msgid "Configuring External Authentication for User Registration with Third-Party Providers"
+#: Views/ExternalRegistrationSettings-Script.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.ExternalRegistrationSettings-Script.Edit"
+msgid "If selected, any IExternalLoginEventHandlers defined in modules are not triggered"
+msgstr ""
+
+#: Views/ExternalRegistrationSettings-Script.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.ExternalRegistrationSettings-Script.Edit"
+msgid "Reset Script"
+msgstr ""
+
+#: Views/ExternalRegistrationSettings-Script.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.ExternalRegistrationSettings-Script.Edit"
+msgid "Use a script to generate userName based on external provider claims"
 msgstr ""
 
 #: Views/ExternalRegistrationSettings.Edit.cshtml
@@ -1467,22 +1572,7 @@ msgstr ""
 
 #: Views/ExternalRegistrationSettings.Edit.cshtml
 msgctxt "OrchardCore.Users.Views.ExternalRegistrationSettings.Edit"
-msgid "If selected, any IExternalLoginEventHandlers defined in modules are not triggered"
-msgstr ""
-
-#: Views/ExternalRegistrationSettings.Edit.cshtml
-msgctxt "OrchardCore.Users.Views.ExternalRegistrationSettings.Edit"
 msgid "If selected, only users with existing local accounts will be able to authenticate, and new users will not be able to register using external authentication. Users without a local account will not be able to authenticate."
-msgstr ""
-
-#: Views/ExternalRegistrationSettings.Edit.cshtml
-msgctxt "OrchardCore.Users.Views.ExternalRegistrationSettings.Edit"
-msgid "Reset Script"
-msgstr ""
-
-#: Views/ExternalRegistrationSettings.Edit.cshtml
-msgctxt "OrchardCore.Users.Views.ExternalRegistrationSettings.Edit"
-msgid "Use a script to generate userName based on external provider claims"
 msgstr ""
 
 #: Views/ExternalRegistrationSettings.Edit.cshtml
@@ -2057,24 +2147,24 @@ msgctxt "OrchardCore.Users.Views.LoginFormRegisterUser"
 msgid "Register as a new user"
 msgstr ""
 
-#: Views/LoginSettings.Edit.cshtml
-msgctxt "OrchardCore.Users.Views.LoginSettings.Edit"
-msgid "Allow user to be remembered during login"
-msgstr ""
-
-#: Views/LoginSettings.Edit.cshtml
-msgctxt "OrchardCore.Users.Views.LoginSettings.Edit"
+#: Views/LoginSettings-Account.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.LoginSettings-Account.Edit"
 msgid "Allow user to change their email address"
 msgstr ""
 
-#: Views/LoginSettings.Edit.cshtml
-msgctxt "OrchardCore.Users.Views.LoginSettings.Edit"
+#: Views/LoginSettings-Account.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.LoginSettings-Account.Edit"
 msgid "Allow user to change their phone number"
+msgstr ""
+
+#: Views/LoginSettings-Account.Edit.cshtml
+msgctxt "OrchardCore.Users.Views.LoginSettings-Account.Edit"
+msgid "Allow user to change their username"
 msgstr ""
 
 #: Views/LoginSettings.Edit.cshtml
 msgctxt "OrchardCore.Users.Views.LoginSettings.Edit"
-msgid "Allow user to change their username"
+msgid "Allow user to be remembered during login"
 msgstr ""
 
 #: Views/LoginSettings.Edit.cshtml
@@ -2344,11 +2434,6 @@ msgstr ""
 
 #: Views/SmsAuthenticatorLoginSettings.Edit.cshtml
 msgctxt "OrchardCore.Users.Views.SmsAuthenticatorLoginSettings.Edit"
-msgid "SMS Authenticator Settings"
-msgstr ""
-
-#: Views/SmsAuthenticatorLoginSettings.Edit.cshtml
-msgctxt "OrchardCore.Users.Views.SmsAuthenticatorLoginSettings.Edit"
 msgid "The body to the message for sending the verification code. Liquid syntax is supported."
 msgstr ""
 
@@ -2565,11 +2650,6 @@ msgstr ""
 #: Views/TwoFactorLoginSettings.Edit.cshtml
 msgctxt "OrchardCore.Users.Views.TwoFactorLoginSettings.Edit"
 msgid "The number of recovery codes to generate. Default is 5."
-msgstr ""
-
-#: Views/TwoFactorLoginSettings.Edit.cshtml
-msgctxt "OrchardCore.Users.Views.TwoFactorLoginSettings.Edit"
-msgid "Two-Factor Settings"
 msgstr ""
 
 #: Views/TwoFactorLoginSettings.Edit.cshtml

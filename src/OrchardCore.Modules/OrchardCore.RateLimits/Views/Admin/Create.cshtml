@@ -8,7 +8,8 @@
 
 <form asp-action="Create" method="post" class="no-multisubmit">
     @Html.ValidationSummary()
-    @await Html.PartialAsync("RateLimitPolicy.Fields", Model)
+
+    @await DisplayAsync(Model.Editor)
 
     <div class="ocat-wrapper">
         <div class="ocat-end-offset">

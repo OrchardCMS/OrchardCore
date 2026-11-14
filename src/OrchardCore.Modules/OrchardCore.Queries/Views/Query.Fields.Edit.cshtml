@@ -9,16 +9,3 @@
     <input asp-for="Source" type="hidden" />
     </div>
 </div>
-
-<div class="ocat-wrapper monaco-json-settings-editor">
-    <label asp-for="Schema" class="ocat-label">@T["Schema"]</label>
-    <div class="ocat-end">
-    <textarea asp-for="Schema" hidden class="monaco-json-settings-editor-value"></textarea>
-    <div id="@Html.IdFor(x => x.Schema)_editor" style="min-height: 300px;" class="form-control monaco-json-settings-editor-container"></div>
-    <span class="hint">@T["The schema the GraphQL API will use to return results."] <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Queries/#graphql" target="_blank">@T["See documentation"]</a></span>
-    </div>
-</div>
-<style asp-name="monaco"></style>
-<script asp-name="monaco" at="Foot"></script>
-
-<script asp-src="~/OrchardCore.Queries/Scripts/query-editors/query-fields.min.js" debug-src="~/OrchardCore.Queries/Scripts/query-editors/query-fields.js" depends-on="monaco" at="Foot" type="module"></script>

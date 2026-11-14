@@ -20,6 +20,11 @@ msgctxt "OrchardCore.Spatial.Drivers.GeoPointFieldDisplayDriver"
 msgid "{0} is an invalid number."
 msgstr ""
 
+#: Drivers/GeoPointFieldSettingsDriver.cs
+msgctxt "OrchardCore.Spatial.Drivers.GeoPointFieldSettingsDriver"
+msgid "Settings"
+msgstr ""
+
 #: GraphQL/GeoPointFieldProvider.cs
 msgctxt "OrchardCore.Spatial.GraphQL.GeoPointFieldProvider"
 msgid "Geo point field"

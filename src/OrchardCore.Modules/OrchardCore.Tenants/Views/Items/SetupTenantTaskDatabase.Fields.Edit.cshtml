@@ -1,0 +1,37 @@
+@using OrchardCore.Tenants.Workflows.ViewModels
+@model SetupTenantTaskViewModel
+
+<div data-task-editor="setup-tenant">
+    <div class="ocat-wrapper" asp-validation-class-for="DatabaseProviderExpression">
+        <label asp-for="DatabaseProviderExpression" class="ocat-label">@T["What type of database to use?"]</label>
+        <div class="ocat-end">
+            <input type="text" asp-for="DatabaseProviderExpression" class="form-control code" />
+            <span asp-validation-for="DatabaseProviderExpression"></span>
+        </div>
+    </div>
+
+    <div class="ocat-wrapper" asp-validation-class-for="DatabaseTablePrefixExpression">
+        <label asp-for="DatabaseTablePrefixExpression" class="ocat-label">@T["Table Prefix"]</label>
+        <div class="ocat-end">
+            <input type="text" asp-for="DatabaseTablePrefixExpression" class="form-control code" />
+            <span asp-validation-for="DatabaseTablePrefixExpression"></span>
+        </div>
+    </div>
+
+    <div class="ocat-wrapper" asp-validation-class-for="DatabaseConnectionStringExpression">
+        <label asp-for="DatabaseConnectionStringExpression" class="ocat-label">@T["Connection string"]</label>
+        <div class="ocat-end">
+            <input type="text" asp-for="DatabaseConnectionStringExpression" class="form-control code" />
+            <span asp-validation-for="DatabaseConnectionStringExpression"></span>
+        </div>
+    </div>
+
+    <div class="ocat-wrapper" asp-validation-class-for="DatabaseSchemaExpression">
+        <label asp-for="DatabaseSchemaExpression" class="ocat-label">@T["Schema"]</label>
+        <div class="ocat-end">
+            <input type="text" asp-for="DatabaseSchemaExpression" class="form-control code" />
+            <span asp-validation-for="DatabaseSchemaExpression"></span>
+            <div class="hint">@T["When left blank, the default value on the server will be used."] @T["For example, '{0}' for SQL Server.", "dbo"]</div>
+        </div>
+    </div>
+</div>

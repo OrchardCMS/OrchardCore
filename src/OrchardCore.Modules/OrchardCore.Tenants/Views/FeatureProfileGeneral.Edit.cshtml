@@ -1,0 +1,38 @@
+@model FeatureProfileViewModel
+@inject OrchardCore.Tenants.Services.IFeatureProfilesSchemaService SchemaService
+
+@{
+    var schema = SchemaService.GetJsonSchema();
+}
+
+<div class="ocat-wrapper" asp-validation-class-for="Name">
+    <label asp-for="Name" class="ocat-label ocat-label-required">@T["Name"]</label>
+    <div class="ocat-end">
+        <input asp-for="Name" class="form-control" autofocus />
+        <span asp-validation-for="Name"></span>
+        <span class="hint">@T["The name of the feature profile."]</span>
+    </div>
+</div>
+
+<div class="ocat-wrapper monaco-json-model-editor" asp-validation-class-for="FeatureRules" data-model-uri="x://orchardcore.tenants.featureprofiles.json" data-schema-uri="x://orchardcore.tenants.featureprofiles.schema.json" data-schema="@schema">
+    <label asp-for="FeatureRules" class="ocat-label ocat-label-required">@T["Rules"]</label>
+    <div class="ocat-end">
+        <div class="form-control" style="min-height: 400px;">
+            <div id="@Html.IdFor(x => x.FeatureRules)_editor" asp-for="FeatureRules" style="min-height: 385px;" dir="@Orchard.CultureDir()" class="monaco-json-model-editor-container"></div>
+        </div>
+        <textarea asp-for="FeatureRules" hidden class="monaco-json-model-editor-value"></textarea>
+        <span asp-validation-for="FeatureRules"></span>
+        <span class="hint">
+            @T["The feature rules. Here is an example if a rule that would exclude '{0}' feature.", "OrchardCore.Flows"]
+
+<pre>
+[
+  {
+    "Rule": "Exclude",
+    "Expression": "OrchardCore.Flows"
+  }
+]
+</pre>
+        </span>
+    </div>
+</div>

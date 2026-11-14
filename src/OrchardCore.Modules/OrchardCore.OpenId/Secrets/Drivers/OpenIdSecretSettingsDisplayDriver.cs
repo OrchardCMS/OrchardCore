@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Entities;
@@ -19,14 +20,18 @@ public sealed class OpenIdSecretSettingsDisplayDriver : DisplayDriver<OpenIdServ
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
 
+    internal readonly IStringLocalizer S;
+
     public OpenIdSecretSettingsDisplayDriver(
         ISiteService siteService,
         IHttpContextAccessor httpContextAccessor,
-        IAuthorizationService authorizationService)
+        IAuthorizationService authorizationService,
+        IStringLocalizer<OpenIdSecretSettingsDisplayDriver> stringLocalizer)
     {
         _siteService = siteService;
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
+        S = stringLocalizer;
     }
 
     // The editor binds the fields of OpenIdSecretSettings.
@@ -48,7 +53,7 @@ public sealed class OpenIdSecretSettingsDisplayDriver : DisplayDriver<OpenIdServ
         {
             model.SigningKeySecretName = settings.SigningKeySecretName;
             model.EncryptionKeySecretName = settings.EncryptionKeySecretName;
-        }).Location("Content:3")
+        }).Location(l => l.Zone("Content", "3").Card(S["Keys from secrets"], "45"))
         .Differentiator("Secrets");
     }
 

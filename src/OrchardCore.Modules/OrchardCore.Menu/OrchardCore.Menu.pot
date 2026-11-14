@@ -79,6 +79,11 @@ msgctxt "OrchardCore.Menu.Services.MenuJSLocalizer"
 msgid "Type to search"
 msgstr ""
 
+#: Settings/HtmlMenuItemPartSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Menu.Settings.HtmlMenuItemPartSettingsDisplayDriver"
+msgid "Settings"
+msgstr ""
+
 #. Format arguments: {0}: menu?.DisplayText
 #: Views/Admin/Create.cshtml
 #, csharp-format

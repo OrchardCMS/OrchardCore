@@ -35,7 +35,7 @@ public sealed class TitlePartSettingsDisplayDriver : ContentTypePartDefinitionDi
             model.RenderTitle = settings.RenderTitle;
             model.TitlePartSettings = settings;
             model.Placeholder = settings.Placeholder;
-        }).Location("Content");
+        }).Location(l => l.Zone("Content").Card(S["Settings"], "20"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)

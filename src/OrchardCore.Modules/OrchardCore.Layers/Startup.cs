@@ -15,6 +15,7 @@ using OrchardCore.Layers.Indexes;
 using OrchardCore.Layers.Models;
 using OrchardCore.Layers.Recipes;
 using OrchardCore.Layers.Services;
+using OrchardCore.Layers.ViewModels;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
@@ -41,6 +42,9 @@ public sealed class Startup : StartupBase
 
         // Builds the rows of the layers admin list.
         services.AddDisplayDriver<Layer, LayerDisplayDriver>();
+
+        // Builds the editor of the pages creating and editing a layer.
+        services.AddDisplayDriver<LayerEditViewModel, LayerEditDisplayDriver>();
         services.AddNavigationProvider<AdminMenu>();
         services.AddScoped<ILayerService, LayerService>();
         services.AddScoped<IContentHandler, LayerMetadataHandler>();

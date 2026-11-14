@@ -58,6 +58,21 @@ msgctxt "OrchardCore.Shortcodes.Controllers.AdminController"
 msgid "The template doesn't contain a valid Liquid expression. Details: {0}"
 msgstr ""
 
+#: Deployment/AllShortcodeTemplatesDeploymentStepDriver.cs
+msgctxt "OrchardCore.Shortcodes.Deployment.AllShortcodeTemplatesDeploymentStepDriver"
+msgid "Shortcode templates"
+msgstr ""
+
+#: Drivers/ShortcodeTemplateDisplayDriver.cs
+msgctxt "OrchardCore.Shortcodes.Drivers.ShortcodeTemplateDisplayDriver"
+msgid "General"
+msgstr ""
+
+#: Drivers/ShortcodeTemplateDisplayDriver.cs
+msgctxt "OrchardCore.Shortcodes.Drivers.ShortcodeTemplateDisplayDriver"
+msgid "Template"
+msgstr ""
+
 #: Services/ShortcodesJSLocalizer.cs
 msgctxt "OrchardCore.Shortcodes.Services.ShortcodesJSLocalizer"
 msgid "No categories found"
@@ -90,37 +105,7 @@ msgstr ""
 
 #: Views/Admin/Create.cshtml
 msgctxt "OrchardCore.Shortcodes.Views.Admin.Create"
-msgid "Categories"
-msgstr ""
-
-#: Views/Admin/Create.cshtml
-msgctxt "OrchardCore.Shortcodes.Views.Admin.Create"
-msgid "Content"
-msgstr ""
-
-#: Views/Admin/Create.cshtml
-msgctxt "OrchardCore.Shortcodes.Views.Admin.Create"
 msgid "Create Shortcode"
-msgstr ""
-
-#: Views/Admin/Create.cshtml
-msgctxt "OrchardCore.Shortcodes.Views.Admin.Create"
-msgid "Default Shortcode Value"
-msgstr ""
-
-#: Views/Admin/Create.cshtml
-msgctxt "OrchardCore.Shortcodes.Views.Admin.Create"
-msgid "Example usage of the shortcode."
-msgstr ""
-
-#: Views/Admin/Create.cshtml
-msgctxt "OrchardCore.Shortcodes.Views.Admin.Create"
-msgid "Hint"
-msgstr ""
-
-#: Views/Admin/Create.cshtml
-msgctxt "OrchardCore.Shortcodes.Views.Admin.Create"
-msgid "Name"
 msgstr ""
 
 #: Views/Admin/Create.cshtml
@@ -145,37 +130,7 @@ msgstr ""
 
 #: Views/Admin/Create.cshtml
 msgctxt "OrchardCore.Shortcodes.Views.Admin.Create"
-msgid "The Shortcode Liquid template."
-msgstr ""
-
-#: Views/Admin/Create.cshtml
-msgctxt "OrchardCore.Shortcodes.Views.Admin.Create"
-msgid "The categories for this shortcode."
-msgstr ""
-
-#: Views/Admin/Create.cshtml
-msgctxt "OrchardCore.Shortcodes.Views.Admin.Create"
-msgid "The default value of the shortcode when selected. Defaults to [name]."
-msgstr ""
-
-#: Views/Admin/Create.cshtml
-msgctxt "OrchardCore.Shortcodes.Views.Admin.Create"
-msgid "The hint for the shortcode."
-msgstr ""
-
-#: Views/Admin/Create.cshtml
-msgctxt "OrchardCore.Shortcodes.Views.Admin.Create"
-msgid "The name of the shortcode."
-msgstr ""
-
-#: Views/Admin/Create.cshtml
-msgctxt "OrchardCore.Shortcodes.Views.Admin.Create"
 msgid "Toggle Dropdown"
-msgstr ""
-
-#: Views/Admin/Create.cshtml
-msgctxt "OrchardCore.Shortcodes.Views.Admin.Create"
-msgid "Usage"
 msgstr ""
 
 #: Views/Admin/Create.cshtml
@@ -190,37 +145,7 @@ msgstr ""
 
 #: Views/Admin/Edit.cshtml
 msgctxt "OrchardCore.Shortcodes.Views.Admin.Edit"
-msgid "Categories"
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.Shortcodes.Views.Admin.Edit"
-msgid "Content"
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.Shortcodes.Views.Admin.Edit"
-msgid "Default Shortcode Value"
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.Shortcodes.Views.Admin.Edit"
 msgid "Edit Shortcode"
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.Shortcodes.Views.Admin.Edit"
-msgid "Example usage of the shortcode."
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.Shortcodes.Views.Admin.Edit"
-msgid "Hint"
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.Shortcodes.Views.Admin.Edit"
-msgid "Name"
 msgstr ""
 
 #: Views/Admin/Edit.cshtml
@@ -245,37 +170,7 @@ msgstr ""
 
 #: Views/Admin/Edit.cshtml
 msgctxt "OrchardCore.Shortcodes.Views.Admin.Edit"
-msgid "The Liquid template."
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.Shortcodes.Views.Admin.Edit"
-msgid "The categories for this shortcode."
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.Shortcodes.Views.Admin.Edit"
-msgid "The default value of the shortcode when selected. Defaults to [name]."
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.Shortcodes.Views.Admin.Edit"
-msgid "The hint for the shortcode."
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.Shortcodes.Views.Admin.Edit"
-msgid "The name of the shortcode."
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.Shortcodes.Views.Admin.Edit"
 msgid "Toggle Dropdown"
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.Shortcodes.Views.Admin.Edit"
-msgid "Usage"
 msgstr ""
 
 #: Views/Admin/Edit.cshtml
@@ -325,7 +220,7 @@ msgstr ""
 
 #: Views/Items/AllShortcodeTemplatesDeploymentStep.Edit.cshtml
 msgctxt "OrchardCore.Shortcodes.Views.Items.AllShortcodeTemplatesDeploymentStep.Edit"
-msgid "All Shortcode Templates"
+msgid "Adds all the shortcode templates to the plan."
 msgstr ""
 
 #: Views/Items/AllShortcodeTemplatesDeploymentStep.Summary.cshtml
@@ -368,6 +263,26 @@ msgctxt "OrchardCore.Shortcodes.Views.ShortcodeModal"
 msgid "Filter"
 msgstr ""
 
+#: Views/ShortcodeTemplateContent.Edit.cshtml
+msgctxt "OrchardCore.Shortcodes.Views.ShortcodeTemplateContent.Edit"
+msgid "Content"
+msgstr ""
+
+#: Views/ShortcodeTemplateContent.Edit.cshtml
+msgctxt "OrchardCore.Shortcodes.Views.ShortcodeTemplateContent.Edit"
+msgid "The Liquid template."
+msgstr ""
+
+#: Views/ShortcodeTemplateCreateContent.Edit.cshtml
+msgctxt "OrchardCore.Shortcodes.Views.ShortcodeTemplateCreateContent.Edit"
+msgid "Content"
+msgstr ""
+
+#: Views/ShortcodeTemplateCreateContent.Edit.cshtml
+msgctxt "OrchardCore.Shortcodes.Views.ShortcodeTemplateCreateContent.Edit"
+msgid "The Shortcode Liquid template."
+msgstr ""
+
 #: Views/ShortcodeTemplateEntry.Buttons.SummaryAdmin.cshtml
 msgctxt "OrchardCore.Shortcodes.Views.ShortcodeTemplateEntry.Buttons.SummaryAdmin"
 msgid "Delete"
@@ -381,4 +296,54 @@ msgstr ""
 #: Views/ShortcodeTemplateEntry.DefaultTags.SummaryAdmin.cshtml
 msgctxt "OrchardCore.Shortcodes.Views.ShortcodeTemplateEntry.DefaultTags.SummaryAdmin"
 msgid "Category"
+msgstr ""
+
+#: Views/ShortcodeTemplateGeneral.Edit.cshtml
+msgctxt "OrchardCore.Shortcodes.Views.ShortcodeTemplateGeneral.Edit"
+msgid "Categories"
+msgstr ""
+
+#: Views/ShortcodeTemplateGeneral.Edit.cshtml
+msgctxt "OrchardCore.Shortcodes.Views.ShortcodeTemplateGeneral.Edit"
+msgid "Default Shortcode Value"
+msgstr ""
+
+#: Views/ShortcodeTemplateGeneral.Edit.cshtml
+msgctxt "OrchardCore.Shortcodes.Views.ShortcodeTemplateGeneral.Edit"
+msgid "Example usage of the shortcode."
+msgstr ""
+
+#: Views/ShortcodeTemplateGeneral.Edit.cshtml
+msgctxt "OrchardCore.Shortcodes.Views.ShortcodeTemplateGeneral.Edit"
+msgid "Hint"
+msgstr ""
+
+#: Views/ShortcodeTemplateGeneral.Edit.cshtml
+msgctxt "OrchardCore.Shortcodes.Views.ShortcodeTemplateGeneral.Edit"
+msgid "Name"
+msgstr ""
+
+#: Views/ShortcodeTemplateGeneral.Edit.cshtml
+msgctxt "OrchardCore.Shortcodes.Views.ShortcodeTemplateGeneral.Edit"
+msgid "The categories for this shortcode."
+msgstr ""
+
+#: Views/ShortcodeTemplateGeneral.Edit.cshtml
+msgctxt "OrchardCore.Shortcodes.Views.ShortcodeTemplateGeneral.Edit"
+msgid "The default value of the shortcode when selected. Defaults to [name]."
+msgstr ""
+
+#: Views/ShortcodeTemplateGeneral.Edit.cshtml
+msgctxt "OrchardCore.Shortcodes.Views.ShortcodeTemplateGeneral.Edit"
+msgid "The hint for the shortcode."
+msgstr ""
+
+#: Views/ShortcodeTemplateGeneral.Edit.cshtml
+msgctxt "OrchardCore.Shortcodes.Views.ShortcodeTemplateGeneral.Edit"
+msgid "The name of the shortcode."
+msgstr ""
+
+#: Views/ShortcodeTemplateGeneral.Edit.cshtml
+msgctxt "OrchardCore.Shortcodes.Views.ShortcodeTemplateGeneral.Edit"
+msgid "Usage"
 msgstr ""

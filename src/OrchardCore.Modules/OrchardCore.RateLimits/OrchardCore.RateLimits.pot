@@ -185,6 +185,11 @@ msgstr ""
 
 #: Drivers/ConcurrencyRateLimiterDisplayDriver.cs
 msgctxt "OrchardCore.RateLimits.Drivers.ConcurrencyRateLimiterDisplayDriver"
+msgid "Limits"
+msgstr ""
+
+#: Drivers/ConcurrencyRateLimiterDisplayDriver.cs
+msgctxt "OrchardCore.RateLimits.Drivers.ConcurrencyRateLimiterDisplayDriver"
 msgid "Newest first (latest request first)"
 msgstr ""
 
@@ -200,12 +205,37 @@ msgstr ""
 
 #: Drivers/FixedWindowRateLimiterDisplayDriver.cs
 msgctxt "OrchardCore.RateLimits.Drivers.FixedWindowRateLimiterDisplayDriver"
+msgid "Limits"
+msgstr ""
+
+#: Drivers/FixedWindowRateLimiterDisplayDriver.cs
+msgctxt "OrchardCore.RateLimits.Drivers.FixedWindowRateLimiterDisplayDriver"
 msgid "Permit limit must be greater than zero."
 msgstr ""
 
 #: Drivers/FixedWindowRateLimiterDisplayDriver.cs
 msgctxt "OrchardCore.RateLimits.Drivers.FixedWindowRateLimiterDisplayDriver"
 msgid "Window must be greater than zero."
+msgstr ""
+
+#: Drivers/RateLimitPolicyEditDisplayDriver.cs
+msgctxt "OrchardCore.RateLimits.Drivers.RateLimitPolicyEditDisplayDriver"
+msgid "General"
+msgstr ""
+
+#: Drivers/RateLimitPolicyEditDisplayDriver.cs
+msgctxt "OrchardCore.RateLimits.Drivers.RateLimitPolicyEditDisplayDriver"
+msgid "Limiters"
+msgstr ""
+
+#: Drivers/RateLimitPolicyEditDisplayDriver.cs
+msgctxt "OrchardCore.RateLimits.Drivers.RateLimitPolicyEditDisplayDriver"
+msgid "Target"
+msgstr ""
+
+#: Drivers/SlidingWindowRateLimiterDisplayDriver.cs
+msgctxt "OrchardCore.RateLimits.Drivers.SlidingWindowRateLimiterDisplayDriver"
+msgid "Limits"
 msgstr ""
 
 #: Drivers/SlidingWindowRateLimiterDisplayDriver.cs
@@ -221,6 +251,11 @@ msgstr ""
 #: Drivers/SlidingWindowRateLimiterDisplayDriver.cs
 msgctxt "OrchardCore.RateLimits.Drivers.SlidingWindowRateLimiterDisplayDriver"
 msgid "Window must be greater than zero."
+msgstr ""
+
+#: Drivers/TokenBucketRateLimiterDisplayDriver.cs
+msgctxt "OrchardCore.RateLimits.Drivers.TokenBucketRateLimiterDisplayDriver"
+msgid "Limits"
 msgstr ""
 
 #: Drivers/TokenBucketRateLimiterDisplayDriver.cs
@@ -343,16 +378,6 @@ msgstr ""
 
 #: Views/Admin/Edit.cshtml
 msgctxt "OrchardCore.RateLimits.Views.Admin.Edit"
-msgid "Add Limiter"
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.RateLimits.Views.Admin.Edit"
-msgid "Add one or more limiters before enabling this policy."
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.RateLimits.Views.Admin.Edit"
 msgid "Available Limiter Types"
 msgstr ""
 
@@ -364,11 +389,6 @@ msgstr ""
 #: Views/Admin/Edit.cshtml
 msgctxt "OrchardCore.RateLimits.Views.Admin.Edit"
 msgid "Edit Rate Limit Policy"
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.RateLimits.Views.Admin.Edit"
-msgid "Limiters"
 msgstr ""
 
 #: Views/Admin/Edit.cshtml
@@ -474,71 +494,6 @@ msgid "{0} limiter"
 msgid_plural "{0} limiters"
 msgstr[0] ""
 msgstr[1] ""
-
-#: Views/Admin/RateLimitPolicy.Fields.cshtml
-msgctxt "OrchardCore.RateLimits.Views.Admin.RateLimitPolicy.Fields"
-msgid "Choose a group declared on one or more endpoints with the RateLimitGroup attribute or WithRateLimitGroups()."
-msgstr ""
-
-#: Views/Admin/RateLimitPolicy.Fields.cshtml
-msgctxt "OrchardCore.RateLimits.Views.Admin.RateLimitPolicy.Fields"
-msgid "Description"
-msgstr ""
-
-#: Views/Admin/RateLimitPolicy.Fields.cshtml
-msgctxt "OrchardCore.RateLimits.Views.Admin.RateLimitPolicy.Fields"
-msgid "Global applies everywhere, Endpoint matches a request path prefix, and Group matches endpoints assigned to a named rate-limit group."
-msgstr ""
-
-#: Views/Admin/RateLimitPolicy.Fields.cshtml
-msgctxt "OrchardCore.RateLimits.Views.Admin.RateLimitPolicy.Fields"
-msgid "Matches requests that start with this path, for example '/api/' or '/users/login'."
-msgstr ""
-
-#: Views/Admin/RateLimitPolicy.Fields.cshtml
-msgctxt "OrchardCore.RateLimits.Views.Admin.RateLimitPolicy.Fields"
-msgid "Optionally describe what this policy is intended to protect."
-msgstr ""
-
-#: Views/Admin/RateLimitPolicy.Fields.cshtml
-msgctxt "OrchardCore.RateLimits.Views.Admin.RateLimitPolicy.Fields"
-msgid "Policy name"
-msgstr ""
-
-#: Views/Admin/RateLimitPolicy.Fields.cshtml
-msgctxt "OrchardCore.RateLimits.Views.Admin.RateLimitPolicy.Fields"
-msgid "Policy type"
-msgstr ""
-
-#: Views/Admin/RateLimitPolicy.Fields.cshtml
-msgctxt "OrchardCore.RateLimits.Views.Admin.RateLimitPolicy.Fields"
-msgid "Rate-limit group"
-msgstr ""
-
-#: Views/Admin/RateLimitPolicy.Fields.cshtml
-msgctxt "OrchardCore.RateLimits.Views.Admin.RateLimitPolicy.Fields"
-msgid "Request path"
-msgstr ""
-
-#: Views/Admin/RateLimitPolicy.Fields.cshtml
-msgctxt "OrchardCore.RateLimits.Views.Admin.RateLimitPolicy.Fields"
-msgid "The group target is read-only while this policy is enabled. Disable it first to choose a different group."
-msgstr ""
-
-#: Views/Admin/RateLimitPolicy.Fields.cshtml
-msgctxt "OrchardCore.RateLimits.Views.Admin.RateLimitPolicy.Fields"
-msgid "The policy type is read-only while this policy is enabled. Disable it first to retarget the policy."
-msgstr ""
-
-#: Views/Admin/RateLimitPolicy.Fields.cshtml
-msgctxt "OrchardCore.RateLimits.Views.Admin.RateLimitPolicy.Fields"
-msgid "The request path is read-only while this policy is enabled. Disable it first to change endpoint targeting."
-msgstr ""
-
-#: Views/Admin/RateLimitPolicy.Fields.cshtml
-msgctxt "OrchardCore.RateLimits.Views.Admin.RateLimitPolicy.Fields"
-msgid "Use a unique name to identify this tenant policy."
-msgstr ""
 
 #: Views/ConcurrencyRateLimiter.Edit.cshtml
 msgctxt "OrchardCore.RateLimits.Views.ConcurrencyRateLimiter.Edit"
@@ -811,6 +766,81 @@ msgstr ""
 #, csharp-format
 msgctxt "OrchardCore.RateLimits.Views.RateLimitPolicy.Description.SummaryAdmin"
 msgid "Matches requests starting with '{0}'."
+msgstr ""
+
+#: Views/RateLimitPolicyGeneral.Edit.cshtml
+msgctxt "OrchardCore.RateLimits.Views.RateLimitPolicyGeneral.Edit"
+msgid "Description"
+msgstr ""
+
+#: Views/RateLimitPolicyGeneral.Edit.cshtml
+msgctxt "OrchardCore.RateLimits.Views.RateLimitPolicyGeneral.Edit"
+msgid "Optionally describe what this policy is intended to protect."
+msgstr ""
+
+#: Views/RateLimitPolicyGeneral.Edit.cshtml
+msgctxt "OrchardCore.RateLimits.Views.RateLimitPolicyGeneral.Edit"
+msgid "Policy name"
+msgstr ""
+
+#: Views/RateLimitPolicyGeneral.Edit.cshtml
+msgctxt "OrchardCore.RateLimits.Views.RateLimitPolicyGeneral.Edit"
+msgid "Use a unique name to identify this tenant policy."
+msgstr ""
+
+#: Views/RateLimitPolicyLimiters.Edit.cshtml
+msgctxt "OrchardCore.RateLimits.Views.RateLimitPolicyLimiters.Edit"
+msgid "Add Limiter"
+msgstr ""
+
+#: Views/RateLimitPolicyLimiters.Edit.cshtml
+msgctxt "OrchardCore.RateLimits.Views.RateLimitPolicyLimiters.Edit"
+msgid "Add one or more limiters before enabling this policy."
+msgstr ""
+
+#: Views/RateLimitPolicyTarget.Edit.cshtml
+msgctxt "OrchardCore.RateLimits.Views.RateLimitPolicyTarget.Edit"
+msgid "Choose a group declared on one or more endpoints with the RateLimitGroup attribute or WithRateLimitGroups()."
+msgstr ""
+
+#: Views/RateLimitPolicyTarget.Edit.cshtml
+msgctxt "OrchardCore.RateLimits.Views.RateLimitPolicyTarget.Edit"
+msgid "Global applies everywhere, Endpoint matches a request path prefix, and Group matches endpoints assigned to a named rate-limit group."
+msgstr ""
+
+#: Views/RateLimitPolicyTarget.Edit.cshtml
+msgctxt "OrchardCore.RateLimits.Views.RateLimitPolicyTarget.Edit"
+msgid "Matches requests that start with this path, for example '/api/' or '/users/login'."
+msgstr ""
+
+#: Views/RateLimitPolicyTarget.Edit.cshtml
+msgctxt "OrchardCore.RateLimits.Views.RateLimitPolicyTarget.Edit"
+msgid "Policy type"
+msgstr ""
+
+#: Views/RateLimitPolicyTarget.Edit.cshtml
+msgctxt "OrchardCore.RateLimits.Views.RateLimitPolicyTarget.Edit"
+msgid "Rate-limit group"
+msgstr ""
+
+#: Views/RateLimitPolicyTarget.Edit.cshtml
+msgctxt "OrchardCore.RateLimits.Views.RateLimitPolicyTarget.Edit"
+msgid "Request path"
+msgstr ""
+
+#: Views/RateLimitPolicyTarget.Edit.cshtml
+msgctxt "OrchardCore.RateLimits.Views.RateLimitPolicyTarget.Edit"
+msgid "The group target is read-only while this policy is enabled. Disable it first to choose a different group."
+msgstr ""
+
+#: Views/RateLimitPolicyTarget.Edit.cshtml
+msgctxt "OrchardCore.RateLimits.Views.RateLimitPolicyTarget.Edit"
+msgid "The policy type is read-only while this policy is enabled. Disable it first to retarget the policy."
+msgstr ""
+
+#: Views/RateLimitPolicyTarget.Edit.cshtml
+msgctxt "OrchardCore.RateLimits.Views.RateLimitPolicyTarget.Edit"
+msgid "The request path is read-only while this policy is enabled. Disable it first to change endpoint targeting."
 msgstr ""
 
 #: Views/RateLimitsToolbar.cshtml

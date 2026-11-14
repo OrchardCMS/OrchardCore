@@ -1,0 +1,36 @@
+@using OrchardCore.Mvc.Utilities
+
+@model AddFieldViewModel
+
+<div class="ocat-limited-wrapper">
+    <label asp-for="DisplayName" class="ocat-label ocat-label-required">@T["Display Name"]</label>
+    <div class="ocat-limited">
+        <input data-displayname="@Html.IdFor(m => m.DisplayName)" asp-for="DisplayName" class="form-control" autofocus />
+        <span class="hint">@T["Name of the field as it will be displayed in screens."]</span>
+    </div>
+</div>
+
+<div class="ocat-limited-wrapper">
+    <label asp-for="Name" class="ocat-label ocat-label-required">@T["Technical Name"]</label>
+    <div class="ocat-limited">
+        <input data-name="@Html.IdFor(m => m.DisplayName)" asp-for="Name" class="form-control" />
+        <span class="hint">@T["Technical name of the field."]</span>
+    </div>
+</div>
+
+<div class="ocat-limited-wrapper">
+    <label asp-for="FieldTypeName" class="ocat-label ocat-label-required">@T["Field Type"]</label>
+    <div class="ocat-limited">
+        <ul class="list-group">
+            @for (var i = 0; i < Model.Fields.Count; i++)
+            {
+                <li class="list-group-item list-group-item-action">
+                    <div class="form-check">
+                        <input type="radio" class="form-check-input" asp-for="FieldTypeName" id="@Html.IdFor(m => m.Fields[i])" value="@Model.Fields[i]" checked="@(i == 0)">
+                        <label class="form-check-label" asp-for="Fields[i]">@Model.Fields[i].CamelFriendly()</label>
+                    </div>
+                </li>
+            }
+        </ul>
+    </div>
+</div>

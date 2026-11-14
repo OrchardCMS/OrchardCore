@@ -7,6 +7,7 @@ using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Liquid;
+using OrchardCore.Localization;
 using OrchardCore.Tests.Stubs;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.ContentFields.Settings;
@@ -208,11 +209,11 @@ public class SettingsDisplayDriverTests
             });
 
         var shapeResult = await DisplayDriverTestHelper.GetShapeResultAsync(
-            new TextFieldSettingsDriver(liquidTemplateManagerMock.Object, Mock.Of<IStringLocalizer<TextFieldSettingsDriver>>()),
+            new TextFieldSettingsDriver(liquidTemplateManagerMock.Object, new StringLocalizer<TextFieldSettingsDriver>(new NullStringLocalizerFactory())),
             _shapeFactory,
             contentDefinition);
 
-        var stringLocalizer = Mock.Of<IStringLocalizer<TextFieldSettingsDriver>>();
+        var stringLocalizer = new StringLocalizer<TextFieldSettingsDriver>(new NullStringLocalizerFactory());
 
         var shape = (TextFieldSettingsViewModel)shapeResult.Shape;
 

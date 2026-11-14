@@ -16,6 +16,7 @@ using OrchardCore.Deployment;
 using OrchardCore.Deployment.Core.Services;
 using OrchardCore.FileStorage;
 using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Json;
@@ -46,6 +47,8 @@ public sealed class WorkflowTypeController : Controller
     private readonly IAuthorizationService _authorizationService;
     private readonly INotifier _notifier;
     private readonly IShapeFactory _shapeFactory;
+    private readonly IDisplayManager<WorkflowTypePropertiesViewModel> _propertiesDisplayManager;
+    private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly JsonSerializerOptions _documentJsonSerializerOptions;
     private readonly ITempDirectoryProvider _tempDirectoryProvider;
     private readonly IEnumerable<IJSLocalizer> _jsLocalizers;
@@ -62,6 +65,8 @@ public sealed class WorkflowTypeController : Controller
         IWorkflowTypeIdGenerator workflowTypeIdGenerator,
         IAuthorizationService authorizationService,
         IShapeFactory shapeFactory,
+        IDisplayManager<WorkflowTypePropertiesViewModel> propertiesDisplayManager,
+        IUpdateModelAccessor updateModelAccessor,
         INotifier notifier,
         IStringLocalizer<WorkflowTypeController> stringLocalizer,
         IHtmlLocalizer<WorkflowTypeController> htmlLocalizer,
@@ -77,6 +82,8 @@ public sealed class WorkflowTypeController : Controller
         _authorizationService = authorizationService;
         _notifier = notifier;
         _shapeFactory = shapeFactory;
+        _propertiesDisplayManager = propertiesDisplayManager;
+        _updateModelAccessor = updateModelAccessor;
         _tempDirectoryProvider = tempDirectoryProvider;
         S = stringLocalizer;
         H = htmlLocalizer;
@@ -247,12 +254,17 @@ public sealed class WorkflowTypeController : Controller
         }
 
         // A new workflow records the data of its activities, to see what its runs did; existing ones keep their setting.
-        return View(new WorkflowTypePropertiesViewModel
+        var viewModel = new WorkflowTypePropertiesViewModel
         {
             IsEnabled = true,
             RecordActivityData = true,
             ReturnUrl = returnUrl,
-        });
+            Page = WorkflowTypePropertiesPage.Create,
+        };
+
+        viewModel.Editor = await _propertiesDisplayManager.BuildEditorAsync(viewModel, _updateModelAccessor.ModelUpdater, isNew: true);
+
+        return View(viewModel);
     }
 
     [HttpPost]
@@ -262,6 +274,9 @@ public sealed class WorkflowTypeController : Controller
         {
             return Forbid();
         }
+
+        viewModel.Page = WorkflowTypePropertiesPage.Create;
+        viewModel.Editor = await _propertiesDisplayManager.UpdateEditorAsync(viewModel, _updateModelAccessor.ModelUpdater, isNew: true);
 
         if (!ModelState.IsValid)
         {
@@ -309,9 +324,12 @@ public sealed class WorkflowTypeController : Controller
             Name = "Copy-" + workflowType.Name,
             IsEnabled = workflowType.IsEnabled,
             ReturnUrl = returnUrl,
+            Page = WorkflowTypePropertiesPage.Clone,
         };
 
         workflowType.CopyExecutionSettingsTo(viewModel);
+
+        viewModel.Editor = await _propertiesDisplayManager.BuildEditorAsync(viewModel, _updateModelAccessor.ModelUpdater, isNew: true);
 
         return View(viewModel);
     }
@@ -323,6 +341,9 @@ public sealed class WorkflowTypeController : Controller
         {
             return Forbid();
         }
+
+        viewModel.Page = WorkflowTypePropertiesPage.Clone;
+        viewModel.Editor = await _propertiesDisplayManager.UpdateEditorAsync(viewModel, _updateModelAccessor.ModelUpdater, isNew: true);
 
         if (!ModelState.IsValid)
         {

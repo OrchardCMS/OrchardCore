@@ -49,7 +49,7 @@ public sealed class UrlRedirectRuleDisplayDriver : DisplayDriver<RewriteRule>
                 new(S["Temporary Redirect (307)"], nameof(RedirectType.TemporaryRedirect)),
                 new(S["Permanent Redirect (308)"], nameof(RedirectType.PermanentRedirect)),
             ];
-        }).Location("Content:5");
+        }).Location(l => l.Zone("Content", "5").Card(S["Redirect"], "20"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(RewriteRule rule, UpdateEditorContext context)

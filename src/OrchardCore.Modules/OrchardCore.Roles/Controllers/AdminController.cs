@@ -41,6 +41,10 @@ public sealed class AdminController : Controller
     private readonly IShellFeaturesManager _shellFeaturesManager;
     private readonly IRoleService _roleService;
     private readonly INotifier _notifier;
+    private readonly IDisplayManager<CreateRoleViewModel> _createRoleDisplayManager;
+    private readonly IDisplayManager<EditRoleViewModel> _editRoleDisplayManager;
+    private readonly IDisplayManager<CloneRoleViewModel> _cloneRoleDisplayManager;
+    private readonly IUpdateModelAccessor _updateModelAccessor;
 
     internal readonly IStringLocalizer S;
     internal readonly IHtmlLocalizer H;
@@ -56,7 +60,11 @@ public sealed class AdminController : Controller
         IRoleService roleService,
         INotifier notifier,
         IStringLocalizer<AdminController> stringLocalizer,
-        IHtmlLocalizer<AdminController> htmlLocalizer)
+        IHtmlLocalizer<AdminController> htmlLocalizer,
+        IDisplayManager<CreateRoleViewModel> createRoleDisplayManager,
+        IDisplayManager<EditRoleViewModel> editRoleDisplayManager,
+        IDisplayManager<CloneRoleViewModel> cloneRoleDisplayManager,
+        IUpdateModelAccessor updateModelAccessor)
     {
         _documentStore = documentStore;
         _roleManager = roleManager;
@@ -69,6 +77,10 @@ public sealed class AdminController : Controller
         _notifier = notifier;
         S = stringLocalizer;
         H = htmlLocalizer;
+        _createRoleDisplayManager = createRoleDisplayManager;
+        _editRoleDisplayManager = editRoleDisplayManager;
+        _cloneRoleDisplayManager = cloneRoleDisplayManager;
+        _updateModelAccessor = updateModelAccessor;
     }
 
     public async Task<ActionResult> Index()
@@ -120,6 +132,8 @@ public sealed class AdminController : Controller
 
         var model = new CreateRoleViewModel();
 
+        model.Editor = await _createRoleDisplayManager.BuildEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: true);
+
         return View(model);
     }
 
@@ -130,6 +144,8 @@ public sealed class AdminController : Controller
         {
             return Forbid();
         }
+
+        model.Editor = await _createRoleDisplayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: true);
 
         if (ModelState.IsValid && await ValidateRoleNameAsync(model.RoleName))
         {
@@ -184,6 +200,8 @@ public sealed class AdminController : Controller
             Permissions = await GetRolePermissionsViewModelAsync(role, canEdit: true),
         };
 
+        model.Editor = await _editRoleDisplayManager.BuildEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: false);
+
         return View(model);
     }
 
@@ -200,7 +218,21 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        role.RoleDescription = roleDescription;
+        var model = new EditRoleViewModel
+        {
+            Role = role,
+            RoleDescription = roleDescription,
+            Permissions = await GetRolePermissionsViewModelAsync(role, canEdit: true),
+        };
+
+        model.Editor = await _editRoleDisplayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: false);
+
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+
+        role.RoleDescription = model.RoleDescription;
 
         if (!await _roleService.IsAdminRoleAsync(role.RoleName))
         {
@@ -333,6 +365,8 @@ public sealed class AdminController : Controller
 
         var model = await GetCloneRoleViewModelAsync(role, role.RoleName, role.RoleDescription);
 
+        model.Editor = await _cloneRoleDisplayManager.BuildEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: true);
+
         return View(model);
     }
 
@@ -350,7 +384,12 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        name = name?.Trim();
+        var model = await GetCloneRoleViewModelAsync(sourceRole, name, roleDescription);
+
+        model.Editor = await _cloneRoleDisplayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: true);
+
+        name = model.Name?.Trim();
+        roleDescription = model.RoleDescription;
 
         if (string.IsNullOrWhiteSpace(name))
         {
@@ -382,8 +421,6 @@ public sealed class AdminController : Controller
                 ModelState.AddModelError(string.Empty, error.Description);
             }
         }
-
-        var model = await GetCloneRoleViewModelAsync(sourceRole, name, roleDescription);
 
         return View(model);
     }

@@ -46,7 +46,7 @@ internal sealed class ContentIndexProfileDisplayDriver : DisplayDriver<IndexProf
                 Value = culture.Name,
             });
 
-        }).Location("Content:5");
+        }).Location(l => l.Zone("Content", "5").Card(S["Indexed content"], "20"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(IndexProfile indexProfile, UpdateEditorContext context)

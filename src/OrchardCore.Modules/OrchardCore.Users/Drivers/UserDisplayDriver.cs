@@ -48,11 +48,17 @@ public sealed class UserDisplayDriver : DisplayDriver<User>
             return null;
         }
 
+        // The password is only set when the user is created.
+        if (!context.IsNew)
+        {
+            return null;
+        }
+
         return Initialize<EditUserViewModel>("UserFields_Edit", model =>
         {
             model.IsNewRequest = context.IsNew;
         })
-       .Location("Content:1.5");
+        .Location(l => l.Zone("Content", "1.5").Card(S["Password"], "20"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(User user, UpdateEditorContext context)

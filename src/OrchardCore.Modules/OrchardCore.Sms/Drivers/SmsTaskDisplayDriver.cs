@@ -23,6 +23,12 @@ public sealed class SmsTaskDisplayDriver : ActivityDisplayDriver<SmsTask, SmsTas
         S = stringLocalizer;
     }
 
+    public override IDisplayResult Edit(SmsTask activity, BuildEditorContext context)
+    {
+        return Initialize<SmsTaskViewModel>("SmsTask_Fields_Edit", model => EditActivityAsync(activity, model))
+            .Location(l => l.Zone("Content", "1").Card(S["Message"], "10"));
+    }
+
     protected override void EditActivity(SmsTask activity, SmsTaskViewModel model)
     {
         model.PhoneNumber = activity.PhoneNumber.Expression;

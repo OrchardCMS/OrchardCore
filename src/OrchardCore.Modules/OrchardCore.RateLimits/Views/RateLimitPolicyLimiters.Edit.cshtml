@@ -1,0 +1,35 @@
+@model OrchardCore.RateLimits.ViewModels.RateLimitPolicyEditViewModel
+
+@{
+    var limiterActionsDisabled = !Model.AreLimiterChangesAllowed;
+}
+
+@if (limiterActionsDisabled)
+{
+    <div class="alert alert-warning" role="alert">
+        @Model.PublishedPolicyLimiterMessage
+    </div>
+}
+
+@if (Model.Limiters.Count == 0)
+{
+    <div class="alert alert-info mb-0" role="alert">@T["Add one or more limiters before enabling this policy."]</div>
+}
+else
+{
+    <ul class="list-group">
+        @foreach (var limiter in Model.Limiters)
+        {
+            <li class="list-group-item">@await DisplayAsync(limiter.Shape)</li>
+        }
+    </ul>
+}
+
+<div class="mt-3">
+    <button type="button"
+            class="btn btn-secondary btn-sm"
+            data-bs-toggle="modal"
+            data-bs-target="#modalAddLimiter"
+            disabled="@limiterActionsDisabled"
+            title="@(limiterActionsDisabled ? Model.PublishedPolicyLimiterMessage : null)">@T["Add Limiter"]</button>
+</div>

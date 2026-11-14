@@ -42,7 +42,7 @@ public sealed class TokenBucketRateLimiterDisplayDriver : DisplayDriver<RateLimi
             model.ReplenishmentPeriodSeconds = data.ReplenishmentPeriodSeconds;
             model.QueueProcessingOrder = data.QueueProcessingOrder;
             model.QueueProcessingOrders = GetQueueProcessingOrders();
-        }).Location("Content:5");
+        }).Location(l => l.Zone("Content", "5").Card(S["Limits"], "10"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(RateLimitLimiter limiter, UpdateEditorContext context)

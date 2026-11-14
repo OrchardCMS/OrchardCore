@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Notify;
@@ -21,6 +22,8 @@ public sealed class HttpsSettingsDisplayDriver : SiteDisplayDriver<HttpsSettings
     private readonly IAuthorizationService _authorizationService;
     private readonly INotifier _notifier;
 
+    internal readonly IStringLocalizer S;
+
     internal readonly IHtmlLocalizer H;
 
     public HttpsSettingsDisplayDriver(
@@ -28,13 +31,15 @@ public sealed class HttpsSettingsDisplayDriver : SiteDisplayDriver<HttpsSettings
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
         INotifier notifier,
-        IHtmlLocalizer<HttpsSettingsDisplayDriver> htmlLocalizer)
+        IHtmlLocalizer<HttpsSettingsDisplayDriver> htmlLocalizer,
+        IStringLocalizer<HttpsSettingsDisplayDriver> stringLocalizer)
     {
         _shellReleaseManager = shellReleaseManager;
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         _notifier = notifier;
         H = htmlLocalizer;
+        S = stringLocalizer;
     }
     protected override string SettingsGroupId
         => GroupId;
@@ -66,7 +71,7 @@ public sealed class HttpsSettingsDisplayDriver : SiteDisplayDriver<HttpsSettings
                             (isHttpsRequest && !settings.RequireHttps
                                 ? _httpContextAccessor.HttpContext.Request.Host.Port
                                 : null);
-        }).Location("Content:2")
+        }).Location(l => l.Zone("Content", "2").Card(S["General"], "10"))
         .OnGroup(GroupId);
     }
 

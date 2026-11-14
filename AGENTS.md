@@ -579,7 +579,8 @@ This applies to admin-facing Razor edit views such as:
 | Standard admin field row (default for all inputs) | `ocat-wrapper` + `ocat-label` + `ocat-end` |
 | Required field label | `ocat-label ocat-label-required` |
 | Checkbox or toggle with no left-column label | `ocat-wrapper` + `ocat-end-offset` |
-| Standalone alert, notice, or section headline inside an edit form | `ocat-wrapper` + `ocat-end-offset` |
+| Standalone alert or notice inside an edit form | `ocat-wrapper` + `ocat-end-offset` |
+| A group of fields (a section of the form) | A card declared by the placement of the shapes of display drivers, see [Cards](#cards) |
 | Limited-width row **only** for `type="number"` inputs or when the user explicitly requests compact width | `ocat-limited-wrapper` + `ocat-label` + `ocat-limited` |
 
 > **Default rule:** Always use the standard `ocat-wrapper` + `ocat-label` + `ocat-end` pattern unless the input is a `type="number"` field or the user explicitly asks for limited/compact width.
@@ -647,14 +648,13 @@ If the row also needs Orchard-specific wrapper classes such as `field-wrapper-*`
 </div>
 ```
 
-### Standalone alert or headline row
+### Standalone alert row
 
-Use `ocat-end-offset` for alerts, notices, legends, and headings that belong to the form but do not have a left-column label:
+Use `ocat-end-offset` for alerts and notices that belong to the form but do not have a left-column label. A heading starting a new section of the form is a card instead, see [Cards](#cards):
 
 ```cshtml
 <div class="ocat-wrapper">
     <div class="ocat-end-offset">
-        <h5>@T["Section heading"]</h5>
         <div class="alert alert-warning" role="alert">
             @T["Important guidance for this form section."]
         </div>
@@ -662,8 +662,18 @@ Use `ocat-end-offset` for alerts, notices, legends, and headings that belong to 
 </div>
 ```
 
+### Cards
+
+Every admin form groups its fields in cards, each a logical section of the form with a short title, so that a long form is easy to follow. Read the `orchardcore-admin-edit-views` skill in `.agents/skills/` before adding or changing an admin form.
+
+- **Screens built by display drivers** (site settings, users, content definition settings, workflow activities, deployment steps, ...): declare the card in the placement location of each editor shape, with a name localized by the driver, e.g. `.Location(l => l.Zone("Content", "1").Card(S["Server"], "10"))`. Shapes placed in the same card share it. Split a view holding several sections into one shape per card. Their views hold no card markup.
+- **Content item editors**: each content part is placed in a card titled with its display name, rendered by `ContentPart.Edit.cshtml`. Part and field editors don't declare cards; placement can group a field in a card of its part (`Parts.Product:5%Shipping`) or group parts in a card (`Parts:5%Metadata`).
+- **Admin pages with a form** (a controller editing a view model, e.g. a template or an OpenID application): the page renders an editor built by the display drivers of its view model, `@await DisplayAsync(Model.Editor)`, and the drivers place its shapes in cards. Follow `OrchardCore.Templates` (`TemplateController`, `TemplateDisplayDriver`) and the skill.
+- Cards are always expanded fieldsets: never group fields in accordions, collapses or `<details>`. In a tab, cards render as fieldsets titled by their legends, without a box, and the only card of a tab renders its fields directly.
+
 ### Avoid
 
+- A form, or a section of a form, outside of a card, card markup written in a view instead of a placement card, a heading row (`<h5>`, `<legend>`) starting a section, or fields grouped in an accordion or a collapse
 - `mb-3`, `form-group`, or `form-label` as the row layout pattern
 - Legacy helper methods such as `@Orchard.GetWrapperClasses()` or `@Orchard.GetLimitedWidthWrapperClasses()`
 - Using `ocat-limited-wrapper` for text inputs, selects, paths, IDs, or other non-number fields unless the user explicitly requests compact width

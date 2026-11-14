@@ -3,18 +3,19 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Theming;
+using OrchardCore.Elasticsearch.Core.Models;
+using OrchardCore.Elasticsearch.Drivers;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Indexing;
 using OrchardCore.Indexing.Models;
+using OrchardCore.Localization;
 using OrchardCore.Locking;
 using OrchardCore.Locking.Distributed;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Scripting;
-using OrchardCore.Elasticsearch.Core.Models;
-using OrchardCore.Elasticsearch.Drivers;
 using OrchardCore.Tests.Modules.OrchardCore.ContentFields.Settings;
 using OrchardCore.Tests.Stubs;
 
@@ -113,7 +114,7 @@ public partial class SettingsDisplayDriverTests
                 .ReturnsAsync(indexes);
 
             // Act
-            var shapeResult = await DisplayDriverTestHelper.GetShapeResultAsync(_shapeFactory, contentDefinition, new ContentPickerFieldElasticEditorSettingsDriver(storeMock.Object));
+            var shapeResult = await DisplayDriverTestHelper.GetShapeResultAsync(_shapeFactory, contentDefinition, new ContentPickerFieldElasticEditorSettingsDriver(storeMock.Object, new StringLocalizer<ContentPickerFieldElasticEditorSettingsDriver>(new NullStringLocalizerFactory())));
             var shape = (ContentPickerFieldElasticEditorSettings)shapeResult.Shape;
 
             // Assert

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.Handlers;
@@ -14,14 +15,18 @@ public sealed class ContentTypesAdminNodeDriver : DisplayDriver<MenuItem, Conten
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
 
+    internal readonly IStringLocalizer S;
+
     public ContentTypesAdminNodeDriver(
         IContentDefinitionManager contentDefinitionManager,
         IHttpContextAccessor httpContextAccessor,
-        IAuthorizationService authorizationService)
+        IAuthorizationService authorizationService,
+        IStringLocalizer<ContentTypesAdminNodeDriver> stringLocalizer)
     {
         _contentDefinitionManager = contentDefinitionManager;
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
+        S = stringLocalizer;
     }
 
     public override Task<IDisplayResult> DisplayAsync(ContentTypesAdminNode treeNode, BuildDisplayContext context)
@@ -47,7 +52,7 @@ public sealed class ContentTypesAdminNodeDriver : DisplayDriver<MenuItem, Conten
                 IsChecked = treeNode.ContentTypes.Any(selected => string.Equals(selected.ContentTypeName, x.Name, StringComparison.OrdinalIgnoreCase)),
                 IconClass = treeNode.ContentTypes.FirstOrDefault(selected => selected.ContentTypeName == x.Name)?.IconClass ?? string.Empty,
             }).ToArray();
-        }).Location("Content");
+        }).Location(l => l.Zone("Content").Card(S["Content types"], "10"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentTypesAdminNode treeNode, UpdateEditorContext context)

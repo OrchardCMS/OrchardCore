@@ -9,6 +9,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
@@ -29,6 +30,8 @@ public sealed class AdminController : Controller
     private readonly INotifier _notifier;
     private readonly IShapeFactory _shapeFactory;
     private readonly PagerOptions _pagerOptions;
+    private readonly IDisplayManager<SecretEditViewModel> _secretDisplayManager;
+    private readonly IUpdateModelAccessor _updateModelAccessor;
 
     internal readonly IStringLocalizer S;
     internal readonly IHtmlLocalizer H;
@@ -41,7 +44,9 @@ public sealed class AdminController : Controller
         IShapeFactory shapeFactory,
         IOptions<PagerOptions> pagerOptions,
         IStringLocalizer<AdminController> stringLocalizer,
-        IHtmlLocalizer<AdminController> htmlLocalizer)
+        IHtmlLocalizer<AdminController> htmlLocalizer,
+        IDisplayManager<SecretEditViewModel> secretDisplayManager,
+        IUpdateModelAccessor updateModelAccessor)
     {
         _secretManager = secretManager;
         _secretTypeProviders = secretTypeProviders;
@@ -51,6 +56,8 @@ public sealed class AdminController : Controller
         _pagerOptions = pagerOptions.Value;
         S = stringLocalizer;
         H = htmlLocalizer;
+        _secretDisplayManager = secretDisplayManager;
+        _updateModelAccessor = updateModelAccessor;
     }
 
     public async Task<IActionResult> Index(SecretIndexOptions options, PagerParameters pagerParameters)
@@ -252,6 +259,8 @@ public sealed class AdminController : Controller
         };
         model.Store = model.AvailableStores.FirstOrDefault();
 
+        model.Editor = await _secretDisplayManager.BuildEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: true);
+
         return View(nameof(Edit), model);
     }
 
@@ -291,6 +300,15 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
+        model.IsNew = true;
+        model.SecretTypeDisplayName = provider.DisplayName;
+        model.AvailableStores = _secretManager.GetStores()
+            .Where(s => !s.IsReadOnly)
+            .Select(s => s.Name)
+            .ToList();
+
+        model.Editor = await _secretDisplayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: true);
+
         // Check if secret already exists
         var infos = await _secretManager.GetSecretInfosAsync();
         if (infos.Any(info => info.Name.Equals(model.Name, StringComparison.OrdinalIgnoreCase)))
@@ -313,13 +331,6 @@ public sealed class AdminController : Controller
             await _notifier.SuccessAsync(H["Secret created successfully."]);
             return RedirectToAction(nameof(Index));
         }
-
-        model.IsNew = true;
-        model.SecretTypeDisplayName = provider.DisplayName;
-        model.AvailableStores = _secretManager.GetStores()
-            .Where(s => !s.IsReadOnly)
-            .Select(s => s.Name)
-            .ToList();
 
         return View(nameof(Edit), model);
     }
@@ -375,6 +386,8 @@ public sealed class AdminController : Controller
         // Populate type-specific fields from secret
         PopulateModelFromSecret(model, secret);
 
+        model.Editor = await _secretDisplayManager.BuildEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: false);
+
         return View(model);
     }
 
@@ -408,6 +421,15 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
+        model.SecretTypeDisplayName = provider.DisplayName;
+        model.IsNew = false;
+        model.AvailableStores = _secretManager.GetStores()
+            .Where(s => !s.IsReadOnly)
+            .Select(s => s.Name)
+            .ToList();
+
+        model.Editor = await _secretDisplayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: false);
+
         // Validate type-specific requirements
         ValidateSecretModel(model, existingSecret);
 
@@ -423,13 +445,6 @@ public sealed class AdminController : Controller
             await _notifier.SuccessAsync(H["Secret updated successfully."]);
             return RedirectToAction(nameof(Index));
         }
-
-        model.SecretTypeDisplayName = provider.DisplayName;
-        model.IsNew = false;
-        model.AvailableStores = _secretManager.GetStores()
-            .Where(s => !s.IsReadOnly)
-            .Select(s => s.Name)
-            .ToList();
 
         return View(model);
     }

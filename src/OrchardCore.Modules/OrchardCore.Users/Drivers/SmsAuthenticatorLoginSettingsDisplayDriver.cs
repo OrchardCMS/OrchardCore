@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -17,14 +18,18 @@ public sealed class SmsAuthenticatorLoginSettingsDisplayDriver : SiteDisplayDriv
     private readonly IAuthorizationService _authorizationService;
     private readonly ILiquidTemplateManager _liquidTemplateManager;
 
+    internal readonly IStringLocalizer S;
+
     public SmsAuthenticatorLoginSettingsDisplayDriver(
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
-        ILiquidTemplateManager liquidTemplateManager)
+        ILiquidTemplateManager liquidTemplateManager,
+        IStringLocalizer<SmsAuthenticatorLoginSettingsDisplayDriver> stringLocalizer)
     {
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         _liquidTemplateManager = liquidTemplateManager;
+        S = stringLocalizer;
     }
 
     protected override string SettingsGroupId
@@ -37,7 +42,7 @@ public sealed class SmsAuthenticatorLoginSettingsDisplayDriver : SiteDisplayDriv
             model.Body = string.IsNullOrWhiteSpace(settings.Body)
             ? EmailAuthenticatorLoginSettings.DefaultBody
             : settings.Body;
-        }).Location("Content:15#Two-Factor Authentication")
+        }).Location(l => l.Zone("Content", "15").Tab("Two-Factor Authentication").Card(S["SMS authenticator"], "50"))
         .RenderWhen(static (driver) => driver._authorizationService.AuthorizeAsync(driver._httpContextAccessor.HttpContext?.User, UsersPermissions.ManageUsers), this)
         .OnGroup(SettingsGroupId);
     }

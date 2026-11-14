@@ -1,0 +1,24 @@
+@using OrchardCore.Modules
+
+@model SiteSettingsViewModel
+
+@inject ITimeZoneSelectListProvider TimeZoneSelectListProvider
+@{
+    var timeZoneSelectList = (await TimeZoneSelectListProvider.GetTimeZoneSelectListAsync())
+        .Select(item => new SelectListItem
+        {
+            Value = item.Key,
+            Text = item.Value
+        });
+}
+
+<div class="ocat-limited-wrapper" asp-validation-class-for="TimeZone">
+    <label asp-for="TimeZone" class="ocat-label">@T["Default Time Zone"]</label>
+    <div class="ocat-limited">
+        <select asp-for="TimeZone" class="form-select" asp-items="timeZoneSelectList">
+            <option value="">@T["Local to server"]</option>
+        </select>
+        <span asp-validation-for="TimeZone"></span>
+        <span class="hint">@T["Determines the default time zone used when displaying and editing dates and times. DST (daylight saving time) will be applied automatically per time zone if available."]</span>
+    </div>
+</div>

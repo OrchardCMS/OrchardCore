@@ -21,6 +21,16 @@ msgctxt "OrchardCore.AdminMenu.AdminMenuLocalizationSources"
 msgid "Admin Menus"
 msgstr ""
 
+#: AdminNodes/LinkAdminNodeDriver.cs
+msgctxt "OrchardCore.AdminMenu.AdminNodes.LinkAdminNodeDriver"
+msgid "Link"
+msgstr ""
+
+#: AdminNodes/PlaceholderAdminNodeDriver.cs
+msgctxt "OrchardCore.AdminMenu.AdminNodes.PlaceholderAdminNodeDriver"
+msgid "Placeholder"
+msgstr ""
+
 #: Controllers/MenuController.cs
 msgctxt "OrchardCore.AdminMenu.Controllers.MenuController"
 msgid "Admin menu deleted successfully."
@@ -86,6 +96,26 @@ msgctxt "OrchardCore.AdminMenu.Controllers.NodeController"
 msgid "The admin node has validation errors."
 msgstr ""
 
+#: Deployment/AdminMenuDeploymentStepDriver.cs
+msgctxt "OrchardCore.AdminMenu.Deployment.AdminMenuDeploymentStepDriver"
+msgid "Admin menus"
+msgstr ""
+
+#: Drivers/AdminMenuCreateDisplayDriver.cs
+msgctxt "OrchardCore.AdminMenu.Drivers.AdminMenuCreateDisplayDriver"
+msgid "General"
+msgstr ""
+
+#: Drivers/AdminMenuEditDisplayDriver.cs
+msgctxt "OrchardCore.AdminMenu.Drivers.AdminMenuEditDisplayDriver"
+msgid "General"
+msgstr ""
+
+#: Drivers/AdminNodePositionDisplayDriver.cs
+msgctxt "OrchardCore.AdminMenu.Drivers.AdminNodePositionDisplayDriver"
+msgid "Position"
+msgstr ""
+
 #. Format arguments: {0}
 #: Permissions.cs
 #, csharp-format
@@ -111,6 +141,16 @@ msgstr ""
 #: Services/AdminMenuJSLocalizer.cs
 msgctxt "OrchardCore.AdminMenu.Services.AdminMenuJSLocalizer"
 msgid "Type to search"
+msgstr ""
+
+#: Views/AdminMenuCreateGeneral.Edit.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.AdminMenuCreateGeneral.Edit"
+msgid "Name"
+msgstr ""
+
+#: Views/AdminMenuEditGeneral.Edit.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.AdminMenuEditGeneral.Edit"
+msgid "Name"
 msgstr ""
 
 #: Views/AdminMenuEntry.ActionsMenuItems.SummaryAdmin.cshtml
@@ -153,6 +193,31 @@ msgctxt "OrchardCore.AdminMenu.Views.AdminMenuEntry.DefaultTags.SummaryAdmin"
 msgid "Status"
 msgstr ""
 
+#: Views/AdminNodePosition.Edit.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.AdminNodePosition.Edit"
+msgid "Position Order"
+msgstr ""
+
+#: Views/AdminNodePosition.Edit.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.AdminNodePosition.Edit"
+msgid "Selection Priority"
+msgstr ""
+
+#: Views/AdminNodePosition.Edit.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.AdminNodePosition.Edit"
+msgid "The position order of this link in the admin menu."
+msgstr ""
+
+#: Views/AdminNodePosition.Edit.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.AdminNodePosition.Edit"
+msgid "The priority of this link to be displayed as active instead of another one when both are pointing to the same url. The link with the highest value has the active status in the navigation."
+msgstr ""
+
+#: Views/Items/AdminMenuDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Items.AdminMenuDeploymentStep.Fields.Edit"
+msgid "Adds all the admin menus to the plan."
+msgstr ""
+
 #: Views/Items/AdminMenuDeploymentStep.Fields.Summary.cshtml
 msgctxt "OrchardCore.AdminMenu.Views.Items.AdminMenuDeploymentStep.Fields.Summary"
 msgid "Adds all admin menus to the plan."
@@ -176,11 +241,6 @@ msgstr ""
 #: Views/Items/LinkAdminNode.Fields.TreeEdit.cshtml
 msgctxt "OrchardCore.AdminMenu.Views.Items.LinkAdminNode.Fields.TreeEdit"
 msgid "Icon"
-msgstr ""
-
-#: Views/Items/LinkAdminNode.Fields.TreeEdit.cshtml
-msgctxt "OrchardCore.AdminMenu.Views.Items.LinkAdminNode.Fields.TreeEdit"
-msgid "Link"
 msgstr ""
 
 #: Views/Items/LinkAdminNode.Fields.TreeEdit.cshtml
@@ -300,11 +360,6 @@ msgstr ""
 
 #: Views/Items/PlaceholderAdminNode.Fields.TreeEdit.cshtml
 msgctxt "OrchardCore.AdminMenu.Views.Items.PlaceholderAdminNode.Fields.TreeEdit"
-msgid "Placeholder"
-msgstr ""
-
-#: Views/Items/PlaceholderAdminNode.Fields.TreeEdit.cshtml
-msgctxt "OrchardCore.AdminMenu.Views.Items.PlaceholderAdminNode.Fields.TreeEdit"
 msgid "Select an icon to display when this menu item is at the first level."
 msgstr ""
 
@@ -353,11 +408,6 @@ msgctxt "OrchardCore.AdminMenu.Views.Menu.Create"
 msgid "Create Admin Menu"
 msgstr ""
 
-#: Views/Menu/Create.cshtml
-msgctxt "OrchardCore.AdminMenu.Views.Menu.Create"
-msgid "Name"
-msgstr ""
-
 #: Views/Menu/Edit.cshtml
 msgctxt "OrchardCore.AdminMenu.Views.Menu.Edit"
 msgid "Admin Menus"
@@ -378,11 +428,6 @@ msgstr ""
 #: Views/Menu/Edit.cshtml
 msgctxt "OrchardCore.AdminMenu.Views.Menu.Edit"
 msgid "Edit Admin Nodes"
-msgstr ""
-
-#: Views/Menu/Edit.cshtml
-msgctxt "OrchardCore.AdminMenu.Views.Menu.Edit"
-msgid "Name"
 msgstr ""
 
 #: Views/Menu/Edit.cshtml
@@ -499,6 +544,11 @@ msgctxt "OrchardCore.AdminMenu.Views.Node.Create"
 msgid "Edit Nodes for '{0}'"
 msgstr ""
 
+#: Views/Node/Create.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Node.Create"
+msgid "General"
+msgstr ""
+
 #: Views/Node/Edit.cshtml
 msgctxt "OrchardCore.AdminMenu.Views.Node.Edit"
 msgid "Admin Menus"
@@ -528,7 +578,7 @@ msgstr ""
 
 #: Views/Node/Edit.cshtml
 msgctxt "OrchardCore.AdminMenu.Views.Node.Edit"
-msgid "Position Order"
+msgid "General"
 msgstr ""
 
 #: Views/Node/Edit.cshtml
@@ -544,21 +594,6 @@ msgstr ""
 #: Views/Node/Edit.cshtml
 msgctxt "OrchardCore.AdminMenu.Views.Node.Edit"
 msgid "Save and continue"
-msgstr ""
-
-#: Views/Node/Edit.cshtml
-msgctxt "OrchardCore.AdminMenu.Views.Node.Edit"
-msgid "Selection Priority"
-msgstr ""
-
-#: Views/Node/Edit.cshtml
-msgctxt "OrchardCore.AdminMenu.Views.Node.Edit"
-msgid "The position order of this link in the admin menu."
-msgstr ""
-
-#: Views/Node/Edit.cshtml
-msgctxt "OrchardCore.AdminMenu.Views.Node.Edit"
-msgid "The priority of this link to be displayed as active instead of another one when both are pointing to the same url. The link with the highest value has the active status in the navigation."
 msgstr ""
 
 #: Views/Node/Edit.cshtml

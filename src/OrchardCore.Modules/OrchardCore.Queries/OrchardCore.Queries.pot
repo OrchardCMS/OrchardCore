@@ -53,6 +53,11 @@ msgstr ""
 
 #: Deployment/QueryBasedContentDeploymentStepDriver.cs
 msgctxt "OrchardCore.Queries.Deployment.QueryBasedContentDeploymentStepDriver"
+msgid "Query"
+msgstr ""
+
+#: Deployment/QueryBasedContentDeploymentStepDriver.cs
+msgctxt "OrchardCore.Queries.Deployment.QueryBasedContentDeploymentStepDriver"
 msgid "Something is wrong with your JSON."
 msgstr ""
 
@@ -64,6 +69,16 @@ msgstr ""
 #: Drivers/QueryDisplayDriver.cs
 msgctxt "OrchardCore.Queries.Drivers.QueryDisplayDriver"
 msgid "A query with the same name already exists"
+msgstr ""
+
+#: Drivers/QueryDisplayDriver.cs
+msgctxt "OrchardCore.Queries.Drivers.QueryDisplayDriver"
+msgid "General"
+msgstr ""
+
+#: Drivers/QueryDisplayDriver.cs
+msgctxt "OrchardCore.Queries.Drivers.QueryDisplayDriver"
+msgid "GraphQL"
 msgstr ""
 
 #: Drivers/QueryDisplayDriver.cs
@@ -134,7 +149,17 @@ msgstr ""
 
 #: Sql/Drivers/SqlQueryDisplayDriver.cs
 msgctxt "OrchardCore.Queries.Sql.Drivers.SqlQueryDisplayDriver"
+msgid "Query"
+msgstr ""
+
+#: Sql/Drivers/SqlQueryDisplayDriver.cs
+msgctxt "OrchardCore.Queries.Sql.Drivers.SqlQueryDisplayDriver"
 msgid "The query field is required"
+msgstr ""
+
+#: Sql/Drivers/SqlQueryRunnerDisplayDriver.cs
+msgctxt "OrchardCore.Queries.Sql.Drivers.SqlQueryRunnerDisplayDriver"
+msgid "Query"
 msgstr ""
 
 #. Format arguments: {0}: query.Source; {1}: query.Name
@@ -230,22 +255,12 @@ msgstr ""
 
 #: Views/Admin/Query.cshtml
 msgctxt "OrchardCore.Queries.Views.Admin.Query"
-msgid "An optional Json object containing the parameter values for this query."
-msgstr ""
-
-#: Views/Admin/Query.cshtml
-msgctxt "OrchardCore.Queries.Views.Admin.Query"
 msgid "Create"
 msgstr ""
 
 #: Views/Admin/Query.cshtml
 msgctxt "OrchardCore.Queries.Views.Admin.Query"
 msgid "Final SQL Query"
-msgstr ""
-
-#: Views/Admin/Query.cshtml
-msgctxt "OrchardCore.Queries.Views.Admin.Query"
-msgid "Parameters"
 msgstr ""
 
 #: Views/Admin/Query.cshtml
@@ -272,24 +287,7 @@ msgstr ""
 
 #: Views/Admin/Query.cshtml
 msgctxt "OrchardCore.Queries.Views.Admin.Query"
-msgid "Template"
-msgstr ""
-
-#: Views/Admin/Query.cshtml
-msgctxt "OrchardCore.Queries.Views.Admin.Query"
-msgid "The SQL query uses standard SQL92 syntax and is converted based on the actual database. Tables will be prefixed automatically."
-msgstr ""
-
-#: Views/Admin/Query.cshtml
-msgctxt "OrchardCore.Queries.Views.Admin.Query"
 msgid "The query as it will be executed by the SQL database."
-msgstr ""
-
-#. Format arguments: {0}: Html.Raw(Url.Action("Query", "Admin", new { area = "OrchardCore.Queries", Query = matchAllQuery }))
-#: Views/Admin/Query.cshtml
-#, csharp-format
-msgctxt "OrchardCore.Queries.Views.Admin.Query"
-msgid "You can <a href=\"{0}\">click here</a> to query all content items."
 msgstr ""
 
 #: Views/Items/AllQueriesDeploymentStep.Edit.cshtml
@@ -414,22 +412,22 @@ msgstr ""
 
 #: Views/Query.Fields.Edit.cshtml
 msgctxt "OrchardCore.Queries.Views.Query.Fields.Edit"
+msgid "The technical name of the query."
+msgstr ""
+
+#: Views/QuerySchema.Edit.cshtml
+msgctxt "OrchardCore.Queries.Views.QuerySchema.Edit"
 msgid "Schema"
 msgstr ""
 
-#: Views/Query.Fields.Edit.cshtml
-msgctxt "OrchardCore.Queries.Views.Query.Fields.Edit"
+#: Views/QuerySchema.Edit.cshtml
+msgctxt "OrchardCore.Queries.Views.QuerySchema.Edit"
 msgid "See documentation"
 msgstr ""
 
-#: Views/Query.Fields.Edit.cshtml
-msgctxt "OrchardCore.Queries.Views.Query.Fields.Edit"
+#: Views/QuerySchema.Edit.cshtml
+msgctxt "OrchardCore.Queries.Views.QuerySchema.Edit"
 msgid "The schema the GraphQL API will use to return results."
-msgstr ""
-
-#: Views/Query.Fields.Edit.cshtml
-msgctxt "OrchardCore.Queries.Views.Query.Fields.Edit"
-msgid "The technical name of the query."
 msgstr ""
 
 #: Views/SqlQuery.Buttons.SummaryAdmin.cshtml
@@ -480,4 +478,31 @@ msgstr ""
 #: Views/SqlQuery.SummaryAdmin.cshtml
 msgctxt "OrchardCore.Queries.Views.SqlQuery.SummaryAdmin"
 msgid "Source"
+msgstr ""
+
+#: Views/SqlQueryRunner.Edit.cshtml
+msgctxt "OrchardCore.Queries.Views.SqlQueryRunner.Edit"
+msgid "An optional Json object containing the parameter values for this query."
+msgstr ""
+
+#: Views/SqlQueryRunner.Edit.cshtml
+msgctxt "OrchardCore.Queries.Views.SqlQueryRunner.Edit"
+msgid "Parameters"
+msgstr ""
+
+#: Views/SqlQueryRunner.Edit.cshtml
+msgctxt "OrchardCore.Queries.Views.SqlQueryRunner.Edit"
+msgid "Template"
+msgstr ""
+
+#: Views/SqlQueryRunner.Edit.cshtml
+msgctxt "OrchardCore.Queries.Views.SqlQueryRunner.Edit"
+msgid "The SQL query uses standard SQL92 syntax and is converted based on the actual database. Tables will be prefixed automatically."
+msgstr ""
+
+#. Format arguments: {0}: Html.Raw(Url.Action("Query", "Admin", new { area = "OrchardCore.Queries", Query = matchAllQuery }))
+#: Views/SqlQueryRunner.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Queries.Views.SqlQueryRunner.Edit"
+msgid "You can <a href=\"{0}\">click here</a> to query all content items."
 msgstr ""

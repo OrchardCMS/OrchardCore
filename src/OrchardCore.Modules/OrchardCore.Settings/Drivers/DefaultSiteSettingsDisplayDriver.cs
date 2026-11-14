@@ -48,13 +48,19 @@ public sealed class DefaultSiteSettingsDisplayDriver : DisplayDriver<ISite>
 
         var result = Combine(
             Initialize<SiteSettingsViewModel>("Settings_Edit__Site", model => PopulateProperties(site, model))
-                .Location("Content:1#Site;10")
+                .Location(l => l.Zone("Content", "1").Tab(S["Site"], "10").Card(S["General"], "10"))
+                .OnGroup(GroupId),
+            Initialize<SiteSettingsViewModel>("Settings_Edit__TimeZone", model => PopulateProperties(site, model))
+                .Location(l => l.Zone("Content", "2").Tab(S["Site"], "10").Card(S["Regional settings"], "20"))
+                .OnGroup(GroupId),
+            Initialize<SiteSettingsViewModel>("Settings_Edit__Pagination", model => PopulateProperties(site, model))
+                .Location(l => l.Zone("Content", "3").Tab(S["Site"], "10").Card(S["Pagination"], "30"))
                 .OnGroup(GroupId),
             Initialize<SiteSettingsViewModel>("Settings_Edit__Resources", model => PopulateProperties(site, model))
-                .Location("Content:1#Resources;20")
+                .Location(l => l.Zone("Content", "1").Tab(S["Resources"], "20").Card(S["Scripts and stylesheets"], "10"))
                 .OnGroup(GroupId),
             Initialize<SiteSettingsViewModel>("Settings_Edit__Cache", model => PopulateProperties(site, model))
-                .Location("Content:1#Cache;30")
+                .Location(l => l.Zone("Content", "1").Tab(S["Cache"], "30").Card(S["Dynamic cache"], "10"))
                 .OnGroup(GroupId)
         );
 

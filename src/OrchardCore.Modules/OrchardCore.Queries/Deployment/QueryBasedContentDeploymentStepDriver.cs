@@ -39,7 +39,7 @@ public sealed class QueryBasedContentDeploymentStepDriver : DisplayDriver<Deploy
             model.QueryParameters = step.QueryParameters;
             model.ExportAsSetupRecipe = step.ExportAsSetupRecipe;
             model.Queries = await _queryManager.ListQueriesAsync(true);
-        }).Location("Content");
+        }).Location(l => l.Zone("Content").Card(S["Query"], "10"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(QueryBasedContentDeploymentStep step, UpdateEditorContext context)

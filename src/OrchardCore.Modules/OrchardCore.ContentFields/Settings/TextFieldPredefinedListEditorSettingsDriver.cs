@@ -27,7 +27,7 @@ public sealed class TextFieldPredefinedListEditorSettingsDriver : ContentPartFie
             model.DefaultValue = settings.DefaultValue;
             model.Editor = settings.Editor;
             model.Options = JConvert.SerializeObject(settings.Options ?? [], JOptions.Indented);
-        }).Location("Editor");
+        }).Location(l => l.Zone("Editor").Card(S["Editor"], "30"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
@@ -88,7 +88,7 @@ public sealed class TextFieldPredefinedListEditorSettingsDriver : ContentPartFie
                 m.DefaultValue = model.DefaultValue;
                 m.Editor = model.Editor;
                 m.Options = model.Options;
-            }).Location("Editor");
+            }).Location(l => l.Zone("Editor").Card(S["Editor"], "30"));
         }
 
         return Edit(partFieldDefinition, context);

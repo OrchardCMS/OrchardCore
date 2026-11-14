@@ -77,6 +77,31 @@ msgctxt "OrchardCore.Roles.Controllers.AdminController"
 msgid "{0} Feature"
 msgstr ""
 
+#: Drivers/CloneRoleDisplayDriver.cs
+msgctxt "OrchardCore.Roles.Drivers.CloneRoleDisplayDriver"
+msgid "General"
+msgstr ""
+
+#: Drivers/CloneRoleDisplayDriver.cs
+msgctxt "OrchardCore.Roles.Drivers.CloneRoleDisplayDriver"
+msgid "Permissions"
+msgstr ""
+
+#: Drivers/CreateRoleDisplayDriver.cs
+msgctxt "OrchardCore.Roles.Drivers.CreateRoleDisplayDriver"
+msgid "General"
+msgstr ""
+
+#: Drivers/EditRoleDisplayDriver.cs
+msgctxt "OrchardCore.Roles.Drivers.EditRoleDisplayDriver"
+msgid "General"
+msgstr ""
+
+#: Drivers/EditRoleDisplayDriver.cs
+msgctxt "OrchardCore.Roles.Drivers.EditRoleDisplayDriver"
+msgid "Permissions"
+msgstr ""
+
 #: Services/RoleStore.cs
 msgctxt "OrchardCore.Roles.Services.RoleStore"
 msgid "Can't delete system roles."
@@ -99,16 +124,6 @@ msgstr ""
 #, csharp-format
 msgctxt "OrchardCore.Roles.Views.Admin.Clone"
 msgid "Clone '{0}' Role"
-msgstr ""
-
-#: Views/Admin/Clone.cshtml
-msgctxt "OrchardCore.Roles.Views.Admin.Clone"
-msgid "Description"
-msgstr ""
-
-#: Views/Admin/Clone.cshtml
-msgctxt "OrchardCore.Roles.Views.Admin.Clone"
-msgid "Role name"
 msgstr ""
 
 #: Views/Admin/Clone.cshtml
@@ -138,16 +153,6 @@ msgstr ""
 
 #: Views/Admin/Create.cshtml
 msgctxt "OrchardCore.Roles.Views.Admin.Create"
-msgid "Description"
-msgstr ""
-
-#: Views/Admin/Create.cshtml
-msgctxt "OrchardCore.Roles.Views.Admin.Create"
-msgid "Name"
-msgstr ""
-
-#: Views/Admin/Create.cshtml
-msgctxt "OrchardCore.Roles.Views.Admin.Create"
 msgid "Roles"
 msgstr ""
 
@@ -169,11 +174,6 @@ msgstr ""
 #: Views/Admin/Edit.cshtml
 msgctxt "OrchardCore.Roles.Views.Admin.Edit"
 msgid "Cancel"
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.Roles.Views.Admin.Edit"
-msgid "Description"
 msgstr ""
 
 #. Format arguments: {0}: Model.Role.RoleName
@@ -345,6 +345,31 @@ msgstr ""
 #: Views/Admin/_RolePermissions.cshtml
 msgctxt "OrchardCore.Roles.Views.Admin._RolePermissions"
 msgid "This system role provides comprehensive access by granting all available permissions."
+msgstr ""
+
+#: Views/CloneRoleGeneral.Edit.cshtml
+msgctxt "OrchardCore.Roles.Views.CloneRoleGeneral.Edit"
+msgid "Description"
+msgstr ""
+
+#: Views/CloneRoleGeneral.Edit.cshtml
+msgctxt "OrchardCore.Roles.Views.CloneRoleGeneral.Edit"
+msgid "Role name"
+msgstr ""
+
+#: Views/CreateRoleGeneral.Edit.cshtml
+msgctxt "OrchardCore.Roles.Views.CreateRoleGeneral.Edit"
+msgid "Description"
+msgstr ""
+
+#: Views/CreateRoleGeneral.Edit.cshtml
+msgctxt "OrchardCore.Roles.Views.CreateRoleGeneral.Edit"
+msgid "Name"
+msgstr ""
+
+#: Views/EditRoleGeneral.Edit.cshtml
+msgctxt "OrchardCore.Roles.Views.EditRoleGeneral.Edit"
+msgid "Description"
 msgstr ""
 
 #: Views/Items/AllRolesDeploymentStep.Edit.cshtml

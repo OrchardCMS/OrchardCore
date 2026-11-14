@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -16,14 +17,18 @@ public class AzureADSettingsDisplayDriver : SiteDisplayDriver<AzureADSettings>
     private readonly IAuthorizationService _authorizationService;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
+    internal readonly IStringLocalizer S;
+
     public AzureADSettingsDisplayDriver(
         IShellReleaseManager shellReleaseManager,
         IAuthorizationService authorizationService,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        IStringLocalizer<AzureADSettingsDisplayDriver> stringLocalizer)
     {
         _shellReleaseManager = shellReleaseManager;
         _authorizationService = authorizationService;
         _httpContextAccessor = httpContextAccessor;
+        S = stringLocalizer;
     }
 
     protected override string SettingsGroupId
@@ -47,7 +52,7 @@ public class AzureADSettingsDisplayDriver : SiteDisplayDriver<AzureADSettings>
             {
                 model.CallbackPath = settings.CallbackPath.Value;
             }
-        }).Location("Content:0")
+        }).Location(l => l.Zone("Content", "0").Card(S["Application"], "10"))
         .OnGroup(SettingsGroupId);
     }
 

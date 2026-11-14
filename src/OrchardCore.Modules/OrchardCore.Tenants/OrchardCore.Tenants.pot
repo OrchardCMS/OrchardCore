@@ -227,6 +227,31 @@ msgctxt "OrchardCore.Tenants.Controllers.TenantApiController"
 msgid "You can only remove a 'Disabled' or an 'Uninitialized' tenant."
 msgstr ""
 
+#: Drivers/EditTenantDisplayDriver.cs
+msgctxt "OrchardCore.Tenants.Drivers.EditTenantDisplayDriver"
+msgid "Features"
+msgstr ""
+
+#: Drivers/EditTenantDisplayDriver.cs
+msgctxt "OrchardCore.Tenants.Drivers.EditTenantDisplayDriver"
+msgid "General"
+msgstr ""
+
+#: Drivers/EditTenantDisplayDriver.cs
+msgctxt "OrchardCore.Tenants.Drivers.EditTenantDisplayDriver"
+msgid "Setup presets"
+msgstr ""
+
+#: Drivers/EditTenantDisplayDriver.cs
+msgctxt "OrchardCore.Tenants.Drivers.EditTenantDisplayDriver"
+msgid "URL"
+msgstr ""
+
+#: Drivers/FeatureProfileDisplayDriver.cs
+msgctxt "OrchardCore.Tenants.Drivers.FeatureProfileDisplayDriver"
+msgid "General"
+msgstr ""
+
 #: FeatureProfilesAdminMenu.cs
 msgctxt "OrchardCore.Tenants.FeatureProfilesAdminMenu"
 msgid "Feature Profiles"
@@ -377,17 +402,7 @@ msgstr ""
 
 #: Views/Admin/Create.cshtml
 msgctxt "OrchardCore.Tenants.Views.Admin.Create"
-msgid "Name"
-msgstr ""
-
-#: Views/Admin/Create.cshtml
-msgctxt "OrchardCore.Tenants.Views.Admin.Create"
 msgid "Tenants"
-msgstr ""
-
-#: Views/Admin/Create.cshtml
-msgctxt "OrchardCore.Tenants.Views.Admin.Create"
-msgid "The name of the tenant."
 msgstr ""
 
 #: Views/Admin/Edit.cshtml
@@ -402,22 +417,12 @@ msgstr ""
 
 #: Views/Admin/Edit.cshtml
 msgctxt "OrchardCore.Tenants.Views.Admin.Edit"
-msgid "Name"
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.Tenants.Views.Admin.Edit"
 msgid "Save"
 msgstr ""
 
 #: Views/Admin/Edit.cshtml
 msgctxt "OrchardCore.Tenants.Views.Admin.Edit"
 msgid "Tenants"
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.Tenants.Views.Admin.Edit"
-msgid "The name of the tenant."
 msgstr ""
 
 #: Views/Admin/Index.cshtml
@@ -490,6 +495,33 @@ msgctxt "OrchardCore.Tenants.Views.FeatureProfileEntry.Buttons.SummaryAdmin"
 msgid "Edit"
 msgstr ""
 
+#: Views/FeatureProfileGeneral.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.FeatureProfileGeneral.Edit"
+msgid "Name"
+msgstr ""
+
+#: Views/FeatureProfileGeneral.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.FeatureProfileGeneral.Edit"
+msgid "Rules"
+msgstr ""
+
+#. Format arguments: {0}: "OrchardCore.Flows"
+#: Views/FeatureProfileGeneral.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Tenants.Views.FeatureProfileGeneral.Edit"
+msgid "The feature rules. Here is an example if a rule that would exclude '{0}' feature."
+msgstr ""
+
+#: Views/FeatureProfileGeneral.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.FeatureProfileGeneral.Edit"
+msgid "The name of the feature profile."
+msgstr ""
+
+#: Views/FeatureProfiles/Create.cshtml
+msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.Create"
+msgid "Cancel"
+msgstr ""
+
 #: Views/FeatureProfiles/Create.cshtml
 msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.Create"
 msgid "Create Feature Profile"
@@ -498,6 +530,36 @@ msgstr ""
 #: Views/FeatureProfiles/Create.cshtml
 msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.Create"
 msgid "Feature Profiles"
+msgstr ""
+
+#: Views/FeatureProfiles/Create.cshtml
+msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.Create"
+msgid "Save"
+msgstr ""
+
+#: Views/FeatureProfiles/Create.cshtml
+msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.Create"
+msgid "Save actions"
+msgstr ""
+
+#: Views/FeatureProfiles/Create.cshtml
+msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.Create"
+msgid "Save and continue"
+msgstr ""
+
+#: Views/FeatureProfiles/Create.cshtml
+msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.Create"
+msgid "Toggle Dropdown"
+msgstr ""
+
+#: Views/FeatureProfiles/Create.cshtml
+msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.Create"
+msgid "and continue"
+msgstr ""
+
+#: Views/FeatureProfiles/Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.Edit"
+msgid "Cancel"
 msgstr ""
 
 #: Views/FeatureProfiles/Edit.cshtml
@@ -510,55 +572,28 @@ msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.Edit"
 msgid "Feature Profiles"
 msgstr ""
 
-#: Views/FeatureProfiles/EditorTemplates/FeatureProfileViewModel.cshtml
-msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.EditorTemplates.FeatureProfileViewModel"
-msgid "Cancel"
-msgstr ""
-
-#: Views/FeatureProfiles/EditorTemplates/FeatureProfileViewModel.cshtml
-msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.EditorTemplates.FeatureProfileViewModel"
-msgid "Name"
-msgstr ""
-
-#: Views/FeatureProfiles/EditorTemplates/FeatureProfileViewModel.cshtml
-msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.EditorTemplates.FeatureProfileViewModel"
-msgid "Rules"
-msgstr ""
-
-#: Views/FeatureProfiles/EditorTemplates/FeatureProfileViewModel.cshtml
-msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.EditorTemplates.FeatureProfileViewModel"
+#: Views/FeatureProfiles/Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.Edit"
 msgid "Save"
 msgstr ""
 
-#: Views/FeatureProfiles/EditorTemplates/FeatureProfileViewModel.cshtml
-msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.EditorTemplates.FeatureProfileViewModel"
+#: Views/FeatureProfiles/Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.Edit"
 msgid "Save actions"
 msgstr ""
 
-#: Views/FeatureProfiles/EditorTemplates/FeatureProfileViewModel.cshtml
-msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.EditorTemplates.FeatureProfileViewModel"
+#: Views/FeatureProfiles/Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.Edit"
 msgid "Save and continue"
 msgstr ""
 
-#. Format arguments: {0}: "OrchardCore.Flows"
-#: Views/FeatureProfiles/EditorTemplates/FeatureProfileViewModel.cshtml
-#, csharp-format
-msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.EditorTemplates.FeatureProfileViewModel"
-msgid "The feature rules. Here is an example if a rule that would exclude '{0}' feature."
-msgstr ""
-
-#: Views/FeatureProfiles/EditorTemplates/FeatureProfileViewModel.cshtml
-msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.EditorTemplates.FeatureProfileViewModel"
-msgid "The name of the feature profile."
-msgstr ""
-
-#: Views/FeatureProfiles/EditorTemplates/FeatureProfileViewModel.cshtml
-msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.EditorTemplates.FeatureProfileViewModel"
+#: Views/FeatureProfiles/Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.Edit"
 msgid "Toggle Dropdown"
 msgstr ""
 
-#: Views/FeatureProfiles/EditorTemplates/FeatureProfileViewModel.cshtml
-msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.EditorTemplates.FeatureProfileViewModel"
+#: Views/FeatureProfiles/Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.Edit"
 msgid "and continue"
 msgstr ""
 
@@ -629,17 +664,7 @@ msgstr ""
 
 #: Views/Items/CreateTenantTask.Fields.Edit.cshtml
 msgctxt "OrchardCore.Tenants.Views.Items.CreateTenantTask.Fields.Edit"
-msgid "(Optional) Example: If prefix is \"site1\", the tenant URL prefix is \"http://orchardproject.net/site1\"."
-msgstr ""
-
-#: Views/Items/CreateTenantTask.Fields.Edit.cshtml
-msgctxt "OrchardCore.Tenants.Views.Items.CreateTenantTask.Fields.Edit"
 msgid "(Optional) the description of the tenant to create."
-msgstr ""
-
-#: Views/Items/CreateTenantTask.Fields.Edit.cshtml
-msgctxt "OrchardCore.Tenants.Views.Items.CreateTenantTask.Fields.Edit"
-msgid "Connection string"
 msgstr ""
 
 #: Views/Items/CreateTenantTask.Fields.Edit.cshtml
@@ -649,64 +674,12 @@ msgstr ""
 
 #: Views/Items/CreateTenantTask.Fields.Edit.cshtml
 msgctxt "OrchardCore.Tenants.Views.Items.CreateTenantTask.Fields.Edit"
-msgid "Example: If host is \"orchardproject.net\", the tenant site URL is \"http://orchardproject.net/\". With Liquid support."
-msgstr ""
-
-#: Views/Items/CreateTenantTask.Fields.Edit.cshtml
-msgctxt "OrchardCore.Tenants.Views.Items.CreateTenantTask.Fields.Edit"
-msgid "Feature Profile"
-msgstr ""
-
-#. Format arguments: {0}: "dbo"
-#: Views/Items/CreateTenantTask.Fields.Edit.cshtml
-#, csharp-format
-msgctxt "OrchardCore.Tenants.Views.Items.CreateTenantTask.Fields.Edit"
-msgid "For example, '{0}' for SQL Server."
-msgstr ""
-
-#: Views/Items/CreateTenantTask.Fields.Edit.cshtml
-msgctxt "OrchardCore.Tenants.Views.Items.CreateTenantTask.Fields.Edit"
-msgid "Host name"
-msgstr ""
-
-#: Views/Items/CreateTenantTask.Fields.Edit.cshtml
-msgctxt "OrchardCore.Tenants.Views.Items.CreateTenantTask.Fields.Edit"
 msgid "Name"
 msgstr ""
 
 #: Views/Items/CreateTenantTask.Fields.Edit.cshtml
 msgctxt "OrchardCore.Tenants.Views.Items.CreateTenantTask.Fields.Edit"
-msgid "Recipe"
-msgstr ""
-
-#: Views/Items/CreateTenantTask.Fields.Edit.cshtml
-msgctxt "OrchardCore.Tenants.Views.Items.CreateTenantTask.Fields.Edit"
-msgid "Schema"
-msgstr ""
-
-#: Views/Items/CreateTenantTask.Fields.Edit.cshtml
-msgctxt "OrchardCore.Tenants.Views.Items.CreateTenantTask.Fields.Edit"
 msgid "Select the name of the tenant to create."
-msgstr ""
-
-#: Views/Items/CreateTenantTask.Fields.Edit.cshtml
-msgctxt "OrchardCore.Tenants.Views.Items.CreateTenantTask.Fields.Edit"
-msgid "Table Prefix"
-msgstr ""
-
-#: Views/Items/CreateTenantTask.Fields.Edit.cshtml
-msgctxt "OrchardCore.Tenants.Views.Items.CreateTenantTask.Fields.Edit"
-msgid "Url Prefix"
-msgstr ""
-
-#: Views/Items/CreateTenantTask.Fields.Edit.cshtml
-msgctxt "OrchardCore.Tenants.Views.Items.CreateTenantTask.Fields.Edit"
-msgid "What type of database to use?"
-msgstr ""
-
-#: Views/Items/CreateTenantTask.Fields.Edit.cshtml
-msgctxt "OrchardCore.Tenants.Views.Items.CreateTenantTask.Fields.Edit"
-msgid "When left blank, the default value on the server will be used."
 msgstr ""
 
 #: Views/Items/CreateTenantTask.Fields.Thumbnail.cshtml
@@ -717,6 +690,68 @@ msgstr ""
 #: Views/Items/CreateTenantTask.Fields.Thumbnail.cshtml
 msgctxt "OrchardCore.Tenants.Views.Items.CreateTenantTask.Fields.Thumbnail"
 msgid "Create a tenant."
+msgstr ""
+
+#: Views/Items/CreateTenantTaskFeatures.Fields.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.CreateTenantTaskFeatures.Fields.Edit"
+msgid "Feature Profile"
+msgstr ""
+
+#: Views/Items/CreateTenantTaskSetup.Fields.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.CreateTenantTaskSetup.Fields.Edit"
+msgid "Connection string"
+msgstr ""
+
+#. Format arguments: {0}: "dbo"
+#: Views/Items/CreateTenantTaskSetup.Fields.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Tenants.Views.Items.CreateTenantTaskSetup.Fields.Edit"
+msgid "For example, '{0}' for SQL Server."
+msgstr ""
+
+#: Views/Items/CreateTenantTaskSetup.Fields.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.CreateTenantTaskSetup.Fields.Edit"
+msgid "Recipe"
+msgstr ""
+
+#: Views/Items/CreateTenantTaskSetup.Fields.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.CreateTenantTaskSetup.Fields.Edit"
+msgid "Schema"
+msgstr ""
+
+#: Views/Items/CreateTenantTaskSetup.Fields.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.CreateTenantTaskSetup.Fields.Edit"
+msgid "Table Prefix"
+msgstr ""
+
+#: Views/Items/CreateTenantTaskSetup.Fields.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.CreateTenantTaskSetup.Fields.Edit"
+msgid "What type of database to use?"
+msgstr ""
+
+#: Views/Items/CreateTenantTaskSetup.Fields.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.CreateTenantTaskSetup.Fields.Edit"
+msgid "When left blank, the default value on the server will be used."
+msgstr ""
+
+#: Views/Items/CreateTenantTaskUrl.Fields.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.CreateTenantTaskUrl.Fields.Edit"
+msgid "(Optional) Example: If prefix is \"site1\", the tenant URL prefix is \"http://orchardproject.net/site1\"."
+msgstr ""
+
+#: Views/Items/CreateTenantTaskUrl.Fields.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.CreateTenantTaskUrl.Fields.Edit"
+msgid "Example: If host is \"orchardproject.net\", the tenant site URL is \"http://orchardproject.net/\". With Liquid support."
+msgstr ""
+
+#: Views/Items/CreateTenantTaskUrl.Fields.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.CreateTenantTaskUrl.Fields.Edit"
+msgid "Host name"
+msgstr ""
+
+#: Views/Items/CreateTenantTaskUrl.Fields.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.CreateTenantTaskUrl.Fields.Edit"
+msgid "Url Prefix"
 msgstr ""
 
 #: Views/Items/DisableTenantTask.Fields.Design.cshtml
@@ -776,39 +811,7 @@ msgstr ""
 
 #: Views/Items/SetupTenantTask.Fields.Edit.cshtml
 msgctxt "OrchardCore.Tenants.Views.Items.SetupTenantTask.Fields.Edit"
-msgid "Admin email"
-msgstr ""
-
-#: Views/Items/SetupTenantTask.Fields.Edit.cshtml
-msgctxt "OrchardCore.Tenants.Views.Items.SetupTenantTask.Fields.Edit"
-msgid "Admin password"
-msgstr ""
-
-#: Views/Items/SetupTenantTask.Fields.Edit.cshtml
-msgctxt "OrchardCore.Tenants.Views.Items.SetupTenantTask.Fields.Edit"
-msgid "Admin user name"
-msgstr ""
-
-#: Views/Items/SetupTenantTask.Fields.Edit.cshtml
-msgctxt "OrchardCore.Tenants.Views.Items.SetupTenantTask.Fields.Edit"
-msgid "Connection string"
-msgstr ""
-
-#. Format arguments: {0}: "dbo"
-#: Views/Items/SetupTenantTask.Fields.Edit.cshtml
-#, csharp-format
-msgctxt "OrchardCore.Tenants.Views.Items.SetupTenantTask.Fields.Edit"
-msgid "For example, '{0}' for SQL Server."
-msgstr ""
-
-#: Views/Items/SetupTenantTask.Fields.Edit.cshtml
-msgctxt "OrchardCore.Tenants.Views.Items.SetupTenantTask.Fields.Edit"
 msgid "Recipe"
-msgstr ""
-
-#: Views/Items/SetupTenantTask.Fields.Edit.cshtml
-msgctxt "OrchardCore.Tenants.Views.Items.SetupTenantTask.Fields.Edit"
-msgid "Schema"
 msgstr ""
 
 #: Views/Items/SetupTenantTask.Fields.Edit.cshtml
@@ -823,22 +826,7 @@ msgstr ""
 
 #: Views/Items/SetupTenantTask.Fields.Edit.cshtml
 msgctxt "OrchardCore.Tenants.Views.Items.SetupTenantTask.Fields.Edit"
-msgid "Table Prefix"
-msgstr ""
-
-#: Views/Items/SetupTenantTask.Fields.Edit.cshtml
-msgctxt "OrchardCore.Tenants.Views.Items.SetupTenantTask.Fields.Edit"
 msgid "Tenant name"
-msgstr ""
-
-#: Views/Items/SetupTenantTask.Fields.Edit.cshtml
-msgctxt "OrchardCore.Tenants.Views.Items.SetupTenantTask.Fields.Edit"
-msgid "What type of database to use?"
-msgstr ""
-
-#: Views/Items/SetupTenantTask.Fields.Edit.cshtml
-msgctxt "OrchardCore.Tenants.Views.Items.SetupTenantTask.Fields.Edit"
-msgid "When left blank, the default value on the server will be used."
 msgstr ""
 
 #: Views/Items/SetupTenantTask.Fields.Thumbnail.cshtml
@@ -849,6 +837,53 @@ msgstr ""
 #: Views/Items/SetupTenantTask.Fields.Thumbnail.cshtml
 msgctxt "OrchardCore.Tenants.Views.Items.SetupTenantTask.Fields.Thumbnail"
 msgid "Setup a tenant."
+msgstr ""
+
+#: Views/Items/SetupTenantTaskAdministrator.Fields.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.SetupTenantTaskAdministrator.Fields.Edit"
+msgid "Admin email"
+msgstr ""
+
+#: Views/Items/SetupTenantTaskAdministrator.Fields.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.SetupTenantTaskAdministrator.Fields.Edit"
+msgid "Admin password"
+msgstr ""
+
+#: Views/Items/SetupTenantTaskAdministrator.Fields.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.SetupTenantTaskAdministrator.Fields.Edit"
+msgid "Admin user name"
+msgstr ""
+
+#: Views/Items/SetupTenantTaskDatabase.Fields.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.SetupTenantTaskDatabase.Fields.Edit"
+msgid "Connection string"
+msgstr ""
+
+#. Format arguments: {0}: "dbo"
+#: Views/Items/SetupTenantTaskDatabase.Fields.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Tenants.Views.Items.SetupTenantTaskDatabase.Fields.Edit"
+msgid "For example, '{0}' for SQL Server."
+msgstr ""
+
+#: Views/Items/SetupTenantTaskDatabase.Fields.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.SetupTenantTaskDatabase.Fields.Edit"
+msgid "Schema"
+msgstr ""
+
+#: Views/Items/SetupTenantTaskDatabase.Fields.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.SetupTenantTaskDatabase.Fields.Edit"
+msgid "Table Prefix"
+msgstr ""
+
+#: Views/Items/SetupTenantTaskDatabase.Fields.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.SetupTenantTaskDatabase.Fields.Edit"
+msgid "What type of database to use?"
+msgstr ""
+
+#: Views/Items/SetupTenantTaskDatabase.Fields.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.Items.SetupTenantTaskDatabase.Fields.Edit"
+msgid "When left blank, the default value on the server will be used."
 msgstr ""
 
 #: Views/ManageFeaturesActionButton.cshtml
@@ -916,165 +951,6 @@ msgctxt "OrchardCore.Tenants.Views.ProfileFeatureTags"
 msgid "Feature Profile"
 msgstr ""
 
-#: Views/Shared/_TenantDatabaseInfo.cshtml
-msgctxt "OrchardCore.Tenants.Views.Shared._TenantDatabaseInfo"
-msgid "Configured in the application's root settings."
-msgstr ""
-
-#: Views/Shared/_TenantDatabaseInfo.cshtml
-msgctxt "OrchardCore.Tenants.Views.Shared._TenantDatabaseInfo"
-msgid "Connection string"
-msgstr ""
-
-#: Views/Shared/_TenantDatabaseInfo.cshtml
-msgctxt "OrchardCore.Tenants.Views.Shared._TenantDatabaseInfo"
-msgid "Database Presets"
-msgstr ""
-
-#. Format arguments: {0}: "dbo"
-#: Views/Shared/_TenantDatabaseInfo.cshtml
-#, csharp-format
-msgctxt "OrchardCore.Tenants.Views.Shared._TenantDatabaseInfo"
-msgid "For example, '{0}' for SQL Server."
-msgstr ""
-
-#: Views/Shared/_TenantDatabaseInfo.cshtml
-msgctxt "OrchardCore.Tenants.Views.Shared._TenantDatabaseInfo"
-msgid "Generated automatically from the configured tenant schema pattern when the tenant is created."
-msgstr ""
-
-#: Views/Shared/_TenantDatabaseInfo.cshtml
-msgctxt "OrchardCore.Tenants.Views.Shared._TenantDatabaseInfo"
-msgid "Generated automatically from the configured tenant schema pattern."
-msgstr ""
-
-#: Views/Shared/_TenantDatabaseInfo.cshtml
-msgctxt "OrchardCore.Tenants.Views.Shared._TenantDatabaseInfo"
-msgid "Generated automatically from the configured tenant table prefix pattern when the tenant is created."
-msgstr ""
-
-#: Views/Shared/_TenantDatabaseInfo.cshtml
-msgctxt "OrchardCore.Tenants.Views.Shared._TenantDatabaseInfo"
-msgid "Generated automatically from the configured tenant table prefix pattern."
-msgstr ""
-
-#: Views/Shared/_TenantDatabaseInfo.cshtml
-msgctxt "OrchardCore.Tenants.Views.Shared._TenantDatabaseInfo"
-msgid "None"
-msgstr ""
-
-#: Views/Shared/_TenantDatabaseInfo.cshtml
-msgctxt "OrchardCore.Tenants.Views.Shared._TenantDatabaseInfo"
-msgid "Optionally specify which presets should be used for the Setup experience."
-msgstr ""
-
-#: Views/Shared/_TenantDatabaseInfo.cshtml
-msgctxt "OrchardCore.Tenants.Views.Shared._TenantDatabaseInfo"
-msgid "Table Prefix"
-msgstr ""
-
-#: Views/Shared/_TenantDatabaseInfo.cshtml
-msgctxt "OrchardCore.Tenants.Views.Shared._TenantDatabaseInfo"
-msgid "Table Schema"
-msgstr ""
-
-#. Format arguments: {0}: provider.SampleConnectionString, selectedProvider?.SampleConnectionString
-#: Views/Shared/_TenantDatabaseInfo.cshtml
-#, csharp-format
-msgctxt "OrchardCore.Tenants.Views.Shared._TenantDatabaseInfo"
-msgid "The connection string to your database instance, e.g. {0}."
-msgstr ""
-
-#: Views/Shared/_TenantDatabaseInfo.cshtml
-msgctxt "OrchardCore.Tenants.Views.Shared._TenantDatabaseInfo"
-msgid "This value is required by configuration when the selected database provider supports table prefixes."
-msgstr ""
-
-#: Views/Shared/_TenantDatabaseInfo.cshtml
-msgctxt "OrchardCore.Tenants.Views.Shared._TenantDatabaseInfo"
-msgid "Used to prefix this tenant's database tables when tenants share the same database."
-msgstr ""
-
-#: Views/Shared/_TenantDatabaseInfo.cshtml
-msgctxt "OrchardCore.Tenants.Views.Shared._TenantDatabaseInfo"
-msgid "What type of database to use?"
-msgstr ""
-
-#: Views/Shared/_TenantDatabaseInfo.cshtml
-msgctxt "OrchardCore.Tenants.Views.Shared._TenantDatabaseInfo"
-msgid "When left blank, the default value on the server will be used."
-msgstr ""
-
-#: Views/Shared/_TenantFeatureProfile.cshtml
-msgctxt "OrchardCore.Tenants.Views.Shared._TenantFeatureProfile"
-msgid "Feature profile"
-msgstr ""
-
-#: Views/Shared/_TenantFeatureProfile.cshtml
-msgctxt "OrchardCore.Tenants.Views.Shared._TenantFeatureProfile"
-msgid "Optionally specify which feature profile should be applied to this tenant."
-msgstr ""
-
-#: Views/Shared/_TenantInfo.cshtml
-msgctxt "OrchardCore.Tenants.Views.Shared._TenantInfo"
-msgid "(Optional) Example: If prefix is \"site1\", the tenant URL prefix is \"https://orchardcore.net/site1\"."
-msgstr ""
-
-#: Views/Shared/_TenantInfo.cshtml
-msgctxt "OrchardCore.Tenants.Views.Shared._TenantInfo"
-msgid "Category"
-msgstr ""
-
-#: Views/Shared/_TenantInfo.cshtml
-msgctxt "OrchardCore.Tenants.Views.Shared._TenantInfo"
-msgid "Description"
-msgstr ""
-
-#: Views/Shared/_TenantInfo.cshtml
-msgctxt "OrchardCore.Tenants.Views.Shared._TenantInfo"
-msgid "Example: If host is \"orchardproject.net\", the tenant site URL is \"https://orchardcore.net/\"."
-msgstr ""
-
-#: Views/Shared/_TenantInfo.cshtml
-msgctxt "OrchardCore.Tenants.Views.Shared._TenantInfo"
-msgid "Hostname"
-msgstr ""
-
-#: Views/Shared/_TenantInfo.cshtml
-msgctxt "OrchardCore.Tenants.Views.Shared._TenantInfo"
-msgid "The category of the tenant."
-msgstr ""
-
-#: Views/Shared/_TenantInfo.cshtml
-msgctxt "OrchardCore.Tenants.Views.Shared._TenantInfo"
-msgid "The description of the tenant."
-msgstr ""
-
-#: Views/Shared/_TenantInfo.cshtml
-msgctxt "OrchardCore.Tenants.Views.Shared._TenantInfo"
-msgid "Url Prefix"
-msgstr ""
-
-#: Views/Shared/_TenantInfo.cshtml
-msgctxt "OrchardCore.Tenants.Views.Shared._TenantInfo"
-msgid "You may define multiple domains using the comma (,) as a separator. Use the '*.' prefix to map all subdomains."
-msgstr ""
-
-#: Views/Shared/_TenantRecipes.cshtml
-msgctxt "OrchardCore.Tenants.Views.Shared._TenantRecipes"
-msgid "Optionally specify which presets should be used for the Setup experience."
-msgstr ""
-
-#: Views/Shared/_TenantRecipes.cshtml
-msgctxt "OrchardCore.Tenants.Views.Shared._TenantRecipes"
-msgid "Recipe"
-msgstr ""
-
-#: Views/Shared/_TenantRecipes.cshtml
-msgctxt "OrchardCore.Tenants.Views.Shared._TenantRecipes"
-msgid "Select a recipe"
-msgstr ""
-
 #: Views/ShellSettingsEntry.Category.SummaryAdmin.cshtml
 msgctxt "OrchardCore.Tenants.Views.ShellSettingsEntry.Category.SummaryAdmin"
 msgid "Category"
@@ -1118,6 +994,165 @@ msgstr ""
 #: Views/ShellSettingsEntry.State.SummaryAdmin.cshtml
 msgctxt "OrchardCore.Tenants.Views.ShellSettingsEntry.State.SummaryAdmin"
 msgid "Uninitialized"
+msgstr ""
+
+#: Views/TenantFeatures.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.TenantFeatures.Edit"
+msgid "Feature profile"
+msgstr ""
+
+#: Views/TenantFeatures.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.TenantFeatures.Edit"
+msgid "Optionally specify which feature profile should be applied to this tenant."
+msgstr ""
+
+#: Views/TenantGeneral.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.TenantGeneral.Edit"
+msgid "Category"
+msgstr ""
+
+#: Views/TenantGeneral.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.TenantGeneral.Edit"
+msgid "Description"
+msgstr ""
+
+#: Views/TenantGeneral.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.TenantGeneral.Edit"
+msgid "Name"
+msgstr ""
+
+#: Views/TenantGeneral.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.TenantGeneral.Edit"
+msgid "The category of the tenant."
+msgstr ""
+
+#: Views/TenantGeneral.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.TenantGeneral.Edit"
+msgid "The description of the tenant."
+msgstr ""
+
+#: Views/TenantGeneral.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.TenantGeneral.Edit"
+msgid "The name of the tenant."
+msgstr ""
+
+#: Views/TenantSetup.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.TenantSetup.Edit"
+msgid "Configured in the application's root settings."
+msgstr ""
+
+#: Views/TenantSetup.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.TenantSetup.Edit"
+msgid "Connection string"
+msgstr ""
+
+#. Format arguments: {0}: "dbo"
+#: Views/TenantSetup.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Tenants.Views.TenantSetup.Edit"
+msgid "For example, '{0}' for SQL Server."
+msgstr ""
+
+#: Views/TenantSetup.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.TenantSetup.Edit"
+msgid "Generated automatically from the configured tenant schema pattern when the tenant is created."
+msgstr ""
+
+#: Views/TenantSetup.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.TenantSetup.Edit"
+msgid "Generated automatically from the configured tenant schema pattern."
+msgstr ""
+
+#: Views/TenantSetup.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.TenantSetup.Edit"
+msgid "Generated automatically from the configured tenant table prefix pattern when the tenant is created."
+msgstr ""
+
+#: Views/TenantSetup.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.TenantSetup.Edit"
+msgid "Generated automatically from the configured tenant table prefix pattern."
+msgstr ""
+
+#: Views/TenantSetup.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.TenantSetup.Edit"
+msgid "None"
+msgstr ""
+
+#: Views/TenantSetup.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.TenantSetup.Edit"
+msgid "Optionally specify which presets should be used for the Setup experience."
+msgstr ""
+
+#: Views/TenantSetup.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.TenantSetup.Edit"
+msgid "Recipe"
+msgstr ""
+
+#: Views/TenantSetup.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.TenantSetup.Edit"
+msgid "Select a recipe"
+msgstr ""
+
+#: Views/TenantSetup.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.TenantSetup.Edit"
+msgid "Table Prefix"
+msgstr ""
+
+#: Views/TenantSetup.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.TenantSetup.Edit"
+msgid "Table Schema"
+msgstr ""
+
+#. Format arguments: {0}: provider.SampleConnectionString, selectedProvider?.SampleConnectionString
+#: Views/TenantSetup.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Tenants.Views.TenantSetup.Edit"
+msgid "The connection string to your database instance, e.g. {0}."
+msgstr ""
+
+#: Views/TenantSetup.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.TenantSetup.Edit"
+msgid "This value is required by configuration when the selected database provider supports table prefixes."
+msgstr ""
+
+#: Views/TenantSetup.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.TenantSetup.Edit"
+msgid "Used to prefix this tenant's database tables when tenants share the same database."
+msgstr ""
+
+#: Views/TenantSetup.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.TenantSetup.Edit"
+msgid "What type of database to use?"
+msgstr ""
+
+#: Views/TenantSetup.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.TenantSetup.Edit"
+msgid "When left blank, the default value on the server will be used."
+msgstr ""
+
+#: Views/TenantUrl.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.TenantUrl.Edit"
+msgid "(Optional) Example: If prefix is \"site1\", the tenant URL prefix is \"https://orchardcore.net/site1\"."
+msgstr ""
+
+#: Views/TenantUrl.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.TenantUrl.Edit"
+msgid "Example: If host is \"orchardproject.net\", the tenant site URL is \"https://orchardcore.net/\"."
+msgstr ""
+
+#: Views/TenantUrl.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.TenantUrl.Edit"
+msgid "Hostname"
+msgstr ""
+
+#: Views/TenantUrl.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.TenantUrl.Edit"
+msgid "Url Prefix"
+msgstr ""
+
+#: Views/TenantUrl.Edit.cshtml
+msgctxt "OrchardCore.Tenants.Views.TenantUrl.Edit"
+msgid "You may define multiple domains using the comma (,) as a separator. Use the '*.' prefix to map all subdomains."
 msgstr ""
 
 #: Views/TenantsFilters.cshtml
@@ -1218,4 +1253,49 @@ msgstr ""
 #: Workflows/Activities/TenantActivity.cs
 msgctxt "OrchardCore.Tenants.Workflows.Activities.TenantActivity"
 msgid "Done"
+msgstr ""
+
+#: Workflows/Drivers/CreateTenantTaskDisplayDriver.cs
+msgctxt "OrchardCore.Tenants.Workflows.Drivers.CreateTenantTaskDisplayDriver"
+msgid "Features"
+msgstr ""
+
+#: Workflows/Drivers/CreateTenantTaskDisplayDriver.cs
+msgctxt "OrchardCore.Tenants.Workflows.Drivers.CreateTenantTaskDisplayDriver"
+msgid "General"
+msgstr ""
+
+#: Workflows/Drivers/CreateTenantTaskDisplayDriver.cs
+msgctxt "OrchardCore.Tenants.Workflows.Drivers.CreateTenantTaskDisplayDriver"
+msgid "Setup presets"
+msgstr ""
+
+#: Workflows/Drivers/CreateTenantTaskDisplayDriver.cs
+msgctxt "OrchardCore.Tenants.Workflows.Drivers.CreateTenantTaskDisplayDriver"
+msgid "URL"
+msgstr ""
+
+#: Workflows/Drivers/DisableTenantTaskDisplayDriver.cs
+msgctxt "OrchardCore.Tenants.Workflows.Drivers.DisableTenantTaskDisplayDriver"
+msgid "Tenant"
+msgstr ""
+
+#: Workflows/Drivers/EnableTenantTaskDisplayDriver.cs
+msgctxt "OrchardCore.Tenants.Workflows.Drivers.EnableTenantTaskDisplayDriver"
+msgid "Tenant"
+msgstr ""
+
+#: Workflows/Drivers/SetupTenantTaskDisplayDriver.cs
+msgctxt "OrchardCore.Tenants.Workflows.Drivers.SetupTenantTaskDisplayDriver"
+msgid "Administrator"
+msgstr ""
+
+#: Workflows/Drivers/SetupTenantTaskDisplayDriver.cs
+msgctxt "OrchardCore.Tenants.Workflows.Drivers.SetupTenantTaskDisplayDriver"
+msgid "Database"
+msgstr ""
+
+#: Workflows/Drivers/SetupTenantTaskDisplayDriver.cs
+msgctxt "OrchardCore.Tenants.Workflows.Drivers.SetupTenantTaskDisplayDriver"
+msgid "General"
 msgstr ""

@@ -3,21 +3,7 @@
 <div asp-validation-summary="ModelOnly"></div>
 <form asp-action="Create" method="post" class="no-multisubmit">
 
-    <div class="ocat-wrapper" asp-validation-class-for="ClientName">
-        <label asp-for="ClientName" class="ocat-label ocat-label-required">@T["Client Name"]</label>
-        <div class="ocat-end">
-        <input asp-for="ClientName" class="form-control" />
-        <span asp-validation-for="ClientName" class="text-danger"></span>
-        </div>
-    </div>
-
-    <div class="ocat-wrapper" asp-validation-class-for="ApiKey">
-        <label asp-for="ApiKey" class="ocat-label ocat-label-required">@T["Api Key"]</label>
-        <div class="ocat-end">
-        <input asp-for="ApiKey" type="password" class="form-control" />
-        <span asp-validation-for="ApiKey" class="text-danger"></span>
-        </div>
-    </div>
+    @await DisplayAsync(Model.Editor)
 
     <div class="action-bar-bottom">
         <button class="btn btn-primary create" type="submit">@T["Create"]</button>

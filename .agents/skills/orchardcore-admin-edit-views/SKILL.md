@@ -1,6 +1,6 @@
 ---
 name: orchardcore-admin-edit-views
-description: Creates and updates OrchardCore admin edit views using the ocat-* CSS class conventions. Use when creating or modifying Edit view files (*.Edit.cshtml, *.Fields.Edit.cshtml) to ensure correct layout and styling.
+description: Creates and updates OrchardCore admin edit views using the ocat-* CSS class conventions, grouping their fields in cards declared by placement or ocat-card markup. Use when creating or modifying Edit view files (*.Edit.cshtml, *.Fields.Edit.cshtml) or the display drivers of admin editors, to ensure correct layout and styling.
 status: completed
 ---
 
@@ -35,7 +35,8 @@ Use this decision guide when creating or updating admin edit views:
 |----------|-------------------|
 | Standard full-width field row | `ocat-wrapper` + `ocat-label` + `ocat-end` |
 | Standalone checkbox/toggle row with no left label | `ocat-wrapper` + `ocat-end-offset` |
-| Standalone alert, notice, legend, or section headline in the form flow | `ocat-wrapper` + `ocat-end-offset` |
+| Standalone alert or notice in the form flow | `ocat-wrapper` + `ocat-end-offset` |
+| A group of fields (a section of the form) | A card, see [Grouping Fields in Cards](#grouping-fields-in-cards) |
 | Top-level limited-width field row (small text, number, select, token, path, port, etc.) | `ocat-limited-wrapper` + `ocat-label` + `ocat-limited` |
 | Content part / content field editor that already needs wrapper classes like `field-wrapper-*` or `content-part-wrapper-*` | Keep the outer `ocat-wrapper`, then place `ocat-limited-wrapper` inside `ocat-end` |
 
@@ -60,6 +61,120 @@ Use this decision guide when creating or updating admin edit views:
     </div>
 </div>
 ```
+
+## Grouping Fields in Cards
+
+Every admin form groups its fields in cards, so that a form reads as a few logical sections, e.g. "Server", "Authentication" and "Sender" for the SMTP settings, instead of one long column of fields. A card has a short title, a noun phrase in sentence case, and optionally a one-line description.
+
+Every card comes from placement: views never write card markup.
+
+### Screens built by display drivers: cards come from placement
+
+Screens composed of the shapes of display drivers (site settings, users, roles, content type, part and field settings, workflow activities, deployment steps, admin menu nodes, sitemap sources, rule conditions, ...) render the shapes in a content zone, which groups the shapes placed in the same card. Declare the card in the placement location of the shape, never with markup in its view:
+
+```csharp
+internal readonly IStringLocalizer S;
+
+public SmtpSettingsDisplayDriver(IStringLocalizer<SmtpSettingsDisplayDriver> stringLocalizer)
+{
+    S = stringLocalizer;
+}
+
+public override IDisplayResult Edit(ISite site, SmtpSettings settings, BuildEditorContext context)
+{
+    return Combine(
+        Initialize<SmtpSettingsViewModel>("SmtpSettingsServer_Edit", model => ...)
+            .Location(l => l.Zone("Content", "1").Card(S["Server"], "10"))
+            .OnGroup(GroupId),
+        Initialize<SmtpSettingsViewModel>("SmtpSettingsAuthentication_Edit", model => ...)
+            .Location(l => l.Zone("Content", "2").Card(S["Authentication"], "20"))
+            .OnGroup(GroupId));
+}
+```
+
+- Localize the card name with the `S` localizer of the driver: the name is the title of the card.
+- The shapes placed in the same card, from any driver, share it, ordered by their zone position. The card position orders the cards.
+- A view holding several logical sections is split into one shape per card, each with its own view, bound to the same view model and prefix, so `UpdateAsync` keeps binding the model once. For instance the general settings render `Settings_Edit__Site` (`Settings-Site.Edit.cshtml`), `Settings_Edit__TimeZone` and `Settings_Edit__Pagination` in the "General", "Regional settings" and "Pagination" cards.
+- Cards combine with tabs: `.Location(l => l.Zone("Content", "1").Tab("Site", "10").Card(S["General"], "10"))` renders the card in the tab.
+- A `placement.json` file moves a shape to another card with the `%` delimiter, e.g. `"place": "Content:5%Server;10"`. Card names written in placement files aren't localized.
+- The views of these shapes only contain their rows: no card markup, and no heading row, the title of the card replaces it.
+- A single shape still declares its card: a screen made of one card is consistent with the others.
+
+#### Content item editors
+
+Each content part of a content item is placed in a card titled with its display name (`Parts:5%Html Body`, see `ContentTypePartDefinitionEditorExtensions.GetEditorCardName`), and `ContentPart.Edit.cshtml` renders the editors of the part and of its fields in it, with the description of the part. The editor shapes of content parts and content fields don't declare cards.
+
+- A field placed in a card of its part, e.g. `"place": "Parts.Product:5%Shipping"`, is grouped in that card inside the card of the part.
+- A part placed in another card of the parts zone, e.g. `"ContentPart_Edit": [{ "differentiator": "Product-AliasPart", "place": "Parts:5%Metadata" }]`, shares that card with the other parts placed in it, as a section titled with its display name.
+- A part placing shapes in the parts zone itself, such as the SEO part in its own tab, declares their cards in their placement, as any driver.
+
+### Admin pages with a form: an editor built by display drivers
+
+A page of a controller that edits a view model (e.g. creating a template, editing an OpenID application) doesn't render the fields itself: it renders an editor built by the display drivers of its view model, so its cards come from placement too, and other modules can add fields or cards to it. `OrchardCore.Templates` (`TemplateController`, `TemplateDisplayDriver`) is the reference.
+
+1. **The view model** carries the editor: `[BindNever] public IShape Editor { get; set; }`.
+2. **A display driver** of the view model renders one shape per card, each a copy of the view model, and binds the fields of its shapes. It keeps the names the page posts (no `TemplateViewModel.` prefix), so the controller, its validation keys and the scripts of the page keep working:
+
+```csharp
+internal sealed class TemplateDisplayDriver : DisplayDriver<TemplateViewModel>
+{
+    internal readonly IStringLocalizer S;
+
+    public TemplateDisplayDriver(IStringLocalizer<TemplateDisplayDriver> stringLocalizer)
+    {
+        S = stringLocalizer;
+    }
+
+    public override IDisplayResult Edit(TemplateViewModel model, BuildEditorContext context)
+    {
+        return Combine(
+            Initialize<TemplateViewModel>("TemplateGeneral_Edit", m => Populate(model, m))
+                .Location(l => l.Zone("Content", "1").Card(S["General"], "10")),
+            Initialize<TemplateViewModel>("TemplateContent_Edit", m => Populate(model, m))
+                .Location(l => l.Zone("Content", "2").Card(S["Template"], "20")));
+    }
+
+    public override async Task<IDisplayResult> UpdateAsync(TemplateViewModel model, UpdateEditorContext context)
+    {
+        await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.Name, m => m.Description, m => m.Content);
+
+        return Edit(model, context);
+    }
+
+    // The fields keep the names the page posts, which the controller validates and the scripts of the page select.
+    protected override void BuildPrefix(TemplateViewModel model, string htmlFieldPrefix)
+    {
+        Prefix = htmlFieldPrefix ?? string.Empty;
+    }
+
+    private static void Populate(TemplateViewModel source, TemplateViewModel model)
+    {
+        model.Name = source.Name;
+        // ...
+    }
+}
+```
+
+   Register it with `services.AddDisplayDriver<TemplateViewModel, TemplateDisplayDriver>()`. Each shape has its own view (`TemplateGeneral.Edit.cshtml`, `@model TemplateViewModel`) holding only its rows. Use `Initialize<T>`, not `View(shapeType, model)`: the latter wraps the model in a `ShapeViewModel<T>`, which renames the fields `Value.Name`.
+3. **The root template** of the editor, named after the view model, renders its zones: `TemplateViewModel.Edit.cshtml` holds `@await DisplayAsync(Model.Content)`.
+4. **The controller** injects `IDisplayManager<TemplateViewModel>` and `IUpdateModelAccessor`. Its GET actions set `model.Editor = await _displayManager.BuildEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew)`, and its POST actions, once the model is bound, `model.Editor = await _displayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew)` before validating and saving as before. Every path returning the view sets the editor.
+5. **The page view** keeps the form, its hidden inputs, its buttons and the scripts of the page, and renders the fields with `@await DisplayAsync(Model.Editor)`.
+
+### How cards render
+
+The admin theme renders a card as a `<fieldset class="ocat-card">` titled by its `<legend class="ocat-card-title">`, always expanded: cards group fields, they don't hide them, so never group fields in an accordion, a collapse or a `<details>` element. Views never write card markup themselves.
+
+- In a tab, which already frames them, the cards render as fieldsets titled by their legends, without the box of a card. The only card of a tab, or a card named as its tab, renders its fields directly, as its title would repeat the tab.
+- A card inside a card renders as a section.
+- The buttons of the form (Save, Cancel) stay after the editor. Tables and lists belonging to a group, e.g. the permissions of a role, are shapes of their card. Modal dialogs, list filters and inline editors don't use cards.
+
+| Class | Element | Purpose |
+|-------|---------|---------|
+| `ocat-card` | `<fieldset>` | A group of fields. Being a fieldset, screen readers announce its title as the name of the group |
+| `ocat-card-title` | `<legend>` | The title of the card |
+| `ocat-card-body` | `<div>` | The rows of the card |
+| `ocat-card-description` | `<p>` | A description, e.g. of a content part, at the top of its card |
+| `ocat-card-section`, `ocat-card-section-title` | `<div>` | A titled section in a card, e.g. a part sharing a card with other parts |
 
 ## Field Type Templates
 
@@ -151,12 +266,11 @@ Use `ocat-end-offset` when there is no label in the left column (e.g., for check
 
 ### Headline / Alert Row (No Left Label)
 
-Use this for standalone form guidance, warnings, legends, or section headers:
+Use this for standalone form guidance or warnings. To start a new section of a form, use a card instead of a heading row (see [Grouping Fields in Cards](#grouping-fields-in-cards)):
 
 ```html
 <div class="ocat-wrapper">
     <div class="ocat-end-offset">
-        <h5>@T["Section heading"]</h5>
         <div class="alert alert-warning" role="alert">
             @T["Important information for editors."]
         </div>

@@ -128,6 +128,11 @@ msgctxt "OrchardCore.Deployment.Controllers.StepController"
 msgid "The deployment plan step has validation errors."
 msgstr ""
 
+#: Deployment/DeploymentPlanDeploymentStepDriver.cs
+msgctxt "OrchardCore.Deployment.Deployment.DeploymentPlanDeploymentStepDriver"
+msgid "Deployment plans"
+msgstr ""
+
 #: DeploymentLocalizationSources.cs
 msgctxt "OrchardCore.Deployment.DeploymentLocalizationSources"
 msgid "Custom File"
@@ -151,6 +156,21 @@ msgstr ""
 #: DeploymentLocalizationSources.cs
 msgctxt "OrchardCore.Deployment.DeploymentLocalizationSources"
 msgid "Recipe File"
+msgstr ""
+
+#: Drivers/DeploymentPlanDisplayDriver.cs
+msgctxt "OrchardCore.Deployment.Drivers.DeploymentPlanDisplayDriver"
+msgid "General"
+msgstr ""
+
+#: Drivers/ImportJsonDisplayDriver.cs
+msgctxt "OrchardCore.Deployment.Drivers.ImportJsonDisplayDriver"
+msgid "Recipe"
+msgstr ""
+
+#: Drivers/ImportPackageDisplayDriver.cs
+msgctxt "OrchardCore.Deployment.Drivers.ImportPackageDisplayDriver"
+msgid "Package"
 msgstr ""
 
 #: Services/FileDownloadDeploymentTargetProvider.cs
@@ -177,6 +197,11 @@ msgstr ""
 
 #: Steps/CustomFileDeploymentStepDriver.cs
 msgctxt "OrchardCore.Deployment.Steps.CustomFileDeploymentStepDriver"
+msgid "File"
+msgstr ""
+
+#: Steps/CustomFileDeploymentStepDriver.cs
+msgctxt "OrchardCore.Deployment.Steps.CustomFileDeploymentStepDriver"
 msgid "Path must be relative to the base directory."
 msgstr ""
 
@@ -187,7 +212,22 @@ msgstr ""
 
 #: Steps/JsonRecipeDeploymentStepDriver.cs
 msgctxt "OrchardCore.Deployment.Steps.JsonRecipeDeploymentStepDriver"
+msgid "Recipe"
+msgstr ""
+
+#: Steps/JsonRecipeDeploymentStepDriver.cs
+msgctxt "OrchardCore.Deployment.Steps.JsonRecipeDeploymentStepDriver"
 msgid "The recipe must have a name property"
+msgstr ""
+
+#: Steps/RecipeFileDeploymentStepDriver.cs
+msgctxt "OrchardCore.Deployment.Steps.RecipeFileDeploymentStepDriver"
+msgid "General"
+msgstr ""
+
+#: Steps/RecipeFileDeploymentStepDriver.cs
+msgctxt "OrchardCore.Deployment.Steps.RecipeFileDeploymentStepDriver"
+msgid "Metadata"
 msgstr ""
 
 #: Views/DeploymentPlan/Create.cshtml
@@ -208,11 +248,6 @@ msgstr ""
 #: Views/DeploymentPlan/Create.cshtml
 msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Create"
 msgid "Deployment Plans"
-msgstr ""
-
-#: Views/DeploymentPlan/Create.cshtml
-msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Create"
-msgid "Name"
 msgstr ""
 
 #: Views/DeploymentPlan/Display.cshtml
@@ -292,11 +327,6 @@ msgstr ""
 
 #: Views/DeploymentPlan/Edit.cshtml
 msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Edit"
-msgid "Name"
-msgstr ""
-
-#: Views/DeploymentPlan/Edit.cshtml
-msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Edit"
 msgid "Save"
 msgstr ""
 
@@ -350,6 +380,16 @@ msgctxt "OrchardCore.Deployment.Views.DeploymentPlanEntry.Buttons.SummaryAdmin"
 msgid "Manage Steps"
 msgstr ""
 
+#: Views/DeploymentPlanGeneral.Edit.cshtml
+msgctxt "OrchardCore.Deployment.Views.DeploymentPlanGeneral.Edit"
+msgid "Name"
+msgstr ""
+
+#: Views/DeploymentStep.Edit.cshtml
+msgctxt "OrchardCore.Deployment.Views.DeploymentStep.Edit"
+msgid "General"
+msgstr ""
+
 #: Views/DeploymentStep.Summary.cshtml
 msgctxt "OrchardCore.Deployment.Views.DeploymentStep.Summary"
 msgid "Delete"
@@ -375,11 +415,6 @@ msgctxt "OrchardCore.Deployment.Views.Import.Index"
 msgid "Import Deployment Package"
 msgstr ""
 
-#: Views/Import/Index.cshtml
-msgctxt "OrchardCore.Deployment.Views.Import.Index"
-msgid "Select a file"
-msgstr ""
-
 #: Views/Import/Json.cshtml
 msgctxt "OrchardCore.Deployment.Views.Import.Json"
 msgid "Import"
@@ -387,12 +422,17 @@ msgstr ""
 
 #: Views/Import/Json.cshtml
 msgctxt "OrchardCore.Deployment.Views.Import.Json"
+msgid "JSON Import"
+msgstr ""
+
+#: Views/ImportJsonRecipe.Edit.cshtml
+msgctxt "OrchardCore.Deployment.Views.ImportJsonRecipe.Edit"
 msgid "JSON"
 msgstr ""
 
-#: Views/Import/Json.cshtml
-msgctxt "OrchardCore.Deployment.Views.Import.Json"
-msgid "JSON Import"
+#: Views/ImportPackageFile.Edit.cshtml
+msgctxt "OrchardCore.Deployment.Views.ImportPackageFile.Edit"
+msgid "Select a file"
 msgstr ""
 
 #: Views/Items/CustomFileDeploymentStep.Fields.Edit.cshtml
@@ -497,16 +537,6 @@ msgstr ""
 
 #: Views/Items/RecipeFileDeploymentStep.Fields.Edit.cshtml
 msgctxt "OrchardCore.Deployment.Views.Items.RecipeFileDeploymentStep.Fields.Edit"
-msgid "Author"
-msgstr ""
-
-#: Views/Items/RecipeFileDeploymentStep.Fields.Edit.cshtml
-msgctxt "OrchardCore.Deployment.Views.Items.RecipeFileDeploymentStep.Fields.Edit"
-msgid "Categories"
-msgstr ""
-
-#: Views/Items/RecipeFileDeploymentStep.Fields.Edit.cshtml
-msgctxt "OrchardCore.Deployment.Views.Items.RecipeFileDeploymentStep.Fields.Edit"
 msgid "Check if the recipe is for setup."
 msgstr ""
 
@@ -532,21 +562,6 @@ msgstr ""
 
 #: Views/Items/RecipeFileDeploymentStep.Fields.Edit.cshtml
 msgctxt "OrchardCore.Deployment.Views.Items.RecipeFileDeploymentStep.Fields.Edit"
-msgid "Tags"
-msgstr ""
-
-#: Views/Items/RecipeFileDeploymentStep.Fields.Edit.cshtml
-msgctxt "OrchardCore.Deployment.Views.Items.RecipeFileDeploymentStep.Fields.Edit"
-msgid "The recipe author."
-msgstr ""
-
-#: Views/Items/RecipeFileDeploymentStep.Fields.Edit.cshtml
-msgctxt "OrchardCore.Deployment.Views.Items.RecipeFileDeploymentStep.Fields.Edit"
-msgid "The recipe categories (comma separated values)."
-msgstr ""
-
-#: Views/Items/RecipeFileDeploymentStep.Fields.Edit.cshtml
-msgctxt "OrchardCore.Deployment.Views.Items.RecipeFileDeploymentStep.Fields.Edit"
 msgid "The recipe description."
 msgstr ""
 
@@ -565,31 +580,6 @@ msgctxt "OrchardCore.Deployment.Views.Items.RecipeFileDeploymentStep.Fields.Edit
 msgid "The recipe name."
 msgstr ""
 
-#: Views/Items/RecipeFileDeploymentStep.Fields.Edit.cshtml
-msgctxt "OrchardCore.Deployment.Views.Items.RecipeFileDeploymentStep.Fields.Edit"
-msgid "The recipe tags (comma separated values)."
-msgstr ""
-
-#: Views/Items/RecipeFileDeploymentStep.Fields.Edit.cshtml
-msgctxt "OrchardCore.Deployment.Views.Items.RecipeFileDeploymentStep.Fields.Edit"
-msgid "The recipe version."
-msgstr ""
-
-#: Views/Items/RecipeFileDeploymentStep.Fields.Edit.cshtml
-msgctxt "OrchardCore.Deployment.Views.Items.RecipeFileDeploymentStep.Fields.Edit"
-msgid "The recipe web site."
-msgstr ""
-
-#: Views/Items/RecipeFileDeploymentStep.Fields.Edit.cshtml
-msgctxt "OrchardCore.Deployment.Views.Items.RecipeFileDeploymentStep.Fields.Edit"
-msgid "Version"
-msgstr ""
-
-#: Views/Items/RecipeFileDeploymentStep.Fields.Edit.cshtml
-msgctxt "OrchardCore.Deployment.Views.Items.RecipeFileDeploymentStep.Fields.Edit"
-msgid "WebSite"
-msgstr ""
-
 #: Views/Items/RecipeFileDeploymentStep.Fields.Summary.cshtml
 msgctxt "OrchardCore.Deployment.Views.Items.RecipeFileDeploymentStep.Fields.Summary"
 msgid "Recipe File"
@@ -603,6 +593,56 @@ msgstr ""
 #: Views/Items/RecipeFileDeploymentStep.Fields.Thumbnail.cshtml
 msgctxt "OrchardCore.Deployment.Views.Items.RecipeFileDeploymentStep.Fields.Thumbnail"
 msgid "Recipe File"
+msgstr ""
+
+#: Views/Items/RecipeFileDeploymentStepMetadata.Fields.Edit.cshtml
+msgctxt "OrchardCore.Deployment.Views.Items.RecipeFileDeploymentStepMetadata.Fields.Edit"
+msgid "Author"
+msgstr ""
+
+#: Views/Items/RecipeFileDeploymentStepMetadata.Fields.Edit.cshtml
+msgctxt "OrchardCore.Deployment.Views.Items.RecipeFileDeploymentStepMetadata.Fields.Edit"
+msgid "Categories"
+msgstr ""
+
+#: Views/Items/RecipeFileDeploymentStepMetadata.Fields.Edit.cshtml
+msgctxt "OrchardCore.Deployment.Views.Items.RecipeFileDeploymentStepMetadata.Fields.Edit"
+msgid "Tags"
+msgstr ""
+
+#: Views/Items/RecipeFileDeploymentStepMetadata.Fields.Edit.cshtml
+msgctxt "OrchardCore.Deployment.Views.Items.RecipeFileDeploymentStepMetadata.Fields.Edit"
+msgid "The recipe author."
+msgstr ""
+
+#: Views/Items/RecipeFileDeploymentStepMetadata.Fields.Edit.cshtml
+msgctxt "OrchardCore.Deployment.Views.Items.RecipeFileDeploymentStepMetadata.Fields.Edit"
+msgid "The recipe categories (comma separated values)."
+msgstr ""
+
+#: Views/Items/RecipeFileDeploymentStepMetadata.Fields.Edit.cshtml
+msgctxt "OrchardCore.Deployment.Views.Items.RecipeFileDeploymentStepMetadata.Fields.Edit"
+msgid "The recipe tags (comma separated values)."
+msgstr ""
+
+#: Views/Items/RecipeFileDeploymentStepMetadata.Fields.Edit.cshtml
+msgctxt "OrchardCore.Deployment.Views.Items.RecipeFileDeploymentStepMetadata.Fields.Edit"
+msgid "The recipe version."
+msgstr ""
+
+#: Views/Items/RecipeFileDeploymentStepMetadata.Fields.Edit.cshtml
+msgctxt "OrchardCore.Deployment.Views.Items.RecipeFileDeploymentStepMetadata.Fields.Edit"
+msgid "The recipe web site."
+msgstr ""
+
+#: Views/Items/RecipeFileDeploymentStepMetadata.Fields.Edit.cshtml
+msgctxt "OrchardCore.Deployment.Views.Items.RecipeFileDeploymentStepMetadata.Fields.Edit"
+msgid "Version"
+msgstr ""
+
+#: Views/Items/RecipeFileDeploymentStepMetadata.Fields.Edit.cshtml
+msgctxt "OrchardCore.Deployment.Views.Items.RecipeFileDeploymentStepMetadata.Fields.Edit"
+msgid "WebSite"
 msgstr ""
 
 #. Format arguments: {0}: Model.Value.Name

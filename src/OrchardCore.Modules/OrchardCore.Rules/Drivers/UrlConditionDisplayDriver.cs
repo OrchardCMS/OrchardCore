@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -10,9 +11,12 @@ public sealed class UrlConditionDisplayDriver : DisplayDriver<Condition, UrlCond
 {
     private readonly ConditionOperatorOptions _options;
 
-    public UrlConditionDisplayDriver(IOptions<ConditionOperatorOptions> options)
+    internal readonly IStringLocalizer S;
+
+    public UrlConditionDisplayDriver(IOptions<ConditionOperatorOptions> options, IStringLocalizer<UrlConditionDisplayDriver> stringLocalizer)
     {
         _options = options.Value;
+        S = stringLocalizer;
     }
 
     public override Task<IDisplayResult> DisplayAsync(UrlCondition condition, BuildDisplayContext context)
@@ -34,7 +38,7 @@ public sealed class UrlConditionDisplayDriver : DisplayDriver<Condition, UrlCond
             }
             m.Value = condition.Value;
             m.Condition = condition;
-        }).Location("Content");
+        }).Location(l => l.Zone("Content").Card(S["Url"], "10"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(UrlCondition condition, UpdateEditorContext context)

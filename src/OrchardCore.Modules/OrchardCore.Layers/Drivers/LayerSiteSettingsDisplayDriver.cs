@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -18,12 +19,16 @@ public sealed class LayerSiteSettingsDisplayDriver : SiteDisplayDriver<LayerSett
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
 
+    internal readonly IStringLocalizer S;
+
     public LayerSiteSettingsDisplayDriver(
         IHttpContextAccessor httpContextAccessor,
-        IAuthorizationService authorizationService)
+        IAuthorizationService authorizationService,
+        IStringLocalizer<LayerSiteSettingsDisplayDriver> stringLocalizer)
     {
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
+        S = stringLocalizer;
     }
 
     protected override string SettingsGroupId
@@ -41,7 +46,7 @@ public sealed class LayerSiteSettingsDisplayDriver : SiteDisplayDriver<LayerSett
         return Initialize<LayerSettingsViewModel>("LayerSettings_Edit", model =>
         {
             model.Zones = string.Join(", ", settings.Zones);
-        }).Location("Content:3")
+        }).Location(l => l.Zone("Content", "3").Card(S["Zones"], "10"))
         .OnGroup(SettingsGroupId);
     }
 

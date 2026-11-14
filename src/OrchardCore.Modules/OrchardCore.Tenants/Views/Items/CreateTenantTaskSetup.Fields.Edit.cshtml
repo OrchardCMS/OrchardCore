@@ -1,0 +1,45 @@
+@using OrchardCore.Tenants.Workflows.ViewModels
+@model CreateTenantTaskViewModel
+
+<div data-task-editor="create-tenant">
+    <div class="ocat-wrapper" asp-validation-class-for="RecipeNameExpression">
+        <label asp-for="RecipeNameExpression" class="ocat-label">@T["Recipe"]</label>
+        <div class="ocat-end">
+            <input type="text" asp-for="RecipeNameExpression" class="form-control code" />
+            <span asp-validation-for="RecipeNameExpression"></span>
+        </div>
+    </div>
+
+    <div class="ocat-wrapper" asp-validation-class-for="DatabaseProviderExpression">
+        <label asp-for="DatabaseProviderExpression" class="ocat-label">@T["What type of database to use?"]</label>
+        <div class="ocat-end">
+            <input type="text" asp-for="DatabaseProviderExpression" class="form-control code" />
+            <span asp-validation-for="DatabaseProviderExpression"></span>
+        </div>
+    </div>
+
+    <div class="ocat-wrapper" asp-validation-class-for="TablePrefixExpression">
+        <label asp-for="TablePrefixExpression" class="ocat-label">@T["Table Prefix"]</label>
+        <div class="ocat-end">
+            <input type="text" asp-for="TablePrefixExpression" class="form-control code" />
+            <span asp-validation-for="TablePrefixExpression"></span>
+        </div>
+    </div>
+
+    <div class="ocat-wrapper" asp-validation-class-for="ConnectionStringExpression">
+        <label asp-for="ConnectionStringExpression" class="ocat-label">@T["Connection string"]</label>
+        <div class="ocat-end">
+            <input type="text" asp-for="ConnectionStringExpression" class="form-control code" />
+            <span asp-validation-for="ConnectionStringExpression"></span>
+        </div>
+    </div>
+
+    <div class="ocat-wrapper" asp-validation-class-for="SchemaExpression">
+        <label asp-for="SchemaExpression" class="ocat-label">@T["Schema"]</label>
+        <div class="ocat-end">
+            <input type="text" asp-for="SchemaExpression" class="form-control code" />
+            <span asp-validation-for="SchemaExpression"></span>
+            <div class="hint">@T["When left blank, the default value on the server will be used."] @T["For example, '{0}' for SQL Server.", "dbo"]</div>
+        </div>
+    </div>
+</div>
