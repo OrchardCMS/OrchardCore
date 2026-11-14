@@ -1,0 +1,18 @@
+@using OrchardCore.OpenId.ViewModels
+@model OpenIdClientSettingsViewModel
+
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <p>@T["Click <a href=\"{0}\" target=\"_blank\">here</a> for more information about the Authorization Code Flow.", "http://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth"]</p>
+    </div>
+</div>
+
+<div class="ocat-wrapper" asp-validation-class-for="UseCodeFlow">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input openid-use-code-flow" asp-for="UseCodeFlow">
+            <label class="form-check-label" asp-for="UseCodeFlow">@T["Use 'code' response type"]</label>
+            <span class="hint dashed">@T["Click <a href=\"{0}\" target=\"_blank\">here</a> for an example.", "http://openid.net/specs/openid-connect-core-1_0.html#codeExample"]</span>
+        </div>
+    </div>
+</div>

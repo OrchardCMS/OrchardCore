@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.DisplayManagement.Entities;
@@ -19,14 +20,18 @@ public sealed class TaxonomyContentsAdminListSettingsDisplayDriver : SiteDisplay
     private readonly IAuthorizationService _authorizationService;
     private readonly YesSql.ISession _session;
 
+    internal readonly IStringLocalizer S;
+
     public TaxonomyContentsAdminListSettingsDisplayDriver(
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
-        YesSql.ISession session)
+        YesSql.ISession session,
+        IStringLocalizer<TaxonomyContentsAdminListSettingsDisplayDriver> stringLocalizer)
     {
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         _session = session;
+        S = stringLocalizer;
     }
 
     protected override string SettingsGroupId
@@ -52,7 +57,7 @@ public sealed class TaxonomyContentsAdminListSettingsDisplayDriver : SiteDisplay
         return Initialize<TaxonomyContentsAdminListSettingsViewModel>("TaxonomyContentsAdminListSettings_Edit", model =>
         {
             model.TaxonomyEntries = entries;
-        }).Location("Content:2")
+        }).Location(l => l.Zone("Content", "2").Card(S["Taxonomies"], "10"))
         .OnGroup(SettingsGroupId);
     }
 

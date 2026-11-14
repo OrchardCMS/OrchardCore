@@ -1,61 +1,12 @@
-@using OrchardCore.ContentManagement
-@using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.ContentManagement.Metadata.Settings
-@using OrchardCore.ContentTypes
-@using OrchardCore.Mvc.Utilities
 @using OrchardCore.Localization.Data
-@using System.Linq
-@using Microsoft.Extensions.Options
 
 @model EditTypeViewModel
 
-@inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
-@inject IOptions<ContentOptions> ContentOptions
 @inject IDataLocalizer D
 
 @{
     var contentSettings = Model.TypeDefinition.GetSettings<ContentSettings>();
-
-    var typePart = Model.TypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.Name, Model.TypeDefinition.Name, StringComparison.OrdinalIgnoreCase));
-
-    var sorted = new List<dynamic>();
-
-    foreach (var part in Model.TypeDefinition.Parts)
-    {
-        var partDefinition = await ContentDefinitionManager.GetPartDefinitionAsync(part.PartDefinition.Name);
-
-        if (partDefinition == null)
-        {
-            continue;
-        }
-
-        var defaultPosition = partDefinition.DefaultPosition() ?? "5";
-
-        sorted.Add(
-            new
-            {
-                Part = part,
-                Order = int.Parse(part.GetSettings<ContentTypePartSettings>().Position ?? defaultPosition)
-            });
-    }
-
-    var partDefinitions = sorted.OrderBy(x => x.Order).Select(x => (ContentTypePartDefinition)x.Part).ToList();
-
-    var fieldDefinitions = new List<ContentPartFieldDefinition>();
-
-    if (typePart?.PartDefinition?.Fields != null)
-    {
-        fieldDefinitions = typePart.PartDefinition.Fields
-        .Select(field => new
-        {
-            Field = field,
-            Order = int.Parse(field.GetSettings<ContentPartFieldSettings>().Position ?? "0"),
-        }).OrderBy(x => x.Order)
-        .Select(x => x.Field)
-        .ToList();
-    }
-
-    var fields = ContentOptions.Value.ContentFieldOptions.Select(cfo => cfo.Type).ToList();
     string localizedTypeName = D[Model.TypeDefinition.DisplayName, DataLocalizationContext.ContentType];
 }
 
@@ -80,128 +31,6 @@
     }
 
     @await DisplayAsync(Model.Editor)
-
-    @if (fieldDefinitions.Count > 0 || fields.Count > 0)
-    {
-        <div class="ocat-wrapper">
-            <div class="ocat-end-offset">
-                <h3>@T["Fields"]</h3>
-
-                <ul class="list-group sortable" id="fields">
-                    @foreach (var fieldDefinition in fieldDefinitions)
-                    {
-                        var settings = fieldDefinition.GetSettings<ContentSettings>();
-
-                        <li class="list-group-item" style="cursor: move;">
-                            <div class="w-100">
-                                <div class="float-end">
-                                    @if (fields.Any(field => string.Equals(field.Name, fieldDefinition.FieldDefinition.Name, StringComparison.OrdinalIgnoreCase)))
-                                    {
-                                        <a asp-route-action="EditField" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@fieldDefinition.Name" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary btn-sm" role="button">@T["Edit"]</a>
-                                    }
-                                    @if (settings.IsSystemDefined)
-                                    {
-                                        <div class="d-inline" data-bs-toggle="tooltip" data-bs-title="@T["System-defined fields are integral components of the system and cannot be removed."]">
-                                            <button type="button" class="btn btn-danger btn-sm" disabled>
-                                                @T["Remove"]
-                                            </button>
-                                        </div>
-                                    }
-                                    else
-                                    {
-                                        <a asp-route-action="RemoveFieldFrom" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@fieldDefinition.Name" class="btn btn-danger btn-sm" role="button" data-url-af="UnsafeUrl RemoveUrl">@T["Remove"]</a>
-                                    }
-                                </div>
-                                @D[fieldDefinition.DisplayName(), $"Content Fields{Constants.ContextSeparator}{typePart.PartDefinition.Name}"] <span class="hint dashed">@fieldDefinition.FieldDefinition.Name.CamelFriendly()</span>
-
-                                @if (!string.IsNullOrEmpty(fieldDefinition.DisplayMode()))
-                                {
-                                    <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@T["Display mode"]"><i class="fa-solid fa-tv text-info" aria-hidden="true"></i> @fieldDefinition.DisplayMode()</span>
-                                }
-                                @if (!string.IsNullOrEmpty(fieldDefinition.Editor()))
-                                {
-                                    <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@T["Editor"]"><i class="fa-solid fa-pen-to-square text-info" aria-hidden="true"></i> @fieldDefinition.Editor()</span>
-                                }
-                            </div>
-                            <input type="hidden" asp-for="OrderedFieldNames" value="@fieldDefinition.Name" />
-                        </li>
-                    }
-                </ul>
-            </div>
-        </div>
-
-        @if (fields.Count > 0)
-        {
-            <div class="ocat-wrapper">
-                <div class="ocat-end-offset">
-                    <a asp-route-action="AddFieldTo" asp-route-id="@Model.TypeDefinition.Name" asp-route-returnUrl="@FullRequestPath" class="btn btn-info btn-sm" role="button">@T["Add Field"]</a>
-                </div>
-            </div>
-        }
-    }
-    <div class="ocat-wrapper">
-        <div class="ocat-end-offset">
-            <h3>@T["Parts"]</h3>
-
-            <ul class="list-group sortable" id="parts">
-                @foreach (var partDefinition in partDefinitions)
-                {
-                    var settings = partDefinition.GetSettings<ContentSettings>();
-
-                    <li class="list-group-item@(partDefinition == typePart ? " bg-faded" : string.Empty)" style="cursor: move;">
-                        <div class="w-100">
-                            @D[partDefinition.DisplayName(), DataLocalizationContext.ContentType]
-
-                            @if (partDefinition != typePart)
-                            {
-                                @if (!string.IsNullOrEmpty(partDefinition.Description()))
-                                {
-                                    <span class="hint dashed">@partDefinition.Description()</span>
-                                }
-
-                                <div class="float-end">
-                                    <a asp-route-action="EditTypePart" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@partDefinition.Name" class="btn btn-primary btn-sm" role="button">@T["Edit"]</a>
-                                    @if (settings.IsSystemDefined)
-                                    {
-                                        <div class="d-inline" data-bs-toggle="tooltip" data-bs-title="@T["System-defined parts are integral components of the system and cannot be removed."]">
-                                            <button type="button" class="btn btn-danger btn-sm" disabled>
-                                                @T["Remove"]
-                                            </button>
-                                        </div>
-                                    }
-                                    else
-                                    {
-                                        <a asp-route-action="RemovePart" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@partDefinition.Name" class="btn btn-danger btn-sm" role="button" data-url-af="UnsafeUrl RemoveUrl">@T["Remove"]</a>
-                                    }
-                                </div>
-                            }
-                            else
-                            {
-                                <span class="hint dashed">@T["Contains the fields for the current type"]</span>
-                            }
-
-                            @if (!string.IsNullOrEmpty(partDefinition.DisplayMode()))
-                            {
-                                <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@T["Display mode"]"><i class="fa-solid fa-tv text-info" aria-hidden="true"></i> @partDefinition.DisplayMode()</span>
-                            }
-                            @if (!string.IsNullOrEmpty(partDefinition.Editor()))
-                            {
-                                <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@T["Editor"]"><i class="fa-solid fa-pen-to-square text-info" aria-hidden="true"></i> @partDefinition.Editor()</span>
-                            }
-                        </div>
-                        <input type="hidden" asp-for="OrderedPartNames" value="@partDefinition.Name" />
-                    </li>
-                }
-            </ul>
-        </div>
-    </div>
-
-    <div class="ocat-wrapper">
-        <div class="ocat-end-offset">
-            <a asp-route-action="AddPartsTo" asp-route-id="@Model.TypeDefinition.Name" class="btn btn-info btn-sm" role="button">@T["Add Parts"]</a>
-            <a asp-route-action="AddReusablePartTo" asp-route-id="@Model.TypeDefinition.Name" class="btn btn-info btn-sm" role="button">@T["Add Named Part"]</a>
-        </div>
-    </div>
 
     <div class="action-bar-bottom">
         <div class="btn-group"

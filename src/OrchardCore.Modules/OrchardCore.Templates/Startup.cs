@@ -29,6 +29,9 @@ public sealed class Startup : StartupBase
 
         // Builds the rows of the templates admin list, shared by the site and admin template lists.
         services.AddDisplayDriver<TemplateEntry, TemplateEntryDisplayDriver>();
+
+        // Builds the editor of a template, shared by the site and admin templates.
+        services.AddDisplayDriver<TemplateViewModel, TemplateDisplayDriver>();
         services.AddPermissionProvider<Permissions>();
         services.AddNavigationProvider<AdminMenu>();
         services.AddRecipeExecutionStep<TemplateStep>();

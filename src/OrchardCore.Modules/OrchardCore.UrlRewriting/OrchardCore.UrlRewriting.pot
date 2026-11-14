@@ -53,6 +53,11 @@ msgstr ""
 
 #: Drivers/RewriteRulesDisplayDriver.cs
 msgctxt "OrchardCore.UrlRewriting.Drivers.RewriteRulesDisplayDriver"
+msgid "General"
+msgstr ""
+
+#: Drivers/RewriteRulesDisplayDriver.cs
+msgctxt "OrchardCore.UrlRewriting.Drivers.RewriteRulesDisplayDriver"
 msgid "Name is required"
 msgstr ""
 
@@ -93,6 +98,11 @@ msgstr ""
 
 #: Drivers/UrlRedirectRuleDisplayDriver.cs
 msgctxt "OrchardCore.UrlRewriting.Drivers.UrlRedirectRuleDisplayDriver"
+msgid "Redirect"
+msgstr ""
+
+#: Drivers/UrlRedirectRuleDisplayDriver.cs
+msgctxt "OrchardCore.UrlRewriting.Drivers.UrlRedirectRuleDisplayDriver"
 msgid "Temporary Redirect (307)"
 msgstr ""
 
@@ -124,6 +134,11 @@ msgstr ""
 #: Drivers/UrlRewriteRuleDisplayDriver.cs
 msgctxt "OrchardCore.UrlRewriting.Drivers.UrlRewriteRuleDisplayDriver"
 msgid "Exclude Query String from Original Request"
+msgstr ""
+
+#: Drivers/UrlRewriteRuleDisplayDriver.cs
+msgctxt "OrchardCore.UrlRewriting.Drivers.UrlRewriteRuleDisplayDriver"
+msgid "Rewrite"
 msgstr ""
 
 #: Drivers/UrlRewriteRuleDisplayDriver.cs
@@ -273,6 +288,11 @@ msgstr ""
 #: Views/RewriteRule.DefaultTags.SummaryAdmin.cshtml
 msgctxt "OrchardCore.UrlRewriting.Views.RewriteRule.DefaultTags.SummaryAdmin"
 msgid "Source"
+msgstr ""
+
+#: Views/RewriteRule.Edit.cshtml
+msgctxt "OrchardCore.UrlRewriting.Views.RewriteRule.Edit"
+msgid "General"
 msgstr ""
 
 #: Views/RewriteRule.Fields.Edit.cshtml

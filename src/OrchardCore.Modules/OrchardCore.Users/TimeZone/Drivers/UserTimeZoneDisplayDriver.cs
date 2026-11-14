@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -9,12 +10,19 @@ namespace OrchardCore.Users.TimeZone.Drivers;
 
 public sealed class UserTimeZoneDisplayDriver : SectionDisplayDriver<User, UserTimeZone>
 {
+    internal readonly IStringLocalizer S;
+
+    public UserTimeZoneDisplayDriver(IStringLocalizer<UserTimeZoneDisplayDriver> stringLocalizer)
+    {
+        S = stringLocalizer;
+    }
+
     public override IDisplayResult Edit(User user, UserTimeZone userTimeZone, BuildEditorContext context)
     {
         return Initialize<UserTimeZoneViewModel>("UserTimeZone_Edit", model =>
         {
             model.TimeZoneId = userTimeZone.TimeZoneId;
-        }).Location("Content:2");
+        }).Location(l => l.Zone("Content", "2").Card(S["Regional settings"], "40"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(User user, UserTimeZone userTimeZone, UpdateEditorContext context)

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -11,9 +12,12 @@ public sealed class ResetIndexDeploymentStepDriver
 {
     private readonly IIndexProfileStore _store;
 
-    public ResetIndexDeploymentStepDriver(IIndexProfileStore store)
+    internal readonly IStringLocalizer S;
+
+    public ResetIndexDeploymentStepDriver(IIndexProfileStore store, IStringLocalizer<ResetIndexDeploymentStepDriver> stringLocalizer)
     {
         _store = store;
+        S = stringLocalizer;
     }
 
     public override Task<IDisplayResult> DisplayAsync(ResetIndexDeploymentStep step, BuildDisplayContext context)
@@ -31,7 +35,7 @@ public sealed class ResetIndexDeploymentStepDriver
             model.IncludeAll = step.IncludeAll;
             model.IndexNames = step.IndexNames;
             model.AllIndexNames = (await _store.GetAllAsync()).Select(x => x.Name).ToArray();
-        }).Location("Content");
+        }).Location(l => l.Zone("Content").Card(S["Indexes"], "10"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ResetIndexDeploymentStep step, UpdateEditorContext context)

@@ -1,0 +1,17 @@
+@model OrchardCore.Email.ViewModels.EmailTestViewModel
+
+<div class="ocat-wrapper" asp-validation-class-for="Subject">
+    <label asp-for="Subject" class="ocat-label ocat-label-required">@T["Subject"]</label>
+    <div class="ocat-end">
+        <input asp-for="Subject" class="form-control" type="text" required />
+        <span asp-validation-for="Subject"></span>
+    </div>
+</div>
+
+<div class="ocat-wrapper" asp-validation-class-for="Body">
+    <label asp-for="Body" class="ocat-label ocat-label-required">@T["Body"]</label>
+    <div class="ocat-end">
+        <textarea asp-for="Body" class="form-control" rows="5"></textarea>
+        <span asp-validation-for="Body"></span>
+    </div>
+</div>

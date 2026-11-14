@@ -18,7 +18,22 @@ msgstr ""
 
 #: Settings/HtmlBodyPartMonacoEditorSettingsDriver.cs
 msgctxt "OrchardCore.Html.Settings.HtmlBodyPartMonacoEditorSettingsDriver"
+msgid "Editor"
+msgstr ""
+
+#: Settings/HtmlBodyPartMonacoEditorSettingsDriver.cs
+msgctxt "OrchardCore.Html.Settings.HtmlBodyPartMonacoEditorSettingsDriver"
 msgid "The options are written in an incorrect format."
+msgstr ""
+
+#: Settings/HtmlBodyPartSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Html.Settings.HtmlBodyPartSettingsDisplayDriver"
+msgid "Settings"
+msgstr ""
+
+#: Settings/HtmlBodyPartTrumbowygEditorSettingsDriver.cs
+msgctxt "OrchardCore.Html.Settings.HtmlBodyPartTrumbowygEditorSettingsDriver"
+msgid "Editor"
 msgstr ""
 
 #: Settings/HtmlBodyPartTrumbowygEditorSettingsDriver.cs

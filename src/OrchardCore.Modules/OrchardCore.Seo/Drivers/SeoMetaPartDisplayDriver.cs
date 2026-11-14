@@ -36,7 +36,7 @@ public sealed class SeoMetaPartDisplayDriver : ContentPartDisplayDriver<SeoMetaP
                 model.CustomMetaTags = JConvert.SerializeObject(part.CustomMetaTags, JOptions.CamelCaseIndented);
                 model.SeoMetaPart = part;
                 model.Settings = settings;
-            }).Location("Parts#SEO;50"),
+            }).Location(l => l.Zone("Parts").Tab("SEO", "50").Card(S["Search engines"], "10")),
         };
 
         if (settings.DisplayOpenGraph)
@@ -47,7 +47,7 @@ public sealed class SeoMetaPartDisplayDriver : ContentPartDisplayDriver<SeoMetaP
                 model.OpenGraphTitle = part.OpenGraphTitle;
                 model.OpenGraphDescription = part.OpenGraphDescription;
                 model.SeoMetaPart = part;
-            }).Location("Parts#SEO;50%Open Graph;20"));
+            }).Location(l => l.Zone("Parts").Tab("SEO", "50").Card(S["Open Graph"], "20")));
         }
 
         if (settings.DisplayTwitter)
@@ -60,7 +60,7 @@ public sealed class SeoMetaPartDisplayDriver : ContentPartDisplayDriver<SeoMetaP
                 model.TwitterCreator = part.TwitterCreator;
                 model.TwitterSite = part.TwitterSite;
                 model.SeoMetaPart = part;
-            }).Location("Parts#SEO;50%Twitter;30"));
+            }).Location(l => l.Zone("Parts").Tab("SEO", "50").Card(S["Twitter"], "30")));
         }
 
         if (settings.DisplayGoogleSchema)
@@ -69,7 +69,7 @@ public sealed class SeoMetaPartDisplayDriver : ContentPartDisplayDriver<SeoMetaP
             {
                 model.GoogleSchema = part.GoogleSchema;
                 model.SeoMetaPart = part;
-            }).Location("Parts#SEO;50%Google Schema;40"));
+            }).Location(l => l.Zone("Parts").Tab("SEO", "50").Card(S["Google Schema"], "40")));
         }
 
         return Combine(results);

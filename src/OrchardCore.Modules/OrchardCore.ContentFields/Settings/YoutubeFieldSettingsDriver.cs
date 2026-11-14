@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
@@ -8,6 +9,13 @@ namespace OrchardCore.ContentFields.Settings;
 
 public sealed class YoutubeFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<YoutubeField>
 {
+    internal readonly IStringLocalizer S;
+
+    public YoutubeFieldSettingsDriver(IStringLocalizer<YoutubeFieldSettingsDriver> stringLocalizer)
+    {
+        S = stringLocalizer;
+    }
+
     public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
     {
         return Initialize<YoutubeFieldSettings>("YoutubeFieldSetting_Edit", model =>
@@ -20,7 +28,7 @@ public sealed class YoutubeFieldSettingsDriver : ContentPartFieldDefinitionDispl
             model.Width = settings.Width != default ? settings.Width : 560;
             model.Required = settings.Required;
             model.Placeholder = settings.Placeholder;
-        }).Location("Content");
+        }).Location(l => l.Zone("Content").Card(S["Settings"], "20"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.Views;
@@ -8,10 +9,17 @@ namespace OrchardCore.Sitemaps.Drivers;
 
 public sealed class SitemapPartDisplayDriver : ContentPartDisplayDriver<SitemapPart>
 {
+    internal readonly IStringLocalizer S;
+
+    public SitemapPartDisplayDriver(IStringLocalizer<SitemapPartDisplayDriver> stringLocalizer)
+    {
+        S = stringLocalizer;
+    }
+
     public override IDisplayResult Edit(SitemapPart part, BuildPartEditorContext context)
     {
         return Initialize<SitemapPartViewModel>("SitemapPart_Edit", m => BuildViewModel(m, part))
-            .Location("Parts#SEO:5");
+            .Location(l => l.Zone("Parts", "5").Tab("SEO").Card(S["Sitemap"], "60"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(SitemapPart model, UpdatePartEditorContext context)

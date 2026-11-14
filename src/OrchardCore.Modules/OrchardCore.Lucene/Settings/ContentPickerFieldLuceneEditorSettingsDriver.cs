@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Handlers;
@@ -10,9 +11,12 @@ public sealed class ContentPickerFieldLuceneEditorSettingsDriver : ContentPartFi
 {
     private readonly IIndexProfileStore _indexProfileStore;
 
-    public ContentPickerFieldLuceneEditorSettingsDriver(IIndexProfileStore indexProfileStore)
+    internal readonly IStringLocalizer S;
+
+    public ContentPickerFieldLuceneEditorSettingsDriver(IIndexProfileStore indexProfileStore, IStringLocalizer<ContentPickerFieldLuceneEditorSettingsDriver> stringLocalizer)
     {
         _indexProfileStore = indexProfileStore;
+        S = stringLocalizer;
     }
 
     public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
@@ -23,7 +27,7 @@ public sealed class ContentPickerFieldLuceneEditorSettingsDriver : ContentPartFi
 
             model.Index = settings.Index;
             model.Indices = (await _indexProfileStore.GetByProviderAsync(LuceneConstants.ProviderName)).Select(x => x.IndexName).ToArray();
-        }).Location("Editor");
+        }).Location(l => l.Zone("Editor").Card(S["Editor"], "30"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)

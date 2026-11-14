@@ -1,0 +1,10 @@
+@model OrchardCore.Email.ViewModels.EmailTestViewModel
+
+<div class="ocat-wrapper">
+    <label asp-for="Provider" class="ocat-label ocat-label-required">@T["Provider"]</label>
+    <div class="ocat-end">
+        <select class="form-select" asp-for="Provider" asp-items="Model.Providers">
+            <option value="">@T["Select a provider"]</option>
+        </select>
+    </div>
+</div>

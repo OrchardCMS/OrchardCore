@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -16,14 +17,18 @@ public sealed class TwitterSigninSettingsDisplayDriver : SiteDisplayDriver<Twitt
     private readonly IAuthorizationService _authorizationService;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
+    internal readonly IStringLocalizer S;
+
     public TwitterSigninSettingsDisplayDriver(
         IShellReleaseManager shellReleaseManager,
         IAuthorizationService authorizationService,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        IStringLocalizer<TwitterSigninSettingsDisplayDriver> stringLocalizer)
     {
         _shellReleaseManager = shellReleaseManager;
         _authorizationService = authorizationService;
         _httpContextAccessor = httpContextAccessor;
+        S = stringLocalizer;
     }
 
     protected override string SettingsGroupId
@@ -44,7 +49,7 @@ public sealed class TwitterSigninSettingsDisplayDriver : SiteDisplayDriver<Twitt
                 model.CallbackPath = settings.CallbackPath;
             }
             model.SaveTokens = settings.SaveTokens;
-        }).Location("Content:5")
+        }).Location(l => l.Zone("Content", "5").Card(S["Sign in"], "10"))
         .OnGroup(SettingsGroupId);
     }
     public override async Task<IDisplayResult> UpdateAsync(ISite site, TwitterSigninSettings settings, UpdateEditorContext context)

@@ -1,21 +1,13 @@
-@using OrchardCore.Mvc.Utilities
 @using OrchardCore.ContentManagement.Metadata.Settings
 @using OrchardCore.ContentManagement.Metadata.Models
-@using OrchardCore.DisplayManagement
 @using OrchardCore.Localization.Data
-@using OrchardCore.DisplayManagement.Theming
 
 @model EditFieldViewModel
 
-@inject IThemeManager ThemeManager
-@inject OrchardCore.DisplayManagement.Descriptors.IShapeTableManager ShapeTableManager
 @inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
 @inject IDataLocalizer D
 
 @{
-    var shapeTable = await ThemeManager.GetShapeTableAsync(ShapeTableManager);
-    var editorShapes = shapeTable.Bindings.Keys.Where(x => x.StartsWith(Model.PartFieldDefinition.FieldDefinition.Name + "_Option__", StringComparison.OrdinalIgnoreCase) || x.Equals(Model.PartFieldDefinition.FieldDefinition.Name + "_Option", StringComparison.OrdinalIgnoreCase));
-    var displayShapes = shapeTable.Bindings.Keys.Where(x => x.StartsWith(Model.PartFieldDefinition.FieldDefinition.Name + "_DisplayOption__", StringComparison.OrdinalIgnoreCase) || x.Equals(Model.PartFieldDefinition.FieldDefinition.Name + "_DisplayOption", StringComparison.OrdinalIgnoreCase));
     var returnUrl = ViewData["returnUrl"]?.ToString();
     var fieldContext = $"Content Fields{Constants.ContextSeparator}{Model.PartFieldDefinition.PartDefinition.Name}";
     string localizedFieldName = D[Model.DisplayName, fieldContext];
@@ -24,6 +16,9 @@
     // A part named after a content type holds that type's own fields, which are edited from the type editor, so the
     // trail leads back through the type rather than through the list of parts.
     var typeDefinition = await ContentDefinitionManager.GetTypeDefinitionAsync(Model.PartFieldDefinition.PartDefinition.Name);
+
+    // The settings of the field are only rendered when the field has settings.
+    bool hasContent = Model.Shape.Content != null;
 }
 
 <zone Name="Title">
@@ -44,22 +39,6 @@
 <form asp-action="EditField" asp-route-returnUrl="@ViewData["returnUrl"]">
     @Html.ValidationSummary()
 
-    <div class="ocat-limited-wrapper">
-        <label asp-for="DisplayName" class="ocat-label ocat-label-required">@T["Display Name"]</label>
-        <div class="ocat-limited">
-            <input asp-for="DisplayName" autofocus class="form-control" />
-            <span class="hint">@T["Name of the field as it will be displayed in screens."]</span>
-        </div>
-    </div>
-
-    <div class="ocat-limited-wrapper">
-        <label asp-for="Name" class="ocat-label">@T["Technical Name"]</label>
-        <div class="ocat-limited">
-            <input asp-for="Name" class="form-control" readonly />
-            <span class="hint">@T["Technical name of the field."]</span>
-        </div>
-    </div>
-
     @if (Model.Shape.Shortcuts != null)
     {
         <div class="ocat-wrapper">
@@ -69,47 +48,17 @@
         </div>
     }
 
-    @if (Model.Shape.Content != null)
+    @* The common settings of the field, in the "General" card of the header zone. The settings of the other modules are cards of the zones rendered below. *@
+    @await DisplayAsync(Model.Shape.Header)
+
+    @if (hasContent)
     {
-        @await DisplayAsync(Model.Shape.Content)
-
-        @if (editorShapes.Any())
-        {
-            <div class="ocat-wrapper">
-                <label asp-for="Editor" class="ocat-label">@T["What type of editor should be used?"]</label>
-                <div class="ocat-end">
-                    <select asp-for="Editor" class="form-select" data-field-editor-select>
-                        @foreach (var editorShape in editorShapes)
-                        {
-                            var shape = await Factory.CreateAsync(editorShape);
-                            shape.Properties["Editor"] = Model.Editor;
-                            @await DisplayAsync(shape)
-                        }
-                    </select>
-                </div>
-            </div>
-        }
-
+        @* The settings of the selected editor follow its selection, before the settings of the field. *@
         <div id="field-editor-container" style="display: none">
             @await DisplayAsync(Model.Shape.Editor)
         </div>
 
-        @if (displayShapes.Any())
-        {
-            <div class="ocat-wrapper">
-                <label asp-for="DisplayMode" class="ocat-label">@T["What type of display mode should be used?"]</label>
-                <div class="ocat-end">
-                    <select asp-for="DisplayMode" class="form-select" data-field-display-select>
-                        @foreach (var displayShape in displayShapes)
-                        {
-                            var shape = await Factory.CreateAsync(displayShape);
-                            shape.Properties["DisplayMode"] = Model.DisplayMode;
-                            @await DisplayAsync(shape)
-                        }
-                    </select>
-                </div>
-            </div>
-        }
+        @await DisplayAsync(Model.Shape.Content)
 
         <div id="field-display-container" style="display: none">
             @await DisplayAsync(Model.Shape.DisplayMode)

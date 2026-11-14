@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement.GraphQL.Options;
 using OrchardCore.ContentManagement.GraphQL.Settings;
@@ -13,9 +14,14 @@ public sealed class GraphQLContentTypePartSettingsDriver : ContentTypePartDefini
 {
     private readonly GraphQLContentOptions _contentOptions;
 
-    public GraphQLContentTypePartSettingsDriver(IOptions<GraphQLContentOptions> optionsAccessor)
+    internal readonly IStringLocalizer S;
+
+    public GraphQLContentTypePartSettingsDriver(
+        IOptions<GraphQLContentOptions> optionsAccessor,
+        IStringLocalizer<GraphQLContentTypePartSettingsDriver> stringLocalizer)
     {
         _contentOptions = optionsAccessor.Value;
+        S = stringLocalizer;
     }
 
     public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
@@ -36,7 +42,7 @@ public sealed class GraphQLContentTypePartSettingsDriver : ContentTypePartDefini
                 await context.Updater.TryUpdateModelAsync(model, Prefix,
                     m => m.Settings);
             }
-        }).Location("Content");
+        }).Location(l => l.Zone("Content").Card(S["GraphQL"], "50"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)

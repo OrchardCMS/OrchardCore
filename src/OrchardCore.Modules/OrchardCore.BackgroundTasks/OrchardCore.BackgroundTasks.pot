@@ -147,6 +147,26 @@ msgctxt "OrchardCore.BackgroundTasks.Controllers.BackgroundTaskController"
 msgid "{0} tasks have been queued and will run shortly."
 msgstr ""
 
+#: Drivers/BackgroundTaskDisplayDriver.cs
+msgctxt "OrchardCore.BackgroundTasks.Drivers.BackgroundTaskDisplayDriver"
+msgid "Advanced"
+msgstr ""
+
+#: Drivers/BackgroundTaskDisplayDriver.cs
+msgctxt "OrchardCore.BackgroundTasks.Drivers.BackgroundTaskDisplayDriver"
+msgid "General"
+msgstr ""
+
+#: Drivers/BackgroundTaskDisplayDriver.cs
+msgctxt "OrchardCore.BackgroundTasks.Drivers.BackgroundTaskDisplayDriver"
+msgid "Locking"
+msgstr ""
+
+#: Drivers/BackgroundTaskDisplayDriver.cs
+msgctxt "OrchardCore.BackgroundTasks.Drivers.BackgroundTaskDisplayDriver"
+msgid "Properties"
+msgstr ""
+
 #: Permissions.cs
 msgctxt "OrchardCore.BackgroundTasks.Permissions"
 msgid "Manage background tasks"
@@ -353,11 +373,6 @@ msgstr ""
 
 #: Views/BackgroundTask/Edit.cshtml
 msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Edit"
-msgid "Advanced"
-msgstr ""
-
-#: Views/BackgroundTask/Edit.cshtml
-msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Edit"
 msgid "Background Tasks"
 msgstr ""
 
@@ -368,87 +383,12 @@ msgstr ""
 
 #: Views/BackgroundTask/Edit.cshtml
 msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Edit"
-msgid "Description"
-msgstr ""
-
-#: Views/BackgroundTask/Edit.cshtml
-msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Edit"
 msgid "Edit Task Settings"
 msgstr ""
 
 #: Views/BackgroundTask/Edit.cshtml
 msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Edit"
-msgid "Ignored if there is no distributed lock feature enabled."
-msgstr ""
-
-#: Views/BackgroundTask/Edit.cshtml
-msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Edit"
-msgid "Invalid lock expiration value in the advanced tab"
-msgstr ""
-
-#: Views/BackgroundTask/Edit.cshtml
-msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Edit"
-msgid "Invalid lock timeout value in the advanced tab"
-msgstr ""
-
-#: Views/BackgroundTask/Edit.cshtml
-msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Edit"
-msgid "Lock expiration (ms)"
-msgstr ""
-
-#: Views/BackgroundTask/Edit.cshtml
-msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Edit"
-msgid "Lock timeout (ms)"
-msgstr ""
-
-#: Views/BackgroundTask/Edit.cshtml
-msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Edit"
-msgid "Properties"
-msgstr ""
-
-#: Views/BackgroundTask/Edit.cshtml
-msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Edit"
-msgid "Reset Schedule"
-msgstr ""
-
-#: Views/BackgroundTask/Edit.cshtml
-msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Edit"
 msgid "Save"
-msgstr ""
-
-#: Views/BackgroundTask/Edit.cshtml
-msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Edit"
-msgid "Schedule"
-msgstr ""
-
-#: Views/BackgroundTask/Edit.cshtml
-msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Edit"
-msgid "The expiration in milliseconds of the lock acquired before executing the task atomically. Leave it to zero to not use any locking."
-msgstr ""
-
-#: Views/BackgroundTask/Edit.cshtml
-msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Edit"
-msgid "The task schedule as a cron expression."
-msgstr ""
-
-#: Views/BackgroundTask/Edit.cshtml
-msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Edit"
-msgid "The timeout in milliseconds to acquire a lock before executing the task atomically. Leave it to zero to not use any locking."
-msgstr ""
-
-#: Views/BackgroundTask/Edit.cshtml
-msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Edit"
-msgid "Title"
-msgstr ""
-
-#: Views/BackgroundTask/Edit.cshtml
-msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Edit"
-msgid "Use Tenant Pipeline"
-msgstr ""
-
-#: Views/BackgroundTask/Edit.cshtml
-msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Edit"
-msgid "Whether or not the tenant pipeline should be built to configure endpoints and then executed to allow route urls generation in the background."
 msgstr ""
 
 #: Views/BackgroundTask/Index.cshtml
@@ -645,6 +585,76 @@ msgstr ""
 #, csharp-format
 msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTaskEntry.Status.SummaryAdmin"
 msgid "{0} of {1}"
+msgstr ""
+
+#: Views/BackgroundTaskGeneral.Edit.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTaskGeneral.Edit"
+msgid "Description"
+msgstr ""
+
+#: Views/BackgroundTaskGeneral.Edit.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTaskGeneral.Edit"
+msgid "Invalid lock expiration value in the advanced tab"
+msgstr ""
+
+#: Views/BackgroundTaskGeneral.Edit.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTaskGeneral.Edit"
+msgid "Invalid lock timeout value in the advanced tab"
+msgstr ""
+
+#: Views/BackgroundTaskGeneral.Edit.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTaskGeneral.Edit"
+msgid "Reset Schedule"
+msgstr ""
+
+#: Views/BackgroundTaskGeneral.Edit.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTaskGeneral.Edit"
+msgid "Schedule"
+msgstr ""
+
+#: Views/BackgroundTaskGeneral.Edit.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTaskGeneral.Edit"
+msgid "The task schedule as a cron expression."
+msgstr ""
+
+#: Views/BackgroundTaskGeneral.Edit.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTaskGeneral.Edit"
+msgid "Title"
+msgstr ""
+
+#: Views/BackgroundTaskGeneral.Edit.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTaskGeneral.Edit"
+msgid "Use Tenant Pipeline"
+msgstr ""
+
+#: Views/BackgroundTaskGeneral.Edit.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTaskGeneral.Edit"
+msgid "Whether or not the tenant pipeline should be built to configure endpoints and then executed to allow route urls generation in the background."
+msgstr ""
+
+#: Views/BackgroundTaskLocking.Edit.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTaskLocking.Edit"
+msgid "Ignored if there is no distributed lock feature enabled."
+msgstr ""
+
+#: Views/BackgroundTaskLocking.Edit.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTaskLocking.Edit"
+msgid "Lock expiration (ms)"
+msgstr ""
+
+#: Views/BackgroundTaskLocking.Edit.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTaskLocking.Edit"
+msgid "Lock timeout (ms)"
+msgstr ""
+
+#: Views/BackgroundTaskLocking.Edit.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTaskLocking.Edit"
+msgid "The expiration in milliseconds of the lock acquired before executing the task atomically. Leave it to zero to not use any locking."
+msgstr ""
+
+#: Views/BackgroundTaskLocking.Edit.cshtml
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTaskLocking.Edit"
+msgid "The timeout in milliseconds to acquire a lock before executing the task atomically. Leave it to zero to not use any locking."
 msgstr ""
 
 #: Views/BackgroundTasksFilters.cshtml

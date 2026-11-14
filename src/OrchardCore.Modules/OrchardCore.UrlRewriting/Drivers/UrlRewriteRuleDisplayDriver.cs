@@ -40,7 +40,7 @@ public sealed class UrlRewriteRuleDisplayDriver : DisplayDriver<RewriteRule>
                 new(S["Append Query String from Original Request"], nameof(QueryStringPolicy.Append)),
                 new(S["Exclude Query String from Original Request"], nameof(QueryStringPolicy.Drop)),
             ];
-        }).Location("Content:5");
+        }).Location(l => l.Zone("Content", "5").Card(S["Rewrite"], "20"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(RewriteRule rule, UpdateEditorContext context)

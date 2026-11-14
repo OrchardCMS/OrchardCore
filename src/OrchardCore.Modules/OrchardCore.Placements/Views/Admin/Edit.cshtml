@@ -22,21 +22,7 @@
         @Html.HiddenFor(m => m.ShapeType)
     }
 
-    <div class="ocat-wrapper" asp-validation-class-for="ShapeType">
-        <label asp-for="ShapeType" class="ocat-label @(Model.Creating ? "ocat-label-required" : null)">@T["Shape type"]</label>
-        <div class="ocat-end">
-        <input asp-for="ShapeType" asp-is-disabled="!Model.Creating" class="form-control" required autofocus />
-        <span asp-validation-for="ShapeType"></span>
-        <span class="hint">@T["The type of the shape."]</span>
-        </div>
-    </div>
-
-    <div class="ocat-wrapper" asp-validation-class-for="Nodes">
-        <label asp-for="Nodes" class="ocat-label">@T["Placement rules"]</label>
-        <div class="ocat-end">
-        <textarea asp-for="Nodes" rows="10" class="form-control placement-nodes-editor"></textarea>
-        </div>
-    </div>
+    @await DisplayAsync(Model.Editor)
 
     <div class="action-bar-bottom">
         <div class="btn-group"

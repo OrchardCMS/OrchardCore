@@ -1,0 +1,17 @@
+@model AdminNodeEditViewModel
+
+<div class="ocat-limited-wrapper">
+    <label asp-for="Priority" class="ocat-label">@T["Selection Priority"]</label>
+    <div class="ocat-limited">
+        <input asp-for="Priority" class="form-control">
+        <span class="hint">@T["The priority of this link to be displayed as active instead of another one when both are pointing to the same url. The link with the highest value has the active status in the navigation."]</span>
+    </div>
+</div>
+
+<div class="ocat-wrapper">
+    <label asp-for="Position" class="ocat-label">@T["Position Order"]</label>
+    <div class="ocat-end">
+        <input asp-for="Position" class="form-control">
+        <span class="hint">@T["The position order of this link in the admin menu."]</span>
+    </div>
+</div>

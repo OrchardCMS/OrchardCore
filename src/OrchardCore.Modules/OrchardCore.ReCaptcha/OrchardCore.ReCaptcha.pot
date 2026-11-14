@@ -31,6 +31,11 @@ msgctxt "OrchardCore.ReCaptcha.DeploymentStartup"
 msgid "ReCaptcha settings"
 msgstr ""
 
+#: Drivers/ReCaptchaSettingsDisplayDriver.cs
+msgctxt "OrchardCore.ReCaptcha.Drivers.ReCaptchaSettingsDisplayDriver"
+msgid "Keys"
+msgstr ""
+
 #: Views/Items/ReCaptchaPart.cshtml
 msgctxt "OrchardCore.ReCaptcha.Views.Items.ReCaptchaPart"
 msgid "ReCaptcha settings are not configured."

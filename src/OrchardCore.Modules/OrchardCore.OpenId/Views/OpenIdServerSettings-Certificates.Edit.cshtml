@@ -1,0 +1,156 @@
+@using Microsoft.Extensions.Localization
+@using OrchardCore.OpenId.ViewModels
+@using OrchardCore.OpenId.Settings
+@using System.Security.Cryptography.X509Certificates
+@model OpenIdServerSettingsViewModel
+@inject IStringLocalizer<OpenIdServerSettingsViewModel> S
+
+@{
+    // Use the short date format, but still allow users to define localized versions.
+    // The DateTime shape will use the current culture's pattern by default.
+    var localizedDateFormat = S.Note(".NET standard date format of the dates shown on this page (short date). Keep it unless the culture needs another .NET date format.")["d"];
+}
+
+<div class="ocat-wrapper" asp-validation-class-for="EncryptionCertificateStoreLocation">
+    <label asp-for="EncryptionCertificateStoreLocation" class="ocat-label">@T["Encryption Certificate Store Location"]</label>
+    <div class="ocat-end">
+        <select asp-for="EncryptionCertificateStoreLocation" class="form-select" data-openid-field="EncryptionCertificateStoreLocation">
+            <option value="">@T["None"]</option>
+
+            @foreach (StoreLocation location in Enum.GetValues<StoreLocation>())
+            {
+                <option value="@location" selected="@(Model.EncryptionCertificateStoreLocation == location)">@location.ToString()</option>
+            }
+        </select>
+        <span asp-validation-for="EncryptionCertificateStoreLocation"></span>
+        <span class="hint">@T["Select the encryption certificate location."]</span>
+    </div>
+</div>
+
+<div id="EncryptionCertificateStoreNameField" class="ocat-wrapper" asp-validation-class-for="EncryptionCertificateStoreName">
+    <label asp-for="EncryptionCertificateStoreName" class="ocat-label">@T["Encryption Certificate Store Name"]</label>
+    <div class="ocat-end">
+        <select asp-for="EncryptionCertificateStoreName" class="form-select" data-openid-field="EncryptionCertificateStoreName">
+            <option value="">@T["None"]</option>
+
+            @foreach (StoreName store in Enum.GetValues<StoreName>())
+            {
+                <option value="@store" selected="@(Model.EncryptionCertificateStoreName == store)">@store.ToString()</option>
+            }
+        </select>
+        <span asp-validation-for="EncryptionCertificateStoreName"></span>
+        <span class="hint">@T["Select the encryption certificate store."]</span>
+    </div>
+</div>
+
+<div id="EncryptionCertificateThumbprintField" class="ocat-wrapper" asp-validation-class-for="EncryptionCertificateThumbprint">
+    @if (Model.AvailableCertificates.Count != 0)
+    {
+        <label asp-for="EncryptionCertificateThumbprint" class="ocat-label">@T["Encryption Certificate"]</label>
+        <div class="ocat-end">
+            <select asp-for="EncryptionCertificateThumbprint" class="form-select" data-openid-field="EncryptionCertificateThumbprint">
+                <option value="">@T["None"]</option>
+
+                @foreach (var certificate in Model.AvailableCertificates)
+                {
+                    var selectedCertificate = Model.EncryptionCertificateThumbprint == certificate.ThumbPrint
+                    && Model.EncryptionCertificateStoreLocation.HasValue && Model.EncryptionCertificateStoreLocation.Value == certificate.StoreLocation
+                    && Model.EncryptionCertificateStoreName.HasValue && Model.EncryptionCertificateStoreName == certificate.StoreName;
+                    if (string.IsNullOrWhiteSpace(certificate.ThumbPrint))
+                    {
+                        <option value="" data-StoreLocation="@certificate.StoreLocation" data-StoreName="@certificate.StoreName" selected="@(selectedCertificate)"></option>
+                        continue;
+                    }
+                    var friendlyName = certificate.FriendlyName;
+                    if (string.IsNullOrWhiteSpace(friendlyName) && !string.IsNullOrWhiteSpace(certificate.ThumbPrint))
+                    {
+                        friendlyName = T.GetString("No Friendly Name");
+                    }
+                    <option value="@certificate.ThumbPrint" data-StoreLocation="@certificate.StoreLocation" data-StoreName="@certificate.StoreName" selected="@(selectedCertificate)">
+                        @friendlyName [<datetime utc="certificate.NotBefore" format="@localizedDateFormat" /> - <datetime utc="certificate.NotAfter" format="@localizedDateFormat" />] @certificate.Subject
+                    </option>
+                }
+            </select>
+            <span asp-validation-for="EncryptionCertificateThumbprint"></span>
+            <span class="hint">@T["Select the encryption certificate."]</span>
+        </div>
+    }
+    else
+    {
+        <div class="ocat-end-offset">
+            <div class="alert alert-warning" asp-validation-for="CertificateThumbprint">@T["A certificate must be added to your server to set up the OpenID Connect module."]</div>
+        </div>
+    }
+</div>
+
+<div class="ocat-wrapper" asp-validation-class-for="SigningCertificateStoreLocation">
+    <label asp-for="SigningCertificateStoreLocation" class="ocat-label">@T["Signing Certificate Store Location"]</label>
+    <div class="ocat-end">
+        <select asp-for="SigningCertificateStoreLocation" class="form-select" data-openid-field="SigningCertificateStoreLocation">
+            <option value="">@T["None"]</option>
+
+            @foreach (StoreLocation location in Enum.GetValues<StoreLocation>())
+            {
+                <option value="@location" selected="@(Model.SigningCertificateStoreLocation == location)">@location.ToString()</option>
+            }
+        </select>
+        <span asp-validation-for="SigningCertificateStoreLocation"></span>
+        <span class="hint">@T["Select the signing certificate location."]</span>
+    </div>
+</div>
+
+<div id="SigningCertificateStoreNameField" class="ocat-wrapper" asp-validation-class-for="SigningCertificateStoreName">
+    <label asp-for="SigningCertificateStoreName" class="ocat-label">@T["Signing Certificate Store Name"]</label>
+    <div class="ocat-end">
+        <select asp-for="SigningCertificateStoreName" class="form-select" data-openid-field="SigningCertificateStoreName">
+            <option value="">@T["None"]</option>
+
+            @foreach (StoreName store in Enum.GetValues<StoreName>())
+            {
+                <option value="@store" selected="@(Model.SigningCertificateStoreName == store)">@store.ToString()</option>
+            }
+        </select>
+        <span asp-validation-for="SigningCertificateStoreName"></span>
+        <span class="hint">@T["Select the signing certificate store."]</span>
+    </div>
+</div>
+
+<div id="SigningCertificateThumbprintField" class="ocat-wrapper" asp-validation-class-for="SigningCertificateThumbprint">
+    @if (Model.AvailableCertificates.Count != 0)
+    {
+        <label asp-for="SigningCertificateThumbprint" class="ocat-label">@T["Signing Certificate"]</label>
+        <div class="ocat-end">
+            <select asp-for="SigningCertificateThumbprint" class="form-select" data-openid-field="SigningCertificateThumbprint">
+                <option value="">@T["None"]</option>
+
+                @foreach (var certificate in Model.AvailableCertificates)
+                {
+                    var selectedCertificate = Model.SigningCertificateThumbprint == certificate.ThumbPrint
+                    && Model.SigningCertificateStoreLocation.HasValue && Model.SigningCertificateStoreLocation.Value == certificate.StoreLocation
+                    && Model.SigningCertificateStoreName.HasValue && Model.SigningCertificateStoreName == certificate.StoreName;
+                    if (string.IsNullOrWhiteSpace(certificate.ThumbPrint))
+                    {
+                        <option value="" data-StoreLocation="@certificate.StoreLocation" data-StoreName="@certificate.StoreName" selected="@(selectedCertificate)"></option>
+                        continue;
+                    }
+                    var friendlyName = certificate.FriendlyName;
+                    if (string.IsNullOrWhiteSpace(friendlyName) && !string.IsNullOrWhiteSpace(certificate.ThumbPrint))
+                    {
+                        friendlyName = T.GetString("No Friendly Name");
+                    }
+                    <option value="@certificate.ThumbPrint" data-StoreLocation="@certificate.StoreLocation" data-StoreName="@certificate.StoreName" selected="@(selectedCertificate)">
+                        @friendlyName [<datetime utc="certificate.NotBefore" format="@localizedDateFormat" /> - <datetime utc="certificate.NotAfter" format="@localizedDateFormat" />] @certificate.Subject
+                    </option>
+                }
+            </select>
+            <span asp-validation-for="SigningCertificateThumbprint"></span>
+            <span class="hint">@T["Select the signing certificate."]</span>
+        </div>
+    }
+    else
+    {
+        <div class="ocat-end-offset">
+            <div class="alert alert-warning" asp-validation-for="CertificateThumbprint">@T["You need to add a certificate to your server for setting up OpenID Connect module."]</div>
+        </div>
+    }
+</div>

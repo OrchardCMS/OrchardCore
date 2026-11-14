@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using OrchardCore.DisplayManagement;
 
 namespace OrchardCore.Elasticsearch.ViewModels;
 
@@ -31,4 +32,10 @@ public class AdminQueryViewModel
 
     [BindNever]
     public string MatchAllQuery { get; set; }
+
+    /// <summary>
+    /// Gets or sets the editor of the Elasticsearch query runner, built by the display drivers of <see cref="AdminQueryViewModel"/>.
+    /// </summary>
+    [BindNever]
+    public IShape Editor { get; set; }
 }

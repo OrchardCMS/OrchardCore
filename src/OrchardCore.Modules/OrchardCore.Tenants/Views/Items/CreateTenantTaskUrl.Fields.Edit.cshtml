@@ -1,0 +1,22 @@
+@using OrchardCore.Tenants.Workflows.ViewModels
+@model CreateTenantTaskViewModel
+
+<div data-task-editor="create-tenant">
+    <div class="ocat-wrapper" asp-validation-class-for="RequestUrlPrefixExpression">
+        <label asp-for="RequestUrlPrefixExpression" class="ocat-label">@T["Url Prefix"]</label>
+        <div class="ocat-end">
+            <input type="text" asp-for="RequestUrlPrefixExpression" class="form-control code" />
+            <span asp-validation-for="RequestUrlPrefixExpression"></span>
+            <span class="hint">@T["(Optional) Example: If prefix is \"site1\", the tenant URL prefix is \"http://orchardproject.net/site1\"."]</span>
+        </div>
+    </div>
+
+    <div class="ocat-wrapper" asp-validation-class-for="RequestUrlHostExpression">
+        <label asp-for="RequestUrlHostExpression" class="ocat-label">@T["Host name"]</label>
+        <div class="ocat-end">
+            <input type="text" asp-for="RequestUrlHostExpression" class="form-control code" />
+            <span asp-validation-for="RequestUrlHostExpression"></span>
+            <span class="hint">@T["Example: If host is \"orchardproject.net\", the tenant site URL is \"http://orchardproject.net/\". With Liquid support."]</span>
+        </div>
+    </div>
+</div>

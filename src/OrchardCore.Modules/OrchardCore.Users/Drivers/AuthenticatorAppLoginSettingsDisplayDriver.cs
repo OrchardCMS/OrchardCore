@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -13,12 +14,16 @@ public sealed class AuthenticatorAppLoginSettingsDisplayDriver : SiteDisplayDriv
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
 
+    internal readonly IStringLocalizer S;
+
     public AuthenticatorAppLoginSettingsDisplayDriver(
         IHttpContextAccessor httpContextAccessor,
-        IAuthorizationService authorizationService)
+        IAuthorizationService authorizationService,
+        IStringLocalizer<AuthenticatorAppLoginSettingsDisplayDriver> stringLocalizer)
     {
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
+        S = stringLocalizer;
     }
 
     protected override string SettingsGroupId
@@ -30,7 +35,7 @@ public sealed class AuthenticatorAppLoginSettingsDisplayDriver : SiteDisplayDriv
         {
             model.UseEmailAsAuthenticatorDisplayName = settings.UseEmailAsAuthenticatorDisplayName;
             model.TokenLength = settings.TokenLength;
-        }).Location("Content:12#Two-Factor Authentication")
+        }).Location(l => l.Zone("Content", "12").Tab("Two-Factor Authentication").Card(S["Authenticator app"], "40"))
         .RenderWhen(static (driver) => driver._authorizationService.AuthorizeAsync(driver._httpContextAccessor.HttpContext?.User, UsersPermissions.ManageUsers), this)
         .OnGroup(SettingsGroupId);
     }

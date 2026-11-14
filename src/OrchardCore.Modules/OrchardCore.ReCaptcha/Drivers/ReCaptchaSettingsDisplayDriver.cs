@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -18,14 +19,18 @@ public sealed class ReCaptchaSettingsDisplayDriver : SiteDisplayDriver<ReCaptcha
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
 
+    internal readonly IStringLocalizer S;
+
     public ReCaptchaSettingsDisplayDriver(
         IOptionsUpdateNotifier optionsUpdateNotifier,
         IHttpContextAccessor httpContextAccessor,
-        IAuthorizationService authorizationService)
+        IAuthorizationService authorizationService,
+        IStringLocalizer<ReCaptchaSettingsDisplayDriver> stringLocalizer)
     {
         _optionsUpdateNotifier = optionsUpdateNotifier;
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
+        S = stringLocalizer;
     }
 
     protected override string SettingsGroupId
@@ -44,7 +49,7 @@ public sealed class ReCaptchaSettingsDisplayDriver : SiteDisplayDriver<ReCaptcha
         {
             model.SiteKey = settings.SiteKey;
             model.SecretKey = settings.SecretKey;
-        }).Location("Content")
+        }).Location(l => l.Zone("Content").Card(S["Keys"], "10"))
         .OnGroup(SettingsGroupId);
     }
 

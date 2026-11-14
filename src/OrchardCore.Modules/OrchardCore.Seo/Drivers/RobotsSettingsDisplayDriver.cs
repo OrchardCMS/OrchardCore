@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Notify;
@@ -18,6 +19,7 @@ public sealed class RobotsSettingsDisplayDriver : SiteDisplayDriver<RobotsSettin
     private readonly INotifier _notifier;
 
     internal readonly IHtmlLocalizer H;
+    internal readonly IStringLocalizer S;
 
     protected override string SettingsGroupId
         => SeoConstants.RobotsSettingsGroupId;
@@ -27,7 +29,8 @@ public sealed class RobotsSettingsDisplayDriver : SiteDisplayDriver<RobotsSettin
         IAuthorizationService authorizationService,
         IStaticFileProvider staticFileProvider,
         INotifier notifier,
-        IHtmlLocalizer<RobotsSettingsDisplayDriver> htmlLocalizer)
+        IHtmlLocalizer<RobotsSettingsDisplayDriver> htmlLocalizer,
+        IStringLocalizer<RobotsSettingsDisplayDriver> stringLocalizer)
     {
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
@@ -35,6 +38,7 @@ public sealed class RobotsSettingsDisplayDriver : SiteDisplayDriver<RobotsSettin
         _notifier = notifier;
 
         H = htmlLocalizer;
+        S = stringLocalizer;
     }
 
     public override async Task<IDisplayResult> EditAsync(ISite site, RobotsSettings settings, BuildEditorContext context)
@@ -58,7 +62,7 @@ public sealed class RobotsSettingsDisplayDriver : SiteDisplayDriver<RobotsSettin
             model.AllowAllAgents = settings.AllowAllAgents;
             model.DisallowAdmin = settings.DisallowAdmin;
             model.AdditionalRules = settings.AdditionalRules;
-        }).Location("Content:5")
+        }).Location(l => l.Zone("Content", "5").Card(S["Rules"], "10"))
         .OnGroup(SettingsGroupId);
     }
 

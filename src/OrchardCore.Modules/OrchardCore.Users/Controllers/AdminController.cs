@@ -35,6 +35,7 @@ public sealed class AdminController : Controller
     private readonly IAuthorizationService _authorizationService;
     private readonly PagerOptions _pagerOptions;
     private readonly IDisplayManager<User> _userDisplayManager;
+    private readonly IDisplayManager<EditPasswordViewModel> _editPasswordDisplayManager;
     private readonly INotifier _notifier;
     private readonly IUserService _userService;
     private readonly IRoleService _roleService;
@@ -62,9 +63,11 @@ public sealed class AdminController : Controller
         ILogger<AdminController> logger,
         IHtmlLocalizer<AdminController> htmlLocalizer,
         IStringLocalizer<AdminController> stringLocalizer,
-        IUpdateModelAccessor updateModelAccessor)
+        IUpdateModelAccessor updateModelAccessor,
+        IDisplayManager<EditPasswordViewModel> editPasswordDisplayManager)
     {
         _userDisplayManager = userDisplayManager;
+        _editPasswordDisplayManager = editPasswordDisplayManager;
         _userOptionsDisplayManager = userOptionsDisplayManager;
         _signInManager = signInManager;
         _authorizationService = authorizationService;
@@ -514,6 +517,8 @@ public sealed class AdminController : Controller
             UsernameOrEmail = user.UserName,
         };
 
+        model.Editor = await _editPasswordDisplayManager.BuildEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: false);
+
         ViewData["ReturnUrl"] = returnUrl;
 
         return View(model);
@@ -531,6 +536,8 @@ public sealed class AdminController : Controller
         {
             return Forbid();
         }
+
+        model.Editor = await _editPasswordDisplayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: false);
 
         var sameUser = user.UserName == User.Identity.Name;
         if (!sameUser)

@@ -90,6 +90,8 @@ public class AdminControllerTests
             null,
             NullLogger<AdminController>.Instance,
             new TestShapeFactory(),
+            Mock.Of<IDisplayManager<EditTenantViewModel>>(),
+            Mock.Of<IUpdateModelAccessor>(),
             Mock.Of<IStringLocalizer<AdminController>>(),
             Mock.Of<IHtmlLocalizer<AdminController>>())
         {

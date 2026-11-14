@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.Deployment.ViewModels;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -8,9 +9,12 @@ public sealed class DeploymentPlanDeploymentStepDriver : DisplayDriver<Deploymen
 {
     private readonly IDeploymentPlanService _deploymentPlanService;
 
-    public DeploymentPlanDeploymentStepDriver(IDeploymentPlanService deploymentPlanService)
+    internal readonly IStringLocalizer S;
+
+    public DeploymentPlanDeploymentStepDriver(IDeploymentPlanService deploymentPlanService, IStringLocalizer<DeploymentPlanDeploymentStepDriver> stringLocalizer)
     {
         _deploymentPlanService = deploymentPlanService;
+        S = stringLocalizer;
     }
 
     public override Task<IDisplayResult> DisplayAsync(DeploymentPlanDeploymentStep step, BuildDisplayContext context)
@@ -29,7 +33,7 @@ public sealed class DeploymentPlanDeploymentStepDriver : DisplayDriver<Deploymen
             model.IncludeAll = step.IncludeAll;
             model.DeploymentPlanNames = step.DeploymentPlanNames;
             model.AllDeploymentPlanNames = (await _deploymentPlanService.GetAllDeploymentPlanNamesAsync()).ToArray();
-        }).Location("Content");
+        }).Location(l => l.Zone("Content").Card(S["Deployment plans"], "10"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(DeploymentPlanDeploymentStep step, UpdateEditorContext context)

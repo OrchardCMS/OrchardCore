@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -17,12 +18,16 @@ public sealed class GoogleAnalyticsSettingsDisplayDriver : SiteDisplayDriver<Goo
     private readonly IAuthorizationService _authorizationService;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
+    internal readonly IStringLocalizer S;
+
     public GoogleAnalyticsSettingsDisplayDriver(
         IAuthorizationService authorizationService,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        IStringLocalizer<GoogleAnalyticsSettingsDisplayDriver> stringLocalizer)
     {
         _authorizationService = authorizationService;
         _httpContextAccessor = httpContextAccessor;
+        S = stringLocalizer;
     }
 
     public override async Task<IDisplayResult> EditAsync(ISite site, GoogleAnalyticsSettings settings, BuildEditorContext context)
@@ -36,7 +41,7 @@ public sealed class GoogleAnalyticsSettingsDisplayDriver : SiteDisplayDriver<Goo
         return Initialize<GoogleAnalyticsSettingsViewModel>("GoogleAnalyticsSettings_Edit", model =>
         {
             model.TrackingID = settings.TrackingID;
-        }).Location("Content:5")
+        }).Location(l => l.Zone("Content", "5").Card(S["Tracking"], "10"))
         .OnGroup(SettingsGroupId);
     }
 

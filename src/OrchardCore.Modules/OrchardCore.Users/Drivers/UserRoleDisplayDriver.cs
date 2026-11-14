@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
@@ -21,6 +22,8 @@ public sealed class UserRoleDisplayDriver : DisplayDriver<User>
     private readonly INotifier _notifier;
     private readonly IAuthorizationService _authorizationService;
 
+    internal readonly IStringLocalizer S;
+
     internal readonly IHtmlLocalizer H;
 
     public UserRoleDisplayDriver(
@@ -30,7 +33,8 @@ public sealed class UserRoleDisplayDriver : DisplayDriver<User>
         IHttpContextAccessor httpContextAccessor,
         INotifier notifier,
         IAuthorizationService authorizationService,
-        IHtmlLocalizer<UserRoleDisplayDriver> htmlLocalizer)
+        IHtmlLocalizer<UserRoleDisplayDriver> htmlLocalizer,
+        IStringLocalizer<UserRoleDisplayDriver> stringLocalizer)
     {
         _userManager = userManager;
         _roleService = roleService;
@@ -39,6 +43,7 @@ public sealed class UserRoleDisplayDriver : DisplayDriver<User>
         _notifier = notifier;
         _authorizationService = authorizationService;
         H = htmlLocalizer;
+        S = stringLocalizer;
     }
 
     public override Task<IDisplayResult> DisplayAsync(User user, BuildDisplayContext context)
@@ -53,17 +58,28 @@ public sealed class UserRoleDisplayDriver : DisplayDriver<User>
         );
     }
 
-    public override IDisplayResult Edit(User user, BuildEditorContext context)
+    public override async Task<IDisplayResult> EditAsync(User user, BuildEditorContext context)
     {
-        // This view is always rendered, however there will be no editable roles if the user does not have permission to edit them.
-        return Initialize<EditUserRoleViewModel>("UserRoleFields_Edit", async model =>
+        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, UsersPermissions.EditUsers, user))
         {
-            var roles = await _roleService.GetAssignableRolesAsync();
+            return null;
+        }
 
-            // When a user is in a role that the current user cannot manage the role is not shown.
-            var authorizedRoleNames = await GetAccessibleRoleNamesAsync(roles);
-            var userRoleNames = await _userRoleStore.GetRolesAsync(user, default);
+        var roles = await _roleService.GetAssignableRolesAsync();
 
+        // When a user is in a role that the current user cannot manage the role is not shown.
+        var authorizedRoleNames = await GetAccessibleRoleNamesAsync(roles);
+
+        // The roles card is not rendered when the current user cannot assign any role.
+        if (!authorizedRoleNames.Any())
+        {
+            return null;
+        }
+
+        var userRoleNames = await _userRoleStore.GetRolesAsync(user, default);
+
+        return Initialize<EditUserRoleViewModel>("UserRoleFields_Edit", model =>
+        {
             var roleEntries = new List<RoleEntry>();
             foreach (var roleName in authorizedRoleNames)
             {
@@ -78,8 +94,7 @@ public sealed class UserRoleDisplayDriver : DisplayDriver<User>
 
             model.Roles = roleEntries.OrderBy(role => role.Role).ToArray();
         })
-        .Location("Content:1.10")
-        .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, UsersPermissions.EditUsers, user));
+        .Location(l => l.Zone("Content", "1.10").Card(S["Roles"], "30"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(User user, UpdateEditorContext context)
@@ -158,7 +173,7 @@ public sealed class UserRoleDisplayDriver : DisplayDriver<User>
             }
         }
 
-        return Edit(user, context);
+        return await EditAsync(user, context);
     }
 
     private async Task<IEnumerable<string>> GetAccessibleRoleNamesAsync(IEnumerable<IRole> roles)

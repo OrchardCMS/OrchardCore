@@ -126,6 +126,21 @@ msgctxt "OrchardCore.Sitemaps.Controllers.SourceController"
 msgid "The sitemap source has validation errors."
 msgstr ""
 
+#: Deployment/AllSitemapsDeploymentStepDriver.cs
+msgctxt "OrchardCore.Sitemaps.Deployment.AllSitemapsDeploymentStepDriver"
+msgid "Sitemaps"
+msgstr ""
+
+#: Drivers/CreateSitemapDisplayDriver.cs
+msgctxt "OrchardCore.Sitemaps.Drivers.CreateSitemapDisplayDriver"
+msgid "General"
+msgstr ""
+
+#: Drivers/CustomPathSitemapSourceDriver.cs
+msgctxt "OrchardCore.Sitemaps.Drivers.CustomPathSitemapSourceDriver"
+msgid "Custom path"
+msgstr ""
+
 #. Format arguments: {0}: invalidCharactersForMessage
 #: Drivers/CustomPathSitemapSourceDriver.cs
 #, csharp-format
@@ -138,6 +153,31 @@ msgstr ""
 #, csharp-format
 msgctxt "OrchardCore.Sitemaps.Drivers.CustomPathSitemapSourceDriver"
 msgid "Your path is too long. The path can only be up to {0} characters."
+msgstr ""
+
+#: Drivers/EditSitemapDisplayDriver.cs
+msgctxt "OrchardCore.Sitemaps.Drivers.EditSitemapDisplayDriver"
+msgid "General"
+msgstr ""
+
+#: Drivers/SitemapIndexDisplayDriver.cs
+msgctxt "OrchardCore.Sitemaps.Drivers.SitemapIndexDisplayDriver"
+msgid "General"
+msgstr ""
+
+#: Drivers/SitemapIndexDisplayDriver.cs
+msgctxt "OrchardCore.Sitemaps.Drivers.SitemapIndexDisplayDriver"
+msgid "Sitemaps"
+msgstr ""
+
+#: Drivers/SitemapPartDisplayDriver.cs
+msgctxt "OrchardCore.Sitemaps.Drivers.SitemapPartDisplayDriver"
+msgid "Sitemap"
+msgstr ""
+
+#: Drivers/SitemapsRobotsSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Sitemaps.Drivers.SitemapsRobotsSettingsDisplayDriver"
+msgid "Sitemaps"
 msgstr ""
 
 #. Format arguments: {0}: invalidCharactersForMessage
@@ -188,37 +228,12 @@ msgstr ""
 
 #: Views/Admin/Create.cshtml
 msgctxt "OrchardCore.Sitemaps.Views.Admin.Create"
-msgid "Enabled"
-msgstr ""
-
-#: Views/Admin/Create.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.Admin.Create"
-msgid "Name"
-msgstr ""
-
-#: Views/Admin/Create.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.Admin.Create"
-msgid "Permalink"
-msgstr ""
-
-#: Views/Admin/Create.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.Admin.Create"
 msgid "Sitemaps"
 msgstr ""
 
 #: Views/Admin/Create.cshtml
 msgctxt "OrchardCore.Sitemaps.Views.Admin.Create"
 msgid "The site settings 'Base url' property is empty, but is required to generate sitemaps."
-msgstr ""
-
-#: Views/Admin/Create.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.Admin.Create"
-msgid "The url of the sitemap. Leave empty to auto-generate it."
-msgstr ""
-
-#: Views/Admin/Create.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.Admin.Create"
-msgid "Uncheck to disable routing to this sitemap."
 msgstr ""
 
 #: Views/Admin/Display.cshtml
@@ -278,21 +293,6 @@ msgstr ""
 
 #: Views/Admin/Edit.cshtml
 msgctxt "OrchardCore.Sitemaps.Views.Admin.Edit"
-msgid "Enabled"
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.Admin.Edit"
-msgid "Name"
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.Admin.Edit"
-msgid "Permalink"
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.Admin.Edit"
 msgid "Save"
 msgstr ""
 
@@ -304,16 +304,6 @@ msgstr ""
 #: Views/Admin/Edit.cshtml
 msgctxt "OrchardCore.Sitemaps.Views.Admin.Edit"
 msgid "The site settings 'Base url' property is empty, but is required to generate sitemaps."
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.Admin.Edit"
-msgid "The url of the sitemap. Leave empty to auto-generate it."
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.Admin.Edit"
-msgid "Uncheck to disable routing to this sitemap."
 msgstr ""
 
 #: Views/Admin/List.cshtml
@@ -433,11 +423,6 @@ msgstr ""
 
 #: Views/CustomPathSitemapSource.Edit.cshtml
 msgctxt "OrchardCore.Sitemaps.Views.CustomPathSitemapSource.Edit"
-msgid "Sitemap Custom Path"
-msgstr ""
-
-#: Views/CustomPathSitemapSource.Edit.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.CustomPathSitemapSource.Edit"
 msgid "The default frequency with which this path is likely to change."
 msgstr ""
 
@@ -468,7 +453,7 @@ msgstr ""
 
 #: Views/Items/AllSitemapsDeploymentStep.Edit.cshtml
 msgctxt "OrchardCore.Sitemaps.Views.Items.AllSitemapsDeploymentStep.Edit"
-msgid "All Sitemaps"
+msgid "Adds all the sitemaps to the plan."
 msgstr ""
 
 #: Views/Items/AllSitemapsDeploymentStep.Summary.cshtml
@@ -541,14 +526,59 @@ msgctxt "OrchardCore.Sitemaps.Views.SitemapCacheEntry.Buttons.SummaryAdmin"
 msgid "Purge"
 msgstr ""
 
-#: Views/SitemapIndex/Create.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.SitemapIndex.Create"
-msgid "Cancel"
+#: Views/SitemapCreateGeneral.Edit.cshtml
+msgctxt "OrchardCore.Sitemaps.Views.SitemapCreateGeneral.Edit"
+msgid "Enabled"
+msgstr ""
+
+#: Views/SitemapCreateGeneral.Edit.cshtml
+msgctxt "OrchardCore.Sitemaps.Views.SitemapCreateGeneral.Edit"
+msgid "Name"
+msgstr ""
+
+#: Views/SitemapCreateGeneral.Edit.cshtml
+msgctxt "OrchardCore.Sitemaps.Views.SitemapCreateGeneral.Edit"
+msgid "Permalink"
+msgstr ""
+
+#: Views/SitemapCreateGeneral.Edit.cshtml
+msgctxt "OrchardCore.Sitemaps.Views.SitemapCreateGeneral.Edit"
+msgid "The url of the sitemap. Leave empty to auto-generate it."
+msgstr ""
+
+#: Views/SitemapCreateGeneral.Edit.cshtml
+msgctxt "OrchardCore.Sitemaps.Views.SitemapCreateGeneral.Edit"
+msgid "Uncheck to disable routing to this sitemap."
+msgstr ""
+
+#: Views/SitemapEditGeneral.Edit.cshtml
+msgctxt "OrchardCore.Sitemaps.Views.SitemapEditGeneral.Edit"
+msgid "Enabled"
+msgstr ""
+
+#: Views/SitemapEditGeneral.Edit.cshtml
+msgctxt "OrchardCore.Sitemaps.Views.SitemapEditGeneral.Edit"
+msgid "Name"
+msgstr ""
+
+#: Views/SitemapEditGeneral.Edit.cshtml
+msgctxt "OrchardCore.Sitemaps.Views.SitemapEditGeneral.Edit"
+msgid "Permalink"
+msgstr ""
+
+#: Views/SitemapEditGeneral.Edit.cshtml
+msgctxt "OrchardCore.Sitemaps.Views.SitemapEditGeneral.Edit"
+msgid "The url of the sitemap. Leave empty to auto-generate it."
+msgstr ""
+
+#: Views/SitemapEditGeneral.Edit.cshtml
+msgctxt "OrchardCore.Sitemaps.Views.SitemapEditGeneral.Edit"
+msgid "Uncheck to disable routing to this sitemap."
 msgstr ""
 
 #: Views/SitemapIndex/Create.cshtml
 msgctxt "OrchardCore.Sitemaps.Views.SitemapIndex.Create"
-msgid "Contained Sitemaps"
+msgid "Cancel"
 msgstr ""
 
 #: Views/SitemapIndex/Create.cshtml
@@ -558,21 +588,6 @@ msgstr ""
 
 #: Views/SitemapIndex/Create.cshtml
 msgctxt "OrchardCore.Sitemaps.Views.SitemapIndex.Create"
-msgid "Enabled"
-msgstr ""
-
-#: Views/SitemapIndex/Create.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.SitemapIndex.Create"
-msgid "Name"
-msgstr ""
-
-#: Views/SitemapIndex/Create.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.SitemapIndex.Create"
-msgid "Permalink"
-msgstr ""
-
-#: Views/SitemapIndex/Create.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.SitemapIndex.Create"
 msgid "Save"
 msgstr ""
 
@@ -584,21 +599,6 @@ msgstr ""
 #: Views/SitemapIndex/Create.cshtml
 msgctxt "OrchardCore.Sitemaps.Views.SitemapIndex.Create"
 msgid "The site settings 'Base url' property is empty, but is required to generate sitemaps."
-msgstr ""
-
-#: Views/SitemapIndex/Create.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.SitemapIndex.Create"
-msgid "The sitemaps this index contains."
-msgstr ""
-
-#: Views/SitemapIndex/Create.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.SitemapIndex.Create"
-msgid "The url of the sitemap index."
-msgstr ""
-
-#: Views/SitemapIndex/Create.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.SitemapIndex.Create"
-msgid "Uncheck to disable routing to the sitemap index."
 msgstr ""
 
 #: Views/SitemapIndex/Edit.cshtml
@@ -608,27 +608,7 @@ msgstr ""
 
 #: Views/SitemapIndex/Edit.cshtml
 msgctxt "OrchardCore.Sitemaps.Views.SitemapIndex.Edit"
-msgid "Contained Sitemaps"
-msgstr ""
-
-#: Views/SitemapIndex/Edit.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.SitemapIndex.Edit"
 msgid "Edit Sitemap Index"
-msgstr ""
-
-#: Views/SitemapIndex/Edit.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.SitemapIndex.Edit"
-msgid "Enabled"
-msgstr ""
-
-#: Views/SitemapIndex/Edit.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.SitemapIndex.Edit"
-msgid "Name"
-msgstr ""
-
-#: Views/SitemapIndex/Edit.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.SitemapIndex.Edit"
-msgid "Permalink"
 msgstr ""
 
 #: Views/SitemapIndex/Edit.cshtml
@@ -644,21 +624,6 @@ msgstr ""
 #: Views/SitemapIndex/Edit.cshtml
 msgctxt "OrchardCore.Sitemaps.Views.SitemapIndex.Edit"
 msgid "The site settings 'Base url' property is empty, but is required to generate sitemaps."
-msgstr ""
-
-#: Views/SitemapIndex/Edit.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.SitemapIndex.Edit"
-msgid "The sitemaps this index contains."
-msgstr ""
-
-#: Views/SitemapIndex/Edit.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.SitemapIndex.Edit"
-msgid "The url of the sitemap index."
-msgstr ""
-
-#: Views/SitemapIndex/Edit.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.SitemapIndex.Edit"
-msgid "Uncheck to disable routing to the sitemap index."
 msgstr ""
 
 #: Views/SitemapIndex/List.cshtml
@@ -706,6 +671,31 @@ msgctxt "OrchardCore.Sitemaps.Views.SitemapIndex.List"
 msgid "selected"
 msgstr ""
 
+#: Views/SitemapIndexGeneral.Edit.cshtml
+msgctxt "OrchardCore.Sitemaps.Views.SitemapIndexGeneral.Edit"
+msgid "Enabled"
+msgstr ""
+
+#: Views/SitemapIndexGeneral.Edit.cshtml
+msgctxt "OrchardCore.Sitemaps.Views.SitemapIndexGeneral.Edit"
+msgid "Name"
+msgstr ""
+
+#: Views/SitemapIndexGeneral.Edit.cshtml
+msgctxt "OrchardCore.Sitemaps.Views.SitemapIndexGeneral.Edit"
+msgid "Permalink"
+msgstr ""
+
+#: Views/SitemapIndexGeneral.Edit.cshtml
+msgctxt "OrchardCore.Sitemaps.Views.SitemapIndexGeneral.Edit"
+msgid "The url of the sitemap index."
+msgstr ""
+
+#: Views/SitemapIndexGeneral.Edit.cshtml
+msgctxt "OrchardCore.Sitemaps.Views.SitemapIndexGeneral.Edit"
+msgid "Uncheck to disable routing to the sitemap index."
+msgstr ""
+
 #: Views/SitemapIndexListEntry.ActionsMenuItems.SummaryAdmin.cshtml
 msgctxt "OrchardCore.Sitemaps.Views.SitemapIndexListEntry.ActionsMenuItems.SummaryAdmin"
 msgid "Disable"
@@ -744,6 +734,16 @@ msgstr ""
 #: Views/SitemapIndexListEntry.DefaultTags.SummaryAdmin.cshtml
 msgctxt "OrchardCore.Sitemaps.Views.SitemapIndexListEntry.DefaultTags.SummaryAdmin"
 msgid "Status"
+msgstr ""
+
+#: Views/SitemapIndexSitemaps.Edit.cshtml
+msgctxt "OrchardCore.Sitemaps.Views.SitemapIndexSitemaps.Edit"
+msgid "Contained Sitemaps"
+msgstr ""
+
+#: Views/SitemapIndexSitemaps.Edit.cshtml
+msgctxt "OrchardCore.Sitemaps.Views.SitemapIndexSitemaps.Edit"
+msgid "The sitemaps this index contains."
 msgstr ""
 
 #: Views/SitemapListEntry.ActionsMenuItems.SummaryAdmin.cshtml
@@ -886,6 +886,11 @@ msgctxt "OrchardCore.Sitemaps.Views.SitemapPart.Edit"
 msgid "The frequency this content item is likely to change."
 msgstr ""
 
+#: Views/SitemapSource.Edit.cshtml
+msgctxt "OrchardCore.Sitemaps.Views.SitemapSource.Edit"
+msgid "General"
+msgstr ""
+
 #: Views/SitemapSource.SummaryAdmin.cshtml
 msgctxt "OrchardCore.Sitemaps.Views.SitemapSource.SummaryAdmin"
 msgid "Delete"
@@ -928,6 +933,11 @@ msgstr ""
 
 #: Views/Source/Create.cshtml
 msgctxt "OrchardCore.Sitemaps.Views.Source.Create"
+msgid "General"
+msgstr ""
+
+#: Views/Source/Create.cshtml
+msgctxt "OrchardCore.Sitemaps.Views.Source.Create"
 msgid "Sitemap"
 msgstr ""
 
@@ -949,6 +959,11 @@ msgstr ""
 #: Views/Source/Edit.cshtml
 msgctxt "OrchardCore.Sitemaps.Views.Source.Edit"
 msgid "Edit Sitemap Source"
+msgstr ""
+
+#: Views/Source/Edit.cshtml
+msgctxt "OrchardCore.Sitemaps.Views.Source.Edit"
+msgid "General"
 msgstr ""
 
 #: Views/Source/Edit.cshtml

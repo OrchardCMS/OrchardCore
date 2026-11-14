@@ -35,6 +35,8 @@ public sealed class AdminController : Controller
     private readonly INotifier _notifier;
     private readonly IShapeFactory _shapeFactory;
     private readonly IHtmlSanitizerService _htmlSanitizerService;
+    private readonly IDisplayManager<ShortcodeTemplateViewModel> _displayManager;
+    private readonly IUpdateModelAccessor _updateModelAccessor;
 
     internal readonly IStringLocalizer S;
     internal readonly IHtmlLocalizer H;
@@ -48,7 +50,9 @@ public sealed class AdminController : Controller
         IShapeFactory shapeFactory,
         IStringLocalizer<AdminController> stringLocalizer,
         IHtmlLocalizer<AdminController> htmlLocalizer,
-        IHtmlSanitizerService htmlSanitizerService
+        IHtmlSanitizerService htmlSanitizerService,
+        IDisplayManager<ShortcodeTemplateViewModel> displayManager,
+        IUpdateModelAccessor updateModelAccessor
         )
     {
         _authorizationService = authorizationService;
@@ -60,6 +64,8 @@ public sealed class AdminController : Controller
         S = stringLocalizer;
         H = htmlLocalizer;
         _htmlSanitizerService = htmlSanitizerService;
+        _displayManager = displayManager;
+        _updateModelAccessor = updateModelAccessor;
     }
 
     [Admin("Shortcodes", "Shortcodes.Index")]
@@ -136,7 +142,11 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        return View(new ShortcodeTemplateViewModel());
+        var model = new ShortcodeTemplateViewModel();
+
+        model.Editor = await _displayManager.BuildEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: true);
+
+        return View(model);
     }
 
     [HttpPost, ActionName(nameof(Create))]
@@ -146,6 +156,8 @@ public sealed class AdminController : Controller
         {
             return Forbid();
         }
+
+        model.Editor = await _displayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: true);
 
         if (ModelState.IsValid)
         {
@@ -227,6 +239,8 @@ public sealed class AdminController : Controller
             Categories = template.Categories,
         };
 
+        model.Editor = await _displayManager.BuildEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: false);
+
         return View(model);
     }
 
@@ -244,6 +258,8 @@ public sealed class AdminController : Controller
         {
             return NotFound();
         }
+
+        model.Editor = await _displayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: false);
 
         if (ModelState.IsValid)
         {

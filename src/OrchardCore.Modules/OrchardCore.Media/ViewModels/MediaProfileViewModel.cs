@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using OrchardCore.DisplayManagement;
 using OrchardCore.Media.Core.Processing;
 
 namespace OrchardCore.Media.ViewModels;
@@ -29,4 +30,10 @@ public class MediaProfileViewModel
     public List<SelectListItem> AvailableResizeModes { get; set; } = [];
     [BindNever]
     public List<SelectListItem> AvailableFormats { get; set; } = [];
+
+    /// <summary>
+    /// Gets or sets the editor of the media profile, built by the display drivers of <see cref="MediaProfileViewModel"/>.
+    /// </summary>
+    [BindNever]
+    public IShape Editor { get; set; }
 }

@@ -21,8 +21,8 @@
         <div class="input-group">
             <span class="input-group-text">@@</span>
             <input asp-for="Text" class="form-control content-preview-text" type="email" placeholder="@settings.Placeholder" asp-is-disabled="settings.Type == FieldBehaviorType.GeneratedDisabled" />
-            <span asp-validation-for="Text"></span>
         </div>
+        <span asp-validation-for="Text"></span>
         @if (!string.IsNullOrEmpty(settings.Hint))
         {
             @await DisplayAsync(await New.Hint_Admin(Hint: settings.Hint))

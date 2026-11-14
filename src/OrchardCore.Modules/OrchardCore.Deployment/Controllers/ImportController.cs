@@ -10,6 +10,8 @@ using Microsoft.Extensions.Logging;
 using OrchardCore.Admin;
 using OrchardCore.Deployment.Services;
 using OrchardCore.Deployment.ViewModels;
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.FileStorage;
 using OrchardCore.Mvc.Utilities;
@@ -26,6 +28,9 @@ public sealed class ImportController : Controller
     private readonly ILogger _logger;
     private readonly FileCreationService _fileCreationService;
     private readonly ITempDirectoryProvider _tempDirectoryProvider;
+    private readonly IDisplayManager<ImportPackageViewModel> _packageDisplayManager;
+    private readonly IDisplayManager<ImportJsonViewModel> _jsonDisplayManager;
+    private readonly IUpdateModelAccessor _updateModelAccessor;
 
     internal readonly IHtmlLocalizer H;
     internal readonly IStringLocalizer S;
@@ -35,6 +40,9 @@ public sealed class ImportController : Controller
         IAuthorizationService authorizationService,
         FileCreationService fileCreationService,
         ITempDirectoryProvider tempDirectoryProvider,
+        IDisplayManager<ImportPackageViewModel> packageDisplayManager,
+        IDisplayManager<ImportJsonViewModel> jsonDisplayManager,
+        IUpdateModelAccessor updateModelAccessor,
         INotifier notifier,
         ILogger<ImportController> logger,
         IHtmlLocalizer<ImportController> htmlLocalizer,
@@ -45,6 +53,9 @@ public sealed class ImportController : Controller
         _authorizationService = authorizationService;
         _fileCreationService = fileCreationService;
         _tempDirectoryProvider = tempDirectoryProvider;
+        _packageDisplayManager = packageDisplayManager;
+        _jsonDisplayManager = jsonDisplayManager;
+        _updateModelAccessor = updateModelAccessor;
         _notifier = notifier;
         _logger = logger;
         H = htmlLocalizer;
@@ -58,7 +69,11 @@ public sealed class ImportController : Controller
             return Forbid();
         }
 
-        return View();
+        var model = new ImportPackageViewModel();
+
+        model.Editor = await _packageDisplayManager.BuildEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: true);
+
+        return View(model);
     }
 
     [HttpPost]
@@ -156,7 +171,11 @@ public sealed class ImportController : Controller
             return Forbid();
         }
 
-        return View();
+        var model = new ImportJsonViewModel();
+
+        model.Editor = await _jsonDisplayManager.BuildEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: true);
+
+        return View(model);
     }
 
     [HttpPost]
@@ -166,6 +185,8 @@ public sealed class ImportController : Controller
         {
             return Forbid();
         }
+
+        model.Editor = await _jsonDisplayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: true);
 
         if (!model.Json.IsJson(JOptions.Document))
         {

@@ -13,6 +13,23 @@
     </breadcrumb>
 </zone>
 
+@{
+    // The shapes of the editor placed in no card, such as the editor of a node whose driver doesn't declare a card,
+    // are grouped in the "General" card.
+    if (Model.Editor.Content is IEnumerable<object> editorShapes)
+    {
+        var generalCard = new OrchardCore.DisplayManagement.Descriptors.GroupingMetadata(T["General"].Value, "10");
+
+        foreach (var shape in editorShapes.OfType<OrchardCore.DisplayManagement.IShape>())
+        {
+            if (!shape.Metadata.CardGrouping.HasValue)
+            {
+                shape.Metadata.CardGrouping = generalCard;
+            }
+        }
+    }
+}
+
 <div asp-validation-summary="All"></div>
 <form asp-action="Create" method="post" class="no-multisubmit">
     @await DisplayAsync(Model.Editor.Content)

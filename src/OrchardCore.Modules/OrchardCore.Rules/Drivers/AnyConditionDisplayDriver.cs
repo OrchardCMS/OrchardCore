@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Rules.Models;
@@ -7,6 +8,13 @@ namespace OrchardCore.Rules.Drivers;
 
 public sealed class AnyConditionDisplayDriver : DisplayDriver<Condition, AnyConditionGroup>
 {
+    internal readonly IStringLocalizer S;
+
+    public AnyConditionDisplayDriver(IStringLocalizer<AnyConditionDisplayDriver> stringLocalizer)
+    {
+        S = stringLocalizer;
+    }
+
     public override Task<IDisplayResult> DisplayAsync(AnyConditionGroup condition, BuildDisplayContext context)
     {
         return
@@ -27,7 +35,7 @@ public sealed class AnyConditionDisplayDriver : DisplayDriver<Condition, AnyCond
         {
             m.DisplayText = condition.DisplayText;
             m.Condition = condition;
-        }).Location("Content");
+        }).Location(l => l.Zone("Content").Card(S["Any"], "10"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(AnyConditionGroup condition, UpdateEditorContext context)

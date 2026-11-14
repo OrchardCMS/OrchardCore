@@ -31,6 +31,8 @@ public sealed class RemoteClientController : Controller
     private readonly IShapeFactory _shapeFactory;
     private readonly RemoteClientService _remoteClientService;
     private readonly INotifier _notifier;
+    private readonly IDisplayManager<EditRemoteClientViewModel> _editorDisplayManager;
+    private readonly IUpdateModelAccessor _updateModelAccessor;
 
     internal readonly IStringLocalizer S;
     internal readonly IHtmlLocalizer H;
@@ -43,7 +45,9 @@ public sealed class RemoteClientController : Controller
         IShapeFactory shapeFactory,
         IStringLocalizer<RemoteClientController> stringLocalizer,
         IHtmlLocalizer<RemoteClientController> htmlLocalizer,
-        INotifier notifier
+        INotifier notifier,
+        IDisplayManager<EditRemoteClientViewModel> editorDisplayManager,
+        IUpdateModelAccessor updateModelAccessor
         )
     {
         _authorizationService = authorizationService;
@@ -52,6 +56,8 @@ public sealed class RemoteClientController : Controller
         S = stringLocalizer;
         H = htmlLocalizer;
         _notifier = notifier;
+        _editorDisplayManager = editorDisplayManager;
+        _updateModelAccessor = updateModelAccessor;
         _remoteClientService = remoteClientService;
         _dataProtector = dataProtectionProvider.CreateProtector("OrchardCore.Deployment").ToTimeLimitedDataProtector();
     }
@@ -128,6 +134,8 @@ public sealed class RemoteClientController : Controller
 
         var model = new EditRemoteClientViewModel();
 
+        model.Editor = await _editorDisplayManager.BuildEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: true);
+
         return View(model);
     }
 
@@ -138,6 +146,8 @@ public sealed class RemoteClientController : Controller
         {
             return Forbid();
         }
+
+        model.Editor = await _editorDisplayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: true);
 
         if (ModelState.IsValid)
         {
@@ -177,6 +187,8 @@ public sealed class RemoteClientController : Controller
             ApiKey = Encoding.UTF8.GetString(_dataProtector.Unprotect(remoteClient.ProtectedApiKey)),
         };
 
+        model.Editor = await _editorDisplayManager.BuildEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: false);
+
         return View(model);
     }
 
@@ -194,6 +206,8 @@ public sealed class RemoteClientController : Controller
         {
             return NotFound();
         }
+
+        model.Editor = await _editorDisplayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: false);
 
         if (ModelState.IsValid)
         {

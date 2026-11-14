@@ -52,7 +52,7 @@ internal sealed class LuceneIndexProfileDisplayDriver : DisplayDriver<IndexProfi
             model.StoreSourceData = metadata.StoreSourceData;
             model.AnalyzerName = metadata.AnalyzerName ?? LuceneConstants.DefaultAnalyzer;
             model.Analyzers = _luceneAnalyzerManager.GetAnalyzers().Select(x => new SelectListItem(x.Name, x.Name));
-        }).Location("Content:5");
+        }).Location(l => l.Zone("Content", "5").Card(S["Index settings"], "30"));
 
         var queryData = Initialize<LuceneDefaultQueryViewModel>("LuceneQuerySettings_Edit", model =>
         {
@@ -83,7 +83,7 @@ internal sealed class LuceneIndexProfileDisplayDriver : DisplayDriver<IndexProfi
                     }).OrderBy(x => x.Text)
                     .ToArray();
             }
-        }).Location("Content:10");
+        }).Location(l => l.Zone("Content", "10").Card(S["Default query"], "40"));
 
         return Combine(data, queryData);
     }

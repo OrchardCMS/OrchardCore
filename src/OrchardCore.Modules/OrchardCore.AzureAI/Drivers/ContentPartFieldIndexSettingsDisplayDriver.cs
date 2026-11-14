@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Handlers;
@@ -8,11 +9,22 @@ using OrchardCore.AzureAI.Models;
 
 namespace OrchardCore.AzureAI.Drivers;
 
-public sealed class ContentPartFieldIndexSettingsDisplayDriver(IAuthorizationService authorizationService, IHttpContextAccessor httpContextAccessor)
-    : ContentPartFieldDefinitionDisplayDriver
+public sealed class ContentPartFieldIndexSettingsDisplayDriver : ContentPartFieldDefinitionDisplayDriver
 {
-    private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
-    private readonly IAuthorizationService _authorizationService = authorizationService;
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IAuthorizationService _authorizationService;
+
+    internal readonly IStringLocalizer S;
+
+    public ContentPartFieldIndexSettingsDisplayDriver(
+        IAuthorizationService authorizationService,
+        IHttpContextAccessor httpContextAccessor,
+        IStringLocalizer<ContentPartFieldIndexSettingsDisplayDriver> stringLocalizer)
+    {
+        _authorizationService = authorizationService;
+        _httpContextAccessor = httpContextAccessor;
+        S = stringLocalizer;
+    }
 
     public override async Task<IDisplayResult> EditAsync(ContentPartFieldDefinition contentPartFieldDefinition, BuildEditorContext updater)
     {
@@ -24,7 +36,7 @@ public sealed class ContentPartFieldIndexSettingsDisplayDriver(IAuthorizationSer
         return Initialize<AzureAISearchContentIndexSettings>("AzureAISearchContentIndexSettings_Edit", model =>
         {
             model.Included = contentPartFieldDefinition.GetSettings<AzureAISearchContentIndexSettings>().Included;
-        }).Location("Content:10");
+        }).Location(l => l.Zone("Content", "10").Card(S["Indexing"], "40"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition contentPartFieldDefinition, UpdatePartFieldEditorContext context)

@@ -184,8 +184,6 @@ public sealed class NodeController : Controller
             AdminNode = treeNode,
             AdminNodeId = treeNode.UniqueId,
             AdminNodeType = treeNode.GetType().Name,
-            Priority = treeNode.Priority,
-            Position = treeNode.Position,
             Editor = await _displayManager.BuildEditorAsync(treeNode, updater: _updateModelAccessor.ModelUpdater, isNew: false, "", ""),
         };
 
@@ -223,9 +221,6 @@ public sealed class NodeController : Controller
 
         if (ModelState.IsValid)
         {
-            treeNode.Priority = model.Priority;
-            treeNode.Position = model.Position;
-
             await _adminMenuService.SaveAsync(adminMenu);
 
             await _notifier.SuccessAsync(H["Admin node updated successfully."]);

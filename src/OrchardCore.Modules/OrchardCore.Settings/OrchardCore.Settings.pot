@@ -31,6 +31,11 @@ msgctxt "OrchardCore.Settings.Controllers.AdminController"
 msgid "Site settings updated successfully."
 msgstr ""
 
+#: Deployment/SiteSettingsDeploymentStepDriver.cs
+msgctxt "OrchardCore.Settings.Deployment.SiteSettingsDeploymentStepDriver"
+msgid "Site settings"
+msgstr ""
+
 #: Startup.cs
 msgctxt "OrchardCore.Settings.DeploymentStartup"
 msgid "Debugging settings"
@@ -41,9 +46,54 @@ msgctxt "OrchardCore.Settings.DeploymentStartup"
 msgid "Exports the debugging settings."
 msgstr ""
 
+#: Drivers/DebugSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Settings.Drivers.DebugSettingsDisplayDriver"
+msgid "Shapes"
+msgstr ""
+
+#: Drivers/DefaultSiteSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Settings.Drivers.DefaultSiteSettingsDisplayDriver"
+msgid "Cache"
+msgstr ""
+
+#: Drivers/DefaultSiteSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Settings.Drivers.DefaultSiteSettingsDisplayDriver"
+msgid "Dynamic cache"
+msgstr ""
+
 #: Drivers/DefaultSiteSettingsDisplayDriver.cs
 msgctxt "OrchardCore.Settings.Drivers.DefaultSiteSettingsDisplayDriver"
 msgid "Enter at least one page size when page size selection is allowed."
+msgstr ""
+
+#: Drivers/DefaultSiteSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Settings.Drivers.DefaultSiteSettingsDisplayDriver"
+msgid "General"
+msgstr ""
+
+#: Drivers/DefaultSiteSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Settings.Drivers.DefaultSiteSettingsDisplayDriver"
+msgid "Pagination"
+msgstr ""
+
+#: Drivers/DefaultSiteSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Settings.Drivers.DefaultSiteSettingsDisplayDriver"
+msgid "Regional settings"
+msgstr ""
+
+#: Drivers/DefaultSiteSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Settings.Drivers.DefaultSiteSettingsDisplayDriver"
+msgid "Resources"
+msgstr ""
+
+#: Drivers/DefaultSiteSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Settings.Drivers.DefaultSiteSettingsDisplayDriver"
+msgid "Scripts and stylesheets"
+msgstr ""
+
+#: Drivers/DefaultSiteSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Settings.Drivers.DefaultSiteSettingsDisplayDriver"
+msgid "Site"
 msgstr ""
 
 #: Drivers/DefaultSiteSettingsDisplayDriver.cs
@@ -155,9 +205,46 @@ msgctxt "OrchardCore.Settings.Views.Settings-Cache.Edit"
 msgid "From environment — enabled in Production, disabled otherwise"
 msgstr ""
 
-#: Views/Settings-Cache.Edit.cshtml
-msgctxt "OrchardCore.Settings.Views.Settings-Cache.Edit"
-msgid "Settings for dynamic caches"
+#: Views/Settings-Pagination.Edit.cshtml
+msgctxt "OrchardCore.Settings.Views.Settings-Pagination.Edit"
+msgid "A comma-separated list of the page size values users can select from, for example 10, 25, 50, 100."
+msgstr ""
+
+#: Views/Settings-Pagination.Edit.cshtml
+msgctxt "OrchardCore.Settings.Views.Settings-Pagination.Edit"
+msgid "Allow users to change the page size on listing pages"
+msgstr ""
+
+#: Views/Settings-Pagination.Edit.cshtml
+msgctxt "OrchardCore.Settings.Views.Settings-Pagination.Edit"
+msgid "Page size"
+msgstr ""
+
+#: Views/Settings-Pagination.Edit.cshtml
+msgctxt "OrchardCore.Settings.Views.Settings-Pagination.Edit"
+msgid "Page size options"
+msgstr ""
+
+#: Views/Settings-Pagination.Edit.cshtml
+msgctxt "OrchardCore.Settings.Views.Settings-Pagination.Edit"
+msgid "Page size selection"
+msgstr ""
+
+#: Views/Settings-Pagination.Edit.cshtml
+msgctxt "OrchardCore.Settings.Views.Settings-Pagination.Edit"
+msgid "The default page size."
+msgstr ""
+
+#. Format arguments: {0}: Model.MaxPageSize
+#: Views/Settings-Pagination.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Settings.Views.Settings-Pagination.Edit"
+msgid "Values cannot exceed the maximum page size of {0}."
+msgstr ""
+
+#: Views/Settings-Pagination.Edit.cshtml
+msgctxt "OrchardCore.Settings.Views.Settings-Pagination.Edit"
+msgid "When enabled, a selector is shown on listing pages so users can choose how many items are displayed per page."
 msgstr ""
 
 #: Views/Settings-Reload.Wrapper.cshtml
@@ -197,11 +284,6 @@ msgstr ""
 
 #: Views/Settings-Resources.Edit.cshtml
 msgctxt "OrchardCore.Settings.Views.Settings-Resources.Edit"
-msgid "Settings for scripts and stylesheets"
-msgstr ""
-
-#: Views/Settings-Resources.Edit.cshtml
-msgctxt "OrchardCore.Settings.Views.Settings-Resources.Edit"
 msgid "Site CDN (Content Delivery Network) base url"
 msgstr ""
 
@@ -227,52 +309,12 @@ msgstr ""
 
 #: Views/Settings-Site.Edit.cshtml
 msgctxt "OrchardCore.Settings.Views.Settings-Site.Edit"
-msgid "A comma-separated list of the page size values users can select from, for example 10, 25, 50, 100."
-msgstr ""
-
-#: Views/Settings-Site.Edit.cshtml
-msgctxt "OrchardCore.Settings.Views.Settings-Site.Edit"
-msgid "Allow users to change the page size on listing pages"
-msgstr ""
-
-#: Views/Settings-Site.Edit.cshtml
-msgctxt "OrchardCore.Settings.Views.Settings-Site.Edit"
 msgid "Base url"
 msgstr ""
 
 #: Views/Settings-Site.Edit.cshtml
 msgctxt "OrchardCore.Settings.Views.Settings-Site.Edit"
-msgid "Default Time Zone"
-msgstr ""
-
-#: Views/Settings-Site.Edit.cshtml
-msgctxt "OrchardCore.Settings.Views.Settings-Site.Edit"
-msgid "Determines the default time zone used when displaying and editing dates and times. DST (daylight saving time) will be applied automatically per time zone if available."
-msgstr ""
-
-#: Views/Settings-Site.Edit.cshtml
-msgctxt "OrchardCore.Settings.Views.Settings-Site.Edit"
 msgid "Enter the fully qualified base URL of the web site."
-msgstr ""
-
-#: Views/Settings-Site.Edit.cshtml
-msgctxt "OrchardCore.Settings.Views.Settings-Site.Edit"
-msgid "Local to server"
-msgstr ""
-
-#: Views/Settings-Site.Edit.cshtml
-msgctxt "OrchardCore.Settings.Views.Settings-Site.Edit"
-msgid "Page size"
-msgstr ""
-
-#: Views/Settings-Site.Edit.cshtml
-msgctxt "OrchardCore.Settings.Views.Settings-Site.Edit"
-msgid "Page size options"
-msgstr ""
-
-#: Views/Settings-Site.Edit.cshtml
-msgctxt "OrchardCore.Settings.Views.Settings-Site.Edit"
-msgid "Page size selection"
 msgstr ""
 
 #: Views/Settings-Site.Edit.cshtml
@@ -292,24 +334,22 @@ msgstr ""
 
 #: Views/Settings-Site.Edit.cshtml
 msgctxt "OrchardCore.Settings.Views.Settings-Site.Edit"
-msgid "The default page size."
-msgstr ""
-
-#: Views/Settings-Site.Edit.cshtml
-msgctxt "OrchardCore.Settings.Views.Settings-Site.Edit"
 msgid "The site name."
 msgstr ""
 
-#. Format arguments: {0}: Model.MaxPageSize
-#: Views/Settings-Site.Edit.cshtml
-#, csharp-format
-msgctxt "OrchardCore.Settings.Views.Settings-Site.Edit"
-msgid "Values cannot exceed the maximum page size of {0}."
+#: Views/Settings-TimeZone.Edit.cshtml
+msgctxt "OrchardCore.Settings.Views.Settings-TimeZone.Edit"
+msgid "Default Time Zone"
 msgstr ""
 
-#: Views/Settings-Site.Edit.cshtml
-msgctxt "OrchardCore.Settings.Views.Settings-Site.Edit"
-msgid "When enabled, a selector is shown on listing pages so users can choose how many items are displayed per page."
+#: Views/Settings-TimeZone.Edit.cshtml
+msgctxt "OrchardCore.Settings.Views.Settings-TimeZone.Edit"
+msgid "Determines the default time zone used when displaying and editing dates and times. DST (daylight saving time) will be applied automatically per time zone if available."
+msgstr ""
+
+#: Views/Settings-TimeZone.Edit.cshtml
+msgctxt "OrchardCore.Settings.Views.Settings-TimeZone.Edit"
+msgid "Local to server"
 msgstr ""
 
 #: Views/Shared/DisplayTemplates/RemovableCulture.cshtml

@@ -1,19 +1,9 @@
 @model ShortcodeTemplateViewModel
-@using System.Text.Json
+@using OrchardCore.DisplayManagement.Zones
 @inject IDisplayManager<ShortcodeDescriptor> ShortcodeDescriptorDisplayManager
-@inject IShortcodeDescriptorManager ShortcodeDescriptorManager
 @{
-    var shortcodeDescriptors = await ShortcodeDescriptorManager.GetShortcodeDescriptors();
-    var categories = shortcodeDescriptors
-        .SelectMany(shortcodeDescriptor => shortcodeDescriptor.Categories ?? Enumerable.Empty<string>())
-        .Distinct(StringComparer.OrdinalIgnoreCase)
-        .OrderBy(category => category)
-        .ToList();
-
-    var jCategories = JConvert.SerializeObject(categories);
-    var jSelectedCategories = JConvert.SerializeObject(Model.Categories);
-    var translations = Orchard.GetJSLocalizations("shortcodes-categories-editor");
-    var translationsJson = Json.Serialize(translations).ToString();
+    // The preview of the shortcode is rendered between the zones of the editor.
+    var editorZones = ((IZoneHolding)Model.Editor).Zones;
 }
 
 <style asp-name="codemirror"></style>
@@ -45,47 +35,7 @@
 
 <div asp-validation-summary="All"></div>
 <form asp-action="Create" method="post" class="no-multisubmit">
-            <div class="ocat-wrapper" asp-validation-class-for="Name">
-                <label asp-for="Name" class="ocat-label ocat-label-required">@T["Name"]</label>
-                <div class="ocat-end">
-                <input asp-for="Name" class="form-control" autofocus />
-                <span asp-validation-for="Name"></span>
-                <span class="hint">@T["The name of the shortcode."]</span>
-                </div>
-            </div>
-
-            <div class="ocat-wrapper" asp-validation-class-for="Hint">
-                <label asp-for="Hint" class="ocat-label">@T["Hint"]</label>
-                <div class="ocat-end">
-                <input asp-for="Hint" class="form-control" />
-                <span class="hint">@T["The hint for the shortcode."]</span>
-                </div>
-            </div>
-
-            <div class="ocat-wrapper" asp-validation-class-for="Usage">
-                <label asp-for="Usage" class="ocat-label">@T["Usage"]</label>
-                <div class="ocat-end">
-                <textarea asp-for="Usage" rows="10" class="form-control"></textarea>
-                <span class="hint">@T["Example usage of the shortcode."]</span>
-                </div>
-            </div>
-
-            @* Do not move app from here, it is specific to categories, and causes conflicts with codemirror due to dom rewrites. *@
-            <div class="ocat-wrapper" asp-validation-class-for="SelectedCategories" id="shortcodeCategories" data-categories="@jCategories" data-selected-categories="@jSelectedCategories" data-translations="@translationsJson" data-hidden-input-id="@Html.IdFor(x => x.SelectedCategories)" data-hidden-input-name="@Html.NameFor(x => x.SelectedCategories)">
-                <label asp-for="SelectedCategories" class="ocat-label">@T["Categories"]</label>
-                <div class="ocat-end">
-                <div class="shortcode-categories-mount"></div>
-                <span class="hint">@T["The categories for this shortcode."]</span>
-                </div>
-            </div>
-
-            <div class="ocat-wrapper" asp-validation-class-for="DefaultValue">
-                <label asp-for="DefaultValue" class="ocat-label">@T["Default Shortcode Value"]</label>
-                <div class="ocat-end">
-                <input asp-for="DefaultValue" class="form-control" />
-                <span class="hint">@T["The default value of the shortcode when selected. Defaults to [name]."]</span>
-                </div>
-            </div>
+    @await DisplayAsync(editorZones["Content"])
 
     <div class="mb-3 d-flex align-items-center justify-content-center">
         <div id="shortcodePreview" style="display: none;">
@@ -98,14 +48,7 @@
         </div>
     </div>
 
-    <div class="ocat-wrapper" asp-validation-class-for="Content">
-        <label asp-for="Content" class="ocat-label ocat-label-required">@T["Content"]</label>
-        <div class="ocat-end">
-        <textarea asp-for="Content" rows="10" class="form-control"></textarea>
-        <span asp-validation-for="Content"></span>
-        <span class="hint">@T["The Shortcode Liquid template."]</span>
-        </div>
-    </div>
+    @await DisplayAsync(editorZones["Footer"])
 
     <div class="action-bar-bottom">
         <div class="btn-group"

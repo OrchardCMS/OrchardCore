@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -7,6 +8,13 @@ namespace OrchardCore.Features.Deployment;
 
 public sealed class AllFeaturesDeploymentStepDriver : DisplayDriver<DeploymentStep, AllFeaturesDeploymentStep>
 {
+    internal readonly IStringLocalizer S;
+
+    public AllFeaturesDeploymentStepDriver(IStringLocalizer<AllFeaturesDeploymentStepDriver> stringLocalizer)
+    {
+        S = stringLocalizer;
+    }
+
     public override Task<IDisplayResult> DisplayAsync(AllFeaturesDeploymentStep step, BuildDisplayContext context)
     {
         return
@@ -21,7 +29,7 @@ public sealed class AllFeaturesDeploymentStepDriver : DisplayDriver<DeploymentSt
         return Initialize<AllFeaturesDeploymentStepViewModel>("AllFeaturesDeploymentStep_Fields_Edit", model =>
         {
             model.IgnoreDisabledFeatures = step.IgnoreDisabledFeatures;
-        }).Location("Content");
+        }).Location(l => l.Zone("Content", "1").Card(S["Features"], "10"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(AllFeaturesDeploymentStep step, UpdateEditorContext context)

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -13,9 +14,12 @@ internal sealed class AzureAISearchIndexProfileDisplayDriver : DisplayDriver<Ind
 {
     private readonly IOptionsMonitor<AzureAISearchDefaultOptions> _azureAIOptions;
 
-    public AzureAISearchIndexProfileDisplayDriver(IOptionsMonitor<AzureAISearchDefaultOptions> azureAIOptions)
+    internal readonly IStringLocalizer S;
+
+    public AzureAISearchIndexProfileDisplayDriver(IOptionsMonitor<AzureAISearchDefaultOptions> azureAIOptions, IStringLocalizer<AzureAISearchIndexProfileDisplayDriver> stringLocalizer)
     {
         _azureAIOptions = azureAIOptions;
+        S = stringLocalizer;
     }
 
     public override IDisplayResult Edit(IndexProfile indexProfile, BuildEditorContext context)
@@ -37,7 +41,7 @@ internal sealed class AzureAISearchIndexProfileDisplayDriver : DisplayDriver<Ind
             }
 
             model.Analyzers = azureAIOptions.Analyzers.Select(x => new SelectListItem(x, x));
-        }).Location("Content:5");
+        }).Location(l => l.Zone("Content", "5").Card(S["Index settings"], "30"));
 
         var queryData = Initialize<AzureAISearchDefaultQueryViewModel>("AzureAISearchQuerySettings_Edit", model =>
         {
@@ -64,7 +68,13 @@ internal sealed class AzureAISearchIndexProfileDisplayDriver : DisplayDriver<Ind
                 }).OrderBy(x => x.Text)
                 .ToArray();
             }
-        }).Location("Content:10");
+        }).Location(l => l.Zone("Content", "10").Card(S["Default query"], "40"));
+
+        // The default query settings are only editable once the index has searchable fields.
+        if (!indexProfile.TryGet<AzureAISearchIndexMetadata>(out var mappingsMetadata) || mappingsMetadata.IndexMappings?.Any(x => x.IsSearchable) != true)
+        {
+            return data;
+        }
 
         return Combine(data, queryData);
     }

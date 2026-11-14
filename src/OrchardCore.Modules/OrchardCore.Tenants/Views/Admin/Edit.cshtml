@@ -1,5 +1,4 @@
 @model EditTenantViewModel
-@inject IEnumerable<OrchardCore.Data.DatabaseProvider> DatabaseProviders
 
 <zone Name="Title">
     <breadcrumb name="TenantsEdit" title="@T["Edit Tenant"]">
@@ -10,28 +9,7 @@
 <div asp-validation-summary="ModelOnly"></div>
 <form asp-action="Edit" method="post" class="no-multisubmit">
 
-    <div class="ocat-wrapper" asp-validation-class-for="Name">
-        <label asp-for="Name" class="ocat-label">@T["Name"]</label>
-        <div class="ocat-end">
-            <input asp-for="Name" class="form-control" readonly autofocus />
-            <span asp-validation-for="Name" class="text-danger"></span>
-            <span class="hint">@T["The name of the tenant."]</span>
-        </div>
-    </div>
-
-    <partial name="_TenantInfo" model="Model" />
-
-    @if (Model.Recipes is not null)
-    {
-        @if (Model.CanEditDatabasePresets)
-        {
-            <partial name="_TenantRecipes" model="Model" />
-        }
-
-        <partial name="_TenantDatabaseInfo" model="Model" />
-    }
-
-    <partial name="_TenantFeatureProfile" model="Model" />
+    @await DisplayAsync(Model.Editor)
 
     <div class="action-bar-bottom">
         <button class="btn btn-primary save" type="submit">@T["Save"]</button>

@@ -1,0 +1,26 @@
+@using OrchardCore.OpenId.ViewModels
+@model OpenIdServerSettingsViewModel
+
+<div class="ocat-wrapper" asp-validation-class-for="RequireProofKeyForCodeExchange">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="RequireProofKeyForCodeExchange">
+            <label class="form-check-label" asp-for="RequireProofKeyForCodeExchange">@T["Require Proof Key for Code Exchange"]</label>
+        </div>
+        <div class="hint">
+            @T["A global setting that enforces PKCE for all registered clients, regardless of whether the 'Require PKCE' option is enabled for individual client applications."]
+        </div>
+    </div>
+</div>
+
+<div class="ocat-wrapper" asp-validation-class-for="RequirePushedAuthorizationRequests">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="RequirePushedAuthorizationRequests">
+            <label class="form-check-label" asp-for="RequirePushedAuthorizationRequests">@T["Require Pushed Authorization Requests"]</label>
+        </div>
+        <div class="hint">
+            @T["A global setting that enforces PAR for all registered clients, regardless of whether the 'Require PAR' option is enabled for individual client applications."]
+        </div>
+    </div>
+</div>

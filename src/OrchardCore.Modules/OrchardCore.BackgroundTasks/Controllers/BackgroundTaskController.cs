@@ -41,6 +41,8 @@ public sealed class BackgroundTaskController : Controller
     private readonly PagerOptions _pagerOptions;
     private readonly INotifier _notifier;
     private readonly IShapeFactory _shapeFactory;
+    private readonly IDisplayManager<BackgroundTaskViewModel> _backgroundTaskDisplayManager;
+    private readonly IUpdateModelAccessor _updateModelAccessor;
 
     internal readonly IStringLocalizer S;
     internal readonly IHtmlLocalizer H;
@@ -53,6 +55,8 @@ public sealed class BackgroundTaskController : Controller
         ShellSettings shellSettings,
         IOptions<PagerOptions> pagerOptions,
         IShapeFactory shapeFactory,
+        IDisplayManager<BackgroundTaskViewModel> backgroundTaskDisplayManager,
+        IUpdateModelAccessor updateModelAccessor,
         IHtmlLocalizer<BackgroundTaskController> htmlLocalizer,
         IStringLocalizer<BackgroundTaskController> stringLocalizer,
         INotifier notifier)
@@ -67,6 +71,8 @@ public sealed class BackgroundTaskController : Controller
         _pagerOptions = pagerOptions.Value;
         _notifier = notifier;
         _shapeFactory = shapeFactory;
+        _backgroundTaskDisplayManager = backgroundTaskDisplayManager;
+        _updateModelAccessor = updateModelAccessor;
         S = stringLocalizer;
         H = htmlLocalizer;
     }
@@ -379,6 +385,8 @@ public sealed class BackgroundTaskController : Controller
             UsePipeline = settings.UsePipeline,
         };
 
+        model.Editor = await _backgroundTaskDisplayManager.BuildEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: false);
+
         return View(model);
     }
 
@@ -397,6 +405,12 @@ public sealed class BackgroundTaskController : Controller
         }
 
         var defaultSettings = task.GetDefaultSettings();
+
+        // The title and the default schedule are those of the task, the editor displays them again when the settings are invalid.
+        model.Title = defaultSettings.Title;
+        model.DefaultSchedule = defaultSettings.Schedule;
+
+        model.Editor = await _backgroundTaskDisplayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: false);
 
         // An empty schedule is bound as null, it would otherwise be stored as the default schedule of the settings.
         var schedule = model.Schedule?.Trim() ?? string.Empty;
@@ -426,9 +440,6 @@ public sealed class BackgroundTaskController : Controller
 
             return RedirectToAction(nameof(Index));
         }
-
-        model.Title = defaultSettings.Title;
-        model.DefaultSchedule = defaultSettings.Schedule;
 
         return View(model);
     }

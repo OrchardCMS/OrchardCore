@@ -135,6 +135,21 @@ msgctxt "OrchardCore.Deployment.Remote.Controllers.RemoteInstanceController"
 msgid "The url is mandatory."
 msgstr ""
 
+#: Drivers/EditRemoteClientDisplayDriver.cs
+msgctxt "OrchardCore.Deployment.Remote.Drivers.EditRemoteClientDisplayDriver"
+msgid "Credentials"
+msgstr ""
+
+#: Drivers/EditRemoteInstanceDisplayDriver.cs
+msgctxt "OrchardCore.Deployment.Remote.Drivers.EditRemoteInstanceDisplayDriver"
+msgid "Credentials"
+msgstr ""
+
+#: Drivers/EditRemoteInstanceDisplayDriver.cs
+msgctxt "OrchardCore.Deployment.Remote.Drivers.EditRemoteInstanceDisplayDriver"
+msgid "General"
+msgstr ""
+
 #: Views/RemoteClient.Buttons.SummaryAdmin.cshtml
 msgctxt "OrchardCore.Deployment.Remote.Views.RemoteClient.Buttons.SummaryAdmin"
 msgid "Delete"
@@ -147,17 +162,7 @@ msgstr ""
 
 #: Views/RemoteClient/Create.cshtml
 msgctxt "OrchardCore.Deployment.Remote.Views.RemoteClient.Create"
-msgid "Api Key"
-msgstr ""
-
-#: Views/RemoteClient/Create.cshtml
-msgctxt "OrchardCore.Deployment.Remote.Views.RemoteClient.Create"
 msgid "Cancel"
-msgstr ""
-
-#: Views/RemoteClient/Create.cshtml
-msgctxt "OrchardCore.Deployment.Remote.Views.RemoteClient.Create"
-msgid "Client Name"
 msgstr ""
 
 #: Views/RemoteClient/Create.cshtml
@@ -167,17 +172,7 @@ msgstr ""
 
 #: Views/RemoteClient/Edit.cshtml
 msgctxt "OrchardCore.Deployment.Remote.Views.RemoteClient.Edit"
-msgid "Api Key"
-msgstr ""
-
-#: Views/RemoteClient/Edit.cshtml
-msgctxt "OrchardCore.Deployment.Remote.Views.RemoteClient.Edit"
 msgid "Cancel"
-msgstr ""
-
-#: Views/RemoteClient/Edit.cshtml
-msgctxt "OrchardCore.Deployment.Remote.Views.RemoteClient.Edit"
-msgid "Client Name"
 msgstr ""
 
 #: Views/RemoteClient/Edit.cshtml
@@ -230,6 +225,16 @@ msgctxt "OrchardCore.Deployment.Remote.Views.RemoteClient.Index"
 msgid "selected"
 msgstr ""
 
+#: Views/RemoteClientCredentials.Edit.cshtml
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteClientCredentials.Edit"
+msgid "Api Key"
+msgstr ""
+
+#: Views/RemoteClientCredentials.Edit.cshtml
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteClientCredentials.Edit"
+msgid "Client Name"
+msgstr ""
+
 #: Views/RemoteInstance.Buttons.SummaryAdmin.cshtml
 msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Buttons.SummaryAdmin"
 msgid "Delete"
@@ -242,17 +247,7 @@ msgstr ""
 
 #: Views/RemoteInstance/Create.cshtml
 msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Create"
-msgid "Api Key"
-msgstr ""
-
-#: Views/RemoteInstance/Create.cshtml
-msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Create"
 msgid "Cancel"
-msgstr ""
-
-#: Views/RemoteInstance/Create.cshtml
-msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Create"
-msgid "Client Name"
 msgstr ""
 
 #: Views/RemoteInstance/Create.cshtml
@@ -267,22 +262,7 @@ msgstr ""
 
 #: Views/RemoteInstance/Create.cshtml
 msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Create"
-msgid "Name"
-msgstr ""
-
-#: Views/RemoteInstance/Create.cshtml
-msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Create"
 msgid "Remote Instances"
-msgstr ""
-
-#: Views/RemoteInstance/Create.cshtml
-msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Create"
-msgid "Url"
-msgstr ""
-
-#: Views/RemoteInstance/Edit.cshtml
-msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Edit"
-msgid "Api Key"
 msgstr ""
 
 #: Views/RemoteInstance/Edit.cshtml
@@ -292,17 +272,7 @@ msgstr ""
 
 #: Views/RemoteInstance/Edit.cshtml
 msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Edit"
-msgid "Client Name"
-msgstr ""
-
-#: Views/RemoteInstance/Edit.cshtml
-msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Edit"
 msgid "Edit Remote Instance"
-msgstr ""
-
-#: Views/RemoteInstance/Edit.cshtml
-msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Edit"
-msgid "Name"
 msgstr ""
 
 #: Views/RemoteInstance/Edit.cshtml
@@ -313,11 +283,6 @@ msgstr ""
 #: Views/RemoteInstance/Edit.cshtml
 msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Edit"
 msgid "Save"
-msgstr ""
-
-#: Views/RemoteInstance/Edit.cshtml
-msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Edit"
-msgid "Url"
 msgstr ""
 
 #: Views/RemoteInstance/Index.cshtml
@@ -353,6 +318,26 @@ msgstr ""
 #: Views/RemoteInstance/Index.cshtml
 msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Index"
 msgid "selected"
+msgstr ""
+
+#: Views/RemoteInstanceCredentials.Edit.cshtml
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstanceCredentials.Edit"
+msgid "Api Key"
+msgstr ""
+
+#: Views/RemoteInstanceCredentials.Edit.cshtml
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstanceCredentials.Edit"
+msgid "Client Name"
+msgstr ""
+
+#: Views/RemoteInstanceGeneral.Edit.cshtml
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstanceGeneral.Edit"
+msgid "Name"
+msgstr ""
+
+#: Views/RemoteInstanceGeneral.Edit.cshtml
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstanceGeneral.Edit"
+msgid "Url"
 msgstr ""
 
 #: Services/RemoteInstanceDeploymentTargetProvider.cs

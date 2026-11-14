@@ -26,6 +26,9 @@ public sealed class ScopeController : Controller
     private readonly IOpenIdScopeManager _scopeManager;
     private readonly IShapeFactory _shapeFactory;
     private readonly PagerOptions _pagerOptions;
+    private readonly IDisplayManager<CreateOpenIdScopeViewModel> _createDisplayManager;
+    private readonly IDisplayManager<EditOpenIdScopeViewModel> _editDisplayManager;
+    private readonly IUpdateModelAccessor _updateModelAccessor;
 
     internal readonly IStringLocalizer S;
     internal readonly IHtmlLocalizer H;
@@ -37,7 +40,10 @@ public sealed class ScopeController : Controller
         IStringLocalizer<ScopeController> stringLocalizer,
         IHtmlLocalizer<ScopeController> htmlLocalizer,
         IAuthorizationService authorizationService,
-        ShellSettings shellSettings)
+        ShellSettings shellSettings,
+        IDisplayManager<CreateOpenIdScopeViewModel> createDisplayManager,
+        IDisplayManager<EditOpenIdScopeViewModel> editDisplayManager,
+        IUpdateModelAccessor updateModelAccessor)
     {
         _scopeManager = scopeManager;
         _shapeFactory = shapeFactory;
@@ -46,6 +52,9 @@ public sealed class ScopeController : Controller
         H = htmlLocalizer;
         _authorizationService = authorizationService;
         _shellSettings = shellSettings;
+        _createDisplayManager = createDisplayManager;
+        _editDisplayManager = editDisplayManager;
+        _updateModelAccessor = updateModelAccessor;
     }
 
     [Admin("OpenId/Scope", "OpenIdScope")]
@@ -125,6 +134,8 @@ public sealed class ScopeController : Controller
 
         var model = new CreateOpenIdScopeViewModel();
 
+        model.Editor = await _createDisplayManager.BuildEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: true);
+
         ViewData["ReturnUrl"] = returnUrl;
 
         return View(model);
@@ -137,6 +148,8 @@ public sealed class ScopeController : Controller
         {
             return Forbid();
         }
+
+        model.Editor = await _createDisplayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: true);
 
         if (ModelState.IsValid && await _scopeManager.FindByNameAsync(model.Name) != null)
         {
@@ -208,6 +221,8 @@ public sealed class ScopeController : Controller
 
         model.Resources = string.Join(' ', resources);
 
+        model.Editor = await _editDisplayManager.BuildEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: false);
+
         ViewData["ReturnUrl"] = returnUrl;
 
         return View(model);
@@ -227,6 +242,8 @@ public sealed class ScopeController : Controller
         {
             return NotFound();
         }
+
+        model.Editor = await _editDisplayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: false);
 
         if (ModelState.IsValid)
         {

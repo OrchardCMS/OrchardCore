@@ -31,7 +31,7 @@ public sealed class AliasPartSettingsDisplayDriver : ContentTypePartDefinitionDi
             model.Pattern = settings.Pattern;
             model.Options = settings.Options;
             model.AliasPartSettings = settings;
-        }).Location("Content");
+        }).Location(l => l.Zone("Content").Card(S["Settings"], "20"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)

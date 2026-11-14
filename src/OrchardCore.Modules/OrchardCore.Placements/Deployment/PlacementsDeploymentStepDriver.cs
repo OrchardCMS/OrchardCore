@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -6,6 +7,13 @@ namespace OrchardCore.Placements.Deployment;
 
 public sealed class PlacementsDeploymentStepDriver : DisplayDriver<DeploymentStep, PlacementsDeploymentStep>
 {
+    internal readonly IStringLocalizer S;
+
+    public PlacementsDeploymentStepDriver(IStringLocalizer<PlacementsDeploymentStepDriver> stringLocalizer)
+    {
+        S = stringLocalizer;
+    }
+
     public override Task<IDisplayResult> DisplayAsync(PlacementsDeploymentStep step, BuildDisplayContext context)
     {
         return
@@ -17,6 +25,6 @@ public sealed class PlacementsDeploymentStepDriver : DisplayDriver<DeploymentSte
 
     public override IDisplayResult Edit(PlacementsDeploymentStep step, BuildEditorContext context)
     {
-        return View("PlacementsDeploymentStep_Edit", step).Location("Content");
+        return View("PlacementsDeploymentStep_Edit", step).Location(l => l.Zone("Content").Card(S["Placements"], "10"));
     }
 }

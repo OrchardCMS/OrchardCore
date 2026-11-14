@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using OrchardCore.DisplayManagement;
 
 namespace OrchardCore.BackgroundTasks.ViewModels;
 
@@ -24,4 +25,10 @@ public class BackgroundTaskViewModel
     public bool UsePipeline { get; set; }
 
     public bool IsAtomic => LockTimeout > 0 && LockExpiration > 0;
+
+    /// <summary>
+    /// Gets or sets the editor of the settings of the task, built by the display drivers of <see cref="BackgroundTaskViewModel"/>.
+    /// </summary>
+    [BindNever]
+    public IShape Editor { get; set; }
 }

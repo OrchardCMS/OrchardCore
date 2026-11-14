@@ -11,38 +11,7 @@
 <div asp-validation-summary="ModelOnly"></div>
 <form asp-action="Create" method="post" class="no-multisubmit">
 
-    <div class="ocat-wrapper" asp-validation-class-for="DisplayName">
-        <label asp-for="DisplayName" class="ocat-label ocat-label-required">@T["Display Name"]</label>
-        <div class="ocat-end">
-            <input asp-for="DisplayName" class="form-control" autofocus />
-            <span asp-validation-for="DisplayName" class="text-danger"></span>
-        </div>
-    </div>
-
-    <div class="ocat-wrapper" asp-validation-class-for="Name">
-        <label asp-for="Name" class="ocat-label ocat-label-required">@T["Name"]</label>
-        <div class="ocat-end">
-            <input asp-for="Name" class="form-control" />
-            <span asp-validation-for="Name" class="text-danger"></span>
-        </div>
-    </div>
-
-    <div class="ocat-wrapper" asp-validation-class-for="Description">
-        <label asp-for="Description" class="ocat-label">@T["Description"]</label>
-        <div class="ocat-end">
-            <textarea asp-for="Description" class="form-control"></textarea>
-            <span asp-validation-for="Description" class="text-danger"></span>
-        </div>
-    </div>
-
-    <div class="ocat-wrapper" asp-validation-class-for="Resources">
-        <label asp-for="Resources" class="ocat-label">@T["Additional resources (API audiences)"]</label>
-        <div class="ocat-end">
-            <input asp-for="Resources" class="form-control" />
-            <span class="hint">@T["A space-separated list of values is required. To utilize another active tenant as a resource, specify it using the format <code>{0}{{tenant_name}}</code>.", OpenIdConstants.Prefixes.Tenant]</span>
-            <span asp-validation-for="Resources" class="text-danger"></span>
-        </div>
-    </div>
+    @await DisplayAsync(Model.Editor)
 
     <div class="action-bar-bottom">
         <button class="btn btn-primary save" type="submit">@T["Save"]</button>

@@ -197,14 +197,109 @@ msgctxt "OrchardCore.ContentTypes.Controllers.AdminController"
 msgid "There are no fields."
 msgstr ""
 
+#: Deployment/ContentDefinitionDeploymentStepDriver.cs
+msgctxt "OrchardCore.ContentTypes.Deployment.ContentDefinitionDeploymentStepDriver"
+msgid "Content definitions"
+msgstr ""
+
+#: Deployment/DeleteContentDefinitionDeploymentStepDriver.cs
+msgctxt "OrchardCore.ContentTypes.Deployment.DeleteContentDefinitionDeploymentStepDriver"
+msgid "Content definitions"
+msgstr ""
+
+#: Deployment/ReplaceContentDefinitionDeploymentStepDriver.cs
+msgctxt "OrchardCore.ContentTypes.Deployment.ReplaceContentDefinitionDeploymentStepDriver"
+msgid "Content definitions"
+msgstr ""
+
+#: Drivers/AddFieldDisplayDriver.cs
+msgctxt "OrchardCore.ContentTypes.Drivers.AddFieldDisplayDriver"
+msgid "General"
+msgstr ""
+
+#: Drivers/AddPartsDisplayDriver.cs
+msgctxt "OrchardCore.ContentTypes.Drivers.AddPartsDisplayDriver"
+msgid "Parts"
+msgstr ""
+
+#: Drivers/AddReusablePartDisplayDriver.cs
+msgctxt "OrchardCore.ContentTypes.Drivers.AddReusablePartDisplayDriver"
+msgid "General"
+msgstr ""
+
+#: Drivers/CreatePartDisplayDriver.cs
+msgctxt "OrchardCore.ContentTypes.Drivers.CreatePartDisplayDriver"
+msgid "General"
+msgstr ""
+
+#: Drivers/CreateTypeDisplayDriver.cs
+msgctxt "OrchardCore.ContentTypes.Drivers.CreateTypeDisplayDriver"
+msgid "General"
+msgstr ""
+
+#: Editors/ContentPartFieldsDisplayDriver.cs
+msgctxt "OrchardCore.ContentTypes.Editors.ContentPartFieldsDisplayDriver"
+msgid "Fields"
+msgstr ""
+
+#: Editors/ContentPartSettingsDisplayDriver.cs
+msgctxt "OrchardCore.ContentTypes.Editors.ContentPartSettingsDisplayDriver"
+msgid "General"
+msgstr ""
+
+#: Editors/ContentTypeFieldsDisplayDriver.cs
+msgctxt "OrchardCore.ContentTypes.Editors.ContentTypeFieldsDisplayDriver"
+msgid "Fields"
+msgstr ""
+
+#: Editors/ContentTypePartsDisplayDriver.cs
+msgctxt "OrchardCore.ContentTypes.Editors.ContentTypePartsDisplayDriver"
+msgid "Parts"
+msgstr ""
+
+#: Editors/ContentTypeSettingsDisplayDriver.cs
+msgctxt "OrchardCore.ContentTypes.Editors.ContentTypeSettingsDisplayDriver"
+msgid "Behavior"
+msgstr ""
+
+#: Editors/ContentTypeSettingsDisplayDriver.cs
+msgctxt "OrchardCore.ContentTypes.Editors.ContentTypeSettingsDisplayDriver"
+msgid "General"
+msgstr ""
+
 #: Editors/ContentTypeSettingsDisplayDriver.cs
 msgctxt "OrchardCore.ContentTypes.Editors.ContentTypeSettingsDisplayDriver"
 msgid "The stereotype should be alphanumeric."
 msgstr ""
 
+#: Editors/DefaultContentPartFieldDisplayDriver.cs
+msgctxt "OrchardCore.ContentTypes.Editors.DefaultContentPartFieldDisplayDriver"
+msgid "General"
+msgstr ""
+
+#: Editors/DefaultContentTypeDisplayDriver.cs
+msgctxt "OrchardCore.ContentTypes.Editors.DefaultContentTypeDisplayDriver"
+msgid "General"
+msgstr ""
+
 #: Editors/DefaultContentTypeDisplayDriver.cs
 msgctxt "OrchardCore.ContentTypes.Editors.DefaultContentTypeDisplayDriver"
 msgid "The Content Type name can't be empty."
+msgstr ""
+
+#: Editors/DefaultContentTypePartDisplayDriver.cs
+msgctxt "OrchardCore.ContentTypes.Editors.DefaultContentTypePartDisplayDriver"
+msgid "General"
+msgstr ""
+
+#: GraphQL/Drivers/GraphQLContentTypePartSettingsDriver.cs
+msgctxt "OrchardCore.ContentTypes.GraphQL.Drivers.GraphQLContentTypePartSettingsDriver"
+msgid "GraphQL"
+msgstr ""
+
+#: GraphQL/Drivers/GraphQLContentTypeSettingsDisplayDriver.cs
+msgctxt "OrchardCore.ContentTypes.GraphQL.Drivers.GraphQLContentTypeSettingsDisplayDriver"
+msgid "GraphQL"
 msgstr ""
 
 #. Format arguments: {0}: part.Name
@@ -226,6 +321,71 @@ msgstr ""
 #, csharp-format
 msgctxt "OrchardCore.ContentTypes.Services.ContentDefinitionService"
 msgid "Cannot add part named '{0}'. It already exists."
+msgstr ""
+
+#: Views/AddFieldGeneral.Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.AddFieldGeneral.Edit"
+msgid "Display Name"
+msgstr ""
+
+#: Views/AddFieldGeneral.Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.AddFieldGeneral.Edit"
+msgid "Field Type"
+msgstr ""
+
+#: Views/AddFieldGeneral.Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.AddFieldGeneral.Edit"
+msgid "Name of the field as it will be displayed in screens."
+msgstr ""
+
+#: Views/AddFieldGeneral.Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.AddFieldGeneral.Edit"
+msgid "Technical Name"
+msgstr ""
+
+#: Views/AddFieldGeneral.Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.AddFieldGeneral.Edit"
+msgid "Technical name of the field."
+msgstr ""
+
+#: Views/AddPartsSelection.Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.AddPartsSelection.Edit"
+msgid "Add &amp; Configure"
+msgstr ""
+
+#: Views/AddPartsSelection.Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.AddPartsSelection.Edit"
+msgid "Choose the Parts to add to this Content Type."
+msgstr ""
+
+#: Views/AddReusablePartGeneral.Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.AddReusablePartGeneral.Edit"
+msgid "Description"
+msgstr ""
+
+#: Views/AddReusablePartGeneral.Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.AddReusablePartGeneral.Edit"
+msgid "Description of the reusable part."
+msgstr ""
+
+#: Views/AddReusablePartGeneral.Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.AddReusablePartGeneral.Edit"
+msgid "Display Name"
+msgstr ""
+
+#: Views/AddReusablePartGeneral.Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.AddReusablePartGeneral.Edit"
+msgid "Name of the reusable part as it will be displayed in screens."
+msgstr ""
+
+#: Views/AddReusablePartGeneral.Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.AddReusablePartGeneral.Edit"
+msgid "Technical Name"
+msgstr ""
+
+#: Views/AddReusablePartGeneral.Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.AddReusablePartGeneral.Edit"
+msgid "Technical name of the reusable part."
 msgstr ""
 
 #. Format arguments: {0}: localizedPartName
@@ -250,11 +410,6 @@ msgctxt "OrchardCore.ContentTypes.Views.Admin.AddFieldTo"
 msgid "Content Types"
 msgstr ""
 
-#: Views/Admin/AddFieldTo.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.AddFieldTo"
-msgid "Display Name"
-msgstr ""
-
 #. Format arguments: {0}: localizedPartName
 #: Views/Admin/AddFieldTo.cshtml
 #, csharp-format
@@ -271,37 +426,12 @@ msgstr ""
 
 #: Views/Admin/AddFieldTo.cshtml
 msgctxt "OrchardCore.ContentTypes.Views.Admin.AddFieldTo"
-msgid "Field Type"
-msgstr ""
-
-#: Views/Admin/AddFieldTo.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.AddFieldTo"
-msgid "Name of the field as it will be displayed in screens."
-msgstr ""
-
-#: Views/Admin/AddFieldTo.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.AddFieldTo"
 msgid "Save"
 msgstr ""
 
 #: Views/Admin/AddFieldTo.cshtml
 msgctxt "OrchardCore.ContentTypes.Views.Admin.AddFieldTo"
 msgid "Save &amp; Configure"
-msgstr ""
-
-#: Views/Admin/AddFieldTo.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.AddFieldTo"
-msgid "Technical Name"
-msgstr ""
-
-#: Views/Admin/AddFieldTo.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.AddFieldTo"
-msgid "Technical name of the field."
-msgstr ""
-
-#: Views/Admin/AddPartsTo.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.AddPartsTo"
-msgid "Add &amp; Configure"
 msgstr ""
 
 #: Views/Admin/AddPartsTo.cshtml
@@ -321,11 +451,6 @@ msgstr ""
 
 #: Views/Admin/AddPartsTo.cshtml
 msgctxt "OrchardCore.ContentTypes.Views.Admin.AddPartsTo"
-msgid "Choose the Parts to add to this Content Type."
-msgstr ""
-
-#: Views/Admin/AddPartsTo.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.AddPartsTo"
 msgid "Content Types"
 msgstr ""
 
@@ -351,31 +476,11 @@ msgctxt "OrchardCore.ContentTypes.Views.Admin.AddReusablePartTo"
 msgid "Content Types"
 msgstr ""
 
-#: Views/Admin/AddReusablePartTo.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.AddReusablePartTo"
-msgid "Description"
-msgstr ""
-
-#: Views/Admin/AddReusablePartTo.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.AddReusablePartTo"
-msgid "Description of the reusable part."
-msgstr ""
-
-#: Views/Admin/AddReusablePartTo.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.AddReusablePartTo"
-msgid "Display Name"
-msgstr ""
-
 #. Format arguments: {0}: localizedTypeName
 #: Views/Admin/AddReusablePartTo.cshtml
 #, csharp-format
 msgctxt "OrchardCore.ContentTypes.Views.Admin.AddReusablePartTo"
 msgid "Edit Content Type - {0}"
-msgstr ""
-
-#: Views/Admin/AddReusablePartTo.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.AddReusablePartTo"
-msgid "Name of the reusable part as it will be displayed in screens."
 msgstr ""
 
 #: Views/Admin/AddReusablePartTo.cshtml
@@ -386,16 +491,6 @@ msgstr ""
 #: Views/Admin/AddReusablePartTo.cshtml
 msgctxt "OrchardCore.ContentTypes.Views.Admin.AddReusablePartTo"
 msgid "Save &amp; Configure"
-msgstr ""
-
-#: Views/Admin/AddReusablePartTo.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.AddReusablePartTo"
-msgid "Technical Name"
-msgstr ""
-
-#: Views/Admin/AddReusablePartTo.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.AddReusablePartTo"
-msgid "Technical name of the reusable part."
 msgstr ""
 
 #: Views/Admin/AddReusablePartTo.cshtml
@@ -415,27 +510,7 @@ msgstr ""
 
 #: Views/Admin/Create.cshtml
 msgctxt "OrchardCore.ContentTypes.Views.Admin.Create"
-msgid "Display Name"
-msgstr ""
-
-#: Views/Admin/Create.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.Create"
-msgid "Name of the type as it will be displayed on screens."
-msgstr ""
-
-#: Views/Admin/Create.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.Create"
 msgid "New Content Type"
-msgstr ""
-
-#: Views/Admin/Create.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.Create"
-msgid "Technical Name"
-msgstr ""
-
-#: Views/Admin/Create.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.Create"
-msgid "Technical name of the type."
 msgstr ""
 
 #: Views/Admin/CreatePart.cshtml
@@ -450,32 +525,7 @@ msgstr ""
 
 #: Views/Admin/CreatePart.cshtml
 msgctxt "OrchardCore.ContentTypes.Views.Admin.CreatePart"
-msgid "Name"
-msgstr ""
-
-#: Views/Admin/CreatePart.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.CreatePart"
 msgid "New Content Part"
-msgstr ""
-
-#: Views/Admin/CreatePart.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.CreatePart"
-msgid "Use no spaces or special characters. For example, \"MyCustomPart\""
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.Edit"
-msgid "Add Field"
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.Edit"
-msgid "Add Named Part"
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.Edit"
-msgid "Add Parts"
 msgstr ""
 
 #: Views/Admin/Edit.cshtml
@@ -490,27 +540,12 @@ msgstr ""
 
 #: Views/Admin/Edit.cshtml
 msgctxt "OrchardCore.ContentTypes.Views.Admin.Edit"
-msgid "Contains the fields for the current type"
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.Edit"
 msgid "Content Types"
 msgstr ""
 
 #: Views/Admin/Edit.cshtml
 msgctxt "OrchardCore.ContentTypes.Views.Admin.Edit"
 msgid "Delete"
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.Edit"
-msgid "Display mode"
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.Edit"
-msgid "Edit"
 msgstr ""
 
 #. Format arguments: {0}: localizedTypeName
@@ -522,27 +557,7 @@ msgstr ""
 
 #: Views/Admin/Edit.cshtml
 msgctxt "OrchardCore.ContentTypes.Views.Admin.Edit"
-msgid "Editor"
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.Edit"
-msgid "Fields"
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.Edit"
 msgid "Ok"
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.Edit"
-msgid "Parts"
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.Edit"
-msgid "Remove"
 msgstr ""
 
 #: Views/Admin/Edit.cshtml
@@ -558,16 +573,6 @@ msgstr ""
 #: Views/Admin/Edit.cshtml
 msgctxt "OrchardCore.ContentTypes.Views.Admin.Edit"
 msgid "Save and continue"
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.Edit"
-msgid "System-defined fields are integral components of the system and cannot be removed."
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.Edit"
-msgid "System-defined parts are integral components of the system and cannot be removed."
 msgstr ""
 
 #: Views/Admin/Edit.cshtml
@@ -607,11 +612,6 @@ msgctxt "OrchardCore.ContentTypes.Views.Admin.EditField"
 msgid "Content Types"
 msgstr ""
 
-#: Views/Admin/EditField.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.EditField"
-msgid "Display Name"
-msgstr ""
-
 #. Format arguments: {0}: localizedPartName
 #: Views/Admin/EditField.cshtml
 #, csharp-format
@@ -628,37 +628,7 @@ msgstr ""
 
 #: Views/Admin/EditField.cshtml
 msgctxt "OrchardCore.ContentTypes.Views.Admin.EditField"
-msgid "Name of the field as it will be displayed in screens."
-msgstr ""
-
-#: Views/Admin/EditField.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.EditField"
 msgid "Save"
-msgstr ""
-
-#: Views/Admin/EditField.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.EditField"
-msgid "Technical Name"
-msgstr ""
-
-#: Views/Admin/EditField.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.EditField"
-msgid "Technical name of the field."
-msgstr ""
-
-#: Views/Admin/EditField.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.EditField"
-msgid "What type of display mode should be used?"
-msgstr ""
-
-#: Views/Admin/EditField.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.EditField"
-msgid "What type of editor should be used?"
-msgstr ""
-
-#: Views/Admin/EditPart.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.EditPart"
-msgid "Add Field"
 msgstr ""
 
 #: Views/Admin/EditPart.cshtml
@@ -681,11 +651,6 @@ msgctxt "OrchardCore.ContentTypes.Views.Admin.EditPart"
 msgid "Delete"
 msgstr ""
 
-#: Views/Admin/EditPart.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.EditPart"
-msgid "Edit"
-msgstr ""
-
 #. Format arguments: {0}: localizedPartName
 #: Views/Admin/EditPart.cshtml
 #, csharp-format
@@ -695,27 +660,12 @@ msgstr ""
 
 #: Views/Admin/EditPart.cshtml
 msgctxt "OrchardCore.ContentTypes.Views.Admin.EditPart"
-msgid "Fields"
-msgstr ""
-
-#: Views/Admin/EditPart.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.EditPart"
 msgid "Ok"
 msgstr ""
 
 #: Views/Admin/EditPart.cshtml
 msgctxt "OrchardCore.ContentTypes.Views.Admin.EditPart"
-msgid "Remove"
-msgstr ""
-
-#: Views/Admin/EditPart.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.EditPart"
 msgid "Save"
-msgstr ""
-
-#: Views/Admin/EditPart.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.EditPart"
-msgid "System-defined fields are integral components of the system and cannot be removed."
 msgstr ""
 
 #: Views/Admin/EditTypePart.cshtml
@@ -726,16 +676,6 @@ msgstr ""
 #: Views/Admin/EditTypePart.cshtml
 msgctxt "OrchardCore.ContentTypes.Views.Admin.EditTypePart"
 msgid "Content Types"
-msgstr ""
-
-#: Views/Admin/EditTypePart.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.EditTypePart"
-msgid "Description"
-msgstr ""
-
-#: Views/Admin/EditTypePart.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.EditTypePart"
-msgid "Display Name"
 msgstr ""
 
 #. Format arguments: {0}: localizedTypeName
@@ -754,11 +694,6 @@ msgstr ""
 
 #: Views/Admin/EditTypePart.cshtml
 msgctxt "OrchardCore.ContentTypes.Views.Admin.EditTypePart"
-msgid "Name of the part as it will be displayed in screens."
-msgstr ""
-
-#: Views/Admin/EditTypePart.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.EditTypePart"
 msgid "Save"
 msgstr ""
 
@@ -767,21 +702,6 @@ msgstr ""
 #, csharp-format
 msgctxt "OrchardCore.ContentTypes.Views.Admin.EditTypePart"
 msgid "Some part settings common to all types can also be defined at the <a href=\"{0}\">Part Definition</a> level."
-msgstr ""
-
-#: Views/Admin/EditTypePart.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.EditTypePart"
-msgid "The description of the part as it will be displayed in screens."
-msgstr ""
-
-#: Views/Admin/EditTypePart.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.EditTypePart"
-msgid "What type of display mode should be used?"
-msgstr ""
-
-#: Views/Admin/EditTypePart.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.EditTypePart"
-msgid "What type of editor should be used?"
 msgstr ""
 
 #: Views/Admin/List.cshtml
@@ -882,6 +802,56 @@ msgstr ""
 #: Views/ContentPartEntry.Buttons.SummaryAdmin.cshtml
 msgctxt "OrchardCore.ContentTypes.Views.ContentPartEntry.Buttons.SummaryAdmin"
 msgid "Ok"
+msgstr ""
+
+#: Views/ContentPartFieldGeneral.Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.ContentPartFieldGeneral.Edit"
+msgid "Display Name"
+msgstr ""
+
+#: Views/ContentPartFieldGeneral.Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.ContentPartFieldGeneral.Edit"
+msgid "Name of the field as it will be displayed in screens."
+msgstr ""
+
+#: Views/ContentPartFieldGeneral.Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.ContentPartFieldGeneral.Edit"
+msgid "Technical Name"
+msgstr ""
+
+#: Views/ContentPartFieldGeneral.Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.ContentPartFieldGeneral.Edit"
+msgid "Technical name of the field."
+msgstr ""
+
+#: Views/ContentPartFieldGeneral.Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.ContentPartFieldGeneral.Edit"
+msgid "What type of display mode should be used?"
+msgstr ""
+
+#: Views/ContentPartFieldGeneral.Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.ContentPartFieldGeneral.Edit"
+msgid "What type of editor should be used?"
+msgstr ""
+
+#: Views/ContentPartFields.Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.ContentPartFields.Edit"
+msgid "Add Field"
+msgstr ""
+
+#: Views/ContentPartFields.Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.ContentPartFields.Edit"
+msgid "Edit"
+msgstr ""
+
+#: Views/ContentPartFields.Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.ContentPartFields.Edit"
+msgid "Remove"
+msgstr ""
+
+#: Views/ContentPartFields.Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.ContentPartFields.Edit"
+msgid "System-defined fields are integral components of the system and cannot be removed."
 msgstr ""
 
 #: Views/ContentPartSettings.Edit.cshtml
@@ -1006,6 +976,106 @@ msgctxt "OrchardCore.ContentTypes.Views.ContentTypeEntry.DefaultTags.SummaryAdmi
 msgid "Technical Name"
 msgstr ""
 
+#: Views/ContentTypeFields.Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.ContentTypeFields.Edit"
+msgid "Add Field"
+msgstr ""
+
+#: Views/ContentTypeFields.Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.ContentTypeFields.Edit"
+msgid "Display mode"
+msgstr ""
+
+#: Views/ContentTypeFields.Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.ContentTypeFields.Edit"
+msgid "Edit"
+msgstr ""
+
+#: Views/ContentTypeFields.Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.ContentTypeFields.Edit"
+msgid "Editor"
+msgstr ""
+
+#: Views/ContentTypeFields.Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.ContentTypeFields.Edit"
+msgid "Remove"
+msgstr ""
+
+#: Views/ContentTypeFields.Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.ContentTypeFields.Edit"
+msgid "System-defined fields are integral components of the system and cannot be removed."
+msgstr ""
+
+#: Views/ContentTypePartGeneral.Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.ContentTypePartGeneral.Edit"
+msgid "Description"
+msgstr ""
+
+#: Views/ContentTypePartGeneral.Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.ContentTypePartGeneral.Edit"
+msgid "Display Name"
+msgstr ""
+
+#: Views/ContentTypePartGeneral.Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.ContentTypePartGeneral.Edit"
+msgid "Name of the part as it will be displayed in screens."
+msgstr ""
+
+#: Views/ContentTypePartGeneral.Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.ContentTypePartGeneral.Edit"
+msgid "The description of the part as it will be displayed in screens."
+msgstr ""
+
+#: Views/ContentTypePartGeneral.Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.ContentTypePartGeneral.Edit"
+msgid "What type of display mode should be used?"
+msgstr ""
+
+#: Views/ContentTypePartGeneral.Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.ContentTypePartGeneral.Edit"
+msgid "What type of editor should be used?"
+msgstr ""
+
+#: Views/ContentTypeParts.Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.ContentTypeParts.Edit"
+msgid "Add Named Part"
+msgstr ""
+
+#: Views/ContentTypeParts.Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.ContentTypeParts.Edit"
+msgid "Add Parts"
+msgstr ""
+
+#: Views/ContentTypeParts.Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.ContentTypeParts.Edit"
+msgid "Contains the fields for the current type"
+msgstr ""
+
+#: Views/ContentTypeParts.Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.ContentTypeParts.Edit"
+msgid "Display mode"
+msgstr ""
+
+#: Views/ContentTypeParts.Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.ContentTypeParts.Edit"
+msgid "Edit"
+msgstr ""
+
+#: Views/ContentTypeParts.Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.ContentTypeParts.Edit"
+msgid "Editor"
+msgstr ""
+
+#: Views/ContentTypeParts.Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.ContentTypeParts.Edit"
+msgid "Remove"
+msgstr ""
+
+#: Views/ContentTypeParts.Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.ContentTypeParts.Edit"
+msgid "System-defined parts are integral components of the system and cannot be removed."
+msgstr ""
+
 #: Views/ContentTypeSettings.Edit.cshtml
 msgctxt "OrchardCore.ContentTypes.Views.ContentTypeSettings.Edit"
 msgid "(Optional) Category for grouping content types in content type pickers. e.g., Common, Media, Layout, ..."
@@ -1033,52 +1103,7 @@ msgstr ""
 
 #: Views/ContentTypeSettings.Edit.cshtml
 msgctxt "OrchardCore.ContentTypes.Views.ContentTypeSettings.Edit"
-msgid "Creatable"
-msgstr ""
-
-#: Views/ContentTypeSettings.Edit.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.ContentTypeSettings.Edit"
 msgid "Description"
-msgstr ""
-
-#: Views/ContentTypeSettings.Edit.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.ContentTypeSettings.Edit"
-msgid "Determines if an instance of this content type can be created through the UI."
-msgstr ""
-
-#: Views/ContentTypeSettings.Edit.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.ContentTypeSettings.Edit"
-msgid "Determines if an instance of this content type can be listed through the UI."
-msgstr ""
-
-#: Views/ContentTypeSettings.Edit.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.ContentTypeSettings.Edit"
-msgid "Determines if this content type can have custom permissions."
-msgstr ""
-
-#: Views/ContentTypeSettings.Edit.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.ContentTypeSettings.Edit"
-msgid "Determines if this content type supports draft versions."
-msgstr ""
-
-#: Views/ContentTypeSettings.Edit.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.ContentTypeSettings.Edit"
-msgid "Determines if this content type supports versioning."
-msgstr ""
-
-#: Views/ContentTypeSettings.Edit.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.ContentTypeSettings.Edit"
-msgid "Draftable"
-msgstr ""
-
-#: Views/ContentTypeSettings.Edit.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.ContentTypeSettings.Edit"
-msgid "Listable"
-msgstr ""
-
-#: Views/ContentTypeSettings.Edit.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.ContentTypeSettings.Edit"
-msgid "Securable"
 msgstr ""
 
 #: Views/ContentTypeSettings.Edit.cshtml
@@ -1091,9 +1116,84 @@ msgctxt "OrchardCore.ContentTypes.Views.ContentTypeSettings.Edit"
 msgid "Thumbnail"
 msgstr ""
 
-#: Views/ContentTypeSettings.Edit.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.ContentTypeSettings.Edit"
+#: Views/ContentTypeSettingsBehavior.Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.ContentTypeSettingsBehavior.Edit"
+msgid "Creatable"
+msgstr ""
+
+#: Views/ContentTypeSettingsBehavior.Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.ContentTypeSettingsBehavior.Edit"
+msgid "Determines if an instance of this content type can be created through the UI."
+msgstr ""
+
+#: Views/ContentTypeSettingsBehavior.Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.ContentTypeSettingsBehavior.Edit"
+msgid "Determines if an instance of this content type can be listed through the UI."
+msgstr ""
+
+#: Views/ContentTypeSettingsBehavior.Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.ContentTypeSettingsBehavior.Edit"
+msgid "Determines if this content type can have custom permissions."
+msgstr ""
+
+#: Views/ContentTypeSettingsBehavior.Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.ContentTypeSettingsBehavior.Edit"
+msgid "Determines if this content type supports draft versions."
+msgstr ""
+
+#: Views/ContentTypeSettingsBehavior.Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.ContentTypeSettingsBehavior.Edit"
+msgid "Determines if this content type supports versioning."
+msgstr ""
+
+#: Views/ContentTypeSettingsBehavior.Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.ContentTypeSettingsBehavior.Edit"
+msgid "Draftable"
+msgstr ""
+
+#: Views/ContentTypeSettingsBehavior.Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.ContentTypeSettingsBehavior.Edit"
+msgid "Listable"
+msgstr ""
+
+#: Views/ContentTypeSettingsBehavior.Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.ContentTypeSettingsBehavior.Edit"
+msgid "Securable"
+msgstr ""
+
+#: Views/ContentTypeSettingsBehavior.Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.ContentTypeSettingsBehavior.Edit"
 msgid "Versionable"
+msgstr ""
+
+#: Views/CreatePartGeneral.Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.CreatePartGeneral.Edit"
+msgid "Name"
+msgstr ""
+
+#: Views/CreatePartGeneral.Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.CreatePartGeneral.Edit"
+msgid "Use no spaces or special characters. For example, \"MyCustomPart\""
+msgstr ""
+
+#: Views/CreateTypeGeneral.Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.CreateTypeGeneral.Edit"
+msgid "Display Name"
+msgstr ""
+
+#: Views/CreateTypeGeneral.Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.CreateTypeGeneral.Edit"
+msgid "Name of the type as it will be displayed on screens."
+msgstr ""
+
+#: Views/CreateTypeGeneral.Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.CreateTypeGeneral.Edit"
+msgid "Technical Name"
+msgstr ""
+
+#: Views/CreateTypeGeneral.Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.CreateTypeGeneral.Edit"
+msgid "Technical name of the type."
 msgstr ""
 
 #: Views/GraphQLContentTypePartSettings.Edit.cshtml

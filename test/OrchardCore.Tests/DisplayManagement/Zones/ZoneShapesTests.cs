@@ -114,13 +114,18 @@ public class ZoneShapesTests
         });
         AddShapeDescriptor(cardContainerDescriptor);
 
-        // Add Card
+        // Add Card: like the Card shape of the application, it renders the columns of its shapes.
         var cardDescriptor = new ShapeDescriptor { ShapeType = "Card" };
         AddBinding(cardDescriptor, "Card", async ctx =>
         {
             var displayHelper = ctx.ServiceProvider.GetRequiredService<IDisplayHelper>();
             var groupingViewModel = (GroupingViewModel)ctx.Value;
-            return await ZoneShapes.CardGrouping(displayHelper, groupingViewModel, _shapeFactory);
+            var tagBuilder = new TagBuilder("div");
+            tagBuilder.AddCssClass("card");
+            tagBuilder.Attributes["data-card"] = groupingViewModel.Grouping.Key;
+            tagBuilder.InnerHtml.AppendHtml(await ZoneShapes.ColumnGrouping(displayHelper, groupingViewModel, _shapeFactory));
+
+            return tagBuilder;
         });
         AddShapeDescriptor(cardDescriptor);
 
@@ -467,7 +472,7 @@ public class ZoneShapesTests
     }
 
     [Fact]
-    public async Task CardGrouping_SingleCard_ProceedToColumnGrouping()
+    public async Task CardGrouping_SingleCard_CreatesCardContainer()
     {
         // Arrange
         var shape1 = CreateShapeWithCardGrouping("Card1", "1");
@@ -484,9 +489,34 @@ public class ZoneShapesTests
         var result = await ZoneShapes.CardGrouping(_displayHelper, viewModel, _shapeFactory);
 
         // Assert
+        var html = GetHtmlString(result);
+        // A single card is still rendered as a card.
+        Assert.Contains("card-container", html);
+        Assert.Contains("data-card=\"Card1\"", html);
+        Assert.Equal(2, html.Split("<div>TestShape</div>").Length - 1);
+    }
+
+    [Fact]
+    public async Task CardGrouping_NoCard_ProceedToColumnGrouping()
+    {
+        // Arrange
+        var shape1 = CreateTestShape("TestShape");
+        var shape2 = CreateTestShape("TestShape");
+
+        var grouping = CreateMockGrouping(shape1, shape2);
+        var viewModel = new GroupingViewModel
+        {
+            Identifier = "test-id",
+            Grouping = grouping,
+        };
+
+        // Act
+        var result = await ZoneShapes.CardGrouping(_displayHelper, viewModel, _shapeFactory);
+
+        // Assert
         Assert.NotNull(result);
         var html = GetHtmlString(result);
-        // Single card should proceed to column grouping and render shapes directly without card container
+        // Shapes placed in no card render directly, without a card container.
         Assert.DoesNotContain("card-container", html);
         Assert.Contains("<div>TestShape</div>", html);
     }

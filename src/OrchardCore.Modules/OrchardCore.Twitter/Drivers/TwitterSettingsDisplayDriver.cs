@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -20,18 +21,22 @@ public sealed class TwitterSettingsDisplayDriver : SiteDisplayDriver<TwitterSett
     private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly IServiceProvider _serviceProvider;
 
+    internal readonly IStringLocalizer S;
+
     public TwitterSettingsDisplayDriver(
         IShellReleaseManager shellReleaseManager,
         IAuthorizationService authorizationService,
         IHttpContextAccessor httpContextAccessor,
         IDataProtectionProvider dataProtectionProvider,
-        IServiceProvider serviceProvider)
+        IServiceProvider serviceProvider,
+        IStringLocalizer<TwitterSettingsDisplayDriver> stringLocalizer)
     {
         _shellReleaseManager = shellReleaseManager;
         _authorizationService = authorizationService;
         _httpContextAccessor = httpContextAccessor;
         _dataProtectionProvider = dataProtectionProvider;
         _serviceProvider = serviceProvider;
+        S = stringLocalizer;
     }
 
     protected override string SettingsGroupId
@@ -52,7 +57,7 @@ public sealed class TwitterSettingsDisplayDriver : SiteDisplayDriver<TwitterSett
             model.ConsumerSecret = SecretInputViewModel.Create(settings.ConsumerSecret, settings.ConsumerSecretSecretName);
             model.AccessToken = settings.AccessToken;
             model.AccessTokenSecret = SecretInputViewModel.Create(settings.AccessTokenSecret, settings.AccessTokenSecretSecretName);
-        }).Location("Content:5")
+        }).Location(l => l.Zone("Content", "5").Card(S["API credentials"], "10"))
         .OnGroup(SettingsGroupId);
     }
 

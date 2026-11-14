@@ -18,27 +18,11 @@
 </zone>
 
 <form asp-action="Edit" method="post" class="no-multisubmit">
-    <div class="ocat-wrapper" asp-validation-class-for="Name">
-        <label asp-for="Name" class="ocat-label">@T["Name"]</label>
-        <div class="ocat-end">
-        <input readonly="readonly" asp-for="Name" class="form-control" type="text" />
-        <span asp-validation-for="Name"></span>
-        </div>
-    </div>
-
-    <div class="ocat-wrapper" asp-validation-class-for="Description">
-        <label asp-for="Description" class="ocat-label">@T["Description"]</label>
-        <div class="ocat-end">
-        <textarea asp-for="Description" class="form-control" rows="3" type="text"></textarea>
-        <span asp-validation-for="Description"></span>
-        </div>
-    </div>
-
     <div class="d-none" id="ruleOrderUrl" data-url="@orderUrl"></div>
     <div class="d-none ruleorderparameters" data-param="name" data-value="@Model.Name"></div>
     <div class="d-none" id="ruleOrderErrorMessage" data-message="@T["Error updating rule order"]"></div>
 
-    @await DisplayAsync(Model.LayerRule)
+    @await DisplayAsync(Model.Editor)
 
     <div class="action-bar-bottom">
         <input class="btn btn-primary" type="submit" value="@T["Save"]" />

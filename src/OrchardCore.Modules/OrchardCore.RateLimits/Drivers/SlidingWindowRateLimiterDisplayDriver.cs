@@ -38,7 +38,7 @@ public sealed class SlidingWindowRateLimiterDisplayDriver : DisplayDriver<RateLi
             model.QueueLimit = data.QueueLimit;
             model.WindowSeconds = data.WindowSeconds;
             model.SegmentsPerWindow = data.SegmentsPerWindow;
-        }).Location("Content:5");
+        }).Location(l => l.Zone("Content", "5").Card(S["Limits"], "10"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(RateLimitLimiter limiter, UpdateEditorContext context)

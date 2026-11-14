@@ -16,19 +16,24 @@ msgctxt "OrchardCore.OpenApi.AdminMenu"
 msgid "Settings"
 msgstr ""
 
-#: Views/OpenApiSettings.Edit.cshtml
-msgctxt "OrchardCore.OpenApi.Views.OpenApiSettings.Edit"
-msgid "API Documentation UIs"
+#: Drivers/OpenApiSettingsDisplayDriver.cs
+msgctxt "OrchardCore.OpenApi.Drivers.OpenApiSettingsDisplayDriver"
+msgid "Documentation UIs"
 msgstr ""
 
-#: Views/OpenApiSettings.Edit.cshtml
-msgctxt "OrchardCore.OpenApi.Views.OpenApiSettings.Edit"
-msgid "API Schema Access"
+#: Drivers/OpenApiSettingsDisplayDriver.cs
+msgctxt "OrchardCore.OpenApi.Drivers.OpenApiSettingsDisplayDriver"
+msgid "Schema access"
 msgstr ""
 
-#: Views/OpenApiSettings.Edit.cshtml
-msgctxt "OrchardCore.OpenApi.Views.OpenApiSettings.Edit"
+#: Views/OpenApiSettings-Schema.Edit.cshtml
+msgctxt "OrchardCore.OpenApi.Views.OpenApiSettings-Schema.Edit"
 msgid "Allow anonymous access to the API schema"
+msgstr ""
+
+#: Views/OpenApiSettings-Schema.Edit.cshtml
+msgctxt "OrchardCore.OpenApi.Views.OpenApiSettings-Schema.Edit"
+msgid "When enabled, the JSON schema endpoints can be accessed without authentication. When disabled (the default), they require the <strong>View OpenAPI Content</strong> permission, and external tools like NSwag must provide authentication."
 msgstr ""
 
 #: Views/OpenApiSettings.Edit.cshtml
@@ -74,9 +79,4 @@ msgstr ""
 #: Views/OpenApiSettings.Edit.cshtml
 msgctxt "OrchardCore.OpenApi.Views.OpenApiSettings.Edit"
 msgid "Swagger UI"
-msgstr ""
-
-#: Views/OpenApiSettings.Edit.cshtml
-msgctxt "OrchardCore.OpenApi.Views.OpenApiSettings.Edit"
-msgid "When enabled, the JSON schema endpoints can be accessed without authentication. When disabled (the default), they require the <strong>View OpenAPI Content</strong> permission, and external tools like NSwag must provide authentication."
 msgstr ""

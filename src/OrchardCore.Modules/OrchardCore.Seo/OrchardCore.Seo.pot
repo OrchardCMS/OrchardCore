@@ -33,6 +33,26 @@ msgctxt "OrchardCore.Seo.Drivers.RobotsSettingsDisplayDriver"
 msgid "A physical {0} file is found for the current site. Until removed, the settings below will have no effect."
 msgstr ""
 
+#: Drivers/RobotsSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Seo.Drivers.RobotsSettingsDisplayDriver"
+msgid "Rules"
+msgstr ""
+
+#: Drivers/SeoMetaPartDisplayDriver.cs
+msgctxt "OrchardCore.Seo.Drivers.SeoMetaPartDisplayDriver"
+msgid "Google Schema"
+msgstr ""
+
+#: Drivers/SeoMetaPartDisplayDriver.cs
+msgctxt "OrchardCore.Seo.Drivers.SeoMetaPartDisplayDriver"
+msgid "Open Graph"
+msgstr ""
+
+#: Drivers/SeoMetaPartDisplayDriver.cs
+msgctxt "OrchardCore.Seo.Drivers.SeoMetaPartDisplayDriver"
+msgid "Search engines"
+msgstr ""
+
 #: Drivers/SeoMetaPartDisplayDriver.cs
 msgctxt "OrchardCore.Seo.Drivers.SeoMetaPartDisplayDriver"
 msgid "The canonical entry contains invalid characters."
@@ -46,6 +66,11 @@ msgstr ""
 #: Drivers/SeoMetaPartDisplayDriver.cs
 msgctxt "OrchardCore.Seo.Drivers.SeoMetaPartDisplayDriver"
 msgid "The meta entries are written in an incorrect format."
+msgstr ""
+
+#: Drivers/SeoMetaPartDisplayDriver.cs
+msgctxt "OrchardCore.Seo.Drivers.SeoMetaPartDisplayDriver"
+msgid "Twitter"
 msgstr ""
 
 #: GraphQL/MetaEntryQueryObjectType.cs
@@ -455,4 +480,9 @@ msgstr ""
 #: Views/SeoMetaPartTwitter.Edit.cshtml
 msgctxt "OrchardCore.Seo.Views.SeoMetaPartTwitter.Edit"
 msgid "Twitter Title"
+msgstr ""
+
+#: Settings/SeoMetaPartSettingsDisplayDriver.cs
+msgctxt "OrchardCore.SeoMeta.Settings.SeoMetaPartSettingsDisplayDriver"
+msgid "Settings"
 msgstr ""

@@ -42,7 +42,7 @@ internal sealed class IndexProfileDeploymentStepDisplayDriver : DisplayDriver<De
                 Selected = step.IndexNames?.Contains(x.Name) ?? false,
             }).OrderBy(x => x.Text)
             .ToArray();
-        }).Location("Content");
+        }).Location(l => l.Zone("Content").Card(S["Index profiles"], "10"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(IndexProfileDeploymentStep step, UpdateEditorContext context)

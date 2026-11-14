@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Localization;
 using OrchardCore.Contents.VersionPruning.Models;
 using OrchardCore.Contents.VersionPruning.ViewModels;
 using OrchardCore.DisplayManagement.Entities;
@@ -16,12 +17,16 @@ public sealed class ContentVersionPruningSettingsDisplayDriver : SiteDisplayDriv
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
 
+    internal readonly IStringLocalizer S;
+
     public ContentVersionPruningSettingsDisplayDriver(
         IAuthorizationService authorizationService,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        IStringLocalizer<ContentVersionPruningSettingsDisplayDriver> stringLocalizer)
     {
         _authorizationService = authorizationService;
         _httpContextAccessor = httpContextAccessor;
+        S = stringLocalizer;
     }
 
     protected override string SettingsGroupId => GroupId;
@@ -41,7 +46,7 @@ public sealed class ContentVersionPruningSettingsDisplayDriver : SiteDisplayDriv
             model.VersionsToKeep = settings.VersionsToKeep;
             model.Disabled = settings.Disabled;
             model.ContentTypes = settings.ContentTypes;
-        }).Location("Content:5")
+        }).Location(l => l.Zone("Content", "5").Card(S["Pruning"], "10"))
         .OnGroup(GroupId);
     }
 

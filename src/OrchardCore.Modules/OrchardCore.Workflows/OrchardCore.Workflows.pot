@@ -499,11 +499,21 @@ msgctxt "OrchardCore.Workflows.Controllers.WorkflowTypeController"
 msgid "Workflow {0} deleted"
 msgstr ""
 
+#: Deployment/AllWorkflowTypeDeploymentStepDriver.cs
+msgctxt "OrchardCore.Workflows.Deployment.AllWorkflowTypeDeploymentStepDriver"
+msgid "Workflows"
+msgstr ""
+
 #. Format arguments: {0}: ActivityRetryPolicy.MaxRetriesLimit
 #: Drivers/ActivityRetryPolicyDisplayDriver.cs
 #, csharp-format
 msgctxt "OrchardCore.Workflows.Drivers.ActivityRetryPolicyDisplayDriver"
 msgid "Retries must be between 0 and {0}."
+msgstr ""
+
+#: Drivers/ActivityRetryPolicyDisplayDriver.cs
+msgctxt "OrchardCore.Workflows.Drivers.ActivityRetryPolicyDisplayDriver"
+msgid "Retry policy"
 msgstr ""
 
 #. Format arguments: {0}: ActivityRetryPolicy.MaxDelay.TotalSeconds
@@ -578,6 +588,36 @@ msgstr ""
 #: Drivers/WhileLoopTaskDisplayDriver.cs
 msgctxt "OrchardCore.Workflows.Drivers.WhileLoopTaskDisplayDriver"
 msgid "Condition"
+msgstr ""
+
+#: Drivers/WorkflowTypePropertiesDisplayDriver.cs
+msgctxt "OrchardCore.Workflows.Drivers.WorkflowTypePropertiesDisplayDriver"
+msgid "Advanced"
+msgstr ""
+
+#: Drivers/WorkflowTypePropertiesDisplayDriver.cs
+msgctxt "OrchardCore.Workflows.Drivers.WorkflowTypePropertiesDisplayDriver"
+msgid "Execution"
+msgstr ""
+
+#: Drivers/WorkflowTypePropertiesDisplayDriver.cs
+msgctxt "OrchardCore.Workflows.Drivers.WorkflowTypePropertiesDisplayDriver"
+msgid "General"
+msgstr ""
+
+#: Drivers/WorkflowTypePropertiesDisplayDriver.cs
+msgctxt "OrchardCore.Workflows.Drivers.WorkflowTypePropertiesDisplayDriver"
+msgid "History"
+msgstr ""
+
+#: Drivers/WorkflowTypePropertiesDisplayDriver.cs
+msgctxt "OrchardCore.Workflows.Drivers.WorkflowTypePropertiesDisplayDriver"
+msgid "Locking"
+msgstr ""
+
+#: Drivers/WorkflowTypePropertiesDisplayDriver.cs
+msgctxt "OrchardCore.Workflows.Drivers.WorkflowTypePropertiesDisplayDriver"
+msgid "Properties"
 msgstr ""
 
 #: Events/StartedByWorkflowEvent.cs
@@ -2850,6 +2890,16 @@ msgctxt "OrchardCore.Workflows.Trimming.AdminMenu"
 msgid "Workflow Trimming"
 msgstr ""
 
+#: Trimming/Drivers/WorkflowTrimmingDisplayDriver.cs
+msgctxt "OrchardCore.Workflows.Trimming.Drivers.WorkflowTrimmingDisplayDriver"
+msgid "Background task"
+msgstr ""
+
+#: Trimming/Drivers/WorkflowTrimmingDisplayDriver.cs
+msgctxt "OrchardCore.Workflows.Trimming.Drivers.WorkflowTrimmingDisplayDriver"
+msgid "Retention"
+msgstr ""
+
 #: UserTasks/Activities/UserTaskEvent.cs
 msgctxt "OrchardCore.Workflows.UserTasks.Activities.UserTaskEvent"
 msgid "The action the user chose."
@@ -2960,6 +3010,11 @@ msgctxt "OrchardCore.Workflows.Views.Activity.Design"
 msgid "Startup event"
 msgstr ""
 
+#: Views/Activity.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Activity.Edit"
+msgid "General"
+msgstr ""
+
 #: Views/Activity.Thumbnail.cshtml
 msgctxt "OrchardCore.Workflows.Views.Activity.Thumbnail"
 msgid "Add"
@@ -3042,11 +3097,6 @@ msgctxt "OrchardCore.Workflows.Views.ActivityRetryPolicy.Edit"
 msgid "Twice as long each time"
 msgstr ""
 
-#: Views/ActivityRetryPolicy.Edit.cshtml
-msgctxt "OrchardCore.Workflows.Views.ActivityRetryPolicy.Edit"
-msgid "When it fails"
-msgstr ""
-
 #: Views/Content.UserTaskButton.cshtml
 msgctxt "OrchardCore.Workflows.Views.Content.UserTaskButton"
 msgid "Toggle Dropdown"
@@ -3065,6 +3115,11 @@ msgstr ""
 #: Views/Content.UserTaskButton.cshtml
 msgctxt "OrchardCore.Workflows.Views.Content.UserTaskButton"
 msgid "and Save"
+msgstr ""
+
+#: Views/Items/AllWorkflowTypeDeploymentStep.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.Items.AllWorkflowTypeDeploymentStep.Fields.Edit"
+msgid "Adds all the workflows to the plan."
 msgstr ""
 
 #: Views/Items/AllWorkflowTypeDeploymentStep.Fields.Summary.cshtml
@@ -4398,131 +4453,6 @@ msgctxt "OrchardCore.Workflows.Views.Workflow.Index"
 msgid "selected"
 msgstr ""
 
-#: Views/WorkflowDesigner/WorkflowDesignerSettings.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowDesigner.WorkflowDesignerSettings"
-msgid "Any number"
-msgstr ""
-
-#: Views/WorkflowDesigner/WorkflowDesignerSettings.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowDesigner.WorkflowDesignerSettings"
-msgid "Check to automatically delete workflows that have completed successfully. Leave unchecked to maintain a history of executed workflows."
-msgstr ""
-
-#: Views/WorkflowDesigner/WorkflowDesignerSettings.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowDesigner.WorkflowDesignerSettings"
-msgid "Check to fault an instance at the activity whose script failed, so it can be retried. Leave unchecked to go on with what the script fell back to; the error shows on the instance's page."
-msgstr ""
-
-#: Views/WorkflowDesigner/WorkflowDesignerSettings.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowDesigner.WorkflowDesignerSettings"
-msgid "Check to let other workflows run this one with the Execute Workflow task. Its variables marked as inputs and outputs are what they pass and get back."
-msgstr ""
-
-#: Views/WorkflowDesigner/WorkflowDesignerSettings.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowDesigner.WorkflowDesignerSettings"
-msgid "Check to record, in the journal of each instance, the expressions each activity evaluated, the outputs it set, the variables it changed and its last result, to see what a run did. Values can be large or sensitive (personal data, keys), so leave it unchecked when they shouldn't be stored."
-msgstr ""
-
-#: Views/WorkflowDesigner/WorkflowDesignerSettings.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowDesigner.WorkflowDesignerSettings"
-msgid "Delete successfully completed workflows"
-msgstr ""
-
-#: Views/WorkflowDesigner/WorkflowDesignerSettings.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowDesigner.WorkflowDesignerSettings"
-msgid "Enabled"
-msgstr ""
-
-#: Views/WorkflowDesigner/WorkflowDesignerSettings.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowDesigner.WorkflowDesignerSettings"
-msgid "Fault the workflow on script errors"
-msgstr ""
-
-#: Views/WorkflowDesigner/WorkflowDesignerSettings.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowDesigner.WorkflowDesignerSettings"
-msgid "Follow every transition"
-msgstr ""
-
-#: Views/WorkflowDesigner/WorkflowDesignerSettings.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowDesigner.WorkflowDesignerSettings"
-msgid "Follow every transition to run several branches from one outcome without a Fork activity. With the first transition only, the other transitions of an outcome are ignored."
-msgstr ""
-
-#: Views/WorkflowDesigner/WorkflowDesignerSettings.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowDesigner.WorkflowDesignerSettings"
-msgid "Follow the first transition only"
-msgstr ""
-
-#: Views/WorkflowDesigner/WorkflowDesignerSettings.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowDesigner.WorkflowDesignerSettings"
-msgid "Instances at a time"
-msgstr ""
-
-#: Views/WorkflowDesigner/WorkflowDesignerSettings.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowDesigner.WorkflowDesignerSettings"
-msgid "Lock expiration (ms)"
-msgstr ""
-
-#: Views/WorkflowDesigner/WorkflowDesignerSettings.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowDesigner.WorkflowDesignerSettings"
-msgid "Lock timeout (ms)"
-msgstr ""
-
-#: Views/WorkflowDesigner/WorkflowDesignerSettings.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowDesigner.WorkflowDesignerSettings"
-msgid "Name"
-msgstr ""
-
-#: Views/WorkflowDesigner/WorkflowDesignerSettings.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowDesigner.WorkflowDesignerSettings"
-msgid "One at a time"
-msgstr ""
-
-#: Views/WorkflowDesigner/WorkflowDesignerSettings.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowDesigner.WorkflowDesignerSettings"
-msgid "One per correlated item"
-msgstr ""
-
-#: Views/WorkflowDesigner/WorkflowDesignerSettings.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowDesigner.WorkflowDesignerSettings"
-msgid "Outcomes with several transitions"
-msgstr ""
-
-#: Views/WorkflowDesigner/WorkflowDesignerSettings.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowDesigner.WorkflowDesignerSettings"
-msgid "Record activity data"
-msgstr ""
-
-#: Views/WorkflowDesigner/WorkflowDesignerSettings.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowDesigner.WorkflowDesignerSettings"
-msgid "The expiration in milliseconds of the lock acquired before resuming a workflow instance of this type atomically. Leave it to zero to not use any locking."
-msgstr ""
-
-#: Views/WorkflowDesigner/WorkflowDesignerSettings.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowDesigner.WorkflowDesignerSettings"
-msgid "The name of the workflow."
-msgstr ""
-
-#: Views/WorkflowDesigner/WorkflowDesignerSettings.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowDesigner.WorkflowDesignerSettings"
-msgid "The timeout in milliseconds to acquire a lock before resuming a given workflow instance of this type atomically. Leave it to zero to not use any locking."
-msgstr ""
-
-#: Views/WorkflowDesigner/WorkflowDesignerSettings.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowDesigner.WorkflowDesignerSettings"
-msgid "Uncheck to prevent workflows of this type from being executed."
-msgstr ""
-
-#: Views/WorkflowDesigner/WorkflowDesignerSettings.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowDesigner.WorkflowDesignerSettings"
-msgid "Usable as an activity"
-msgstr ""
-
-#: Views/WorkflowDesigner/WorkflowDesignerSettings.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowDesigner.WorkflowDesignerSettings"
-msgid "With one at a time, an event doesn't start an instance while another instance waits. With one per correlated item, it doesn't start one while an instance for the same item waits, such as the same content item or user, when the event starting it has a correlation id."
-msgstr ""
-
 #: Views/WorkflowEntry.Buttons.SummaryAdmin.cshtml
 msgctxt "OrchardCore.Workflows.Views.WorkflowEntry.Buttons.SummaryAdmin"
 msgid "Are you sure you want to delete this workflow instance?"
@@ -4631,11 +4561,6 @@ msgstr ""
 
 #: Views/WorkflowTrimming.Fields.Edit.cshtml
 msgctxt "OrchardCore.Workflows.Views.WorkflowTrimming.Fields.Edit"
-msgid "Disable"
-msgstr ""
-
-#: Views/WorkflowTrimming.Fields.Edit.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowTrimming.Fields.Edit"
 msgid "Executing"
 msgstr ""
 
@@ -4657,16 +4582,6 @@ msgstr ""
 #: Views/WorkflowTrimming.Fields.Edit.cshtml
 msgctxt "OrchardCore.Workflows.Views.WorkflowTrimming.Fields.Edit"
 msgid "Idle"
-msgstr ""
-
-#: Views/WorkflowTrimming.Fields.Edit.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowTrimming.Fields.Edit"
-msgid "Last run"
-msgstr ""
-
-#: Views/WorkflowTrimming.Fields.Edit.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowTrimming.Fields.Edit"
-msgid "Never"
 msgstr ""
 
 #: Views/WorkflowTrimming.Fields.Edit.cshtml
@@ -4698,17 +4613,7 @@ msgstr ""
 
 #: Views/WorkflowTrimming.Fields.Edit.cshtml
 msgctxt "OrchardCore.Workflows.Views.WorkflowTrimming.Fields.Edit"
-msgid "The last time the background trimming task was run."
-msgstr ""
-
-#: Views/WorkflowTrimming.Fields.Edit.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowTrimming.Fields.Edit"
 msgid "The number of days a workflow instance is retained for."
-msgstr ""
-
-#: Views/WorkflowTrimming.Fields.Edit.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowTrimming.Fields.Edit"
-msgid "Whether the task is disabled."
 msgstr ""
 
 #: Views/WorkflowTrimming.Fields.Edit.cshtml
@@ -4716,14 +4621,29 @@ msgctxt "OrchardCore.Workflows.Views.WorkflowTrimming.Fields.Edit"
 msgid "Workflows with the selected statuses will be trimmed."
 msgstr ""
 
-#: Views/WorkflowType/Clone.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
-msgid "Advanced"
+#: Views/WorkflowTrimmingTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowTrimmingTask.Fields.Edit"
+msgid "Disable"
 msgstr ""
 
-#: Views/WorkflowType/Clone.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
-msgid "Any number"
+#: Views/WorkflowTrimmingTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowTrimmingTask.Fields.Edit"
+msgid "Last run"
+msgstr ""
+
+#: Views/WorkflowTrimmingTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowTrimmingTask.Fields.Edit"
+msgid "Never"
+msgstr ""
+
+#: Views/WorkflowTrimmingTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowTrimmingTask.Fields.Edit"
+msgid "The last time the background trimming task was run."
+msgstr ""
+
+#: Views/WorkflowTrimmingTask.Fields.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowTrimmingTask.Fields.Edit"
+msgid "Whether the task is disabled."
 msgstr ""
 
 #: Views/WorkflowType/Clone.cshtml
@@ -4733,62 +4653,7 @@ msgstr ""
 
 #: Views/WorkflowType/Clone.cshtml
 msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
-msgid "Check to automatically delete workflows that have completed successfully. Leave unchecked to maintain a history of executed workflows."
-msgstr ""
-
-#: Views/WorkflowType/Clone.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
-msgid "Check to fault an instance at the activity whose script failed, so it can be retried. Leave unchecked to go on with what the script fell back to; the error shows on the instance's page."
-msgstr ""
-
-#: Views/WorkflowType/Clone.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
-msgid "Check to let other workflows run this one with the Execute Workflow task. Its variables marked as inputs and outputs are what they pass and get back."
-msgstr ""
-
-#: Views/WorkflowType/Clone.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
-msgid "Check to record, in the journal of each instance, the expressions each activity evaluated, the outputs it set, the variables it changed and its last result, to see what a run did. Values can be large or sensitive (personal data, keys), so leave it unchecked when they shouldn't be stored."
-msgstr ""
-
-#: Views/WorkflowType/Clone.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
 msgid "Clone Workflow"
-msgstr ""
-
-#: Views/WorkflowType/Clone.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
-msgid "Delete successfully completed workflows"
-msgstr ""
-
-#: Views/WorkflowType/Clone.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
-msgid "Enabled"
-msgstr ""
-
-#: Views/WorkflowType/Clone.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
-msgid "Fault the workflow on script errors"
-msgstr ""
-
-#: Views/WorkflowType/Clone.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
-msgid "Follow every transition"
-msgstr ""
-
-#: Views/WorkflowType/Clone.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
-msgid "Follow every transition to run several branches from one outcome without a Fork activity. With the first transition only, the other transitions of an outcome are ignored."
-msgstr ""
-
-#: Views/WorkflowType/Clone.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
-msgid "Follow the first transition only"
-msgstr ""
-
-#: Views/WorkflowType/Clone.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
-msgid "Instances at a time"
 msgstr ""
 
 #: Views/WorkflowType/Clone.cshtml
@@ -4803,77 +4668,7 @@ msgstr ""
 
 #: Views/WorkflowType/Clone.cshtml
 msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
-msgid "Lock expiration (ms)"
-msgstr ""
-
-#: Views/WorkflowType/Clone.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
-msgid "Lock timeout (ms)"
-msgstr ""
-
-#: Views/WorkflowType/Clone.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
-msgid "Name"
-msgstr ""
-
-#: Views/WorkflowType/Clone.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
-msgid "One at a time"
-msgstr ""
-
-#: Views/WorkflowType/Clone.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
-msgid "One per correlated item"
-msgstr ""
-
-#: Views/WorkflowType/Clone.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
-msgid "Outcomes with several transitions"
-msgstr ""
-
-#: Views/WorkflowType/Clone.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
-msgid "Properties"
-msgstr ""
-
-#: Views/WorkflowType/Clone.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
-msgid "Record activity data"
-msgstr ""
-
-#: Views/WorkflowType/Clone.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
 msgid "Save"
-msgstr ""
-
-#: Views/WorkflowType/Clone.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
-msgid "The expiration in milliseconds of the lock acquired before resuming a workflow instance of this type atomically. Leave it to zero to not use any locking."
-msgstr ""
-
-#: Views/WorkflowType/Clone.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
-msgid "The name of the workflow."
-msgstr ""
-
-#: Views/WorkflowType/Clone.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
-msgid "The timeout in milliseconds to acquire a lock before resuming a given workflow instance of this type atomically. Leave it to zero to not use any locking."
-msgstr ""
-
-#: Views/WorkflowType/Clone.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
-msgid "Uncheck to prevent workflows of this type from being executed."
-msgstr ""
-
-#: Views/WorkflowType/Clone.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
-msgid "Usable as an activity"
-msgstr ""
-
-#: Views/WorkflowType/Clone.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
-msgid "With one at a time, an event doesn't start an instance while another instance waits. With one per correlated item, it doesn't start one while an instance for the same item waits, such as the same content item or user, when the event starting it has a correlation id."
 msgstr ""
 
 #: Views/WorkflowType/Clone.cshtml
@@ -4893,32 +4688,7 @@ msgstr ""
 
 #: Views/WorkflowType/Create.cshtml
 msgctxt "OrchardCore.Workflows.Views.WorkflowType.Create"
-msgid "Any number"
-msgstr ""
-
-#: Views/WorkflowType/Create.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowType.Create"
 msgid "Cancel"
-msgstr ""
-
-#: Views/WorkflowType/Create.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowType.Create"
-msgid "Check to automatically delete workflows that have completed successfully. Leave unchecked to maintain a history of executed workflows."
-msgstr ""
-
-#: Views/WorkflowType/Create.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowType.Create"
-msgid "Check to fault an instance at the activity whose script failed, so it can be retried. Leave unchecked to go on with what the script fell back to; the error shows on the instance's page."
-msgstr ""
-
-#: Views/WorkflowType/Create.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowType.Create"
-msgid "Check to let other workflows run this one with the Execute Workflow task. Its variables marked as inputs and outputs are what they pass and get back."
-msgstr ""
-
-#: Views/WorkflowType/Create.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowType.Create"
-msgid "Check to record, in the journal of each instance, the expressions each activity evaluated, the outputs it set, the variables it changed and its last result, to see what a run did. Values can be large or sensitive (personal data, keys), so leave it unchecked when they shouldn't be stored."
 msgstr ""
 
 #: Views/WorkflowType/Create.cshtml
@@ -4929,116 +4699,6 @@ msgstr ""
 #: Views/WorkflowType/Create.cshtml
 msgctxt "OrchardCore.Workflows.Views.WorkflowType.Create"
 msgid "Create and open the designer"
-msgstr ""
-
-#: Views/WorkflowType/Create.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowType.Create"
-msgid "Delete successfully completed workflows"
-msgstr ""
-
-#: Views/WorkflowType/Create.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowType.Create"
-msgid "Enabled"
-msgstr ""
-
-#: Views/WorkflowType/Create.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowType.Create"
-msgid "Fault the workflow on script errors"
-msgstr ""
-
-#: Views/WorkflowType/Create.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowType.Create"
-msgid "Follow every transition"
-msgstr ""
-
-#: Views/WorkflowType/Create.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowType.Create"
-msgid "Follow every transition to run several branches from one outcome without a Fork activity. With the first transition only, the other transitions of an outcome are ignored."
-msgstr ""
-
-#: Views/WorkflowType/Create.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowType.Create"
-msgid "Follow the first transition only"
-msgstr ""
-
-#: Views/WorkflowType/Create.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowType.Create"
-msgid "Instances at a time"
-msgstr ""
-
-#: Views/WorkflowType/Create.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowType.Create"
-msgid "Lock expiration (ms)"
-msgstr ""
-
-#: Views/WorkflowType/Create.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowType.Create"
-msgid "Lock timeout (ms)"
-msgstr ""
-
-#: Views/WorkflowType/Create.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowType.Create"
-msgid "More settings"
-msgstr ""
-
-#: Views/WorkflowType/Create.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowType.Create"
-msgid "Name"
-msgstr ""
-
-#: Views/WorkflowType/Create.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowType.Create"
-msgid "One at a time"
-msgstr ""
-
-#: Views/WorkflowType/Create.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowType.Create"
-msgid "One per correlated item"
-msgstr ""
-
-#: Views/WorkflowType/Create.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowType.Create"
-msgid "Outcomes with several transitions"
-msgstr ""
-
-#: Views/WorkflowType/Create.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowType.Create"
-msgid "Record activity data"
-msgstr ""
-
-#: Views/WorkflowType/Create.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowType.Create"
-msgid "The defaults suit most workflows. You can change these settings later, on the designer's Workflow tab."
-msgstr ""
-
-#: Views/WorkflowType/Create.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowType.Create"
-msgid "The expiration in milliseconds of the lock acquired before resuming a workflow instance of this type atomically. Leave it to zero to not use any locking."
-msgstr ""
-
-#: Views/WorkflowType/Create.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowType.Create"
-msgid "The timeout in milliseconds to acquire a lock before resuming a given workflow instance of this type atomically. Leave it to zero to not use any locking."
-msgstr ""
-
-#: Views/WorkflowType/Create.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowType.Create"
-msgid "Uncheck to prevent workflows of this type from being executed."
-msgstr ""
-
-#: Views/WorkflowType/Create.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowType.Create"
-msgid "Usable as an activity"
-msgstr ""
-
-#: Views/WorkflowType/Create.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowType.Create"
-msgid "What the workflow does, such as \"Notify the editors when an article is published\"."
-msgstr ""
-
-#: Views/WorkflowType/Create.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowType.Create"
-msgid "With one at a time, an event doesn't start an instance while another instance waits. With one per correlated item, it doesn't start one while an instance for the same item waits, such as the same content item or user, when the event starting it has a correlation id."
 msgstr ""
 
 #: Views/WorkflowType/Create.cshtml
@@ -5141,6 +4801,151 @@ msgstr ""
 #: Views/WorkflowTypeEntry.DefaultTags.SummaryAdmin.cshtml
 msgctxt "OrchardCore.Workflows.Views.WorkflowTypeEntry.DefaultTags.SummaryAdmin"
 msgid "Status"
+msgstr ""
+
+#: Views/WorkflowTypeExecution.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowTypeExecution.Edit"
+msgid "Any number"
+msgstr ""
+
+#: Views/WorkflowTypeExecution.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowTypeExecution.Edit"
+msgid "Check to fault an instance at the activity whose script failed, so it can be retried. Leave unchecked to go on with what the script fell back to; the error shows on the instance's page."
+msgstr ""
+
+#: Views/WorkflowTypeExecution.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowTypeExecution.Edit"
+msgid "Check to let other workflows run this one with the Execute Workflow task. Its variables marked as inputs and outputs are what they pass and get back."
+msgstr ""
+
+#: Views/WorkflowTypeExecution.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowTypeExecution.Edit"
+msgid "Enabled"
+msgstr ""
+
+#: Views/WorkflowTypeExecution.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowTypeExecution.Edit"
+msgid "Fault the workflow on script errors"
+msgstr ""
+
+#: Views/WorkflowTypeExecution.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowTypeExecution.Edit"
+msgid "Follow every transition"
+msgstr ""
+
+#: Views/WorkflowTypeExecution.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowTypeExecution.Edit"
+msgid "Follow every transition to run several branches from one outcome without a Fork activity. With the first transition only, the other transitions of an outcome are ignored."
+msgstr ""
+
+#: Views/WorkflowTypeExecution.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowTypeExecution.Edit"
+msgid "Follow the first transition only"
+msgstr ""
+
+#: Views/WorkflowTypeExecution.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowTypeExecution.Edit"
+msgid "Instances at a time"
+msgstr ""
+
+#: Views/WorkflowTypeExecution.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowTypeExecution.Edit"
+msgid "One at a time"
+msgstr ""
+
+#: Views/WorkflowTypeExecution.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowTypeExecution.Edit"
+msgid "One per correlated item"
+msgstr ""
+
+#: Views/WorkflowTypeExecution.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowTypeExecution.Edit"
+msgid "Outcomes with several transitions"
+msgstr ""
+
+#: Views/WorkflowTypeExecution.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowTypeExecution.Edit"
+msgid "The defaults suit most workflows. You can change these settings later, on the designer's Workflow tab."
+msgstr ""
+
+#: Views/WorkflowTypeExecution.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowTypeExecution.Edit"
+msgid "Uncheck to prevent workflows of this type from being executed."
+msgstr ""
+
+#: Views/WorkflowTypeExecution.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowTypeExecution.Edit"
+msgid "Usable as an activity"
+msgstr ""
+
+#: Views/WorkflowTypeExecution.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowTypeExecution.Edit"
+msgid "With one at a time, an event doesn't start an instance while another instance waits. With one per correlated item, it doesn't start one while an instance for the same item waits, such as the same content item or user, when the event starting it has a correlation id."
+msgstr ""
+
+#: Views/WorkflowTypeGeneral.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowTypeGeneral.Edit"
+msgid "Enabled"
+msgstr ""
+
+#: Views/WorkflowTypeGeneral.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowTypeGeneral.Edit"
+msgid "Name"
+msgstr ""
+
+#: Views/WorkflowTypeGeneral.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowTypeGeneral.Edit"
+msgid "The name of the workflow."
+msgstr ""
+
+#: Views/WorkflowTypeGeneral.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowTypeGeneral.Edit"
+msgid "Uncheck to prevent workflows of this type from being executed."
+msgstr ""
+
+#: Views/WorkflowTypeGeneral.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowTypeGeneral.Edit"
+msgid "What the workflow does, such as \"Notify the editors when an article is published\"."
+msgstr ""
+
+#: Views/WorkflowTypeHistory.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowTypeHistory.Edit"
+msgid "Check to automatically delete workflows that have completed successfully. Leave unchecked to maintain a history of executed workflows."
+msgstr ""
+
+#: Views/WorkflowTypeHistory.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowTypeHistory.Edit"
+msgid "Check to record, in the journal of each instance, the expressions each activity evaluated, the outputs it set, the variables it changed and its last result, to see what a run did. Values can be large or sensitive (personal data, keys), so leave it unchecked when they shouldn't be stored."
+msgstr ""
+
+#: Views/WorkflowTypeHistory.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowTypeHistory.Edit"
+msgid "Delete successfully completed workflows"
+msgstr ""
+
+#: Views/WorkflowTypeHistory.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowTypeHistory.Edit"
+msgid "Record activity data"
+msgstr ""
+
+#: Views/WorkflowTypeLocking.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowTypeLocking.Edit"
+msgid "Lock expiration (ms)"
+msgstr ""
+
+#: Views/WorkflowTypeLocking.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowTypeLocking.Edit"
+msgid "Lock timeout (ms)"
+msgstr ""
+
+#: Views/WorkflowTypeLocking.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowTypeLocking.Edit"
+msgid "The expiration in milliseconds of the lock acquired before resuming a workflow instance of this type atomically. Leave it to zero to not use any locking."
+msgstr ""
+
+#: Views/WorkflowTypeLocking.Edit.cshtml
+msgctxt "OrchardCore.Workflows.Views.WorkflowTypeLocking.Edit"
+msgid "The timeout in milliseconds to acquire a lock before resuming a given workflow instance of this type atomically. Leave it to zero to not use any locking."
 msgstr ""
 
 #: WorkflowsLocalizationSources.cs

@@ -75,6 +75,26 @@ msgctxt "OrchardCore.Templates.Controllers.TemplateController"
 msgid "The name is mandatory."
 msgstr ""
 
+#: Deployment/AllAdminTemplatesDeploymentStepDriver.cs
+msgctxt "OrchardCore.Templates.Deployment.AllAdminTemplatesDeploymentStepDriver"
+msgid "Admin templates"
+msgstr ""
+
+#: Deployment/AllTemplatesDeploymentStepDriver.cs
+msgctxt "OrchardCore.Templates.Deployment.AllTemplatesDeploymentStepDriver"
+msgid "Templates"
+msgstr ""
+
+#: Drivers/TemplateDisplayDriver.cs
+msgctxt "OrchardCore.Templates.Drivers.TemplateDisplayDriver"
+msgid "General"
+msgstr ""
+
+#: Drivers/TemplateDisplayDriver.cs
+msgctxt "OrchardCore.Templates.Drivers.TemplateDisplayDriver"
+msgid "Template"
+msgstr ""
+
 #: Permissions.cs
 msgctxt "OrchardCore.Templates.Permissions"
 msgid "Manage templates"
@@ -219,22 +239,7 @@ msgstr ""
 
 #: Views/Template/Create.cshtml
 msgctxt "OrchardCore.Templates.Views.Template.Create"
-msgid "Content"
-msgstr ""
-
-#: Views/Template/Create.cshtml
-msgctxt "OrchardCore.Templates.Views.Template.Create"
 msgid "Create Template"
-msgstr ""
-
-#: Views/Template/Create.cshtml
-msgctxt "OrchardCore.Templates.Views.Template.Create"
-msgid "Description"
-msgstr ""
-
-#: Views/Template/Create.cshtml
-msgctxt "OrchardCore.Templates.Views.Template.Create"
-msgid "Name"
 msgstr ""
 
 #: Views/Template/Create.cshtml
@@ -260,21 +265,6 @@ msgstr ""
 #: Views/Template/Create.cshtml
 msgctxt "OrchardCore.Templates.Views.Template.Create"
 msgid "Templates"
-msgstr ""
-
-#: Views/Template/Create.cshtml
-msgctxt "OrchardCore.Templates.Views.Template.Create"
-msgid "The Liquid template."
-msgstr ""
-
-#: Views/Template/Create.cshtml
-msgctxt "OrchardCore.Templates.Views.Template.Create"
-msgid "The description of the template."
-msgstr ""
-
-#: Views/Template/Create.cshtml
-msgctxt "OrchardCore.Templates.Views.Template.Create"
-msgid "The name of the template."
 msgstr ""
 
 #: Views/Template/Create.cshtml
@@ -299,27 +289,12 @@ msgstr ""
 
 #: Views/Template/Edit.cshtml
 msgctxt "OrchardCore.Templates.Views.Template.Edit"
-msgid "Content"
-msgstr ""
-
-#: Views/Template/Edit.cshtml
-msgctxt "OrchardCore.Templates.Views.Template.Edit"
-msgid "Description"
-msgstr ""
-
-#: Views/Template/Edit.cshtml
-msgctxt "OrchardCore.Templates.Views.Template.Edit"
 msgid "Edit Admin Template"
 msgstr ""
 
 #: Views/Template/Edit.cshtml
 msgctxt "OrchardCore.Templates.Views.Template.Edit"
 msgid "Edit Template"
-msgstr ""
-
-#: Views/Template/Edit.cshtml
-msgctxt "OrchardCore.Templates.Views.Template.Edit"
-msgid "Name"
 msgstr ""
 
 #: Views/Template/Edit.cshtml
@@ -345,21 +320,6 @@ msgstr ""
 #: Views/Template/Edit.cshtml
 msgctxt "OrchardCore.Templates.Views.Template.Edit"
 msgid "Templates"
-msgstr ""
-
-#: Views/Template/Edit.cshtml
-msgctxt "OrchardCore.Templates.Views.Template.Edit"
-msgid "The Liquid template."
-msgstr ""
-
-#: Views/Template/Edit.cshtml
-msgctxt "OrchardCore.Templates.Views.Template.Edit"
-msgid "The description of the template."
-msgstr ""
-
-#: Views/Template/Edit.cshtml
-msgctxt "OrchardCore.Templates.Views.Template.Edit"
-msgid "The name of the template."
 msgstr ""
 
 #: Views/Template/Edit.cshtml
@@ -404,6 +364,16 @@ msgctxt "OrchardCore.Templates.Views.Template.Index"
 msgid "selected"
 msgstr ""
 
+#: Views/TemplateContent.Edit.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateContent.Edit"
+msgid "Content"
+msgstr ""
+
+#: Views/TemplateContent.Edit.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateContent.Edit"
+msgid "The Liquid template."
+msgstr ""
+
 #: Views/TemplateCreateButton.cshtml
 msgctxt "OrchardCore.Templates.Views.TemplateCreateButton"
 msgid "Add Template"
@@ -417,6 +387,26 @@ msgstr ""
 #: Views/TemplateEntry.Buttons.SummaryAdmin.cshtml
 msgctxt "OrchardCore.Templates.Views.TemplateEntry.Buttons.SummaryAdmin"
 msgid "Edit"
+msgstr ""
+
+#: Views/TemplateGeneral.Edit.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateGeneral.Edit"
+msgid "Description"
+msgstr ""
+
+#: Views/TemplateGeneral.Edit.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateGeneral.Edit"
+msgid "Name"
+msgstr ""
+
+#: Views/TemplateGeneral.Edit.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateGeneral.Edit"
+msgid "The description of the template."
+msgstr ""
+
+#: Views/TemplateGeneral.Edit.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateGeneral.Edit"
+msgid "The name of the template."
 msgstr ""
 
 #: Views/TemplateSettings.cshtml

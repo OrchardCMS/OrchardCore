@@ -27,6 +27,7 @@ public sealed class DeploymentPlanController : Controller
 
     private readonly IAuthorizationService _authorizationService;
     private readonly IDisplayManager<DeploymentStep> _displayManager;
+    private readonly IDisplayManager<CreateDeploymentPlanViewModel> _planDisplayManager;
     private readonly IEnumerable<IDeploymentStepFactory> _factories;
     private readonly ISession _session;
     private readonly PagerOptions _pagerOptions;
@@ -41,6 +42,7 @@ public sealed class DeploymentPlanController : Controller
     public DeploymentPlanController(
         IAuthorizationService authorizationService,
         IDisplayManager<DeploymentStep> displayManager,
+        IDisplayManager<CreateDeploymentPlanViewModel> planDisplayManager,
         IEnumerable<IDeploymentStepFactory> factories,
         ISession session,
         IOptions<PagerOptions> pagerOptions,
@@ -52,6 +54,7 @@ public sealed class DeploymentPlanController : Controller
         IUpdateModelAccessor updateModelAccessor)
     {
         _displayManager = displayManager;
+        _planDisplayManager = planDisplayManager;
         _factories = factories;
         _authorizationService = authorizationService;
         _session = session;
@@ -234,6 +237,8 @@ public sealed class DeploymentPlanController : Controller
 
         var model = new CreateDeploymentPlanViewModel();
 
+        model.Editor = await _planDisplayManager.BuildEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: true);
+
         return View(model);
     }
 
@@ -244,6 +249,8 @@ public sealed class DeploymentPlanController : Controller
         {
             return Forbid();
         }
+
+        model.Editor = await _planDisplayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: true);
 
         if (ModelState.IsValid)
         {
@@ -292,6 +299,8 @@ public sealed class DeploymentPlanController : Controller
             Name = deploymentPlan.Name,
         };
 
+        model.Editor = await _planDisplayManager.BuildEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: false);
+
         return View(model);
     }
 
@@ -309,6 +318,8 @@ public sealed class DeploymentPlanController : Controller
         {
             return NotFound();
         }
+
+        model.Editor = await _planDisplayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: false);
 
         if (ModelState.IsValid)
         {

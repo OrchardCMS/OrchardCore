@@ -4,6 +4,7 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Email.Drivers;
 using OrchardCore.Email.Migrations;
 using OrchardCore.Email.Services;
+using OrchardCore.Email.ViewModels;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
@@ -23,5 +24,8 @@ public sealed class Startup : StartupBase
             .AddNavigationProvider<AdminMenu>();
 
         services.AddDataMigration<EmailMigrations>();
+
+        // Builds the editor of the test email page.
+        services.AddDisplayDriver<EmailTestViewModel, EmailTestDisplayDriver>();
     }
 }

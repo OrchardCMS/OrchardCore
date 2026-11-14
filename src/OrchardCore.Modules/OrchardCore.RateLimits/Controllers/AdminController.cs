@@ -13,6 +13,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Infrastructure.Entities;
@@ -48,6 +49,8 @@ public sealed class AdminController : Controller
     private readonly RateLimitsOptions _rateLimitsOptions;
     private readonly EndpointDataSource _endpointDataSource;
     private readonly IDisplayManager<RateLimitLimiter> _displayManager;
+    private readonly IDisplayManager<RateLimitPolicyEditViewModel> _policyDisplayManager;
+    private readonly IUpdateModelAccessor _updateModelAccessor;
 
     internal readonly IStringLocalizer S;
     internal readonly IHtmlLocalizer H;
@@ -55,6 +58,8 @@ public sealed class AdminController : Controller
     public AdminController(
         IAuthorizationService authorizationService,
         IDisplayManager<RateLimitLimiter> displayManager,
+        IDisplayManager<RateLimitPolicyEditViewModel> policyDisplayManager,
+        IUpdateModelAccessor updateModelAccessor,
         INotifier notifier,
         IRateLimitPolicyStore policyStore,
         IServiceProvider serviceProvider,
@@ -66,6 +71,8 @@ public sealed class AdminController : Controller
     {
         _authorizationService = authorizationService;
         _displayManager = displayManager;
+        _policyDisplayManager = policyDisplayManager;
+        _updateModelAccessor = updateModelAccessor;
         _notifier = notifier;
         _policyStore = policyStore;
         _serviceProvider = serviceProvider;
@@ -156,7 +163,11 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        return View(CreateEditViewModel());
+        var model = CreateEditViewModel();
+
+        model.Editor = await _policyDisplayManager.BuildEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: true);
+
+        return View(model);
     }
 
     [HttpPost]
@@ -168,17 +179,21 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
+        // The editor lists the policy types and the groups, and is displayed again when the policy is invalid.
+        model.PolicyScopes = CreatePolicyScopeList();
+        model.LimiterSources = BuildLimiterSources();
+        model.AvailableGroups = BuildAvailableGroupList(model.GroupName);
+        model.AreLimiterChangesAllowed = true;
+        model.PublishedPolicyLimiterMessage = S[PublishedPolicyLimiterMessage];
+        model.InitialIsEnabled = false;
+        model.EnabledUtc = null;
+
+        model.Editor = await _policyDisplayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: true);
+
         ValidatePolicy(model, null, existingPolicy: null, await GetCurrentPoliciesAsync());
 
         if (!ModelState.IsValid)
         {
-            model.PolicyScopes = CreatePolicyScopeList();
-            model.LimiterSources = BuildLimiterSources();
-            model.AvailableGroups = BuildAvailableGroupList(model.GroupName);
-            model.AreLimiterChangesAllowed = true;
-            model.PublishedPolicyLimiterMessage = S[PublishedPolicyLimiterMessage];
-            model.InitialIsEnabled = false;
-            model.EnabledUtc = null;
             return View(model);
         }
 
@@ -211,7 +226,11 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        return View(await CreateEditViewModelAsync(policy));
+        var model = await CreateEditViewModelAsync(policy);
+
+        model.Editor = await _policyDisplayManager.BuildEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: false);
+
+        return View(model);
     }
 
     [HttpPost]
@@ -475,6 +494,8 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
+        model.Editor = await _policyDisplayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: false);
+
         ValidatePolicy(model, policyId, existingPolicy, await GetCurrentPoliciesAsync());
 
         if (!ModelState.IsValid)
@@ -488,6 +509,10 @@ public sealed class AdminController : Controller
             invalidModel.IsEnabled = existingPolicy.IsEnabled;
             invalidModel.Status = RateLimitPolicyStore.GetStatus(existingPolicy.IsEnabled);
             invalidModel.EnabledUtc = existingPolicy.EnabledUtc;
+
+            // The policy is displayed again from its stored state, with the posted values kept by the model state.
+            invalidModel.Editor = await _policyDisplayManager.BuildEditorAsync(invalidModel, _updateModelAccessor.ModelUpdater, isNew: false);
+
             return View("Edit", invalidModel);
         }
 

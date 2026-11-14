@@ -150,6 +150,21 @@ msgctxt "OrchardCore.Media.Controllers.MediaProfilesController"
 msgid "WebP"
 msgstr ""
 
+#: Deployment/AllMediaProfilesDeploymentStepDriver.cs
+msgctxt "OrchardCore.Media.Deployment.AllMediaProfilesDeploymentStepDriver"
+msgid "Media profiles"
+msgstr ""
+
+#: Deployment/MediaDeploymentStepDriver.cs
+msgctxt "OrchardCore.Media.Deployment.MediaDeploymentStepDriver"
+msgid "Media"
+msgstr ""
+
+#: Drivers/MediaApiSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Media.Drivers.MediaApiSettingsDisplayDriver"
+msgid "Authentication"
+msgstr ""
+
 #: Drivers/MediaApiSettingsDisplayDriver.cs
 msgctxt "OrchardCore.Media.Drivers.MediaApiSettingsDisplayDriver"
 msgid "Bearer — OAuth2 + PKCE (requires OpenID Connect)"
@@ -193,6 +208,16 @@ msgstr ""
 #, csharp-format
 msgctxt "OrchardCore.Media.Drivers.MediaFieldDisplayDriver"
 msgid "{0}: There was an error handling the files."
+msgstr ""
+
+#: Drivers/MediaProfileDisplayDriver.cs
+msgctxt "OrchardCore.Media.Drivers.MediaProfileDisplayDriver"
+msgid "General"
+msgstr ""
+
+#: Drivers/MediaProfileDisplayDriver.cs
+msgctxt "OrchardCore.Media.Drivers.MediaProfileDisplayDriver"
+msgid "Image processing"
 msgstr ""
 
 #: Endpoints/Api/UploadMediaEndpoint.cs
@@ -885,7 +910,17 @@ msgstr ""
 
 #: Settings/MediaFieldSettingsDriver.cs
 msgctxt "OrchardCore.Media.Settings.MediaFieldSettingsDriver"
+msgid "Media types"
+msgstr ""
+
+#: Settings/MediaFieldSettingsDriver.cs
+msgctxt "OrchardCore.Media.Settings.MediaFieldSettingsDriver"
 msgid "Please select at least one extension."
+msgstr ""
+
+#: Settings/MediaFieldSettingsDriver.cs
+msgctxt "OrchardCore.Media.Settings.MediaFieldSettingsDriver"
+msgid "Settings"
 msgstr ""
 
 #: Views/Admin/Index.cshtml
@@ -1100,7 +1135,7 @@ msgstr ""
 
 #: Views/Items/AllMediaProfilesDeploymentStep.Edit.cshtml
 msgctxt "OrchardCore.Media.Views.Items.AllMediaProfilesDeploymentStep.Edit"
-msgid "All Media Profiles"
+msgid "Adds all the media profiles to the plan."
 msgstr ""
 
 #: Views/Items/AllMediaProfilesDeploymentStep.Summary.cshtml
@@ -1220,11 +1255,6 @@ msgstr ""
 
 #: Views/MediaFieldSettings.Edit.cshtml
 msgctxt "OrchardCore.Media.Views.MediaFieldSettings.Edit"
-msgid "Allow all default media types"
-msgstr ""
-
-#: Views/MediaFieldSettings.Edit.cshtml
-msgctxt "OrchardCore.Media.Views.MediaFieldSettings.Edit"
 msgid "Allow anchors"
 msgstr ""
 
@@ -1248,21 +1278,9 @@ msgctxt "OrchardCore.Media.Views.MediaFieldSettings.Edit"
 msgid "Required"
 msgstr ""
 
-#. Format arguments: {0}: group.Key
-#: Views/MediaFieldSettings.Edit.cshtml
-#, csharp-format
-msgctxt "OrchardCore.Media.Views.MediaFieldSettings.Edit"
-msgid "Select all extensions with the '{0}' type."
-msgstr ""
-
 #: Views/MediaFieldSettings.Edit.cshtml
 msgctxt "OrchardCore.Media.Views.MediaFieldSettings.Edit"
 msgid "The hint text to display on the editor."
-msgstr ""
-
-#: Views/MediaFieldSettings.Edit.cshtml
-msgctxt "OrchardCore.Media.Views.MediaFieldSettings.Edit"
-msgid "This will allow the user to attach any accessible file from the media library."
 msgstr ""
 
 #: Views/MediaFieldSettings.Edit.cshtml
@@ -1285,11 +1303,118 @@ msgctxt "OrchardCore.Media.Views.MediaFieldSettings.Edit"
 msgid "Whether selecting an anchor point for resizing is allowed."
 msgstr ""
 
+#: Views/MediaFieldSettingsMediaTypes.Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaFieldSettingsMediaTypes.Edit"
+msgid "Allow all default media types"
+msgstr ""
+
 #. Format arguments: {0}: group.Key
-#: Views/MediaFieldSettings.Edit.cshtml
+#: Views/MediaFieldSettingsMediaTypes.Edit.cshtml
 #, csharp-format
-msgctxt "OrchardCore.Media.Views.MediaFieldSettings.Edit"
+msgctxt "OrchardCore.Media.Views.MediaFieldSettingsMediaTypes.Edit"
+msgid "Select all extensions with the '{0}' type."
+msgstr ""
+
+#: Views/MediaFieldSettingsMediaTypes.Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaFieldSettingsMediaTypes.Edit"
+msgid "This will allow the user to attach any accessible file from the media library."
+msgstr ""
+
+#. Format arguments: {0}: group.Key
+#: Views/MediaFieldSettingsMediaTypes.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Media.Views.MediaFieldSettingsMediaTypes.Edit"
 msgid "{0} types"
+msgstr ""
+
+#: Views/MediaProfileCreateGeneral.Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfileCreateGeneral.Edit"
+msgid "Hint"
+msgstr ""
+
+#: Views/MediaProfileCreateGeneral.Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfileCreateGeneral.Edit"
+msgid "Name"
+msgstr ""
+
+#: Views/MediaProfileCreateGeneral.Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfileCreateGeneral.Edit"
+msgid "The hint for the media profile."
+msgstr ""
+
+#: Views/MediaProfileCreateGeneral.Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfileCreateGeneral.Edit"
+msgid "The name of the media profile."
+msgstr ""
+
+#: Views/MediaProfileCreateImageProcessing.Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfileCreateImageProcessing.Edit"
+msgid "Auto Orient"
+msgstr ""
+
+#: Views/MediaProfileCreateImageProcessing.Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfileCreateImageProcessing.Edit"
+msgid "Automatically orient the image based on EXIF metadata. Enabled by default."
+msgstr ""
+
+#: Views/MediaProfileCreateImageProcessing.Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfileCreateImageProcessing.Edit"
+msgid "Background Color"
+msgstr ""
+
+#: Views/MediaProfileCreateImageProcessing.Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfileCreateImageProcessing.Edit"
+msgid "Format"
+msgstr ""
+
+#: Views/MediaProfileCreateImageProcessing.Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfileCreateImageProcessing.Edit"
+msgid "Height"
+msgstr ""
+
+#: Views/MediaProfileCreateImageProcessing.Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfileCreateImageProcessing.Edit"
+msgid "Quality"
+msgstr ""
+
+#: Views/MediaProfileCreateImageProcessing.Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfileCreateImageProcessing.Edit"
+msgid "Resize Mode"
+msgstr ""
+
+#: Views/MediaProfileCreateImageProcessing.Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfileCreateImageProcessing.Edit"
+msgid "Select the background color for the processed image. An empty value means a bgcolor command will not be applied. Examples of valid values: 'white', 'ffff00', 'ffff0080', '128,64,32' and '128,64,32,80'."
+msgstr ""
+
+#: Views/MediaProfileCreateImageProcessing.Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfileCreateImageProcessing.Edit"
+msgid "Select the format for the processed image. A default value means a format command will not be applied."
+msgstr ""
+
+#: Views/MediaProfileCreateImageProcessing.Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfileCreateImageProcessing.Edit"
+msgid "Select the height for the processed image. A default value means a height command will not be applied."
+msgstr ""
+
+#: Views/MediaProfileCreateImageProcessing.Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfileCreateImageProcessing.Edit"
+msgid "Select the resize mode for the processed image."
+msgstr ""
+
+#: Views/MediaProfileCreateImageProcessing.Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfileCreateImageProcessing.Edit"
+msgid "Select the width for the processed image. A default value means a width command will not be applied."
+msgstr ""
+
+#: Views/MediaProfileCreateImageProcessing.Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfileCreateImageProcessing.Edit"
+msgid "The quality percentage for the processed image. Only supported with the JPG and WebP format. A value of 100% means a quality command will not be applied."
+msgstr ""
+
+#: Views/MediaProfileCreateImageProcessing.Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfileCreateImageProcessing.Edit"
+msgid "Width"
 msgstr ""
 
 #: Views/MediaProfileEntry.Buttons.SummaryAdmin.cshtml
@@ -1302,19 +1427,94 @@ msgctxt "OrchardCore.Media.Views.MediaProfileEntry.Buttons.SummaryAdmin"
 msgid "Edit"
 msgstr ""
 
-#: Views/MediaProfiles/Create.cshtml
-msgctxt "OrchardCore.Media.Views.MediaProfiles.Create"
+#: Views/MediaProfileGeneral.Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfileGeneral.Edit"
+msgid "Hint"
+msgstr ""
+
+#: Views/MediaProfileGeneral.Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfileGeneral.Edit"
+msgid "Name"
+msgstr ""
+
+#: Views/MediaProfileGeneral.Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfileGeneral.Edit"
+msgid "The hint for the media profile."
+msgstr ""
+
+#: Views/MediaProfileGeneral.Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfileGeneral.Edit"
+msgid "The name of the media profile."
+msgstr ""
+
+#: Views/MediaProfileImageProcessing.Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfileImageProcessing.Edit"
 msgid "Auto Orient"
 msgstr ""
 
-#: Views/MediaProfiles/Create.cshtml
-msgctxt "OrchardCore.Media.Views.MediaProfiles.Create"
+#: Views/MediaProfileImageProcessing.Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfileImageProcessing.Edit"
 msgid "Automatically orient the image based on EXIF metadata. Enabled by default."
 msgstr ""
 
-#: Views/MediaProfiles/Create.cshtml
-msgctxt "OrchardCore.Media.Views.MediaProfiles.Create"
+#: Views/MediaProfileImageProcessing.Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfileImageProcessing.Edit"
 msgid "Background Color"
+msgstr ""
+
+#: Views/MediaProfileImageProcessing.Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfileImageProcessing.Edit"
+msgid "Format"
+msgstr ""
+
+#: Views/MediaProfileImageProcessing.Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfileImageProcessing.Edit"
+msgid "Height"
+msgstr ""
+
+#: Views/MediaProfileImageProcessing.Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfileImageProcessing.Edit"
+msgid "Quality"
+msgstr ""
+
+#: Views/MediaProfileImageProcessing.Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfileImageProcessing.Edit"
+msgid "Resize Mode"
+msgstr ""
+
+#: Views/MediaProfileImageProcessing.Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfileImageProcessing.Edit"
+msgid "Select the background color for the processed image. An empty value means a bgcolor command will not be applied. Examples of valid values: 'white', 'ffff00', 'ffff0080', '128,64,32' and '128,64,32,16'."
+msgstr ""
+
+#: Views/MediaProfileImageProcessing.Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfileImageProcessing.Edit"
+msgid "Select the format for the processed image. A default value means a format command will not be applied."
+msgstr ""
+
+#: Views/MediaProfileImageProcessing.Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfileImageProcessing.Edit"
+msgid "Select the height for the processed image. A default value means a height command will not be applied."
+msgstr ""
+
+#: Views/MediaProfileImageProcessing.Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfileImageProcessing.Edit"
+msgid "Select the resize mode for the processed image."
+msgstr ""
+
+#: Views/MediaProfileImageProcessing.Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfileImageProcessing.Edit"
+msgid "Select the width for the processed image. A default value means a width command will not be applied."
+msgstr ""
+
+#: Views/MediaProfileImageProcessing.Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfileImageProcessing.Edit"
+msgid "The quality percentage for the processed image. Only supported with the JPG or WebP format. A value of 100% means a quality command will not be applied."
+msgstr ""
+
+#: Views/MediaProfileImageProcessing.Edit.cshtml
+msgctxt "OrchardCore.Media.Views.MediaProfileImageProcessing.Edit"
+msgid "Width"
 msgstr ""
 
 #: Views/MediaProfiles/Create.cshtml
@@ -1329,37 +1529,7 @@ msgstr ""
 
 #: Views/MediaProfiles/Create.cshtml
 msgctxt "OrchardCore.Media.Views.MediaProfiles.Create"
-msgid "Format"
-msgstr ""
-
-#: Views/MediaProfiles/Create.cshtml
-msgctxt "OrchardCore.Media.Views.MediaProfiles.Create"
-msgid "Height"
-msgstr ""
-
-#: Views/MediaProfiles/Create.cshtml
-msgctxt "OrchardCore.Media.Views.MediaProfiles.Create"
-msgid "Hint"
-msgstr ""
-
-#: Views/MediaProfiles/Create.cshtml
-msgctxt "OrchardCore.Media.Views.MediaProfiles.Create"
 msgid "Media Profiles"
-msgstr ""
-
-#: Views/MediaProfiles/Create.cshtml
-msgctxt "OrchardCore.Media.Views.MediaProfiles.Create"
-msgid "Name"
-msgstr ""
-
-#: Views/MediaProfiles/Create.cshtml
-msgctxt "OrchardCore.Media.Views.MediaProfiles.Create"
-msgid "Quality"
-msgstr ""
-
-#: Views/MediaProfiles/Create.cshtml
-msgctxt "OrchardCore.Media.Views.MediaProfiles.Create"
-msgid "Resize Mode"
 msgstr ""
 
 #: Views/MediaProfiles/Create.cshtml
@@ -1379,72 +1549,12 @@ msgstr ""
 
 #: Views/MediaProfiles/Create.cshtml
 msgctxt "OrchardCore.Media.Views.MediaProfiles.Create"
-msgid "Select the background color for the processed image. An empty value means a bgcolor command will not be applied. Examples of valid values: 'white', 'ffff00', 'ffff0080', '128,64,32' and '128,64,32,80'."
-msgstr ""
-
-#: Views/MediaProfiles/Create.cshtml
-msgctxt "OrchardCore.Media.Views.MediaProfiles.Create"
-msgid "Select the format for the processed image. A default value means a format command will not be applied."
-msgstr ""
-
-#: Views/MediaProfiles/Create.cshtml
-msgctxt "OrchardCore.Media.Views.MediaProfiles.Create"
-msgid "Select the height for the processed image. A default value means a height command will not be applied."
-msgstr ""
-
-#: Views/MediaProfiles/Create.cshtml
-msgctxt "OrchardCore.Media.Views.MediaProfiles.Create"
-msgid "Select the resize mode for the processed image."
-msgstr ""
-
-#: Views/MediaProfiles/Create.cshtml
-msgctxt "OrchardCore.Media.Views.MediaProfiles.Create"
-msgid "Select the width for the processed image. A default value means a width command will not be applied."
-msgstr ""
-
-#: Views/MediaProfiles/Create.cshtml
-msgctxt "OrchardCore.Media.Views.MediaProfiles.Create"
-msgid "The hint for the media profile."
-msgstr ""
-
-#: Views/MediaProfiles/Create.cshtml
-msgctxt "OrchardCore.Media.Views.MediaProfiles.Create"
-msgid "The name of the media profile."
-msgstr ""
-
-#: Views/MediaProfiles/Create.cshtml
-msgctxt "OrchardCore.Media.Views.MediaProfiles.Create"
-msgid "The quality percentage for the processed image. Only supported with the JPG and WebP format. A value of 100% means a quality command will not be applied."
-msgstr ""
-
-#: Views/MediaProfiles/Create.cshtml
-msgctxt "OrchardCore.Media.Views.MediaProfiles.Create"
 msgid "Toggle Dropdown"
 msgstr ""
 
 #: Views/MediaProfiles/Create.cshtml
 msgctxt "OrchardCore.Media.Views.MediaProfiles.Create"
-msgid "Width"
-msgstr ""
-
-#: Views/MediaProfiles/Create.cshtml
-msgctxt "OrchardCore.Media.Views.MediaProfiles.Create"
 msgid "and continue"
-msgstr ""
-
-#: Views/MediaProfiles/Edit.cshtml
-msgctxt "OrchardCore.Media.Views.MediaProfiles.Edit"
-msgid "Auto Orient"
-msgstr ""
-
-#: Views/MediaProfiles/Edit.cshtml
-msgctxt "OrchardCore.Media.Views.MediaProfiles.Edit"
-msgid "Automatically orient the image based on EXIF metadata. Enabled by default."
-msgstr ""
-
-#: Views/MediaProfiles/Edit.cshtml
-msgctxt "OrchardCore.Media.Views.MediaProfiles.Edit"
-msgid "Background Color"
 msgstr ""
 
 #: Views/MediaProfiles/Edit.cshtml
@@ -1459,37 +1569,7 @@ msgstr ""
 
 #: Views/MediaProfiles/Edit.cshtml
 msgctxt "OrchardCore.Media.Views.MediaProfiles.Edit"
-msgid "Format"
-msgstr ""
-
-#: Views/MediaProfiles/Edit.cshtml
-msgctxt "OrchardCore.Media.Views.MediaProfiles.Edit"
-msgid "Height"
-msgstr ""
-
-#: Views/MediaProfiles/Edit.cshtml
-msgctxt "OrchardCore.Media.Views.MediaProfiles.Edit"
-msgid "Hint"
-msgstr ""
-
-#: Views/MediaProfiles/Edit.cshtml
-msgctxt "OrchardCore.Media.Views.MediaProfiles.Edit"
 msgid "Media Profiles"
-msgstr ""
-
-#: Views/MediaProfiles/Edit.cshtml
-msgctxt "OrchardCore.Media.Views.MediaProfiles.Edit"
-msgid "Name"
-msgstr ""
-
-#: Views/MediaProfiles/Edit.cshtml
-msgctxt "OrchardCore.Media.Views.MediaProfiles.Edit"
-msgid "Quality"
-msgstr ""
-
-#: Views/MediaProfiles/Edit.cshtml
-msgctxt "OrchardCore.Media.Views.MediaProfiles.Edit"
-msgid "Resize Mode"
 msgstr ""
 
 #: Views/MediaProfiles/Edit.cshtml
@@ -1509,52 +1589,7 @@ msgstr ""
 
 #: Views/MediaProfiles/Edit.cshtml
 msgctxt "OrchardCore.Media.Views.MediaProfiles.Edit"
-msgid "Select the background color for the processed image. An empty value means a bgcolor command will not be applied. Examples of valid values: 'white', 'ffff00', 'ffff0080', '128,64,32' and '128,64,32,16'."
-msgstr ""
-
-#: Views/MediaProfiles/Edit.cshtml
-msgctxt "OrchardCore.Media.Views.MediaProfiles.Edit"
-msgid "Select the format for the processed image. A default value means a format command will not be applied."
-msgstr ""
-
-#: Views/MediaProfiles/Edit.cshtml
-msgctxt "OrchardCore.Media.Views.MediaProfiles.Edit"
-msgid "Select the height for the processed image. A default value means a height command will not be applied."
-msgstr ""
-
-#: Views/MediaProfiles/Edit.cshtml
-msgctxt "OrchardCore.Media.Views.MediaProfiles.Edit"
-msgid "Select the resize mode for the processed image."
-msgstr ""
-
-#: Views/MediaProfiles/Edit.cshtml
-msgctxt "OrchardCore.Media.Views.MediaProfiles.Edit"
-msgid "Select the width for the processed image. A default value means a width command will not be applied."
-msgstr ""
-
-#: Views/MediaProfiles/Edit.cshtml
-msgctxt "OrchardCore.Media.Views.MediaProfiles.Edit"
-msgid "The hint for the media profile."
-msgstr ""
-
-#: Views/MediaProfiles/Edit.cshtml
-msgctxt "OrchardCore.Media.Views.MediaProfiles.Edit"
-msgid "The name of the media profile."
-msgstr ""
-
-#: Views/MediaProfiles/Edit.cshtml
-msgctxt "OrchardCore.Media.Views.MediaProfiles.Edit"
-msgid "The quality percentage for the processed image. Only supported with the JPG or WebP format. A value of 100% means a quality command will not be applied."
-msgstr ""
-
-#: Views/MediaProfiles/Edit.cshtml
-msgctxt "OrchardCore.Media.Views.MediaProfiles.Edit"
 msgid "Toggle Dropdown"
-msgstr ""
-
-#: Views/MediaProfiles/Edit.cshtml
-msgctxt "OrchardCore.Media.Views.MediaProfiles.Edit"
-msgid "Width"
 msgstr ""
 
 #: Views/MediaProfiles/Edit.cshtml

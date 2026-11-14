@@ -56,43 +56,6 @@
         <span class="hint">@T["The comma-separated list of blind copy email addresses. With Liquid support."]</span>
         </div>
     </div>
-
-    <div class="ocat-wrapper" asp-validation-class-for="SubjectExpression">
-        <label asp-for="SubjectExpression" class="ocat-label">@T["Subject"]</label>
-        <div class="ocat-end">
-        <input type="text" asp-for="SubjectExpression" class="form-control code" />
-        <span asp-validation-for="SubjectExpression"></span>
-        <span class="hint">@T["The subject of the email message. With Liquid support."]</span>
-        </div>
-    </div>
-
-    <div class="ocat-wrapper">
-        <label class="ocat-label">@T["Format"]</label>
-        <div class="ocat-end">
-        <select class="form-select" asp-for="BodyFormat" data-all-value="@MailMessageBodyFormat.All" data-text-value="@MailMessageBodyFormat.Text" data-html-value="@MailMessageBodyFormat.Html">
-            <option selected="@(Model.BodyFormat == MailMessageBodyFormat.All)" value="@MailMessageBodyFormat.All">@T["All"]</option>
-            <option selected="@(Model.BodyFormat == MailMessageBodyFormat.Text)" value="@MailMessageBodyFormat.Text">@T["Text"]</option>
-            <option selected="@(Model.BodyFormat == MailMessageBodyFormat.Html)" value="@MailMessageBodyFormat.Html">@T["Html"]</option>
-        </select>
-        <span class="hint">@T["The format of the email message."]</span>
-        </div>
-    </div>
-
-    <div class="ocat-wrapper" id="textBodyDiv">
-        <label asp-for="TextBody" class="ocat-label">@T["Text Body"]</label>
-        <div class="ocat-end">
-        <textarea asp-for="TextBody" rows="5" class="form-control"></textarea>
-        <span class="hint">@T["The plain text body of the email message. With Liquid support."]</span>
-        </div>
-    </div>
-
-    <div class="ocat-wrapper" id="htmlBodyDiv">
-        <label asp-for="HtmlBody" class="ocat-label">@T["HTML Body"]</label>
-        <div class="ocat-end">
-        <textarea asp-for="HtmlBody" rows="5" class="form-control"></textarea>
-        <span class="hint">@T["The HTML body of the email message. With Liquid support."]</span>
-        </div>
-    </div>
 </div>
 
 <style asp-name="codemirror"></style>

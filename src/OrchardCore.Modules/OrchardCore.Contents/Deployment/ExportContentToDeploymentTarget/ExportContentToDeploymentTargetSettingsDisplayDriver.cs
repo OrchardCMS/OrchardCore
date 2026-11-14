@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Localization;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
@@ -15,12 +16,16 @@ public sealed class ExportContentToDeploymentTargetSettingsDisplayDriver : SiteD
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
 
+    internal readonly IStringLocalizer S;
+
     public ExportContentToDeploymentTargetSettingsDisplayDriver(
         IHttpContextAccessor httpContextAccessor,
-        IAuthorizationService authorizationService)
+        IAuthorizationService authorizationService,
+        IStringLocalizer<ExportContentToDeploymentTargetSettingsDisplayDriver> stringLocalizer)
     {
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
+        S = stringLocalizer;
     }
 
     protected override string SettingsGroupId
@@ -37,7 +42,7 @@ public sealed class ExportContentToDeploymentTargetSettingsDisplayDriver : SiteD
         return Initialize<ExportContentToDeploymentTargetSettingsViewModel>("ExportContentToDeploymentTargetSettings_Edit", model =>
         {
             model.ExportContentToDeploymentTargetPlanId = settings.ExportContentToDeploymentTargetPlanId;
-        }).Location("Content:2")
+        }).Location(l => l.Zone("Content", "2").Card(S["Deployment plan"], "10"))
         .OnGroup(SettingsGroupId);
     }
 

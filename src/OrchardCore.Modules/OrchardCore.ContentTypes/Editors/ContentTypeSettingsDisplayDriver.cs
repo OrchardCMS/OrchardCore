@@ -31,22 +31,25 @@ public sealed class ContentTypeSettingsDisplayDriver : ContentTypeDefinitionDisp
         _contentDefinitionManager = contentDefinitionManager;
     }
 
-    public override IDisplayResult Edit(ContentTypeDefinition contentTypeDefinition, BuildEditorContext context)
+    public override async Task<IDisplayResult> EditAsync(ContentTypeDefinition contentTypeDefinition, BuildEditorContext context)
     {
-        return Initialize<ContentTypeSettingsViewModel>("ContentTypeSettings_Edit", async model =>
+        var settings = contentTypeDefinition.GetSettings<ContentTypeSettings>();
+        var options = await GetOptionsAsync(contentTypeDefinition, settings.Stereotype);
+
+        var results = new List<IDisplayResult>
         {
-            var settings = contentTypeDefinition.GetSettings<ContentTypeSettings>();
-            model.Creatable = settings.Creatable;
-            model.Listable = settings.Listable;
-            model.Draftable = settings.Draftable;
-            model.Versionable = settings.Versionable;
-            model.Securable = settings.Securable;
-            model.Stereotype = settings.Stereotype;
-            model.Description = settings.Description;
-            model.Category = settings.Category;
-            model.ThumbnailPath = settings.ThumbnailPath;
-            model.Options = await GetOptionsAsync(contentTypeDefinition, settings.Stereotype);
-        }).Location("Content:5");
+            Initialize<ContentTypeSettingsViewModel>("ContentTypeSettings_Edit", model => PopulateViewModel(model, settings, options))
+                .Location(l => l.Zone("Content", "5").Card(S["General"], "10")),
+        };
+
+        // The behavior card is only rendered when at least one of its options can be changed.
+        if (options.ShowCreatable || options.ShowListable || options.ShowDraftable || options.ShowVersionable || options.ShowSecurable)
+        {
+            results.Add(Initialize<ContentTypeSettingsViewModel>("ContentTypeSettingsBehavior_Edit", model => PopulateViewModel(model, settings, options))
+                .Location(l => l.Zone("Content", "5").Card(S["Behavior"], "15")));
+        }
+
+        return Combine(results);
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentTypeDefinition contentTypeDefinition, UpdateTypeEditorContext context)
@@ -70,7 +73,21 @@ public sealed class ContentTypeSettingsDisplayDriver : ContentTypeDefinitionDisp
 
         Apply(context, model, options);
 
-        return Edit(contentTypeDefinition, context);
+        return await EditAsync(contentTypeDefinition, context);
+    }
+
+    private static void PopulateViewModel(ContentTypeSettingsViewModel model, ContentTypeSettings settings, ContentTypeDefinitionDriverOptions options)
+    {
+        model.Creatable = settings.Creatable;
+        model.Listable = settings.Listable;
+        model.Draftable = settings.Draftable;
+        model.Versionable = settings.Versionable;
+        model.Securable = settings.Securable;
+        model.Stereotype = settings.Stereotype;
+        model.Description = settings.Description;
+        model.Category = settings.Category;
+        model.ThumbnailPath = settings.ThumbnailPath;
+        model.Options = options;
     }
 
     private static void Apply(UpdateTypeEditorContext context, ContentTypeSettingsViewModel model, ContentTypeDefinitionDriverOptions options)

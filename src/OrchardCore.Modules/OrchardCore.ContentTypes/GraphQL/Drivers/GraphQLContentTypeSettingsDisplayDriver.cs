@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement.GraphQL.Options;
 using OrchardCore.ContentManagement.GraphQL.Settings;
@@ -13,9 +14,14 @@ public sealed class GraphQLContentTypeSettingsDisplayDriver : ContentTypeDefinit
 {
     private readonly GraphQLContentOptions _contentOptions;
 
-    public GraphQLContentTypeSettingsDisplayDriver(IOptions<GraphQLContentOptions> optionsAccessor)
+    internal readonly IStringLocalizer S;
+
+    public GraphQLContentTypeSettingsDisplayDriver(
+        IOptions<GraphQLContentOptions> optionsAccessor,
+        IStringLocalizer<GraphQLContentTypeSettingsDisplayDriver> stringLocalizer)
     {
         _contentOptions = optionsAccessor.Value;
+        S = stringLocalizer;
     }
 
     public override IDisplayResult Edit(ContentTypeDefinition contentTypeDefinition, BuildEditorContext context)
@@ -25,7 +31,7 @@ public sealed class GraphQLContentTypeSettingsDisplayDriver : ContentTypeDefinit
             model.Definition = contentTypeDefinition;
             model.Settings = contentTypeDefinition.GetSettings<GraphQLContentTypeSettings>();
             model.Options = _contentOptions;
-        }).Location("Content:5");
+        }).Location(l => l.Zone("Content", "5").Card(S["GraphQL"], "50"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentTypeDefinition contentTypeDefinition, UpdateTypeEditorContext context)

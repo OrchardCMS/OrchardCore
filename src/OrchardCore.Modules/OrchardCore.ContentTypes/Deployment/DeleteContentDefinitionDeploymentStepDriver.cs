@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.ContentTypes.ViewModels;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
@@ -8,6 +9,13 @@ namespace OrchardCore.ContentTypes.Deployment;
 public sealed class DeleteContentDefinitionDeploymentStepDriver : DisplayDriver<DeploymentStep, DeleteContentDefinitionDeploymentStep>
 {
     private static readonly char[] s_separator = [' ', ','];
+
+    internal readonly IStringLocalizer S;
+
+    public DeleteContentDefinitionDeploymentStepDriver(IStringLocalizer<DeleteContentDefinitionDeploymentStepDriver> stringLocalizer)
+    {
+        S = stringLocalizer;
+    }
 
     public override Task<IDisplayResult> DisplayAsync(DeleteContentDefinitionDeploymentStep step, BuildDisplayContext context)
     {
@@ -24,7 +32,7 @@ public sealed class DeleteContentDefinitionDeploymentStepDriver : DisplayDriver<
         {
             model.ContentParts = string.Join(", ", step.ContentParts);
             model.ContentTypes = string.Join(", ", step.ContentTypes);
-        }).Location("Content");
+        }).Location(l => l.Zone("Content").Card(S["Content definitions"], "10"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(DeleteContentDefinitionDeploymentStep step, UpdateEditorContext context)

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
@@ -8,6 +9,13 @@ namespace OrchardCore.ContentFields.Settings;
 
 public sealed class BooleanFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<BooleanField>
 {
+    internal readonly IStringLocalizer S;
+
+    public BooleanFieldSettingsDriver(IStringLocalizer<BooleanFieldSettingsDriver> stringLocalizer)
+    {
+        S = stringLocalizer;
+    }
+
     public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
     {
         return Initialize<BooleanFieldSettings>("BooleanFieldSettings_Edit", model =>
@@ -17,7 +25,7 @@ public sealed class BooleanFieldSettingsDriver : ContentPartFieldDefinitionDispl
             model.Hint = settings.Hint;
             model.Label = settings.Label;
             model.DefaultValue = settings.DefaultValue;
-        }).Location("Content");
+        }).Location(l => l.Zone("Content").Card(S["Settings"], "20"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)

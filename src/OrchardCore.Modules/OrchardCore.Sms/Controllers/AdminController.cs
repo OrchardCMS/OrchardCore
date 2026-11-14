@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Sms.ViewModels;
 
@@ -17,6 +19,8 @@ public sealed class AdminController : Controller
     private readonly INotifier _notifier;
     private readonly IAuthorizationService _authorizationService;
     private readonly ISmsProviderResolver _smsProviderResolver;
+    private readonly IDisplayManager<SmsTestViewModel> _smsTestDisplayManager;
+    private readonly IUpdateModelAccessor _updateModelAccessor;
 
     internal readonly IHtmlLocalizer H;
     internal readonly IStringLocalizer S;
@@ -27,6 +31,8 @@ public sealed class AdminController : Controller
         ISmsProviderResolver smsProviderResolver,
         INotifier notifier,
         IAuthorizationService authorizationService,
+        IDisplayManager<SmsTestViewModel> smsTestDisplayManager,
+        IUpdateModelAccessor updateModelAccessor,
         IHtmlLocalizer<AdminController> htmlLocalizer,
         IStringLocalizer<AdminController> stringLocalizer)
     {
@@ -35,6 +41,8 @@ public sealed class AdminController : Controller
         _smsProviderResolver = smsProviderResolver;
         _notifier = notifier;
         _authorizationService = authorizationService;
+        _smsTestDisplayManager = smsTestDisplayManager;
+        _updateModelAccessor = updateModelAccessor;
         H = htmlLocalizer;
         S = stringLocalizer;
     }
@@ -51,6 +59,8 @@ public sealed class AdminController : Controller
 
         PopulateModel(model);
 
+        model.Editor = await _smsTestDisplayManager.BuildEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: true);
+
         return View(model);
     }
 
@@ -61,6 +71,11 @@ public sealed class AdminController : Controller
         {
             return Forbid();
         }
+
+        // The providers are listed by the editor, which is also rendered when the message can't be sent.
+        PopulateModel(model);
+
+        model.Editor = await _smsTestDisplayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: true);
 
         if (ModelState.IsValid)
         {
@@ -94,8 +109,6 @@ public sealed class AdminController : Controller
                 }
             }
         }
-
-        PopulateModel(model);
 
         return View(model);
     }

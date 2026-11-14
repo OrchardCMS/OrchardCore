@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using Lucene.Net.Documents;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using OrchardCore.DisplayManagement;
 
 namespace OrchardCore.Lucene.ViewModels;
 
@@ -29,4 +30,10 @@ public class AdminQueryViewModel
 
     [BindNever]
     public IEnumerable<Document> Documents { get; set; } = [];
+
+    /// <summary>
+    /// Gets or sets the editor of the Lucene query runner, built by the display drivers of <see cref="AdminQueryViewModel"/>.
+    /// </summary>
+    [BindNever]
+    public IShape Editor { get; set; }
 }

@@ -1,0 +1,23 @@
+@model MediaProfileViewModel
+
+<div class="ocat-wrapper form-g" asp-validation-class-for="Name">
+    <label asp-for="Name" class="ocat-label ocat-label-required">@T["Name"]</label>
+    <div class="ocat-end w-100">
+        <div class="w-100 w-lg-75 w-xl-50">
+            <input asp-for="Name" class="form-control" autofocus />
+            <span asp-validation-for="Name"></span>
+        </div>
+        <span class="hint">@T["The name of the media profile."]</span>
+    </div>
+</div>
+
+<div class="ocat-wrapper form-g" asp-validation-class-for="Hint">
+    <label asp-for="Hint" class="ocat-label">@T["Hint"]</label>
+    <div class="ocat-end w-100">
+        <div class="w-100 w-lg-75 w-xl-50">
+            <textarea asp-for="Hint" rows="2" class="form-control"></textarea>
+            <span asp-validation-for="Hint"></span>
+        </div>
+        <span class="hint">@T["The hint for the media profile."]</span>
+    </div>
+</div>

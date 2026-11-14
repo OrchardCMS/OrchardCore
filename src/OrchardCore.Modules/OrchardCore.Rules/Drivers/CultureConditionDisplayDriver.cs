@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -10,9 +11,12 @@ public sealed class CultureConditionDisplayDriver : DisplayDriver<Condition, Cul
 {
     private readonly ConditionOperatorOptions _options;
 
-    public CultureConditionDisplayDriver(IOptions<ConditionOperatorOptions> options)
+    internal readonly IStringLocalizer S;
+
+    public CultureConditionDisplayDriver(IOptions<ConditionOperatorOptions> options, IStringLocalizer<CultureConditionDisplayDriver> stringLocalizer)
     {
         _options = options.Value;
+        S = stringLocalizer;
     }
 
     public override Task<IDisplayResult> DisplayAsync(CultureCondition condition, BuildDisplayContext context)
@@ -34,7 +38,7 @@ public sealed class CultureConditionDisplayDriver : DisplayDriver<Condition, Cul
                 }
                 m.Value = condition.Value;
                 m.Condition = condition;
-            }).Location("Content");
+            }).Location(l => l.Zone("Content").Card(S["Culture"], "10"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(CultureCondition condition, UpdateEditorContext context)

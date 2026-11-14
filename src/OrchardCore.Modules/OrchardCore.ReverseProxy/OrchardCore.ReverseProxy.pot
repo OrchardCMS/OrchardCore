@@ -28,6 +28,11 @@ msgstr ""
 
 #: Drivers/ReverseProxySettingsDisplayDriver.cs
 msgctxt "OrchardCore.ReverseProxy.Drivers.ReverseProxySettingsDisplayDriver"
+msgid "Forwarded headers"
+msgstr ""
+
+#: Drivers/ReverseProxySettingsDisplayDriver.cs
+msgctxt "OrchardCore.ReverseProxy.Drivers.ReverseProxySettingsDisplayDriver"
 msgid "The current settings are coming from configuration sources, saving the settings will affect the AdminSettings not the configuration."
 msgstr ""
 

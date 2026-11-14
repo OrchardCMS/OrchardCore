@@ -1,0 +1,17 @@
+@model CloneRoleViewModel
+@using OrchardCore.Roles.ViewModels
+
+<div class="ocat-wrapper" asp-validation-class-for="Name">
+    <label asp-for="Name" class="ocat-label ocat-label-required">@T["Role name"]</label>
+    <div class="ocat-end">
+        <input asp-for="Name" class="form-control" autofocus />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+</div>
+<div class="ocat-wrapper" asp-validation-class-for="RoleDescription">
+    <label asp-for="RoleDescription" class="ocat-label">@T["Description"]</label>
+    <div class="ocat-end">
+        <textarea asp-for="RoleDescription" class="form-control"></textarea>
+        <span asp-validation-for="RoleDescription" class="text-danger"></span>
+    </div>
+</div>

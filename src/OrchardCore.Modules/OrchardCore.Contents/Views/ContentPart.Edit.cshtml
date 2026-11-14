@@ -1,52 +1,72 @@
 @model OrchardCore.ContentManagement.Display.ViewModels.ContentPartShapeViewModel
-@using OrchardCore.ContentManagement
+@using OrchardCore.ContentManagement.Display.ContentDisplay
 @using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.ContentManagement.Metadata.Settings
 @using OrchardCore.ContentTypes
+@using OrchardCore.DisplayManagement
+@using OrchardCore.DisplayManagement.ViewModels
 @using OrchardCore.Localization.Data
 @using OrchardCore.Mvc.Utilities
 
 @inject IDataLocalizer D
 
-@{
-    var shapes = Model.Items;
+@*
+    The editor of a content part in a content item, holding the editors of the part and of its fields.
 
-    if (shapes.Count == 0)
+    The part is placed in a card titled with its display name ("Parts:5%Html Body"). When a placement puts it in a
+    card shared with other parts, e.g. "Parts:5%Metadata", the part is a section of that card titled with its own
+    display name. The shapes of the part placed in a card of their own, e.g. a field placed in
+    "Parts.Product:5%Shipping", are grouped in that card inside the part.
+*@
+
+@{
+    if (Model.Items.Count == 0)
     {
         return;
     }
 
-    ContentPart contentPart = Model.ContentPart;
-    ContentTypePartDefinition typePartDefinition = Model.ContentTypePartDefinition;
+    var typePartDefinition = Model.ContentTypePartDefinition;
+    var displayName = D[typePartDefinition.GetEditorCardName(), DataLocalizationContext.ContentType];
     var description = typePartDefinition.Description();
+    var cssClass = $"content-part-wrapper content-part-wrapper-{typePartDefinition.PartDefinition.Name.HtmlClassify()}"
+        + (typePartDefinition.IsNamedPart() ? $" content-part-wrapper-{typePartDefinition.Name.HtmlClassify()}" : string.Empty);
+
+    // The part is a section of a card titled otherwise, e.g. one it shares with other parts.
+    var card = Model.Metadata.CardGrouping;
+    var isSection = card.HasValue && !string.Equals(card.Name, typePartDefinition.GetEditorCardName(), StringComparison.Ordinal);
+
+    // The shapes of the part are rendered by the card grouping of the content zones, so the ones placed in cards
+    // are grouped in them.
+    IShape cards = null;
+
+    if (Model.Items.OfType<IShape>().Any(shape => shape.Metadata.CardGrouping.HasValue))
+    {
+        cards = await Factory.CreateAsync<GroupingViewModel>("CardGrouping", model =>
+        {
+            model.Identifier = $"{typePartDefinition.ContentTypeDefinition.Name}-{typePartDefinition.Name}";
+            model.Grouping = Model.Items.ToLookup(_ => "Content").First();
+        });
+    }
 }
 
-<div class="@($"ocat-wrapper content-part-wrapper content-part-wrapper-{typePartDefinition.PartDefinition.Name.HtmlClassify()}" + (typePartDefinition.IsNamedPart() ? $" content-part-wrapper-{typePartDefinition.Name.HtmlClassify()}" : string.Empty))">
-
-    @if (typePartDefinition.IsNamedPart())
+<div class="@(isSection ? "ocat-card-section " : null)@cssClass">
+    @if (isSection)
     {
-        <div class="ocat-label">
-            @D[typePartDefinition.DisplayName(), DataLocalizationContext.ContentType]
-
-            @if (!string.IsNullOrEmpty(description))
-            {
-                <small class="form-text text-muted">@description</small>
-            }
-        </div>
-
-        <div class="ocat-end">
-            @foreach (var shape in shapes)
-            {
-                @await DisplayAsync(shape)
-            }
-        </div>
+        <div class="ocat-card-section-title">@displayName</div>
+    }
+    @if (!string.IsNullOrEmpty(description))
+    {
+        <p class="ocat-card-description">@description</p>
+    }
+    @if (cards != null)
+    {
+        @await DisplayAsync(cards)
     }
     else
     {
-        foreach (var shape in shapes)
+        foreach (var item in Model.Items)
         {
-            @await DisplayAsync(shape)
+            @await DisplayAsync(item)
         }
     }
-
 </div>

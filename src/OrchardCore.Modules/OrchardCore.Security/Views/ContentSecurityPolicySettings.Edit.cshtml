@@ -1,65 +1,5 @@
-@using Microsoft.AspNetCore.Mvc.Localization
-@using OrchardCore.Security.Options
 @using OrchardCore.Security.ViewModels
 @model SecuritySettingsViewModel
-
-@functions
-{
-    public LocalizedHtmlString GetContentSecurityPolicyName(string value)
-    {
-        LocalizedHtmlString name = null;
-        switch (value)
-        {
-            case ContentSecurityPolicyValue.BaseUri:
-                name = T["Base URI"];
-                break;
-            case ContentSecurityPolicyValue.ChildSource:
-                name = T["Child Source"];
-                break;
-            case ContentSecurityPolicyValue.ConnectSource:
-                name = T["Connect Source"];
-                break;
-            case ContentSecurityPolicyValue.DefaultSource:
-                name = T["Default Source"];
-                break;
-            case ContentSecurityPolicyValue.FontSource:
-                name = T["Font Source"];
-                break;
-            case ContentSecurityPolicyValue.FormAction:
-                name = T["Form Action"];
-                break;
-            case ContentSecurityPolicyValue.FrameAncestors:
-                name = T["Frame Ancestors"];
-                break;
-            case ContentSecurityPolicyValue.FrameSource:
-                name = T["Frame Source"];
-                break;
-            case ContentSecurityPolicyValue.ImageSource:
-                name = T["Image Source"];
-                break;
-            case ContentSecurityPolicyValue.ManifestSource:
-                name = T["Manifest Source"];
-                break;
-            case ContentSecurityPolicyValue.MediaSource:
-                name = T["Media Source"];
-                break;
-            case ContentSecurityPolicyValue.ObjectSource:
-                name = T["Object Source"];
-                break;
-            case ContentSecurityPolicyValue.Sandbox:
-                name = T["Sandbox"];
-                break;
-            case ContentSecurityPolicyValue.ScriptSource:
-                name = T["Script Source"];
-                break;
-            case ContentSecurityPolicyValue.StyleSource:
-                name = T["Style Source"];
-                break;
-        }
-
-        return name;
-    }
-}
 
 <div class="ocat-wrapper" asp-validation-class-for="EnableSandbox">
     <div class="ocat-end-offset">
@@ -77,34 +17,5 @@
             <input type="checkbox" class="form-check-input" asp-for="UpgradeInsecureRequests" />
             <label class="form-check-label" asp-for="UpgradeInsecureRequests">@T["Upgrade Insecure Requests"]</label>
         </div>
-    </div>
-</div>
-
-<div class="ocat-wrapper">
-    <div class="ocat-end-offset">
-        <table class="table table-striped table-hover">
-            <thead>
-                <tr>
-                    <th>@T["Name"]</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var key in Model.ContentSecurityPolicy.Keys)
-                {
-                    var value = Model.ContentSecurityPolicy[key];
-
-                    <tr>
-                        <td>@GetContentSecurityPolicyName(key)</td>
-                        <td>
-                            <div class="mb-0">
-                                <input class="form-control" id="@Html.IdFor(m => m.ContentSecurityPolicy[key])" name="@Html.NameFor(m => m.ContentSecurityPolicy[key])" value="@value" />
-                            </div>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-        <span class="hint">@T["Allows administrators to control resources the user agent is allowed to load for a given page."]</span>
     </div>
 </div>

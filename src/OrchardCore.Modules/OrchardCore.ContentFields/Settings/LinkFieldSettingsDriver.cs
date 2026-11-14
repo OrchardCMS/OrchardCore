@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
@@ -8,6 +9,13 @@ namespace OrchardCore.ContentFields.Settings;
 
 public sealed class LinkFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<LinkField>
 {
+    internal readonly IStringLocalizer S;
+
+    public LinkFieldSettingsDriver(IStringLocalizer<LinkFieldSettingsDriver> stringLocalizer)
+    {
+        S = stringLocalizer;
+    }
+
     public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
     {
         return Initialize<LinkFieldSettings>("LinkFieldSettings_Edit", model =>
@@ -23,7 +31,7 @@ public sealed class LinkFieldSettingsDriver : ContentPartFieldDefinitionDisplayD
             model.DefaultUrl = settings.DefaultUrl;
             model.DefaultText = settings.DefaultText;
             model.DefaultTarget = settings.DefaultTarget;
-        }).Location("Content");
+        }).Location(l => l.Zone("Content").Card(S["Settings"], "20"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)

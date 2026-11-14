@@ -322,6 +322,10 @@ To apply a position modifier, or column width modifier, apply the appropriate va
 
 Fields or Parts which do not have a grouping will fall into the default `Content` group when other fields apply a grouping.
 
+A single card is rendered as a card too. In the admin theme, cards render as the cards grouping the fields of every admin form, titled with the name of the card, and the shapes of the default `Content` group render as they are: in a content item editor, each content part is already a card of its own. See [Admin Theme Conventions](../../themes/admin-theme.md#cards).
+
+Display drivers declare the card of their editor shapes with the fluent API, localizing its name, which is its title: `.Location(l => l.Zone("Content", "1").Card(S["Server"], "10"))`. Card names written in placement files aren't localized.
+
 !!! warning "Shape position vs. group position"
     The **position** (the number after `:`) controls the order of shapes **within a zone**. The **group position** (the number after `;`) controls the order of the **groups themselves** (e.g., which tab appears first). These are two different things.
 

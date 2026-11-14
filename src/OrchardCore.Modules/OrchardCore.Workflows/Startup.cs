@@ -95,6 +95,9 @@ public sealed class Startup : StartupBase
         // Builds the rows of the workflow types admin list.
         services.AddDisplayDriver<WorkflowTypeEntry, WorkflowTypeEntryDisplayDriver>();
         services.AddDisplayDriver<WorkflowEntry, WorkflowEntryDisplayDriver>();
+
+        // Builds the editor of the properties of a workflow type, on the create and clone pages and in the designer.
+        services.AddDisplayDriver<WorkflowTypePropertiesViewModel, WorkflowTypePropertiesDisplayDriver>();
         services.AddPermissionProvider<Permissions>();
         services.AddDisplayDriver<IActivity, MissingActivityDisplayDriver>();
         services.AddDisplayDriver<IActivity, ActivityRetryPolicyDisplayDriver>();

@@ -33,6 +33,8 @@ public sealed class AdminController : Controller
     private readonly INotifier _notifier;
     private readonly IShapeFactory _shapeFactory;
     private readonly PagerOptions _pagerOptions;
+    private readonly IDisplayManager<EditShapePlacementViewModel> _displayManager;
+    private readonly IUpdateModelAccessor _updateModelAccessor;
 
     internal readonly IHtmlLocalizer H;
     internal readonly IStringLocalizer S;
@@ -45,7 +47,9 @@ public sealed class AdminController : Controller
         IStringLocalizer<AdminController> stringLocalizer,
         INotifier notifier,
         IOptions<PagerOptions> pagerOptions,
-        IShapeFactory shapeFactory)
+        IShapeFactory shapeFactory,
+        IDisplayManager<EditShapePlacementViewModel> displayManager,
+        IUpdateModelAccessor updateModelAccessor)
     {
         _logger = logger;
         _authorizationService = authorizationService;
@@ -53,6 +57,8 @@ public sealed class AdminController : Controller
         _notifier = notifier;
         _shapeFactory = shapeFactory;
         _pagerOptions = pagerOptions.Value;
+        _displayManager = displayManager;
+        _updateModelAccessor = updateModelAccessor;
 
         H = htmlLocalizer;
         S = stringLocalizer;
@@ -144,6 +150,8 @@ public sealed class AdminController : Controller
             Nodes = JConvert.SerializeObject(template, JOptions.Indented),
         };
 
+        viewModel.Editor = await _displayManager.BuildEditorAsync(viewModel, _updateModelAccessor.ModelUpdater, isNew: true);
+
         ViewData["ReturnUrl"] = returnUrl;
         return View(nameof(Edit), viewModel);
     }
@@ -184,6 +192,8 @@ public sealed class AdminController : Controller
             Nodes = JConvert.SerializeObject(placementNodes, JOptions.Indented),
         };
 
+        viewModel.Editor = await _displayManager.BuildEditorAsync(viewModel, _updateModelAccessor.ModelUpdater, isNew: false);
+
         ViewData["ReturnUrl"] = returnUrl;
         return View(viewModel);
     }
@@ -197,6 +207,8 @@ public sealed class AdminController : Controller
         }
 
         ViewData["ReturnUrl"] = returnUrl;
+
+        viewModel.Editor = await _displayManager.UpdateEditorAsync(viewModel, _updateModelAccessor.ModelUpdater, isNew: viewModel.Creating);
 
         viewModel.ShapeType = viewModel.ShapeType?.Trim();
 
@@ -262,6 +274,9 @@ public sealed class AdminController : Controller
         {
             return RedirectToReturnUrlOrIndex(returnUrl);
         }
+
+        // The rules may have been created, which the editor shows.
+        viewModel.Editor = await _displayManager.BuildEditorAsync(viewModel, _updateModelAccessor.ModelUpdater, isNew: viewModel.Creating);
 
         return View(viewModel);
     }

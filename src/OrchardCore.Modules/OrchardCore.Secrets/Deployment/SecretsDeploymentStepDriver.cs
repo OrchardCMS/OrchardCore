@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -9,9 +10,12 @@ public sealed class SecretsDeploymentStepDriver : DisplayDriver<DeploymentStep, 
 {
     private readonly ISecretManager _secretManager;
 
-    public SecretsDeploymentStepDriver(ISecretManager secretManager)
+    internal readonly IStringLocalizer S;
+
+    public SecretsDeploymentStepDriver(ISecretManager secretManager, IStringLocalizer<SecretsDeploymentStepDriver> stringLocalizer)
     {
         _secretManager = secretManager;
+        S = stringLocalizer;
     }
 
     public override Task<IDisplayResult> DisplayAsync(SecretsDeploymentStep step, BuildDisplayContext context)
@@ -37,7 +41,7 @@ public sealed class SecretsDeploymentStepDriver : DisplayDriver<DeploymentStep, 
         {
             model.EncryptionKeyName = step.EncryptionKeyName;
             model.AvailableEncryptionKeys = encryptionKeys;
-        }).Location("Content");
+        }).Location(l => l.Zone("Content").Card(S["Encryption"], "10"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(SecretsDeploymentStep step, UpdateEditorContext context)

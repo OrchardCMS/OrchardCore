@@ -30,6 +30,13 @@ public sealed class Startup : StartupBase
 
         // Builds the rows of the admin menus list.
         services.AddDisplayDriver<AdminMenuEntry, AdminMenuEntryDisplayDriver>();
+
+        // Build the editors of the pages creating and editing an admin menu.
+        services.AddDisplayDriver<AdminMenuCreateViewModel, AdminMenuCreateDisplayDriver>();
+        services.AddDisplayDriver<AdminMenuEditViewModel, AdminMenuEditDisplayDriver>();
+
+        // Adds the position of an existing admin node to its editor.
+        services.AddDisplayDriver<MenuItem, AdminNodePositionDisplayDriver>();
         services.AddScoped<IAdminMenuAccessor, AdminMenuAccessor>();
         services.AddScoped<AdminMenuNavigationProvidersCoordinator>();
 

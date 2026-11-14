@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Localization;
 using OrchardCore.ContentLocalization.Models;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
@@ -15,12 +16,16 @@ public sealed class ContentCulturePickerSettingsDriver : SiteDisplayDriver<Conte
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
 
+    internal readonly IStringLocalizer S;
+
     public ContentCulturePickerSettingsDriver(
         IHttpContextAccessor httpContextAccessor,
-        IAuthorizationService authorizationService)
+        IAuthorizationService authorizationService,
+        IStringLocalizer<ContentCulturePickerSettingsDriver> stringLocalizer)
     {
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
+        S = stringLocalizer;
     }
 
     protected override string SettingsGroupId
@@ -39,7 +44,7 @@ public sealed class ContentCulturePickerSettingsDriver : SiteDisplayDriver<Conte
         {
             model.SetCookie = settings.SetCookie;
             model.RedirectToHomepage = settings.RedirectToHomepage;
-        }).Location("Content:5")
+        }).Location(l => l.Zone("Content", "5").Card(S["General"], "10"))
         .OnGroup(SettingsGroupId);
     }
 

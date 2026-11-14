@@ -25,20 +25,26 @@ public sealed class AutoroutePartSettingsDisplayDriver : ContentTypePartDefiniti
 
     public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
     {
-        return Initialize<AutoroutePartSettingsViewModel>("AutoroutePartSettings_Edit", model =>
-        {
-            var settings = contentTypePartDefinition.GetSettings<AutoroutePartSettings>();
+        var settings = contentTypePartDefinition.GetSettings<AutoroutePartSettings>();
 
-            model.AllowCustomPath = settings.AllowCustomPath;
-            model.AllowUpdatePath = settings.AllowUpdatePath;
-            model.Pattern = settings.Pattern;
-            model.ShowHomepageOption = settings.ShowHomepageOption;
-            model.AllowDisabled = settings.AllowDisabled;
-            model.AllowRouteContainedItems = settings.AllowRouteContainedItems;
-            model.ManageContainedItemRoutes = settings.ManageContainedItemRoutes;
-            model.AllowAbsolutePath = settings.AllowAbsolutePath;
-            model.AutoroutePartSettings = settings;
-        }).Location("Content");
+        return Combine(
+            Initialize<AutoroutePartSettingsViewModel>("AutoroutePartSettings_Edit", model => PopulateViewModel(settings, model))
+                .Location(l => l.Zone("Content", "1").Card(S["Settings"], "20")),
+            Initialize<AutoroutePartSettingsViewModel>("AutoroutePartSettingsContainer_Edit", model => PopulateViewModel(settings, model))
+                .Location(l => l.Zone("Content", "1").Card(S["Contained items"], "25")));
+    }
+
+    private static void PopulateViewModel(AutoroutePartSettings settings, AutoroutePartSettingsViewModel model)
+    {
+        model.AllowCustomPath = settings.AllowCustomPath;
+        model.AllowUpdatePath = settings.AllowUpdatePath;
+        model.Pattern = settings.Pattern;
+        model.ShowHomepageOption = settings.ShowHomepageOption;
+        model.AllowDisabled = settings.AllowDisabled;
+        model.AllowRouteContainedItems = settings.AllowRouteContainedItems;
+        model.ManageContainedItemRoutes = settings.ManageContainedItemRoutes;
+        model.AllowAbsolutePath = settings.AllowAbsolutePath;
+        model.AutoroutePartSettings = settings;
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)

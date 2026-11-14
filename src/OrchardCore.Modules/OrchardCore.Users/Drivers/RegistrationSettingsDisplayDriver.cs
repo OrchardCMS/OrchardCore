@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -17,14 +18,18 @@ public sealed class RegistrationSettingsDisplayDriver : SiteDisplayDriver<Regist
     private readonly IAuthorizationService _authorizationService;
     private readonly IOptionsUpdateNotifier _optionsUpdateNotifier;
 
+    internal readonly IStringLocalizer S;
+
     public RegistrationSettingsDisplayDriver(
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
-        IOptionsUpdateNotifier optionsUpdateNotifier)
+        IOptionsUpdateNotifier optionsUpdateNotifier,
+        IStringLocalizer<RegistrationSettingsDisplayDriver> stringLocalizer)
     {
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         _optionsUpdateNotifier = optionsUpdateNotifier;
+        S = stringLocalizer;
     }
 
     protected override string SettingsGroupId
@@ -44,7 +49,7 @@ public sealed class RegistrationSettingsDisplayDriver : SiteDisplayDriver<Regist
             model.UsersMustValidateEmail = settings.UsersMustValidateEmail;
             model.UsersAreModerated = settings.UsersAreModerated;
             model.UseSiteTheme = settings.UseSiteTheme;
-        }).Location("Content:5#General")
+        }).Location(l => l.Zone("Content", "5").Tab("General").Card(S["Registration"], "10"))
         .OnGroup(SettingsGroupId);
     }
 

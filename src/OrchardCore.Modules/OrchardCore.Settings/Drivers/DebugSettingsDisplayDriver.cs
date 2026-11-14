@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
@@ -17,17 +18,21 @@ public sealed class DebugSettingsDisplayDriver : SiteDisplayDriver<DebugSettings
     private readonly IAuthorizationService _authorizationService;
     private readonly IOptionsUpdateNotifier _optionsUpdateNotifier;
 
+    internal readonly IStringLocalizer S;
+
     protected override string SettingsGroupId
         => GroupId;
 
     public DebugSettingsDisplayDriver(
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
-        IOptionsUpdateNotifier optionsUpdateNotifier)
+        IOptionsUpdateNotifier optionsUpdateNotifier,
+        IStringLocalizer<DebugSettingsDisplayDriver> stringLocalizer)
     {
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         _optionsUpdateNotifier = optionsUpdateNotifier;
+        S = stringLocalizer;
     }
 
     public override async Task<IDisplayResult> EditAsync(ISite site, DebugSettings settings, BuildEditorContext context)
@@ -42,7 +47,7 @@ public sealed class DebugSettingsDisplayDriver : SiteDisplayDriver<DebugSettings
         return Initialize<DebugSettingsViewModel>("DebugSettings_Edit", model =>
         {
             model.WriteShapeDebugInformation = settings.WriteShapeDebugInformation;
-        }).Location("Content:5")
+        }).Location(l => l.Zone("Content", "5").Card(S["Shapes"], "10"))
         .OnGroup(SettingsGroupId);
     }
 
