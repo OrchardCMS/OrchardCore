@@ -6,17 +6,17 @@
   <ItemGroup>
     <PackageVersion Include="Acornima" Version="1.9.1" />
     <PackageVersion Include="AnyAscii" Version="0.3.3" />
-    <PackageVersion Include="AngleSharp" Version="1.8.5" />
+    <PackageVersion Include="AngleSharp" Version="1.9.0" />
     <PackageVersion Include="AWSSDK.S3" Version="4.0.104.8" />
     <PackageVersion Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.102.7" />
     <PackageVersion Include="Azure.Communication.Email" Version="1.1.0" />
     <PackageVersion Include="Azure.Communication.Sms" Version="1.0.2" />
-    <PackageVersion Include="Azure.Core" Version="1.63.0" />
+    <PackageVersion Include="Azure.Core" Version="1.64.0" />
     <PackageVersion Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.5.2" />
     <PackageVersion Include="Azure.Extensions.AspNetCore.DataProtection.Blobs" Version="1.5.5" />
     <PackageVersion Include="Azure.Identity" Version="1.21.0" />
     <PackageVersion Include="Azure.Search.Documents" Version="12.0.0" />
-    <PackageVersion Include="Azure.Security.KeyVault.Secrets" Version="4.11.2" />
+    <PackageVersion Include="Azure.Security.KeyVault.Secrets" Version="4.12.0" />
     <PackageVersion Include="Azure.Storage.Blobs" Version="12.30.1" />
     <PackageVersion Include="Azure.Storage.Files.DataLake" Version="12.28.0" />
     <PackageVersion Include="BenchmarkDotNet" Version="0.15.8" />
