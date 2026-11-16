@@ -7,7 +7,6 @@ using Microsoft.Extensions.Logging.Abstractions;
 using OrchardCore.Secrets;
 using OrchardCore.Secrets.Controllers;
 using OrchardCore.Secrets.ViewModels;
-using ISecret = OrchardCore.Secrets.ISecret;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Secrets;
 
@@ -94,7 +93,7 @@ public class SecretStoreControllerTests
         Assert.False(Assert.IsType<SecretStoreViewModel>(result.Model).Confirm);
         _operations.Verify(o => o.MoveSecretAsync("secret", "Database", "AzureKeyVault"), name == null ? Times.Never : Times.Once);
         _operations.Verify(o => o.MoveAllSecretsAsync("Database", "AzureKeyVault"), name == null ? Times.Once : Times.Never);
-        _manager.Verify(m => m.GetSecretAsync<ISecret>(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+        _manager.Verify(m => m.GetSecretAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
     }
 
     [Fact]

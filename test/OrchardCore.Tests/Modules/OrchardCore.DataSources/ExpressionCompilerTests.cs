@@ -35,8 +35,10 @@ public sealed class ExpressionCompilerTests
         // Act
         var value = Evaluate(formula);
 
-        // Assert
-        Assert.Equal(System.Convert.ToDecimal(expected), System.Convert.ToDecimal(value));
+        // Assert: since .NET 11 a double converts exactly to a decimal, 2.35 to 2.35000000000000008881...,
+        // so the expected value is parsed from its shortest representation instead.
+        var expectedNumber = decimal.Parse(System.Convert.ToString(expected, CultureInfo.InvariantCulture), NumberStyles.Float, CultureInfo.InvariantCulture);
+        Assert.Equal(expectedNumber, System.Convert.ToDecimal(value));
     }
 
     [Theory]

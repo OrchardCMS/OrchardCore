@@ -59,7 +59,10 @@ public class LocalizedContentItemIndexProvider : ContentHandlerBase, IIndexProvi
 
     public void Describe(DescribeContext<ContentItem> context)
     {
+        // A content item has a single LocalizationPart, so the contents admin list filtered on a culture stays without grouping.
         context.For<LocalizedContentItemIndex>()
+            .ExclusiveToDocumentType()
+            .SingleRecordPerDocument()
             .When(contentItem => contentItem.Has<LocalizationPart>() || _partRemoved.Contains(contentItem.ContentItemId))
             .Map(contentItem =>
             {

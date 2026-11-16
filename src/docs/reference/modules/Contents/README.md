@@ -605,6 +605,33 @@ Now, when a user searches for a product's serial number in the administration UI
 
 The `UseExactMatch` option in the `ContentsAdminListFilterOptions` class modifies the default search behavior by enclosing searched terms within quotation marks, creating an exact match search by default, this unless if the search text explicitly uses 'OR' or 'AND' operators.
 
+## Filters and Duplicate Items in the Admin UI
+
+`ContentItemIndex` has a single record per content item version, which its index provider declares with YesSql's `SingleRecordPerDocument()`. A query that only joins indexes declaring it doesn't need to remove the content items it would return several times, so it doesn't group its matches by document. The content items admin list, sorted by modified date as it is by default, then reads the matches in the order of the `IDX_ContentItemIndex_ModifiedUtc` or `IDX_ContentItemIndex_ContentType_ModifiedUtc` index, and stops as soon as the page is full. `ContainedPartIndex` and `LocalizedContentItemIndex` have the same declaration, so filtering the list on a list or a culture keeps it.
+
+A search text keeps the grouping, with YesSql's `NoIndexOptimizations()`: a text can't seek, and without it the database could walk the index of the order looking for the few items containing the text, all of it when none does. The content pickers do the same when searching.
+
+An index can have several records per document, for example `TaxonomyIndex` has one per term. When a filter joins such an index, or any index that doesn't declare a single record per document, YesSql groups the matches by document to return each content item once, and a page reads every match.
+
+A filter that joins an index of your own keeps the list from stopping early, unless its index provider declares a single record per document:
+
+```csharp
+public sealed class ProductIndexProvider : IndexProvider<ContentItem>
+{
+    public override void Describe(DescribeContext<ContentItem> context)
+    {
+        context.For<ProductIndex>()
+            .ExclusiveToDocumentType()
+            .SingleRecordPerDocument()
+            .Map(contentItem => contentItem.TryGet<ProductPart>(out var part)
+                ? new ProductIndex { SerialNumber = part.SerialNumber }
+                : null);
+    }
+}
+```
+
+Saving a document whose map returns several records then throws. `ExclusiveToDocumentType()` declares that only content items have records in the index, so that the count of the list reads the index tables without joining the `Document` table. Both declarations change every query on the index, not only the admin list, and YesSql can't verify the records that are already in the table. See the YesSql documentation of these methods before adding them to an existing index.
+
 ## Documenting Filters in the Admin UI
 
 The content items admin list has a **Filters** dropdown next to the search box. Its **Filter syntax** entry opens the **Available Filters** dialog, which lists every filter a user can type into the search box (`text:`, `type:`, `status:`, `sort:`, …) as a compact grid of cards.

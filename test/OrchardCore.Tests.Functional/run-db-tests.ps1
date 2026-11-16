@@ -30,7 +30,7 @@ function Invoke-Build {
     Write-Host "Building..."
     dotnet build -c Release $Project
 
-    $BuildDir     = Join-Path $ScriptDir 'bin\Release\net10.0'
+    $BuildDir     = Join-Path $ScriptDir 'bin\Release\net11.0'
     $PlaywrightDll = Join-Path $BuildDir 'Microsoft.Playwright.dll'
     if (Test-Path $PlaywrightDll) {
         Write-Host "Installing Playwright browsers..."

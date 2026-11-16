@@ -91,7 +91,7 @@ public sealed class DataPipelineIndexProvider : IndexProvider<DataPipeline>
             .Map(pipeline => new DataPipelineIndex
             {
                 PipelineId = pipeline.PipelineId,
-                Name = pipeline.Name?.Length > DataPipelineIndex.MaxNameLength ? pipeline.Name[..DataPipelineIndex.MaxNameLength] : pipeline.Name,
+                Name = TextHelper.Truncate(pipeline.Name, DataPipelineIndex.MaxNameLength),
                 IsEnabled = pipeline.IsEnabled,
                 IsPublished = pipeline.Published is not null,
                 ModifiedUtc = pipeline.ModifiedUtc,
@@ -118,13 +118,17 @@ public sealed class DataPipelineRunIndexProvider : IndexProvider<DataPipelineRun
 {
     public override void Describe(DescribeContext<DataPipelineRun> context)
     {
+        // A run is a document with a single record here, so a query that only joins indexes with a single record per document isn't
+        // grouped by document, and its count reads this table without joining the Document table.
         context.For<DataPipelineRunIndex>()
+            .ExclusiveToDocumentType()
+            .SingleRecordPerDocument()
             .Map(run => new DataPipelineRunIndex
             {
                 RunId = run.RunId,
                 PipelineId = run.PipelineId,
                 Status = run.Status.ToString(),
-                CorrelationId = run.CorrelationId?.Length > DataPipelineRunIndex.MaxCorrelationIdLength ? run.CorrelationId[..DataPipelineRunIndex.MaxCorrelationIdLength] : run.CorrelationId,
+                CorrelationId = TextHelper.Truncate(run.CorrelationId, DataPipelineRunIndex.MaxCorrelationIdLength),
                 QueuedUtc = run.QueuedUtc,
                 CompletedUtc = run.CompletedUtc,
                 HeartbeatUtc = run.HeartbeatUtc,

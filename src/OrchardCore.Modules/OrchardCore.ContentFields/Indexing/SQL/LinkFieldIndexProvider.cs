@@ -87,9 +87,9 @@ public class LinkFieldIndexProvider : ContentFieldIndexProvider
                             ContentType = contentItem.ContentType,
                             ContentPart = pair.Definition.ContentTypePartDefinition.Name,
                             ContentField = pair.Definition.Name,
-                            Url = pair.Field.Url?[..Math.Min(pair.Field.Url.Length, LinkFieldIndex.MaxUrlSize)],
+                            Url = TextHelper.Truncate(pair.Field.Url, LinkFieldIndex.MaxUrlSize),
                             BigUrl = pair.Field.Url,
-                            Text = pair.Field.Text?[..Math.Min(pair.Field.Text.Length, LinkFieldIndex.MaxTextSize)],
+                            Text = TextHelper.Truncate(pair.Field.Text, LinkFieldIndex.MaxTextSize),
                             BigText = pair.Field.Text,
                         });
             });

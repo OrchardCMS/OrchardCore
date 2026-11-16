@@ -426,6 +426,13 @@ msgctxt "OrchardCore.Indexing.Views.IndexProfile.Buttons.SummaryAdmin"
 msgid "Edit"
 msgstr ""
 
+#. Format arguments: {0}: Model.Value.Name
+#: Views/IndexProfile.Checkbox.SummaryAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Indexing.Views.IndexProfile.Checkbox.SummaryAdmin"
+msgid "Select {0}"
+msgstr ""
+
 #: Views/IndexProfile.DefaultMeta.SummaryAdmin.cshtml
 msgctxt "OrchardCore.Indexing.Views.IndexProfile.DefaultMeta.SummaryAdmin"
 msgid "Author"

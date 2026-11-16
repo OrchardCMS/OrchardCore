@@ -1,6 +1,8 @@
 using System.Data.Common;
+using Moq.Protected;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
+using YesSql.Provider.Sqlite;
 using ISession = YesSql.ISession;
 
 namespace OrchardCore.Data.Migration.Tests;
@@ -103,9 +105,15 @@ public class DataMigrationManagerTests
         extensionManagerMock.Setup(m => m.GetFeatureDependencies(It.IsAny<string>()))
             .Returns(Enumerable.Empty<IFeatureInfo>());
 
+        // The schema builder requires the connection of the transaction.
+        var transactionMock = new Mock<DbTransaction>();
+        transactionMock.Protected()
+            .SetupGet<DbConnection>("DbConnection")
+            .Returns(Mock.Of<DbConnection>());
+
         var sessionMock = new Mock<ISession>();
         sessionMock.Setup(s => s.BeginTransactionAsync())
-            .ReturnsAsync(Mock.Of<DbTransaction>());
+            .ReturnsAsync(transactionMock.Object);
 
         sessionMock.Setup(s => s.Query())
             .Returns(new FakeQuery());
@@ -114,7 +122,8 @@ public class DataMigrationManagerTests
             .Returns(Task.CompletedTask);
 
         var storeMock = new Mock<IStore>();
-        storeMock.Setup(s => s.Configuration).Returns(new Configuration());
+        // The schema builder reads the dialect of the configuration.
+        storeMock.Setup(s => s.Configuration).Returns(new Configuration().UseSqLite("Data Source=:memory:"));
 
         return new DataMigrationManager(
             typeFeatureProviderMock.Object,

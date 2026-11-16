@@ -7,6 +7,7 @@ using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Secrets;
 using OrchardCore.Settings;
+using Secret = OrchardCore.Secrets.Secret;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Secrets;
 
@@ -88,7 +89,7 @@ public class CredentialMigrationTests
         Assert.True(Assert.Single(migration.Results).Succeeded);
         Assert.Null(test.Site.Properties[scenario.Settings][scenario.LegacyProperty]?.GetValue<string>());
         Assert.Equal("Moved", test.Site.Properties[scenario.Settings][scenario.ReferenceProperty].GetValue<string>());
-        test.SecretManager.Verify(m => m.SaveSecretAsync("Moved", It.Is<TextSecret>(s => s.Text == "credential"), "Vault", It.IsAny<SecretSaveOptions>()), Times.Once);
+        test.SecretManager.Verify(m => m.SaveSecretAsync("Moved", It.Is<Secret>(s => s.Value is TextSecret && ((TextSecret)s.Value).Text == "credential"), "Vault", It.IsAny<SecretSaveOptions>()), Times.Once);
         test.SiteService.Verify(s => s.UpdateSiteSettingsAsync(It.IsAny<ISite>()), Times.Once);
     }
 
@@ -127,7 +128,7 @@ public class CredentialMigrationTests
         Assert.Equal("encrypted", test.Site.Properties[scenario.Settings][scenario.LegacyProperty].GetValue<string>());
         Assert.Null(test.Site.Properties[scenario.Settings][scenario.ReferenceProperty]);
         test.SiteService.Verify(s => s.UpdateSiteSettingsAsync(It.IsAny<ISite>()), Times.Never);
-        test.SecretManager.Verify(m => m.SaveSecretAsync(It.IsAny<string>(), It.IsAny<TextSecret>(), It.IsAny<string>(), It.IsAny<SecretSaveOptions>()), Times.Never);
+        test.SecretManager.Verify(m => m.SaveSecretAsync(It.IsAny<string>(), It.IsAny<Secret>(), It.IsAny<string>(), It.IsAny<SecretSaveOptions>()), Times.Never);
     }
 
     [Theory]
@@ -139,7 +140,7 @@ public class CredentialMigrationTests
         var test = new DriverTest(scenario, provider);
         var encrypted = provider.CreateProtector(scenario.Purpose).Protect("credential");
         test.Site.Properties[scenario.Settings] = new JsonObject { [scenario.LegacyProperty] = encrypted };
-        test.SecretManager.Setup(m => m.SaveSecretAsync(It.IsAny<string>(), It.IsAny<TextSecret>(), It.IsAny<string>(), It.IsAny<SecretSaveOptions>()))
+        test.SecretManager.Setup(m => m.SaveSecretAsync(It.IsAny<string>(), It.IsAny<Secret>(), It.IsAny<string>(), It.IsAny<SecretSaveOptions>()))
             .ThrowsAsync(new InvalidOperationException("Store unavailable"));
 
         var migration = await test.UpdateAsync(migrate: true, "Moved");

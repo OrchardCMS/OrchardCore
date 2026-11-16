@@ -24,35 +24,35 @@ public class SecretManager : ISecretManager
     }
 
     /// <inheritdoc />
-    public async Task<T> GetSecretAsync<T>(string name) where T : class, ISecret
+    public async Task<Secret> GetSecretAsync(string name)
     {
         foreach (var store in _stores)
         {
-            var secret = await store.GetSecretAsync<T>(name);
-            if (secret != null)
+            var secret = await store.GetSecretAsync(name);
+            if (secret is not null)
             {
                 return secret;
             }
         }
 
-        return null;
+        return default;
     }
 
     /// <inheritdoc />
-    public async Task<T> GetSecretAsync<T>(string name, string storeName) where T : class, ISecret
+    public async Task<Secret> GetSecretAsync(string name, string storeName)
     {
         var store = GetStore(storeName);
         if (store == null)
         {
             _logger.LogWarning("Secret store '{StoreName}' not found.", storeName);
-            return null;
+            return default;
         }
 
-        return await store.GetSecretAsync<T>(name);
+        return await store.GetSecretAsync(name);
     }
 
     /// <inheritdoc />
-    public async Task SaveSecretAsync<T>(string name, T secret, SecretSaveOptions options = null) where T : class, ISecret
+    public async Task SaveSecretAsync(string name, Secret secret, SecretSaveOptions options = null)
     {
         await using var locker = await SecretStoreOperations.AcquireMutationLockAsync(_distributedLock);
         var store = GetDefaultWritableStore();
@@ -65,7 +65,7 @@ public class SecretManager : ISecretManager
     }
 
     /// <inheritdoc />
-    public async Task SaveSecretAsync<T>(string name, T secret, string storeName, SecretSaveOptions options = null) where T : class, ISecret
+    public async Task SaveSecretAsync(string name, Secret secret, string storeName, SecretSaveOptions options = null)
     {
         await using var locker = await SecretStoreOperations.AcquireMutationLockAsync(_distributedLock);
         var store = GetStore(storeName);

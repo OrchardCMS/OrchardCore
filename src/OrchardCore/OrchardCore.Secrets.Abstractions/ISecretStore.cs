@@ -19,22 +19,20 @@ public interface ISecretStore
     /// <summary>
     /// Gets a secret by its name.
     /// </summary>
-    /// <typeparam name="T">The type of secret to retrieve.</typeparam>
     /// <param name="name">The name of the secret.</param>
-    /// <returns>The secret if found, otherwise null.</returns>
-    Task<T> GetSecretAsync<T>(string name) where T : class, ISecret;
+    /// <returns>The secret if found, otherwise a secret with a <see langword="null"/> <see cref="Secret.Value"/>.</returns>
+    Task<Secret> GetSecretAsync(string name);
 
     /// <summary>
     /// Saves a secret with the specified name.
     /// </summary>
-    /// <typeparam name="T">The type of secret to save.</typeparam>
     /// <param name="name">The name of the secret.</param>
     /// <param name="secret">The secret to save.</param>
     /// <param name="options">Optional save options including description and expiration.</param>
     /// <remarks>
     /// Complete only after the value is durably persisted. Transfers may delete their source after this method succeeds.
     /// </remarks>
-    Task SaveSecretAsync<T>(string name, T secret, SecretSaveOptions options = null) where T : class, ISecret;
+    Task SaveSecretAsync(string name, Secret secret, SecretSaveOptions options = null);
 
     /// <summary>
     /// Removes a secret by its name.

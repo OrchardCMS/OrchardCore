@@ -44,7 +44,7 @@ public class ResizeUrlFilter : ILiquidFilter
         }
 
         width = useNamed ? arguments["width"] : arguments.At(0);
-        height = useNamed ? arguments["height"] : arguments.At(1);  
+        height = useNamed ? arguments["height"] : arguments.At(1);
         mode = useNamed ? arguments["mode"] : arguments.At(2);
         quality = useNamed ? arguments["quality"] : arguments.At(3);
         format = useNamed ? arguments["format"] : arguments.At(4);

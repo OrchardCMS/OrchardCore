@@ -29,7 +29,12 @@ public class ContentItemIndexProvider : IndexProvider<ContentItem>
 {
     public override void Describe(DescribeContext<ContentItem> context)
     {
+        // Each version of a content item is a document with one record here. So a query that only joins indexes with a single record
+        // per document doesn't group its matches by document, and a page stops as soon as it's full when a database index serves its
+        // order, like the contents admin list by modified date. And its count reads this table without joining the Document table.
         context.For<ContentItemIndex>()
+            .ExclusiveToDocumentType()
+            .SingleRecordPerDocument()
             .Map(contentItem =>
             {
                 var contentItemIndex = new ContentItemIndex
@@ -49,22 +54,22 @@ public class ContentItemIndexProvider : IndexProvider<ContentItem>
 
                 if (contentItemIndex.ContentType?.Length > ContentItemIndex.MaxContentTypeSize)
                 {
-                    contentItemIndex.ContentType = contentItem.ContentType[..ContentItemIndex.MaxContentTypeSize];
+                    contentItemIndex.ContentType = TextHelper.Truncate(contentItem.ContentType, ContentItemIndex.MaxContentTypeSize);
                 }
 
                 if (contentItemIndex.Owner?.Length > ContentItemIndex.MaxOwnerSize)
                 {
-                    contentItemIndex.Owner = contentItem.Owner[..ContentItemIndex.MaxOwnerSize];
+                    contentItemIndex.Owner = TextHelper.Truncate(contentItem.Owner, ContentItemIndex.MaxOwnerSize);
                 }
 
                 if (contentItemIndex.Author?.Length > ContentItemIndex.MaxAuthorSize)
                 {
-                    contentItemIndex.Author = contentItem.Author[..ContentItemIndex.MaxAuthorSize];
+                    contentItemIndex.Author = TextHelper.Truncate(contentItem.Author, ContentItemIndex.MaxAuthorSize);
                 }
 
                 if (contentItemIndex.DisplayText?.Length > ContentItemIndex.MaxDisplayTextSize)
                 {
-                    contentItemIndex.DisplayText = contentItem.DisplayText[..ContentItemIndex.MaxDisplayTextSize];
+                    contentItemIndex.DisplayText = TextHelper.Truncate(contentItem.DisplayText, ContentItemIndex.MaxDisplayTextSize);
                 }
 
                 return contentItemIndex;

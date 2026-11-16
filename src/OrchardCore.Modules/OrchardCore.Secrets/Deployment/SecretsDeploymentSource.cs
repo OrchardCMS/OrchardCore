@@ -52,8 +52,12 @@ public sealed class SecretsDeploymentSource : DeploymentSourceBase<SecretsDeploy
             {
                 try
                 {
-                    var secret = await _secretManager.GetSecretAsync<ISecret>(info.Name, info.Store)
-                        ?? throw new InvalidOperationException($"Secret '{info.Name}' could not be read from '{info.Store}'.");
+                    var secret = await _secretManager.GetSecretAsync(info.Name, info.Store);
+                    if (secret is null)
+                    {
+                        throw new InvalidOperationException($"Secret '{info.Name}' could not be read from '{info.Store}'.");
+                    }
+
                     var encrypted = await _encryptionService.EncryptAsync(secret, step.EncryptionKeyName, info);
                     secretEntry["Version"] = encrypted.Version;
                     secretEntry["Tag"] = encrypted.Tag;

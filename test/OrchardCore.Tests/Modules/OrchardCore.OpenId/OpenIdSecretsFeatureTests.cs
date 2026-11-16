@@ -24,6 +24,7 @@ using OrchardCore.Settings;
 using OrchardCore.Tests.Stubs;
 using OpenIdSecretsMigrations = OrchardCore.OpenId.Secrets.Migrations;
 using StartupBase = OrchardCore.Modules.StartupBase;
+using Secret = OrchardCore.Secrets.Secret;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.OpenId;
 
@@ -154,13 +155,13 @@ public class OpenIdSecretsFeatureTests
         Assert.Equal("OpenId.EncryptionCertificate", settings.EncryptionKeySecretName);
         secretManager.Verify(manager => manager.SaveSecretAsync(
             "OpenId.SigningCertificate",
-            It.Is<X509Secret>(secret => secret.StoreLocation == StoreLocation.CurrentUser
-                && secret.StoreName == StoreName.My && secret.Thumbprint == "signing-thumbprint"),
+            It.Is<Secret>(secret => secret.Value is X509Secret && ((X509Secret)secret.Value).StoreLocation == StoreLocation.CurrentUser
+                && ((X509Secret)secret.Value).StoreName == StoreName.My && ((X509Secret)secret.Value).Thumbprint == "signing-thumbprint"),
             It.IsAny<SecretSaveOptions>()), Times.Once);
         secretManager.Verify(manager => manager.SaveSecretAsync(
             "OpenId.EncryptionCertificate",
-            It.Is<X509Secret>(secret => secret.StoreLocation == StoreLocation.LocalMachine
-                && secret.StoreName == StoreName.My && secret.Thumbprint == "encryption-thumbprint"),
+            It.Is<Secret>(secret => secret.Value is X509Secret && ((X509Secret)secret.Value).StoreLocation == StoreLocation.LocalMachine
+                && ((X509Secret)secret.Value).StoreName == StoreName.My && ((X509Secret)secret.Value).Thumbprint == "encryption-thumbprint"),
             It.IsAny<SecretSaveOptions>()), Times.Once);
         siteService.Verify(service => service.UpdateSiteSettingsAsync(site), Times.Once);
     }

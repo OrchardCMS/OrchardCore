@@ -350,6 +350,13 @@ msgctxt "OrchardCore.Deployment.Views.DeploymentPlanEntry.Buttons.SummaryAdmin"
 msgid "Manage Steps"
 msgstr ""
 
+#. Format arguments: {0}: Model.Value.DeploymentPlan.Name
+#: Views/DeploymentPlanEntry.Checkbox.SummaryAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Deployment.Views.DeploymentPlanEntry.Checkbox.SummaryAdmin"
+msgid "Select {0}"
+msgstr ""
+
 #: Views/DeploymentStep.Summary.cshtml
 msgctxt "OrchardCore.Deployment.Views.DeploymentStep.Summary"
 msgid "Delete"

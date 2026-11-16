@@ -299,11 +299,11 @@ public sealed class AdminController : Controller
         }
 
         // Validate type-specific requirements
-        ValidateSecretModel(model, null);
+        ValidateSecretModel(model, default);
 
         if (ModelState.IsValid)
         {
-            var secret = CreateSecretFromModel(model, null);
+            var secret = CreateSecretFromModel(model, default);
             var options = new SecretSaveOptions
             {
                 Description = model.Description,
@@ -351,8 +351,8 @@ public sealed class AdminController : Controller
         }
 
         // Get the actual secret to populate form values
-        var secret = await _secretManager.GetSecretAsync<ISecret>(secretInfo.Name, secretInfo.Store);
-        if (secret == null)
+        var secret = await _secretManager.GetSecretAsync(secretInfo.Name, secretInfo.Store);
+        if (secret is null)
         {
             return NotFound();
         }
@@ -402,8 +402,8 @@ public sealed class AdminController : Controller
         }
 
         // Get existing secret
-        var existingSecret = await _secretManager.GetSecretAsync<ISecret>(info.Name, info.Store);
-        if (existingSecret == null)
+        var existingSecret = await _secretManager.GetSecretAsync(info.Name, info.Store);
+        if (existingSecret is null)
         {
             return NotFound();
         }
@@ -459,7 +459,7 @@ public sealed class AdminController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    private void ValidateSecretModel(SecretEditViewModel model, ISecret existingSecret)
+    private void ValidateSecretModel(SecretEditViewModel model, Secret existingSecret)
     {
         var isNew = existingSecret is null;
 
@@ -485,7 +485,7 @@ public sealed class AdminController : Controller
                     break;
                 }
 
-                var secret = CreateX509Secret(model, existingSecret as X509Secret);
+                var secret = CreateX509Secret(model, existingSecret.Value as X509Secret);
                 using (var certificate = secret.GetCertificate())
                 {
                     if (certificate is null)
@@ -515,7 +515,7 @@ public sealed class AdminController : Controller
         return matches.Count == 1 ? matches[0] : null;
     }
 
-    private static void PopulateModelFromSecret(SecretEditViewModel model, ISecret secret)
+    private static void PopulateModelFromSecret(SecretEditViewModel model, Secret secret)
     {
         if (secret is X509Secret x509Secret)
         {
@@ -532,13 +532,13 @@ public sealed class AdminController : Controller
         // RsaKeySecret: don't expose the private key
     }
 
-    private ISecret CreateSecretFromModel(SecretEditViewModel model, ISecret existingSecret)
+    private static Secret CreateSecretFromModel(SecretEditViewModel model, Secret existingSecret)
     {
         return model.SecretType switch
         {
-            nameof(TextSecret) => CreateTextSecret(model, existingSecret as TextSecret),
-            nameof(RsaKeySecret) => CreateRsaKeySecret(model, existingSecret as RsaKeySecret),
-            nameof(X509Secret) => CreateX509Secret(model, existingSecret as X509Secret),
+            nameof(TextSecret) => CreateTextSecret(model, existingSecret.Value as TextSecret),
+            nameof(RsaKeySecret) => CreateRsaKeySecret(model, existingSecret.Value as RsaKeySecret),
+            nameof(X509Secret) => CreateX509Secret(model, existingSecret.Value as X509Secret),
             _ => throw new InvalidOperationException($"Unknown secret type: {model.SecretType}"),
         };
     }
@@ -596,7 +596,7 @@ public sealed class AdminController : Controller
         };
     }
 
-    private async Task SaveSecretAsync(string name, ISecret secret, string store, SecretSaveOptions options)
+    private async Task SaveSecretAsync(string name, Secret secret, string store, SecretSaveOptions options)
     {
         if (!string.IsNullOrEmpty(store))
         {

@@ -40,7 +40,7 @@ public class DatabaseSecretStore : ISecretStore
     public bool IsReadOnly => false;
 
     /// <inheritdoc />
-    public async Task<T> GetSecretAsync<T>(string name) where T : class, ISecret
+    public async Task<Secret> GetSecretAsync(string name)
     {
         ArgumentException.ThrowIfNullOrEmpty(name);
 
@@ -48,28 +48,34 @@ public class DatabaseSecretStore : ISecretStore
 
         if (!document.Secrets.TryGetValue(name, out var entry))
         {
-            return null;
+            return default;
+        }
+
+        if (!Secret.TryGetType(entry.Type, out var type))
+        {
+            _logger.LogError("The secret '{SecretName}' has an unknown type '{SecretType}'.", name, entry.Type);
+            return default;
         }
 
         try
         {
             var decryptedData = _dataProtector.Unprotect(entry.EncryptedData);
-            // Deserialize as ISecret to use polymorphic deserialization, then cast to T
-            var secret = JsonSerializer.Deserialize<ISecret>(decryptedData, _serializerOptions);
-            return secret as T;
+
+            // The type of the secret is stored with the entry, so the payload is the secret itself.
+            return Secret.FromValue(JsonSerializer.Deserialize(decryptedData, type, _serializerOptions));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to decrypt secret '{SecretName}'.", name);
-            return null;
+            return default;
         }
     }
 
     /// <inheritdoc />
-    public Task SaveSecretAsync<T>(string name, T secret, SecretSaveOptions options = null) where T : class, ISecret
+    public Task SaveSecretAsync(string name, Secret secret, SecretSaveOptions options = null)
     {
         ArgumentException.ThrowIfNullOrEmpty(name);
-        ArgumentNullException.ThrowIfNull(secret);
+        ArgumentNullException.ThrowIfNull(secret.Value, nameof(secret));
 
         // A separate scope commits only this mutation before a transfer can discard its source.
         return ShellScope.Current == null
@@ -77,12 +83,12 @@ public class DatabaseSecretStore : ISecretStore
             : ShellScope.UsingChildScopeAsync(_ => SaveCoreAsync(name, secret, options), activateShell: false);
     }
 
-    private async Task SaveCoreAsync<T>(string name, T secret, SecretSaveOptions options) where T : class, ISecret
+    private async Task SaveCoreAsync(string name, Secret secret, SecretSaveOptions options)
     {
         var document = await _documentManager.GetOrCreateMutableAsync();
 
-        // Serialize as ISecret to include type discriminator for polymorphic serialization
-        var json = JsonSerializer.Serialize<ISecret>(secret, _serializerOptions);
+        var type = secret.Value.GetType();
+        var json = JsonSerializer.Serialize(secret.Value, type, _serializerOptions);
         var encryptedData = _dataProtector.Protect(json);
 
         var now = DateTime.UtcNow;
@@ -91,7 +97,7 @@ public class DatabaseSecretStore : ISecretStore
         document.Secrets[name] = new SecretEntry
         {
             Name = name,
-            Type = secret.GetType().FullName,
+            Type = type.FullName,
             EncryptedData = encryptedData,
             CreatedUtc = existingEntry?.CreatedUtc ?? now,
             UpdatedUtc = now,

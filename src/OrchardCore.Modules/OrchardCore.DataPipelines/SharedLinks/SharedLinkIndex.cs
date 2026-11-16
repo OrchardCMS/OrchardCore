@@ -52,6 +52,6 @@ public sealed class SharedLinkIndexProvider : IndexProvider<SharedLink>
 
     private static string Truncate(string value)
     {
-        return value?.Length > SharedLinkIndex.MaxTitleLength ? value[..SharedLinkIndex.MaxTitleLength] : value;
+        return TextHelper.Truncate(value, SharedLinkIndex.MaxTitleLength);
     }
 }

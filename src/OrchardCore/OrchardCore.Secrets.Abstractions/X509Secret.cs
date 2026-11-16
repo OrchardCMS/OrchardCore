@@ -8,7 +8,7 @@ namespace OrchardCore.Secrets;
 /// Represents a secret holding an X.509 certificate, either referenced from a certificate store
 /// or contained in the secret as PEM-encoded certificate material.
 /// </summary>
-public class X509Secret : ISecret
+public sealed class X509Secret
 {
     /// <summary>
     /// Gets or sets where the certificate is loaded from.

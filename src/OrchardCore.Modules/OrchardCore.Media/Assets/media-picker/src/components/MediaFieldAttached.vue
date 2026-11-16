@@ -136,6 +136,7 @@
           <img
             ref="anchorImageRef"
             :src="selectedMedia.url"
+            :alt="selectedMedia.name"
             class="tw:max-w-full"
           />
           <div

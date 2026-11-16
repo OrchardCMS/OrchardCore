@@ -123,7 +123,7 @@ dotnet build src/OrchardCore.Themes/YourTheme
 
 # Run the application
 cd src/OrchardCore.Cms.Web
-dotnet run -f net10.0
+dotnet run -f net11.0
 ```
 
 Then create a new tenant (or reset the default one) and pick **Your Site** in the setup screen's recipe list. Verify features, theme, and content provisioned correctly.

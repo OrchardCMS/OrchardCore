@@ -13,7 +13,7 @@ Build the project and install the Playwright browser:
 
 ```bash
 dotnet build -c Release test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj
-dotnet exec test/OrchardCore.Tests.Functional/bin/Release/net10.0/Microsoft.Playwright.dll install chromium
+dotnet exec test/OrchardCore.Tests.Functional/bin/Release/net11.0/Microsoft.Playwright.dll install chromium
 ```
 
 Run all tests:

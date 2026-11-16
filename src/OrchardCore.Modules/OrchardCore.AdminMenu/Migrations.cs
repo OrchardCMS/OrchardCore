@@ -58,7 +58,7 @@ public sealed class Migrations : DataMigration
             var jsonObject = JsonNode.Parse(jsonContent);
 
             // Retrieve all admin menus
-            if (!(jsonObject["AdminMenu"] is JsonArray adminMenuItems))
+            if (jsonObject["AdminMenu"] is not JsonArray adminMenuItems)
             {
                 logger.LogWarning("Convert to 3.x format: no admin menu item in '{Identifier}', strange AdminMenuList format.", jsonObject["Identifier"]?.GetValue<string>() ?? "");
                 return;

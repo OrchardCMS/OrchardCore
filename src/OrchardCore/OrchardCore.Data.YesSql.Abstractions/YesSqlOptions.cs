@@ -22,6 +22,16 @@ public class YesSqlOptions
     public IsolationLevel IsolationLevel { get; set; } = IsolationLevel.ReadCommitted;
 
     /// <summary>
+    /// Gets or sets whether the indexes created on existing tables don't block the writes to these tables, when the database supports it.
+    /// </summary>
+    /// <remarks>
+    /// SQL Server creates them online on the editions supporting online index operations, and MySQL in place without locking
+    /// the table. PostgreSQL can't create an index concurrently in a transaction, and data migrations run in one, so it still
+    /// blocks the writes. SQLite always creates indexes the regular way.
+    /// </remarks>
+    public bool ConcurrentIndexCreationEnabled { get; set; } = true;
+
+    /// <summary>
     /// Gets or sets whether the spans of the database commands emitted by YesSql include their SQL text.
     /// </summary>
     /// <remarks>

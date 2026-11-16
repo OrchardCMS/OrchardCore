@@ -38,7 +38,11 @@ public class WorkflowIndexProvider : IndexProvider<Workflow>
 {
     public override void Describe(DescribeContext<Workflow> context)
     {
+        // A workflow instance is a document with a single record here, so a query that only joins indexes with a single record per
+        // document isn't grouped by document, and its count reads this table without joining the Document table.
         context.For<WorkflowIndex>()
+            .ExclusiveToDocumentType()
+            .SingleRecordPerDocument()
             .Map(workflow =>
                 new WorkflowIndex
                 {

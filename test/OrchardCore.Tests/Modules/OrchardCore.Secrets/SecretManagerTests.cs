@@ -4,6 +4,7 @@ using OrchardCore.Locking;
 using OrchardCore.Locking.Distributed;
 using OrchardCore.Secrets;
 using OrchardCore.Secrets.Services;
+using Secret = OrchardCore.Secrets.Secret;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Secrets;
 
@@ -27,7 +28,7 @@ public class SecretManagerTests
 
         var store1 = new Mock<ISecretStore>();
         store1.Setup(s => s.Name).Returns("Store1");
-        store1.Setup(s => s.GetSecretAsync<TextSecret>("test-secret"))
+        store1.Setup(s => s.GetSecretAsync("test-secret"))
             .ReturnsAsync(expectedSecret);
 
         var store2 = new Mock<ISecretStore>();
@@ -41,7 +42,7 @@ public class SecretManagerTests
         // Assert
         Assert.NotNull(result);
         Assert.Equal("test-value", result.Text);
-        store2.Verify(s => s.GetSecretAsync<TextSecret>(It.IsAny<string>()), Times.Never);
+        store2.Verify(s => s.GetSecretAsync(It.IsAny<string>()), Times.Never);
     }
 
     [Fact]
@@ -52,12 +53,12 @@ public class SecretManagerTests
 
         var store1 = new Mock<ISecretStore>();
         store1.Setup(s => s.Name).Returns("Store1");
-        store1.Setup(s => s.GetSecretAsync<TextSecret>("test-secret"))
+        store1.Setup(s => s.GetSecretAsync("test-secret"))
             .ReturnsAsync((TextSecret)null);
 
         var store2 = new Mock<ISecretStore>();
         store2.Setup(s => s.Name).Returns("Store2");
-        store2.Setup(s => s.GetSecretAsync<TextSecret>("test-secret"))
+        store2.Setup(s => s.GetSecretAsync("test-secret"))
             .ReturnsAsync(expectedSecret);
 
         var manager = new SecretManager([store1.Object, store2.Object], _loggerMock.Object, _distributedLock.Object);
@@ -76,7 +77,7 @@ public class SecretManagerTests
         // Arrange
         var store1 = new Mock<ISecretStore>();
         store1.Setup(s => s.Name).Returns("Store1");
-        store1.Setup(s => s.GetSecretAsync<TextSecret>("test-secret"))
+        store1.Setup(s => s.GetSecretAsync("test-secret"))
             .ReturnsAsync((TextSecret)null);
 
         var manager = new SecretManager([store1.Object], _loggerMock.Object, _distributedLock.Object);
@@ -97,12 +98,12 @@ public class SecretManagerTests
 
         var store1 = new Mock<ISecretStore>();
         store1.Setup(s => s.Name).Returns("Store1");
-        store1.Setup(s => s.GetSecretAsync<TextSecret>("test-secret"))
+        store1.Setup(s => s.GetSecretAsync("test-secret"))
             .ReturnsAsync(secret1);
 
         var store2 = new Mock<ISecretStore>();
         store2.Setup(s => s.Name).Returns("Store2");
-        store2.Setup(s => s.GetSecretAsync<TextSecret>("test-secret"))
+        store2.Setup(s => s.GetSecretAsync("test-secret"))
             .ReturnsAsync(secret2);
 
         var manager = new SecretManager([store1.Object, store2.Object], _loggerMock.Object, _distributedLock.Object);
@@ -135,7 +136,7 @@ public class SecretManagerTests
     public async Task SaveSecretAsync_SavesTo_DefaultWritableStore()
     {
         // Arrange
-        var secret = new TextSecret { Text = "new-secret" };
+        Secret secret = new TextSecret { Text = "new-secret" };
 
         var readOnlyStore = new Mock<ISecretStore>();
         readOnlyStore.Setup(s => s.Name).Returns("ReadOnly");
@@ -152,14 +153,14 @@ public class SecretManagerTests
 
         // Assert
         writableStore.Verify(s => s.SaveSecretAsync("test-secret", secret, It.IsAny<SecretSaveOptions>()), Times.Once);
-        readOnlyStore.Verify(s => s.SaveSecretAsync(It.IsAny<string>(), It.IsAny<TextSecret>(), It.IsAny<SecretSaveOptions>()), Times.Never);
+        readOnlyStore.Verify(s => s.SaveSecretAsync(It.IsAny<string>(), It.IsAny<Secret>(), It.IsAny<SecretSaveOptions>()), Times.Never);
     }
 
     [Fact]
     public async Task SaveSecretAsync_ThrowsException_WhenNoWritableStore()
     {
         // Arrange
-        var secret = new TextSecret { Text = "new-secret" };
+        Secret secret = new TextSecret { Text = "new-secret" };
 
         var readOnlyStore = new Mock<ISecretStore>();
         readOnlyStore.Setup(s => s.Name).Returns("ReadOnly");
@@ -176,7 +177,7 @@ public class SecretManagerTests
     public async Task SaveSecretAsync_WithStoreName_SavesTo_SpecificStore()
     {
         // Arrange
-        var secret = new TextSecret { Text = "new-secret" };
+        Secret secret = new TextSecret { Text = "new-secret" };
 
         var store1 = new Mock<ISecretStore>();
         store1.Setup(s => s.Name).Returns("Store1");
@@ -193,14 +194,14 @@ public class SecretManagerTests
 
         // Assert
         store2.Verify(s => s.SaveSecretAsync("test-secret", secret, It.IsAny<SecretSaveOptions>()), Times.Once);
-        store1.Verify(s => s.SaveSecretAsync(It.IsAny<string>(), It.IsAny<TextSecret>(), It.IsAny<SecretSaveOptions>()), Times.Never);
+        store1.Verify(s => s.SaveSecretAsync(It.IsAny<string>(), It.IsAny<Secret>(), It.IsAny<SecretSaveOptions>()), Times.Never);
     }
 
     [Fact]
     public async Task SaveSecretAsync_WithStoreName_ThrowsException_WhenStoreIsReadOnly()
     {
         // Arrange
-        var secret = new TextSecret { Text = "new-secret" };
+        Secret secret = new TextSecret { Text = "new-secret" };
 
         var readOnlyStore = new Mock<ISecretStore>();
         readOnlyStore.Setup(s => s.Name).Returns("ReadOnly");

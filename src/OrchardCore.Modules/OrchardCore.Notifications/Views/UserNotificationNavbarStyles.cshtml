@@ -73,4 +73,15 @@
             gap: .25rem;
             margin-top: .5rem;
         }
+
+    @@media (max-width: 575.98px) {
+        /* On small screens, the menu spans the screen below the bell, as aligning it with the bell would cut it off. */
+        .notification-navbar[data-bs-popper] {
+            position: fixed !important;
+            top: auto;
+            right: 1rem;
+            left: 1rem;
+            width: auto;
+        }
+    }
 </style>

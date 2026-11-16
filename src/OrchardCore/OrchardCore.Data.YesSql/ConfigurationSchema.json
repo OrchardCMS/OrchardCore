@@ -24,6 +24,11 @@
               "default": false,
               "description": "Whether to enable checks that help diagnosing the concurrent use of a YesSql session."
             },
+            "ConcurrentIndexCreationEnabled": {
+              "type": "boolean",
+              "default": true,
+              "description": "Whether the indexes created on existing tables don't block the writes to these tables, when the database supports it. PostgreSQL still blocks them, as data migrations run in a transaction."
+            },
             "IncludeQueryTextInTelemetry": {
               "type": "boolean",
               "default": false,

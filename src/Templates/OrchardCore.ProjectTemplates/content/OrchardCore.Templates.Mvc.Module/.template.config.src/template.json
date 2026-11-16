@@ -19,8 +19,8 @@
       "datatype": "choice",
       "choices": [
         {
-          "choice": "net10.0",
-          "description": "Target net10.0"
+          "choice": "net11.0",
+          "description": "Target net11.0"
         }
       ],
       "replaces": "$(TemplateTargetPackageFramework)",

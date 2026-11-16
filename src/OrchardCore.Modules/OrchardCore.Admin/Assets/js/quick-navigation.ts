@@ -1,4 +1,5 @@
 import removeDiacritics from "@orchardcore/bloom/helpers/removeDiacritics";
+import { appendHighlighted } from "@orchardcore/bloom/helpers/appendHighlighted";
 ///<reference path="@types/bootstrap/index.d.ts" />
 
 interface QuickNavigationDestination {
@@ -82,30 +83,6 @@ const filter = (term: string): QuickNavigationEntry[] => {
     ranked.sort((a, b) => b.rank - a.rank);
 
     return ranked.slice(0, maxResults).map((r) => r.entry);
-};
-
-// Appends text to parent, wrapping the first match of term in a <mark>. Only DOM APIs are
-// used (no innerHTML) so menu titles are never interpreted as HTML.
-const appendHighlighted = (parent: HTMLElement, text: string, term: string) => {
-    const normalizedText = normalize(text);
-    const normalizedTerm = normalize(term);
-
-    // Diacritics removal is not always one-to-one (e.g. "Æ" becomes "AE"). Only highlight when
-    // the normalized text keeps the original length so the slice offsets stay valid.
-    const start = normalizedTerm && normalizedText.length === text.length ? normalizedText.indexOf(normalizedTerm) : -1;
-
-    if (start < 0) {
-        parent.appendChild(document.createTextNode(text));
-        return;
-    }
-
-    const end = start + normalizedTerm.length;
-    const mark = document.createElement("mark");
-    mark.textContent = text.slice(start, end);
-
-    parent.appendChild(document.createTextNode(text.slice(0, start)));
-    parent.appendChild(mark);
-    parent.appendChild(document.createTextNode(text.slice(end)));
 };
 
 const setActive = (i: number) => {

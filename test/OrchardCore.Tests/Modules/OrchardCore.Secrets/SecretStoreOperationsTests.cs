@@ -7,7 +7,7 @@ using OrchardCore.Locking.Distributed;
 using OrchardCore.Secrets;
 using OrchardCore.Secrets.Providers;
 using OrchardCore.Secrets.Services;
-using ISecret = OrchardCore.Secrets.ISecret;
+using Secret = OrchardCore.Secrets.Secret;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Secrets;
 
@@ -42,7 +42,7 @@ public class SecretStoreOperationsTests
     [InlineData("X509")]
     public async Task Move_PreservesValueTypeAndMetadataAndDeletesOnlySource(string type)
     {
-        ISecret secret = type switch
+        Secret secret = type switch
         {
             "RSA" => new RsaKeySecret { PublicKey = "public", PrivateKey = "private" },
             "X509" => new X509Secret { Thumbprint = "thumbprint" },
@@ -57,14 +57,14 @@ public class SecretStoreOperationsTests
         Assert.True(result.Succeeded);
         Assert.True(result.DestinationSaved);
         Assert.Empty(_source.Entries);
-        var saved = await _manager.GetSecretAsync<ISecret>("secret", "AzureKeyVault");
-        Assert.Equal(secret.GetType(), saved.GetType());
-        Assert.Equal(JsonSerializer.Serialize(secret, secret.GetType()), JsonSerializer.Serialize(saved, saved.GetType()));
+        var saved = await _manager.GetSecretAsync("secret", "AzureKeyVault");
+        Assert.Equal(secret.Value.GetType(), saved.Value.GetType());
+        Assert.Equal(JsonSerializer.Serialize(secret), JsonSerializer.Serialize(saved));
         var info = Assert.Single(await _destination.GetSecretInfosAsync());
         Assert.Equal("description", info.Description);
         Assert.Equal(expires, info.ExpiresUtc);
         Assert.Equal("other-value", (await _other.GetSecretAsync<TextSecret>("secret")).Text);
-        Assert.Equal(JsonSerializer.Serialize(saved, saved.GetType()), JsonSerializer.Serialize(await _manager.GetSecretAsync<ISecret>("secret"), saved.GetType()));
+        Assert.Equal(JsonSerializer.Serialize(saved), JsonSerializer.Serialize(await _manager.GetSecretAsync("secret")));
         Assert.Equal(1, _source.CommitCount);
         Assert.Equal(1, _destination.CommitCount);
     }
@@ -257,8 +257,8 @@ public class SecretStoreOperationsTests
 
         public string Name { get; }
         public bool IsReadOnly { get; set; }
-        public Dictionary<string, (ISecret Secret, SecretInfo Info)> Entries { get; } = [];
-        private readonly Dictionary<string, (ISecret Secret, SecretInfo Info)> _pending = [];
+        public Dictionary<string, (Secret Secret, SecretInfo Info)> Entries { get; } = [];
+        private readonly Dictionary<string, (Secret Secret, SecretInfo Info)> _pending = [];
         private readonly HashSet<string> _removed = [];
         public bool CorruptValue { get; set; }
         public bool CorruptMetadata { get; set; }
@@ -269,20 +269,20 @@ public class SecretStoreOperationsTests
         public Action OnSave { get; set; }
         public Func<Task> BeforeSave { get; set; }
 
-        public void Add(string name, ISecret secret, string description = null, DateTime? expires = null) =>
+        public void Add(string name, Secret secret, string description = null, DateTime? expires = null) =>
             Entries[name] = (secret, new SecretInfo
             {
                 Name = name,
                 Store = Name,
-                Type = secret.GetType().FullName,
+                Type = secret.Value.GetType().FullName,
                 Description = description,
                 ExpiresUtc = expires,
             });
 
-        public Task<T> GetSecretAsync<T>(string name) where T : class, ISecret =>
-            Task.FromResult(Entries.TryGetValue(name, out var entry) ? entry.Secret as T : null);
+        public Task<Secret> GetSecretAsync(string name) =>
+            Task.FromResult(Entries.TryGetValue(name, out var entry) ? entry.Secret : default);
 
-        public async Task SaveSecretAsync<T>(string name, T secret, SecretSaveOptions options = null) where T : class, ISecret
+        public async Task SaveSecretAsync(string name, Secret secret, SecretSaveOptions options = null)
         {
             if (BeforeSave != null)
             {
@@ -291,12 +291,12 @@ public class SecretStoreOperationsTests
             }
 
             var copy = CorruptValue ? new TextSecret { Text = "wrong" }
-                : (ISecret)JsonSerializer.Deserialize(JsonSerializer.Serialize(secret, secret.GetType()), secret.GetType());
+                : Secret.FromValue(JsonSerializer.Deserialize(JsonSerializer.Serialize(secret), secret.Value.GetType()));
             _pending[name] = (copy, new SecretInfo
             {
                 Name = name,
                 Store = Name,
-                Type = copy.GetType().FullName,
+                Type = copy.Value.GetType().FullName,
                 Description = CorruptMetadata ? "wrong" : options?.Description,
                 ExpiresUtc = options?.ExpiresUtc,
             });

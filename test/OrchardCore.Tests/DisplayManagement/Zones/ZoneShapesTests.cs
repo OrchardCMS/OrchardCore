@@ -793,7 +793,6 @@ public class ZoneShapesTests
         // Non-column item should NOT be in a column wrapper
         Assert.DoesNotContain("column-content", html);
         // Non-column item should appear after the row
-        var rowEndIndex = html.LastIndexOf("</div></div>", StringComparison.Ordinal);
         var lastShapeIndex = html.LastIndexOf("<div>TestShape</div>", StringComparison.Ordinal);
         Assert.True(lastShapeIndex > html.IndexOf("row", StringComparison.Ordinal), "Non-column shape should appear after the row starts");
     }

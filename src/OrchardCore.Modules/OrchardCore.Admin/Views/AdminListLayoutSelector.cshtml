@@ -8,10 +8,10 @@
 @if (showSelector)
 {
     <div class="btn-group admin-list-layout-selector" role="group" aria-label="@T["Layout"]">
-        <a href="@Model.ListUrl" class="btn btn-sm @(isList ? "btn-primary active" : "btn-outline-secondary")" title="@T["List"]" aria-label="@T["List"]" aria-pressed="@isList">
+        <a href="@Model.ListUrl" class="btn btn-sm @(isList ? "btn-primary active" : "btn-outline-secondary")" title="@T["List"]" aria-label="@T["List"]" aria-current="@(isList ? "true" : null)">
             <i class="fa-solid fa-list" aria-hidden="true"></i>
         </a>
-        <a href="@Model.GridUrl" class="btn btn-sm @(isGrid ? "btn-primary active" : "btn-outline-secondary")" title="@T["Grid"]" aria-label="@T["Grid"]" aria-pressed="@isGrid">
+        <a href="@Model.GridUrl" class="btn btn-sm @(isGrid ? "btn-primary active" : "btn-outline-secondary")" title="@T["Grid"]" aria-label="@T["Grid"]" aria-current="@(isGrid ? "true" : null)">
             <i class="fa-solid fa-table-cells-large" aria-hidden="true"></i>
         </a>
     </div>

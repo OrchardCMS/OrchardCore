@@ -138,6 +138,13 @@ msgctxt "OrchardCore.AdminMenu.Views.AdminMenuEntry.Buttons.SummaryAdmin"
 msgid "Edit Nodes"
 msgstr ""
 
+#. Format arguments: {0}: Model.Value.AdminMenu.Name
+#: Views/AdminMenuEntry.Checkbox.SummaryAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.AdminMenu.Views.AdminMenuEntry.Checkbox.SummaryAdmin"
+msgid "Select {0}"
+msgstr ""
+
 #: Views/AdminMenuEntry.DefaultTags.SummaryAdmin.cshtml
 msgctxt "OrchardCore.AdminMenu.Views.AdminMenuEntry.DefaultTags.SummaryAdmin"
 msgid "Disabled"
