@@ -212,6 +212,7 @@ describe("main.ts", () => {
       expect(translations.noImages).toBe("No images");
       expect(translations.addMedia).toBe("Add media");
       expect(translations.removeMedia).toBe("Remove");
+      expect(translations.downloadMedia).toBe("Download");
       expect(translations.ok).toBe("OK");
       expect(translations.cancel).toBe("Cancel");
     });

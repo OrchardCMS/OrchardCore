@@ -145,6 +145,13 @@ msgctxt "OrchardCore.Deployment.Remote.Views.RemoteClient.Buttons.SummaryAdmin"
 msgid "Edit"
 msgstr ""
 
+#. Format arguments: {0}: Model.Value.ClientName
+#: Views/RemoteClient.Checkbox.SummaryAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteClient.Checkbox.SummaryAdmin"
+msgid "Select {0}"
+msgstr ""
+
 #: Views/RemoteClient/Create.cshtml
 msgctxt "OrchardCore.Deployment.Remote.Views.RemoteClient.Create"
 msgid "Api Key"
@@ -238,6 +245,13 @@ msgstr ""
 #: Views/RemoteInstance.Buttons.SummaryAdmin.cshtml
 msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Buttons.SummaryAdmin"
 msgid "Edit"
+msgstr ""
+
+#. Format arguments: {0}: Model.Value.Name
+#: Views/RemoteInstance.Checkbox.SummaryAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Deployment.Remote.Views.RemoteInstance.Checkbox.SummaryAdmin"
+msgid "Select {0}"
 msgstr ""
 
 #: Views/RemoteInstance/Create.cshtml

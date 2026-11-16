@@ -1302,6 +1302,13 @@ msgctxt "OrchardCore.Media.Views.MediaProfileEntry.Buttons.SummaryAdmin"
 msgid "Edit"
 msgstr ""
 
+#. Format arguments: {0}: Model.Value.Name
+#: Views/MediaProfileEntry.Checkbox.SummaryAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Media.Views.MediaProfileEntry.Checkbox.SummaryAdmin"
+msgid "Select {0}"
+msgstr ""
+
 #: Views/MediaProfiles/Create.cshtml
 msgctxt "OrchardCore.Media.Views.MediaProfiles.Create"
 msgid "Auto Orient"

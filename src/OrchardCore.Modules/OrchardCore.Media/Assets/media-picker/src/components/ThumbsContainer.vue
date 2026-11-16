@@ -36,6 +36,8 @@
             <button
               type="button"
               class="mf-btn-delete tw:order-2 tw:px-1 tw:py-0.5 tw:text-xs tw:border-none tw:bg-transparent tw:cursor-pointer tw:text-[var(--oc-media-body-color)] tw:flex-shrink-0"
+              :aria-label="t.removeMedia"
+              :title="t.removeMedia"
               @click.stop="emit('deleteMedia', media)"
             >
               <i class="fa-solid fa-trash" aria-hidden="true"></i>
@@ -52,6 +54,7 @@
               :src="buildMediaUrl(media.url!, thumbSize)"
               :data-mime="media.mime"
               class="tw:max-w-full tw:max-h-full tw:object-contain"
+              alt=""
               draggable="false"
             />
             <i
@@ -64,6 +67,8 @@
             <button
               type="button"
               class="mf-btn-delete tw:order-2 tw:px-1 tw:py-0.5 tw:text-xs tw:border-none tw:bg-transparent tw:cursor-pointer tw:text-[var(--oc-media-body-color)] tw:flex-shrink-0"
+              :aria-label="t.removeMedia"
+              :title="t.removeMedia"
               @click.stop="emit('deleteMedia', media)"
             >
               <i class="fa-solid fa-trash" aria-hidden="true"></i>
@@ -71,6 +76,8 @@
             <a
               :href="media.url"
               target="_blank"
+              :aria-label="t.downloadMedia"
+              :title="t.downloadMedia"
               class="mf-btn-delete tw:order-1 tw:ml-auto tw:px-1 tw:py-0.5 tw:text-xs tw:border-none tw:bg-transparent tw:cursor-pointer tw:text-[var(--oc-media-body-color)] tw:flex-shrink-0"
               @click.stop
             >
@@ -92,6 +99,8 @@
             <button
               type="button"
               class="mf-btn-delete tw:order-2 tw:px-1 tw:py-0.5 tw:text-xs tw:border-none tw:bg-transparent tw:cursor-pointer tw:text-[var(--oc-media-body-color)] tw:flex-shrink-0"
+              :aria-label="t.removeMedia"
+              :title="t.removeMedia"
               @click.stop="emit('deleteMedia', media)"
             >
               <i class="fa-solid fa-trash" aria-hidden="true"></i>

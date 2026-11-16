@@ -1002,6 +1002,13 @@ msgctxt "OrchardCore.Contents.Views.ContentsButtonEdit_SummaryAdmin"
 msgid "View"
 msgstr ""
 
+#. Format arguments: {0}: Model.ContentItem.DisplayText
+#: Views/ContentsCheckbox_SummaryAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Contents.Views.ContentsCheckbox_SummaryAdmin"
+msgid "Select {0}"
+msgstr ""
+
 #: Views/ContentsMeta_SummaryAdmin.cshtml
 msgctxt "OrchardCore.Contents.Views.ContentsMeta_SummaryAdmin"
 msgid "Author"
