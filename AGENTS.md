@@ -585,6 +585,8 @@ This applies to admin-facing Razor edit views such as:
 
 > **Default rule:** Always use the standard `ocat-wrapper` + `ocat-label` + `ocat-end` pattern unless the input is a `type="number"` field or the user explicitly asks for limited/compact width.
 
+> **Cards:** Every admin screen with a form, except a content item editor, groups its fields in cards declared by placement, see [Cards](#cards).
+
 ### Standard field example
 
 ```cshtml
@@ -664,7 +666,7 @@ Use `ocat-end-offset` for alerts and notices that belong to the form but do not 
 
 ### Cards
 
-Every admin form groups its fields in cards, each a logical section of the form with a short title, so that a long form is easy to follow. Read the `orchardcore-admin-edit-views` skill in `.agents/skills/` before adding or changing an admin form.
+**Always group the fields of a new or changed admin screen in cards: site settings, settings of a feature, create and edit pages, content type, part and field settings, workflow activities, deployment steps, and any other admin page with a form.** The only exception is the editor of a content item, whose parts and fields are never grouped in cards. Cards give the whole admin panel one consistent, continuous look: each card is a logical section of the form with a short title (e.g. "Server", "Authentication", "Sender"), so that a long form is easy to follow. Read the `orchardcore-admin-edit-views` skill in `.agents/skills/` before adding or changing an admin form.
 
 - **Screens built by display drivers** (site settings, users, content definition settings, workflow activities, deployment steps, ...): declare the card in the placement location of each editor shape, with a name localized by the driver, e.g. `.Location(l => l.Zone("Content", "1").Card(S["Server"], "10"))`. Shapes placed in the same card share it. Split a view holding several sections into one shape per card. Their views hold no card markup.
 - **Content item editors** are not grouped in cards: the editor shapes of content parts and content fields don't declare cards.
