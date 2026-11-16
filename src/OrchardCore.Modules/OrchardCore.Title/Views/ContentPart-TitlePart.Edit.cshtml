@@ -22,12 +22,7 @@
     }
 }
 
-@{
-    var cssClass = $"content-part-wrapper content-part-wrapper-{typePartDefinition.PartDefinition.Name.HtmlClassify()}"
-        + (typePartDefinition.IsNamedPart() ? $" content-part-wrapper-{typePartDefinition.Name.HtmlClassify()}" : string.Empty);
-}
-
-<div class="@cssClass">
+<div class="@($"ocat-wrapper content-part-wrapper content-part-wrapper-{typePartDefinition.PartDefinition.Name.HtmlClassify()}" + (typePartDefinition.IsNamedPart() ? $" content-part-wrapper-{typePartDefinition.Name.HtmlClassify()}" : string.Empty))">
     @foreach (var shape in shapes)
     {
         @await DisplayAsync(shape)

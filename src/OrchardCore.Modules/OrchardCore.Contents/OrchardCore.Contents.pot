@@ -2299,9 +2299,41 @@ msgctxt "OrchardCore.Contents.Views.Items.UpdateContentTask.Fields.Thumbnail"
 msgid "Update a content item."
 msgstr ""
 
+#: Views/Shared/Components/SelectContentTypes/Checkboxes.cshtml
+msgctxt "OrchardCore.Contents.Views.Shared.Components.SelectContentTypes.Checkboxes"
+msgid "Select all"
+msgstr ""
+
+#: Views/Shared/Components/SelectContentTypes/Default.cshtml
+msgctxt "OrchardCore.Contents.Views.Shared.Components.SelectContentTypes.Default"
+msgid "Deselect all"
+msgstr ""
+
+#. Format arguments: {0}: "{0}"
+#: Views/Shared/Components/SelectContentTypes/Default.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Contents.Views.Shared.Components.SelectContentTypes.Default"
+msgid "No content type matches {0}"
+msgstr ""
+
+#: Views/Shared/Components/SelectContentTypes/Default.cshtml
+msgctxt "OrchardCore.Contents.Views.Shared.Components.SelectContentTypes.Default"
+msgid "Remove"
+msgstr ""
+
+#: Views/Shared/Components/SelectContentTypes/Default.cshtml
+msgctxt "OrchardCore.Contents.Views.Shared.Components.SelectContentTypes.Default"
+msgid "Search content types"
+msgstr ""
+
 #: Views/Shared/Components/SelectContentTypes/Default.cshtml
 msgctxt "OrchardCore.Contents.Views.Shared.Components.SelectContentTypes.Default"
 msgid "Select all"
+msgstr ""
+
+#: Views/Shared/Components/SelectContentTypes/Default.cshtml
+msgctxt "OrchardCore.Contents.Views.Shared.Components.SelectContentTypes.Default"
+msgid "Select content types"
 msgstr ""
 
 #: Views/Shared/Components/SelectContentTypes/Picker.cshtml

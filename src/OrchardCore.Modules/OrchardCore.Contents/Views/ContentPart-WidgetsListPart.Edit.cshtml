@@ -1,0 +1,37 @@
+@using OrchardCore.ContentManagement.Metadata.Models
+@using OrchardCore.ContentManagement.Metadata.Settings
+@using OrchardCore.ContentTypes
+@using OrchardCore.Localization.Data
+@using OrchardCore.Mvc.Utilities
+
+@inject IDataLocalizer D
+
+@{
+    var shapes = Model.Items;
+
+    if (shapes.Count == 0)
+    {
+        return;
+    }
+
+    ContentTypePartDefinition typePartDefinition = Model.ContentTypePartDefinition;
+    var description = typePartDefinition.Description();
+}
+
+<div class="@($"ocat-wrapper content-part-wrapper content-part-wrapper-{typePartDefinition.PartDefinition.Name.HtmlClassify()}" + (typePartDefinition.IsNamedPart() ? $" content-part-wrapper-{typePartDefinition.Name.HtmlClassify()}" : string.Empty))">
+    <div class="ocat-label">
+        @D[typePartDefinition.DisplayName(), DataLocalizationContext.ContentType]
+
+        @if (!string.IsNullOrEmpty(description))
+        {
+            <small class="form-text text-muted">@description</small>
+        }
+    </div>
+
+    <div class="ocat-end">
+        @foreach (var shape in shapes)
+        {
+            @await DisplayAsync(shape)
+        }
+    </div>
+</div>

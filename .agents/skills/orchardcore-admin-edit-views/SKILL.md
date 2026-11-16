@@ -102,11 +102,7 @@ public override IDisplayResult Edit(ISite site, SmtpSettings settings, BuildEdit
 
 #### Content item editors
 
-Each content part of a content item is placed in a card titled with its display name (`Parts:5%Html Body`, see `ContentTypePartDefinitionEditorExtensions.GetEditorCardName`), and `ContentPart.Edit.cshtml` renders the editors of the part and of its fields in it, with the description of the part. The editor shapes of content parts and content fields don't declare cards.
-
-- A field placed in a card of its part, e.g. `"place": "Parts.Product:5%Shipping"`, is grouped in that card inside the card of the part.
-- A part placed in another card of the parts zone, e.g. `"ContentPart_Edit": [{ "differentiator": "Product-AliasPart", "place": "Parts:5%Metadata" }]`, shares that card with the other parts placed in it, as a section titled with its display name.
-- A part placing shapes in the parts zone itself, such as the SEO part in its own tab, declares their cards in their placement, as any driver.
+Content item editors are not grouped in cards: the editor shapes of content parts and content fields don't declare cards, and `ContentPart.Edit.cshtml` renders the parts as they are.
 
 ### Admin pages with a form: an editor built by display drivers
 
@@ -162,19 +158,28 @@ internal sealed class TemplateDisplayDriver : DisplayDriver<TemplateViewModel>
 
 ### How cards render
 
-The admin theme renders a card as a `<fieldset class="ocat-card">` titled by its `<legend class="ocat-card-title">`, always expanded: cards group fields, they don't hide them, so never group fields in an accordion, a collapse or a `<details>` element. Views never write card markup themselves.
+The admin theme renders a card (the `Card` shape) as a Bootstrap card, or as a `<fieldset>` titled by its `<legend>` in a tab (e.g. the general, email and SMS settings), always expanded: cards group fields, they don't hide them, so never group fields in an accordion, a collapse or a `<details>` element. Views never write card markup themselves.
 
-- In a tab, which already frames them, the cards render as fieldsets titled by their legends, without the box of a card. The only card of a tab, or a card named as its tab, renders its fields directly, as its title would repeat the tab.
-- A card inside a card renders as a section.
+```html
+<div class="card mb-3 ocat-card" role="group" aria-labelledby="...">
+    <div class="card-header ocat-card-title" id="...">Server</div>
+    <div class="card-body ocat-card-body">...</div>
+</div>
+```
+
+- The `ocat-card`, `ocat-card-title` and `ocat-card-body` classes are hooks for scripts and custom admin themes.
+- A card whose shapes render nothing is not shown.
 - The buttons of the form (Save, Cancel) stay after the editor. Tables and lists belonging to a group, e.g. the permissions of a role, are shapes of their card. Modal dialogs, list filters and inline editors don't use cards.
 
-| Class | Element | Purpose |
-|-------|---------|---------|
-| `ocat-card` | `<fieldset>` | A group of fields. Being a fieldset, screen readers announce its title as the name of the group |
-| `ocat-card-title` | `<legend>` | The title of the card |
-| `ocat-card-body` | `<div>` | The rows of the card |
-| `ocat-card-description` | `<p>` | A description, e.g. of a content part, at the top of its card |
-| `ocat-card-section`, `ocat-card-section-title` | `<div>` | A titled section in a card, e.g. a part sharing a card with other parts |
+### Selecting content types
+
+To select content types, render the `SelectContentTypes` view component of `OrchardCore.Contents` instead of a list of checkboxes: a searchable bootstrap-select picker that shows the selected content types as tags, with select all and deselect all. It posts the selected names under `htmlName`, as checkboxes sharing that name would.
+
+```cshtml
+@await Component.InvokeAsync("SelectContentTypes", new { selectedContentTypes = Model.ContentTypes, htmlName = Html.NameFor(m => m.ContentTypes) })
+```
+
+Pass `stereotype` to list the content types of a stereotype, `displayMode = "Picker"` for a filter where no selection means any content type, or `displayMode = "Checkboxes"` for the checkbox list.
 
 ## Field Type Templates
 

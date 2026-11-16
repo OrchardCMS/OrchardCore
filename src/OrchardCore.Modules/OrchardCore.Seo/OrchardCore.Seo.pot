@@ -40,21 +40,6 @@ msgstr ""
 
 #: Drivers/SeoMetaPartDisplayDriver.cs
 msgctxt "OrchardCore.Seo.Drivers.SeoMetaPartDisplayDriver"
-msgid "Google Schema"
-msgstr ""
-
-#: Drivers/SeoMetaPartDisplayDriver.cs
-msgctxt "OrchardCore.Seo.Drivers.SeoMetaPartDisplayDriver"
-msgid "Open Graph"
-msgstr ""
-
-#: Drivers/SeoMetaPartDisplayDriver.cs
-msgctxt "OrchardCore.Seo.Drivers.SeoMetaPartDisplayDriver"
-msgid "Search engines"
-msgstr ""
-
-#: Drivers/SeoMetaPartDisplayDriver.cs
-msgctxt "OrchardCore.Seo.Drivers.SeoMetaPartDisplayDriver"
 msgid "The canonical entry contains invalid characters."
 msgstr ""
 
@@ -66,11 +51,6 @@ msgstr ""
 #: Drivers/SeoMetaPartDisplayDriver.cs
 msgctxt "OrchardCore.Seo.Drivers.SeoMetaPartDisplayDriver"
 msgid "The meta entries are written in an incorrect format."
-msgstr ""
-
-#: Drivers/SeoMetaPartDisplayDriver.cs
-msgctxt "OrchardCore.Seo.Drivers.SeoMetaPartDisplayDriver"
-msgid "Twitter"
 msgstr ""
 
 #: GraphQL/MetaEntryQueryObjectType.cs

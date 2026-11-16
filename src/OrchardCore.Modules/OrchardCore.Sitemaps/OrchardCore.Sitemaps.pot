@@ -170,11 +170,6 @@ msgctxt "OrchardCore.Sitemaps.Drivers.SitemapIndexDisplayDriver"
 msgid "Sitemaps"
 msgstr ""
 
-#: Drivers/SitemapPartDisplayDriver.cs
-msgctxt "OrchardCore.Sitemaps.Drivers.SitemapPartDisplayDriver"
-msgid "Sitemap"
-msgstr ""
-
 #: Drivers/SitemapsRobotsSettingsDisplayDriver.cs
 msgctxt "OrchardCore.Sitemaps.Drivers.SitemapsRobotsSettingsDisplayDriver"
 msgid "Sitemaps"

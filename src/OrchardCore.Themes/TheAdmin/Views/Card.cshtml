@@ -1,48 +1,27 @@
 @model OrchardCore.DisplayManagement.ViewModels.GroupingViewModel
 @using OrchardCore.DisplayManagement
 @using OrchardCore.DisplayManagement.ViewModels
-@using OrchardCore.Localization.Data
 @using OrchardCore.Mvc.Utilities
 
 @inject IShapeFactory ShapeFactory
-@inject IDataLocalizer D
 
 @*
     A card of a content zone, grouping the shapes placed in the same card, e.g. with a "Content:5%Server;10"
-    placement, rendered as the cards of the admin forms. The card is always expanded: it groups fields, it doesn't
+    placement, rendered as a Bootstrap card, or as a fieldset in a tab, always expanded: it groups fields, it doesn't
     hide them. The shapes placed in no card are grouped under the "Content" key: they render as they are.
 *@
 
 @{
     var name = Model.Grouping.Key;
 
-    // The columns of the shapes placed in this card, e.g. with a "Parts:5%Metadata|Left" placement.
+    // The columns of the shapes placed in this card, e.g. with a "Content:5%Server|Left" placement.
     var columns = await ShapeFactory.CreateAsync<GroupingViewModel>("ColumnGrouping", m =>
     {
         m.Identifier = Model.Identifier;
         m.Grouping = Model.Grouping;
     });
 
-    // A display driver names a card with a localized string. The cards of the content parts of a content item are
-    // named after the display names of the parts, translated as the other names of content definitions.
-    string title = name;
-
-    if (Model.Grouping.Any(item => item is IShape shape && shape.Metadata.Type == "ContentPart_Edit"))
-    {
-        title = D[name, OrchardCore.ContentTypes.DataLocalizationContext.ContentType].Value;
-    }
-
-    // In a tab, which already frames them, the cards render as fieldsets titled by their legends (see _ocat.scss).
-    var tab = Model.Grouping
-        .OfType<IShape>()
-        .Select(shape => shape.Metadata.TabGrouping)
-        .FirstOrDefault(grouping => grouping.HasValue);
-
-    // The only card of a tab, or a card named as its tab, would repeat the tab: its shapes render as they are.
-    var repeatsTab = (tab.HasValue && string.Equals(tab.Name, name, StringComparison.Ordinal)) ||
-        (Model.Properties.TryGetValue("OnlyCardOfTab", out var onlyCardOfTab) && onlyCardOfTab is true);
-
-    // A card whose shapes render nothing, e.g. a content part whose editors are all placed elsewhere, is not shown.
+    // A card whose shapes render nothing is not shown.
     var content = await DisplayAsync(columns);
 
     using var writer = new System.IO.StringWriter();
@@ -53,18 +32,33 @@
     {
         return;
     }
+
+    var titleId = $"card-{Model.Identifier}-{name}".HtmlClassify();
+
+    // In a tab, which already frames them, the groups are fieldsets titled by their legends, e.g. in the general,
+    // email and SMS settings.
+    var inTab = Model.Grouping.OfType<IShape>().Any(shape => shape.Metadata.TabGrouping.HasValue);
 }
 
-@if (name == "Content" || repeatsTab)
+@if (name == "Content")
 {
     @Html.Raw(html)
 }
-else
+else if (inTab)
 {
-    <fieldset class="ocat-card @($"ocat-card-{name}".HtmlClassify())">
-        <legend class="ocat-card-title">@title</legend>
+    <fieldset class="mb-4 ocat-card @($"ocat-card-{name}".HtmlClassify())">
+        <legend class="fs-6 fw-semibold border-bottom pb-2 mb-3 ocat-card-title">@name</legend>
         <div class="ocat-card-body">
             @Html.Raw(html)
         </div>
     </fieldset>
+}
+else
+{
+    <div class="card mb-3 ocat-card @($"ocat-card-{name}".HtmlClassify())" role="group" aria-labelledby="@titleId">
+        <div class="card-header ocat-card-title" id="@titleId">@name</div>
+        <div class="card-body ocat-card-body">
+            @Html.Raw(html)
+        </div>
+    </div>
 }

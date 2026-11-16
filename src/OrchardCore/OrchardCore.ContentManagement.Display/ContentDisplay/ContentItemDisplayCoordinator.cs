@@ -386,10 +386,7 @@ public class ContentItemDisplayCoordinator : IContentDisplayHandler
         var typePartShapeResult = ShapeResult.Create(shapeType, static (_, _) => ValueTask.FromResult<IShape>(new ContentPartShapeViewModel()), shapeType);
         typePartShapeResult.Differentiator($"{contentType}-{partName}");
         typePartShapeResult.Name(partName);
-
-        // Each part is a card of the editor, titled with the display name of the part. A placement can place
-        // the part in another card, e.g. one shared with other parts, or in no card.
-        typePartShapeResult.Location(l => l.Zone("Parts", partPosition).Card(typePartDefinition.GetEditorCardName(), partPosition));
+        typePartShapeResult.Location($"Parts:{partPosition}");
         typePartShapeResult.OnGroup(groupId);
         typePartShapeResult.Displaying(ctx =>
         {

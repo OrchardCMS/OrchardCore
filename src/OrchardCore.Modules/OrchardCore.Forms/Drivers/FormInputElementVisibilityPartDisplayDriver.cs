@@ -93,7 +93,7 @@ internal sealed class FormInputElementVisibilityPartDisplayDriver : ContentPartD
                         CaseSensitive = rule.CaseSensitive,
                     }),
                 });
-        }).Location(l => l.Zone("Parts", "0").Tab("Visibility Settings", "5").Card(S["Visibility rules"], "10"));
+        }).Location("Parts:0#Visibility Settings;5");
     }
 
     public override async Task<IDisplayResult> UpdateAsync(FormInputElementVisibilityPart part, UpdatePartEditorContext context)
