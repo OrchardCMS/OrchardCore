@@ -52,7 +52,7 @@ public sealed class Migrations : DataMigration
     public async Task<int> UpdateFrom2Async()
     {
         await _contentDefinitionManager.AlterTypeDefinitionAsync("SocialMetaSettings", type => type
-            .DisplayedAs("Social Meta"));
+            .WithDisplayName("Social Meta"));
 
         return 3;
     }
