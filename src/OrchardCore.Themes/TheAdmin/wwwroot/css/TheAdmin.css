@@ -684,6 +684,24 @@ html:has(.action-bar-bottom) {
   --bs-btn-padding-x: 0.25rem;
 }
 
+/*
+ Filters of the admin lists rendered with bootstrap-select.
+
+ bootstrap-select greys the toggle out (.bs-placeholder) while nothing is selected, which is right for a form field
+ whose title is a placeholder, but not for a filter: its title is the name of the filter whatever is selected, e.g.
+ a multiple "Visibility" filter with options selected next to a "Status" filter without, so the filters of a list
+ looked different from each other. Filters, in an admin list or showing a static title, keep the color of their
+ button.
+*/
+.admin-list .bootstrap-select > .btn.dropdown-toggle.bs-placeholder, .admin-list .bootstrap-select > .dropdown-toggle.bs-placeholder.button, .admin-list .bootstrap-select > .btn.dropdown-toggle.bs-placeholder:hover, .admin-list .bootstrap-select > .btn.dropdown-toggle.bs-placeholder:focus, .admin-list .bootstrap-select > .btn.dropdown-toggle.bs-placeholder:active,
+.bootstrap-select > select[data-selected-text-format=static] + .btn.dropdown-toggle.bs-placeholder,
+.bootstrap-select > select[data-selected-text-format=static] + .dropdown-toggle.bs-placeholder.button,
+.bootstrap-select > select[data-selected-text-format=static] + .btn.dropdown-toggle.bs-placeholder:hover,
+.bootstrap-select > select[data-selected-text-format=static] + .btn.dropdown-toggle.bs-placeholder:focus,
+.bootstrap-select > select[data-selected-text-format=static] + .btn.dropdown-toggle.bs-placeholder:active {
+  color: var(--bs-btn-color);
+}
+
 .oc-breadcrumb .breadcrumb {
   --bs-breadcrumb-divider: '\203A';
   align-items: center;
@@ -9906,6 +9924,17 @@ input[type=password]::-ms-clear {
   border-top: var(--bs-border-width) solid var(--bs-border-color) !important;
   border-top-left-radius: var(--bs-border-radius) !important;
   border-top-right-radius: var(--bs-border-radius) !important;
+}
+
+/*
+ The first row a search leaves visible gets the top border and corners of the list, unless a visible item comes
+ before it, such as the toolbar strip of an admin list: it is then a middle row, which keeps square corners and
+ the single border it shares with the item above.
+*/
+.list-group > li:not(.d-none) ~ .first-child-visible {
+  border-top-width: 0 !important;
+  border-top-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
 }
 
 .list-group .last-child-visible {
