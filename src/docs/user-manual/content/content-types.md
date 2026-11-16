@@ -18,6 +18,7 @@ A **content type** is the template for a kind of content: *Article*, *Blog Post*
 | **Permission** | *View content types.* (see the lists), *Edit content types.* (create, change and delete) |
 | **Feature** | **Content Types** (`OrchardCore.ContentTypes`) |
 
+![The Content Types list](images/content-types.webp)
 
 !!! warning "Changes apply to every content item of the type"
     Changing a content type changes the editor and the display of all its content items at once. Try big changes on a test site first.
@@ -51,6 +52,8 @@ A new type is **Creatable**, **Listable**, **Draftable**, **Versionable** and **
 
 Open **Design > Content Definition > Content Types** and click **Edit** on the type. The top of the editor holds the type's settings. Click **Save** at the bottom to apply them, or open the arrow next to **Save** and choose **and continue** to save and stay on the page.
 
+![The editor of the Blog Post content type, with its settings, parts and fields](images/edit-content-type.webp)
+
 | Setting | What it does |
 | --- | --- |
 | **Technical Name** | Read only. |
@@ -71,6 +74,8 @@ Open **Design > Content Definition > Content Types** and click **Edit** on the t
 
 ## Add parts to a content type
 
+![The Add Parts screen](images/add-parts.webp)
+
 1. Open the type editor and click **Add Parts** (under the list of parts).
 2. Tick each part you want and click **Add Selected Parts**. To add one part and set it up straight away, click **Add & Configure** on its row instead.
 
@@ -88,6 +93,8 @@ Some parts can be added more than once to the same type, each copy with its own 
 Only parts marked **Reusable** are offered. When there are none, the screen says *There are no available named parts.*
 
 ## Add fields to a content type
+
+![The Add Field screen](images/add-field.webp)
 
 1. Open the type editor and click **Add Field** (under the list of fields).
 2. Type the **Display Name**, for example *Start date*. The **Technical Name** fills in by itself.

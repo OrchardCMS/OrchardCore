@@ -16,6 +16,8 @@ An Orchard Core site is made of **features**: pieces you turn on only when your 
 | **Permission** | *Manage Features* |
 | **Feature** | **Features** (`OrchardCore.Features`), always on |
 
+![The Features screen, listing the features grouped by category, with an Enable or Disable button on each](images/features.webp)
+
 !!! tip "Don't see this menu?"
     Only people whose role has the *Manage Features* permission see **Tools > Features**. Usually that's the **Administrator** role. See [Roles and permissions](roles-and-permissions.md).
 

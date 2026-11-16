@@ -17,6 +17,8 @@ This page lists every activity of the workflow designer. The **Activities** list
 | **Permission** | *Manage workflows* |
 | **Feature** | **Workflows** (`OrchardCore.Workflows`), plus **HTTP Workflows Activities** (`OrchardCore.Workflows.Http`), **Timer Workflows Activities** (`OrchardCore.Workflows.Timers`) and **Session Workflows Activities** (`OrchardCore.Workflows.Session`) for their activities |
 
+![The workflow designer](images/workflow-designer.webp)
+
 ## Background
 
 | Activity | What it does |

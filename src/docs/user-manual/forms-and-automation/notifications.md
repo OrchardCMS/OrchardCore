@@ -36,6 +36,8 @@ A notification is marked as read as soon as you point at it or click it in the l
 
 The notification center lists only your own notifications: nobody else, not even an administrator, sees them here.
 
+![The Notification Center](images/notifications.webp)
+
 | Element | What it does |
 | --- | --- |
 | **Search** | Finds notifications by their text. |

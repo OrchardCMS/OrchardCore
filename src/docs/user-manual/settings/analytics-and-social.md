@@ -22,8 +22,9 @@ These screens connect your site to outside services: Google Analytics and Google
 
 The Administrator role has all these permissions by default. Signing in with a Google, Meta or X account is a different feature; see [External sign-in](../users/external-sign-in.md).
 
-
 ## Track visits with Google Analytics
+
+![The Google Analytics settings](images/google-analytics.webp)
 
 1. In your Google Analytics account, copy the ID of your property's web data stream (it looks like `G-XXXXXXXXXX`).
 2. Open **Settings > Integrations > Google Analytics**.
@@ -35,6 +36,8 @@ The Google Analytics script is added to every page of the site (not to the admin
 ## Add Google Tag Manager
 
 Google Tag Manager loads your marketing and analytics tags from one place, managed in Google's own interface.
+
+![The Google Tag Manager settings](images/google-tag-manager.webp)
 
 1. In Google Tag Manager, copy the ID of your container (it looks like `GTM-XXXXXXX`).
 2. Open **Settings > Integrations > Google Tag Manager**.
@@ -49,6 +52,8 @@ The Tag Manager script is added to every page of the site (not to the admin). Us
 ## Connect a Meta app
 
 A Meta app connects your site to Meta's developer platform. The [Meta widgets](#add-meta-social-plugin-widgets) and Meta sign-in need it.
+
+![The Meta App settings](images/meta-app.webp)
 
 1. On the Meta for Developers website, create an app and copy its App ID and App Secret.
 2. Open **Settings > Integrations > Meta App**.
@@ -67,6 +72,8 @@ A Meta app connects your site to Meta's developer platform. The [Meta widgets](#
 ## Measure ads with the Meta Pixel
 
 The Meta Pixel tells Meta which visitors came from your ads and what they did on your site.
+
+![The Meta Pixel settings](images/meta-pixel.webp)
 
 1. In Meta Events Manager, copy your Pixel ID.
 2. Open **Settings > Integrations > Meta Pixel**.

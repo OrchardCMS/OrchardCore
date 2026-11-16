@@ -19,10 +19,11 @@ Everyone who signs in to the site has a user account. The user list is where adm
 | **Permission** | *List all users* to open the list. *Edit any user*, *Delete any user*, *Assign any role to users* for the actions. *Manage security settings and all users* includes all of them except *Assign any role to users*. |
 | **Feature** | **Users** (`OrchardCore.Users`) |
 
-
 The dashboard also shows a **Manage users** card with a **Go to users** button.
 
 ## Find a user
+
+![The Users list](images/users.webp)
 
 Open **Access Control > Users**. Each row shows the user name and email address, a badge for each of the person's roles, and these status badges when they apply:
 
@@ -40,6 +41,8 @@ To narrow the list:
 The list can also be shown as a grid with **User**, **Roles** and **Actions** columns. See [Finding your way](../getting-started/finding-your-way.md) for layouts and paging.
 
 ## Add a user
+
+![The screen to add a user](images/create-user.webp)
 
 1. Open **Access Control > Users** and click **Add User** at the top right.
 2. Fill in the form on the **Create User** page (see the table).

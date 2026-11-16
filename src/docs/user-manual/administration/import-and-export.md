@@ -18,13 +18,14 @@ Import and export moves content and configuration from one site to another: from
 | **Permission** | *Manage deployment plans* and *Export Data*, both, to open **Plans**, create and change plans and run them. *Import Data* to import. Administrators have them by default. |
 | **Feature** | **Deployment** (`OrchardCore.Deployment`) |
 
-
 !!! warning "Importing changes the site right away"
     An import runs the package as a [recipe](recipes.md): it adds or replaces content, settings and configuration as soon as you click **Import**, with no preview and no undo. *Import Data* is marked as a security-critical permission. Import only packages you trust, and try them on a test site first.
 
 To send a plan straight to another site instead of downloading a file, see [Remote deployment](remote-deployment.md). For a step-by-step example, see [Copy content between sites](../use-cases/copy-content-between-sites.md).
 
 ## Create a deployment plan
+
+![The Deployment Plans list](images/deployment-plans.webp)
 
 1. Open **Tools > Deployments > Plans** and click **Add Deployment Plan**.
 2. Type a **Name**. It is required and must be unique.
@@ -123,6 +124,8 @@ In **Tools > Deployments > Plans**, each row has **Manage Steps**, **Edit** (to 
 
 ## Import a package
 
+![The Package Import screen](images/package-import.webp)
+
 1. Open **Tools > Deployments > Package Import** on the site that receives the data.
 2. Click **Select a file** and choose the `.zip` package, or a single `.json` recipe file.
 3. Click **Import**.
@@ -130,6 +133,8 @@ In **Tools > Deployments > Plans**, each row has **Manage Steps**, **Edit** (to 
 You see *Deployment package imported.* when it worked. If a step fails, you see *The import failed with the following errors: ...*. A step that needs a feature that isn't turned on in this site is skipped without a message, so turn on the same features as the source site first, or include the **All Features** step.
 
 ## Import JSON
+
+![The JSON Import screen](images/json-import.webp)
 
 To import a recipe without a file, for example steps a developer sent you:
 

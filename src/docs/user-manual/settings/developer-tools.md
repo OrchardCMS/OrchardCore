@@ -28,10 +28,11 @@ Some features are mostly for developers, integrators and power users: tools to e
 
 The Administrator role has these permissions by default.
 
-
 ## Explore your content with GraphiQL
 
 GraphQL is a way for other applications, such as a mobile app or a separate website front end, to ask the site for exactly the content they need. **Tools > GraphiQL** opens GraphiQL, an explorer where you type a query on the left and see the answer on the right. The explorer suggests the content types, fields and parts of your site as you type, and its documentation panel lists everything you can ask for.
+
+![The GraphiQL screen](images/graphiql.webp)
 
 1. Open **Tools > GraphiQL**.
 2. Type a query in the left pane, for example `{ article { displayText } }` to list the titles of your articles.

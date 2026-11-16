@@ -25,6 +25,8 @@ These settings decide what people meet on the login page: whether they can stay 
 
 ## Set the login options
 
+![The User Login settings](images/user-login-settings.webp)
+
 1. Open **Settings > Security > User Login**.
 2. Change the options on the **General** tab (see the table).
 3. Click **Save**.
@@ -45,6 +47,8 @@ The page has more tabs when features add them: **Two-Factor Authentication** (se
 
 Self-registration is open as soon as the **Users Registration** feature (`OrchardCore.Users.Registration`) is on. The login page then shows **Register as a new user**. There is no separate on/off switch: to stop registrations, turn the feature off in **Tools > Features**. The feature needs **Email**, and the site's email must be set up so confirmation emails can go out, see [Email](../settings/email.md).
 
+![The Registration settings](images/registration-settings.webp)
+
 1. Open **Settings > Security > Registration**.
 2. Set the options on the **General** tab.
 3. Click **Save**.
@@ -63,6 +67,8 @@ People who register get no role. Give them the roles they need in [Users](users.
 The **External Authentication** tab on the same page holds the rules for people who register by signing in with an external service. See [External sign-in](external-sign-in.md).
 
 ## Let people reset a forgotten password
+
+![The Reset Password settings](images/reset-password-settings.webp)
 
 | | |
 | --- | --- |

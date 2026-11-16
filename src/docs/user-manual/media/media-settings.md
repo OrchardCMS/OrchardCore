@@ -21,10 +21,11 @@ Behind the [media library](media-library.md) are a few settings screens and seve
 | **Permission** | *Manage Media Profiles*; *View Media Options*; *Manage Media API authentication settings*; *Manage Asset Cache Folder* |
 | **Feature** | **Media** (`OrchardCore.Media`); **Media Cache** (`OrchardCore.Media.Cache`) for **Cache** |
 
-
 ## Image profiles
 
 A media profile is a named recipe for resizing images, such as *banner: 2048 × 600, cropped*. Themes and templates ask for an image "with the banner profile", and the site produces and caches a resized copy, so editors can upload one large picture and the site serves the right size everywhere. The Blog recipe, for example, creates a `banner` profile for the header images of the Blog theme.
+
+![The Media Profiles list](images/media-profiles.webp)
 
 Profiles only take effect where a theme or template uses them by name. Creating a profile doesn't change any image by itself; ask whoever builds your theme which names it uses.
 
@@ -58,6 +59,8 @@ To change a profile, click **Edit** on its row; the form is the same. Changing a
 ## See the media options
 
 Open **Settings > Media > Options** to see how the media library is configured. The page is read-only: *Media is configured with appsettings.json.* Your IT team changes these values; see the Technical Manual.
+
+![The media Options screen](images/media-options.webp)
 
 | Option | What it means |
 | --- | --- |
@@ -97,6 +100,8 @@ The media library, the media pickers and uploads talk to the server through the 
 ## Purge the media cache
 
 When your files are stored in the cloud (Azure or Amazon S3), the **Media Cache** (`OrchardCore.Media.Cache`) feature keeps local copies of the files the site serves, so it doesn't fetch them from the cloud each time. It turns on with the cloud storage features.
+
+![The media Cache screen](images/media-cache.webp)
 
 To clear these copies, for example after files were changed directly in the cloud storage:
 

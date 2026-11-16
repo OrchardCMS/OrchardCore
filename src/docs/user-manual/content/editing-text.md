@@ -41,6 +41,8 @@ In the rich text editors:
 
 ## Write in Markdown
 
+![The Markdown editor of a Blog Post](images/blog-post-editor.webp)
+
 The **MarkdownBody** box (or a **Markdown** field) uses one of these editors:
 
 | Editor | What you see |

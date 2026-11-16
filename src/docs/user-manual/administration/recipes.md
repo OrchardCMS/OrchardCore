@@ -16,13 +16,14 @@ A recipe is a file that changes a site in one go: it can turn on features, add c
 | **Permission** | *Manage Recipes*. Administrators have it by default. |
 | **Feature** | **Recipes** (`OrchardCore.Recipes`), always on. It uses **Recipes Core Services** (`OrchardCore.Recipes.Core`), turned on for you. |
 
-
 !!! warning "Recipes change the site at once"
     Running a recipe applies all its changes immediately: it can replace content, settings and other configuration, and there is no undo. *Manage Recipes* is marked as a security-critical permission. Read the recipe's description first, and try it on a test site.
 
 ## Find a recipe
 
 Open **Tools > Recipes**. The recipes are grouped under the name of the feature or theme that ships them, and each one shows its name, its tags and a short description. Type in **Search** to filter the list by recipe name or group name. The layout button switches between the list and grid views, see [Finding your way](../getting-started/finding-your-way.md).
+
+![The Recipes list](images/recipes.webp)
 
 The page lists the recipes of every module and theme of your installation, even when the feature or theme isn't turned on. It doesn't list setup recipes, nor recipes marked as hidden.
 

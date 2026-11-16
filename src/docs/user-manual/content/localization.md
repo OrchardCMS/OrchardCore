@@ -20,8 +20,9 @@ This page covers every localization screen. For a step-by-step walkthrough, see 
 | **Permission** | *Manage supported culture*; *Localize content for others*, *Localize own content*; *Manage ContentCulturePicker settings*; *View dynamic translations and statistics*, *Manage all dynamic translations*, *Manage ... translations* (one per culture) |
 | **Feature** | **Localization** (`OrchardCore.Localization`), **Content Localization** (`OrchardCore.ContentLocalization`), **Content Culture Picker** (`OrchardCore.ContentLocalization.ContentCulturePicker`), **Admin Culture Picker** (`OrchardCore.Localization.AdminCulturePicker`), **Content Language Header** (`OrchardCore.Localization.ContentLanguageHeader`), **Data Localization** (`OrchardCore.DataLocalization`), **Localized Content Item Sitemaps** (`OrchardCore.ContentLocalization.Sitemaps`) |
 
-
 ## Choose the site's cultures
+
+![The Cultures settings](images/cultures.webp)
 
 1. Open **Settings > Localization > Cultures**.
 2. Pick a culture in the drop-down list under the table, for example `fr-FR (French (France))`, and click **Add culture**. Repeat for each language.

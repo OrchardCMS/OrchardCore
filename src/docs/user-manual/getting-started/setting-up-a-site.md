@@ -33,6 +33,8 @@ The link works for 24 hours. When it expires, open the tenant list again to get 
 
 ## Fill in the setup screen
 
+![The setup screen of a site](images/setup.webp)
+
 1. Type the name of your site in **What is the name of your site?**.
 2. Pick a **Recipe**. Each recipe shows a short description in the list. See [Choose a recipe](#choose-a-recipe).
 3. Check the **Default Time Zone**.

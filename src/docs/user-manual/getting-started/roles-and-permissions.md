@@ -19,6 +19,8 @@ Two people who sign in to the same site often see different admin menus. That is
 
 ## How access works
 
+![The editor of the Editor role, with its permissions grouped by feature](images/role-editor.webp)
+
 - A **permission** allows one thing, for example *Publish or unpublish content for others* or *Manage Media*. Each feature brings its own permissions.
 - A **role** is a named set of permissions, such as *Editor*. An administrator ticks the permissions each role has.
 - A **user** has any number of roles. You get every permission of every role you have, added together. No role takes a permission away.

@@ -38,6 +38,8 @@ Each search engine is a feature. Turn on the ones you need in **Tools > Features
 
 ## Create an index
 
+![The Indexes list](images/indexes.webp)
+
 1. Open **Search > Indexes** and click **Add index**.
 2. In **Available Sources**, find the search engine and click **Add** under **Content in Lucene**, **Content in Elasticsearch** or **Content in Azure AI Search**. If the box says *You need to enable a feature which provides an index source.*, turn on a search engine feature first.
 3. Type an **Index Name**. The **Name** is filled in for you; change it if you want.
@@ -118,6 +120,8 @@ To fix an index by hand, open **Search > Indexes** and use the row's **Actions**
 The list shows the **Name**, the **Source** (search engine and type) and when each index was **Last modified**. Type in **Search** to filter it.
 
 ## Set up the search page
+
+![The Site Search settings](images/site-search-settings.webp)
 
 1. Open **Settings > Search > Site Search**.
 2. Pick the **Default search index**.

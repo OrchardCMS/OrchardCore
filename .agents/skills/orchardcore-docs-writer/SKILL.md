@@ -154,6 +154,10 @@ Always tag the language: ` ```csharp `, ` ```json `, ` ```bash `, ` ```liquid `.
 
 Host videos on YouTube, and never commit a video or its assets to the repository. Use privacy mode — `https://www.youtube-nocookie.com/embed/<id>`.
 
+## Screenshots
+
+Screenshots follow the specification in `AGENTS.md` (Screenshots) and `src/docs/contributing/contributing-documentation.md`: 1280x800 window at scale 1, light mode, Blog recipe site with sample data, WebP quality 82 under 150 KB, in the `images` folder next to the page, right after the paragraph that introduces the screen. Add each screen to `SHOTS` in `.scripts/docs/screenshots.py` and run the script; never take or edit a screenshot by hand.
+
 ## Docs theme
 
 The docs theme lives in `src/docs/theme/` (template overrides), `src/docs/assets/css/` and `src/docs/assets/js/`. `assets/css/theme.css` holds its tokens: every color and radius is a `--oc-*` custom property defined there for the light and dark (`slate`) schemes, and the other stylesheets use the tokens.

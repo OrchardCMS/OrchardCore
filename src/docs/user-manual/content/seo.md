@@ -21,7 +21,6 @@ Search engine optimization (SEO) is about helping search engines and social netw
 | **Permission** | The permission to edit the content item; *Manage Custom Settings - Social Meta Settings*; *Manage SEO related settings* |
 | **Feature** | **SEO** (`OrchardCore.Seo`); **Custom Settings** (`OrchardCore.CustomSettings`) for **Social Meta Settings** |
 
-
 ## Add SEO options to a content type
 
 1. Open **Design > Content Definition > Content Types** and click **Edit** on the type, for example **Article**.
@@ -73,6 +72,8 @@ These panels appear in the **SEO** tab when the part settings tick them. Every b
 
 **Social Meta Settings** holds the defaults used by every content item with the SEO part. The menu appears when the **Custom Settings** feature is on.
 
+![The Social Meta Settings](images/social-meta-settings.webp)
+
 1. Open **Settings > Social Meta Settings**.
 2. In the **Content** section, fill in the default texts.
 3. In the **Social** section, pick the default pictures.
@@ -96,6 +97,8 @@ Permission: *Manage Custom Settings - Social Meta Settings*. See [Custom setting
 ## Set up robots.txt
 
 Search engine robots read `https://your-site/robots.txt` to learn what they may visit. Orchard Core builds this file from these settings.
+
+![The Robots settings](images/robots.webp)
 
 1. Open **Settings > Search > Search Engine Optimization > Robots**.
 2. Set the options and click **Save**.

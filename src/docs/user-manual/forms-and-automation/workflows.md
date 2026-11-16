@@ -17,7 +17,6 @@ A workflow does work for you when something happens. *When* a visitor sends the 
 | **Permission** | *Manage workflows*; *Execute workflows* to run them from the designer and retry instances; *Manage workflow settings* for trimming |
 | **Feature** | **Workflows** (`OrchardCore.Workflows`), plus **HTTP Workflows Activities** (`OrchardCore.Workflows.Http`), **Timer Workflows Activities** (`OrchardCore.Workflows.Timers`) and **Session Workflows Activities** (`OrchardCore.Workflows.Session`) for their activities |
 
-
 ## Words you'll meet
 
 | Word | Meaning |
@@ -33,6 +32,8 @@ A workflow does work for you when something happens. *When* a visitor sends the 
 ## The workflows list
 
 Open **Design > Workflows**. Each row shows the workflow's name and badges: **Disabled** when it's turned off, **No startup task** when no activity is marked as the start, and **Instances** when it has runs.
+
+![The Workflows list](images/workflows.webp)
 
 - **Edit** opens the designer. The **Instances** badge opens the runs of that workflow. **Delete** deletes it.
 - The row's **Actions** menu has **Clone** (copy it under another name, with its settings) and **Export** (download it as a file, to import on another site; see [Import and export](../administration/import-and-export.md)).
@@ -61,6 +62,8 @@ Open **Design > Workflows**. Each row shows the workflow's name and badges: **Di
 ## The designer
 
 The designer has a toolbar, the **Activities** list on the left, the canvas in the middle and a panel on the right.
+
+![The workflow designer](images/workflow-designer.webp)
 
 | Toolbar item | What it does |
 | --- | --- |

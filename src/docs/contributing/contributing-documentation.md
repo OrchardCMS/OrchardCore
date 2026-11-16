@@ -72,6 +72,7 @@ Every person who signs in has a user account. This page explains how to add and 
 - Use task headings that start with a verb, such as "Add a user", in sentence case.
 - Write one action per step, and bold the exact labels shown on screen. Use **Click** for buttons, **Choose** for lists and menus, **Tick** and **Clear** for checkboxes, and **Type** for text.
 - List the related Technical Manual pages in `technical_manual`, as paths relative to `src/docs/`. A build hook (`.scripts/docs/manuals.py`) adds a "For developers and IT" box to the page, a box linking back to it at the top of each of those Technical Manual pages, and a short line about missing menus under the Menu / Permission / Feature table. Don't write these boxes yourself.
+- Show the main screens, following the [Screenshots](#screenshots) specification.
 - Add the page to the `User Manual` section of the `nav` in `mkdocs.yml`, in the section that matches the job, and use the page title as its nav title.
 
 ## Editing documentation pages
@@ -92,6 +93,27 @@ Do the following if you're adding docs for a newly developed extension, or if yo
 3. Link to the `README.md` file from `reference/modules/README.md`.
 4. Link to the `README.md` file from the `mkdocs.yml` file in the repository root.
 5. If the module contains content parts, also link the `README.md` file from `reference/modules/ContentParts/README.md`.
+
+## Screenshots
+
+User Manual pages show the screens they describe. Every screenshot follows the same specification, so they look the same on every page, and `.scripts/docs/screenshots.py` takes them all:
+
+| | |
+| --- | --- |
+| **Window** | 1280x800 at a device scale of 1: the whole browser window, with the admin menu. A long editor may capture the whole page, cut at 1600 pixels. |
+| **Look** | Light mode, `en-US`, the admin menu as on a fresh visit, nothing focused or hovered. |
+| **Site** | Set up with the Blog recipe, signed in as `admin`, with the features of the page turned on and sample data so lists aren't empty. No personal data or secrets. |
+| **File** | WebP at quality 82, under 150 KB, named after the screen in lowercase kebab case, in the `images` folder next to the page. |
+| **Page** | Right after the paragraph that introduces the screen, with alt text that says which screen it is. No arrows, highlights or crops. |
+
+To add or retake screenshots:
+
+1. Run a local site set up with the Blog recipe (see [Running the documentation site locally](#running-the-documentation-site-locally) for the docs themselves).
+2. Add the screen to `SHOTS` in `.scripts/docs/screenshots.py`: the image file and the address of the screen.
+3. Run `pip install playwright pillow`, then `python .scripts/docs/screenshots.py --url <site address> --password <admin password>`. Add `--only <name>` to take only the shots whose file contains that name.
+4. Add the image to the page with `![Alt text](images/<name>.webp)`, and commit it.
+
+When a change alters a screen that has a screenshot, retake it in the same pull request.
 
 ## Running the documentation site locally
 

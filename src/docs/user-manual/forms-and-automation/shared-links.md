@@ -17,6 +17,8 @@ The **Share a download link** step of a [data pipeline](data-pipeline-steps.md#d
 
 ## Find a shared link
 
+![The Shared Links list](images/shared-links.webp)
+
 1. Open **Tools > Shared Links**.
 2. Type part of the file's name, or of the pipeline that shared it, in **Search by name or source**, and press Enter.
 

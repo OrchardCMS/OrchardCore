@@ -18,13 +18,14 @@ A query is a saved question to the site's data, such as "the three latest blog p
 | **Permission** | *Manage queries* for **All Queries**. *Manage SQL Queries* for SQL queries and **Run SQL Query**. *Manage Lucene Indexes* for **Run Lucene Query**. *Manage Elasticsearch Indexes* for **Run Elasticsearch Query**. Administrators and Editors have *Manage queries* and *Manage SQL Queries* by default. |
 | **Feature** | **Queries** (`OrchardCore.Queries`), plus **SQL Queries** (`OrchardCore.Queries.Sql`), **Lucene** (`OrchardCore.Lucene`) or **Elasticsearch** (`OrchardCore.Elasticsearch`) for each kind of query |
 
-
 !!! warning "SQL queries can read everything"
     A SQL query can read any table of the site's database. *Manage SQL Queries* is marked as a security-critical permission: give it only to people you trust with all the site's data.
 
 **Queries Core Services** (`OrchardCore.Queries.Core`) is turned on for you when a feature needs it.
 
 ## Find a query
+
+![The All Queries list](images/queries.webp)
 
 Open **Search > Queries > All Queries**. Each row shows the query's name and its **Source** (**SQL query**, **Lucene query** or **Elasticsearch query**), with these buttons:
 
@@ -86,6 +87,8 @@ SELECT DocumentId FROM ContentItemIndex WHERE ContentType='BlogPost' ORDER BY Cr
 
 **Run SQL Query** lets you try a SQL query on the live database before you save it.
 
+![The Run SQL Query screen](images/run-sql-query.webp)
+
 1. Open **Search > Queries > Run SQL Query**.
 2. Type the query in **Template**. To start from an example, click the **click here** link in the hint, which fills in a query for all content items.
 3. If the query has parameters, type their values in **Parameters** as JSON, for example `{"limit": 5}`.
@@ -94,6 +97,8 @@ SELECT DocumentId FROM ContentItemIndex WHERE ContentType='BlogPost' ORDER BY Cr
 The screen shows the **Final SQL Query**, the query as the database runs it with the table prefix and the database's own syntax, the time it took (*Query executed in ... ms*) and the rows it returned. Click **Create** to save the query as a new SQL query. If the query has a mistake, the error is shown on the screen instead of results.
 
 ## Try a Lucene or Elasticsearch query
+
+![The Run Lucene Query screen](images/run-lucene-query.webp)
 
 1. Open **Search > Queries > Run Lucene Query** or **Run Elasticsearch Query**. You can also choose **Query Index** in an index's **Actions** menu in **Search > Indexes**.
 2. Pick the **Index**.

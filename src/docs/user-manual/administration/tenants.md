@@ -17,7 +17,6 @@ A tenant is a separate site that runs inside the same Orchard Core installation.
 | **Permission** | *Manage tenants* for tenants. *Manage tenant feature profiles* for feature profiles. Administrators have them by default. |
 | **Feature** | **Tenants** (`OrchardCore.Tenants`) and **Tenant Feature Profiles** (`OrchardCore.Tenants.FeatureProfiles`), on the **Default** tenant only |
 
-
 ## How visitors reach a tenant
 
 Each tenant answers on its own address, set by a **Hostname**, a **Url Prefix**, or both:
@@ -29,6 +28,8 @@ Each tenant answers on its own address, set by a **Hostname**, a **Url Prefix**,
 No two tenants can have the same hostname and prefix.
 
 ## Add a tenant
+
+![The screen to add a tenant](images/create-tenant.webp)
 
 1. Open **Multi-Tenancy > Tenants** and click **Add Tenant**.
 2. Type the **Name**.
@@ -67,6 +68,8 @@ A new tenant must be set up before it works: someone fills in its setup screen a
 You can also send the setup link to the person who will run the tenant: right-click **Setup** and copy the link. It works for 24 hours.
 
 ## Find a tenant
+
+![The Tenants list](images/tenants.webp)
 
 Each row of **Multi-Tenancy > Tenants** shows the tenant's name (a link to its site), its hostname and prefix, and badges for its state, database, recipe and category. To narrow the list:
 
@@ -123,6 +126,8 @@ You see *The tenant '...' was removed, see the log file for more info.* If somet
 ## Limit the features of a tenant
 
 A feature profile is a list of rules that hides features from the tenants that use it, for example to stop customer sites from turning on workflows.
+
+![The Feature Profiles list](images/feature-profiles.webp)
 
 1. Open **Multi-Tenancy > Feature Profiles** and click **Add Feature Profile**.
 2. Type a **Name**.

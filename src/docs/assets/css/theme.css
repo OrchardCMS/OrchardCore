@@ -176,3 +176,9 @@
 .md-footer-meta {
   background-color: var(--oc-header-overlay);
 }
+
+/* Screenshots (see .scripts/docs/screenshots.py): a plain border separates their white background from the page. */
+.md-typeset img[src$=".webp"] {
+  border: 0.05rem solid var(--oc-table-border);
+  border-radius: var(--oc-radius-small);
+}

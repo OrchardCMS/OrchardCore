@@ -19,8 +19,9 @@ The media library holds the files your site uses: pictures, PDFs, office documen
 | **Permission** | *Manage Media* (see [Who can see and change which folders](#who-can-see-and-change-which-folders)) |
 | **Feature** | **Media** (`OrchardCore.Media`) |
 
-
 ## Find your way around the library
+
+![The media library, with its folders on the left and the files on the right](images/media-library.webp)
 
 Open **Media > Library**. The screen has three areas:
 

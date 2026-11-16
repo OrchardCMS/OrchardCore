@@ -19,11 +19,12 @@ Remote deployment sends a deployment plan from one site straight to another, wit
 | **Permission** | *Manage remote clients* for remote clients. *Manage remote instances* for remote instances. *Export Data* to send a plan. Administrators have them by default. |
 | **Feature** | **Remote Deployment** (`OrchardCore.Deployment.Remote`), on both sites. It turns on **Deployment** (`OrchardCore.Deployment`). |
 
-
 !!! warning "The receiving site imports at once"
     The receiving site imports every package sent with a valid client name and key, with no confirmation, just like [Package Import](import-and-export.md#import-a-package). Use a long, random key, use a different key for each sending site, use `https://` addresses, and delete clients you no longer use.
 
 ## Allow a site to receive deployments
+
+![The Remote Clients list](images/remote-clients.webp)
 
 On the receiving site:
 
@@ -42,6 +43,8 @@ The receiving address of this site is its address followed by `/OrchardCore.Depl
 Also turn on, in the receiving site, every feature the packages need, see [Features](../getting-started/features.md).
 
 ## Connect the sending site
+
+![The Remote Instances list](images/remote-instances.webp)
 
 On the sending site:
 

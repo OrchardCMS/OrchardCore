@@ -16,7 +16,6 @@ Some content belongs inside other content: blog posts inside a blog, episodes in
 | **Permission** | The content permissions of the list and of its contained types (for example *Edit content for others*, *Publish or unpublish content for others*); *Edit content types* to change the list settings |
 | **Feature** | **Lists** (`OrchardCore.Lists`) |
 
-
 ## How the Blog recipe uses lists
 
 A site set up with the **Blog** recipe has a ready-made list:
@@ -27,6 +26,8 @@ A site set up with the **Blog** recipe has a ready-made list:
 - The permalink of a post starts with the blog's own address, for example `/blog/my-first-post`.
 
 ## Open the items of a list
+
+![The items of the blog, with the Create Blog Post button](images/blog-items.webp)
 
 1. Open **Content > Content Items**.
 2. On the row of the list (for example your blog), click **List ... Items** (for example **List BlogPost Items**), or **List Items** when the list holds several types.

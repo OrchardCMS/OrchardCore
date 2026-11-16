@@ -146,5 +146,6 @@ If a site that was working suddenly shows the setup screen, don't run the setup:
 
 ## Still stuck?
 
+- Get help from [our community](https://github.com/OrchardCMS/OrchardCore#help-and-support).
 - The [Glossary](glossary.md) explains the admin's words.
 - Your developer or IT team can find more in the Technical Manual, linked at the bottom of each page.

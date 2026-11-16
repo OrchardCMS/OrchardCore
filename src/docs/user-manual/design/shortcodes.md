@@ -16,6 +16,7 @@ A shortcode is a short word in square brackets, such as `[image]photo.jpg[/image
 | **Permission** | *Manage shortcode templates* |
 | **Feature** | **Shortcodes** (`OrchardCore.Shortcodes`) to use shortcodes; **Shortcode Templates** (`OrchardCore.Shortcodes.Templates`) to create your own |
 
+![The Shortcodes list](images/shortcodes.webp)
 
 !!! warning
     *Manage shortcode templates* is marked security critical: a shortcode template runs Liquid on every page that uses it. Give it only to people you trust.

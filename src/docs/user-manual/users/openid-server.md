@@ -33,6 +33,8 @@ Turning on the Authorization Server also turns on the Management UI and **OpenID
 
 ## Configure the server
 
+![The Authorization Server settings](images/openid-server.webp)
+
 1. Open **Settings > OpenID Connect > Authorization Server**.
 2. Set the options on **Configure OpenID Connect server settings**.
 3. Click **Save**.
@@ -83,6 +85,8 @@ With the **OpenID Connect Secrets** feature (`OrchardCore.OpenId.Secrets`, which
 
 ## Add an application
 
+![The OpenID Connect Applications list](images/openid-applications.webp)
+
 1. Open **Access Control > OpenID Connect > Applications** and click **New application**.
 2. Fill in the form on **Create a new application** (see the table).
 3. Click **Save**.
@@ -113,6 +117,8 @@ The application appears in the list. Use **Search** to find one by name, and **C
 
 A scope is a named piece of access. A site may already list **Email**, **Phone**, **Profile** and **Roles**, which give applications the person's email address, phone number, profile and roles.
 
+![The OpenID Connect Scopes list](images/openid-scopes.webp)
+
 1. Open **Access Control > OpenID Connect > Scopes** and click **New scope**, or **Edit** on a row.
 2. Fill in the fields.
 3. Click **Save**.
@@ -129,6 +135,8 @@ To delete a scope, click **Delete** on its row and confirm. Remove it from appli
 ## Validate tokens
 
 The **Token Validation** feature lets your site accept tokens, so that an application can call your site's APIs with a token. The tokens can come from this site's own server, from another tenant of the same installation, or from another server.
+
+![The Token Validation settings](images/openid-validation.webp)
 
 1. Open **Settings > OpenID Connect > Token Validation**.
 2. Fill in the fields on **Configure OpenID Connect validation settings**.

@@ -16,7 +16,6 @@ The site can send text messages (SMS), for example two-factor sign-in codes, not
 | **Permission** | *Manage SMS Settings* (the Administrator role has it by default) |
 | **Feature** | **SMS** (`OrchardCore.Sms`), which includes Twilio. For Azure, also **Azure Communication Services SMS** (`OrchardCore.Sms.Azure`). |
 
-
 ## Before you start
 
 Get from your text message service:
@@ -64,6 +63,8 @@ When the **Secrets** feature is on, **Auth Token** and **Connection String** hav
 
 ## Choose the default provider
 
+![The SMS settings](images/sms.webp)
+
 1. Open **Settings > Communication > SMS**. The **Providers** tab opens first.
 2. Pick the **Default SMS provider**.
 3. Click **Save**.
@@ -78,6 +79,8 @@ The list shows the providers that are turned on, by their short names:
 | **Log** | Appears only on a developer's computer. It doesn't send anything: it writes the messages to the site's log, for testing. |
 
 ## Send a test SMS
+
+![The SMS Test screen](images/sms-test.webp)
 
 1. Open **Tools > Testing > SMS Test**.
 2. Pick the **Provider**.

@@ -24,6 +24,8 @@ A role is a named set of permissions, such as *Editor* or *Translator*. You give
 
 Open **Access Control > Roles**. Each row shows the role name, its description, and a **System** badge for the roles that can't be deleted. Type in **Search** to filter the list by name as you type. With *Manage Roles*, each row has **Edit** and, except for system roles, **Delete**, and the top of the page has **Add Role**.
 
+![The Roles list](images/roles.webp)
+
 The grid layout shows the same information in **Name**, **Kind** and **Actions** columns.
 
 ## Add a role
@@ -39,6 +41,8 @@ The site confirms *Role created successfully.* The name can't be changed later; 
     If you create a role with the name of one of the starter roles, such as *Editor* or *Author*, it gets the default permissions that the site's features define for that name.
 
 ## Choose a role's permissions
+
+![The editor of a role, with its permissions grouped by feature](images/role-editor.webp)
 
 1. Open **Access Control > Roles** and click **Edit** on the role (or click its name).
 2. Optionally change the **Description**.

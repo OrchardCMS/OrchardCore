@@ -27,6 +27,8 @@ To open the admin, sign in (see [Signing in](signing-in.md)) and go to `/Admin` 
 
 The first page of the admin is the dashboard. Click the site name at the top left of any admin page to come back to it. The breadcrumb at the top of every page also starts with **Dashboard**.
 
+![The admin dashboard, with the admin menu on the left and the top bar](images/dashboard.webp)
+
 On a site without the **Admin Dashboard** feature, the dashboard shows a **Welcome to Orchard Core** message and a few shortcut cards:
 
 | Card | Button | Where it goes |
@@ -121,6 +123,8 @@ Most admin pages show a breadcrumb above the title, for example **Dashboard / Ma
 ## Work with admin lists
 
 Many admin pages show a list: content items, users, roles, queries, tenants and more. They all work the same way.
+
+![The Content Items list, with its search box, filters and the actions of each row](images/content-list.webp)
 
 ### Search and filter
 

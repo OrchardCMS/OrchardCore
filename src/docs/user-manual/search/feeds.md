@@ -34,6 +34,8 @@ The address has the form `https://www.example.com/Contents/Lists/<id>/rss`, wher
 
 ## Change the feed of a list
 
+![The editor of the blog, with its RSS feed options](images/blog-feed.webp)
+
 1. Open the list's editor.
 2. Change the feed settings, described below.
 3. Click **Publish** (or **Save Draft** and publish later).

@@ -17,7 +17,6 @@ A data pipeline moves data for you, without code. It reads rows from a source, s
 | **Permission** | *View data pipelines and their runs*, *Run data pipelines*, *Manage data pipelines*, *Manage shared links* |
 | **Feature** | **Data Pipelines** (`OrchardCore.DataPipelines`), **Data Pipelines - FTP** (`OrchardCore.DataPipelines.Ftp`), **Data Pipelines - SFTP** (`OrchardCore.DataPipelines.Sftp`), **Data Pipelines Core** (`OrchardCore.DataPipelines.Core`) |
 
-
 ## How a pipeline works
 
 A pipeline is made of **steps** of four kinds, listed by category in the designer:
@@ -46,6 +45,8 @@ What a pipeline can read depends on the data sources of the site; see [Data sour
     A published pipeline runs with the access of the user who published it: it reads and writes what that user may read and write. That is why *Manage data pipelines* is a security critical permission. Give it only to people you trust with that access.
 
 ## Find a pipeline
+
+![The Pipelines list](images/data-pipelines.webp)
 
 Open **Tools > Data Pipelines > Pipelines**. Type in the **Search** box to find pipelines by name. Each row shows:
 
@@ -183,6 +184,8 @@ Pipelines have no schedule setting of their own. To run one on a schedule, use a
 ## Read the run history
 
 Open **Tools > Data Pipelines > Run History** to see the runs of every pipeline, the most recent first, or choose **Run history** in a pipeline's **Actions** menu to see only its runs. Use **Search by pipeline** to find runs by pipeline name, and the **Status** menu to show **Every status** or only **Queued**, **Running**, **Succeeded**, **Failed** or **Cancelled** runs.
+
+![The Run History list](images/data-pipeline-runs.webp)
 
 Each row shows the pipeline, the status, the version that ran, when it was queued, how long it took, and what started it (**Manual** or **Workflow**) and who. A failed run shows its error under the row. Click **Details** to open the run. The **Actions** menu has **Open the pipeline**, **Run history of the pipeline** and, for a queued or running run, **Cancel the run**.
 

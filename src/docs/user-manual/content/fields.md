@@ -27,6 +27,8 @@ Fields are the boxes of a content item beyond its title and body: a subtitle, a 
 
 Each field has a display name, shown as its label in the editor, and an **editor**: the way you fill it in. The same kind of field can look different from one content type to another. For example, a number can be a plain box, a slider or a drop-down list.
 
+![The editor of a new Blog Post, with its Title, Markdown body, Image and Tags fields](images/blog-post-editor.webp)
+
 When a field is required, its label is marked as required and you can't save the item until it is filled in. The form then shows a message such as *A value is required for Price.* Many fields also show a hint under the box and a placeholder (grey example text) inside it.
 
 ### Set up a field (site builders)

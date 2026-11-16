@@ -59,6 +59,8 @@ When the **Secrets** feature is on, each secret box has a list above it: **User-
 
 ## Connect a Microsoft account
 
+![The Microsoft authentication settings](images/microsoft-account.webp)
+
 1. Open **Settings > Security > Authentication > Microsoft**.
 2. Fill in the fields and click **Save**.
 
@@ -86,6 +88,8 @@ Use this for work or school accounts in your organization's Microsoft Entra ID (
 
 ## Connect Google
 
+![The Google authentication settings](images/google-authentication.webp)
+
 1. Open **Settings > Security > Authentication > Google**.
 2. Fill in the fields and click **Save**.
 
@@ -108,6 +112,8 @@ Facebook sign-in uses the app you register for all Meta features.
 The Meta page reminds you that the **Meta Integration settings** must be configured for sign-in to work.
 
 ## Connect GitHub
+
+![The GitHub authentication settings](images/github-authentication.webp)
 
 1. Open **Settings > Security > Authentication > GitHub**.
 2. Fill in **Client ID** and **Client secret** from your GitHub app.

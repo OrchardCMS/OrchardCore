@@ -180,6 +180,18 @@ These skills provide step-by-step guidance, code templates, and references for c
 
 Every video of Orchard Core (documentation, pull requests, walkthroughs) follows one specification: 1920x1080 at 30 fps, the Orchard Core logo, colors and Open Sans font on a dark background, recordings at 1536x864 in a green frame, the `en-US-AndrewMultilingualNeural` voice, WebVTT captions, and an H.264 encode under 10 MB. Always produce videos with the `orchardcore-video-producer` skill, and don't change its specification for a single video. Narration describes the current behavior, with no "new", "now", or version wording, so videos stay accurate. Never commit a video or its assets, such as captions or a poster, to the repository. Publish the video on the Orchard Core YouTube channel, with its captions, and embed it in the docs from `https://www.youtube-nocookie.com/embed/<id>`.
 
+## Screenshots
+
+Every screenshot in the docs follows one specification, so they look the same on every page:
+
+- **Taken by the script.** Add the screen to `SHOTS` in `.scripts/docs/screenshots.py` and run it against a local site; never take or edit a screenshot by hand.
+- **Window:** 1280x800 at a device scale of 1, the whole browser window with the admin menu, light mode, `en-US`. A long editor or form may capture the whole page, cut at 1600 pixels.
+- **Site:** set up with the Blog recipe, signed in as `admin`, with the features the page describes turned on and sample data so lists aren't empty. No personal data, real credentials or secrets on screen.
+- **State:** the admin menu as on a fresh visit (the script clears the menu the admin theme remembers), nothing focused or hovered, no open dropdown unless the page is about it.
+- **File:** WebP at quality 82, under 150 KB, named in lowercase kebab case after the screen (`create-tenant.webp`), in the `images` folder next to the page that shows it.
+- **On the page:** right after the paragraph that introduces the screen, at most one per task, with alt text that says which screen it is and what it shows. No arrows, highlights, crops or annotations.
+- **Kept current:** when a change alters a screen that has a screenshot, run the script for it (`--only <name>`) and commit the new image in the same pull request.
+
 ## Frontend Assets
 
 ### Asset Management
@@ -302,6 +314,7 @@ The documentation site has two manuals, and both must stay accurate as the code 
 - **Don't move or rename existing pages.** Their URLs are public; add a `redirect_maps` entry in `mkdocs.yml` when a move can't be avoided.
 - Describe the current behavior, without "new", "now" or version wording; changes between versions go in the release notes.
 - **Changing the docs theme** (`src/docs/theme/`, `src/docs/assets/`)? Take colors and radii from the tokens in `assets/css/theme.css`, and follow the design rules in the `orchardcore-docs-writer` skill: no thick colored borders for emphasis, no emoji, icons or ALL-CAPS labels on every item, no hover effects that move the layout.
+- **Screenshots** follow the specification in [Screenshots](#screenshots): taken by `.scripts/docs/screenshots.py`, never by hand.
 - Build the docs before pushing (`pip install -r src/docs/requirements.txt`, then `python -m mkdocs build`) and fix every warning: broken links and anchors are reported there.
 
 ### Translation Templates

@@ -16,8 +16,9 @@ A theme decides how pages look: the layout, colors, fonts, header, footer and wh
 | **Permission** | *Apply a Theme* |
 | **Feature** | **Themes** (`OrchardCore.Themes`) |
 
-
 ## See the installed themes
+
+![The Themes screen](images/themes.webp)
 
 Open **Design > Themes**. Each installed theme is a card with a preview picture, its name and description, the author, a website link, its tags and its version. The two current themes come first:
 

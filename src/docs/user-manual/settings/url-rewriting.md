@@ -20,6 +20,7 @@ There are two kinds of rules:
 | **Permission** | *Manage URLs rewriting rules* (the Administrator role has it by default) |
 | **Feature** | **URL Rewriting** (`OrchardCore.UrlRewriting`) |
 
+![The URL Rewriting rules](images/url-rewriting.webp)
 
 !!! tip "Changing the address of a single content item?"
     To give a page a new address, change its permalink instead; see [URLs and the home page](../content/urls-and-homepage.md). Use URL rewriting for addresses that no longer belong to a content item, or for whole groups of addresses.

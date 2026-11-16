@@ -16,10 +16,11 @@ A menu is the list of links visitors use to move around your site, usually shown
 | **Permission** | *Manage menus* to add, edit and delete menu items; the *List Menu content items* permission to see the menu entry |
 | **Feature** | **Menu** (`OrchardCore.Menu`), which uses **Navigation** (`OrchardCore.Navigation`, always on) |
 
-
 ## See your menus
 
 Open **Content > Menus**. It is the content items list, filtered to the **Menu** type, with each menu's title, status and actions. Click a menu's title or **Edit** to open it. The **Blog** recipe also adds a shortcut to the **Main Menu** at the top level of the admin menu.
+
+![The editor of the Main Menu, with its menu items](images/menu.webp)
 
 ## Create a menu
 

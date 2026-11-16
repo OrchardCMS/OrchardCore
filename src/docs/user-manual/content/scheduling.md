@@ -17,6 +17,8 @@ Scheduling lets the site publish a content item for you at a set date and time, 
 | **Permission** | Permission to publish the item: *Publish or unpublish own content* or *Publish or unpublish content for others* (or the same for one content type) |
 | **Feature** | **Publish Later** (`OrchardCore.PublishLater`), **Archive Later** (`OrchardCore.ArchiveLater`) |
 
+![A content editor, with the Publish Later box and the buttons at the bottom](images/editor-buttons.webp)
+
 !!! tip "Don't see the boxes?"
     The boxes appear only on content types that have the **PublishLater** or **ArchiveLater** part, and only for people allowed to publish the item. A site builder adds the parts to a content type, see [Set up scheduling](#set-up-scheduling-site-builders).
 

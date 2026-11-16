@@ -19,6 +19,8 @@ Each page or post of the site needs a name and an address that visitors can open
 | **Permission** | Permission to edit the content item. *Set homepage.* to make an item the home page (given to the **Administrator** role by default). |
 | **Feature** | **Title** (`OrchardCore.Title`), **Autoroute** (`OrchardCore.Autoroute`), **Alias** (`OrchardCore.Alias`), **Home Route** (`OrchardCore.HomeRoute`) |
 
+![The editor of a new Article, with the Title and Permalink boxes](images/create-article.webp)
+
 ## Give a content item a title
 
 Type the name of the item in **Title**, at the top of the editor. The title is what the admin lists show and, usually, the heading of the page on the site. It is also used to build the item's address (see below).

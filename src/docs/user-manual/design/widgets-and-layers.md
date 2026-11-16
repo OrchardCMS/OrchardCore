@@ -17,7 +17,6 @@ A **widget** is a small block of content, such as a paragraph, an image, a raw H
 | **Permission** | *Manage layers* |
 | **Feature** | **Layers** (`OrchardCore.Layers`), which turns on **Widgets** (`OrchardCore.Widgets`) and **Rules** (`OrchardCore.Rules`) |
 
-
 ## How it fits together
 
 1. **Settings > Zones** lists the zones you can put widgets in. The theme must show these zones, or their widgets never appear.
@@ -26,6 +25,8 @@ A **widget** is a small block of content, such as a paragraph, an image, a raw H
 4. When a visitor opens a page, each layer's rules are checked. A widget is shown when its layer's rules are all true and the widget is published.
 
 ## Choose the zones
+
+![The Zones settings](images/zones.webp)
 
 1. Open **Settings > Zones**.
 2. In **Available zones for Layers**, type the zone names separated by commas, for example `Content, Footer`.
@@ -44,6 +45,8 @@ The names must match the zones of your site theme, letter for letter. The built-
 The Coming Soon theme shows all of them except `Messages`, and the Safe Mode theme shows only `Header`, `Content` and `Footer`. If you use another theme, ask its author which zones it shows. Until at least one zone is set, **Design > Widgets** asks you to *define the available zones* first.
 
 ## See the widgets and layers
+
+![The Widgets screen, with the zones of the theme and the layers](images/layers.webp)
 
 Open **Design > Widgets**. The page is titled **Widgets and Layers** and has two columns:
 

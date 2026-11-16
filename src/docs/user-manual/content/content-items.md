@@ -17,6 +17,8 @@ Everything you write on the site, such as pages, articles, blog posts or menus, 
 | **Permission** | *List content items* to open the list. Then, for each action: *Edit own content* / *Edit content for others*, *Publish or unpublish own content* / *Publish or unpublish content for others*, *Delete own content* / *Delete content for others*, *Clone own content* / *Clone content*, *Preview own content* / *Preview content*. |
 | **Feature** | **Contents** (`OrchardCore.Contents`) |
 
+![The Content Items list](images/content-items.webp)
+
 A content type can also have its own permissions, such as *Edit Article*, so you may see some types and not others.
 
 By default, **Editor** can list, edit, publish, delete, preview and clone everyone's content; **Author** can edit, publish, delete, preview and clone their own content; **Contributor** can edit, preview and clone their own content but not publish it.
@@ -77,6 +79,8 @@ You can combine filters with spaces, for example `status:Draft type:Article`. Fo
 The menus and the search box stay in step: choosing **Sort > Title** adds `sort:Title` to the box.
 
 ## Create a content item
+
+![The editor of a new Article](images/create-article.webp)
 
 1. Open **Content > Content Items** and click **New** at the top right, then choose a content type. On a single type's list, the button reads **New Article** (or the name of the type).
 2. Fill in the form. Required boxes are marked, and the boxes depend on the content type: see [Editing text](editing-text.md), [Fields](fields.md) and [URLs and the home page](urls-and-homepage.md).

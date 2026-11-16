@@ -15,8 +15,9 @@ The **audit trail** is the history of what happens in the admin: who created, sa
 | **Permission** | *View audit trail*, *Manage audit trail settings* |
 | **Feature** | **Audit Trail** (`OrchardCore.AuditTrail`) |
 
-
 ## Choose what is recorded
+
+![The Audit Trail settings](images/audit-trail-settings.webp)
 
 !!! warning "Content events are recorded only for the types you pick"
     Out of the box, no content type is selected, so no content event is recorded. Pick the content types on the **Content** tab of the settings before you rely on the audit trail.
@@ -45,6 +46,8 @@ Deleted events, and the versions saved with them, can't be recovered.
 ## Browse the audit trail
 
 Open **Tools > Audit Trail**. Each row shows the event (for example **Published**), its category, the details, who triggered it, when, and the IP address if it is recorded.
+
+![The Audit Trail list of events](images/audit-trail.webp)
 
 For a content event, the details read like *Version 3 of the Article My first post was published*. Click **Version 3** to see that version (read only), or the item's title to open its current editor.
 

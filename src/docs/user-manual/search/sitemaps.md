@@ -16,7 +16,6 @@ A sitemap is an XML file, such as `https://www.example.com/sitemap.xml`, that li
 | **Permission** | *Manage sitemaps*. Administrators have it by default. |
 | **Feature** | **Sitemaps** (`OrchardCore.Sitemaps`) |
 
-
 !!! warning "Set the base URL first"
     Sitemaps contain full addresses, so they need the site's address. If the sitemap screens show *The site settings 'Base url' property is empty, but is required to generate sitemaps.*, open **Settings > General** and fill in **Base url**, see [General settings](../settings/general.md).
 
@@ -78,6 +77,8 @@ On the **Manage Sources** screen, each source has **Edit** and **Delete** button
 
 ## Manage sitemaps
 
+![The Sitemaps list](images/sitemaps.webp)
+
 In **Tools > Search Engine Optimization > Sitemaps**, each row shows the sitemap's name and **Status** (**Enabled** or **Disabled**), with these buttons:
 
 - **View** opens the sitemap as search engines see it.
@@ -122,6 +123,8 @@ Add the **Sitemap** part (`SitemapPart`) to a content type to control each item,
 | **Priority** | How important this item is, from **0.0** to **1.0**. |
 
 ## Clear the sitemap cache
+
+![The Sitemaps Cache screen](images/sitemaps-cache.webp)
 
 The site builds each sitemap the first time it is requested and keeps the result in a cache file. Publishing or unpublishing content, or changing a sitemap, updates it. If a sitemap looks out of date, clear its cache:
 

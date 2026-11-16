@@ -16,7 +16,6 @@ A **taxonomy** is a list of words used to classify content: *Categories* (*News*
 | **Permission** | *Manage taxonomies* (add, edit, delete terms; settings) and the usual content permissions on the **Taxonomy** type |
 | **Feature** | **Taxonomies** (`OrchardCore.Taxonomies`), **Taxonomies Contents List Filters** (`OrchardCore.Taxonomies.ContentsAdminList`) |
 
-
 A site set up with the **Blog** recipe already has two taxonomies, **Tags** and **Categories**, used by the **Tags** and **Category** fields of blog posts. On that site, **Content > Taxonomy** lists them.
 
 ## Prepare a term content type
@@ -44,6 +43,8 @@ The taxonomy also has an **Alias** and a **Permalink**, both generated from the 
     You can add terms only after the taxonomy is saved once. Until then the **Add ...** button doesn't show.
 
 ## Add terms
+
+![The editor of a taxonomy, with its terms](images/taxonomy.webp)
 
 1. Open the taxonomy's editor (**Content > Content Items**, then **Edit** on the taxonomy).
 2. Click **Add ...** (for example **Add Region**) above the list of terms.

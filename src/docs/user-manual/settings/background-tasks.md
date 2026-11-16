@@ -15,8 +15,9 @@ Background tasks are jobs the site runs on its own, on a schedule, without anyon
 | **Permission** | *Manage background tasks* (the Administrator role has it by default) |
 | **Feature** | **Background Tasks** (`OrchardCore.BackgroundTasks`) |
 
-
 ## Read the list of tasks
+
+![The Background Tasks list](images/background-tasks.webp)
 
 Open **Tools > Background Tasks**. Each row shows:
 

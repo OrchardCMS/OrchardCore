@@ -28,13 +28,14 @@ These screens protect your site and its visitors: they tell browsers what a page
 
 The Administrator role has all these permissions by default.
 
-
 !!! warning "Saving reloads the site"
     The security headers, CORS, reverse proxy and HTTPS screens reload the site when you save. Rate limits reload it when you enable or disable a policy, or delete an enabled one. The site may answer slowly for a few seconds. See [How settings changes apply](general.md#how-settings-changes-apply).
 
 ## Set the security headers
 
 Security headers are instructions the site sends to the browser with every page. They tell the browser which scripts, images and frames a page may load, which device features (camera, microphone, location) it may use, and how much of the page address to share when a visitor follows a link to another site.
+
+![The Security Headers settings](images/security-headers.webp)
 
 1. Open **Settings > Security > Security Headers**. The screen has three tabs.
 2. Change the values on the tabs you need.
@@ -77,6 +78,8 @@ The site also always tells browsers not to guess the type of the files it sends,
 
 Browsers stop a web page on one website from reading data from another website, unless the second website allows it. Cross-Origin Resource Sharing (CORS) policies are those permissions. You need one when another website or app of yours, such as a mobile web app or a separate front end, calls your site's APIs from the browser.
 
+![The Cross-Origin Resource Sharing screen](images/cors.webp)
+
 ### Add a CORS policy
 
 1. Open **Settings > Security > Cross-Origin Resource Sharing**.
@@ -112,6 +115,8 @@ The screen lists the policies, with a **Default Policy** badge on the default on
 
 reCAPTCHA is a free Google service that asks visitors to prove they are not robots. It stops robots from guessing passwords, creating fake accounts and filling in your forms.
 
+![The reCaptcha settings](images/recaptcha.webp)
+
 1. Create a reCAPTCHA site on Google's reCAPTCHA website (the link is on the screen). Google gives you a site key and a secret key.
 2. Open **Settings > Security > reCaptcha**.
 3. Type the **Site Key** and the **Secret Key**.
@@ -131,6 +136,8 @@ reCAPTCHA works only when both keys are filled in. Then:
 ## Limit how many requests visitors can send
 
 Rate limits stop a single visitor, or a robot, from overloading the site with requests. When a visitor sends too many, the site answers with the *Too many requests* error page (status 429) instead of the page.
+
+![The Rate Limits screen](images/rate-limits.webp)
 
 Each signed-in user has their own allowance. Anonymous visitors are counted by their IP address, so visitors who share one address, such as everyone in an office behind one gateway, share one allowance.
 
@@ -184,6 +191,8 @@ To act on several policies, check them (or **Select All**), then pick **Enable**
 ## Set up the reverse proxy options
 
 Many sites run behind another server, such as a load balancer, a CDN or a hosting proxy, that receives the visitors' requests and passes them on. The site then sees the proxy's address instead of the visitor's. These options tell the site to trust the information the proxy adds about the original request.
+
+![The Reverse Proxy settings](images/reverse-proxy.webp)
 
 1. Open **Settings > Reverse Proxy**.
 2. Check the options your IT team asks for.

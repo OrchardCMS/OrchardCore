@@ -17,7 +17,6 @@ The site sends email for many tasks: password reset links, registration confirma
 | **Permission** | *Manage Email Settings* (the Administrator role has it by default) |
 | **Feature** | **Email** (`OrchardCore.Email`), with at least one provider: **SMTP Email Provider** (`OrchardCore.Email.Smtp`) or **Azure Communication Services Email** (`OrchardCore.Email.Azure`) |
 
-
 ## Before you start
 
 Get the connection details from whoever runs your email service:
@@ -84,6 +83,8 @@ Keeping credentials in secrets lets you change a password in one place, and lets
 
 When more than one provider is on, the site sends with the default one.
 
+![The Email settings](images/email.webp)
+
 1. Open **Settings > Communication > Email**. The **Providers** tab opens first.
 2. Pick the **Default provider**.
 3. Click **Save**.
@@ -99,6 +100,8 @@ The list shows only the providers that are turned on:
 If no provider is on, the tab says *No email providers are currently enabled.*
 
 ## Send a test email
+
+![The Email Test screen](images/email-test.webp)
 
 1. Open **Tools > Testing > Email Test**.
 2. Pick the **Provider** to test. The default provider is selected for you.

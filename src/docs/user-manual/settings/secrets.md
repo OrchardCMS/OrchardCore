@@ -18,7 +18,6 @@ Secret values are encrypted, and once saved they are never shown again, not even
 | **Permission** | *View secrets* (to see the list) and *Manage secrets* (to add, change, move and delete). The Administrator role has both by default. **Migrate Secrets** and **Secret Stores** need *Manage secrets*. |
 | **Feature** | **Secrets** (`OrchardCore.Secrets`); optionally **Secrets - Azure Key Vault** (`OrchardCore.Secrets.AzureKeyVault`) |
 
-
 ## Where secrets are kept
 
 Secrets live in a **store**:
@@ -92,6 +91,8 @@ The settings then point to the new secrets and no longer keep the values. If a s
 
 **Tools > Security > Secrets** lists the secrets with their type, store and expiration. Use **Search**, the expiration filter (**All**, **Expired**, **Expires within 30 days**, **Never expires**) and the type filter to narrow the list.
 
+![The Secrets list](images/secrets.webp)
+
 - **Edit**: change the value, description or expiration date. Leave **Value** empty to keep the current value; stored values are never displayed. The **Name** can't be changed.
 - **Move**: move the secret to another store (see below).
 - **Delete**: removes the secret after you confirm. To delete several, check them and pick **Delete** in the **Actions** menu.
@@ -106,6 +107,8 @@ When a secret has an **Expiration date**, the admin dashboard shows a warning to
 ## Move secrets to another store
 
 Use **Tools > Security > Secret Stores** to move secrets between stores, for example from the database to Azure Key Vault before you stop using the database store.
+
+![The Secret Stores screen](images/secret-stores.webp)
 
 1. Open **Tools > Security > Secret Stores**.
 2. Pick the **Source store**. The screen shows how many active secrets it holds.

@@ -21,6 +21,8 @@ The dashboard is the first page you see after signing in to the admin, and the p
 
 ## The welcome dashboard
 
+![The admin dashboard](images/dashboard.webp)
+
 Without the **Admin Dashboard** feature, the dashboard shows *Welcome to Orchard Core* and a row of cards. Each card links to a common task, and appears when its feature is on:
 
 | Card | Link | Opens |

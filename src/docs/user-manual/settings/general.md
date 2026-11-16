@@ -19,7 +19,6 @@ The **Settings > General** screen holds the basic facts about your site: its nam
 | **Permission** | *Manage general settings* (General), *Manage Admin Settings* (Admin), *Manage debugging settings* (Debugging). The Administrator role has all three by default. |
 | **Feature** | **Settings** (`OrchardCore.Settings`, always on) and **Admin** (`OrchardCore.Admin`) |
 
-
 ## How settings changes apply
 
 Every settings screen has a **Save** button at the bottom. After a successful save you see *Site settings updated successfully.*
@@ -30,6 +29,8 @@ Some screens show a yellow warning at the top: *The website might be restarted u
     Some settings can also be fixed by your developer or IT team in the site configuration. When that is the case, the screen may tell you that the current values come from configuration, and what you save there may not change what the site uses.
 
 ## Change the site name, time zone and page size
+
+![The General settings](images/general.webp)
 
 1. Open **Settings > General**. The screen has three tabs: **Site**, **Resources** and **Cache**.
 2. On the **Site** tab, change the fields you need.
@@ -85,6 +86,8 @@ The **Dynamic Cache** feature (`OrchardCore.DynamicCache`, on by default in most
 
 **Settings > Admin** changes the admin for everyone who uses it.
 
+![The Admin settings](images/admin-settings.webp)
+
 1. Open **Settings > Admin**.
 2. Check or clear the options, and pick the layouts.
 3. Click **Save**.
@@ -108,6 +111,8 @@ The changes apply to everyone at the next page they open.
 ## See which template drew a part of a page
 
 **Settings > Debugging** helps a site builder or designer who works on [templates](../design/templates-and-placements.md).
+
+![The Debugging settings](images/debugging.webp)
 
 1. Open **Settings > Debugging**.
 2. Check **Write shape debug information**.

@@ -22,6 +22,7 @@ The widgets and items live inside the content item: they have no page of their o
 | **Permission** | The permission to edit the content item; *Edit content types* to change the part settings |
 | **Feature** | **Flows** (`OrchardCore.Flows`), which also turns on **Widgets** (`OrchardCore.Widgets`) |
 
+![The editor of a new Page, with its Flow part where you add widgets](images/page-editor.webp)
 
 ## Add a widget to a flow
 

@@ -21,6 +21,7 @@ If you have never written HTML, start small, keep a copy of what you change, and
 | **Permission** | *Manage templates* and *Manage Liquid templates*; *Manage admin templates* and *Manage Liquid templates*; *Manage placements* |
 | **Feature** | **Templates** (`OrchardCore.Templates`); **Admin Templates** (`OrchardCore.AdminTemplates`); **Placements** (`OrchardCore.Placements`). Templates need **Liquid** (`OrchardCore.Liquid`). |
 
+![The Templates list](images/templates.webp)
 
 !!! warning "These permissions are powerful"
     *Manage templates*, *Manage admin templates* and *Manage Liquid templates* are marked security critical: a template can show any data the site has to anyone who visits a page. Give them only to people you trust.
@@ -41,6 +42,8 @@ The full list, with the names used by fields, parts, menus and more, is in the T
 The easiest way to get the right name: open **Design > Content Definition > Content Types**, edit a type, and use the **Edit templates** button. It lists *Template for a ... content item in detail views* and *Template for a ... content item in summary views*, and opens the template editor with the name filled in. The **Edit** page of each part of the type, opened from the content type editor, has the same button.
 
 ## Create a template
+
+![The Create Template screen](images/create-template.webp)
 
 1. Open **Design > Templates** and click **Add Template**.
 2. Type the shape **Name**, such as `Content__Article`. It is required and must be unique.
@@ -81,6 +84,8 @@ Deleting a template puts back the theme's own design for that shape.
 ## Place, move or hide parts of a page
 
 A content item is made of parts and fields, and each one is drawn as a shape placed in a zone of the page (such as `Content` or `Meta`) at a position. **Placements** let you change that without a template, for example to hide the tags in blog post summaries, or to show a field before the body.
+
+![The Placements list](images/placements.webp)
 
 ### Create a placement
 

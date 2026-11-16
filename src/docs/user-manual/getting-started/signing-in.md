@@ -22,6 +22,8 @@ What you see depends on how your administrator set the site up. A link or a butt
 
 ## Sign in
 
+![The sign-in page](images/login.webp)
+
 1. Open the login page.
 2. Type your user name or your email address in **Username or email address**.
 3. Type your password in **Password**.
@@ -130,6 +132,8 @@ The user menu shows **Signed in as** and your user name above **Log off**.
 
 ## Edit your profile
 
+![The Edit Profile screen](images/edit-profile.webp)
+
 1. Open the user menu at the top right.
 2. Click **Profile**.
 3. Change the fields you need on the **Edit User** page.
@@ -150,6 +154,8 @@ Extra tabs can appear on this page when the site has [custom user settings](../u
 If **Profile** opens a read-only page, your role can view profiles but not edit your own. Ask for the *Edit own user information* permission.
 
 ## Change your password
+
+![The Change Password screen](images/change-password.webp)
 
 1. Open the user menu at the top right.
 2. Click **Change password**.
