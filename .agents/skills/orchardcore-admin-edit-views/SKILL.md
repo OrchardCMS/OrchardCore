@@ -158,7 +158,7 @@ internal sealed class TemplateDisplayDriver : DisplayDriver<TemplateViewModel>
 
 ### How cards render
 
-The admin theme renders a card (the `Card` shape) as a Bootstrap card, or as a `<fieldset>` titled by its `<legend>` in a tab (e.g. the general, email and SMS settings), always expanded: cards group fields, they don't hide them, so never group fields in an accordion, a collapse or a `<details>` element. Views never write card markup themselves.
+The admin theme renders a card (the `Card` shape) as a Bootstrap card, or as a `<fieldset>` titled by its `<legend>` in a tab (e.g. the general, email and SMS settings) unless it holds a table, such as the events of the audit trail, always expanded: cards group fields, they don't hide them, so never group fields in an accordion, a collapse or a `<details>` element. Views never write card markup themselves.
 
 ```html
 <div class="card mb-3 ocat-card" role="group" aria-labelledby="...">

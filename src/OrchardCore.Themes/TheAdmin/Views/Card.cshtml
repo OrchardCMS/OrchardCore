@@ -35,9 +35,10 @@
 
     var titleId = $"card-{Model.Identifier}-{name}".HtmlClassify();
 
-    // In a tab, which already frames them, the groups are fieldsets titled by their legends, e.g. in the general,
-    // email and SMS settings.
-    var inTab = Model.Grouping.OfType<IShape>().Any(shape => shape.Metadata.TabGrouping.HasValue);
+    // In a tab, which already frames them, the groups of fields are fieldsets titled by their legends, e.g. in the
+    // general, email and SMS settings. A group holding a table, e.g. the events of the audit trail, stays a card.
+    var inTab = Model.Grouping.OfType<IShape>().Any(shape => shape.Metadata.TabGrouping.HasValue) &&
+        !html.Contains("<table", StringComparison.OrdinalIgnoreCase);
 }
 
 @if (name == "Content")

@@ -39,7 +39,7 @@ public sealed class Migrations : DataMigration
 
         await _recipeMigrator.ExecuteAsync("socialmetasettings.recipe.json", this);
 
-        return 2;
+        return 3;
     }
 
     public async Task<int> UpdateFrom1Async()
@@ -47,5 +47,13 @@ public sealed class Migrations : DataMigration
         await _recipeMigrator.ExecuteAsync($"socialmetasettings{RecipesConstants.RecipeExtension}", this);
 
         return 2;
+    }
+
+    public async Task<int> UpdateFrom2Async()
+    {
+        await _contentDefinitionManager.AlterTypeDefinitionAsync("SocialMetaSettings", type => type
+            .DisplayedAs("Social Meta"));
+
+        return 3;
     }
 }

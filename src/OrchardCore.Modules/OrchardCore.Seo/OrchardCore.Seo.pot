@@ -329,7 +329,7 @@ msgstr ""
 
 #: Views/SeoMetaPartGoogleSchema.Edit.cshtml
 msgctxt "OrchardCore.Seo.Views.SeoMetaPartGoogleSchema.Edit"
-msgid "The Social Meta Settings Google Schema is used by default, or can be overridden here."
+msgid "The Social Meta Google Schema is used by default, or can be overridden here."
 msgstr ""
 
 #: Views/SeoMetaPartOpenGraph.Edit.cshtml
@@ -354,7 +354,7 @@ msgstr ""
 
 #: Views/SeoMetaPartOpenGraph.Edit.cshtml
 msgctxt "OrchardCore.Seo.Views.SeoMetaPartOpenGraph.Edit"
-msgid "The Social Meta Settings Open Graph Type is used by default, or can be overridden here."
+msgid "The Social Meta Open Graph Type is used by default, or can be overridden here."
 msgstr ""
 
 #: Views/SeoMetaPartOpenGraph.Edit.cshtml
@@ -419,17 +419,17 @@ msgstr ""
 
 #: Views/SeoMetaPartTwitter.Edit.cshtml
 msgctxt "OrchardCore.Seo.Views.SeoMetaPartTwitter.Edit"
-msgid "The Social Meta Settings Twitter Card is used by default, or can be overridden here."
+msgid "The Social Meta Twitter Card is used by default, or can be overridden here."
 msgstr ""
 
 #: Views/SeoMetaPartTwitter.Edit.cshtml
 msgctxt "OrchardCore.Seo.Views.SeoMetaPartTwitter.Edit"
-msgid "The Social Meta Settings Twitter Creator is used by default, or can be overridden here."
+msgid "The Social Meta Twitter Creator is used by default, or can be overridden here."
 msgstr ""
 
 #: Views/SeoMetaPartTwitter.Edit.cshtml
 msgctxt "OrchardCore.Seo.Views.SeoMetaPartTwitter.Edit"
-msgid "The Social Meta Settings Twitter Site is used by default, or can be overridden here."
+msgid "The Social Meta Twitter Site is used by default, or can be overridden here."
 msgstr ""
 
 #: Views/SeoMetaPartTwitter.Edit.cshtml

@@ -14,7 +14,7 @@
       "ContentTypes": [
         {
           "Name": "SocialMetaSettings",
-          "DisplayName": "Social Meta Settings",
+          "DisplayName": "Social Meta",
           "Settings": {
             "ContentTypeSettings": {
               "Stereotype": "CustomSettings"

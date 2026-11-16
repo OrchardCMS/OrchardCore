@@ -669,7 +669,7 @@ Every admin form groups its fields in cards, each a logical section of the form 
 - **Screens built by display drivers** (site settings, users, content definition settings, workflow activities, deployment steps, ...): declare the card in the placement location of each editor shape, with a name localized by the driver, e.g. `.Location(l => l.Zone("Content", "1").Card(S["Server"], "10"))`. Shapes placed in the same card share it. Split a view holding several sections into one shape per card. Their views hold no card markup.
 - **Content item editors** are not grouped in cards: the editor shapes of content parts and content fields don't declare cards.
 - **Admin pages with a form** (a controller editing a view model, e.g. a template or an OpenID application): the page renders an editor built by the display drivers of its view model, `@await DisplayAsync(Model.Editor)`, and the drivers place its shapes in cards. Follow `OrchardCore.Templates` (`TemplateController`, `TemplateDisplayDriver`) and the skill.
-- The admin theme renders cards as Bootstrap cards (`card`, `card-header`, `card-body`), and as fieldsets titled by their legends in a tab (e.g. the general, email and SMS settings), always expanded: never group fields in accordions, collapses or `<details>`.
+- The admin theme renders cards as Bootstrap cards (`card`, `card-header`, `card-body`), and as fieldsets titled by their legends in a tab (e.g. the general, email and SMS settings), unless they hold a table, always expanded: never group fields in accordions, collapses or `<details>`.
 
 ### Avoid
 
