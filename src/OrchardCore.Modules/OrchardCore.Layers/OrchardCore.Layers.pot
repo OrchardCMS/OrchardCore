@@ -323,6 +323,13 @@ msgctxt "OrchardCore.Layers.Views.Layer.Buttons.SummaryAdmin"
 msgid "Edit"
 msgstr ""
 
+#. Format arguments: {0}: Model.Value.Name
+#: Views/Layer.Checkbox.SummaryAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Layers.Views.Layer.Checkbox.SummaryAdmin"
+msgid "Select {0}"
+msgstr ""
+
 #: Views/LayerGeneral.Edit.cshtml
 msgctxt "OrchardCore.Layers.Views.LayerGeneral.Edit"
 msgid "Description"

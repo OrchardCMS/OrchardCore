@@ -379,6 +379,11 @@ html:has(.action-bar-bottom) {
   scroll-padding-bottom: calc(var(--oc-action-bar-bottom-height, 3.5rem) + 0.5rem);
 }
 
+.alert a:not(.btn):not(.button):not(.alert-link) {
+  color: var(--bs-alert-link-color);
+  text-decoration: underline;
+}
+
 /*
  Admin lists rendered by the AdminList shape.
 
@@ -910,7 +915,7 @@ html[dir="rtl"] .CodeMirror-cursor {
 
 .hint {
   font-size: 0.875em;
-  color: var(--bs-secondary) !important;
+  color: var(--bs-secondary-color) !important;
   overflow-wrap: break-word;
   word-wrap: break-word;
   -ms-word-break: break-all;
@@ -10972,12 +10977,32 @@ input:not([type=checkbox]):not([type=radio]).input-validation-error {
   background-color: var(--bs-body-bg) !important;
 }
 
+.multiselect__tag,
+.multiselect__option--highlight,
+.multiselect__option--highlight::after {
+  background-color: var(--bs-success) !important;
+}
+
+.multiselect__tag-icon:hover,
+.multiselect__tag-icon:focus {
+  background-color: var(--bs-success-text-emphasis) !important;
+}
+
+.multiselect__option--selected.multiselect__option--highlight,
+.multiselect__option--selected.multiselect__option--highlight::after {
+  background-color: var(--bs-danger) !important;
+}
+
 /* Import themes */
 /* The light theme is also the default theme. */
 /* Do not wrap the these classes for the light theme specific. */
 .ta-badge {
   background-color: var(--bs-light);
   color: var(--bs-secondary-color);
+}
+
+.ta-badge a {
+  color: var(--bs-link-hover-color);
 }
 
 .card {

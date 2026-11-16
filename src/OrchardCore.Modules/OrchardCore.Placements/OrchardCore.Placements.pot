@@ -295,6 +295,13 @@ msgctxt "OrchardCore.Placements.Views.ShapePlacement.Buttons.SummaryAdmin"
 msgid "Edit"
 msgstr ""
 
+#. Format arguments: {0}: Model.Value.ShapeType
+#: Views/ShapePlacement.Checkbox.SummaryAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Placements.Views.ShapePlacement.Checkbox.SummaryAdmin"
+msgid "Select {0}"
+msgstr ""
+
 #: Views/ShapePlacementRules.Edit.cshtml
 msgctxt "OrchardCore.Placements.Views.ShapePlacementRules.Edit"
 msgid "Placement rules"

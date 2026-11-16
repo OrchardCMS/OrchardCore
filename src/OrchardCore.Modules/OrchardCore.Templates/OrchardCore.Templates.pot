@@ -389,6 +389,13 @@ msgctxt "OrchardCore.Templates.Views.TemplateEntry.Buttons.SummaryAdmin"
 msgid "Edit"
 msgstr ""
 
+#. Format arguments: {0}: Model.Value.Name
+#: Views/TemplateEntry.Checkbox.SummaryAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Templates.Views.TemplateEntry.Checkbox.SummaryAdmin"
+msgid "Select {0}"
+msgstr ""
+
 #: Views/TemplateGeneral.Edit.cshtml
 msgctxt "OrchardCore.Templates.Views.TemplateGeneral.Edit"
 msgid "Description"

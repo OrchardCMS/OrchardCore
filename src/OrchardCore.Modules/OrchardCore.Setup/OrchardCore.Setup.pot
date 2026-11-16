@@ -151,6 +151,16 @@ msgstr ""
 
 #: Views/Setup/Index.cshtml
 msgctxt "OrchardCore.Setup.Views.Setup.Index"
+msgid "Show password"
+msgstr ""
+
+#: Views/Setup/Index.cshtml
+msgctxt "OrchardCore.Setup.Views.Setup.Index"
+msgid "Show password confirmation"
+msgstr ""
+
+#: Views/Setup/Index.cshtml
+msgctxt "OrchardCore.Setup.Views.Setup.Index"
 msgid "Show/hide connection string"
 msgstr ""
 
