@@ -600,6 +600,19 @@ body.ta-admin {
     display: none;
   }
 
+  .left-sidebar-compact #left-nav > ul > li > figure > figcaption > .item-label:hover,
+  .left-sidebar-compact #left-nav > ul > li > figure > figcaption > .item-label:focus-visible,
+  .left-sidebar-compact #left-nav > ul > li.visible > figure > figcaption > .item-label {
+    background-color: transparent;
+    color: var(--oc-admin-menu-font-color-hover);
+  }
+
+  .left-sidebar-compact #left-nav > ul > li > figure > figcaption > .item-label:hover > .icon,
+  .left-sidebar-compact #left-nav > ul > li > figure > figcaption > .item-label:focus-visible > .icon,
+  .left-sidebar-compact #left-nav > ul > li.visible > figure > figcaption > .item-label > .icon {
+    background-color: rgba(var(--ta-menu-strong-rgb), 0.16);
+  }
+
   .left-sidebar-compact #left-nav > ul > li.active > figure > figcaption {
     background-color: transparent;
   }
@@ -672,11 +685,6 @@ body.ta-admin {
 
   .left-sidebar-compact #left-nav > ul > li.visible > figure > ul.collapse {
     display: block;
-  }
-
-  .left-sidebar-compact #left-nav > ul > li.visible > figure > figcaption > .item-label {
-    background-color: var(--oc-admin-menu-item-hover-bg-color);
-    color: var(--oc-admin-menu-font-color-hover);
   }
 }
 

@@ -538,6 +538,19 @@ $menu-label-size: 0.90625rem;
             display: none;
         }
 
+        // Hovering an icon, or opening its flyout, tints its tile rather than the row around it, which would draw a
+        // second box.
+        #left-nav > ul > li > figure > figcaption > .item-label:hover,
+        #left-nav > ul > li > figure > figcaption > .item-label:focus-visible,
+        #left-nav > ul > li.visible > figure > figcaption > .item-label {
+            background-color: transparent;
+            color: var(--oc-admin-menu-font-color-hover);
+
+            > .icon {
+                background-color: rgba(var(--ta-menu-strong-rgb), 0.16);
+            }
+        }
+
         // The icon is the whole row here: the current section is marked by filling its tile, not by a pill around it,
         // which would draw a second box. The section holding the current page is marked the same way, as its items
         // are not shown.
@@ -614,10 +627,6 @@ $menu-label-size: 0.90625rem;
             display: block;
         }
 
-        #left-nav > ul > li.visible > figure > figcaption > .item-label {
-            background-color: var(--oc-admin-menu-item-hover-bg-color);
-            color: var(--oc-admin-menu-font-color-hover);
-        }
     }
 }
 
