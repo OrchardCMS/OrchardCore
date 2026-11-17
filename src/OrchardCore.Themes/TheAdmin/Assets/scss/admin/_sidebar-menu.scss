@@ -538,6 +538,22 @@ $menu-label-size: 0.90625rem;
             display: none;
         }
 
+        // The icon is the whole row here: the current section is marked by filling its tile, not by a pill around it,
+        // which would draw a second box. The section holding the current page is marked the same way, as its items
+        // are not shown.
+        #left-nav > ul > li.active > figure > figcaption {
+            background-color: transparent;
+        }
+
+        #left-nav > ul > li.active > figure > figcaption > .item-label {
+            background-color: transparent;
+
+            > .icon {
+                background-color: var(--oc-admin-menu-item-active-bg-color);
+                color: var(--ta-menu-active-color);
+            }
+        }
+
         // Each group opens as a flyout, positioned by the script so that it is never clipped by the scrollable rail
         // nor by the viewport. The rules showing and hiding it repeat '.collapse' to outweigh the ones driving the
         // collapse of the expanded menu.
@@ -577,6 +593,20 @@ $menu-label-size: 0.90625rem;
 
             .item-label {
                 padding-inline-start: 0.5rem;
+            }
+
+            // The levels under the items of the flyout step in, as they do in the expanded menu, along the same
+            // hairline.
+            ul .item-label {
+                padding-inline-start: 1.75rem;
+            }
+
+            ul ul .item-label {
+                padding-inline-start: 3rem;
+            }
+
+            ul ul ul .item-label {
+                padding-inline-start: 4.25rem;
             }
         }
 

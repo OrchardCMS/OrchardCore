@@ -600,6 +600,19 @@ body.ta-admin {
     display: none;
   }
 
+  .left-sidebar-compact #left-nav > ul > li.active > figure > figcaption {
+    background-color: transparent;
+  }
+
+  .left-sidebar-compact #left-nav > ul > li.active > figure > figcaption > .item-label {
+    background-color: transparent;
+  }
+
+  .left-sidebar-compact #left-nav > ul > li.active > figure > figcaption > .item-label > .icon {
+    background-color: var(--oc-admin-menu-item-active-bg-color);
+    color: var(--ta-menu-active-color);
+  }
+
   .left-sidebar-compact #left-nav > ul > li > figure > ul.collapse.show {
     display: none;
   }
@@ -643,6 +656,18 @@ body.ta-admin {
 
   .left-sidebar-compact #left-nav > ul > li > figure > ul .item-label {
     padding-inline-start: 0.5rem;
+  }
+
+  .left-sidebar-compact #left-nav > ul > li > figure > ul ul .item-label {
+    padding-inline-start: 1.75rem;
+  }
+
+  .left-sidebar-compact #left-nav > ul > li > figure > ul ul ul .item-label {
+    padding-inline-start: 3rem;
+  }
+
+  .left-sidebar-compact #left-nav > ul > li > figure > ul ul ul ul .item-label {
+    padding-inline-start: 4.25rem;
   }
 
   .left-sidebar-compact #left-nav > ul > li.visible > figure > ul.collapse {
