@@ -126,8 +126,12 @@ body[data-actions-layout="menu"] .action-bar-bottom:not(.action-bar-ready) .acti
         --bs-btn-active-bg: var(--bs-danger-bg-subtle);
     }
 
-    // Separates the destructive actions from the others.
-    > :not(.btn-danger, .btn-outline-danger) + :is(.btn-danger, .btn-outline-danger) {
+    // Shows the destructive actions last, separated from the others.
+    > :is(.btn-danger, .btn-outline-danger) {
+        order: 1;
+    }
+
+    &:has(> :not(.btn-danger, .btn-outline-danger)) > :is(.btn-danger, .btn-outline-danger):not(:is(.btn-danger, .btn-outline-danger) ~ *) {
         position: relative;
         margin-top: 0.5rem !important;
 

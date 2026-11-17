@@ -387,12 +387,16 @@ body[data-actions-layout=menu] .action-bar-bottom:not(.action-bar-ready) .action
   --bs-btn-active-bg: var(--bs-danger-bg-subtle);
 }
 
-.action-bar-menu-items > :not(.btn-danger, .btn-outline-danger) + :is(.btn-danger, .btn-outline-danger) {
+.action-bar-menu-items > :is(.btn-danger, .btn-outline-danger) {
+  order: 1;
+}
+
+.action-bar-menu-items:has(> :not(.btn-danger, .btn-outline-danger)) > :is(.btn-danger, .btn-outline-danger):not(:is(.btn-danger, .btn-outline-danger) ~ *) {
   position: relative;
   margin-top: 0.5rem !important;
 }
 
-.action-bar-menu-items > :not(.btn-danger, .btn-outline-danger) + :is(.btn-danger, .btn-outline-danger)::before {
+.action-bar-menu-items:has(> :not(.btn-danger, .btn-outline-danger)) > :is(.btn-danger, .btn-outline-danger):not(:is(.btn-danger, .btn-outline-danger) ~ *)::before {
   content: "";
   position: absolute;
   top: calc(-0.25rem - var(--bs-border-width));
