@@ -1,9 +1,13 @@
 // ---------------------------------------------------------------------------
 // Admin sidebar menu.
 //
-// The menu is rendered as groups (first level) holding their items (second level).
-// It is rendered fully collapsed: the script restores what the user last left open,
-// and opens whatever holds the current page. Nothing is ever collapsed on its own.
+// The menu runs the whole height of the window, the branding at its top. It is rendered as groups (first level)
+// holding their items (second level), fully collapsed: the script restores what the user last left open, and opens
+// whatever holds the current page. Nothing is ever collapsed on its own.
+//
+// Its colors come from the scheme (the '--oc-admin-menu-*' properties declared in _variables.scss read the scheme's
+// '--ta-menu-*' tokens): dark with light text in most schemes, light gray with dark text in a 'light menu' scheme.
+// Every row is a rounded pill, the current page a filled pill of the primary.
 //
 // Three layouts are supported:
 //  1. Expanded  : the default, full width sidebar.
@@ -11,8 +15,23 @@
 //  3. Off canvas: a drawer toggled from the top bar (below the medium breakpoint).
 // ---------------------------------------------------------------------------
 
-// Keyboard focus must stay visible: the hover background alone is far too faint to
-// carry it, so every control of the menu draws an outline instead.
+// The inset of the pills from the edges of the menu.
+$menu-pill-inset: 0.75rem;
+$menu-pill-radius: calc(0.625rem * var(--ta-radius-scale, 1));
+
+// Two wide diagonal bands of a slightly different shade across the menu, at a few percent: lighter on a dark menu,
+// darker on a light one.
+$menu-bands: linear-gradient(
+    118deg,
+    transparent 0 26%,
+    rgba(var(--ta-menu-strong-rgb), 0.035) 26% 44%,
+    transparent 44% 58%,
+    rgba(var(--ta-menu-strong-rgb), 0.025) 58% 72%,
+    transparent 72%
+);
+
+// Keyboard focus must stay visible: the hover background alone is far too faint to carry it, so every control of the
+// menu draws an outline instead.
 #ta-left-sidebar :focus-visible,
 .ta-sidebar-toggler:focus-visible {
     outline: 2px solid var(--oc-admin-accent-strong-color);
@@ -21,18 +40,18 @@
 
 #ta-left-sidebar {
     position: fixed;
-    top: var(--oc-top-nav-height);
+    top: 0;
     bottom: 0;
     left: 0;
     width: var(--oc-start-navigation-width);
-    z-index: var(--oc-start-navigation-zindex);
+    z-index: var(--ta-sidebar-zindex);
     background-color: var(--oc-admin-menu-bg-color);
+    background-image: $menu-bands, var(--ta-menu-gradient);
     color: var(--oc-admin-menu-font-color);
-    border-right: var(--bs-border-width) solid var(--oc-admin-menu-border-color);
-    // The admin uses the default Bootstrap sans serif stack, stated here so that the
-    // menu never inherits a different font from a host application.
+    box-shadow: 1px 0 0 rgba(8, 27, 38, 0.08);
+    // Stated here so that the menu never inherits a different font from a host application.
     font-family: var(--bs-body-font-family);
-    transition: left 0.2s ease-in-out, width 0.2s ease-in-out;
+    transition: left 0.2s ease-in-out, right 0.2s ease-in-out, width 0.2s ease-in-out;
 
     ::-webkit-scrollbar {
         width: 4px;
@@ -56,8 +75,8 @@
         position: relative;
     }
 
-    // Bootstrap's collapse rules are declared with a lower specificity than the
-    // ones below, so they have to be repeated here.
+    // Bootstrap's collapse rules are declared with a lower specificity than the ones below, so they have to be
+    // repeated here.
     .collapse {
         display: none;
     }
@@ -67,57 +86,126 @@
     }
 }
 
-// The filter input sits on top of the menu, it is removed when the
-// 'Enable Admin Menu filter' option is turned off.
+// Branding
+// --------
+.ta-sidebar-brand {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    height: var(--oc-top-nav-height);
+    padding: 0 1.25rem;
+    overflow: hidden;
+    border-bottom: var(--bs-border-width) solid var(--oc-admin-menu-border-color);
+
+    .ta-navbar-brand {
+        display: block;
+        min-width: 0;
+        margin: 0;
+        padding: 0;
+        color: var(--oc-admin-accent-color);
+
+        &:hover,
+        &:focus-visible {
+            color: var(--oc-admin-accent-color);
+        }
+
+        > div {
+            min-width: 0;
+            flex-wrap: nowrap;
+        }
+
+        img {
+            width: auto;
+            height: 2.125rem;
+            border-radius: var(--ta-radius-md);
+        }
+
+        span {
+            overflow: hidden;
+            font-size: var(--ta-font-size-lg);
+            font-weight: var(--ta-font-weight-strong);
+            text-overflow: ellipsis;
+        }
+    }
+}
+
+// The menu filter
+// ---------------
+// The filter input sits on top of the menu, it is removed when the 'Enable Admin Menu filter' option is turned off.
 .nav-filter {
     position: relative;
     flex: 0 0 auto;
-    border-bottom: var(--bs-border-width) solid var(--oc-admin-menu-border-color);
+    margin: 0.875rem $menu-pill-inset 0.25rem;
+    border: var(--bs-border-width) solid var(--oc-admin-menu-border-color);
+    border-radius: $menu-pill-radius;
+    background-color: rgba(var(--ta-menu-strong-rgb), 0.06);
 
     .nav-filter-icon {
         position: absolute;
         top: 50%;
-        left: 0.75rem;
+        inset-inline-start: 0.75rem;
         transform: translateY(-50%);
-        font-size: 0.75rem;
-        color: var(--oc-admin-menu-font-color);
+        font-size: var(--ta-font-size-xs);
+        color: var(--ta-menu-muted);
         pointer-events: none;
     }
 
+    // The input follows the rounded box it sits in, so its focus outline (drawn along its corners) has the same
+    // shape.
     #filter,
     #filter:focus {
-        height: 38px;
-        padding-left: 2.25rem;
+        height: 2.375rem;
+        padding-inline-start: 2.25rem;
         border: none;
-        border-radius: unset;
+        border-radius: calc(#{$menu-pill-radius} - var(--bs-border-width));
         box-shadow: unset;
         background-color: transparent;
-        color: var(--bs-body-color);
+        color: var(--oc-admin-accent-color);
+        font-size: var(--ta-font-size-sm);
+    }
+
+    #filter::placeholder {
+        color: var(--ta-menu-muted);
     }
 
     #filter:focus-visible {
         outline: 2px solid var(--oc-admin-accent-strong-color);
         outline-offset: -2px;
     }
+
+    &:focus-within {
+        border-color: rgba(var(--ta-menu-accent-rgb), 0.6);
+        background-color: rgba(var(--ta-menu-strong-rgb), 0.1);
+    }
 }
 
+// Rows
+// ----
 #left-nav {
     flex: 1 1 auto;
     min-height: 0;
-    padding-top: 0.25rem;
-    padding-bottom: 0.5rem;
+    padding-top: 0.5rem;
+    padding-bottom: 1rem;
     overflow-x: hidden;
     overflow-y: auto;
-    scrollbar-width: thin;
     scrollbar-color: var(--oc-scrollbar-color) transparent;
+    // Windows draws a classic scrollbar, arrows included, once 'scrollbar-color' is set. It is hidden until the menu
+    // is pointed at or focused.
+    scrollbar-width: none;
+
+    &:hover,
+    &:focus-within {
+        scrollbar-width: thin;
+    }
 }
 
-// A row is made of the label and, when the item both links to a page and owns
-// children, of the button toggling those children.
+// A row is made of the label and, when the item both links to a page and owns children, of the button toggling
+// those children. Both share one pill.
 .nav-item-row {
     display: flex;
     align-items: stretch;
-    margin: 0;
+    margin: 2px $menu-pill-inset;
+    border-radius: $menu-pill-radius;
 }
 
 .item-label {
@@ -125,21 +213,25 @@
     display: flex;
     flex: 1 1 auto;
     align-items: center;
-    // Space between the icon and the label. A gap rather than a margin, so that the
-    // compact rail, where the label is hidden, keeps its icon centered.
-    column-gap: 0.375rem;
+    // Space between the icon and the label. A gap rather than a margin, so that the compact rail, where the label is
+    // hidden, keeps its icon centered.
+    column-gap: 0.5rem;
     min-width: 0;
     min-height: var(--oc-admin-menu-item-height);
     margin: 0;
-    padding: 0.3125rem 0.5rem 0.3125rem 0.75rem;
+    padding-block: 0.3125rem;
+    padding-inline: 0.5rem 0.625rem;
     border: none;
+    border-radius: $menu-pill-radius;
     background: none;
     font: inherit;
     text-align: start;
     text-decoration: none;
     color: var(--oc-admin-menu-item-font-color);
     cursor: pointer;
+    transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
 
+    // The icons are Font Awesome solid glyphs, set by each module.
     > .icon {
         flex: 0 0 auto;
         align-self: flex-start;
@@ -148,17 +240,18 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.25rem;
+        font-size: 0.9375rem;
 
         svg {
-            width: 1.25rem;
+            width: 0.9375rem;
         }
     }
 
     > .title {
         flex: 1 1 auto;
         min-width: 0;
-        font-size: 0.875rem;
+        font-size: var(--ta-font-size-sm);
+        font-weight: var(--ta-font-weight-normal);
         // Long words, such as a content type name, break rather than overflow.
         overflow-wrap: break-word;
     }
@@ -189,6 +282,7 @@
     min-height: var(--oc-admin-menu-item-height);
     padding: 0;
     border: none;
+    border-radius: $menu-pill-radius;
     background: none;
     color: inherit;
     cursor: pointer;
@@ -200,9 +294,19 @@
     }
 }
 
-// Sized here rather than with a Font Awesome class, which would scale the chevron
-// with the font size of the row, making the ones of the groups smaller than the
-// ones of the items.
+.nav-item-row:has(> .nav-toggle) {
+    > .item-label {
+        border-start-end-radius: 0;
+        border-end-end-radius: 0;
+    }
+
+    > .nav-toggle {
+        border-start-start-radius: 0;
+        border-end-start-radius: 0;
+    }
+}
+
+// Sized here rather than with a Font Awesome class, which would scale the chevron with the font size of the row.
 #ta-left-sidebar .chevron {
     font-size: 0.6875rem;
     transition: transform 0.2s ease-in-out;
@@ -215,29 +319,13 @@
 // Groups
 // ------
 #left-nav > ul > li.has-items > figure > figcaption {
-    margin-top: 0.75rem;
-}
-
-#left-nav > ul > li.has-items:first-child > figure > figcaption {
-    margin-top: 0.25rem;
+    margin-top: 2px;
 }
 
 .nav-group-label {
-    min-height: 2.5rem;
-    font-size: 0.8125rem;
-    font-weight: 600;
-    color: var(--oc-admin-menu-group-font-color);
-
-    // The icon of a group is muted like its caption and lines up with the icons
-    // of the items it holds. It is the largest of the menu, as it is what the eye
-    // scans to find a section.
-    > .icon {
-        font-size: 1.375rem;
-
-        svg {
-            width: 1.375rem;
-        }
-    }
+    font-size: var(--ta-font-size-sm);
+    font-weight: var(--ta-font-weight-normal);
+    color: var(--oc-admin-menu-item-font-color);
 
     &:hover,
     &:focus-visible {
@@ -245,43 +333,95 @@
     }
 }
 
-// Items
-// -----
-// Nested items are set apart from the items of their group.
-#left-nav ul ul ul {
-    background-color: rgba(var(--bs-emphasis-color-rgb), 0.04);
-}
+// The icon of each first level row sits on a quiet rounded tile, a wash of the menu's own text color, so the icons
+// stand out without adding colors. On the current page the tile is a wash of the row's text color.
+#left-nav > ul > li > figure > figcaption > .item-label > .icon {
+    align-self: center;
+    width: 2rem;
+    height: 2rem;
+    min-height: 2rem;
+    border-radius: var(--ta-radius-md);
+    background-color: rgba(var(--ta-menu-strong-rgb), 0.08);
+    color: var(--oc-admin-accent-color);
 
-#left-nav ul ul ul .item-label {
-    padding-left: 2.5rem;
-
-    > .icon {
-        width: 1.5rem;
-        font-size: 1.125rem;
+    &:empty {
+        background-color: transparent;
     }
 }
 
-#left-nav ul ul ul ul .item-label {
-    padding-left: 3.5rem;
+#left-nav > ul > li.current > figure > figcaption > .item-label > .icon {
+    background-color: color-mix(in srgb, var(--ta-menu-active-color) 18%, transparent);
+    color: var(--ta-menu-active-color);
+}
+
+// Items
+// -----
+// The children of a group hang under it, along a hairline, each level stepping in a little past its parent. The rows
+// of a group are a little tighter than the groups, so a group still reads as one.
+#left-nav .nav-group-items {
+    position: relative;
+    padding: 0.125rem 0 0.375rem;
+
+    &::after {
+        content: "";
+        position: absolute;
+        top: 0.25rem;
+        bottom: 0.5rem;
+        inset-inline-start: calc(#{$menu-pill-inset} + 0.75rem);
+        border-inline-start: 1px solid var(--oc-admin-menu-separator-color);
+        pointer-events: none;
+    }
+
+    .nav-item-row {
+        margin-block: 1px;
+    }
+
+    .nav-toggle {
+        min-height: 2.125rem;
+    }
+
+    .item-label {
+        min-height: 2.125rem;
+        padding-block: 0.25rem;
+        padding-inline-start: 1.875rem;
+
+        > .icon,
+        > .collapse-icon {
+            min-height: 1.625rem;
+        }
+
+        > .icon {
+            width: 1.5rem;
+        }
+    }
+}
+
+// Deeper levels step in again. '.nav-group-items' is repeated so these outweigh the second level's rule above.
+#left-nav .nav-group-items ul .item-label {
+    padding-inline-start: 3rem;
+}
+
+#left-nav .nav-group-items ul ul .item-label {
+    padding-inline-start: 4.125rem;
 }
 
 // The current page, and its ancestors.
-#left-nav li.current > figure > figcaption > .item-label {
+#left-nav li.current > figure > figcaption {
     background-color: var(--oc-admin-menu-item-active-bg-color);
-    color: var(--oc-admin-menu-item-font-color-active);
-    font-weight: 600;
+    border-radius: $menu-pill-radius;
 
-    &::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        border-left: 3px solid var(--oc-selected-indicator-color);
+    > .item-label,
+    > .nav-toggle {
+        background-color: transparent;
+        color: var(--ta-menu-active-color);
+    }
+
+    > .item-label > .title {
+        font-weight: var(--ta-font-weight-strong);
     }
 }
 
-#left-nav li.active:not(.current) > figure > figcaption > .item-label > .title {
+#left-nav li.active:not(.current) > figure > figcaption > .item-label {
     color: var(--oc-admin-menu-item-font-color-active);
 }
 
@@ -299,18 +439,20 @@
     position: relative;
     z-index: 1;
     border-top: var(--bs-border-width) solid var(--oc-admin-menu-border-color);
-    background-color: var(--oc-admin-menu-bg-color);
+    background-color: transparent;
 }
 
 .leftbar-compactor {
     display: block;
-    width: var(--oc-start-navigation-width-when-compact);
-    height: 40px;
+    width: 100%;
+    height: 2.75rem;
     padding: 0;
+    padding-inline-end: 1.75rem;
     border: none;
     background-color: transparent;
-    color: var(--oc-admin-menu-font-color);
-    font-size: 20px;
+    color: var(--ta-menu-muted);
+    font-size: 1rem;
+    text-align: end;
     cursor: pointer;
     transition-duration: 0.2s;
 
@@ -345,29 +487,45 @@
             display: none;
         }
 
+        .ta-sidebar-brand {
+            justify-content: center;
+            padding: 0;
+
+            // The logo's alt text names the link here, the name beside it is hidden.
+            .ta-navbar-brand span {
+                display: none;
+            }
+
+            .ta-navbar-brand img {
+                padding-inline-end: 0 !important;
+            }
+        }
+
+        .leftbar-compactor {
+            padding: 0;
+            text-align: center;
+        }
+
         // Only the first level is rendered in the rail, as an icon.
         #left-nav > ul > li > figure > figcaption {
-            margin-top: 0;
+            margin: 2px 0.75rem;
         }
 
         #left-nav > ul > li > figure > figcaption > .item-label {
             justify-content: center;
-            // The icon is alone on its row, it is given room to breathe rather
-            // than the tight line height of a row holding a label.
-            min-height: 3.25rem;
+            min-height: 3rem;
             padding: 0.5rem 0;
 
-            // The icon carries the whole row on its own here, so it is drawn
-            // larger than in the expanded menu.
+            // The icon is all a row shows here, so its tile and glyph are drawn larger than in the expanded menu.
             > .icon {
-                // The label it would line up with is hidden here, so it is centered, both
-                // ways: it keeps the flex layout of the expanded menu, which centers the glyph.
-                align-self: center;
-                width: 100%;
-                font-size: 1.5rem;
+                width: 2.75rem;
+                height: 2.75rem;
+                min-height: 2.75rem;
+                border-radius: var(--ta-radius);
+                font-size: 1.375rem;
 
                 svg {
-                    width: 1.5rem;
+                    width: 1.375rem;
                 }
             }
 
@@ -381,34 +539,45 @@
             display: none;
         }
 
-        // Each group opens as a flyout, positioned by the script so that it is
-        // never clipped by the scrollable rail nor by the viewport. The rules
-        // showing and hiding it repeat '.collapse' to outweigh the ones driving
-        // the collapse of the expanded menu.
+        // Each group opens as a flyout, positioned by the script so that it is never clipped by the scrollable rail
+        // nor by the viewport. The rules showing and hiding it repeat '.collapse' to outweigh the ones driving the
+        // collapse of the expanded menu.
         #left-nav > ul > li > figure > ul.collapse.show {
             display: none;
         }
 
         #left-nav > ul > li > figure > ul {
             width: var(--oc-start-navigation-width);
+            padding: 0.375rem 0 0.5rem;
             overflow-x: hidden;
             overflow-y: auto;
-            box-shadow: var(--oc-admin-menu-flyout-shadow);
             border: var(--bs-border-width) solid var(--oc-admin-menu-border-color);
+            border-radius: var(--ta-radius);
             background-color: var(--oc-admin-menu-bg-color);
+            background-image: linear-gradient(180deg, rgba(var(--ta-menu-strong-rgb), 0.04), rgba(var(--ta-menu-strong-rgb), 0));
+            box-shadow: var(--oc-admin-menu-flyout-shadow);
             scrollbar-width: thin;
             scrollbar-color: var(--oc-scrollbar-color) transparent;
-            z-index: var(--oc-start-navigation-zindex);
+            z-index: var(--ta-sidebar-zindex);
 
             // Reminds which group the flyout belongs to.
             &::before {
                 content: attr(data-title);
                 display: block;
-                padding: 0.5rem 0.75rem;
+                margin-bottom: 0.25rem;
+                padding: 0.5rem 1.25rem 0.625rem;
                 border-bottom: var(--bs-border-width) solid var(--oc-admin-menu-border-color);
-                font-size: 0.8125rem;
-                font-weight: 600;
-                color: var(--oc-admin-menu-group-font-color);
+                font-size: var(--ta-font-size-sm);
+                font-weight: var(--ta-font-weight-strong);
+                color: var(--oc-admin-accent-color);
+            }
+
+            &::after {
+                display: none;
+            }
+
+            .item-label {
+                padding-inline-start: 0.5rem;
             }
         }
 
@@ -426,14 +595,20 @@
 // Layout 3 : the off canvas drawer, below the medium breakpoint.
 // --------------------------------------------------------------
 @include media-breakpoint-down(md) {
+    // The closed drawer, off screen, takes no keyboard focus: it is hidden once its slide out is over, and shown as
+    // soon as it starts sliding in.
     #ta-left-sidebar {
         width: var(--oc-start-navigation-width-when-mobile);
         left: calc(-1 * var(--oc-start-navigation-width-when-mobile));
+        visibility: hidden;
+        transition: left 0.2s ease-in-out, right 0.2s ease-in-out, visibility 0s linear 0.2s;
     }
 
     .ta-sidebar-open #ta-left-sidebar {
         left: 0;
-        box-shadow: var(--oc-admin-menu-flyout-shadow);
+        visibility: visible;
+        box-shadow: var(--ta-shadow-lg);
+        transition: left 0.2s ease-in-out, right 0.2s ease-in-out, visibility 0s linear 0s;
     }
 
     #ta-left-sidebar .footer {
@@ -442,7 +617,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-
     #ta-left-sidebar,
     #ta-left-sidebar .chevron,
     .ta-sidebar-backdrop,
@@ -454,12 +628,9 @@
 .ta-sidebar-backdrop {
     display: none;
     position: fixed;
-    top: var(--oc-top-nav-height);
-    right: 0;
-    bottom: 0;
-    left: 0;
-    z-index: calc(var(--oc-start-navigation-zindex) - 1);
-    background-color: rgba(0, 0, 0, 0.5);
+    inset: 0;
+    z-index: var(--ta-backdrop-zindex);
+    background-color: rgba(8, 27, 38, 0.55);
     opacity: 0;
     transition: opacity 0.2s ease-in-out;
 }
@@ -470,5 +641,19 @@
             display: block;
             opacity: 1;
         }
+    }
+}
+
+// Contrast themes drop backgrounds: the current page is outlined instead; print gets a plain menu.
+@media (forced-colors: active) {
+    #left-nav li.current > figure > figcaption {
+        outline: 2px solid Highlight;
+        outline-offset: -2px;
+    }
+}
+
+@media (forced-colors: active), print {
+    #ta-left-sidebar {
+        background-image: none;
     }
 }

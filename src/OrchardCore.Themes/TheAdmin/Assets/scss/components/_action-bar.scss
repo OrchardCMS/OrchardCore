@@ -23,11 +23,13 @@
     justify-content: flex-end;
     gap: 0.25rem;
     margin: 0 !important;
-    padding: 0.75rem 1rem calc(0.75rem + env(safe-area-inset-bottom, 0px));
+    padding: 0.75rem var(--ta-content-padding-x) calc(0.75rem + env(safe-area-inset-bottom, 0px));
     color: var(--bs-body-color);
-    background-color: var(--bs-tertiary-bg);
-    border-top: var(--bs-border-width) solid var(--bs-border-color);
-    transition: left 0.2s ease-in-out;
+    // The bar takes the color of the page, like the top bar, lifted by a soft shadow.
+    background-color: var(--ta-topbar-bg);
+    border-top: var(--bs-border-width) solid var(--ta-border);
+    box-shadow: var(--ta-bottombar-shadow);
+    transition: left 0.2s ease-in-out, right 0.2s ease-in-out;
 
     // Neutralizes the spacing utilities the buttons used when they were rendered below the form.
     > *,

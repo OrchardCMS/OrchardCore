@@ -4,21 +4,34 @@
 
 // 'html' outranks codemirror.css, which pages that add editors later (the workflow designer's panels) load after
 // this stylesheet: otherwise its white background and black text win in dark mode.
+// The editor is drawn like the other fields: rounded, on the surface, with the border and focus ring of an input.
 html .CodeMirror {
     height: auto;
-    border: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color);
-    background-color: var(--bs-body-bg);
+    border: var(--bs-border-width) var(--bs-border-style) var(--ta-control-border);
+    border-radius: var(--bs-border-radius);
+    background-color: var(--ta-surface);
     color: var(--bs-body-color);
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+html .CodeMirror-focused {
+    border-color: var(--ta-focus-color);
+    box-shadow: 0 0 0 1px var(--ta-focus-color);
 }
 
 html .CodeMirror-gutters {
-    border-right-color: var(--bs-border-color);
-    background-color: var(--bs-secondary-bg);
-    color: var(--bs-secondary-color);
+    border-right-color: var(--ta-border);
+    background-color: var(--ta-surface);
+    color: var(--ta-muted);
 }
 
 html .CodeMirror-linenumber {
-    color: var(--bs-secondary-color);
+    color: var(--ta-muted);
+    opacity: 0.8;
+}
+
+html .CodeMirror-lines {
+    padding-block: 0.375rem;
 }
 
 html .CodeMirror-cursor {

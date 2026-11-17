@@ -1,3 +1,11 @@
+.badge {
+    font-weight: 600;
+    letter-spacing: 0.01em;
+}
+
+// The metadata badges of the admin (the type, status, dates and author of a record...): an outline in the border
+// color, with the muted text color, and no fill, so they never show a second shade on a hovered row or a tinted
+// surface. A badge with a contextual color keeps it.
 .ta-badge {
     --ta-badge-extra-padding: var(--bs-border-width);
 
@@ -5,10 +13,21 @@
     padding:
         calc(var(--bs-badge-padding-y) + var(--ta-badge-extra-padding))
         calc(var(--bs-badge-padding-x) + var(--ta-badge-extra-padding));
+    font-size: var(--ta-font-size-xs);
 
     &:not(.text-bg-primary, .text-bg-secondary, .text-bg-success, .text-bg-danger, .text-bg-warning, .text-bg-info, .text-bg-light, .text-bg-dark) {
         --ta-badge-extra-padding: 0px;
-        border: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color) !important;
+        border: var(--bs-border-width) var(--bs-border-style) var(--ta-border) !important;
+        background-color: transparent;
+        color: var(--ta-muted);
+
+        a {
+            color: var(--ta-link);
+        }
+
+        .text-secondary {
+            color: inherit !important;
+        }
     }
 }
 

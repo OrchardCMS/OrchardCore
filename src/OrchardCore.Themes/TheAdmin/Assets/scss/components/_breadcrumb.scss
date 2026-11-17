@@ -1,15 +1,30 @@
+// The trail of pages above the title: the pages above the current one are links, underlined, the current page is
+// plain muted text, and the chevrons between them are large enough to read as separators.
 .oc-breadcrumb {
     .breadcrumb {
         // The default Bootstrap divider is a slash, a chevron reads better in a trail of pages.
         --bs-breadcrumb-divider: '\203A';
+        --bs-breadcrumb-divider-color: var(--ta-muted);
+        --bs-breadcrumb-item-padding-x: 0.5rem;
+        --bs-breadcrumb-item-active-color: var(--ta-muted);
         align-items: center;
         flex-wrap: wrap;
         row-gap: 0.25rem;
+        margin-bottom: 0.5rem;
+        font-size: var(--ta-font-size-sm);
 
-        // The trail is a small path above the title, not a heading: it stays quiet and lets the page title
-        // rendered below it lead.
-        font-size: 0.8125rem;
-        margin-bottom: 0.25rem;
+        a {
+            color: var(--ta-link);
+            text-decoration: underline;
+            text-decoration-color: rgba(var(--ta-link-rgb), 0.4);
+            text-decoration-thickness: 1px;
+            text-underline-offset: 0.2em;
+
+            &:hover {
+                color: var(--ta-link-hover);
+                text-decoration-color: currentColor;
+            }
+        }
     }
 
     // The trail reads right to left, so the chevron points the other way.
@@ -21,16 +36,20 @@
         display: flex;
         align-items: center;
     }
+
+    .breadcrumb-item + .breadcrumb-item::before {
+        font-size: 1.25em;
+        line-height: 1;
+    }
 }
 
-// The page title rendered below the trail. It inherits the theme's '.ta-content h1' size, so it reads as the title
-// did before the trail was introduced; only the space between it and the trail above is set here.
+// The page title rendered below the trail; only the space between it and the trail above is set here.
 .oc-breadcrumb-title {
     margin-top: 0;
 }
 
-// When titles are displayed in the top bar, the title sits in it as before and the trail is left to the content area
-// rather than crowding the bar. With no title below it there, the trail keeps the space the title would have left.
+// When titles are displayed in the top bar, the trail is left to the content area. With no title below it there, the
+// trail keeps the space the title would have left.
 .oc-breadcrumb:not(:has(+ .oc-breadcrumb-title)) .breadcrumb {
     margin-bottom: 1rem;
 }

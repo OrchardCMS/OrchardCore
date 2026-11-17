@@ -188,6 +188,69 @@ If the part or field is a named part, also append the named-part-specific class:
 
 These classes enable targeted styling of specific content type editors without relying on C# helper extensions.
 
+## Admin Schemes
+
+The look of **TheAdmin** comes from a scheme: its colors, typefaces, base font size, density and corners. Schemes are records admins manage on **Design > Admin schemes** (they need the `ManageAdminSettings` permission). The default scheme of the site is set on **Settings > Admin**, and each user can pick another one from the theme menu of the top bar.
+
+A scheme is made of four colors, from which every other color of the admin is derived for the light and the dark mode, each checked against the surfaces it is drawn on so that text reaches 4.5:1 and the boundaries of controls and focus indicators 3:1 (WCAG 2.2 AA):
+
+| Color | Used for |
+|-------|----------|
+| Primary | Buttons, links, the current page of the menu, checked boxes, the toolbar of lists |
+| Deep | Headings, and the top of the menu |
+| Ink | The bottom of the menu, the darkest surface, the backdrop of the log in page |
+| Accent | Links and highlights on dark surfaces |
+
+Optional settings fine tune what is derived: the hue and saturation of the page, borders and dark mode surfaces, a light menu (light gray with dark text), the color of text on the primary, the page color, the toolbar color and the page gradient. A second group sets the typography and shape:
+
+| Setting | Values | CSS custom property |
+|---------|--------|---------------------|
+| Typeface | Lato, Inter, Source Sans 3, System font | `--ta-font-family` |
+| Heading typeface | The same choices, or the typeface of the body | `--ta-heading-font-family` |
+| Base font size | 14 px to 18 px, as a share of the browser's own size | `--ta-font-scale` |
+| Density | Compact, Default, Comfortable | `--ta-density` |
+| Corners | Square, Subtle, Default, Round | `--ta-radius-scale` |
+
+The fonts are served by the theme; the admin never calls a font CDN.
+
+Schemes are exported with the `AdminSchemes` deployment step and imported with the `AdminSchemes` recipe step:
+
+```json
+{
+  "steps": [
+    {
+      "name": "AdminSchemes",
+      "Schemes": [
+        {
+          "ItemId": "harbor",
+          "Name": "Harbor",
+          "Primary": "#1f6f8b",
+          "Deep": "#123c4c",
+          "Ink": "#081a21",
+          "Accent": "#5bc0de",
+          "FontFamily": "inter",
+          "FontScale": 1,
+          "Density": 1,
+          "RadiusScale": 1
+        }
+      ]
+    }
+  ]
+}
+```
+
+### Design Tokens
+
+Every component of the theme reads the same tokens, so a theme that depends on **TheAdmin** can restyle the admin by overriding them, without rebuilding its stylesheets:
+
+| Tokens | Purpose |
+|--------|---------|
+| `--ta-font-size-xs`, `-sm`, `-md`, `-lg`, `-xl`, `-page-title` | The type scale. Body text, fields and buttons are `md`; hints, column headers, breadcrumbs, metadata and the items of the menu are `sm`; badges are `xs`. |
+| `--ta-surface-padding-x`, `--ta-surface-padding-y`, `--ta-row-padding-y` | The padding inside every surface: card bodies and headers, list rows and toolbars, table cells, tab panes, alerts. |
+| `--ta-stack-gap`, `--ta-content-padding-x` | The space between the surfaces of a page, and around the page. |
+| `--ta-radius-sm`, `--ta-radius-md`, `--ta-radius`, `--ta-radius-lg` | The corners, from fields and buttons to cards and dialogs. |
+| `--ta-primary`, `--ta-link`, `--ta-heading`, `--ta-label`, `--ta-muted`, `--ta-border`, `--ta-control-border`, `--ta-page-bg`, `--ta-surface`, `--ta-toolbar-bg`, `--ta-row-hover-bg`, `--ta-menu-*` | The colors of the scheme. Bootstrap's own variables (`--bs-primary`, `--bs-link-color`, `--bs-border-color`, `--bs-secondary-color`...) read them. |
+
 ## The `[Admin]` Attribute
 
 To ensure a controller or a specific action uses the Admin Theme, decorate it with the `[Admin]` attribute. This is essential when creating custom administration pages.

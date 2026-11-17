@@ -1,9 +1,16 @@
 /* Import variables first */
 @import 'variables';
 
+/* The design tokens, the scheme derivation and the typefaces, then Bootstrap rebranded with them. */
+@import 'main/tokens';
+@import 'main/schemes';
+@import 'main/fonts';
+@import 'main/bootstrap';
+
 /* Import the files from main folder before importing any component */
 @import 'main/helpers';
 @import 'main/overrides';
+@import 'main/accessibility';
 
 /* Import the components files */
 @import 'components/ocat';
@@ -21,11 +28,15 @@
 @import 'components/icon-picker';
 @import 'components/list-group';
 @import 'components/markdown';
+@import 'components/menu-editor';
 @import 'components/monaco';
 @import 'components/navbar';
 @import 'components/nouislider';
+@import 'components/page';
 @import 'components/pager';
 @import 'components/recaptcha';
+@import 'components/scheme-editor';
+@import 'components/scheme-picker';
 @import 'components/sortable';
 @import 'components/tabs';
 @import 'components/trumbowyg';

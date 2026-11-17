@@ -136,6 +136,14 @@ const applySelectedNavFromSessionStorage = () => {
         return document.readyState === 'complete';
     }
 
+    // The stored item only disambiguates the page the server selected, e.g. between two items linking to it. A page
+    // opened otherwise than from the menu (a typed address, a link in a page) keeps the item the server selected, which
+    // is remembered instead.
+    if (hasServerSelection && selectedLink.pathname.toLowerCase() !== currentPath) {
+        persistSelectedNavHash(getSelectedNavHashFromDom(nav));
+        return true;
+    }
+
     applySelectedNavLink(nav, selectedLink);
 
     return true;

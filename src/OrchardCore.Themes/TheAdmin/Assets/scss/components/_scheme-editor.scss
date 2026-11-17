@@ -1,0 +1,146 @@
+// ---------------------------------------------------------------------------
+// The editor of a color scheme an admin adds: a light and a dark preview, each a small mock of the admin drawn with
+// the tokens of the scheme being edited. The previews carry 'data-ta-scheme="editor-preview"', whose rules the editor
+// fetches from the server as the colors change, so they show exactly what the scheme will look like.
+// ---------------------------------------------------------------------------
+
+.ta-scheme-previews {
+    display: grid;
+    gap: 1rem;
+
+    @media (min-width: 992px) {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.ta-scheme-preview {
+    // Tokens the light mode leaves to Bootstrap; set here so a light preview stays light on a dark page.
+    --ta-preview-body: #212529;
+    // The tokens derived from the scheme's scales are computed where they are declared, on the page's root, so they
+    // are declared again here, where the scheme being edited applies.
+    --ta-radius-sm: calc(0.375rem * var(--ta-radius-scale));
+    --ta-radius-md: calc(0.5rem * var(--ta-radius-scale));
+    --ta-radius: calc(0.75rem * var(--ta-radius-scale));
+
+    font-family: var(--ta-font-family);
+
+    display: flex;
+    min-height: 15rem;
+    overflow: hidden;
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    border-radius: var(--ta-radius);
+    background-color: var(--ta-page-bg);
+    background-image: var(--ta-page-gradient);
+    color: var(--ta-preview-body);
+    font-size: calc(0.8125rem * var(--ta-font-scale));
+
+    &[data-bs-theme="dark"] {
+        --ta-preview-body: var(--ta-body-color);
+    }
+}
+
+.ta-scheme-preview-menu {
+    flex: 0 0 9.5rem;
+    padding: 0.75rem 0.5rem;
+    background-color: var(--ta-menu-bg);
+    background-image: var(--ta-menu-gradient);
+    color: var(--ta-menu-color);
+
+    > div {
+        margin-bottom: 2px;
+        padding: 0.375rem 0.625rem;
+        border-radius: var(--ta-radius-md);
+    }
+
+    .ta-scheme-preview-brand {
+        margin-bottom: 0.5rem;
+        color: var(--ta-menu-strong);
+        font-weight: 700;
+    }
+
+    .ta-scheme-preview-current {
+        background-color: var(--ta-menu-active-bg);
+        color: var(--ta-menu-active-color);
+        font-weight: 700;
+    }
+}
+
+.ta-scheme-preview-page {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: 0.625rem;
+    min-width: 0;
+    padding: 0.875rem;
+
+    .ta-scheme-preview-heading {
+        font-family: var(--ta-heading-font-family);
+        color: var(--ta-heading);
+        font-size: 1.125rem;
+        font-weight: 700;
+    }
+
+    .ta-scheme-preview-card {
+        overflow: hidden;
+        border: var(--bs-border-width) solid var(--ta-border);
+        border-radius: var(--ta-radius-md);
+        background-color: var(--ta-surface);
+    }
+
+    .ta-scheme-preview-toolbar {
+        padding: 0.375rem 0.625rem;
+        background-color: var(--ta-toolbar-bg);
+        color: var(--ta-toolbar-fg);
+        font-weight: 700;
+    }
+
+    .ta-scheme-preview-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+        padding: 0.375rem 0.625rem;
+        border-top: var(--bs-border-width) solid var(--ta-border);
+    }
+
+    .ta-scheme-preview-link {
+        color: var(--ta-link);
+        text-decoration: underline;
+    }
+
+    .ta-scheme-preview-muted {
+        color: var(--ta-muted);
+    }
+
+    .ta-scheme-preview-label {
+        color: var(--ta-label);
+    }
+
+    .ta-scheme-preview-field {
+        height: 1.75rem;
+        border: var(--bs-border-width) solid var(--ta-control-border);
+        border-radius: var(--ta-radius-sm);
+        background-color: var(--ta-surface);
+    }
+
+    .ta-scheme-preview-button {
+        align-self: flex-start;
+        padding: 0.25rem 0.75rem;
+        border-radius: var(--ta-radius-sm);
+        background-color: var(--ta-primary);
+        color: var(--ta-on-primary);
+        font-weight: 700;
+    }
+}
+
+// The color fields: the native picker beside the hex value it keeps in step with.
+.ta-color-field {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    max-width: 16rem;
+
+    .form-control-color {
+        flex: 0 0 3rem;
+    }
+}

@@ -1,12 +1,107 @@
+// The log in, registration and password pages: the branding above a card, on a plain backdrop in the scheme's ink.
+// This stylesheet stands alone (the admin's own is not loaded on these pages), so it brings the tokens, the scheme,
+// the typefaces and the Bootstrap layer with it.
+
+@import 'variables';
+@import 'main/tokens';
+@import 'main/schemes';
+@import 'main/fonts';
+@import 'main/bootstrap';
+@import 'components/forms';
+@import 'components/alert';
+@import 'components/recaptcha';
+@import 'components/validations';
+
 body, html {
     height: 100%;
 }
 
+body.ta-auth {
+    min-height: 100%;
+    background-color: var(--ta-ink);
+}
+
+.ta-auth-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    min-height: 100vh;
+    padding: 2rem 1rem;
+}
+
+.ta-auth-brand .ta-navbar-brand {
+    display: block;
+    margin: 0;
+    color: #fff;
+    text-decoration: none;
+
+    img {
+        height: 2.75rem;
+        border-radius: var(--ta-radius);
+    }
+
+    span {
+        font-size: var(--ta-font-size-xl);
+        font-weight: var(--ta-font-weight-strong);
+        letter-spacing: 0.01em;
+    }
+}
+
+.ta-auth-page > .alert,
+.ta-auth-page > .message {
+    width: 100%;
+    max-width: 800px;
+}
+
+// The card keeps TheAdmin's 'auth-wrapper' class, so every page made for TheAdmin fits in it.
 .auth-wrapper {
     width: 100%;
     max-width: 800px;
     margin: auto;
 }
 
-@import 'components/recaptcha';
-@import 'components/validations';
+.ta-auth-card {
+    margin: 0;
+    padding: 2rem;
+    border: var(--bs-border-width) solid rgba(255, 255, 255, 0.12);
+    border-radius: var(--ta-radius-lg);
+    background-color: var(--ta-surface);
+    box-shadow: var(--ta-shadow-lg);
+
+    @include media-breakpoint-up(sm) {
+        padding: 2.5rem;
+    }
+
+    h1 {
+        font-size: var(--ta-font-size-page-title);
+    }
+
+    hr {
+        border-color: var(--ta-border);
+        opacity: 1;
+    }
+
+    .btn {
+        padding-block: 0.5625rem;
+    }
+}
+
+// The two-factor authentication pages hold more than a form (codes, devices...): a wider card.
+.ta-auth-card-wide {
+    width: 100%;
+    max-width: 960px;
+}
+
+// A page holding one form in a centered column (the log in page without external providers) gets a narrow card, the
+// column filling it.
+.ta-auth-card:has(> .row > .offset-md-3:only-child),
+.ta-auth-card:has(> .row > .col-12:first-child + .offset-md-3:last-child) {
+    max-width: 460px;
+
+    > .row > .offset-md-3 {
+        width: 100%;
+        margin-inline-start: 0;
+    }
+}

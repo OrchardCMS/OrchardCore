@@ -1,4 +1,4 @@
-﻿/*
+/*
  Admin lists rendered by the AdminList shape.
 
  .admin-list-list is the default 'List' layout (a list-group, see _list-group.scss).
@@ -25,29 +25,34 @@
 
 $oc-admin-list-stack-width: 48rem;
 
-// Column headers.
+// Column headers: the secondary size and color, in sentence case.
 @mixin admin-list-header-cell {
-    font-size: 0.8125rem;
-    font-weight: 600;
-    letter-spacing: 0.02em;
-    text-transform: uppercase;
-    color: var(--bs-secondary-color);
+    font-size: var(--ta-font-size-sm);
+    font-weight: var(--ta-font-weight-strong);
+    color: var(--ta-muted);
     white-space: nowrap;
 }
 
+/*
+ Both layouts are drawn as a surface, like a card, with two header layers: the toolbar, a bar in the scheme's primary
+ ('--ta-toolbar-bg'), and, in the Grid layout, the column headers, a lighter shade. Their rows, toolbar and headers
+ all start at the inner padding of a surface ('--ta-surface-padding-x'), so they line up with the cards of the page.
+*/
 .admin-list-grid {
-    --oc-admin-list-cell-padding-y: 0.5rem;
-    --oc-admin-list-cell-padding-x: 0.75rem;
+    --oc-admin-list-cell-padding-y: var(--ta-row-padding-y);
+    --oc-admin-list-cell-padding-x: calc(0.75rem * var(--ta-density));
 
     container-type: inline-size;
     container-name: admin-list;
-    border: var(--bs-border-width) solid var(--bs-border-color);
-    border-radius: var(--bs-border-radius);
+    border: var(--bs-border-width) solid var(--ta-border);
+    border-radius: var(--ta-radius);
+    background-color: var(--ta-surface);
+    box-shadow: var(--ta-shadow);
 
     .admin-list-toolbar {
-        padding: 0.75rem var(--oc-admin-list-cell-padding-x);
-        border-bottom: var(--bs-border-width) solid var(--bs-border-color);
-        border-radius: var(--bs-border-radius) var(--bs-border-radius) 0 0;
+        padding: var(--ta-row-padding-y) var(--ta-surface-padding-x);
+        border-bottom: var(--bs-border-width) solid var(--ta-border);
+        border-radius: calc(var(--ta-radius) - var(--bs-border-width)) calc(var(--ta-radius) - var(--bs-border-width)) 0 0;
     }
 
     // Badges rendered inside cells (status, dates, author) align with the text baseline.
@@ -62,8 +67,8 @@ $oc-admin-list-stack-width: 48rem;
 
     // Part summaries placed under the title keep a secondary weight.
     .contentpart {
-        font-size: 0.875rem;
-        color: var(--bs-secondary-color);
+        font-size: var(--ta-font-size-sm);
+        color: var(--ta-muted);
     }
 
 
@@ -78,8 +83,8 @@ $oc-admin-list-stack-width: 48rem;
 .admin-list .admin-list-secondary {
     flex-basis: 100%;
     width: 100%;
-    font-size: 0.875rem;
-    color: var(--bs-secondary-color);
+    font-size: var(--ta-font-size-sm);
+    color: var(--ta-muted);
 }
 
 /* The toolbar strip carries the layout selector beside the count, so the count takes the space left. */
@@ -202,7 +207,17 @@ $oc-admin-list-stack-width: 48rem;
         // dropped: a title followed by a hint or a badge would otherwise sit flush against it.
         gap: 0.375rem;
         padding: var(--oc-admin-list-cell-padding-y) var(--oc-admin-list-cell-padding-x);
-        border-bottom: var(--bs-border-width) solid var(--bs-border-color);
+        border-bottom: var(--bs-border-width) solid var(--ta-border);
+        transition: background-color 0.15s ease-in-out;
+
+        // The first and last cells of a row start and end at the inner padding of the surface.
+        &:first-child {
+            padding-inline-start: var(--ta-surface-padding-x);
+        }
+
+        &:last-child {
+            padding-inline-end: var(--ta-surface-padding-x);
+        }
 
         &.admin-list-align-center {
             justify-content: center;
@@ -213,28 +228,33 @@ $oc-admin-list-stack-width: 48rem;
         }
     }
 
+    .admin-list-grid-header {
+        background-color: var(--ta-list-header-bg);
+    }
+
     .admin-list-grid-header .admin-list-grid-cell {
         @include admin-list-header-cell;
-        border-bottom-width: calc(var(--bs-border-width) * 2);
     }
 
     .admin-list-grid-label {
         display: none;
     }
 
+    // One surface carries the hover: the cells of a table row here, the whole row once a narrow list folds it into
+    // wrapped lines (below), where tinted cells would read as separate boxes.
     .admin-list-grid-row:hover > .admin-list-grid-cell {
-        background-color: var(--bs-tertiary-bg);
+        background-color: var(--ta-row-hover-bg);
     }
 
     .admin-list-grid-row:last-child > .admin-list-grid-cell {
         border-bottom: 0;
 
         &:first-child {
-            border-bottom-left-radius: var(--bs-border-radius);
+            border-end-start-radius: calc(var(--ta-radius) - var(--bs-border-width));
         }
 
         &:last-child {
-            border-bottom-right-radius: var(--bs-border-radius);
+            border-end-end-radius: calc(var(--ta-radius) - var(--bs-border-width));
         }
     }
 
@@ -268,15 +288,28 @@ $oc-admin-list-stack-width: 48rem;
             flex-wrap: wrap;
             align-items: center;
             gap: 0.25rem 0.75rem;
-            padding: var(--oc-admin-list-cell-padding-y) var(--oc-admin-list-cell-padding-x);
-            border-bottom: var(--bs-border-width) solid var(--bs-border-color);
+            padding: var(--ta-row-padding-y) var(--ta-surface-padding-x);
+            border-bottom: var(--bs-border-width) solid var(--ta-border);
+            transition: background-color 0.15s ease-in-out;
 
             &:last-child {
                 border-bottom: 0;
+                border-end-start-radius: calc(var(--ta-radius) - var(--bs-border-width));
+                border-end-end-radius: calc(var(--ta-radius) - var(--bs-border-width));
+            }
+
+            &:hover {
+                background-color: var(--ta-row-hover-bg);
+            }
+
+            &:hover > .admin-list-grid-cell {
+                background-color: transparent;
             }
         }
 
-        .admin-list-grid-cell {
+        .admin-list-grid-cell,
+        .admin-list-grid-cell:first-child,
+        .admin-list-grid-cell:last-child {
             display: block;
             padding: 0;
             border-bottom: 0;
@@ -311,5 +344,103 @@ $oc-admin-list-stack-width: 48rem;
         .admin-list-grid-row.admin-list-empty {
             padding: 0;
         }
+
+        // The title sits in the same run as the type, status and dates here, so it keeps an underline and does not
+        // stand out by color alone (WCAG 1.4.1).
+        .admin-list-column-title a:not(.btn):not(.dropdown-item):not(.page-link):not(.badge) {
+            text-decoration: underline;
+        }
+    }
+}
+
+/*
+ The toolbar of a list, in either layout: a bar in the scheme's primary. Everything on it takes the one text color that
+ passes on it ('--ta-toolbar-fg'): the count, its muted part, the filters, even with nothing picked, the check box and
+ the layout switch, whose active button would otherwise be the color of the bar.
+*/
+.admin-list > .text-bg-theme,
+.admin-list .admin-list-toolbar {
+    --ta-focus-color: var(--ta-toolbar-fg);
+    background-color: var(--ta-toolbar-bg) !important;
+    color: var(--ta-toolbar-fg) !important;
+
+    .text-muted,
+    .text-secondary,
+    .text-body-secondary,
+    label {
+        color: inherit !important;
+    }
+
+    // The button color is also what _bootstrap-select.scss gives a filter with nothing picked.
+    .bootstrap-select > .dropdown-toggle,
+    .bootstrap-select > .dropdown-toggle.bs-placeholder {
+        --bs-btn-color: var(--ta-toolbar-fg);
+        --bs-btn-hover-color: var(--ta-toolbar-fg);
+        --bs-btn-active-color: var(--ta-toolbar-fg);
+        color: var(--ta-toolbar-fg);
+
+        &:hover,
+        &:focus-visible,
+        &.show {
+            background-color: var(--ta-toolbar-hover-bg);
+            color: var(--ta-toolbar-fg);
+        }
+    }
+
+    // A check box on the bar: a light box, and once checked an outline with the mark in the bar's text color.
+    .form-check-input {
+        border-color: var(--ta-toolbar-fg);
+    }
+
+    .form-check-input:checked,
+    .form-check-input[type="checkbox"]:indeterminate {
+        background-color: transparent;
+        border-color: var(--ta-toolbar-fg);
+    }
+
+    .admin-list-layout-selector .btn {
+        --bs-btn-color: var(--ta-toolbar-fg);
+        --bs-btn-bg: transparent;
+        --bs-btn-border-color: rgba(var(--ta-toolbar-fg-rgb), 0.6);
+        --bs-btn-hover-color: var(--ta-toolbar-fg);
+        --bs-btn-hover-bg: var(--ta-toolbar-hover-bg);
+        --bs-btn-hover-border-color: var(--ta-toolbar-fg);
+        --bs-btn-active-color: var(--ta-toolbar-bg);
+        --bs-btn-active-bg: var(--ta-toolbar-fg);
+        --bs-btn-active-border-color: var(--ta-toolbar-fg);
+        box-shadow: none;
+    }
+
+    // Menus opened from the bar keep the colors of a menu.
+    .dropdown-menu {
+        --ta-focus-color: var(--ta-link);
+        color: var(--bs-body-color);
+    }
+}
+
+// The 'List' layout is drawn as a card. Its toolbar's rounded top follows the card.
+.admin-list-list {
+    border-radius: var(--ta-radius);
+    box-shadow: var(--ta-shadow);
+
+    > .text-bg-theme:first-child {
+        border-start-start-radius: inherit;
+        border-start-end-radius: inherit;
+    }
+
+    > .list-group-item:not(.active):not(.text-bg-theme):hover {
+        background-color: var(--ta-row-hover-bg);
+    }
+}
+
+// Links inside the records of a list are not underlined (each stands in a cell or badge of its own, not in a run of
+// text); they underline on hover and on keyboard focus.
+.admin-list a:not(.btn):not(.dropdown-item):not(.page-link):not(.badge) {
+    text-decoration: none;
+    text-underline-offset: 0.2em;
+
+    &:hover,
+    &:focus-visible {
+        text-decoration: underline;
     }
 }
