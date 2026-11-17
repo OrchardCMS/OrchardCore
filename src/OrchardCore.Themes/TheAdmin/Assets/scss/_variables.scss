@@ -1,10 +1,9 @@
-/* 
+/*
     IMPORTANT: Never import Bootstrap directly into the theme. 
-    TheAdmin.css will depend on Bootstrap, but we never want to compile it. 
+    TheAdmin.css will depend on Bootstrap, but we never want to compile it. The few Bootstrap settings the theme needs are in _config.scss.
 */
-@import '../../../../../node_modules/bootstrap/scss/_functions';
-@import '../../../../../node_modules/bootstrap/scss/_variables';
-@import '../../../../../node_modules/bootstrap/scss/mixins/_breakpoints';
+
+@use 'config' as *;
 
 // Custom variables.
 $top-nav-height: 4rem !default;

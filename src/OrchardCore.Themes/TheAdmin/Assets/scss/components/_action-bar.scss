@@ -1,3 +1,5 @@
+@use '../config' as *;
+
 .action-bar {
     top: var(--oc-top-nav-height);
     z-index: var(--oc-action-bar-zindex);

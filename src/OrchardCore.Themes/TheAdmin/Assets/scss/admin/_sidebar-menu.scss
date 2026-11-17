@@ -16,19 +16,13 @@
 // ---------------------------------------------------------------------------
 
 // The inset of the pills from the edges of the menu.
+@use '../config' as *;
+
 $menu-pill-inset: 0.75rem;
 $menu-pill-radius: calc(0.625rem * var(--ta-radius-scale, 1));
 
-// Two wide diagonal bands of a slightly different shade across the menu, at a few percent: lighter on a dark menu,
-// darker on a light one.
-$menu-bands: linear-gradient(
-    118deg,
-    transparent 0 26%,
-    rgba(var(--ta-menu-strong-rgb), 0.035) 26% 44%,
-    transparent 44% 58%,
-    rgba(var(--ta-menu-strong-rgb), 0.025) 58% 72%,
-    transparent 72%
-);
+// The size of the labels of the first level rows, a step above the items they hold.
+$menu-label-size: 0.90625rem;
 
 // Keyboard focus must stay visible: the hover background alone is far too faint to carry it, so every control of the
 // menu draws an outline instead.
@@ -46,7 +40,7 @@ $menu-bands: linear-gradient(
     width: var(--oc-start-navigation-width);
     z-index: var(--ta-sidebar-zindex);
     background-color: var(--oc-admin-menu-bg-color);
-    background-image: $menu-bands, var(--ta-menu-gradient);
+    background-image: var(--ta-menu-gradient);
     color: var(--oc-admin-menu-font-color);
     box-shadow: 1px 0 0 rgba(8, 27, 38, 0.08);
     // Stated here so that the menu never inherits a different font from a host application.
@@ -122,8 +116,9 @@ $menu-bands: linear-gradient(
 
         span {
             overflow: hidden;
-            font-size: var(--ta-font-size-lg);
+            font-size: 1.0625rem;
             font-weight: var(--ta-font-weight-strong);
+            letter-spacing: 0.01em;
             text-overflow: ellipsis;
         }
     }
@@ -215,7 +210,7 @@ $menu-bands: linear-gradient(
     align-items: center;
     // Space between the icon and the label. A gap rather than a margin, so that the compact rail, where the label is
     // hidden, keeps its icon centered.
-    column-gap: 0.5rem;
+    column-gap: 0.375rem;
     min-width: 0;
     min-height: var(--oc-admin-menu-item-height);
     margin: 0;
@@ -323,7 +318,7 @@ $menu-bands: linear-gradient(
 }
 
 .nav-group-label {
-    font-size: var(--ta-font-size-sm);
+    font-size: $menu-label-size;
     font-weight: var(--ta-font-weight-normal);
     color: var(--oc-admin-menu-item-font-color);
 
@@ -335,6 +330,10 @@ $menu-bands: linear-gradient(
 
 // The icon of each first level row sits on a quiet rounded tile, a wash of the menu's own text color, so the icons
 // stand out without adding colors. On the current page the tile is a wash of the row's text color.
+#left-nav > ul > li > figure > figcaption > .item-label > .title {
+    font-size: $menu-label-size;
+}
+
 #left-nav > ul > li > figure > figcaption > .item-label > .icon {
     align-self: center;
     width: 2rem;

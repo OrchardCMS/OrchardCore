@@ -1,7 +1,7 @@
 @charset "UTF-8";
-/* 
+/*
     IMPORTANT: Never import Bootstrap directly into the theme. 
-    TheAdmin.css will depend on Bootstrap, but we never want to compile it. 
+    TheAdmin.css will depend on Bootstrap, but we never want to compile it. The few Bootstrap settings the theme needs are in _config.scss.
 */
 :root {
   --oc-border-content: var(--bs-border-width) solid var(--bs-border-color);
@@ -136,20 +136,19 @@ body.ta-admin {
   width: var(--oc-start-navigation-width);
   z-index: var(--ta-sidebar-zindex);
   background-color: var(--oc-admin-menu-bg-color);
+  background-image: var(--ta-menu-gradient);
   color: var(--oc-admin-menu-font-color);
   font-family: var(--bs-body-font-family);
 }
 
 [dir="ltr"] #ta-left-sidebar {
   left: 0;
-  background-image: linear-gradient(118deg, transparent 0 26%, rgba(var(--ta-menu-strong-rgb), 0.035) 26% 44%, transparent 44% 58%, rgba(var(--ta-menu-strong-rgb), 0.025) 58% 72%, transparent 72%), var(--ta-menu-gradient);
   box-shadow: 1px 0 0 rgba(8, 27, 38, 0.08);
   transition: left 0.2s ease-in-out, right 0.2s ease-in-out, width 0.2s ease-in-out;
 }
 
 [dir="rtl"] #ta-left-sidebar {
   right: 0;
-  background-image: linear-gradient(-118deg, transparent 0 26%, rgba(var(--ta-menu-strong-rgb), 0.035) 26% 44%, transparent 44% 58%, rgba(var(--ta-menu-strong-rgb), 0.025) 58% 72%, transparent 72%), var(--ta-menu-gradient);
   box-shadow: -1px 0 0 rgba(8, 27, 38, 0.08);
   transition: right 0.2s ease-in-out, left 0.2s ease-in-out, width 0.2s ease-in-out;
 }
@@ -219,8 +218,9 @@ body.ta-admin {
 
 .ta-sidebar-brand .ta-navbar-brand span {
   overflow: hidden;
-  font-size: var(--ta-font-size-lg);
+  font-size: 1.0625rem;
   font-weight: var(--ta-font-weight-strong);
+  letter-spacing: 0.01em;
   text-overflow: ellipsis;
 }
 
@@ -296,7 +296,7 @@ body.ta-admin {
   display: flex;
   flex: 1 1 auto;
   align-items: center;
-  column-gap: 0.5rem;
+  column-gap: 0.375rem;
   min-width: 0;
   min-height: var(--oc-admin-menu-item-height);
   margin: 0;
@@ -398,13 +398,17 @@ body.ta-admin {
 }
 
 .nav-group-label {
-  font-size: var(--ta-font-size-sm);
+  font-size: 0.90625rem;
   font-weight: var(--ta-font-weight-normal);
   color: var(--oc-admin-menu-item-font-color);
 }
 
 .nav-group-label:hover, .nav-group-label:focus-visible {
   color: var(--oc-admin-menu-font-color-hover);
+}
+
+#left-nav > ul > li > figure > figcaption > .item-label > .title {
+  font-size: 0.90625rem;
 }
 
 #left-nav > ul > li > figure > figcaption > .item-label > .icon {

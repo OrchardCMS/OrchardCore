@@ -1,7 +1,8 @@
-@import '../mixins/_word-wrap';
-@import '../../../../../../node_modules/bootstrap/scss/mixins/_border-radius';
 
 // Help text under a field: the secondary size and color, everywhere.
+@use '../mixins/word-wrap' as *;
+@use '../config' as *;
+
 .hint,
 .form-text {
     font-size: var(--ta-font-size-sm);
@@ -22,7 +23,7 @@
     font-size: $code-font-size;
     padding: $kbd-padding-y $kbd-padding-x;
     color: $pre-color;
-    @include border-radius($border-radius);
+    border-radius: $border-radius;
 }
 
 // Labels (Orchard Core's '.ocat-label' and Bootstrap's) are set apart from the values by their color alone, at the
@@ -79,10 +80,6 @@ label .field-validation-error::before {
 label.input-required:after {
     color: var(--bs-danger-text-emphasis);
     content: " *"
-}
-
-.button {
-    @extend .btn, .btn-primary !optional;
 }
 
 input[type="password"]::-ms-reveal,

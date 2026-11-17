@@ -1,8 +1,8 @@
 @charset "UTF-8";
 /* Import variables first */
-/* 
+/*
     IMPORTANT: Never import Bootstrap directly into the theme. 
-    TheAdmin.css will depend on Bootstrap, but we never want to compile it. 
+    TheAdmin.css will depend on Bootstrap, but we never want to compile it. The few Bootstrap settings the theme needs are in _config.scss.
 */
 :root {
   --oc-border-content: var(--bs-border-width) solid var(--bs-border-color);

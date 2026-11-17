@@ -2,15 +2,16 @@
 // This stylesheet stands alone (the admin's own is not loaded on these pages), so it brings the tokens, the scheme,
 // the typefaces and the Bootstrap layer with it.
 
-@import 'variables';
-@import 'main/tokens';
-@import 'main/schemes';
-@import 'main/fonts';
-@import 'main/bootstrap';
-@import 'components/forms';
-@import 'components/alert';
-@import 'components/recaptcha';
-@import 'components/validations';
+@use 'config' as *;
+@use 'variables';
+@use 'main/tokens';
+@use 'main/schemes';
+@use 'main/fonts';
+@use 'main/bootstrap';
+@use 'components/forms';
+@use 'components/alert';
+@use 'components/recaptcha';
+@use 'components/validations';
 
 body, html {
     height: 100%;
@@ -104,4 +105,10 @@ body.ta-auth {
         width: 100%;
         margin-inline-start: 0;
     }
+}
+
+// A '.button' is a primary button. Declared here, where every module of the stylesheet is loaded, so that it extends
+// the button rules of all of them.
+.button {
+    @extend .btn, .btn-primary !optional;
 }

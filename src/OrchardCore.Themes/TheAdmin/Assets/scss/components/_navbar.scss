@@ -4,6 +4,8 @@
 // settings show it there) and the items of the Navbar shape: the theme menu, the notifications, the user menu...
 // ---------------------------------------------------------------------------
 
+@use '../config' as *;
+
 .ta-navbar-top {
     left: var(--oc-start-navigation-width);
     height: var(--oc-top-nav-height);

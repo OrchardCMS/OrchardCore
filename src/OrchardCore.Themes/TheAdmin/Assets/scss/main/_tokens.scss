@@ -12,6 +12,8 @@
 //  - '--ta-radius-scale': how round the corners are.
 // ---------------------------------------------------------------------------
 
+@use '../config' as *;
+
 $ta-font-stack-fallback: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 
 :root {

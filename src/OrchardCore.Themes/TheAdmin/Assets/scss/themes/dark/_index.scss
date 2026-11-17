@@ -1,7 +1,8 @@
-@import '../../../../../../../node_modules/bootstrap/scss/mixins/_color-mode';
+@use 'sass:meta';
+@use '../../config' as *;
 
 /* The colors of both modes come from the scheme tokens (main/_schemes.scss), the menu included; only what they do not
    cover is here. */
 @include color-mode(dark) {
-    @import "theme_helpers";
+    @include meta.load-css('theme_helpers');
 }
