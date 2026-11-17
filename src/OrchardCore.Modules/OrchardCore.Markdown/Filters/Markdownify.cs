@@ -21,9 +21,9 @@ public class Markdownify : ILiquidFilter
 
     public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
     {
-        var html = _markdownService.ToHtml(input.ToStringValue());
+        var html = _markdownService.ToHtml(input.ToStringValue(ctx));
         html = _htmlSanitizerService.Sanitize(html);
 
-        return ValueTask.FromResult<FluidValue>(new StringValue(html));
+        return ValueTask.FromResult<FluidValue>(StringValue.Create(html));
     }
 }

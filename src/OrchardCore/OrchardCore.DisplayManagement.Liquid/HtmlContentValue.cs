@@ -1,8 +1,8 @@
-using System.Globalization;
 using System.Text.Encodings.Web;
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Html;
+using OrchardCore.Liquid;
 
 namespace OrchardCore.DisplayManagement.Liquid;
 
@@ -33,41 +33,31 @@ public class HtmlContentValue : FluidValue
         return NilValue.Instance;
     }
 
-    public override bool ToBooleanValue()
+    public override bool ToBooleanValue(TemplateContext context)
     {
         return true;
     }
 
-    public override decimal ToNumberValue()
+    public override decimal ToNumberValue(TemplateContext context)
     {
         return 0;
     }
 
-    public override string ToStringValue()
+    public override string ToStringValue(TemplateContext context)
     {
         return _value.ToString();
     }
 
-    public override ValueTask WriteToAsync(TextWriter writer, TextEncoder encoder, CultureInfo cultureInfo)
+    public override ValueTask WriteToAsync(IFluidOutput output, TextEncoder encoder, TemplateContext context)
     {
-        _value.WriteTo(writer, (HtmlEncoder)encoder);
+        output.Write(_value, (HtmlEncoder)encoder);
 
         return ValueTask.CompletedTask;
     }
 
-    public override object ToObjectValue()
+    public override object ToObjectValue(TemplateContext context)
     {
         return _value;
-    }
-
-    public override bool Contains(FluidValue value)
-    {
-        return false;
-    }
-
-    public override IEnumerable<FluidValue> Enumerate(TemplateContext context)
-    {
-        return [];
     }
 
     public override bool Equals(object other)
@@ -84,11 +74,5 @@ public class HtmlContentValue : FluidValue
     public override int GetHashCode()
     {
         return _value.GetHashCode();
-    }
-
-    [Obsolete("WriteTo is obsolete, prefer the WriteToAsync method.")]
-    public override void WriteTo(TextWriter writer, TextEncoder encoder, CultureInfo cultureInfo)
-    {
-        _value.WriteTo(writer, (HtmlEncoder)encoder);
     }
 }

@@ -1,38 +1,70 @@
+using System.Globalization;
 using Microsoft.Extensions.Compliance.Redaction;
 
 namespace OrchardCore.Users.AuditTrail.Services;
 
 /// <summary>
-/// Substitutes all but the first and last letter with asterisks. Ideal for redacting emails or names.
+/// Substitutes all but the first and last text element with asterisks. Ideal for redacting emails or names.
 /// </summary>
 public class PartialAsteriskRedactor : Redactor
 {
     public override int Redact(ReadOnlySpan<char> source, Span<char> destination)
     {
-        if (destination.Length == 0)
+        var requiredLength = GetRedactedLength(source);
+        if (destination.Length < requiredLength)
+        {
+            throw new ArgumentException("The destination is too short for the redacted value.", nameof(destination));
+        }
+
+        if (source.IsEmpty)
         {
             return 0;
         }
 
-        destination[0] = source[0];
+        var firstLength = StringInfo.GetNextTextElementLength(source);
+        source[..firstLength].CopyTo(destination);
+        var written = firstLength;
+        var position = firstLength;
 
-        for (var i = 1; i < source.Length - 1 && i < destination.Length; i++)
+        while (position < source.Length)
         {
-            destination[i] = '*';
+            var length = StringInfo.GetNextTextElementLength(source[position..]);
+            if (position + length == source.Length)
+            {
+                source[position..].CopyTo(destination[written..]);
+                written += length;
+            }
+            else
+            {
+                destination[written++] = '*';
+            }
+
+            position += length;
         }
 
-        if (destination.Length >= source.Length)
-        {
-            destination[source.Length - 1] = source[^1];
-        }
-
-        return Math.Min(source.Length, destination.Length);
+        return written;
     }
 
-    public override int GetRedactedLength(ReadOnlySpan<char> input) => input.Length;
+    public override int GetRedactedLength(ReadOnlySpan<char> input)
+    {
+        if (input.IsEmpty)
+        {
+            return 0;
+        }
 
-    public override string Redact(string source) =>
-        (source?.Length ?? 0) <= 2 
-            ? source
-            : $"{source![0]}{new string('*', source.Length - 2)}{source[^1]}";
+        var firstLength = StringInfo.GetNextTextElementLength(input);
+        var length = firstLength;
+        var position = firstLength;
+
+        while (position < input.Length)
+        {
+            var nextLength = StringInfo.GetNextTextElementLength(input[position..]);
+            position += nextLength;
+            length += position == input.Length ? nextLength : 1;
+        }
+
+        return length;
+    }
+
+    public override string Redact(string source) => source is null ? null : base.Redact(source);
 }

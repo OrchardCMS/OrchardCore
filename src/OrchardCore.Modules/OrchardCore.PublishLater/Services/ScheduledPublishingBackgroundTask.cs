@@ -31,7 +31,7 @@ public sealed class ScheduledPublishingBackgroundTask : IBackgroundTask
             .QueryIndex<PublishLaterPartIndex>(index => index.Latest && !index.Published && index.ScheduledPublishDateTimeUtc < _clock.UtcNow)
             .ListAsync(cancellationToken);
 
-        if (!itemsToPublish.Any())
+        if (itemsToPublish.Count == 0)
         {
             return;
         }

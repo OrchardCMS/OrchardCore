@@ -6,10 +6,10 @@ namespace OrchardCore.Liquid.Filters;
 
 public static class JsonFilter
 {
-    public static ValueTask<FluidValue> Json(FluidValue input, FilterArguments arguments, TemplateContext context)
+    public static async ValueTask<FluidValue> Json(FluidValue input, FilterArguments arguments, TemplateContext context)
     {
         var formatting = JOptions.Default;
-        if (arguments.At(0).ToBooleanValue())
+        if (arguments.At(0).ToBooleanValue(context))
         {
             formatting = JOptions.Indented;
         }
@@ -17,31 +17,31 @@ public static class JsonFilter
         switch (input.Type)
         {
             case FluidValues.Array:
-                return ValueTask.FromResult<FluidValue>(new StringValue(JConvert.SerializeObject(input.Enumerate(context).Select(o => o.ToObjectValue()), formatting)));
+                return StringValue.Create(JConvert.SerializeObject(await input.EnumerateAsync(context).Select(o => o.ToObjectValue(context)).ToArrayAsync(), formatting));
 
             case FluidValues.Boolean:
-                return ValueTask.FromResult<FluidValue>(new StringValue(JConvert.SerializeObject(input.ToBooleanValue(), formatting)));
+                return StringValue.Create(JConvert.SerializeObject(input.ToBooleanValue(context), formatting));
 
             case FluidValues.Nil:
-                return ValueTask.FromResult<FluidValue>(StringValue.Create("null"));
+                return StringValue.Create("null");
 
             case FluidValues.Number:
-                return ValueTask.FromResult<FluidValue>(new StringValue(JConvert.SerializeObject(input.ToNumberValue(), formatting)));
+                return StringValue.Create(JConvert.SerializeObject(input.ToNumberValue(context), formatting));
 
             case FluidValues.DateTime:
             case FluidValues.Dictionary:
             case FluidValues.Object:
-                return ValueTask.FromResult<FluidValue>(new StringValue(JConvert.SerializeObject(input.ToObjectValue(), formatting)));
+                return StringValue.Create(JConvert.SerializeObject(input.ToObjectValue(context), formatting));
 
             case FluidValues.String:
-                var stringValue = input.ToStringValue();
+                var stringValue = input.ToStringValue(context);
 
                 if (string.IsNullOrWhiteSpace(stringValue))
                 {
-                    return ValueTask.FromResult(input);
+                    return input;
                 }
 
-                return ValueTask.FromResult<FluidValue>(new StringValue(JConvert.SerializeObject(stringValue, formatting)));
+                return StringValue.Create(JConvert.SerializeObject(stringValue, formatting));
         }
 
         throw new NotSupportedException("Unrecognized FluidValue");

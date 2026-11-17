@@ -93,6 +93,48 @@ describe("ServerFormHost", () => {
         expect(submit).not.toHaveBeenCalled();
     });
 
+    it("submit_Applied_ShowsSavedThenApplyAgain", async () => {
+        const { wrapper, submit } = mountHost();
+        await flushPromises();
+        const button = () => wrapper.get("[data-cy=panel-apply]");
+
+        await wrapper.get("input").trigger("input");
+        await wrapper.get("form").trigger("submit");
+        await flushPromises();
+
+        expect(submit).toHaveBeenCalledTimes(1);
+        expect(button().text()).toBe("Saved!");
+        expect(button().classes()).toContain("btn-success");
+
+        vi.advanceTimersByTime(1800);
+        await flushPromises();
+
+        expect(button().text()).toBe("Apply");
+        expect(button().classes()).toContain("btn-primary");
+    });
+
+    it("submit_NothingChanged_StillShowsSaved", async () => {
+        const { wrapper, submit } = mountHost();
+        await flushPromises();
+
+        await wrapper.get("form").trigger("submit");
+        await flushPromises();
+
+        expect(submit).not.toHaveBeenCalled();
+        expect(wrapper.get("[data-cy=panel-apply]").text()).toBe("Saved!");
+    });
+
+    it("submit_Invalid_DoesNotShowSaved", async () => {
+        const { wrapper } = mountHost({ submit: () => Promise.resolve({ ...fragment("<input name='x' />"), valid: false }) });
+        await flushPromises();
+
+        await wrapper.get("input").trigger("input");
+        await wrapper.get("form").trigger("submit");
+        await flushPromises();
+
+        expect(wrapper.get("[data-cy=panel-apply]").text()).toBe("Apply");
+    });
+
     it("apply_RichEditors_DispatchesSubmitBeforeCollectingTheForm", async () => {
         const order: string[] = [];
         const { wrapper } = mountHost({

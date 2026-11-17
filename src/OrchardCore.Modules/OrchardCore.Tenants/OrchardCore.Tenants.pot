@@ -490,6 +490,13 @@ msgctxt "OrchardCore.Tenants.Views.FeatureProfileEntry.Buttons.SummaryAdmin"
 msgid "Edit"
 msgstr ""
 
+#. Format arguments: {0}: Model.Value.Name
+#: Views/FeatureProfileEntry.Checkbox.SummaryAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Tenants.Views.FeatureProfileEntry.Checkbox.SummaryAdmin"
+msgid "Select {0}"
+msgstr ""
+
 #: Views/FeatureProfiles/Create.cshtml
 msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.Create"
 msgid "Create Feature Profile"
@@ -1078,6 +1085,13 @@ msgstr ""
 #: Views/ShellSettingsEntry.Category.SummaryAdmin.cshtml
 msgctxt "OrchardCore.Tenants.Views.ShellSettingsEntry.Category.SummaryAdmin"
 msgid "Category"
+msgstr ""
+
+#. Format arguments: {0}: Model.Value.Name
+#: Views/ShellSettingsEntry.Checkbox.SummaryAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Tenants.Views.ShellSettingsEntry.Checkbox.SummaryAdmin"
+msgid "Select {0}"
 msgstr ""
 
 #: Views/ShellSettingsEntry.Database.SummaryAdmin.cshtml

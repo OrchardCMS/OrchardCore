@@ -35,7 +35,7 @@ public class ShellWebRootRemovingHandler : IShellRemovingHandler
         }
 
         var shellWebRootFolder = Path.Combine(
-            _webHostEnvironment.WebRootPath,
+            _webHostEnvironment.GetWebRootPathOrDefault(),
             context.ShellSettings.Name);
 
         try

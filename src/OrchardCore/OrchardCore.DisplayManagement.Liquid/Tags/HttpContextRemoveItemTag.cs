@@ -9,7 +9,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags;
 
 public class HttpContextRemoveItemTag
 {
-    public static async ValueTask<Completion> WriteToAsync(Expression argument, TextWriter _1, TextEncoder _2, TemplateContext context)
+    public static async ValueTask<Completion> WriteToAsync(Expression argument, IFluidOutput _1, TextEncoder _2, TemplateContext context)
     {
         var services = ((LiquidTemplateContext)context).Services;
 
@@ -17,7 +17,7 @@ public class HttpContextRemoveItemTag
 
         if (httpContext != null)
         {
-            var itemKey = (await argument.EvaluateAsync(context)).ToStringValue();
+            var itemKey = (await argument.EvaluateAsync(context)).ToStringValue(context);
 
             if (!string.IsNullOrEmpty(itemKey))
             {

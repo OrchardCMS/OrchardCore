@@ -20,7 +20,7 @@ public class UserEmailFilter : ILiquidFilter
 
     public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments args, LiquidTemplateContext ctx)
     {
-        var value = input.ToObjectValue();
+        var value = input.ToObjectValue(ctx);
         if (value is LiquidUserAccessor)
         {
             var claimsPrincipal = _httpContextAccessor.HttpContext?.User;

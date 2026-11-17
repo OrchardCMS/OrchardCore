@@ -10,7 +10,6 @@ using OrchardCore.DisplayManagement.Liquid.TagHelpers;
 using OrchardCore.DisplayManagement.Liquid.Tags;
 using OrchardCore.DisplayManagement.Razor;
 using OrchardCore.Environment.Shell.Configuration;
-using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Liquid;
 
 namespace Microsoft.Extensions.DependencyInjection;
@@ -20,20 +19,29 @@ public static class LiquidCoreServices
     public static IServiceCollection AddLiquidCoreServices(this IServiceCollection services)
     {
         services.AddSingleton<LiquidViewParser>();
-        services.Configure<FluidParserOptions>(options =>
+        services.AddSingleton<IOptions<FluidParserOptions>>(serviceProvider =>
         {
-            var configuration = ShellScope.Services.GetRequiredService<IShellConfiguration>();
-
             // The 'OrchardCore_Liquid' section is deprecated and will be removed in a future major version, use 'Liquid' instead.
-            configuration.GetSectionCompat("Liquid", "OrchardCore_Liquid").Bind(options);
+            var section = serviceProvider.GetRequiredService<IShellConfiguration>().GetSectionCompat("Liquid", "OrchardCore_Liquid");
 
-            // Always enable the use of functions, do not expose it as a configuration option.
-            options.AllowFunctions = true;
+            return Options.Options.Create(new FluidParserOptions
+            {
+                AllowParentheses = section.GetValue<bool>(nameof(FluidParserOptions.AllowParentheses)),
+                AllowLiquidTag = section.GetValue<bool>(nameof(FluidParserOptions.AllowLiquidTag)),
+                AllowTrailingQuestionMark = section.GetValue<bool>(nameof(FluidParserOptions.AllowTrailingQuestionMark)),
+
+                // Always enable the use of functions, do not expose it as a configuration option.
+                AllowFunctions = true,
+
+                // Existing templates can use escape sequences in their strings, do not expose it as a configuration option.
+                AllowStringEscapeSequences = true,
+            });
         });
 
         services.AddSingleton<IAnchorTag, AnchorTag>();
 
-        services.AddTransient<IConfigureOptions<TemplateOptions>, TemplateOptionsFileProviderSetup>();
+        services.AddLiquidTemplateOptions();
+        services.AddTransient<IConfigureOptions<TemplateOptionsBuilder>, TemplateOptionsFileProviderSetup>();
 
         services.AddTransient<IConfigureOptions<LiquidViewOptions>, LiquidViewOptionsSetup>();
 
@@ -48,7 +56,7 @@ public static class LiquidCoreServices
 
         services.AddSingleton<LiquidTagHelperFactory>();
 
-        services.AddSingleton<IConfigureOptions<TemplateOptions>, TemplateOptionsConfigurations>();
+        services.AddSingleton<IConfigureOptions<TemplateOptionsBuilder>, TemplateOptionsConfigurations>();
 
         services.AddLiquidFilter<SanitizeHtmlFilter>("sanitize_html");
 

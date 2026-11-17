@@ -16,7 +16,7 @@ public class EmbeddedDirectoryContents : IDirectoryContents
 
     public bool Exists
     {
-        get { return _entries.Any(); }
+        get { return _entries.Count > 0; }
     }
 
     public IEnumerator<IFileInfo> GetEnumerator()

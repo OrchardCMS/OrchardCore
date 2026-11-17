@@ -8,6 +8,14 @@ public class NotificationOptions
     public int TotalUnreadNotifications { get; set; } = 10;
 
     /// <summary>
+    /// The maximum number of unread notifications evaluated by the <see cref="INotificationVisibilityHandler"/>
+    /// implementations to count the unread notifications of the navbar, the most recent first. When a user has
+    /// more, the count of those that are not hidden is followed by a plus sign. Only used when a visibility
+    /// handler is registered.
+    /// </summary>
+    public int MaxEvaluatedUnreadNotifications { get; set; } = 100;
+
+    /// <summary>
     /// Whether or not to disable HtmlBody Sanitizer.
     /// </summary>
     public bool DisableNotificationHtmlBodySanitizer { get; set; }

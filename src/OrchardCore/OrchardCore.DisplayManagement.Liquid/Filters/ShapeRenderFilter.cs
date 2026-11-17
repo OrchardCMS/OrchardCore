@@ -21,7 +21,7 @@ public class ShapeRenderFilter : ILiquidFilter
             return new HtmlContentValue(await task);
         }
 
-        if (input.ToObjectValue() is IShape shape)
+        if (input.ToObjectValue(ctx) is IShape shape)
         {
             var task = _displayHelper.ShapeExecuteAsync(shape);
             if (!task.IsCompletedSuccessfully)

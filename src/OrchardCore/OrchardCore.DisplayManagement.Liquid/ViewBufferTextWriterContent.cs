@@ -1,15 +1,20 @@
+using System.Buffers;
 using System.Text;
 using System.Text.Encodings.Web;
+using Fluid;
 using Microsoft.AspNetCore.Html;
 
 namespace OrchardCore.DisplayManagement.Liquid;
 
 /// <summary>
 /// An <see cref="IHtmlContent"/> implementation that inherits from <see cref="TextWriter"/> to write to the ASP.NET ViewBufferTextWriter
-/// in an optimal way.
+/// in an optimal way. It is also an <see cref="IFluidOutput"/>, such that a Liquid template renders in it without another buffer.
 /// </summary>
-public class ViewBufferTextWriterContent : TextWriter, IHtmlContent
+public class ViewBufferTextWriterContent : TextWriter, IHtmlContent, IFluidOutput
 {
+    private const int MinimumRentedBufferSize = 1024;
+
+    private char[] _rentedBuffer;
     private StringBuilder _builder;
     private StringBuilderPool _pooledBuilder;
     private List<StringBuilderPool> _previousPooledBuilders;
@@ -240,11 +245,73 @@ public class ViewBufferTextWriterContent : TextWriter, IHtmlContent
         }
     }
 
+    public override string ToString()
+    {
+        if (_builder == null)
+        {
+            throw new InvalidOperationException("Buffer has already been rendered");
+        }
+
+        if (_previousPooledBuilders == null)
+        {
+            return _builder.ToString();
+        }
+
+        var result = new StringBuilder();
+
+        foreach (var pooledBuilder in _previousPooledBuilders)
+        {
+            result.Append(pooledBuilder.Builder);
+        }
+
+        return result.Append(_builder).ToString();
+    }
+
     public override Task FlushAsync()
     {
         // Override since the base implementation does unnecessary work
         return Task.CompletedTask;
     }
+
+    #region IFluidOutput
+
+    // A string builder can't expose its buffer, which is only needed to encode a value that requires it.
+    // The rented buffer is returned right away since many instances can be alive while a page is rendered.
+    public Span<char> GetSpan(int sizeHint = 0) => RentBuffer(sizeHint);
+
+    public Memory<char> GetMemory(int sizeHint = 0) => RentBuffer(sizeHint);
+
+    public void Advance(int count)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegative(count);
+
+        var buffer = _rentedBuffer ?? throw new InvalidOperationException($"'{nameof(GetSpan)}' or '{nameof(GetMemory)}' must be called first.");
+
+        _rentedBuffer = null;
+
+        Write(buffer.AsSpan(0, count));
+
+        ArrayPool<char>.Shared.Return(buffer);
+    }
+
+    ValueTask IFluidOutput.FlushAsync() => ValueTask.CompletedTask;
+
+    private char[] RentBuffer(int sizeHint)
+    {
+        if (_rentedBuffer == null || _rentedBuffer.Length < sizeHint)
+        {
+            if (_rentedBuffer != null)
+            {
+                ArrayPool<char>.Shared.Return(_rentedBuffer);
+            }
+
+            _rentedBuffer = ArrayPool<char>.Shared.Rent(Math.Max(sizeHint, MinimumRentedBufferSize));
+        }
+
+        return _rentedBuffer;
+    }
+
+    #endregion
 
     #region Async Methods
 

@@ -11,7 +11,7 @@ namespace OrchardCore.DynamicCache.Liquid;
 
 public class CacheExpiresOnTag
 {
-    public static async ValueTask<Completion> WriteToAsync(Expression argument, TextWriter _1, TextEncoder _2, TemplateContext context)
+    public static async ValueTask<Completion> WriteToAsync(Expression argument, IFluidOutput _1, TextEncoder _2, TemplateContext context)
     {
         var services = ((LiquidTemplateContext)context).Services;
 
@@ -26,7 +26,7 @@ public class CacheExpiresOnTag
         var input = await argument.EvaluateAsync(context);
         if (input.Type == FluidValues.String)
         {
-            var stringValue = input.ToStringValue();
+            var stringValue = input.ToStringValue(context);
             if (!DateTimeOffset.TryParse(stringValue, context.CultureInfo, DateTimeStyles.AssumeUniversal, out value))
             {
                 return Completion.Normal;
@@ -34,7 +34,7 @@ public class CacheExpiresOnTag
         }
         else
         {
-            switch (input.ToObjectValue())
+            switch (input.ToObjectValue(context))
             {
                 case DateTime dateTime:
                     value = dateTime;

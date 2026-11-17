@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Linq.Expressions;
 using Castle.DynamicProxy;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Views;
@@ -7,7 +8,9 @@ namespace OrchardCore.DisplayManagement;
 
 public static class ShapeFactoryExtensions
 {
-    private static readonly ConcurrentDictionary<Type, Type> s_proxyTypeCache = [];
+    // The factory of a proxy type calls its constructor directly, instead of 'Activator.CreateInstance()' resolving
+    // the constructor from the arguments on each creation.
+    private static readonly ConcurrentDictionary<Type, Func<IShape>> s_proxyFactoryCache = [];
     private static readonly ProxyGenerator s_proxyGenerator = new();
 
     /// <summary>
@@ -192,19 +195,71 @@ public static class ShapeFactoryExtensions
             return (IShape)Activator.CreateInstance(baseType);
         }
 
-        if (s_proxyTypeCache.TryGetValue(baseType, out var proxyType))
+        if (s_proxyFactoryCache.TryGetValue(baseType, out var proxyFactory))
         {
-            var model = new ShapeViewModel();
-
-            return (IShape)Activator.CreateInstance(proxyType, model, model, Array.Empty<IInterceptor>());
+            return proxyFactory();
         }
 
         var options = new ProxyGenerationOptions();
         options.AddMixinInstance(new ShapeViewModel());
         var shape = (IShape)s_proxyGenerator.CreateClassProxy(baseType, options);
 
-        s_proxyTypeCache.TryAdd(baseType, shape.GetType());
+        s_proxyFactoryCache.TryAdd(baseType, CreateProxyFactory(shape.GetType()));
 
         return shape;
+    }
+
+    /// <summary>
+    /// Compiles a delegate creating a proxy with a new <see cref="ShapeViewModel"/> mixin and no interceptor, through
+    /// the constructor of the proxy type that takes the mixin and the interceptors.
+    /// </summary>
+    private static Func<IShape> CreateProxyFactory(Type proxyType)
+    {
+        var mixin = Expression.Variable(typeof(ShapeViewModel), "mixin");
+
+        foreach (var constructor in proxyType.GetConstructors())
+        {
+            var parameters = constructor.GetParameters();
+            var arguments = new Expression[parameters.Length];
+            var matches = true;
+
+            for (var i = 0; i < parameters.Length; i++)
+            {
+                var parameterType = parameters[i].ParameterType;
+
+                if (parameterType == typeof(IInterceptor[]))
+                {
+                    arguments[i] = Expression.Constant(Array.Empty<IInterceptor>(), typeof(IInterceptor[]));
+                }
+                else if (parameterType.IsAssignableFrom(typeof(ShapeViewModel)))
+                {
+                    arguments[i] = mixin;
+                }
+                else
+                {
+                    matches = false;
+                    break;
+                }
+            }
+
+            if (!matches)
+            {
+                continue;
+            }
+
+            var body = Expression.Block(
+                [mixin],
+                Expression.Assign(mixin, Expression.New(typeof(ShapeViewModel))),
+                Expression.Convert(Expression.New(constructor, arguments), typeof(IShape)));
+
+            return Expression.Lambda<Func<IShape>>(body).Compile();
+        }
+
+        // Fallback to the activator with the mixin and the interceptors, should the proxy type not be the expected one.
+        return () =>
+        {
+            var model = new ShapeViewModel();
+            return (IShape)Activator.CreateInstance(proxyType, model, model, Array.Empty<IInterceptor>());
+        };
     }
 }

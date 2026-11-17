@@ -1,12 +1,129 @@
 # Background Tasks (`OrchardCore.BackgroundTasks`)
 
-This module provides tools to manage background tasks. This includes an admin UI to show which background tasks are registered with the ability to enable and disable them.
+This module provides tools to manage background tasks. This includes an admin UI to show which background tasks are registered, how they ran, and to control them.
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/xgHO128P1bU" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 After enabling the feature, you'll be able to manage background tasks under Tools → Background Tasks. This includes the following:
 
 - Enable or disable a task.
-- Change the schedule of the task, i.e. how frequently it runs, with [cron expressions](https://en.wikipedia.org/wiki/Cron#Cron_expression).
+- Change the schedule of the task, i.e. how frequently it runs, with [cron expressions](https://en.wikipedia.org/wiki/Cron#Cron_expression). A schedule that is not a valid cron expression is rejected.
 - Whether to build the tenant routing pipeline for the task, allowing it to generate correct routes.
+- See the execution state of each task: when it last ran, whether that run succeeded or failed and with which error, how long it took, and when it is expected to run next.
+- Run a task on demand.
+
+## Execution State
+
+Each task of the list shows badges next to its title telling whether it is running or queued, when its last run started with its outcome and duration, when its next scheduled run is expected, and how many of its runs failed. The error message of a failed run is shown under the description of the task. With the **Grid** layout of the admin lists, the last run and the next run are shown in columns of their own. The **Status** filter lists the tasks that are running or queued, or whose last run failed.
+
+The next run of a task is shown as **due** when its scheduled time passed and the background service didn't start it yet, and as **never** when its schedule never occurs, like `0 0 31 2 *` on February 31, or is not a valid cron expression. Such a schedule only prevents this task from running on schedule, it can still be run on demand and the other tasks are not affected.
+
+The title of a task is the `Title` of its `[BackgroundTask]` attribute. A task that doesn't define one is shown with a title built from the name of its type, for instance **Chunk File Upload** for `ChunkFileUploadBackgroundTask`.
+
+Clicking the title of a task, or the **Details** item of its **Actions** menu, opens a page with:
+
+- The status of the task, the start time, outcome, duration and trigger of its last run, and the date and time of its next scheduled run.
+- The number of completed runs and of failed runs.
+- The message and the full details, including the stack trace, of the last error.
+- The most recent runs of the task, with their start time, duration, trigger, outcome and error.
+- The settings of the task.
+
+The list and the details page stay up to date while they are visible: they check the status of the tasks in the background, every 10 seconds or every few seconds while a task is queued or running, and update a task as soon as it starts or completes a run, whether it was scheduled or run on demand, without reloading the page. When the list is filtered to show the tasks that are running or queued, or whose last run failed, the page is reloaded when another task starts matching the filter.
+
+!!! note
+    The execution state is kept in memory by the background service of each server, it is not stored in the database. It reflects the runs of the server handling the request since the application started, so it is reset when the application restarts, and in a web farm each server shows the runs it executed itself, so these pages [require session affinity](#running-in-a-web-farm).
+
+## Running a Task on Demand
+
+The **Run now** item of the **Actions** menu of a task, available in the list and on the details page, queues the task to run as soon as possible, regardless of its schedule. With the **Menu** layout of the actions of the admin lists, it's in the menu of the row of the task. Select several tasks and use the **Run now** bulk action to queue them all at once.
+
+- A task that is already running or queued on the server handling the request is not queued again.
+- A disabled task can also be run on demand, which is convenient to check a task before enabling it. Its schedule is not affected.
+- The task runs only on the server that handled the request, usually within a second or two, as the background service doesn't wait for the end of its polling time nor of its minimum idle time to pick up a requested run. An atomic task still waits to acquire its lock, as for a scheduled run. In a web farm, the other servers are not affected, see [Running in a Web Farm](#running-in-a-web-farm).
+- The background service waits for the tasks it started, each one up to its polling time, before starting others, on any tenant. While other tasks run, a requested task stays queued, and a scheduled task is shown as due, until they complete or the background service stops waiting for them, see [Long-Running Tasks](#long-running-tasks).
+- If the task was already due on that server, the requested run takes the place of the scheduled one. The next scheduled run is not affected.
+- Right after a tenant starts, its tasks are only known to the background service after its next polling, so a task may first be reported as not loaded yet. The request triggers that polling, so trying again a moment later succeeds.
+
+## Long-Running Tasks
+
+The background service runs the due tasks of a tenant one after the other, and the tenants in parallel. It waits for each task at most for its polling time, the `PollingTime` setting, one minute by default, or for its minimum idle time if it is longer, so that a task that takes longer, or never completes, doesn't prevent the other tasks of all tenants from running:
+
+- A task that has not completed after this time keeps running, while the background service runs the other tasks without waiting for it. A warning is logged once for this run.
+- Until it completes, the task is not run again, neither on schedule nor on demand. Once it completes, it runs again if one of its scheduled occurrences passed in the meantime.
+- When the application stops, the background service cancels the token passed to the running tasks, and waits for them to complete up to the shutdown timeout of the application.
+
+The background service can't stop a task that doesn't observe its cancellation token, or that blocks its thread. A task that calls a service that may not respond should use a timeout, so that it completes even when the service doesn't. Several long tasks that are due at the same time in a tenant are still waited for one after the other, so they can delay the other tasks by several polling times.
+
+## Running in a Web Farm
+
+When the application runs on several servers, each server runs its own background service, which runs the tasks of the tenants independently of the other servers:
+
+- A scheduled task runs on every server, each one following its own copy of the schedule. For instance, with three servers, a task scheduled every day at midnight runs three times every day, once per server.
+- By default, these runs can happen at the same time. To prevent two servers from running a task at the same time, make the task atomic by setting its lock timeout and lock expiration, in its `[BackgroundTask]` attribute or in the **Advanced** tab of its settings, and enable a distributed lock feature such as **Redis Lock** (`OrchardCore.Redis.Lock`). Without a distributed lock, these settings are ignored.
+- An atomic task still runs on every server, but one server at a time. A server that can't acquire the lock within the lock timeout tries again on its next polling, and runs the task once the lock is released. Set the lock expiration above the longest expected duration of the task, otherwise the lock may expire while the task is still running.
+- Unless the `ShellWarmup` option is enabled, a server only runs the tasks of a tenant once this tenant has handled a request on this server.
+
+**Run now** doesn't follow this behavior: it runs the task only on the server that handled the request, and doesn't affect the other servers, which keep running the task on schedule. This is enough for a task that works on shared data, such as the database, as most tasks do. For a task that works on the local data of each server, such as a local cache, it only processes the data of the server that ran it.
+
+The execution state and the run requests are kept in memory by each server and are not shared, so the background tasks admin pages require session affinity (sticky sessions) on the load balancer, or accessing a single server directly. Without it, consecutive requests reach different servers:
+
+- A page shows the runs of the server that rendered it, so a task queued on a server can look idle on the next page.
+- A **Run now** that is retried from such a page can run the task again on another server, as a task is only recognized as already running or queued by the server that holds it. A distributed lock prevents these runs from overlapping, but not from happening.
+
+An open page only updates from the server that rendered it and ignores the answers of the others. It is reloaded when that server no longer answers for a few minutes, for instance after a restart.
+
+## Configuration
+
+The background service that runs the tasks of all tenants is configured in the `OrchardCore:BackgroundService` section of the application configuration, for example in the `appsettings.json` file:
+
+```json
+{
+  "OrchardCore": {
+    "BackgroundService": {
+      "PollingTime": "00:01:00",
+      "MinimumIdleTime": "00:00:10",
+      "MaxRecentRuns": 10
+    }
+  }
+}
+```
+
+| Setting | Description | Default |
+| --- | --- | --- |
+| `ShellWarmup` | Whether all tenants are loaded when the application starts so that their background tasks run without waiting for a first request. | `false` |
+| `PollingTime` | The time to wait between two executions of all the background tasks of a given tenant. It also bounds how long the background service waits for a task before running the others, see [Long-Running Tasks](#long-running-tasks). | `00:01:00` |
+| `MinimumIdleTime` | The minimum idle time before the background tasks of a tenant are triggered, as well as between tasks. | `00:00:10` |
+| `MaxRecentRuns` | The number of completed runs kept in memory for each task and shown on its details page. | `10` |
+
+## Using the Execution State from Code
+
+The `IBackgroundTaskMonitor` service gives access to the execution state of the background tasks of a tenant, and lets them be run on demand. It is registered at the host level along with the background service, so it is shared by all tenants, and it is not available in an application that doesn't call `AddBackgroundService()`. Inject it as an `IEnumerable<IBackgroundTaskMonitor>` if your code may run without it.
+
+```csharp
+public sealed class MyService
+{
+    private readonly IBackgroundTaskMonitor _backgroundTaskMonitor;
+    private readonly ShellSettings _shellSettings;
+
+    public MyService(IBackgroundTaskMonitor backgroundTaskMonitor, ShellSettings shellSettings)
+    {
+        _backgroundTaskMonitor = backgroundTaskMonitor;
+        _shellSettings = shellSettings;
+    }
+
+    public async Task<bool> HasFailedAsync(string taskName)
+    {
+        var state = await _backgroundTaskMonitor.GetStateAsync(_shellSettings.Name, taskName);
+
+        return state?.LastRun?.Result == BackgroundTaskRunResult.Failed;
+    }
+
+    public Task<BackgroundTaskRunRequestResult> RunNowAsync(string taskName)
+        => _backgroundTaskMonitor.RequestRunAsync(_shellSettings.Name, taskName);
+}
+```
+
+The name of a task is the full name of its type, as returned by the `GetTaskName()` extension method of `IBackgroundTask`.
 
 ## Video
 

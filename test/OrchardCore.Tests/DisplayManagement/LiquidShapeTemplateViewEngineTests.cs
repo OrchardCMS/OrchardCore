@@ -53,10 +53,11 @@ public class LiquidShapeTemplateViewEngineTests
                 .AddScoped<LiquidTemplateContextAccessor>()
                 .AddScoped<LiquidShapeTemplateViewEngine>()
                 .AddScoped(sp => (RazorShapeTemplateViewEngine)null)
-                .Configure<TemplateOptions>(options =>
+                .AddLiquidTemplateOptions()
+                .Configure<LiquidViewOptions>(options => options.FileProviders.Add(new PhysicalFileProvider(folder.FullName)))
+                .Configure<TemplateOptionsBuilder>(options =>
                 {
-                    options.FileProvider = new PhysicalFileProvider(folder.FullName);
-                    options.Filters.AddFilter("view_context", (input, arguments, context) =>
+                    options.AddFilter("view_context", (input, arguments, context) =>
                     {
                         templateViewContext = ((LiquidTemplateContext)context).ViewContext;
                         currentWhileRendering = viewContextAccessor.ViewContext == templateViewContext;

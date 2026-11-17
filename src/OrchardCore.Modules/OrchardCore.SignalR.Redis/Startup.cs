@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
@@ -18,14 +19,29 @@ public sealed class Startup : StartupBase
     private const string BackplaneRegistrationKey = "OrchardCore.SignalR.Backplane";
     private const string RedisBackplaneFeature = "OrchardCore.SignalR.Redis";
 
+    private readonly ILogger _logger;
+
+    public Startup(ILogger<Startup> logger)
+    {
+        _logger = logger;
+    }
+
     public override void ConfigureServices(IServiceCollection services)
     {
-        if (!services.Any(descriptor => descriptor.ServiceType == typeof(IRedisService)))
+        if (!services.IsRedisConfigured())
         {
             return;
         }
 
-        EnsureNoBackplaneIsRegistered(services);
+        if (!RegisterBackplane(services))
+        {
+            _logger.LogError(
+                "The '{Feature}' feature is enabled but not active as the '{OtherFeature}' backplane is already registered. Enable only one SignalR backplane per tenant.",
+                RedisBackplaneFeature,
+                AzureBackplaneFeature);
+
+            return;
+        }
 
         services
             .AddSignalR()
@@ -34,17 +50,18 @@ public sealed class Startup : StartupBase
         services.AddTransient<IConfigureOptions<SignalRRedisOptions>, SignalRRedisOptionsConfiguration>();
     }
 
-    private static void EnsureNoBackplaneIsRegistered(IServiceCollection services)
+    private static bool RegisterBackplane(IServiceCollection services)
     {
         if (services.Any(descriptor =>
             descriptor.IsKeyedService &&
             string.Equals(descriptor.ServiceKey as string, BackplaneRegistrationKey, StringComparison.Ordinal)))
         {
-            throw new InvalidOperationException(
-                $"The '{AzureBackplaneFeature}' and '{RedisBackplaneFeature}' features cannot be enabled together.");
+            return false;
         }
 
         services.AddKeyedSingleton<object>(BackplaneRegistrationKey, new object());
+
+        return true;
     }
 }
 

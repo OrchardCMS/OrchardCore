@@ -17,9 +17,9 @@ internal sealed class EncryptFilter : ILiquidFilter
     public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext context)
     {
         var protector = _dataProtectionProvider.CreateProtector(OrchardCoreConstants.Security.ScriptingEncryptionPurpose);
-        var bytes = Encoding.UTF8.GetBytes(input?.ToStringValue() ?? string.Empty);
+        var bytes = Encoding.UTF8.GetBytes(input?.ToStringValue(context) ?? string.Empty);
         var encryptedBytes = protector.Protect(bytes);
-        return new ValueTask<FluidValue>(new StringValue(Convert.ToBase64String(encryptedBytes)));
+        return new ValueTask<FluidValue>(StringValue.Create(Convert.ToBase64String(encryptedBytes)));
     }
 }
 
@@ -34,7 +34,7 @@ internal sealed class DecryptFilter : ILiquidFilter
 
     public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext context)
     {
-        var inputString = input?.ToStringValue();
+        var inputString = input?.ToStringValue(context);
 
         if (string.IsNullOrEmpty(inputString))
         {
@@ -48,7 +48,7 @@ internal sealed class DecryptFilter : ILiquidFilter
             var protector = _dataProtectionProvider.CreateProtector(OrchardCoreConstants.Security.ScriptingEncryptionPurpose);
             var bytes = protector.Unprotect(encryptedbytes);
 
-            return new ValueTask<FluidValue>(new StringValue(Encoding.UTF8.GetString(bytes)));
+            return new ValueTask<FluidValue>(StringValue.Create(Encoding.UTF8.GetString(bytes)));
         }
         catch (Exception) { }
 

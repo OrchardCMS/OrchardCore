@@ -20,7 +20,7 @@ public class UtcTimeZoneFilter : ILiquidFilter
 
         if (input.Type == FluidValues.String)
         {
-            var stringValue = input.ToStringValue();
+            var stringValue = input.ToStringValue(ctx);
 
             if (stringValue == "now" || stringValue == "today")
             {
@@ -36,7 +36,7 @@ public class UtcTimeZoneFilter : ILiquidFilter
         }
         else
         {
-            switch (input.ToObjectValue())
+            switch (input.ToObjectValue(ctx))
             {
                 case DateTime dateTime:
                     value = dateTime;
@@ -49,6 +49,6 @@ public class UtcTimeZoneFilter : ILiquidFilter
             }
         }
 
-        return new ObjectValue(await _localClock.ConvertToUtcAsync(value.DateTime));
+        return ObjectValue.Create(await _localClock.ConvertToUtcAsync(value.DateTime));
     }
 }

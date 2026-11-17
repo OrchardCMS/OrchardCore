@@ -13,7 +13,7 @@ with `playwright-cli`.
 
 ## Prerequisites
 
-1. Application is built: `dotnet build src/OrchardCore.Cms.Web -c Debug -f net10.0`
+1. Application is built: `dotnet build src/OrchardCore.Cms.Web -c Debug -f net11.0`
 2. No existing data: delete `src/OrchardCore.Cms.Web/App_Data` if present
 3. Application is running **without** AutoSetup env vars (so the wizard appears)
 4. Browser installed for `playwright-cli` (`--browser webkit` on macOS) — see

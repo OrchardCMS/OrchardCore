@@ -177,11 +177,11 @@ public class MarkdownTests
 
         var filter = new Markdownify(markdownService, htmlSanitizerService);
         var result = await filter.ProcessAsync(
-            new StringValue(maliciousMarkdown),
+            StringValue.Create(maliciousMarkdown),
             new FilterArguments(),
             null);
 
-        var html = result.ToStringValue();
+        var html = result.ToStringValue(null);
 
         Assert.DoesNotContain("<script>", html);
         Assert.DoesNotContain("onerror", html);
@@ -206,11 +206,11 @@ public class MarkdownTests
 
         var filter = new Markdownify(markdownService, htmlSanitizerService);
         var result = await filter.ProcessAsync(
-            new StringValue("This is **bold** and _italic_ text."),
+            StringValue.Create("This is **bold** and _italic_ text."),
             new FilterArguments(),
             null);
 
-        var html = result.ToStringValue();
+        var html = result.ToStringValue(null);
 
         Assert.Contains("<strong>bold</strong>", html);
         Assert.Contains("<em>italic</em>", html);

@@ -8,7 +8,6 @@ using OrchardCore.Alias.Indexing;
 using OrchardCore.Alias.Models;
 using OrchardCore.Alias.Services;
 using OrchardCore.Alias.Settings;
-using OrchardCore.Alias.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
@@ -27,32 +26,33 @@ public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.Configure<TemplateOptions>(o =>
+        services.Configure<TemplateOptionsBuilder>(o =>
         {
-            o.MemberAccessStrategy.Register<AliasPartViewModel>();
-
-            o.MemberAccessStrategy.Register<LiquidContentAccessor, LiquidPropertyAccessor>("Alias", (obj, context) =>
+            o.ConfigureMemberAccess(strategy =>
             {
-                var liquidTemplateContext = (LiquidTemplateContext)context;
-
-                return new LiquidPropertyAccessor(liquidTemplateContext, async (alias, context) =>
+                strategy.Register<LiquidContentAccessor, LiquidPropertyAccessor>("Alias", (obj, context) =>
                 {
-                    var session = context.Services.GetRequiredService<ISession>();
+                    var liquidTemplateContext = (LiquidTemplateContext)context;
 
-#pragma warning disable CA1862 // Use the 'StringComparison' method overloads to perform case-insensitive string comparisons
-                    var contentItem = await session.Query<ContentItem, AliasPartIndex>(x =>
-                        x.Published && x.Alias == alias.ToLowerInvariant()).FirstOrDefaultAsync();
-#pragma warning restore CA1862 // Use the 'StringComparison' method overloads to perform case-insensitive string comparisons
-
-                    if (contentItem == null)
+                    return new LiquidPropertyAccessor(liquidTemplateContext, async (alias, context) =>
                     {
-                        return NilValue.Instance;
-                    }
+                        var session = context.Services.GetRequiredService<ISession>();
 
-                    var contentManager = context.Services.GetRequiredService<IContentManager>();
-                    contentItem = await contentManager.LoadAsync(contentItem);
+    #pragma warning disable CA1862 // Use the 'StringComparison' method overloads to perform case-insensitive string comparisons
+                        var contentItem = await session.Query<ContentItem, AliasPartIndex>(x =>
+                            x.Published && x.Alias == alias.ToLowerInvariant()).FirstOrDefaultAsync();
+    #pragma warning restore CA1862 // Use the 'StringComparison' method overloads to perform case-insensitive string comparisons
 
-                    return new ObjectValue(contentItem);
+                        if (contentItem == null)
+                        {
+                            return NilValue.Instance;
+                        }
+
+                        var contentManager = context.Services.GetRequiredService<IContentManager>();
+                        contentItem = await contentManager.LoadAsync(contentItem);
+
+                        return ObjectValue.Create(contentItem);
+                    });
                 });
             });
         });

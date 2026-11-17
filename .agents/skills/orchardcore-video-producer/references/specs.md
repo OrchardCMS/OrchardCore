@@ -12,9 +12,9 @@ Every Orchard Core video follows these values. They are applied by `scripts/bran
 | Video codec | H.264 High, `yuv420p`, `-preset slow -crf 33 -tune stillimage`, keyframe every 10 s | Plays everywhere; screen content compresses well. |
 | Audio codec | AAC, 64 kbps, 48 kHz, mono | Speech only; stereo and higher rates only add size. |
 | Container | MP4 with `-movflags +faststart` | Starts playing before it's fully downloaded. |
-| Size | Under 10 MB (10,000,000 bytes) | GitHub's attachment limit, and a reasonable size for the docs repository. An 8-minute video is about 9.7 MB. |
+| Size | Under 10 MB (10,000,000 bytes) | GitHub's attachment limit, for pull requests. An 8-minute video is about 9.7 MB. |
 | Master | `build/master.mp4`, CRF 16, AAC 192 kbps stereo | Kept in the workspace to encode again without rebuilding. |
-| Captions | WebVTT (docs) and SRT, at most about 13 words each, split at sentence ends | Accessibility, and viewing without sound. |
+| Captions | WebVTT and SRT, at most about 13 words each, split at sentence ends | Accessibility, and viewing without sound. |
 
 ## Layout
 

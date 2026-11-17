@@ -137,7 +137,7 @@ After the **build** task has executed your extension's `Styles` folder will cont
 - `Styles.css` (non-minified with inline source maps)
 - `Styles.min.css` (minified)
 
-Once these output asset files have been generated you can reference them from Razor views just as you normally wolud using the Orchard Core resource manager, either by declaring them in a resource manifest class and requiring them using one of the `Require()` methods or by including them by path using one of the `Include()` methods.
+Once these output asset files have been generated you can reference them from Razor views just as you normally would using the Orchard Core resource manager, either by declaring them in a resource manifest class and requiring them using one of the `Require()` methods or by including them by path using one of the `Include()` methods.
 
 Note: The generated output asset files will not be automatically added to your extension project (`.csproj`) file. If you wish to keep the output asset files in source control, you will need to manually include them in your project using Solution Explorer after they have been generated for the first time. See the section on advanced scenarios below for some pointers on when you may or may not want to do this.
 

@@ -113,5 +113,5 @@ The search will find terms that begin with "type" and end with "ing" or "service
 
 `/type.*ing?/`
 
-![regular expressions](images/regular-expresions.PNG)
+![regular expressions](images/regular-expressions.PNG)
 

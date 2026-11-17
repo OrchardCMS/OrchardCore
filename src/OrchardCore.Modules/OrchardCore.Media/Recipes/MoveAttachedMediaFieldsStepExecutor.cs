@@ -90,7 +90,7 @@ public sealed class MoveAttachedMediaFieldsStepExecutor
                 .Take(BatchSize)
                 .ListAsync();
 
-            if (!latestIndexes.Any())
+            if (latestIndexes.Count == 0)
             {
                 break;
             }

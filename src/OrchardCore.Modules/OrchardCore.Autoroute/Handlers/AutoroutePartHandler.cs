@@ -422,14 +422,14 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
             using (CultureScope.Create(cultureAspect.Culture, ignoreSystemSettings: cultureOptions.IgnoreSystemSettings))
             {
                 part.Path = await _liquidTemplateManager.RenderStringAsync(pattern, NullEncoder.Default, model,
-                    new Dictionary<string, FluidValue>() { [nameof(ContentItem)] = new ObjectValue(model.ContentItem) });
+                    new Dictionary<string, FluidValue>() { [nameof(ContentItem)] = ObjectValue.Create(model.ContentItem) });
             }
 
             part.Path = part.Path.ReplaceLineEndings(string.Empty);
 
             if (part.Path?.Length > AutoroutePart.MaxPathLength)
             {
-                part.Path = part.Path[..AutoroutePart.MaxPathLength];
+                part.Path = TextHelper.Truncate(part.Path, AutoroutePart.MaxPathLength);
             }
 
             if (!await IsAbsolutePathUniqueAsync(part.Path, part.ContentItem.ContentItemId))
@@ -591,7 +591,7 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
         // Unversioned length + separator char + version length.
         var maxLength = AutoroutePart.MaxPathLength - 1 - versionLength;
 
-        return unversionedPath.AsSpan(0, Math.Min(unversionedPath.Length, maxLength));
+        return unversionedPath.AsSpan(0, TextHelper.GetTruncationLength(unversionedPath.AsSpan(), maxLength));
     }
 
     private async Task<bool> IsAbsolutePathUniqueAsync(string path, string contentItemId)

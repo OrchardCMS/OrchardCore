@@ -23,13 +23,13 @@ The `OrchardCore.Email` module provides you with the capability to integrate add
 If your provider does not require any settings, you may register it using the `AddEmailProvider<>` extension. For instance:
 
 ```csharp
-services.AddEmailProvider<YourCustomImplemenation>("A technical name for your implementation")
+services.AddEmailProvider<YourCustomImplementation>("A technical name for your implementation")
 ```
 
 However, if you have a complex provider like the included SMTP one, you may implement `IConfigureOptions<EmailProviderOptions>` and register it using the `AddEmailProviderOptionsConfiguration<>` extension. For instance:
 
 ```csharp
-services.AddEmailProviderOptionsConfiguration<YourCustomImplemenation>()
+services.AddEmailProviderOptionsConfiguration<YourCustomImplementation>()
 ```
 
 Here is and example of how we register the SMTP complex provider:

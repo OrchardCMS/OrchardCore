@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.Extensions.Logging;
 using OrchardCore.Admin;
 using OrchardCore.AuditTrail.Indexes;
 using OrchardCore.AuditTrail.Models;

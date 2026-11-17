@@ -17,9 +17,9 @@ public class ContentUrlFilter : ILiquidFilter
     {
         var urlHelper = _urlHelperFactory.GetUrlHelper(context.ViewContext);
 
-        var trimmedInputString = input.ToStringValue().Trim();
+        var trimmedInputString = input.ToStringValue(context).Trim();
         var absolutePath = urlHelper.Content(trimmedInputString);
 
-        return new StringValue(absolutePath);
+        return StringValue.Create(absolutePath);
     }
 }

@@ -31,15 +31,9 @@ public sealed class Migrations : DataMigration
             .Column<string>("DisplayText", column => column.Nullable().WithLength(ContentItemIndex.MaxDisplayTextSize))
         );
 
-        await SchemaBuilder.AlterIndexTableAsync<ContentItemIndex>(table => table
-            .CreateIndex("IDX_ContentItemIndex_DocumentId",
-                "DocumentId",
-                "ContentItemId",
-                "ContentItemVersionId",
-                "Published",
-                "Latest")
-        );
-
+        // YesSql already indexes DocumentId for the joins (IDX_FK_ContentItemIndex), so this one is here for the columns it covers:
+        // a list that matches most of the table and groups by document, such as the admin list of every type by creation or
+        // publication date, reads its sort date here instead of in the table.
         await SchemaBuilder.AlterIndexTableAsync<ContentItemIndex>(table => table
             .CreateIndex("IDX_ContentItemIndex_DocumentId_ContentType",
                 "DocumentId",
@@ -51,34 +45,12 @@ public sealed class Migrations : DataMigration
                 "Latest")
         );
 
-        await SchemaBuilder.AlterIndexTableAsync<ContentItemIndex>(table => table
-            .CreateIndex("IDX_ContentItemIndex_DocumentId_Owner",
-                "DocumentId",
-                "Owner",
-                "Published",
-                "Latest")
-        );
-
-        await SchemaBuilder.AlterIndexTableAsync<ContentItemIndex>(table => table
-            .CreateIndex("IDX_ContentItemIndex_DocumentId_Author",
-                "DocumentId",
-                "Author",
-                "Published",
-                "Latest")
-        );
-
-        await SchemaBuilder.AlterIndexTableAsync<ContentItemIndex>(table => table
-            .CreateIndex("IDX_ContentItemIndex_DocumentId_DisplayText",
-                "DocumentId",
-                "DisplayText",
-                "Published",
-                "Latest")
-        );
-
         await CreateContentItemIdIndexAsync();
+        await CreateFilterIndexesAsync();
+        await CreateModifiedIndexesAsync();
 
         // Shortcut other migration steps on new content definition schemas.
-        return 7;
+        return 9;
     }
 
     public async Task<int> UpdateFrom1Async()
@@ -242,9 +214,33 @@ public sealed class Migrations : DataMigration
         return 7;
     }
 
-    // Every other index on ContentItemIndex leads with DocumentId, so a query by ContentItemId (IContentManager.GetAsync, for one
-    // item or a batch) can't seek and scans an index instead. DocumentId is the join to Document; Published and Latest are what a
-    // read by ID filters on.
+    public async Task<int> UpdateFrom7Async()
+    {
+        await CreateFilterIndexesAsync();
+
+        // A join on DocumentId seeks on IDX_FK_ContentItemIndex or IDX_ContentItemIndex_DocumentId_ContentType. All these added is a
+        // smaller index to scan for a filter that can't seek anyway, such as on DisplayText with Contains or on Author, which isn't
+        // worth their cost on every write. A site that relies on such a filter can add the index it needs.
+        await SchemaBuilder.AlterIndexTableAsync<ContentItemIndex>(table =>
+        {
+            table.DropIndex("IDX_ContentItemIndex_DocumentId");
+            table.DropIndex("IDX_ContentItemIndex_DocumentId_Owner");
+            table.DropIndex("IDX_ContentItemIndex_DocumentId_Author");
+            table.DropIndex("IDX_ContentItemIndex_DocumentId_DisplayText");
+        });
+
+        return 8;
+    }
+
+    public async Task<int> UpdateFrom8Async()
+    {
+        await CreateModifiedIndexesAsync();
+
+        return 9;
+    }
+
+    // No other index leads with ContentItemId, so a query by ContentItemId (IContentManager.GetAsync, for one item or a batch) can
+    // only seek on this one. DocumentId is the join to Document; Published and Latest are what a read by ID filters on.
     private Task CreateContentItemIdIndexAsync()
         => SchemaBuilder.AlterIndexTableAsync<ContentItemIndex>(table => table
             .CreateIndex("IDX_ContentItemIndex_ContentItemId",
@@ -253,4 +249,69 @@ public sealed class Migrations : DataMigration
                 "Published",
                 "Latest")
         );
+
+    // A filter on one of these columns can't seek on an index that leads with DocumentId, so it scans an index or the table however
+    // few items it matches. On ContentType and Owner: the contents admin list and its count, GraphQL, pickers, sitemaps. On
+    // ContentItemVersionId: IContentManager.GetVersionAsync and loading the results of a Lucene or Elasticsearch query.
+    //
+    // Published and Latest come after DocumentId, read from the index without being part of the seek, for two reasons. One index
+    // then serves both of them, on a type or an owner. And with Latest before DocumentId, MySQL's estimates change for the count of
+    // the default admin list and for its other sort orders, which match almost every type: it starts from the Type index of Document
+    // instead, which takes almost twice as long. A read by version filters on neither.
+    //
+    // No date is added here: CreateModifiedIndexesAsync has the indexes that sort by date. Author and DisplayText are left out: only
+    // the optional GraphQL where filters on Author, and DisplayText is filtered with Contains, which can't seek.
+    private async Task CreateFilterIndexesAsync()
+    {
+        await SchemaBuilder.AlterIndexTableAsync<ContentItemIndex>(table => table
+            .CreateIndex("IDX_ContentItemIndex_ContentType",
+                "ContentType",
+                "DocumentId",
+                "Published",
+                "Latest")
+        );
+
+        await SchemaBuilder.AlterIndexTableAsync<ContentItemIndex>(table => table
+            .CreateIndex("IDX_ContentItemIndex_Owner",
+                "Owner",
+                "DocumentId",
+                "Published",
+                "Latest")
+        );
+
+        await SchemaBuilder.AlterIndexTableAsync<ContentItemIndex>(table => table
+            .CreateIndex("IDX_ContentItemIndex_ContentItemVersionId",
+                "ContentItemVersionId",
+                "DocumentId")
+        );
+    }
+
+    // Serve the contents admin list by modified date, its default order. Read backward they return the items in the order of the
+    // list, so a page stops as soon as it's full, whatever status it filters on, which is read from the index.
+    //
+    // The first one is for a list of several types, the default page. The date comes first as a seek on Latest doesn't help: MySQL
+    // would prefer it for other lists, and then sort its matches. New records go at the end of this index, which makes it cheap.
+    //
+    // The second one is for a list of one type. The first one alone would walk the whole index when a type has few items, or only
+    // old ones, and SQL Server does so for every type once it has cached that plan.
+    private async Task CreateModifiedIndexesAsync()
+    {
+        await SchemaBuilder.AlterIndexTableAsync<ContentItemIndex>(table => table
+            .CreateIndex("IDX_ContentItemIndex_ModifiedUtc",
+                "ModifiedUtc",
+                "DocumentId",
+                "Latest",
+                "Published",
+                "ContentType")
+        );
+
+        await SchemaBuilder.AlterIndexTableAsync<ContentItemIndex>(table => table
+            .CreateIndex("IDX_ContentItemIndex_ContentType_ModifiedUtc",
+                "ContentType",
+                "ModifiedUtc",
+                "DocumentId",
+                "Latest",
+                "Published")
+        );
+    }
 }

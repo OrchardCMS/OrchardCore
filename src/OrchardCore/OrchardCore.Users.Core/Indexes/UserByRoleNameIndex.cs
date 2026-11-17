@@ -25,7 +25,7 @@ public class UserByRoleNameIndexProvider : IndexProvider<User>
             .Map(user =>
             {
                 // Include a marker that the user does not have any roles, i.e. is Authenticated only.
-                if (!user.RoleNames.Any())
+                if (user.RoleNames.Count == 0)
                 {
                     return new UserByRoleNameIndex[]
                     {

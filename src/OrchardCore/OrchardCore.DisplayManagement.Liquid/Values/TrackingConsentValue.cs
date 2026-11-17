@@ -29,18 +29,15 @@ internal sealed class TrackingConsentValue : FluidValue
     public override bool Equals(FluidValue other)
         => other is TrackingConsentValue;
 
-    public override bool ToBooleanValue() => true;
+    public override bool ToBooleanValue(TemplateContext context) => true;
 
-    public override decimal ToNumberValue() => 0;
+    public override decimal ToNumberValue(TemplateContext context) => 0;
 
-    public override object ToObjectValue() => null!;
+    public override object ToObjectValue(TemplateContext context) => null!;
 
-    public override string ToStringValue() => "TrackingConsent";
+    public override string ToStringValue(TemplateContext context) => "TrackingConsent";
 
     public override ValueTask<FluidValue> GetValueAsync(string name, TemplateContext context) => GetValueInternal(name, context);
-
-    [Obsolete("GetValue is obsolete, prefer the GetValueAsync method.")]
-    protected override FluidValue GetValue(string name, TemplateContext context) => GetValueInternal(name, context);
 
     private static FluidValue GetValueInternal(string name, TemplateContext context)
     {
@@ -56,8 +53,8 @@ internal sealed class TrackingConsentValue : FluidValue
             nameof(ITrackingConsentFeature.CanTrack) => BooleanValue.Create(feature.CanTrack),
             nameof(ITrackingConsentFeature.HasConsent) => BooleanValue.Create(feature.HasConsent),
             nameof(ITrackingConsentFeature.IsConsentNeeded) => BooleanValue.Create(feature.IsConsentNeeded),
-            "CookieName" => new StringValue(GetCookiePolicyOptions(context)?.ConsentCookie?.Name ?? string.Empty),
-            "CookieValue" => new StringValue(GetCookiePolicyOptions(context)?.ConsentCookieValue ?? string.Empty),
+            "CookieName" => StringValue.Create(GetCookiePolicyOptions(context)?.ConsentCookie?.Name ?? string.Empty),
+            "CookieValue" => StringValue.Create(GetCookiePolicyOptions(context)?.ConsentCookieValue ?? string.Empty),
             _ => NilValue.Instance
         };
     }

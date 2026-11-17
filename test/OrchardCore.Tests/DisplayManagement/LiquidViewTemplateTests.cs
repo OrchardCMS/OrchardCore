@@ -19,8 +19,7 @@ public class LiquidViewTemplateTests
     public async Task RenderAsync_ExistingViewContext_LocalizesAndRestoresScope(bool useWriter)
     {
         using var services = CreateServiceProvider();
-        var options = new TemplateOptions();
-        options.Filters.AddFilter("t", LiquidViewFilters.Localize);
+        var options = new TemplateOptionsBuilder().AddFilter("t", LiquidViewFilters.Localize).Build();
         var context = new LiquidTemplateContext(services, options);
         context.SetValue("Model", "Outer");
         var parser = new FluidParser();
@@ -29,8 +28,8 @@ public class LiquidViewTemplateTests
         var result = await RenderAsync(template, context, useWriter);
 
         Assert.Equal("Inner: Localized name", result);
-        Assert.Equal("Outer", context.GetValue("Model").ToStringValue());
-        Assert.Null(context.GetValue("ViewLocalizer").ToObjectValue());
+        Assert.Equal("Outer", context.GetValue("Model").ToStringValue(context));
+        Assert.Null(context.GetValue("ViewLocalizer").ToObjectValue(context));
         Mock.Get(services.GetRequiredService<IViewLocalizer>())
             .As<IViewContextAware>()
             .Verify(localizer => localizer.Contextualize(context.ViewContext), Times.Once);
@@ -42,8 +41,7 @@ public class LiquidViewTemplateTests
     public async Task RenderAsync_RenderingThrows_RestoresScope(bool useWriter)
     {
         using var services = CreateServiceProvider();
-        var options = new TemplateOptions();
-        options.Filters.AddFilter("fail", (_, _, _) => throw new InvalidOperationException("Rendering failed."));
+        var options = new TemplateOptionsBuilder().AddFilter("fail", (_, _, _) => throw new InvalidOperationException("Rendering failed.")).Build();
         var context = new LiquidTemplateContext(services, options);
         context.SetValue("Model", "Outer");
         var parser = new FluidParser();
@@ -51,15 +49,15 @@ public class LiquidViewTemplateTests
 
         await Assert.ThrowsAsync<InvalidOperationException>(() => RenderAsync(template, context, useWriter));
 
-        Assert.Equal("Outer", context.GetValue("Model").ToStringValue());
-        Assert.Null(context.GetValue("ViewLocalizer").ToObjectValue());
+        Assert.Equal("Outer", context.GetValue("Model").ToStringValue(context));
+        Assert.Null(context.GetValue("ViewLocalizer").ToObjectValue(context));
     }
 
     [Fact]
     public async Task InvokeInScopeAsync_NestedCallbackThrows_RestoresParentScope()
     {
         using var services = CreateServiceProvider();
-        var context = new LiquidTemplateContext(services, new TemplateOptions());
+        var context = new LiquidTemplateContext(services, TemplateOptions.Default);
         var viewContext = services.GetRequiredService<ViewContextAccessor>().ViewContext;
         context.SetValue("Model", "Root");
 
@@ -67,21 +65,21 @@ public class LiquidViewTemplateTests
         {
             await Assert.ThrowsAsync<InvalidOperationException>(() =>
                 context.InvokeInScopeAsync<string>(viewContext, "Inner", () => throw new InvalidOperationException()));
-            Assert.Equal("Outer", context.GetValue("Model").ToStringValue());
-            Assert.IsAssignableFrom<IViewLocalizer>(context.GetValue("ViewLocalizer").ToObjectValue());
+            Assert.Equal("Outer", context.GetValue("Model").ToStringValue(context));
+            Assert.IsAssignableFrom<IViewLocalizer>(context.GetValue("ViewLocalizer").ToObjectValue(context));
             return 42;
         });
 
         Assert.Equal(42, result);
-        Assert.Equal("Root", context.GetValue("Model").ToStringValue());
-        Assert.Null(context.GetValue("ViewLocalizer").ToObjectValue());
+        Assert.Equal("Root", context.GetValue("Model").ToStringValue(context));
+        Assert.Null(context.GetValue("ViewLocalizer").ToObjectValue(context));
     }
 
     [Fact]
     public async Task RenderAsync_TemplateNotLocalizing_DoesNotContextualizeLocalizer()
     {
         using var services = CreateServiceProvider();
-        var context = new LiquidTemplateContext(services, new TemplateOptions());
+        var context = new LiquidTemplateContext(services, TemplateOptions.Default);
         var parser = new FluidParser();
         Assert.True(parser.TryParse("{{ Model }}", out var template, out var error), error);
 
@@ -97,7 +95,7 @@ public class LiquidViewTemplateTests
     public async Task InvokeInScopeAsync_CallbackWithState_RunsInScopeAndRestoresParentScope()
     {
         using var services = CreateServiceProvider();
-        var context = new LiquidTemplateContext(services, new TemplateOptions());
+        var context = new LiquidTemplateContext(services, TemplateOptions.Default);
         var viewContext = services.GetRequiredService<ViewContextAccessor>().ViewContext;
         context.SetValue("Model", "Root");
 
@@ -106,29 +104,29 @@ public class LiquidViewTemplateTests
 
         await context.InvokeInScopeAsync(viewContext, "Inner", state =>
         {
-            modelInScope = state.Context.GetValue("Model").ToStringValue();
+            modelInScope = state.Context.GetValue("Model").ToStringValue(context);
             stateInScope = state.Value;
             return ValueTask.CompletedTask;
         }, (Context: context, Value: "State"));
 
         Assert.Equal("Inner", modelInScope);
         Assert.Equal("State", stateInScope);
-        Assert.Equal("Root", context.GetValue("Model").ToStringValue());
-        Assert.Null(context.GetValue("ViewLocalizer").ToObjectValue());
+        Assert.Equal("Root", context.GetValue("Model").ToStringValue(context));
+        Assert.Null(context.GetValue("ViewLocalizer").ToObjectValue(context));
     }
 
     [Fact]
     public async Task InvokeInScopeAsync_NoViewContext_InitializesWithoutViewScope()
     {
         using var services = CreateServiceProvider();
-        var context = new LiquidTemplateContext(services, new TemplateOptions());
+        var context = new LiquidTemplateContext(services, TemplateOptions.Default);
         context.SetValue("Model", "Outer");
 
         await context.InvokeInScopeAsync(viewContext: null, model: "Inner", () =>
         {
             Assert.True(context.IsInitialized);
-            Assert.Equal("Outer", context.GetValue("Model").ToStringValue());
-            Assert.Null(context.GetValue("ViewLocalizer").ToObjectValue());
+            Assert.Equal("Outer", context.GetValue("Model").ToStringValue(context));
+            Assert.Null(context.GetValue("ViewLocalizer").ToObjectValue(context));
             return Task.CompletedTask;
         });
 
@@ -142,8 +140,7 @@ public class LiquidViewTemplateTests
     public async Task RenderAsync_LocalizeWithNamedArgumentsAndNote_IgnoresNote()
     {
         using var services = CreateServiceProvider();
-        var options = new TemplateOptions();
-        options.Filters.AddFilter("t", LiquidViewFilters.Localize);
+        var options = new TemplateOptionsBuilder().AddFilter("t", LiquidViewFilters.Localize).Build();
         var context = new LiquidTemplateContext(services, options);
         var parser = new FluidParser();
         Assert.True(parser.TryParse("{{ 'in {0} years' | t: note: 'Relative date.', years: 3 }} {{ 'in {0} years' | t: years: 4, note: 'Relative date.' }} {{ 'in {0} years' | t: 5 }}", out var template, out var error), error);

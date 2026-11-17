@@ -2,5 +2,5 @@
 
 <div class="form-check">
     <input type="checkbox" class="form-check-input" value="@Model.User.UserId" name="itemIds" id="itemIds-@Model.User.UserId">
-    <label class="form-check-label" for="itemIds-@Model.User.UserId"></label>
+    <label class="form-check-label" for="itemIds-@Model.User.UserId"><span class="visually-hidden">@T["Select {0}", Model.User.UserName]</span></label>
 </div>

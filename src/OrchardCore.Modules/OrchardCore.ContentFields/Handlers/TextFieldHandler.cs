@@ -69,7 +69,7 @@ public class TextFieldHandler : ContentFieldHandler<TextField>
             var value = await _liquidTemplateManager.RenderStringAsync(settings.Pattern, NullEncoder.Default, field,
                 new Dictionary<string, FluidValue>()
                 {
-                    ["ContentItem"] = new ObjectValue(field.ContentItem),
+                    ["ContentItem"] = ObjectValue.Create(field.ContentItem),
                 });
 
             field.Text = value?.Trim();

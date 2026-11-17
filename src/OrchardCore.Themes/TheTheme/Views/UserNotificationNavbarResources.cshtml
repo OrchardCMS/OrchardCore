@@ -1,0 +1,11 @@
+<script asp-src="~/TheTheme/js/user-notification-navbar/UserNotificationNavbar.min.js" debug-src="~/TheTheme/js/user-notification-navbar/UserNotificationNavbar.js" depends-on="notification-manager" at="Foot" type="module"></script>
+
+@await DisplayAsync(await New.UserNotificationNavbarStyles())
+
+<style at="Head">
+    .dropdown-menu.scrollable {
+        overflow-y: auto;
+        max-height: var(--oc-height-dropdown, 250px);
+        scrollbar-width: thin;
+    }
+</style>

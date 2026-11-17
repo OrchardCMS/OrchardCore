@@ -8,6 +8,10 @@ public class PagerOptions
 
     public int MaxPageSize { get; set; } = 100;
 
+    /// <summary>
+    /// Gets or sets the highest total the content items admin list reports instead of counting its items,
+    /// which avoids an expensive count query on large databases. A value of <c>0</c> counts the items.
+    /// </summary>
     public int MaxPagedCount { get; set; }
 
     /// <summary>

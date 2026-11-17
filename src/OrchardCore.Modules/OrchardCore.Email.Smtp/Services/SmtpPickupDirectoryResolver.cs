@@ -153,15 +153,13 @@ internal static class SmtpPickupDirectoryResolver
 
     private static string ParseAndFormat(string template, FluidParser fluidParser, ShellOptions shellOptions, ShellSettings shellSettings)
     {
-        var templateOptions = new TemplateOptions();
-        templateOptions.MemberAccessStrategy.Register<ShellSettings>();
 
         if (!fluidParser.TryParse(template, out var parsedTemplate, out var errors))
         {
             throw new InvalidOperationException($"Failed to parse SMTP pickup directory location base: {string.Join(System.Environment.NewLine, errors)}");
         }
 
-        var templateContext = new TemplateContext(templateOptions);
+        var templateContext = new TemplateContext(TemplateOptions.Default);
         templateContext.SetValue("AppData", shellOptions.ShellsApplicationDataPath);
         templateContext.SetValue("ShellSettings", shellSettings);
 

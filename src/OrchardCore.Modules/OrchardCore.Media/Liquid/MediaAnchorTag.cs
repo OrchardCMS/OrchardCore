@@ -27,7 +27,7 @@ public class MediaAnchorTag : IAnchorTag
         return false;
     }
 
-    public async ValueTask<Completion> WriteToAsync(IReadOnlyList<FilterArgument> argumentsList, IReadOnlyList<Statement> statements, TextWriter writer, TextEncoder encoder, LiquidTemplateContext context)
+    public async ValueTask<Completion> WriteToAsync(IReadOnlyList<FilterArgument> argumentsList, IReadOnlyList<Statement> statements, IFluidOutput output, TextEncoder encoder, LiquidTemplateContext context)
     {
         var services = context.Services;
         var mediaFileStore = services.GetRequiredService<IMediaFileStore>();
@@ -43,13 +43,13 @@ public class MediaAnchorTag : IAnchorTag
         {
             switch (argument.Name)
             {
-                case "asset_href": assetHref = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                case "append_version": appendVersion = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
+                case "asset_href": assetHref = (await argument.Expression.EvaluateAsync(context)).ToStringValue(context); break;
+                case "append_version": appendVersion = (await argument.Expression.EvaluateAsync(context)).ToStringValue(context); break;
 
                 default:
 
                     customAttributes ??= [];
-                    customAttributes[argument.Name] = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                    customAttributes[argument.Name] = (await argument.Expression.EvaluateAsync(context)).ToStringValue(context);
 
                     break;
             }
@@ -79,11 +79,11 @@ public class MediaAnchorTag : IAnchorTag
             tagBuilder.Attributes[attribute.Key] = attribute.Value;
         }
 
-        tagBuilder.RenderStartTag().WriteTo(writer, (HtmlEncoder)encoder);
+        output.Write(tagBuilder.RenderStartTag(), (HtmlEncoder)encoder);
 
         if (statements != null && statements.Count > 0)
         {
-            var completion = await statements.RenderStatementsAsync(writer, encoder, context);
+            var completion = await statements.RenderStatementsAsync(output, encoder, context);
 
             if (completion != Completion.Normal)
             {
@@ -91,7 +91,7 @@ public class MediaAnchorTag : IAnchorTag
             }
         }
 
-        tagBuilder.RenderEndTag().WriteTo(writer, (HtmlEncoder)encoder);
+        output.Write(tagBuilder.RenderEndTag(), (HtmlEncoder)encoder);
 
         return Completion.Normal;
     }

@@ -1,0 +1,7 @@
+@using OrchardCore.Localization
+@using Microsoft.Extensions.Localization
+@model NotificationViewModel
+
+@inject IStringLocalizerFactory LocalizerFactory
+
+<span class="notification-meta-item notification-type" data-notification-type="@Model.TypeDescriptor.Name">@LocalizerFactory.Localize(Model.TypeDescriptor.DisplayName)</span>

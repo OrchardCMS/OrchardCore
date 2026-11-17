@@ -32,7 +32,7 @@ public sealed class ScheduledArchivingBackgroundTask : IBackgroundTask
             .QueryIndex<ArchiveLaterPartIndex>(index => index.Latest && index.Published && index.ScheduledArchiveDateTimeUtc < _clock.UtcNow)
             .ListAsync(cancellationToken);
 
-        if (!itemsToArchive.Any())
+        if (itemsToArchive.Count == 0)
         {
             return;
         }

@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using System.Globalization;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Operations;
@@ -249,6 +250,24 @@ public sealed class LocalizationSourceAnalyzer : DiagnosticAnalyzer
     {
         var text = value.Replace('\r', ' ').Replace('\n', ' ');
 
-        return text.Length <= PreviewLength ? text : text.Substring(0, PreviewLength - 1) + "…";
+        if (text.Length <= PreviewLength)
+        {
+            return text;
+        }
+
+        var elements = StringInfo.GetTextElementEnumerator(text);
+        var length = 0;
+        while (elements.MoveNext())
+        {
+            var end = elements.ElementIndex + elements.GetTextElement().Length;
+            if (end > PreviewLength - 1)
+            {
+                break;
+            }
+
+            length = end;
+        }
+
+        return text.Substring(0, length) + "…";
     }
 }

@@ -1,0 +1,89 @@
+using OrchardCore.Notifications.Models;
+
+namespace OrchardCore.Notifications;
+
+/// <summary>
+/// Resolves the notification methods a user receives for a type of notification.
+/// </summary>
+public static class NotificationTypePreferences
+{
+    /// <summary>
+    /// Gets whether a method is on for a type of notification, without the methods the user turned off for every type.
+    /// </summary>
+    /// <param name="part">The preferences of the user, or <see langword="null"/>.</param>
+    /// <param name="type">The type of notification.</param>
+    /// <param name="method">The notification method.</param>
+    /// <returns><see langword="true"/> when the method is on for the type.</returns>
+    public static bool IsMethodEnabledForType(UserNotificationPreferencesPart part, NotificationTypeDescriptor type, string method)
+    {
+        ArgumentNullException.ThrowIfNull(type);
+
+        if (part?.Types is not null && part.Types.TryGetValue(type.Name, out var preference) && preference is not null)
+        {
+            if (preference.Optin?.Contains(method, StringComparer.OrdinalIgnoreCase) == true)
+            {
+                return true;
+            }
+
+            if (preference.Optout?.Contains(method, StringComparer.OrdinalIgnoreCase) == true)
+            {
+                return false;
+            }
+        }
+
+        return !type.DisabledMethods.Contains(method);
+    }
+
+    /// <summary>
+    /// Records the methods a user turned on for a type of notification, keeping only the choices that differ
+    /// from the defaults of the type, so a change of the defaults applies to the users who did not choose.
+    /// </summary>
+    /// <param name="part">The preferences of the user.</param>
+    /// <param name="type">The type of notification.</param>
+    /// <param name="methods">Every available method.</param>
+    /// <param name="enabledMethods">The methods the user turned on for the type.</param>
+    public static void SetEnabledMethods(UserNotificationPreferencesPart part, NotificationTypeDescriptor type, IEnumerable<string> methods, IEnumerable<string> enabledMethods)
+    {
+        ArgumentNullException.ThrowIfNull(part);
+        ArgumentNullException.ThrowIfNull(type);
+
+        var enabled = new HashSet<string>(enabledMethods ?? [], StringComparer.OrdinalIgnoreCase);
+        var listedMethods = new HashSet<string>(methods, StringComparer.OrdinalIgnoreCase);
+        NotificationTypePreference existing = null;
+        part.Types?.TryGetValue(type.Name, out existing);
+
+        // The choices of a method that isn't registered, for example when its feature is disabled, are kept.
+        var optin = existing?.Optin?.Where(method => !listedMethods.Contains(method)).ToList() ?? [];
+        var optout = existing?.Optout?.Where(method => !listedMethods.Contains(method)).ToList() ?? [];
+
+        foreach (var method in listedMethods)
+        {
+            var isDefault = !type.DisabledMethods.Contains(method);
+            var isEnabled = enabled.Contains(method);
+
+            if (isEnabled && !isDefault)
+            {
+                optin.Add(method);
+            }
+            else if (!isEnabled && isDefault)
+            {
+                optout.Add(method);
+            }
+        }
+
+        part.Types ??= new Dictionary<string, NotificationTypePreference>(StringComparer.OrdinalIgnoreCase);
+
+        if (optin.Count == 0 && optout.Count == 0)
+        {
+            part.Types.Remove(type.Name);
+
+            return;
+        }
+
+        part.Types[type.Name] = new NotificationTypePreference
+        {
+            Optin = optin.ToArray(),
+            Optout = optout.ToArray(),
+        };
+    }
+}

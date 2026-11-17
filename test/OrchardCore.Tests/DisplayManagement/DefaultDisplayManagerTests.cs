@@ -7,6 +7,7 @@ using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Localization;
+using OrchardCore.Telemetry;
 using OrchardCore.Tests.Stubs;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -191,6 +192,87 @@ public class DefaultDisplayManagerTests
         Assert.Equal("Views/DiagnosticsFoo.cshtml", activity.GetTagItem("orchardcore.shape.binding"));
         Assert.True(Interlocked.Read(ref renderedShapes) >= 1);
         Assert.True(Assert.Single(durations) >= 0);
+    }
+
+    [Fact]
+    public async Task RenderShape_SlowerThanThreshold_TracesShapeWithItsBinding()
+    {
+        var shapeType = $"SlowFoo{Guid.NewGuid():n}";
+        var activities = await RenderTracedShapeAsync(shapeType, TimeSpan.FromMilliseconds(100), OrchardCoreTelemetryConstants.ActivitySourceName);
+
+        var activity = Assert.Single(activities);
+        Assert.Equal(OrchardCoreTelemetryConstants.ActivitySourceName, activity.Source.Name);
+        Assert.Equal("Views/SlowFoo.cshtml", activity.GetTagItem("orchardcore.shape.binding"));
+    }
+
+    [Fact]
+    public async Task RenderShape_FasterThanThreshold_DoesNotTraceShape()
+    {
+        var shapeType = $"FastFoo{Guid.NewGuid():n}";
+        var activities = await RenderTracedShapeAsync(shapeType, TimeSpan.Zero, OrchardCoreTelemetryConstants.ActivitySourceName);
+
+        Assert.Empty(activities);
+    }
+
+    [Fact]
+    public async Task RenderShape_SlowAndTracedByDisplayManagement_TracesShapeOnce()
+    {
+        var shapeType = $"SlowFoo{Guid.NewGuid():n}";
+        var activities = await RenderTracedShapeAsync(
+            shapeType,
+            TimeSpan.FromMilliseconds(100),
+            OrchardCoreTelemetryConstants.ActivitySourceName,
+            DisplayManagementDiagnostics.ActivitySourceName);
+
+        var activity = Assert.Single(activities);
+        Assert.Equal(DisplayManagementDiagnostics.ActivitySourceName, activity.Source.Name);
+    }
+
+    private async Task<List<Activity>> RenderTracedShapeAsync(string shapeType, TimeSpan renderingDuration, params string[] sourceNames)
+    {
+        var displayManager = _serviceProvider.GetService<IHtmlDisplay>();
+
+        var shape = new Shape();
+        shape.Metadata.Type = shapeType;
+
+        var descriptor = new ShapeDescriptor
+        {
+            ShapeType = shapeType,
+        };
+        descriptor.Bindings[shapeType] = new ShapeBinding
+        {
+            BindingName = shapeType,
+            BindingSource = "Views/SlowFoo.cshtml",
+            BindingAsync = async ctx =>
+            {
+                await Task.Delay(renderingDuration);
+
+                return new HtmlString("Hi there!");
+            },
+        };
+        AddShapeDescriptor(descriptor);
+
+        var activities = new List<Activity>();
+        using var listener = new ActivityListener
+        {
+            ShouldListenTo = source => sourceNames.Contains(source.Name),
+            Sample = (ref ActivityCreationOptions<ActivityContext> _) => ActivitySamplingResult.AllDataAndRecorded,
+            ActivityStopped = activity =>
+            {
+                if (activity.GetTagItem("orchardcore.shape.type") as string == shapeType)
+                {
+                    lock (activities)
+                    {
+                        activities.Add(activity);
+                    }
+                }
+            },
+        };
+        ActivitySource.AddActivityListener(listener);
+
+        await displayManager.ExecuteAsync(CreateDisplayContext(shape));
+
+        return activities;
     }
 
     [Fact]

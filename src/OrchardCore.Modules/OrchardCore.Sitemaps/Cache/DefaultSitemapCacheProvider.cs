@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Sitemaps.Cache;
 
@@ -178,6 +179,6 @@ public class DefaultSitemapCacheProvider : ISitemapCacheProvider
 
     private static string GetSitemapCachePath(IWebHostEnvironment webHostEnvironment, ShellSettings shellSettings, string cachePath)
     {
-        return PathExtensions.Combine(webHostEnvironment.WebRootPath, shellSettings.Name, cachePath);
+        return PathExtensions.Combine(webHostEnvironment.GetWebRootPathOrDefault(), shellSettings.Name, cachePath);
     }
 }

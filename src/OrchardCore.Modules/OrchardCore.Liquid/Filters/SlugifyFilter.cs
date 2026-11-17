@@ -15,8 +15,8 @@ public class SlugifyFilter : ILiquidFilter
 
     public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
     {
-        var slug = _slugService.Slugify(input.ToStringValue());
+        var slug = _slugService.Slugify(input.ToStringValue(ctx));
 
-        return new StringValue(slug);
+        return StringValue.Create(slug);
     }
 }

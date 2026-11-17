@@ -15,7 +15,7 @@ public class ContentLocalizationFilter : ILiquidFilter
 
     public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
     {
-        var locale = arguments.At(0).ToStringValue();
+        var locale = arguments.At(0).ToStringValue(ctx);
 
         if (arguments.At(0).IsNil())
         {
@@ -26,13 +26,13 @@ public class ContentLocalizationFilter : ILiquidFilter
         {
             // List of content item ids
 
-            var localizationSets = input.Enumerate(ctx).Select(x => x.ToStringValue()).ToArray();
+            var localizationSets = await input.EnumerateAsync(ctx).Select(x => x.ToStringValue(ctx)).ToArrayAsync();
 
             return FluidValue.Create(await _contentLocalizationManager.GetItemsForSetsAsync(localizationSets, locale), ctx.Options);
         }
         else
         {
-            var localizationSet = input.ToStringValue();
+            var localizationSet = input.ToStringValue(ctx);
 
             return FluidValue.Create(await _contentLocalizationManager.GetContentItemAsync(localizationSet, locale), ctx.Options);
         }

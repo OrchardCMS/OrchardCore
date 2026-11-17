@@ -79,10 +79,10 @@ public sealed class LiquidStartup : StartupBase
         services.Configure<SettingsLiquidOptions>(_configuration.GetSection("Liquid"));
         
         services.AddSingleton<ISitePropertiesLiquidMapper, SitePropertiesLiquidMapper>();
-        services.Configure<TemplateOptions>(o =>
+        services.Configure<TemplateOptionsBuilder>(o =>
         {
-            o.Scope.SetValue("Site", new ObjectValue(new LiquidSiteSettingsAccessor()));
-            o.MemberAccessStrategy.Register<LiquidSiteSettingsAccessor, FluidValue>(async (obj, name, context) =>
+            o.WithGlobalValue("Site", ObjectValue.Create(new LiquidSiteSettingsAccessor()));
+            o.ConfigureMemberAccess(strategy => strategy.Register<LiquidSiteSettingsAccessor, FluidValue>(async (obj, name, context) =>
             {
                 var liquidTemplateContext = (LiquidTemplateContext)context;
                 var services = liquidTemplateContext.Services;
@@ -92,30 +92,30 @@ public sealed class LiquidStartup : StartupBase
 
                 FluidValue result = name switch
                 {
-                    nameof(ISite.SiteName) => new StringValue(site.SiteName),
-                    nameof(ISite.PageTitleFormat) => new StringValue(site.PageTitleFormat),
+                    nameof(ISite.SiteName) => StringValue.Create(site.SiteName ?? string.Empty),
+                    nameof(ISite.PageTitleFormat) => StringValue.Create(site.PageTitleFormat ?? string.Empty),
                     // The site salt should never be accessible to Liquid and exposing it is a major security risk. This
                     // comment and the dummy value below should be kept, to record that it's intentional.
-                    nameof(ISite.SiteSalt) => new StringValue("[REDACTED]"),
-                    nameof(ISite.SuperUser) => new StringValue(site.SuperUser),
-                    nameof(ISite.Calendar) => new StringValue(site.Calendar),
-                    nameof(ISite.TimeZoneId) => new StringValue(site.TimeZoneId),
-                    nameof(ISite.ResourceDebugMode) => new StringValue(site.ResourceDebugMode.ToString()),
+                    nameof(ISite.SiteSalt) => StringValue.Create("[REDACTED]"),
+                    nameof(ISite.SuperUser) => StringValue.Create(site.SuperUser ?? string.Empty),
+                    nameof(ISite.Calendar) => StringValue.Create(site.Calendar ?? string.Empty),
+                    nameof(ISite.TimeZoneId) => StringValue.Create(site.TimeZoneId ?? string.Empty),
+                    nameof(ISite.ResourceDebugMode) => StringValue.Create(site.ResourceDebugMode.ToString()),
                     nameof(ISite.UseCdn) => BooleanValue.Create(site.UseCdn),
-                    nameof(ISite.CdnBaseUrl) => new StringValue(site.CdnBaseUrl),
+                    nameof(ISite.CdnBaseUrl) => StringValue.Create(site.CdnBaseUrl ?? string.Empty),
                     nameof(ISite.PageSize) => NumberValue.Create(site.PageSize),
                     nameof(ISite.MaxPageSize) => NumberValue.Create(site.MaxPageSize),
                     nameof(ISite.MaxPagedCount) => NumberValue.Create(site.MaxPagedCount),
-                    nameof(ISite.BaseUrl) => new StringValue(site.BaseUrl),
-                    nameof(ISite.HomeRoute) => new ObjectValue(site.HomeRoute),
+                    nameof(ISite.BaseUrl) => StringValue.Create(site.BaseUrl ?? string.Empty),
+                    nameof(ISite.HomeRoute) => ObjectValue.Create(site.HomeRoute),
                     nameof(ISite.AppendVersion) => BooleanValue.Create(site.AppendVersion),
-                    nameof(ISite.CacheMode) => new StringValue(site.CacheMode.ToString()),
+                    nameof(ISite.CacheMode) => StringValue.Create(site.CacheMode.ToString()),
                     nameof(ISite.Properties) => await services.GetRequiredService<ISitePropertiesLiquidMapper>().MapAsync(site),
                     _ => NilValue.Instance
                 };
 
                 return result;
-            });
+            }));
         });
     }
 }

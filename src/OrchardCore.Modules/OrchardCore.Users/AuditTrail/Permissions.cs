@@ -16,7 +16,7 @@ public class Permissions : IPermissionProvider
         LocalizationSource.Create<Permissions>("View Audit Trail events about own user"),
         [ViewUserAuditTrailEvents],
         isSecurityCritical: true);
-    
+
     public static readonly Permission ManageUserAuditTrailSettings = new(
         nameof(ManageUserAuditTrailSettings),
         LocalizationSource.Create<Permissions>("Manage Audit Trail settings for user events"),

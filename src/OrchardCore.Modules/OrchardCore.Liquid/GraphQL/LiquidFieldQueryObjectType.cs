@@ -58,7 +58,7 @@ public sealed class LiquidFieldQueryObjectType : ObjectGraphType<LiquidField>
             model,
             new Dictionary<string, FluidValue>
             {
-                [nameof(model.ContentItem)] = new ObjectValue(model.ContentItem),
+                [nameof(model.ContentItem)] = ObjectValue.Create(model.ContentItem),
             });
     }
 }

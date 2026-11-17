@@ -1,4 +1,3 @@
-using OrchardCore.AdminMenu;
 using OrchardCore.AdminMenu.Services;
 using OrchardCore.Contents.AdminNodes;
 using OrchardCore.Localization.Data;

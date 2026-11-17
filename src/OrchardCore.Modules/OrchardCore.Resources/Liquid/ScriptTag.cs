@@ -11,7 +11,7 @@ public class ScriptTag
 {
     private static readonly char[] s_separators = [',', ' '];
 
-    public static async ValueTask<Completion> WriteToAsync(IReadOnlyList<FilterArgument> argumentsList, TextWriter writer, TextEncoder _, TemplateContext context)
+    public static async ValueTask<Completion> WriteToAsync(IReadOnlyList<FilterArgument> argumentsList, IFluidOutput output, TextEncoder _, TemplateContext context)
     {
         var services = ((LiquidTemplateContext)context).Services;
         var resourceManager = services.GetRequiredService<IResourceManager>();
@@ -36,20 +36,20 @@ public class ScriptTag
         {
             switch (argument.Name)
             {
-                case "name": name = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                case "src": src = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                case "append_version": appendVersion = (await argument.Expression.EvaluateAsync(context)).ToBooleanValue(); break;
-                case "cdn_src": cdnSrc = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                case "debug_src": debugSrc = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                case "debug_cdn_src": debugCdnSrc = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                case "use_cdn": useCdn = (await argument.Expression.EvaluateAsync(context)).ToBooleanValue(); break;
-                case "condition": condition = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                case "culture": culture = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                case "debug": debug = (await argument.Expression.EvaluateAsync(context)).ToBooleanValue(); break;
-                case "depends_on": dependsOn = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                case "version": version = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                case "at": Enum.TryParse((await argument.Expression.EvaluateAsync(context)).ToStringValue(), ignoreCase: true, out at); break;
-                default: (customAttributes ??= [])[argument.Name] = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
+                case "name": name = (await argument.Expression.EvaluateAsync(context)).ToStringValue(context); break;
+                case "src": src = (await argument.Expression.EvaluateAsync(context)).ToStringValue(context); break;
+                case "append_version": appendVersion = (await argument.Expression.EvaluateAsync(context)).ToBooleanValue(context); break;
+                case "cdn_src": cdnSrc = (await argument.Expression.EvaluateAsync(context)).ToStringValue(context); break;
+                case "debug_src": debugSrc = (await argument.Expression.EvaluateAsync(context)).ToStringValue(context); break;
+                case "debug_cdn_src": debugCdnSrc = (await argument.Expression.EvaluateAsync(context)).ToStringValue(context); break;
+                case "use_cdn": useCdn = (await argument.Expression.EvaluateAsync(context)).ToBooleanValue(context); break;
+                case "condition": condition = (await argument.Expression.EvaluateAsync(context)).ToStringValue(context); break;
+                case "culture": culture = (await argument.Expression.EvaluateAsync(context)).ToStringValue(context); break;
+                case "debug": debug = (await argument.Expression.EvaluateAsync(context)).ToBooleanValue(context); break;
+                case "depends_on": dependsOn = (await argument.Expression.EvaluateAsync(context)).ToStringValue(context); break;
+                case "version": version = (await argument.Expression.EvaluateAsync(context)).ToStringValue(context); break;
+                case "at": Enum.TryParse((await argument.Expression.EvaluateAsync(context)).ToStringValue(context), ignoreCase: true, out at); break;
+                default: (customAttributes ??= [])[argument.Name] = (await argument.Expression.EvaluateAsync(context)).ToStringValue(context); break;
             }
         }
 
@@ -150,7 +150,7 @@ public class ScriptTag
 
             if (at == ResourceLocation.Unspecified || at == ResourceLocation.Inline)
             {
-                resourceManager.RenderLocalScript(setting, writer);
+                resourceManager.RenderLocalScript(setting, output.AsTextWriter());
             }
         }
 
@@ -176,7 +176,7 @@ public class ScriptTag
 
             if (at == ResourceLocation.Unspecified || at == ResourceLocation.Inline)
             {
-                resourceManager.RenderLocalScript(setting, writer);
+                resourceManager.RenderLocalScript(setting, output.AsTextWriter());
             }
         }
 
@@ -195,7 +195,7 @@ public class ScriptTag
 
                 if (at == ResourceLocation.Inline)
                 {
-                    resourceManager.RenderLocalScript(setting, writer);
+                    resourceManager.RenderLocalScript(setting, output.AsTextWriter());
                 }
             }
         }

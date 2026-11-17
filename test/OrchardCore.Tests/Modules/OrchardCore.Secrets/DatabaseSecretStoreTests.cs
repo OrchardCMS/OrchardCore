@@ -13,7 +13,6 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Secrets;
 
 public class DatabaseSecretStoreTests
 {
-    private static readonly JsonSerializerOptions _secretSerializerOptions = new() { TypeInfoResolver = new DefaultSecretTypeResolver() };
     private readonly Mock<IDocumentManager<SecretsDocument>> _documentManagerMock;
     private readonly Mock<IDataProtectionProvider> _dataProtectionProviderMock;
     private readonly Mock<IDataProtector> _dataProtectorMock;
@@ -28,10 +27,7 @@ public class DatabaseSecretStoreTests
         _dataProtectorMock = new Mock<IDataProtector>();
         _loggerMock = new Mock<ILogger<DatabaseSecretStore>>();
 
-        // Set up JSON serializer options with polymorphic support for ISecret
-        var docJsonOptions = new DocumentJsonSerializerOptions();
-        docJsonOptions.SerializerOptions.TypeInfoResolver = new DefaultSecretTypeResolver();
-        _jsonOptions = Options.Create(docJsonOptions);
+        _jsonOptions = Options.Create(new DocumentJsonSerializerOptions());
 
         _dataProtectionProviderMock
             .Setup(p => p.CreateProtector(It.IsAny<string>()))
@@ -72,13 +68,12 @@ public class DatabaseSecretStoreTests
         Assert.Null(result);
     }
 
-    [Fact]
-    public async Task GetSecretAsync_ReturnsDecryptedSecret_WhenFound()
+    [Theory]
+    [InlineData("""{"Text":"secret-value"}""")]
+    [InlineData("""{"$type":"TextSecret","Text":"secret-value"}""")]
+    public async Task GetSecretAsync_ReturnsDecryptedSecret_WhenFound(string serialized)
     {
-        // Arrange
-        var secret = new TextSecret { Text = "secret-value" };
-        // Serialize with the type discriminator using the polymorphic options
-        var serialized = JsonSerializer.Serialize<global::OrchardCore.Secrets.ISecret>(secret, _secretSerializerOptions);
+        // Arrange: the type of the secret is stored with the entry, a payload can still contain a type discriminator.
 
         // The encrypted data needs to be base64-encoded (what IDataProtector.Protect returns)
         // When Unprotect is called with a string, it base64-decodes it first
@@ -372,7 +367,7 @@ public class DatabaseSecretStoreTests
 
         // Act & Assert (ArgumentException.ThrowIfNullOrEmpty throws ArgumentNullException for null)
         await Assert.ThrowsAsync<ArgumentNullException>(
-            () => _store.SaveSecretAsync<TextSecret>(null, secret));
+            () => _store.SaveSecretAsync(null, secret));
     }
 
     [Fact]
@@ -380,35 +375,6 @@ public class DatabaseSecretStoreTests
     {
         // Act & Assert
         await Assert.ThrowsAsync<ArgumentNullException>(
-            () => _store.SaveSecretAsync<TextSecret>("name", null));
-    }
-}
-
-/// <summary>
-/// Simple type resolver for tests that supports polymorphic serialization of ISecret types.
-/// </summary>
-internal sealed class DefaultSecretTypeResolver : System.Text.Json.Serialization.Metadata.DefaultJsonTypeInfoResolver
-{
-    public override System.Text.Json.Serialization.Metadata.JsonTypeInfo GetTypeInfo(Type type, JsonSerializerOptions options)
-    {
-        var typeInfo = base.GetTypeInfo(type, options);
-
-        if (type == typeof(global::OrchardCore.Secrets.ISecret))
-        {
-            typeInfo.PolymorphismOptions = new System.Text.Json.Serialization.Metadata.JsonPolymorphismOptions
-            {
-                TypeDiscriminatorPropertyName = "$type",
-                IgnoreUnrecognizedTypeDiscriminators = true,
-                UnknownDerivedTypeHandling = System.Text.Json.Serialization.JsonUnknownDerivedTypeHandling.FailSerialization,
-                DerivedTypes =
-                {
-                    new System.Text.Json.Serialization.Metadata.JsonDerivedType(typeof(TextSecret), nameof(TextSecret)),
-                    new System.Text.Json.Serialization.Metadata.JsonDerivedType(typeof(RsaKeySecret), nameof(RsaKeySecret)),
-                    new System.Text.Json.Serialization.Metadata.JsonDerivedType(typeof(X509Secret), nameof(X509Secret)),
-                },
-            };
-        }
-
-        return typeInfo;
+            () => _store.SaveSecretAsync("name", (TextSecret)null));
     }
 }

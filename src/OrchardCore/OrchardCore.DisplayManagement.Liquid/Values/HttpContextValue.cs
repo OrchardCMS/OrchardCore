@@ -1,4 +1,3 @@
-using System.Globalization;
 using System.Text.Encodings.Web;
 using Fluid;
 using Fluid.Values;
@@ -22,16 +21,20 @@ internal sealed class HttpContextValue : FluidValue
         return other is HttpContextValue;
     }
 
-    public override bool ToBooleanValue() => true;
+    public override bool ToBooleanValue(TemplateContext context) => true;
 
-    public override decimal ToNumberValue() => 0;
+    public override decimal ToNumberValue(TemplateContext context) => 0;
 
-    public override object ToObjectValue() => null;
+    public override object ToObjectValue(TemplateContext context) => null;
 
-    public override string ToStringValue() => "HttpContext";
+    public override string ToStringValue(TemplateContext context) => "HttpContext";
 
-    public override async ValueTask WriteToAsync(TextWriter writer, TextEncoder encoder, CultureInfo cultureInfo)
-        => await writer.WriteAsync(ToStringValue());
+    public override ValueTask WriteToAsync(IFluidOutput output, TextEncoder encoder, TemplateContext context)
+    {
+        output.Write(ToStringValue(context));
+
+        return ValueTask.CompletedTask;
+    }
 
     public override ValueTask<FluidValue> GetValueAsync(string name, TemplateContext context)
     {
@@ -44,7 +47,7 @@ internal sealed class HttpContextValue : FluidValue
 
         return name switch
         {
-            nameof(HttpContext.Items) => new ObjectValue(new HttpContextItemsWrapper(httpContext.Items)),
+            nameof(HttpContext.Items) => ObjectValue.Create(new HttpContextItemsWrapper(httpContext.Items)),
             _ => NilValue.Instance
         };
     }

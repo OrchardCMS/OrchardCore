@@ -33,6 +33,29 @@ public abstract class FeatureAttributeTests<TAttribute>
     protected static string LoremWords(int count) => LoremNET.Lorem.Words(count);
 
     /// <summary>
+    /// Returns a <paramref name="count"/> of Lorem Ipsum Words, optionally all <paramref name="distinct"/>.
+    /// </summary>
+    /// <param name="count"></param>
+    /// <param name="distinct"></param>
+    /// <returns></returns>
+    protected static string LoremWords(int count, bool distinct)
+    {
+        if (!distinct)
+        {
+            return LoremWords(count);
+        }
+
+        var words = new HashSet<string>(StringComparer.Ordinal);
+
+        while (words.Count < count)
+        {
+            words.Add(LoremWords(1));
+        }
+
+        return string.Join(' ', words);
+    }
+
+    /// <summary>
     /// Public|Instance
     /// </summary>
     private const BindingFlags CtorFlags = BindingFlags.Public | BindingFlags.Instance;

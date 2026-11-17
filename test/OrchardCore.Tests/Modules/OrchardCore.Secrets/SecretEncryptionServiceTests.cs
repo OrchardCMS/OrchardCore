@@ -5,7 +5,6 @@ using OrchardCore.Secrets;
 using OrchardCore.Secrets.Models;
 using OrchardCore.Secrets.Providers;
 using OrchardCore.Secrets.Services;
-using ISecret = OrchardCore.Secrets.ISecret;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Secrets;
 
@@ -23,20 +22,22 @@ public class SecretEncryptionServiceTests
             IncludesPrivateKey = true,
         };
         var manager = new Mock<ISecretManager>();
-        manager.Setup(m => m.GetSecretAsync<RsaKeySecret>("key")).ReturnsAsync(key);
+        manager.Setup(m => m.GetSecretAsync("key")).ReturnsAsync(key);
         _service = new SecretEncryptionService(manager.Object,
             [new TextSecretTypeProvider(Mock.Of<IStringLocalizer<TextSecretTypeProvider>>()),
-                new RsaKeySecretTypeProvider(Mock.Of<IStringLocalizer<RsaKeySecretTypeProvider>>()), new CustomSecretProvider()]);
+                new RsaKeySecretTypeProvider(Mock.Of<IStringLocalizer<RsaKeySecretTypeProvider>>())]);
     }
 
     [Fact]
-    public async Task RoundTrip_PreservesRegisteredCustomType()
+    public async Task RoundTrip_PreservesSecretType()
     {
-        var info = new SecretInfo { Name = "custom", Store = "Database", Type = typeof(CustomSecret).FullName };
-        var encrypted = await _service.EncryptAsync(new CustomSecret { Value = "custom value" }, "key", info);
+        var info = new SecretInfo { Name = "rsa", Store = "Database", Type = typeof(RsaKeySecret).FullName };
+        var encrypted = await _service.EncryptAsync(new RsaKeySecret { PublicKey = "public", PrivateKey = "private", IncludesPrivateKey = true }, "key", info);
         var decrypted = await _service.DecryptAsync(encrypted, "key", info);
 
-        Assert.Equal("custom value", Assert.IsType<CustomSecret>(decrypted).Value);
+        var rsaKey = Assert.IsType<RsaKeySecret>(decrypted.Value);
+        Assert.Equal("public", rsaKey.PublicKey);
+        Assert.Equal("private", rsaKey.PrivateKey);
         Assert.Equal(1, encrypted.Version);
         Assert.Equal(12, Convert.FromBase64String(encrypted.IV).Length);
         Assert.Equal(16, Convert.FromBase64String(encrypted.Tag).Length);
@@ -84,7 +85,7 @@ public class SecretEncryptionServiceTests
     {
         var (certificatePem, privateKeyPem) = X509SecretTests.CreateCertificatePem();
         var manager = new Mock<ISecretManager>();
-        manager.Setup(m => m.GetSecretAsync<X509Secret>("certificate")).ReturnsAsync(X509Secret.FromPem(certificatePem, privateKeyPem));
+        manager.Setup(m => m.GetSecretAsync("certificate")).ReturnsAsync(X509Secret.FromPem(certificatePem, privateKeyPem));
         var service = new SecretEncryptionService(manager.Object,
             [new TextSecretTypeProvider(Mock.Of<IStringLocalizer<TextSecretTypeProvider>>())]);
         var info = new SecretInfo { Name = "secret", Store = "Database", Type = nameof(TextSecret) };
@@ -92,7 +93,7 @@ public class SecretEncryptionServiceTests
         var encrypted = await service.EncryptAsync(new TextSecret { Text = "safe" }, "certificate", info);
         var decrypted = await service.DecryptAsync(encrypted, "certificate", info);
 
-        Assert.Equal("safe", Assert.IsType<TextSecret>(decrypted).Text);
+        Assert.Equal("safe", Assert.IsType<TextSecret>(decrypted.Value).Text);
     }
 
     private static string FlipByte(string value)
@@ -100,16 +101,5 @@ public class SecretEncryptionServiceTests
         var bytes = Convert.FromBase64String(value);
         bytes[0] ^= 1;
         return Convert.ToBase64String(bytes);
-    }
-
-    public sealed class CustomSecret : ISecret
-    {
-        public string Value { get; set; }
-    }
-
-    private sealed class CustomSecretProvider : SecretTypeProvider<CustomSecret>
-    {
-        public override string DisplayName => "Custom";
-        public override string Description => "Custom secret for regression coverage.";
     }
 }

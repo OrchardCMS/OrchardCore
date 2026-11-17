@@ -19,10 +19,10 @@ public class AppendVersionFilter : ILiquidFilter
 
     public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
     {
-        var url = input.ToStringValue();
+        var url = input.ToStringValue(ctx);
 
         var imageUrl = _fileVersionProvider.AddFileVersionToPath(_httpContextAccessor.HttpContext.Request.PathBase, url);
 
-        return ValueTask.FromResult<FluidValue>(new StringValue(imageUrl ?? url));
+        return ValueTask.FromResult<FluidValue>(StringValue.Create(imageUrl ?? url));
     }
 }

@@ -9,7 +9,7 @@ namespace OrchardCore.Resources.Liquid;
 
 public class MetaTag
 {
-    public static async ValueTask<Completion> WriteToAsync(IReadOnlyList<FilterArgument> argumentsList, TextWriter _1, TextEncoder _2, TemplateContext context)
+    public static async ValueTask<Completion> WriteToAsync(IReadOnlyList<FilterArgument> argumentsList, IFluidOutput _1, TextEncoder _2, TemplateContext context)
     {
         var services = ((LiquidTemplateContext)context).Services;
         var resourceManager = services.GetRequiredService<IResourceManager>();
@@ -27,13 +27,13 @@ public class MetaTag
         {
             switch (argument.Name)
             {
-                case "name": name = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                case "property": property = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                case "content": content = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                case "http_equiv": httpEquiv = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                case "charset": charset = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                case "separator": separator = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                default: (customAttributes ??= [])[argument.Name] = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
+                case "name": name = (await argument.Expression.EvaluateAsync(context)).ToStringValue(context); break;
+                case "property": property = (await argument.Expression.EvaluateAsync(context)).ToStringValue(context); break;
+                case "content": content = (await argument.Expression.EvaluateAsync(context)).ToStringValue(context); break;
+                case "http_equiv": httpEquiv = (await argument.Expression.EvaluateAsync(context)).ToStringValue(context); break;
+                case "charset": charset = (await argument.Expression.EvaluateAsync(context)).ToStringValue(context); break;
+                case "separator": separator = (await argument.Expression.EvaluateAsync(context)).ToStringValue(context); break;
+                default: (customAttributes ??= [])[argument.Name] = (await argument.Expression.EvaluateAsync(context)).ToStringValue(context); break;
             }
         }
 

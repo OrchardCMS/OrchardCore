@@ -166,7 +166,7 @@ public static class DateTimeParser
         var arithmetic = Terms.Integer(NumberOptions.AllowLeadingSign);
         var range = Literals.Text("..");
 
-        var todayParser = Terms.Text("@today").And(ZeroOrOne(arithmetic))
+        var todayParser = Terms.Text("@today").And(arithmetic.Else(0))
              .Then<OperatorNode>(x =>
              {
                  if (x.Item2 != 0)
@@ -177,7 +177,7 @@ public static class DateTimeParser
                  return new TodayNode();
              });
 
-        var nowParser = Terms.Text("@now").And(ZeroOrOne(arithmetic))
+        var nowParser = Terms.Text("@now").And(arithmetic.Else(0))
             .Then<OperatorNode>(x =>
             {
                 if (x.Item2 != 0)
@@ -226,7 +226,7 @@ public static class DateTimeParser
         var valueParser = OneOf(currentParser, dateParser);
 
         var rangeParser = valueParser
-            .And(ZeroOrOne(range.SkipAnd(OneOf(currentParser, dateParser))))
+            .And(range.SkipAnd(OneOf(currentParser, dateParser)).Else(default(OperatorNode)))
             .Then<ExpressionNode>(x =>
             {
                 if (x.Item2 == null)
@@ -246,7 +246,7 @@ public static class DateTimeParser
                     x.Item2.Operator = x.Item1;
                     return new UnaryExpressionNode(x.Item2);
                 })
-            .Or(rangeParser).Compile();
+            .Or(rangeParser);
     }
 }
 

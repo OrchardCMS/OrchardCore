@@ -4,4 +4,4 @@
 @model ShapeViewModel<BackgroundTaskEntry>
 
 @* Plain link, like the title of a content item in the Manage Content list. *@
-<a asp-action="Edit" asp-controller="BackgroundTask" asp-route-name="@Model.Value.Name">@Model.Value.Title</a>
+<a asp-action="Details" asp-controller="BackgroundTask" asp-route-name="@Model.Value.Name">@Model.Value.Title</a>

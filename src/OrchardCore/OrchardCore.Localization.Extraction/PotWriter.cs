@@ -80,6 +80,11 @@ public static class PotWriter
                 flags.Add("csharp-format");
             }
 
+            if (message.Plural is not null && message.Range is { } range)
+            {
+                flags.Add("range: " + range.Min.ToString(CultureInfo.InvariantCulture) + ".." + range.Max.ToString(CultureInfo.InvariantCulture));
+            }
+
             if (flags.Count > 0)
             {
                 output.Append("#, ").AppendJoin(", ", flags).Append('\n');

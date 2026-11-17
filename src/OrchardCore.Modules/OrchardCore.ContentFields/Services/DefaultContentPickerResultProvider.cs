@@ -46,6 +46,8 @@ public class DefaultContentPickerResultProvider : IContentPickerResultProvider
 
         if (!string.IsNullOrEmpty(searchContext.Query))
         {
+            // Grouped, a text that few items contain is searched in the matches of the types, instead of in every document in order.
+            query.NoIndexOptimizations();
             query.With<ContentItemIndex>(x => x.DisplayText.Contains(searchContext.Query) || x.ContentType.Contains(searchContext.Query));
         }
 
@@ -64,7 +66,7 @@ public class DefaultContentPickerResultProvider : IContentPickerResultProvider
                     ContentItem = contentItem,
                     ContentItemId = contentItem.ContentItemId,
                     DisplayText = await _templateManager.RenderStringAsync(settings.TitlePattern, NullEncoder.Default, contentItem,
-                        new Dictionary<string, FluidValue>() { [nameof(ContentItem)] = new ObjectValue(contentItem) }),
+                        new Dictionary<string, FluidValue>() { [nameof(ContentItem)] = ObjectValue.Create(contentItem) }),
                     HasPublished = await _contentManager.HasPublishedVersionAsync(contentItem),
                 });
             }

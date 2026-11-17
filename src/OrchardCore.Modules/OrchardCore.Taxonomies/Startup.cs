@@ -28,7 +28,6 @@ using OrchardCore.Taxonomies.Liquid;
 using OrchardCore.Taxonomies.Models;
 using OrchardCore.Taxonomies.Services;
 using OrchardCore.Taxonomies.Settings;
-using OrchardCore.Taxonomies.ViewModels;
 
 namespace OrchardCore.Taxonomies;
 
@@ -36,13 +35,8 @@ public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.Configure<TemplateOptions>(o =>
+        services.Configure<TemplateOptionsBuilder>(o =>
         {
-            o.MemberAccessStrategy.Register<TaxonomyField>();
-            o.MemberAccessStrategy.Register<TaxonomyPartViewModel>();
-            o.MemberAccessStrategy.Register<TermPartViewModel>();
-            o.MemberAccessStrategy.Register<DisplayTaxonomyFieldViewModel>();
-            o.MemberAccessStrategy.Register<DisplayTaxonomyFieldTagsViewModel>();
         })
         .AddLiquidFilter<InheritedTermsFilter>("inherited_terms")
         .AddLiquidFilter<TaxonomyTermsFilter>("taxonomy_terms");

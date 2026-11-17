@@ -14,7 +14,6 @@ using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Navigation;
 using OrchardCore.Queries.ViewModels;
 using OrchardCore.Routing;
-using YesSql.Services;
 
 namespace OrchardCore.Queries.Controllers;
 

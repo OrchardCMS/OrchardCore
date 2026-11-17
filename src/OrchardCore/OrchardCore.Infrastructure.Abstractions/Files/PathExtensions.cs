@@ -19,7 +19,7 @@ public static class PathExtensions
             return path;
         }
 
-        if (other.StartsWith('/') || other.StartsWith('\\'))
+        if (other[0] is '\\' or '/' || Path.IsPathFullyQualified(other))
         {
             // "other" is already an app-rooted path. Return it as-is.
             return other;
@@ -62,6 +62,14 @@ public static class PathExtensions
     /// </summary>
     public static string ResolvePath(string path)
     {
+        var isWindows = OperatingSystem.IsWindows();
+        
+        // Normalize paths on Windows.
+        if (isWindows)
+        {
+            path = path.Replace('/', Path.DirectorySeparatorChar);
+        }
+        
         var pathSegment = new StringSegment(path);
         if (path[0] == PathSeparators[0] || path[0] == PathSeparators[1])
         {
@@ -78,7 +86,8 @@ public static class PathExtensions
             // We need to resolve paths with multiple path separators (e.g "//" or "\\") or, directory traversals e.g. ("../" or "./").
             if (segment.Length == 0 ||
                 segment.Equals(ParentDirectoryToken) ||
-                segment.Equals(CurrentDirectoryToken))
+                segment.Equals(CurrentDirectoryToken) ||
+                (isWindows && segment.Value?.Contains(':') == true))
             {
                 requiresResolution = true;
                 break;
@@ -120,10 +129,17 @@ public static class PathExtensions
         }
 
         var builder = new StringBuilder();
-        for (var i = 0; i < pathSegments.Count; i++)
+        foreach (var segment in pathSegments)
         {
-            var segment = pathSegments[i];
-            builder.Append('/');
+            builder.Append(Path.DirectorySeparatorChar);
+            
+            // On Windows, prevent malformed/malicious paths, by removing everything before a directory path segment
+            // such as "C:" even if it's in the middle of the path.
+            if (isWindows && segment.Value?.Contains(':') == true)
+            {
+                builder.Clear();
+            }
+            
             builder.Append(segment.Buffer, segment.Offset, segment.Length);
         }
 
@@ -134,8 +150,18 @@ public static class PathExtensions
     /// Gets the full path of a unique file in the system's temporary directory.
     /// </summary>
     /// <remarks>
-    /// The generated file name does not contains an extension.
+    /// The generated file name does not contain an extension.
     /// </remarks>
     public static string GetTempFileName()
         => Combine(Path.GetTempPath(), Path.GetRandomFileName());
+
+    /// <summary>
+    /// Returns <see langword="true"/> if the <paramref name="path"/> is outside of <paramref name="basePath"/>. If the
+    /// <paramref name="path"/> is relative, it's first combined with the <paramref name="basePath"/>.
+    /// </summary>
+    public static bool IsOutsideOfBasePath(string basePath, string path)
+    {
+        var absolutePath = Path.IsPathFullyQualified(path) ? path : ResolvePath(Combine(basePath, path));
+        return Path.GetRelativePath(basePath, absolutePath).StartsWith(ParentDirectoryToken);
+    }
 }

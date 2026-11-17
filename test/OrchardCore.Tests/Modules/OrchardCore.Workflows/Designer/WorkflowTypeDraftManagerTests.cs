@@ -345,6 +345,42 @@ public sealed class WorkflowTypeDraftManagerTests : IAsyncLifetime
         Assert.True(_workflowType.RecordActivityData);
     }
 
+    [Theory]
+    [InlineData(false, true)]
+    [InlineData(true, false)]
+    public async Task UpdateSettingsAsync_EnabledChanged_AppliesToLiveTypeWithoutPublishing(bool live, bool requested)
+    {
+        _workflowType.IsEnabled = live;
+
+        var result = await CreateManager().UpdateSettingsAsync(_workflowType.WorkflowTypeId, 0, new WorkflowTypeDraftSettings
+        {
+            Name = "Renamed",
+            IsEnabled = requested,
+        });
+
+        Assert.True(result.Succeeded);
+        Assert.Equal(requested, _workflowType.IsEnabled);
+        Assert.Equal(requested, result.Draft.IsEnabled);
+
+        // The other settings still wait for the draft to be published.
+        Assert.Equal("Live", _workflowType.Name);
+        _workflowTypeStore.Verify(x => x.SaveAsync(_workflowType), Times.Once);
+    }
+
+    [Fact]
+    public async Task UpdateSettingsAsync_EnabledUnchanged_DoesNotSaveLiveType()
+    {
+        _workflowType.IsEnabled = true;
+
+        await CreateManager().UpdateSettingsAsync(_workflowType.WorkflowTypeId, 0, new WorkflowTypeDraftSettings
+        {
+            Name = "Renamed",
+            IsEnabled = true,
+        });
+
+        _workflowTypeStore.Verify(x => x.SaveAsync(It.IsAny<WorkflowType>()), Times.Never);
+    }
+
     [Fact]
     public async Task PublishAsync_CurrentRevision_SavesThroughStoreOnceAndDeletesDraft()
     {

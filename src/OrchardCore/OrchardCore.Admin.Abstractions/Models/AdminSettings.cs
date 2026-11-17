@@ -44,7 +44,7 @@ public class AdminSettings
     /// <summary>
     /// Whether a list shows a selector letting the user render it with another layout. The choice is kept in a
     /// cookie, per list, and only applies to that user. When this is off, every list uses
-    /// <see cref="ListLayout"/>.
+    /// <see cref="ListLayout"/>. It is on by default.
     /// </summary>
-    public bool AllowUserListLayoutSelection { get; set; }
+    public bool AllowUserListLayoutSelection { get; set; } = true;
 }

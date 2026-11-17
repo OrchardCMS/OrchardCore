@@ -65,6 +65,8 @@ public sealed class LocalizationSetContentPickerAdminController : Controller
 
         if (!string.IsNullOrEmpty(query))
         {
+            // Grouped, a text that few items contain is searched in the matches of the types, instead of in every document in order.
+            dbQuery.NoIndexOptimizations();
             dbQuery.With<ContentItemIndex>(x => x.DisplayText.Contains(query) || x.ContentType.Contains(query));
         }
 

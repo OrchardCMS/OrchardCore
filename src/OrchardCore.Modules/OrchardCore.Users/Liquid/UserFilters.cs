@@ -11,7 +11,7 @@ public static class UserFilters
 {
     public static ValueTask<FluidValue> HasClaim(FluidValue input, FilterArguments arguments, TemplateContext ctx)
     {
-        if (input.ToObjectValue() is LiquidUserAccessor)
+        if (input.ToObjectValue(ctx) is LiquidUserAccessor)
         {
             var context = (LiquidTemplateContext)ctx;
             var httpContextAccessor = context.Services.GetRequiredService<IHttpContextAccessor>();
@@ -19,8 +19,8 @@ public static class UserFilters
             var user = httpContextAccessor.HttpContext?.User;
             if (user != null)
             {
-                var claimType = arguments["type"].Or(arguments.At(0)).ToStringValue();
-                var claimName = arguments["name"].Or(arguments.At(1)).ToStringValue();
+                var claimType = arguments["type"].Or(arguments.At(0)).ToStringValue(ctx);
+                var claimName = arguments["name"].Or(arguments.At(1)).ToStringValue(ctx);
 
                 if (user.HasClaim(claimType, claimName))
                 {
@@ -34,7 +34,7 @@ public static class UserFilters
 
     public static ValueTask<FluidValue> UserId(FluidValue input, FilterArguments _, TemplateContext ctx)
     {
-        if (input.ToObjectValue() is LiquidUserAccessor)
+        if (input.ToObjectValue(ctx) is LiquidUserAccessor)
         {
             var httpContextAccessor = ((LiquidTemplateContext)ctx).Services.GetRequiredService<IHttpContextAccessor>();
 

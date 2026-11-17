@@ -121,4 +121,28 @@ public sealed class RazorLocalizationExtractorTests
         Assert.Contains("#. Relative date shown for future dates.\n#. Format arguments: {0}: years\n", output);
         Assert.Contains("#. Greeting shown on the dashboard.\n#. Format arguments: {0}: user name\n", output);
     }
+
+    [Fact]
+    public void Extract_PluralRangeInRazor_WritesRangeFlag()
+    {
+        using var workspace = new TestWorkspace();
+        var options = workspace.Options("Module");
+        options.References.Add(typeof(LocalizationMetadata).Assembly.Location);
+        options.References.Add(typeof(PluralizationArgument).Assembly.Location);
+        var view = workspace.Write("Views/Index.cshtml", """
+            @using Microsoft.AspNetCore.Mvc.Localization
+            @using static OrchardCore.Localization.LocalizationMetadata
+            @inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer T
+            @{ var hours = 2; }
+            <p>@T.Plural(Arg("hours", hours, 0, 23), "1 hour", "{0} hours")</p>
+            """);
+        options.RazorFiles.Add(new ExtractionFile(view, "Views/Index.cshtml"));
+
+        var catalog = LocalizationExtractor.Extract(options, TestContext.Current.CancellationToken);
+
+        Assert.Empty(catalog.Diagnostics);
+        var output = PotWriter.Write(catalog, "Module");
+        Assert.Contains("#. Format arguments: {0}: hours\n", output);
+        Assert.Contains("#, csharp-format, range: 0..23\n", output);
+    }
 }

@@ -6,15 +6,24 @@ namespace OrchardCore.BackgroundTasks;
 public sealed class BackgroundTaskScheduler
 {
     private readonly IClock _clock;
+    private readonly int _maxRecentRuns;
+    private readonly Lock _lock = new();
+    private BackgroundTaskTrigger _trigger;
 
     public BackgroundTaskScheduler(string tenant, string name, DateTime referenceTime, IClock clock)
+        : this(tenant, name, referenceTime, clock, BackgroundServiceOptions.DefaultMaxRecentRuns)
+    {
+    }
+
+    public BackgroundTaskScheduler(string tenant, string name, DateTime referenceTime, IClock clock, int maxRecentRuns)
     {
         Name = name;
         Tenant = tenant;
         ReferenceTime = referenceTime;
         Settings = new BackgroundTaskSettings() { Name = name };
-        State = new BackgroundTaskState() { Name = name };
+        State = new BackgroundTaskState() { Name = name, Tenant = tenant };
         _clock = clock;
+        _maxRecentRuns = Math.Max(0, maxRecentRuns);
     }
 
     public string Name { get; }
@@ -28,16 +37,29 @@ public sealed class BackgroundTaskScheduler
 
     public bool CanRun()
     {
-        var now = DateTime.UtcNow;
+        // A run requested on demand doesn't depend on the schedule, nor on whether the task is enabled.
+        if (State.Status == BackgroundTaskStatus.Queued && !Released && Updated)
+        {
+            return true;
+        }
+
+        var now = _clock.UtcNow;
         var referenceTime = ReferenceTime;
 
         if (TimeZone != null)
         {
-            now = _clock.ConvertToTimeZone(DateTime.UtcNow, TimeZone).DateTime;
+            now = _clock.ConvertToTimeZone(now, TimeZone).DateTime;
             referenceTime = _clock.ConvertToTimeZone(ReferenceTime, TimeZone).DateTime;
         }
 
-        var nextStartTime = CrontabSchedule.Parse(Settings.Schedule).GetNextOccurrence(referenceTime);
+        // An invalid schedule only prevents this task from being scheduled, not the other tasks of the background service.
+        var schedule = CrontabSchedule.TryParse(Settings.Schedule);
+        if (schedule is null)
+        {
+            return false;
+        }
+
+        var nextStartTime = schedule.GetNextOccurrence(referenceTime);
         if (now >= nextStartTime)
         {
             if (Settings.Enable && !Released && Updated)
@@ -45,14 +67,145 @@ public sealed class BackgroundTaskScheduler
                 return true;
             }
 
-            ReferenceTime = DateTime.UtcNow;
+            ReferenceTime = _clock.UtcNow;
         }
 
         return false;
     }
 
+    /// <summary>
+    /// Marks the task as running, before it starts its work.
+    /// </summary>
     public void Run()
     {
-        State.LastStartTime = ReferenceTime = DateTime.UtcNow;
+        lock (_lock)
+        {
+            _trigger = State.Status == BackgroundTaskStatus.Queued
+                ? BackgroundTaskTrigger.Manual
+                : BackgroundTaskTrigger.Schedule;
+
+            State.LastStartTime = ReferenceTime = _clock.UtcNow;
+            State.Status = BackgroundTaskStatus.Running;
+            State.QueuedTime = null;
+        }
+    }
+
+    /// <summary>
+    /// Records the outcome of the current run, after the task completed its work.
+    /// </summary>
+    /// <param name="result">The outcome of the run.</param>
+    /// <param name="exception">The exception thrown by the task, if any.</param>
+    public void Complete(BackgroundTaskRunResult result, Exception exception = null)
+    {
+        lock (_lock)
+        {
+            var run = new BackgroundTaskRun
+            {
+                StartTime = State.LastStartTime,
+                EndTime = _clock.UtcNow,
+                Trigger = _trigger,
+                Result = result,
+                ErrorMessage = exception?.Message,
+                ErrorDetails = exception?.ToString(),
+            };
+
+            State.LastRun = run;
+            State.RunCount++;
+
+            if (result == BackgroundTaskRunResult.Failed)
+            {
+                State.FailureCount++;
+            }
+
+            if (_maxRecentRuns > 0)
+            {
+                State.RecentRuns = [run, .. State.RecentRuns.Take(_maxRecentRuns - 1)];
+            }
+
+            State.Status = BackgroundTaskStatus.Idle;
+        }
+    }
+
+    /// <summary>
+    /// Requests the task to run as soon as possible, unless it is already running or queued.
+    /// </summary>
+    public BackgroundTaskRunRequestResult RequestRun()
+    {
+        lock (_lock)
+        {
+            switch (State.Status)
+            {
+                case BackgroundTaskStatus.Running:
+                    return BackgroundTaskRunRequestResult.AlreadyRunning;
+
+                case BackgroundTaskStatus.Queued:
+                    return BackgroundTaskRunRequestResult.AlreadyQueued;
+            }
+
+            State.Status = BackgroundTaskStatus.Queued;
+            State.QueuedTime = _clock.UtcNow;
+
+            return BackgroundTaskRunRequestResult.Queued;
+        }
+    }
+
+    /// <summary>
+    /// Gets a snapshot of the execution state of the task, that is not updated by the next runs.
+    /// </summary>
+    public BackgroundTaskState GetState()
+    {
+        lock (_lock)
+        {
+            return new BackgroundTaskState
+            {
+                Name = Name,
+                Tenant = Tenant,
+                LastStartTime = State.LastStartTime,
+                Status = State.Status,
+                QueuedTime = State.QueuedTime,
+                NextStartTime = GetNextStartTime(),
+                LastRun = State.LastRun,
+                RunCount = State.RunCount,
+                FailureCount = State.FailureCount,
+                RecentRuns = State.RecentRuns,
+            };
+        }
+    }
+
+    /// <summary>
+    /// Gets the UTC date and time of the next occurrence of the schedule, whether the task is enabled or not, or
+    /// <see langword="null"/> if the schedule is not a valid cron expression or never occurs, like on February 31.
+    /// </summary>
+    public DateTime? GetNextStartTime()
+    {
+        var schedule = CrontabSchedule.TryParse(Settings.Schedule);
+        if (schedule is null)
+        {
+            return null;
+        }
+
+        // The schedule applies to the local time of the tenant, as when checking if the task can run.
+        var timeZone = TimeZone;
+        var localReferenceTime = timeZone is null ? ReferenceTime : _clock.ConvertToTimeZone(ReferenceTime, timeZone).DateTime;
+        var localNextStartTime = schedule.GetNextOccurrence(localReferenceTime);
+
+        // No occurrence was found before the maximum date, which can't be converted to another time zone.
+        if (localNextStartTime == DateTime.MaxValue)
+        {
+            return null;
+        }
+
+        if (timeZone is null)
+        {
+            return DateTime.SpecifyKind(localNextStartTime, DateTimeKind.Utc);
+        }
+
+        // The offset depends on the instant, so it is first approximated with the offset at the local time read as UTC.
+        var offset = _clock.ConvertToTimeZone(DateTime.SpecifyKind(localNextStartTime, DateTimeKind.Utc), timeZone).Offset;
+        var nextStartTime = DateTime.SpecifyKind(localNextStartTime - offset, DateTimeKind.Utc);
+
+        offset = _clock.ConvertToTimeZone(nextStartTime, timeZone).Offset;
+
+        return DateTime.SpecifyKind(localNextStartTime - offset, DateTimeKind.Utc);
     }
 }

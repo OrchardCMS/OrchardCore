@@ -23,7 +23,7 @@ public class ResourceUrlFilter : ILiquidFilter
 
     public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
     {
-        var resourcePath = input.ToStringValue();
+        var resourcePath = input.ToStringValue(ctx);
 
         if (resourcePath.StartsWith("~/", StringComparison.Ordinal))
         {
@@ -41,6 +41,6 @@ public class ResourceUrlFilter : ILiquidFilter
             resourcePath = _options.CdnBaseUrl + resourcePath;
         }
 
-        return ValueTask.FromResult<FluidValue>(new StringValue(resourcePath));
+        return ValueTask.FromResult<FluidValue>(StringValue.Create(resourcePath));
     }
 }

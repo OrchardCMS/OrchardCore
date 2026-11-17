@@ -307,6 +307,7 @@ nav:
               - Modules: reference/modules/Modules/README.md
               - OpenApi: reference/modules/OpenApi/README.md
               - OpenId: reference/modules/OpenId/README.md
+              - OpenTelemetry: reference/modules/OpenTelemetry/README.md
               - Permissions: reference/modules/Security/Permissions.md
               - Razor Helpers: reference/modules/Razor/README.md
               - Rate Limits: reference/modules/RateLimits/README.md

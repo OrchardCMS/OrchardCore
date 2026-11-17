@@ -165,7 +165,7 @@ public sealed class AWSS3ResizedImageCacheTests : IAsyncLifetime
         using var a = FakeImage("a");
         using var b = FakeImage("b");
         await _cache.SetAsync("key-a", a, "image/jpeg", TimeSpan.FromDays(1));
-        await _cache.SetAsync("key-b", b, "image/png",  TimeSpan.FromDays(1));
+        await _cache.SetAsync("key-b", b, "image/png", TimeSpan.FromDays(1));
 
         await _cache.ClearAsync();
 

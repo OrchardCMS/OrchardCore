@@ -46,7 +46,9 @@ public class LocalLockTests
 
         Assert.False(locked);
         Assert.Null(locker);
-        Assert.True(sw.ElapsedMilliseconds >= 45, $"Expected ~50ms timeout, got {sw.ElapsedMilliseconds}ms");
+
+        // The timeout relies on a coarse timer, around 15ms on Windows, which can elapse that much early.
+        Assert.True(sw.ElapsedMilliseconds >= 30, $"Expected ~50ms timeout, got {sw.ElapsedMilliseconds}ms");
     }
 
     [Fact]

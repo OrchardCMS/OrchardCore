@@ -85,10 +85,10 @@ public class LiquidTagHelperFactory
         return LiquidTagHelperActivator.None;
     }
 
-    public ITagHelper CreateTagHelper(LiquidTagHelperActivator activator, ViewContext context, FilterArguments arguments,
+    public ITagHelper CreateTagHelper(LiquidTagHelperActivator activator, ViewContext context, TemplateContext templateContext, FilterArguments arguments,
         out TagHelperAttributeList contextAttributes, out TagHelperAttributeList outputAttributes)
     {
-        return activator.Create(_factory, context, arguments, out contextAttributes, out outputAttributes);
+        return activator.Create(_factory, context, templateContext, arguments, out contextAttributes, out outputAttributes);
     }
 
     private static void AddTagMatchingRules(Type type, TagHelperDescriptorBuilder descriptorBuilder)

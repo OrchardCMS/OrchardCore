@@ -31,8 +31,8 @@ public class SignalUrlFilter : ILiquidFilter
             throw new ArgumentException("WorkflowExecutionContext missing while invoking 'signal_url'");
         }
 
-        var workflowContext = (WorkflowExecutionContext)workflowContextValue.ToObjectValue();
-        var signalName = input.ToStringValue();
+        var workflowContext = (WorkflowExecutionContext)workflowContextValue.ToObjectValue(ctx);
+        var signalName = input.ToStringValue(ctx);
         var payload = string.IsNullOrWhiteSpace(workflowContext.CorrelationId)
             ? SignalPayload.ForWorkflow(signalName, workflowContext.WorkflowId)
             : SignalPayload.ForCorrelation(signalName, workflowContext.CorrelationId);

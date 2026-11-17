@@ -18,7 +18,7 @@
         @if (Model.TotalUnread > 0)
         {
             LocalizedHtmlString title;
-            if (Model.TotalUnread > Model.MaxVisibleNotifications)
+            if (Model.TotalUnread > Model.MaxVisibleNotifications || Model.IsTotalUnreadCapped)
             {
                 title = T["You have more than {0} unread notifications", Model.MaxVisibleNotifications];
             }
@@ -29,7 +29,7 @@
 
             <i class="fa-solid fa-bell" aria-hidden="true" data-bs-toggle="tooltip" data-bs-original-title="@title"></i>
 
-            <span class="position-absolute start-50 translate-middle badge rounded-pill text-bg-danger" id="UnreadNotificationBadge">@Model.TotalUnread</span>
+            <span class="position-absolute start-50 translate-middle badge rounded-pill text-bg-danger" id="UnreadNotificationBadge" data-capped="@Model.IsTotalUnreadCapped.ToString().ToLowerInvariant()">@Model.TotalUnread@(Model.IsTotalUnreadCapped ? "+" : null)</span>
         }
         else
         {
@@ -45,7 +45,6 @@
                 {
                     var notification = Model.Notifications[i];
                     var shape = await NotificationDisplayDriver.BuildDisplayAsync(notification, UpdateModelAccessor.ModelUpdater, "Header");
-                    shape.Properties[nameof(Notification)] = notification;
                     <div class="@(i == maxCount - 1 ? string.Empty : "border-bottom")">
                         @await DisplayAsync(shape)
                     </div>
@@ -69,24 +68,3 @@
         }
     </ul>
 </li>
-
-<script asp-src="~/TheTheme/js/user-notification-navbar/UserNotificationNavbar.min.js" debug-src="~/TheTheme/js/user-notification-navbar/UserNotificationNavbar.js" depends-on="notification-manager" at="Foot" type="module"></script>
-
-<style at="Head">
-    #UnreadNotificationBadge {
-        top:5px;
-    }
-    .notification-navbar {
-        max-width: 20rem;
-    }
-
-        .notification-navbar .notification-is-unread {
-            font-weight: 600 !important;
-        }
-
-    .dropdown-menu.scrollable {
-        overflow-y: auto;
-        max-height: var(--oc-height-dropdown, 250px);
-        scrollbar-width: thin;
-    }
-</style>

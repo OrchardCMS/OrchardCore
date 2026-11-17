@@ -1,4 +1,3 @@
-using System.Globalization;
 using System.Text.Encodings.Web;
 using Fluid;
 using Fluid.Values;
@@ -22,16 +21,20 @@ internal sealed class HttpRequestValue : FluidValue
         return other is HttpRequestValue;
     }
 
-    public override bool ToBooleanValue() => true;
+    public override bool ToBooleanValue(TemplateContext context) => true;
 
-    public override decimal ToNumberValue() => 0;
+    public override decimal ToNumberValue(TemplateContext context) => 0;
 
-    public override object ToObjectValue() => null;
+    public override object ToObjectValue(TemplateContext context) => null;
 
-    public override string ToStringValue() => "Request";
+    public override string ToStringValue(TemplateContext context) => "Request";
 
-    public override async ValueTask WriteToAsync(TextWriter writer, TextEncoder encoder, CultureInfo cultureInfo)
-        => await writer.WriteAsync(ToStringValue());
+    public override ValueTask WriteToAsync(IFluidOutput output, TextEncoder encoder, TemplateContext context)
+    {
+        output.Write(ToStringValue(context));
+
+        return ValueTask.CompletedTask;
+    }
 
     public override ValueTask<FluidValue> GetValueAsync(string name, TemplateContext context)
     {
@@ -44,27 +47,27 @@ internal sealed class HttpRequestValue : FluidValue
 
         return name switch
         {
-            nameof(HttpRequest.QueryString) => new StringValue(request.QueryString.Value),
-            nameof(HttpRequest.ContentType) => new StringValue(request.ContentType),
+            nameof(HttpRequest.QueryString) => StringValue.Create(request.QueryString.Value ?? string.Empty),
+            nameof(HttpRequest.ContentType) => StringValue.Create(request.ContentType ?? string.Empty),
             nameof(HttpRequest.ContentLength) => NumberValue.Create(request.ContentLength ?? 0),
-            nameof(HttpRequest.Cookies) => new ObjectValue(new CookieCollectionWrapper(request.Cookies)),
-            nameof(HttpRequest.Headers) => new ObjectValue(new HeaderDictionaryWrapper(request.Headers)),
-            nameof(HttpRequest.Query) => new ObjectValue(new QueryCollection(request.Query.ToDictionary(kv => kv.Key, kv => kv.Value))),
-            nameof(HttpRequest.Form) => request.HasFormContentType ? (FluidValue)new ObjectValue(request.Form) : NilValue.Instance,
-            nameof(HttpRequest.Protocol) => new StringValue(request.Protocol),
-            nameof(HttpRequest.Path) => new StringValue(request.Path.Value),
-            nameof(HttpRequest.PathBase) => new StringValue(request.PathBase.Value),
-            nameof(HttpRequest.Host) => new StringValue(request.Host.Value),
+            nameof(HttpRequest.Cookies) => ObjectValue.Create(new CookieCollectionWrapper(request.Cookies)),
+            nameof(HttpRequest.Headers) => ObjectValue.Create(new HeaderDictionaryWrapper(request.Headers)),
+            nameof(HttpRequest.Query) => ObjectValue.Create(new QueryCollection(request.Query.ToDictionary(kv => kv.Key, kv => kv.Value))),
+            nameof(HttpRequest.Form) => request.HasFormContentType ? (FluidValue)ObjectValue.Create(request.Form) : NilValue.Instance,
+            nameof(HttpRequest.Protocol) => StringValue.Create(request.Protocol ?? string.Empty),
+            nameof(HttpRequest.Path) => StringValue.Create(request.Path.Value ?? string.Empty),
+            nameof(HttpRequest.PathBase) => StringValue.Create(request.PathBase.Value ?? string.Empty),
+            nameof(HttpRequest.Host) => StringValue.Create(request.Host.Value ?? string.Empty),
             nameof(HttpRequest.IsHttps) => BooleanValue.Create(request.IsHttps),
-            nameof(HttpRequest.Scheme) => new StringValue(request.Scheme),
-            nameof(HttpRequest.Method) => new StringValue(request.Method),
-            nameof(HttpRequest.RouteValues) => new ObjectValue(new RouteValueDictionaryWrapper(request.RouteValues)),
+            nameof(HttpRequest.Scheme) => StringValue.Create(request.Scheme ?? string.Empty),
+            nameof(HttpRequest.Method) => StringValue.Create(request.Method ?? string.Empty),
+            nameof(HttpRequest.RouteValues) => ObjectValue.Create(new RouteValueDictionaryWrapper(request.RouteValues)),
 
             // Provides correct escaping to reconstruct a request or redirect URI.
-            "UriHost" => new StringValue(request.Host.ToUriComponent(), encode: false),
-            "UriPath" => new StringValue(request.Path.ToUriComponent(), encode: false),
-            "UriPathBase" => new StringValue(request.PathBase.ToUriComponent(), encode: false),
-            "UriQueryString" => new StringValue(request.QueryString.ToUriComponent(), encode: false),
+            "UriHost" => StringValue.Create(request.Host.ToUriComponent(), encode: false),
+            "UriPath" => StringValue.Create(request.Path.ToUriComponent(), encode: false),
+            "UriPathBase" => StringValue.Create(request.PathBase.ToUriComponent(), encode: false),
+            "UriQueryString" => StringValue.Create(request.QueryString.ToUriComponent(), encode: false),
             _ => ValueTask.FromResult<FluidValue>(NilValue.Instance)
         };
     }

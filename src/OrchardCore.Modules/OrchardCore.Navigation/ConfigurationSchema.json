@@ -26,7 +26,7 @@
                 },
                 "MaxPagedCount": {
                   "type": "integer",
-                  "description": "When greater than 0, the total number of items assumed by the content items admin pager instead of counting the items, which avoids an expensive count query on large databases. A value of 0 counts the items.",
+                  "description": "When greater than 0, the highest total reported by the content items admin pager instead of counting the items, which avoids an expensive count query on large databases. A page that isn't full shows where the list ends, so a lower total is reported from it. A value of 0 counts the items.",
                   "default": 0,
                   "minimum": 0
                 },

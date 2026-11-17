@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <InternalsVisibleTo Include="OrchardCore.Tests" />
     <InternalsVisibleTo Include="OrchardCore.Tests.Integration" />
   </ItemGroup>
   

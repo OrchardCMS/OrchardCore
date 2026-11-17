@@ -100,7 +100,7 @@ public class TitlePartHandler : ContentPartHandler<TitlePart>
             var title = await _liquidTemplateManager.RenderStringAsync(settings.Pattern, NullEncoder.Default, model,
                 new Dictionary<string, FluidValue>()
                 {
-                    ["ContentItem"] = new ObjectValue(model.ContentItem),
+                    ["ContentItem"] = ObjectValue.Create(model.ContentItem),
                 });
 
             title = title.ReplaceLineEndings(string.Empty);

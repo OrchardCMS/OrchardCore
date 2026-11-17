@@ -8,7 +8,7 @@ public class TransliterateFilter : ILiquidFilter
 {
     public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
     {
-        var text = input.ToStringValue();
+        var text = input.ToStringValue(ctx);
 
         if (string.IsNullOrEmpty(text))
         {

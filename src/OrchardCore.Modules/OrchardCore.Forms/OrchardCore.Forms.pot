@@ -570,6 +570,7 @@ msgctxt "OrchardCore.Forms.Views.Items.InputPart.Fields.Edit"
 msgid "Week"
 msgstr ""
 
+#. The HTML for attribute of the label: the ID of the form element it describes.
 #: Views/Items/LabelPart.Fields.Edit.cshtml
 msgctxt "OrchardCore.Forms.Views.Items.LabelPart.Fields.Edit"
 msgid "For"

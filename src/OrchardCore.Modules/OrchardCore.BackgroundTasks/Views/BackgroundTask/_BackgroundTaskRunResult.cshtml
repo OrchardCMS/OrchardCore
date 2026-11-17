@@ -1,0 +1,16 @@
+@model BackgroundTaskRunResult
+
+@switch (Model)
+{
+    case BackgroundTaskRunResult.Succeeded:
+        <span class="badge text-bg-success" data-run-result="Succeeded">@T["Succeeded"]</span>
+        break;
+
+    case BackgroundTaskRunResult.Failed:
+        <span class="badge text-bg-danger" data-run-result="Failed">@T["Failed"]</span>
+        break;
+
+    case BackgroundTaskRunResult.Canceled:
+        <span class="badge text-bg-secondary" data-run-result="Canceled">@T["Canceled"]</span>
+        break;
+}

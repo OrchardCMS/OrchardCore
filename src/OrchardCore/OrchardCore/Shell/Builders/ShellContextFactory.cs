@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Environment.Shell.Descriptor.Models;
+using OrchardCore.Telemetry;
 
 namespace OrchardCore.Environment.Shell.Builders;
 
@@ -25,7 +26,12 @@ public class ShellContextFactory : IShellContextFactory
         _logger = logger;
     }
 
-    async Task<ShellContext> IShellContextFactory.CreateShellContextAsync(ShellSettings settings)
+    Task<ShellContext> IShellContextFactory.CreateShellContextAsync(ShellSettings settings)
+    {
+        return MeasureAsync(settings, CreateShellContextInternalAsync);
+    }
+
+    private async Task<ShellContext> CreateShellContextInternalAsync(ShellSettings settings)
     {
         if (_logger.IsEnabled(LogLevel.Information))
         {
@@ -52,6 +58,11 @@ public class ShellContextFactory : IShellContextFactory
     }
 
     Task<ShellContext> IShellContextFactory.CreateSetupContextAsync(ShellSettings settings)
+    {
+        return MeasureAsync(settings, CreateSetupContextInternalAsync);
+    }
+
+    private Task<ShellContext> CreateSetupContextInternalAsync(ShellSettings settings)
     {
         if (_logger.IsEnabled(LogLevel.Debug))
         {
@@ -116,6 +127,22 @@ public class ShellContextFactory : IShellContextFactory
     }
 
     /// <summary>
+    /// Traces and measures the build of the service container of a tenant.
+    /// </summary>
+    private static async Task<ShellContext> MeasureAsync(ShellSettings settings, Func<ShellSettings, Task<ShellContext>> createAsync)
+    {
+        ShellContext context = null;
+
+        await OrchardCoreTelemetry.MeasureTenantOperationAsync(
+            "Build tenant container",
+            OrchardCoreTelemetry.TenantContainerDuration,
+            settings.Name,
+            async () => context = await createAsync(settings));
+
+        return context;
+    }
+
+    /// <summary>
     /// The minimum shell descriptor is used to bootstrap the first container that will be used
     /// to call all module IStartup implementation. It's composed of module names that reference
     /// core components necessary for the desired scenario.
@@ -128,7 +155,7 @@ public class ShellContextFactory : IShellContextFactory
         return new ShellDescriptor
         {
             SerialNumber = -1,
-            Features = new List<ShellFeature>(_shellFeatures),
+            Features = [.. _shellFeatures],
         };
     }
 }

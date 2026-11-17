@@ -131,6 +131,7 @@ public sealed class WorkflowsDesignerJSLocalizer : IJSLocalizer
             { "FormLoadFailed", S["The form couldn't be loaded."].Value },
             { "Apply", S["Apply"].Value },
             { "Applying", S["Applying…"].Value },
+            { "AppliedFeedback", S["Saved!"].Value },
             { "FormHasErrors", S["Fix the errors, then apply."].Value },
             { "ApplyFailed", S["The changes couldn't be applied. Try again."].Value },
             { "DiscardChangesTitle", S["Discard changes?"].Value },

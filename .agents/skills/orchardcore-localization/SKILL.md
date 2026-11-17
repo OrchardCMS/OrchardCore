@@ -56,7 +56,7 @@ S.Plural(count, "{0} book", "{0} books");
 
 ### Step 2b: Describe messages for translators
 
-Add a note for an ambiguous message and name format arguments; both are ignored at runtime and only written to the POT template:
+Add a note for an ambiguous message and name format arguments; both are ignored at runtime and only written to the POT template. Use them sparingly: only where a translator could not otherwise know what the message or a placeholder means, such as a word with several meanings or a format pattern that must not be translated literally. Don't add them to messages that are clear from their text and context. For example:
 
 ```csharp
 using static OrchardCore.Localization.LocalizationMetadata; // Arg(); Razor views inherit it from the base page.
@@ -68,6 +68,8 @@ S.Note("Greeting shown on the dashboard.")["Hello {0}", Arg("user name", user.Na
 Sources: `LocalizationSource.Create<Owner>("Hello {0}", note: "...")`, then `factory.Localize(source, Arg("user name", name))`.
 
 Liquid: `{{ "in {0} years" | t: years: time.years, note: "Relative date shown for future dates." }}`. Notes and names must be constants (`OCLOC010` otherwise).
+
+When a plural count is certainly bounded, name it with the `Arg(name, value, min, max)` overload (also a no-op), written as the gettext `range` flag: `H.Plural(Arg("hours", time.Hours, 0, 23), "1 hour ago", "{0} hours ago")`. Bounds must be constants with `0 <= min <= max` and a range only applies to a `Plural` count, not nested in another `Arg` (`OCLOC011` otherwise); different ranges for one message widen to their union. Only declare a range the code guarantees.
 
 ### Step 3: Reuse shared sources for strings declared without a localizer
 

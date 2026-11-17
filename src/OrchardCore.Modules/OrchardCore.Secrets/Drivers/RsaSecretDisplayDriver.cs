@@ -8,7 +8,7 @@ using OrchardCore.Secrets.ViewModels;
 
 namespace OrchardCore.Secrets.Drivers;
 
-public sealed class RsaSecretDisplayDriver : DisplayDriver<ISecret, RsaKeySecret>
+public sealed class RsaSecretDisplayDriver : DisplayDriver<RsaKeySecret>
 {
     internal readonly IStringLocalizer S;
 

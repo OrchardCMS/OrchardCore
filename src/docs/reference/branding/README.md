@@ -19,6 +19,17 @@ Other formats:
 - [PNG, high-resolution](assets/logo/color/orchard-core-logo-color-high-resolution.png)
 - [SVG](assets/logo/color/orchard-core-logo-color.svg)
 
+## Color Logo with White Font
+
+<img src="assets/logo/color-white-font/orchard-core-logo-color-white-font.png" alt="Color Orchard Core logo with white font" style="background-color: #000;">
+
+Other formats:
+
+- [AI](assets/logo/color-white-font/orchard-core-logo-color-white-font.ai)
+- [PDF](assets/logo/color-white-font/orchard-core-logo-color-white-font.pdf)
+- [PNG, high-resolution](assets/logo/color-white-font/orchard-core-logo-color-white-font-high-resolution.png)
+- [SVG](assets/logo/color-white-font/orchard-core-logo-color-white-font.svg)
+
 ## Dark Logo
 
 ![Dark Orchard Core logo](assets/logo/dark/orchard-core-logo-dark.png)

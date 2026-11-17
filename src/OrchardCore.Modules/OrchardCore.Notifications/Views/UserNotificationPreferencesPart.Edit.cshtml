@@ -33,4 +33,55 @@
     </div>
 </div>
 
+@if (Model.TypePreferences.Count > 0)
+{
+    var typeMethodsName = Html.NameFor(x => x.TypeMethods);
+    var typeMethodsId = Html.IdFor(x => x.TypeMethods);
+
+    <div class="ocat-wrapper">
+        <label class="ocat-label">@T["Notification Types"]</label>
+        <div class="ocat-end">
+            <span class="hint">@T["Choose how you receive each type of notification. A method turned off above stays off for every type."]</span>
+            <div class="table-responsive">
+                <table class="table table-sm align-middle mb-0" id="@typeMethodsId">
+                    <thead>
+                        <tr>
+                            <th scope="col">@T["Type"]</th>
+                            @foreach (var method in Model.AvailableMethods)
+                            {
+                                <th scope="col" class="text-center">@method.Text</th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var type in Model.TypePreferences)
+                        {
+                            <tr>
+                                <th scope="row" class="fw-normal">
+                                    @type.DisplayName
+                                    @if (!string.IsNullOrEmpty(type.Description))
+                                    {
+                                        <span class="hint d-block">@type.Description</span>
+                                    }
+                                </th>
+                                @foreach (var method in Model.AvailableMethods)
+                                {
+                                    var htmlId = $"{typeMethodsId}_{type.Name}_{method.Value}";
+
+                                    <td class="text-center">
+                                        <div class="form-check d-inline-block">
+                                            <input class="form-check-input" type="checkbox" name="@($"{typeMethodsName}[{type.Name}]")" value="@method.Value" id="@htmlId" @(type.EnabledMethods.Contains(method.Value, StringComparer.OrdinalIgnoreCase) ? "checked" : null)>
+                                            <label class="form-check-label visually-hidden" for="@htmlId">@T["Receive {0} with {1}", type.DisplayName, method.Text]</label>
+                                        </div>
+                                    </td>
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+
 <script asp-src="~/OrchardCore.Notifications/Scripts/user-notification-preferences-part/user-notification-preferences-part.min.js" debug-src="~/OrchardCore.Notifications/Scripts/user-notification-preferences-part/user-notification-preferences-part.js" at="Foot" type="module"></script>

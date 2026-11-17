@@ -12,6 +12,69 @@ Integrates Redis into Orchard Core. Provides the following features:
 
 This module provides a health check to report the status for the Redis server. Refer also to the [Health Checks Section](../HealthChecks/README.md).
 
+## Missing or Invalid Configuration
+
+When the `Configuration` string is missing or invalid, an error is logged and the tenant keeps running without Redis: Redis Cache, Redis Bus, Redis Lock, Redis DataProtection and the [SignalR Redis backplane](../SignalR/README.md) aren't active, so the tenant uses the default implementations, and the health check reports the Redis server as unhealthy.
+
+## Using Redis from a Module
+
+A module whose feature depends on `OrchardCore.Redis` can take `IRedisService` in the constructor of its services, as it's always registered while this feature is enabled. When the `Configuration` string is missing or invalid it resolves to `NullRedisService`, which never connects. Whatever the implementation, `Connection` and `Database` are `null` until a connection is created, which can fail, and a connection doesn't mean that the server is reachable:
+
+```csharp
+public sealed class CounterService
+{
+    private readonly IRedisService _redis;
+    private readonly string _prefix;
+    private readonly ILogger _logger;
+
+    public CounterService(IRedisService redis, ShellSettings shellSettings, ILogger<CounterService> logger)
+    {
+        _redis = redis;
+        _prefix = redis.InstancePrefix + shellSettings.Name + ':';
+        _logger = logger;
+    }
+
+    public async Task<long> IncrementAsync(string key)
+    {
+        if (_redis.Database is null)
+        {
+            await _redis.ConnectAsync();
+
+            if (_redis.Database is null)
+            {
+                return 0;
+            }
+        }
+
+        try
+        {
+            return await _redis.Database.StringIncrementAsync(_prefix + key);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Unable to increment '{KeyName}'.", _prefix + key);
+
+            return 0;
+        }
+    }
+}
+```
+
+The startup of a feature that replaces a default implementation with one relying on Redis should only do it when Redis is configured, by calling `IsRedisConfigured()`:
+
+```csharp
+public sealed class Startup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        if (services.IsRedisConfigured())
+        {
+            services.AddSingleton<ICounterStore, RedisCounterStore>();
+        }
+    }
+}
+```
+
 ## Video
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/etH6IJOGUe8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

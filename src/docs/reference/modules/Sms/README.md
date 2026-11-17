@@ -29,13 +29,13 @@ The `OrchardCore.Sms` module provides you with the capability to integrate addit
 If your provider does not require any settings like the `LogProvider`, you may register it like this.
 
 ```csharp
-services.AddSmsProvider<YourCustomImplemenation>("A technical name for your implementation")
+services.AddSmsProvider<YourCustomImplementation>("A technical name for your implementation")
 ```
 
 However, if you have a complex provider like the Twilio provider, you may implement `IConfigureOptions<SmsProviderOptions>` and register it using the following extensions
 
 ```csharp
-services.AddSmsProviderOptionsConfiguration<YourCustomImplemenation>()
+services.AddSmsProviderOptionsConfiguration<YourCustomImplementation>()
 ```
 
 Here is and example of how we register Twilio complex provider:

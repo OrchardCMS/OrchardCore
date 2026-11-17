@@ -437,7 +437,7 @@ public sealed class ElasticsearchIndexManager : IIndexManager
 
         if (_elasticSearchOptions.Analyzers is not null && _elasticSearchOptions.Analyzers.TryGetValue(analyzerName, out var analyzerProperties))
         {
-            var analyzer = GetAnalyzer(analyzerProperties);
+            var analyzer = GetAnalyzer(analyzerProperties.DeepClone().AsObject());
 
             indexSettings.Analysis.Analyzers.Add(analyzerName, analyzer);
         }
@@ -452,9 +452,11 @@ public sealed class ElasticsearchIndexManager : IIndexManager
                     continue;
                 }
 
-                RemoveTypeNode(filter.Value);
+                var filterProperties = filter.Value.DeepClone().AsObject();
 
-                var tokenFilter = filter.Value.ToObject(tokenFilterType) as ITokenFilter;
+                RemoveTypeNode(filterProperties);
+
+                var tokenFilter = filterProperties.ToObject(tokenFilterType) as ITokenFilter;
 
                 if (tokenFilter is not null)
                 {

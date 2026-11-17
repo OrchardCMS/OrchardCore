@@ -129,13 +129,13 @@ else
                                 <td class="col-1">
                                     <div class="form-check">
                                         <input type="checkbox" class="form-check-input" disabled="@(!Model.CanEdit)" id="Checkbox.@permission.Name" name="Checkbox.@permission.Name" checked="@isAssigned" value="true">
-                                        <label class="form-check-label" for="Checkbox.@permission.Name"></label>
+                                        <label class="form-check-label" for="Checkbox.@permission.Name"><span class="visually-hidden">@T["Allow {0}", description]</span></label>
                                     </div>
                                 </td>
                                 <td class="col-1">
                                     <div class="form-check" data-bs-toggle="tooltip" data-bs-html="true" title="@toolTip">
                                         <input type="checkbox" class="form-check-input" disabled="disabled" id="Effective.@permission.Name" name="Effective.@permission.Name" checked="@isEffective">
-                                        <label class="form-check-label" for="Effective.@permission.Name"></label>
+                                        <label class="form-check-label" for="Effective.@permission.Name"><span class="visually-hidden">@T["Effective: {0}", description]</span></label>
                                     </div>
                                 </td>
                             </tr>

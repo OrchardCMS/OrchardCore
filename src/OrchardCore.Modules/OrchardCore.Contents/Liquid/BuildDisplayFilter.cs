@@ -34,7 +34,7 @@ public class BuildDisplayFilter : ILiquidFilter
             return FluidValue.Create(await task, options);
         }
 
-        var obj = input.ToObjectValue();
+        var obj = input.ToObjectValue(ctx);
 
         if (obj is not ContentItem contentItem)
         {
@@ -56,13 +56,13 @@ public class BuildDisplayFilter : ILiquidFilter
         // When {{ Model.ContentItem | shape_build_display | shape_render }} is called prevent unlimited recursions.
         // max_recursions is an optional argument to override the default limit of 20.
         var maxRecursions = arguments["max_recursions"];
-        var recursionLimit = maxRecursions.Type == FluidValues.Number ? Convert.ToInt32(maxRecursions.ToNumberValue()) : DefaultMaxContentItemRecursions;
+        var recursionLimit = maxRecursions.Type == FluidValues.Number ? Convert.ToInt32(maxRecursions.ToNumberValue(ctx)) : DefaultMaxContentItemRecursions;
         if (_buildDisplayRecursionHelper.IsRecursive(contentItem, recursionLimit))
         {
             return ValueTask.FromResult<FluidValue>(NilValue.Instance);
         }
 
-        var displayType = arguments["type"].Or(arguments.At(0)).ToStringValue();
+        var displayType = arguments["type"].Or(arguments.At(0)).ToStringValue(ctx);
 
         var task = _contentItemDisplayManager.BuildDisplayAsync(contentItem, _updateModelAccessor.ModelUpdater, displayType);
         if (task.IsCompletedSuccessfully)

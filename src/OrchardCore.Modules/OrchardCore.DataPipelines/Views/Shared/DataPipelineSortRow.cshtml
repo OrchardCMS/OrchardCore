@@ -8,7 +8,7 @@
     <select name="@(prefix).Field" class="form-select" aria-label="@T["Field"]">
         <partial name="DataPipelineFieldOptions" model="@((Model.Fields, Model.Key.Field, true))" />
     </select>
-    <select name="@(prefix).Descending" class="form-select" style="max-width: 12rem" aria-label="@T["Order"]">
+    <select name="@(prefix).Descending" class="form-select" style="max-width: 12rem" aria-label="@T.Note("Sort direction: ascending or descending.")["Order"]">
         <option value="false" selected="@(!Model.Key.Descending)">@T["Ascending"]</option>
         <option value="true" selected="@Model.Key.Descending">@T["Descending"]</option>
     </select>

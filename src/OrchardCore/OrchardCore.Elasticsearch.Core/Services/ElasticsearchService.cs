@@ -109,7 +109,7 @@ public class ElasticsearchService : ISearchService
                     : await _liquidTemplateManager.RenderStringAsync(queryMetadata.DefaultQuery, _javaScriptEncoder,
                     new Dictionary<string, FluidValue>()
                     {
-                        ["term"] = new StringValue(term),
+                        ["term"] = StringValue.Create(term),
                     });
 
                 try

@@ -20,7 +20,7 @@ public class ShortcodeFilter : ILiquidFilter
         var shortcodeContext = new Context();
 
         // Retrieve the 'ContentItem' from the ambient liquid scope.
-        var model = context.GetValue("Model").ToObjectValue();
+        var model = context.GetValue("Model").ToObjectValue(context);
         if (model is Shape shape && shape.Properties.TryGetValue("ContentItem", out var contentItem))
         {
             shortcodeContext["ContentItem"] = contentItem;
@@ -30,6 +30,6 @@ public class ShortcodeFilter : ILiquidFilter
             shortcodeContext["ContentItem"] = null;
         }
 
-        return new StringValue(await _shortcodeService.ProcessAsync(input.ToStringValue(), shortcodeContext));
+        return StringValue.Create(await _shortcodeService.ProcessAsync(input.ToStringValue(context), shortcodeContext));
     }
 }

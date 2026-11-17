@@ -85,9 +85,7 @@ public partial class TenantDatabasePatternResolver
             return null;
         }
 
-        var templateOptions = new TemplateOptions();
-        templateOptions.MemberAccessStrategy.Register<ShellSettings>();
-        var templateContext = new TemplateContext(templateOptions);
+        var templateContext = new TemplateContext(TemplateOptions.Default);
         templateContext.SetValue("ShellSettings", shellSettings);
 
         string value;

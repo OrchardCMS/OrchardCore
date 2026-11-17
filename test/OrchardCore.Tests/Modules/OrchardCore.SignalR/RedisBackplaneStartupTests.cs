@@ -1,5 +1,7 @@
+using Microsoft.AspNetCore.SignalR.StackExchangeRedis;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -20,16 +22,29 @@ public sealed class RedisBackplaneStartupTests
     {
         // Arrange
         var services = new ServiceCollection();
-        var startup = new SignalRRedisStartup();
+        var startup = new SignalRRedisStartup(NullLogger<SignalRRedisStartup>.Instance);
 
         // Act
         startup.ConfigureServices(services);
 
         // Assert
-        Assert.DoesNotContain(
-            services,
-            descriptor => descriptor.ServiceType == typeof(IConfigureOptions<SignalRRedisOptions>)
-                && descriptor.ImplementationType == typeof(SignalRRedisOptionsConfiguration));
+        Assert.DoesNotContain(services, IsBackplaneConfiguration);
+    }
+
+    [Fact]
+    public void ConfigureServices_WithNullRedisService_DoesNotRegisterBackplaneConfiguration()
+    {
+        // Arrange
+        var services = new ServiceCollection();
+        services.AddSingleton<IRedisService, NullRedisService>();
+
+        var startup = new SignalRRedisStartup(NullLogger<SignalRRedisStartup>.Instance);
+
+        // Act
+        startup.ConfigureServices(services);
+
+        // Assert
+        Assert.DoesNotContain(services, IsBackplaneConfiguration);
     }
 
     [Fact]
@@ -39,20 +54,17 @@ public sealed class RedisBackplaneStartupTests
         var services = new ServiceCollection();
         services.AddSingleton(Mock.Of<IRedisService>());
 
-        var startup = new SignalRRedisStartup();
+        var startup = new SignalRRedisStartup(NullLogger<SignalRRedisStartup>.Instance);
 
         // Act
         startup.ConfigureServices(services);
 
         // Assert
-        Assert.Contains(
-            services,
-            descriptor => descriptor.ServiceType == typeof(IConfigureOptions<SignalRRedisOptions>)
-                && descriptor.ImplementationType == typeof(SignalRRedisOptionsConfiguration));
+        Assert.Contains(services, IsBackplaneConfiguration);
     }
 
     [Fact]
-    public void ConfigureServices_WithAzureBackplane_ThrowsConfigurationError()
+    public void ConfigureServices_WithAzureBackplane_DoesNotRegisterRedisBackplaneAndLogsError()
     {
         // Arrange
         var configuration = new ConfigurationBuilder()
@@ -77,11 +89,20 @@ public sealed class RedisBackplaneStartupTests
             NullLogger<AzureSignalRStartup>.Instance)
             .ConfigureServices(services);
 
+        var logger = new Mock<ILogger<SignalRRedisStartup>>();
+
         // Act
-        var exception = Assert.Throws<InvalidOperationException>(
-            () => new SignalRRedisStartup().ConfigureServices(services));
+        new SignalRRedisStartup(logger.Object).ConfigureServices(services);
 
         // Assert
-        Assert.Contains("cannot be enabled together", exception.Message);
+        Assert.DoesNotContain(services, IsBackplaneConfiguration);
+        Assert.DoesNotContain(services, descriptor => descriptor.ImplementationType == typeof(RedisHubLifetimeManager<>));
+        logger.Verify(l => l.Log(
+            LogLevel.Error, It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(),
+            It.IsAny<Exception>(), It.IsAny<Func<It.IsAnyType, Exception, string>>()), Times.Once);
     }
+
+    private static bool IsBackplaneConfiguration(ServiceDescriptor descriptor)
+        => descriptor.ServiceType == typeof(IConfigureOptions<SignalRRedisOptions>)
+            && descriptor.ImplementationType == typeof(SignalRRedisOptionsConfiguration);
 }

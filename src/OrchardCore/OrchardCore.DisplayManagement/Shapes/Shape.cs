@@ -34,7 +34,7 @@ public class Shape : Composite, IShape, IPositioned, IEnumerable<object>
 
             if (!_sorted && _items.Count > 0)
             {
-                _items = _items.OrderBy(x => x, FlatPositionComparer.Instance).ToList();
+                _items.SortByPosition();
                 _sorted = true;
             }
 
@@ -134,7 +134,7 @@ public class Shape : Composite, IShape, IPositioned, IEnumerable<object>
 
         if (!_sorted && _items.Count > 0)
         {
-            _items = _items.OrderBy(x => x, FlatPositionComparer.Instance).ToList();
+            _items.SortByPosition();
             _sorted = true;
         }
 
@@ -150,7 +150,7 @@ public class Shape : Composite, IShape, IPositioned, IEnumerable<object>
 
         if (!_sorted && _items.Count > 0)
         {
-            _items = _items.OrderBy(x => x, FlatPositionComparer.Instance).ToList();
+            _items.SortByPosition();
             _sorted = true;
         }
 

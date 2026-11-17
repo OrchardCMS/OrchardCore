@@ -6,7 +6,6 @@ using Moq;
 using OrchardCore.Secrets;
 using OrchardCore.Secrets.AzureKeyVault;
 using OrchardCore.Secrets.Providers;
-using ISecret = OrchardCore.Secrets.ISecret;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Secrets;
 
@@ -191,7 +190,7 @@ public class AzureKeyVaultSecretStoreTests
         await store.SaveSecretAsync("rsa", new RsaKeySecret { PublicKey = "public" },
             new SecretSaveOptions { Description = "description", ExpiresUtc = expires });
 
-        Assert.IsType<RsaKeySecret>(await store.GetSecretAsync<ISecret>("rsa"));
+        Assert.IsType<RsaKeySecret>((await store.GetSecretAsync("rsa")).Value);
         Assert.Null(await store.GetSecretAsync<TextSecret>("rsa"));
         var info = Assert.Single(await store.GetSecretInfosAsync());
         Assert.Equal("rsa", info.Name);
@@ -222,7 +221,7 @@ public class AzureKeyVaultSecretStoreTests
         var entry = _entries.Values.Single(e => e.Name != "external");
         entry.Properties.Tags["OrchardTenant"] = "foreign";
         Assert.Empty(await store.GetSecretInfosAsync());
-        await Assert.ThrowsAsync<InvalidOperationException>(() => store.GetSecretAsync<ISecret>("owned"));
+        await Assert.ThrowsAsync<InvalidOperationException>(() => store.GetSecretAsync("owned"));
         await Assert.ThrowsAsync<InvalidOperationException>(() => store.SaveSecretAsync("owned", new TextSecret()));
         await Assert.ThrowsAsync<InvalidOperationException>(() => store.RemoveSecretAsync("owned"));
     }
@@ -250,6 +249,6 @@ public class AzureKeyVaultSecretStoreTests
     {
         _client.Setup(c => c.GetSecretAsync(It.IsAny<string>(), null, null, It.IsAny<CancellationToken>()))
             .ThrowsAsync(new RequestFailedException(403, "Forbidden"));
-        await Assert.ThrowsAsync<RequestFailedException>(() => CreateStore("tenant").GetSecretAsync<ISecret>("secret"));
+        await Assert.ThrowsAsync<RequestFailedException>(() => CreateStore("tenant").GetSecretAsync("secret"));
     }
 }

@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using OrchardCore.BackgroundTasks;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Descriptor;
@@ -94,6 +96,8 @@ public static partial class OrchardCoreBuilderExtensions
     /// </summary>
     public static OrchardCoreBuilder AddBackgroundService(this OrchardCoreBuilder builder)
     {
+        builder.ApplicationServices.TryAddSingleton<BackgroundTaskMonitor>();
+        builder.ApplicationServices.TryAddSingleton<IBackgroundTaskMonitor>(sp => sp.GetRequiredService<BackgroundTaskMonitor>());
         builder.ApplicationServices.AddHostedService<ModularBackgroundService>();
 
         builder.ApplicationServices

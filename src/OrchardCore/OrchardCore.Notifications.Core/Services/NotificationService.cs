@@ -1,4 +1,6 @@
+using System.Text.Json.Nodes;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Entities;
 using OrchardCore.Modules;
 using YesSql;
 
@@ -34,15 +36,22 @@ public class NotificationService : INotificationService
     /// <returns>A <see cref="NotificationSendResult"/> that describes how many notification methods succeeded or failed.</returns>
     public async Task<NotificationSendResult> SendAsync(object notify, INotificationMessage message, CancellationToken cancellationToken = default)
     {
+        ArgumentNullException.ThrowIfNull(message);
+
+        NotificationLengthValidator.Validate(message.Type, message.ReferenceId);
+
         var notificationContext = new NotificationContext(message, notify);
 
         var notification = await CreateNotificationAsync(notificationContext, cancellationToken);
 
         await _notificationEvents.InvokeAsync((handler, context, token) => handler.SendingAsync(context, token), notificationContext, cancellationToken, _logger);
 
-        var sendResult = new NotificationSendResult();
+        var sendResult = new NotificationSendResult
+        {
+            Notification = notification,
+        };
 
-        var providers = await _notificationMethodProviderAccessor.GetProvidersAsync(notify);
+        var providers = await _notificationMethodProviderAccessor.GetProvidersAsync(notify, message);
 
         foreach (var provider in providers)
         {
@@ -82,7 +91,29 @@ public class NotificationService : INotificationService
             CreatedUtc = _clock.UtcNow,
             Subject = context.NotificationMessage.Subject,
             Summary = context.NotificationMessage.Summary,
+            Type = NullIfEmpty(context.NotificationMessage.Type),
+            ReferenceId = NullIfEmpty(context.NotificationMessage.ReferenceId),
         };
+
+        var url = NullIfEmpty(context.NotificationMessage.Url);
+
+        if (url is not null)
+        {
+            if (NotificationUrlHelper.IsValid(url))
+            {
+                notification.Url = url;
+            }
+            else
+            {
+                _logger.LogWarning("The URL of the notification '{Subject}' was ignored, as it is neither an absolute HTTP URL nor a local URL.", notification.Subject);
+            }
+        }
+
+        // The properties stored on the message are copied, so the display drivers of its type can show them.
+        if (context.NotificationMessage is Entity entity)
+        {
+            notification.Properties.Merge(entity.Properties);
+        }
 
         context.Notification = notification;
 
@@ -92,4 +123,7 @@ public class NotificationService : INotificationService
 
         return notification;
     }
+
+    private static string NullIfEmpty(string value)
+        => string.IsNullOrEmpty(value) ? null : value;
 }

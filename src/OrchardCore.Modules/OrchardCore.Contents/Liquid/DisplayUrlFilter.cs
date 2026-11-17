@@ -37,22 +37,22 @@ public class DisplayUrlFilter : ILiquidFilter
     {
         if (_httpContextAccessor.HttpContext is not { } httpContext)
         {
-            return new StringValue(string.Empty);
+            return StringValue.Create(string.Empty);
         }
 
-        var contentItem = input.ToObjectValue() as ContentItem;
+        var contentItem = input.ToObjectValue(context) as ContentItem;
         RouteValueDictionary routeValues;
 
         if (contentItem == null)
         {
-            if (string.IsNullOrEmpty(input.ToStringValue()))
+            if (string.IsNullOrEmpty(input.ToStringValue(context)))
             {
                 return StringValue.Empty;
             }
 
             routeValues = new RouteValueDictionary(_autorouteOptions.GlobalRouteValues)
             {
-                [_autorouteOptions.ContentItemIdKey] = input.ToStringValue(),
+                [_autorouteOptions.ContentItemIdKey] = input.ToStringValue(context),
             };
         }
         else
@@ -66,6 +66,6 @@ public class DisplayUrlFilter : ILiquidFilter
             ? _urlHelperFactory.GetUrlHelper(actionContext).RouteUrl(routeValues)
             : _linkGenerator.GetPathByRouteValues(httpContext, string.Empty, routeValues);
 
-        return new StringValue(linkUrl);
+        return StringValue.Create(linkUrl);
     }
 }

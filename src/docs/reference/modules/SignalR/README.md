@@ -94,7 +94,7 @@ The Azure SignalR Service backplane (`OrchardCore.SignalR.Azure`) uses its own c
 
 If a backplane feature is enabled but its connection string is missing, a warning is logged at startup and SignalR keeps working in single-instance (in-memory) mode — messages then only reach clients connected to the same instance.
 
-Enable only one backplane feature per tenant. Enabling both the Azure and Redis backplanes causes tenant startup to fail with a configuration error rather than selecting one provider unpredictably.
+Enable only one backplane feature per tenant. When both the Azure and Redis backplanes are enabled and configured, the Azure backplane is used and an error is logged for the Redis one, so that the tenant keeps running and its features can still be changed.
 
 ## Client integration
 

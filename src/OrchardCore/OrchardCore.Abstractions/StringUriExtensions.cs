@@ -16,7 +16,7 @@ public static class StringUriExtensions
 
     public static string ToSnakeCase(this string str)
     {
-        return string.Concat(str.Select((x, i) => i > 0 && char.IsUpper(x) ? "_" + x.ToString() : x.ToString())).ToLower();
+        return string.Concat(str.Select((x, i) => i > 0 && char.IsUpper(x) ? "_" + x.ToString() : x.ToString())).ToLowerInvariant();
     }
 
     public static string RemoveQueryString(this string url, out string queryString)

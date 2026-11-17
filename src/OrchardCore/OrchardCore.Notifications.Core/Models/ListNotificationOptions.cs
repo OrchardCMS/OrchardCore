@@ -15,6 +15,8 @@ public class ListNotificationOptions
 
     public NotificationStatus? Status { get; set; }
 
+    public string Type { get; set; }
+
     public NotificationOrder? OrderBy { get; set; }
 
     public NotificationBulkAction? BulkAction { get; set; }
@@ -41,6 +43,9 @@ public class ListNotificationOptions
 
     [BindNever]
     public List<SelectListItem> Sorts { get; set; }
+
+    [BindNever]
+    public List<SelectListItem> Types { get; set; }
 
     [BindNever]
     public RouteValueDictionary RouteValues { get; set; } = [];

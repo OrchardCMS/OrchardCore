@@ -42,10 +42,10 @@ public sealed class CoreStartup : StartupBase
         services.AddDeployment<AllQueriesDeploymentSource, AllQueriesDeploymentStep, AllQueriesDeploymentStepDriver>();
         services.AddSingleton<IGlobalMethodProvider, QueryGlobalMethodProvider>();
 
-        services.Configure<TemplateOptions>(o =>
+        services.Configure<TemplateOptionsBuilder>(o =>
         {
-            o.Scope.SetValue("Queries", new ObjectValue(new LiquidQueriesAccessor()));
-            o.MemberAccessStrategy.Register<LiquidQueriesAccessor, FluidValue>(async (obj, name, context) =>
+            o.WithGlobalValue("Queries", ObjectValue.Create(new LiquidQueriesAccessor()));
+            o.ConfigureMemberAccess(strategy => strategy.Register<LiquidQueriesAccessor, FluidValue>(async (obj, name, context) =>
             {
                 var liquidTemplateContext = (LiquidTemplateContext)context;
                 var queryManager = liquidTemplateContext.Services.GetRequiredService<IQueryManager>();
@@ -53,7 +53,7 @@ public sealed class CoreStartup : StartupBase
                 var query = await queryManager.GetQueryAsync(name);
 
                 return FluidValue.Create(query, context.Options);
-            });
+            }));
         })
         .AddLiquidFilter<QueryFilter>("query");
 

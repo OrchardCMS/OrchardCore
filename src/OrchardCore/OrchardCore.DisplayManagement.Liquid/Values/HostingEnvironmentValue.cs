@@ -1,4 +1,3 @@
-using System.Globalization;
 using System.Text.Encodings.Web;
 using Fluid;
 using Fluid.Values;
@@ -23,19 +22,23 @@ internal sealed class HostingEnvironmentValue : FluidValue
             return false;
         }
 
-        return ToStringValue() == other.ToStringValue();
+        return _hostEnvironment.EnvironmentName == other.ToStringValue(null);
     }
 
-    public override bool ToBooleanValue() => true;
+    public override bool ToBooleanValue(TemplateContext context) => true;
 
-    public override decimal ToNumberValue() => 0;
+    public override decimal ToNumberValue(TemplateContext context) => 0;
 
-    public override object ToObjectValue() => _hostEnvironment;
+    public override object ToObjectValue(TemplateContext context) => _hostEnvironment;
 
-    public override string ToStringValue() => _hostEnvironment.EnvironmentName;
+    public override string ToStringValue(TemplateContext context) => _hostEnvironment.EnvironmentName;
 
-    public override async ValueTask WriteToAsync(TextWriter writer, TextEncoder encoder, CultureInfo cultureInfo)
-        => await writer.WriteAsync(ToStringValue());
+    public override ValueTask WriteToAsync(IFluidOutput output, TextEncoder encoder, TemplateContext context)
+    {
+        output.Write(ToStringValue(context));
+
+        return ValueTask.CompletedTask;
+    }
 
     public override ValueTask<FluidValue> GetValueAsync(string name, TemplateContext context)
         => name switch

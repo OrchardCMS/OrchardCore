@@ -21,9 +21,9 @@ public class ShapePagerTag
         "ItemTagName"
     ];
 
-    public static async ValueTask<Completion> WriteToAsync(ValueTuple<Expression, IReadOnlyList<FilterArgument>> arguments, TextWriter _1, TextEncoder _2, TemplateContext context)
+    public static async ValueTask<Completion> WriteToAsync(ValueTuple<Expression, IReadOnlyList<FilterArgument>> arguments, IFluidOutput _1, TextEncoder _2, TemplateContext context)
     {
-        var objectValue = (await arguments.Item1.EvaluateAsync(context)).ToObjectValue() as dynamic;
+        var objectValue = (await arguments.Item1.EvaluateAsync(context)).ToObjectValue(context) as dynamic;
 
         if (objectValue is Shape shape)
         {
@@ -35,7 +35,7 @@ public class ShapePagerTag
 
                     if (s_properties.Contains(propertyName))
                     {
-                        objectValue[propertyName] = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                        objectValue[propertyName] = (await argument.Expression.EvaluateAsync(context)).ToStringValue(context);
                     }
                 }
             }
@@ -50,7 +50,7 @@ public class ShapePagerTag
 
                     if (itemClasses.Type == FluidValues.String)
                     {
-                        var values = itemClasses.ToStringValue().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                        var values = itemClasses.ToStringValue(context).Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
                         foreach (var value in values)
                         {
@@ -59,9 +59,9 @@ public class ShapePagerTag
                     }
                     else if (itemClasses.Type == FluidValues.Array)
                     {
-                        foreach (var value in itemClasses.Enumerate(context))
+                        await foreach (var value in itemClasses.EnumerateAsync(context))
                         {
-                            objectValue.ItemClasses.Add(value.ToStringValue());
+                            objectValue.ItemClasses.Add(value.ToStringValue(context));
                         }
                     }
                 }
@@ -72,7 +72,7 @@ public class ShapePagerTag
 
                     if (classes.Type == FluidValues.String)
                     {
-                        var values = classes.ToStringValue().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                        var values = classes.ToStringValue(context).Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
                         foreach (var value in values)
                         {
@@ -81,9 +81,9 @@ public class ShapePagerTag
                     }
                     else if (classes.Type == FluidValues.Array)
                     {
-                        foreach (var value in classes.Enumerate(context))
+                        await foreach (var value in classes.EnumerateAsync(context))
                         {
-                            objectValue.Classes.Add(value.ToStringValue());
+                            objectValue.Classes.Add(value.ToStringValue(context));
                         }
                     }
                 }
@@ -94,7 +94,7 @@ public class ShapePagerTag
 
                     if (attributes.Type == FluidValues.String)
                     {
-                        var values = JConvert.DeserializeObject<Dictionary<string, string>>(attributes.ToStringValue());
+                        var values = JConvert.DeserializeObject<Dictionary<string, string>>(attributes.ToStringValue(context));
                         foreach (var value in values)
                         {
                             objectValue.Attributes.TryAdd(value.Key, value.Value);
@@ -108,7 +108,7 @@ public class ShapePagerTag
 
                     if (itemAttributes.Type == FluidValues.String)
                     {
-                        var values = JConvert.DeserializeObject<Dictionary<string, string>>(itemAttributes.ToStringValue());
+                        var values = JConvert.DeserializeObject<Dictionary<string, string>>(itemAttributes.ToStringValue(context));
                         foreach (var value in values)
                         {
                             objectValue.ItemAttributes.TryAdd(value.Key, value.Value);

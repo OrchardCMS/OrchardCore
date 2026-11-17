@@ -9,7 +9,7 @@ namespace OrchardCore.DynamicCache.Liquid;
 
 public class CacheDependencyTag
 {
-    public static async ValueTask<Completion> WriteToAsync(Expression argument, TextWriter _1, TextEncoder _2, TemplateContext context)
+    public static async ValueTask<Completion> WriteToAsync(Expression argument, IFluidOutput _1, TextEncoder _2, TemplateContext context)
     {
         var services = ((LiquidTemplateContext)context).Services;
 
@@ -20,7 +20,7 @@ public class CacheDependencyTag
             return Completion.Normal;
         }
 
-        var dependency = (await argument.EvaluateAsync(context)).ToStringValue();
+        var dependency = (await argument.EvaluateAsync(context)).ToStringValue(context);
 
         cacheScopeManager.AddDependencies(dependency);
 

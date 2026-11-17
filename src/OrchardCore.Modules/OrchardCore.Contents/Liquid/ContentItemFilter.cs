@@ -19,12 +19,12 @@ public class ContentItemFilter : ILiquidFilter
         if (input.Type == FluidValues.Array)
         {
             // List of content item ids to return.
-            var contentItemIds = input.Enumerate(ctx).Select(x => x.ToStringValue());
+            var contentItemIds = await input.EnumerateAsync(ctx).Select(x => x.ToStringValue(ctx)).ToArrayAsync();
 
             return FluidValue.Create(await _contentManager.GetAsync(contentItemIds), ctx.Options);
         }
 
-        var contentItemId = input.ToStringValue();
+        var contentItemId = input.ToStringValue(ctx);
 
         return FluidValue.Create(await _contentManager.GetAsync(contentItemId), ctx.Options);
     }

@@ -127,7 +127,7 @@ The rendering of shapes emits traces and metrics, to find which shapes take time
 | `ActivitySource` | `OrchardCore.DisplayManagement` | An activity named `Render shape` for each rendered shape, displayed as `Render shape {type}`, with the `orchardcore.shape.type` and `orchardcore.shape.binding` (the template or the code that rendered it) tags. Activities of nested shapes are children of the activity of their parent shape. |
 | `Meter` | `OrchardCore.DisplayManagement` | The `orchardcore.display.shapes_rendered` counter of the rendered shapes, and the `orchardcore.display.shape.duration` histogram of the rendering durations in seconds, including their child shapes, tagged with `orchardcore.shape.type`. |
 
-As a page can render hundreds of shapes, these sources are not collected unless they are added explicitly. For instance, with OpenTelemetry:
+As a page can render hundreds of shapes, these sources are not collected unless they are added explicitly. The shapes slower than a threshold are traced by default, see [OpenTelemetry](../OpenTelemetry/README.md#investigating-performance). For instance, with OpenTelemetry:
 
 ```csharp
 builder.Services.AddOpenTelemetry()

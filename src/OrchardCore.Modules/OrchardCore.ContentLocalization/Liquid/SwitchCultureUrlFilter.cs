@@ -25,7 +25,7 @@ public class SwitchCultureUrlFilter : ILiquidFilter
         var request = _httpContextAccessor.HttpContext?.Request
             ?? throw new ArgumentException("HttpRequest missing while invoking 'switch_culture_url'");
 
-        var targetCulture = input.ToStringValue();
+        var targetCulture = input.ToStringValue(context);
 
         var url = urlHelper.RouteUrl("RedirectToLocalizedContent",
             new

@@ -14,7 +14,7 @@ public class ZoneTag
     public static async ValueTask<Completion> WriteToAsync(
         IReadOnlyList<FilterArgument> argumentsList,
         IReadOnlyList<Statement> statements,
-        TextWriter _,
+        IFluidOutput _,
         TextEncoder encoder,
         TemplateContext context)
     {
@@ -31,20 +31,20 @@ public class ZoneTag
             // check common case
             if (string.IsNullOrEmpty(argument.Name) && argument.Expression is LiteralExpression literalExpression)
             {
-                name = literalExpression.Value.ToStringValue();
+                name = literalExpression.Value.ToStringValue(context);
                 continue;
             }
 
             switch (argument.Name)
             {
                 case "position":
-                    position = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                    position = (await argument.Expression.EvaluateAsync(context)).ToStringValue(context);
                     break;
 
                 case null:
                 case "name":
                 case "":
-                    name ??= (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                    name ??= (await argument.Expression.EvaluateAsync(context)).ToStringValue(context);
                     break;
             }
         }

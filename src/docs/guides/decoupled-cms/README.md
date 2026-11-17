@@ -59,7 +59,7 @@ The newly created website should be able to run, and look like this:
 
 ```xml
 <PropertyGroup>
-  <TargetFramework>net10.0</TargetFramework>
+  <TargetFramework>net11.0</TargetFramework>
 </PropertyGroup>
 ```
 

@@ -17,7 +17,7 @@ public class ContainerFilter : ILiquidFilter
 
     public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
     {
-        var contentItem = input.ToObjectValue() as ContentItem ?? throw new ArgumentException("A Content Item was expected");
+        var contentItem = input.ToObjectValue(ctx) as ContentItem ?? throw new ArgumentException("A Content Item was expected");
 
         var containerId = contentItem.TryGet<ContainedPart>(out var containedPart) ? containedPart.ListContentItemId : null;
 
@@ -27,10 +27,10 @@ public class ContainerFilter : ILiquidFilter
 
             if (container != null)
             {
-                return new ObjectValue(container);
+                return ObjectValue.Create(container);
             }
         }
 
-        return new ObjectValue(contentItem);
+        return ObjectValue.Create(contentItem);
     }
 }

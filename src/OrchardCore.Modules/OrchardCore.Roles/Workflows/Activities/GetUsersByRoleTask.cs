@@ -71,7 +71,7 @@ public class GetUsersByRoleTask : TaskActivity<GetUsersByRoleTask>, IActivityPro
                 }
             }
 
-            workflowContext.Output[outputKeyName] = FluidValue.Create(usersInRole, new TemplateOptions());
+            workflowContext.Output[outputKeyName] = FluidValue.Create(usersInRole, TemplateOptions.Default);
 
             return Outcome("Done");
         }

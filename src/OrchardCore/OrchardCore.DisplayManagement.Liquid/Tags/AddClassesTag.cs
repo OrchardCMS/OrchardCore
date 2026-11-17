@@ -7,9 +7,9 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags;
 
 public class AddClassesTag
 {
-    public static async ValueTask<Completion> WriteToAsync(ValueTuple<Expression, Expression> arguments, TextWriter _1, TextEncoder _2, TemplateContext context)
+    public static async ValueTask<Completion> WriteToAsync(ValueTuple<Expression, Expression> arguments, IFluidOutput _1, TextEncoder _2, TemplateContext context)
     {
-        var objectValue = (await arguments.Item1.EvaluateAsync(context)).ToObjectValue();
+        var objectValue = (await arguments.Item1.EvaluateAsync(context)).ToObjectValue(context);
 
         if (objectValue is IShape shape)
         {
@@ -17,7 +17,7 @@ public class AddClassesTag
 
             if (classes.Type == FluidValues.String)
             {
-                var values = classes.ToStringValue().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                var values = classes.ToStringValue(context).Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
                 foreach (var value in values)
                 {
@@ -26,9 +26,9 @@ public class AddClassesTag
             }
             else if (classes.Type == FluidValues.Array)
             {
-                foreach (var value in classes.Enumerate(context))
+                await foreach (var value in classes.EnumerateAsync(context))
                 {
-                    shape.Classes.Add(value.ToStringValue());
+                    shape.Classes.Add(value.ToStringValue(context));
                 }
             }
         }

@@ -28,7 +28,7 @@ public sealed class BuildIntegrationTests
 
         Assert.DoesNotContain("Localization catalog", output);
         Assert.False(File.Exists(Path.Combine(workspace.DirectoryPath, "RazorModule.pot")));
-        Assert.False(HasResource(Path.Combine(workspace.DirectoryPath, "bin/Debug/net10.0/RazorModule.dll"), "RazorModule.Localization.pot"));
+        Assert.False(HasResource(Path.Combine(workspace.DirectoryPath, "bin/Debug/net11.0/RazorModule.dll"), "RazorModule.Localization.pot"));
     }
 
     [Fact]
@@ -37,8 +37,8 @@ public sealed class BuildIntegrationTests
         using var workspace = new TestWorkspace();
         var project = CopyFixture(workspace);
         var template = Path.Combine(workspace.DirectoryPath, "RazorModule.pot");
-        var stamp = Path.Combine(workspace.DirectoryPath, "obj/Debug/net10.0/Localization/RazorModule.pot.stamp.json");
-        var assembly = Path.Combine(workspace.DirectoryPath, "bin/Debug/net10.0/RazorModule.dll");
+        var stamp = Path.Combine(workspace.DirectoryPath, "obj/Debug/net11.0/Localization/RazorModule.pot.stamp.json");
+        var assembly = Path.Combine(workspace.DirectoryPath, "bin/Debug/net11.0/RazorModule.dll");
 
         Assert.Contains("3 messages in RazorModule.pot", await BuildAsync(project, Update));
         var text = await File.ReadAllTextAsync(template, TestContext.Current.CancellationToken);
@@ -99,7 +99,7 @@ public sealed class BuildIntegrationTests
         Assert.Contains("removed", await BuildAsync(project, Update));
         Assert.False(File.Exists(template));
         Assert.Contains("up to date", await BuildAsync(project, Update));
-        Assert.False(HasResource(Path.Combine(workspace.DirectoryPath, "bin/Debug/net10.0/RazorModule.dll"), "RazorModule.Localization.pot"));
+        Assert.False(HasResource(Path.Combine(workspace.DirectoryPath, "bin/Debug/net11.0/RazorModule.dll"), "RazorModule.Localization.pot"));
     }
 
     [Fact]
@@ -140,7 +140,7 @@ public sealed class BuildIntegrationTests
         var project = CopyFixture(workspace);
         var output = Path.Combine(workspace.DirectoryPath, "exported templates");
         var template = Path.Combine(workspace.DirectoryPath, "RazorModule.pot");
-        var exported = Path.Combine(output, "net10.0/RazorModule.pot");
+        var exported = Path.Combine(output, "net11.0/RazorModule.pot");
         var property = "-p:LocalizationCatalogOutputPath=" + output;
         await BuildAsync(project, property);
         Assert.False(Directory.Exists(output));
@@ -177,7 +177,7 @@ public sealed class BuildIntegrationTests
         foreach (var (workspace, assemblyName) in new[] { (application, "Application"), (module, "RazorModule") })
         {
             var template = Path.Combine(workspace.DirectoryPath, assemblyName + ".pot");
-            var assembly = Path.Combine(application.DirectoryPath, "bin/Debug/net10.0", assemblyName + ".dll");
+            var assembly = Path.Combine(application.DirectoryPath, "bin/Debug/net11.0", assemblyName + ".dll");
             Assert.Equal(await File.ReadAllTextAsync(template, TestContext.Current.CancellationToken), ReadResource(assembly, assemblyName + ".Localization.pot"));
         }
     }
@@ -231,7 +231,7 @@ public sealed class BuildIntegrationTests
         var consumer = workspace.Write("Consumer/Consumer.csproj", $$"""
             <Project Sdk="Microsoft.NET.Sdk">
               <PropertyGroup>
-                <TargetFrameworks>netstandard2.0;net10.0</TargetFrameworks>
+                <TargetFrameworks>netstandard2.0;net11.0</TargetFrameworks>
                 <LangVersion>14.0</LangVersion>
                 <RestoreAdditionalProjectSources>{{SecurityElement.Escape(feed)}}</RestoreAdditionalProjectSources>
                 <RestorePackagesPath>{{SecurityElement.Escape(Path.Combine(workspace.DirectoryPath, "packages"))}}</RestorePackagesPath>
@@ -256,7 +256,7 @@ public sealed class BuildIntegrationTests
         Assert.Contains("up to date", await BuildAsync(consumer, Update));
 
         await BuildAsync(consumer);
-        foreach (var framework in new[] { "netstandard2.0", "net10.0" })
+        foreach (var framework in new[] { "netstandard2.0", "net11.0" })
         {
             var assembly = Path.Combine(workspace.DirectoryPath, "Consumer/bin/Debug", framework, "Consumer.dll");
             Assert.Equal(text, ReadResource(assembly, "Consumer.Localization.pot"));
@@ -264,7 +264,7 @@ public sealed class BuildIntegrationTests
         }
 
         var publish = Path.Combine(workspace.DirectoryPath, "publish");
-        await RequireSuccessAsync("publish", consumer, "--tl:off", "--nologo", "-f", "net10.0", "-c", "Debug", "-o", publish, "-v:quiet");
+        await RequireSuccessAsync("publish", consumer, "--tl:off", "--nologo", "-f", "net11.0", "-c", "Debug", "-o", publish, "-v:quiet");
         Assert.Contains("Packaged message", ReadResource(Path.Combine(publish, "Consumer.dll"), "Consumer.Localization.pot"));
         Assert.DoesNotContain(Directory.GetFiles(publish, "*.dll"), path => Path.GetFileName(path).Contains("CodeAnalysis", StringComparison.Ordinal) || Path.GetFileName(path).Contains("Localization.Tools", StringComparison.Ordinal));
     }

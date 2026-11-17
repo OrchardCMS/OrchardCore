@@ -20,7 +20,7 @@ public class LocalTimeZoneFilter : ILiquidFilter
 
         if (input.Type == FluidValues.String)
         {
-            var stringValue = input.ToStringValue();
+            var stringValue = input.ToStringValue(ctx);
 
             if (stringValue == "now" || stringValue == "today")
             {
@@ -36,7 +36,7 @@ public class LocalTimeZoneFilter : ILiquidFilter
         }
         else
         {
-            switch (input.ToObjectValue())
+            switch (input.ToObjectValue(ctx))
             {
                 case DateTime dateTime:
                     value = dateTime;
@@ -49,6 +49,6 @@ public class LocalTimeZoneFilter : ILiquidFilter
             }
         }
 
-        return new ObjectValue(await _localClock.ConvertToLocalAsync(value));
+        return ObjectValue.Create(await _localClock.ConvertToLocalAsync(value));
     }
 }

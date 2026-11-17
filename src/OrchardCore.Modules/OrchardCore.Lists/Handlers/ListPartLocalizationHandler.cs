@@ -25,7 +25,7 @@ public class ListPartLocalizationHandler : ContentLocalizationPartHandlerBase<Li
         var containedList = await _session.Query<ContentItem, ContainedPartIndex>(
             x => x.ListContentItemId == context.Original.ContentItemId).ListAsync();
 
-        if (!containedList.Any())
+        if (containedList.Count == 0)
         {
             return;
         }

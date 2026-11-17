@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Scope;
+using OrchardCore.Telemetry;
 
 namespace OrchardCore.Modules;
 
@@ -29,7 +30,11 @@ public static class ShellPipelineExtensions
         {
             if (!context.HasPipeline())
             {
-                context.Pipeline = await context.BuildPipelineInternalAsync();
+                await OrchardCoreTelemetry.MeasureTenantOperationAsync(
+                    "Build tenant pipeline",
+                    OrchardCoreTelemetry.TenantPipelineDuration,
+                    context.Settings.Name,
+                    async () => context.Pipeline = await context.BuildPipelineInternalAsync());
             }
         }
         finally

@@ -14,7 +14,9 @@ public sealed class NotificationMigrations : DataMigration
             .Column<bool>("IsRead")
             .Column<DateTime>("ReadAtUtc")
             .Column<DateTime>("CreatedAtUtc")
-            .Column<string>("Content", column => column.WithLength(NotificationConstants.NotificationIndexContentLength)),
+            .Column<string>("Content", column => column.WithLength(NotificationConstants.NotificationIndexContentLength))
+            .Column<string>("Type", column => column.Nullable().WithLength(NotificationConstants.NotificationTypeLength))
+            .Column<string>("ReferenceId", column => column.Nullable().WithLength(NotificationConstants.NotificationReferenceIdLength)),
             collection: NotificationConstants.NotificationCollection
         );
 
@@ -38,7 +40,9 @@ public sealed class NotificationMigrations : DataMigration
             collection: NotificationConstants.NotificationCollection
         );
 
-        return 2;
+        await CreateTypeIndexesAsync();
+
+        return 3;
     }
 
     public async Task<int> UpdateFrom1Async()
@@ -53,5 +57,48 @@ public sealed class NotificationMigrations : DataMigration
         );
 
         return 2;
+    }
+
+    public async Task<int> UpdateFrom2Async()
+    {
+        await SchemaBuilder.AlterIndexTableAsync<NotificationIndex>(table => table
+            .AddColumn<string>("Type", column => column.Nullable().WithLength(NotificationConstants.NotificationTypeLength)),
+            collection: NotificationConstants.NotificationCollection
+        );
+
+        await SchemaBuilder.AlterIndexTableAsync<NotificationIndex>(table => table
+            .AddColumn<string>("ReferenceId", column => column.Nullable().WithLength(NotificationConstants.NotificationReferenceIdLength)),
+            collection: NotificationConstants.NotificationCollection
+        );
+
+        await CreateTypeIndexesAsync();
+
+        return 3;
+    }
+
+    private async Task CreateTypeIndexesAsync()
+    {
+        // 'DocumentId' comes last in these indexes, as a database can't seek on the columns that follow it.
+
+        // Lists the notifications of a user by type in the notification center.
+        await SchemaBuilder.AlterIndexTableAsync<NotificationIndex>(table => table
+            .CreateIndex("IDX_NotificationIndex_UserId_Type",
+                "UserId",
+                "Type",
+                "IsRead",
+                "CreatedAtUtc",
+                "DocumentId"),
+            collection: NotificationConstants.NotificationCollection
+        );
+
+        // Finds the notifications of a record, see 'INotificationManager'.
+        await SchemaBuilder.AlterIndexTableAsync<NotificationIndex>(table => table
+            .CreateIndex("IDX_NotificationIndex_Type_ReferenceId",
+                "Type",
+                "ReferenceId",
+                "UserId",
+                "DocumentId"),
+            collection: NotificationConstants.NotificationCollection
+        );
     }
 }

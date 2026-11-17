@@ -10,7 +10,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags;
 
 public class AntiForgeryTokenTag
 {
-    public static ValueTask<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context)
+    public static ValueTask<Completion> WriteToAsync(IFluidOutput output, TextEncoder encoder, TemplateContext context)
     {
         var services = ((LiquidTemplateContext)context).Services;
 
@@ -20,11 +20,11 @@ public class AntiForgeryTokenTag
         var httpContext = httpContextAccessor.HttpContext;
         var tokenSet = antiforgery.GetAndStoreTokens(httpContext);
 
-        writer.Write("<input name=\"");
-        writer.Write(encoder.Encode(tokenSet.FormFieldName));
-        writer.Write("\" type=\"hidden\" value=\"");
-        writer.Write(encoder.Encode(tokenSet.RequestToken));
-        writer.Write("\" />");
+        output.Write("<input name=\"");
+        output.Write(encoder.Encode(tokenSet.FormFieldName));
+        output.Write("\" type=\"hidden\" value=\"");
+        output.Write(encoder.Encode(tokenSet.RequestToken));
+        output.Write("\" />");
 
         return ValueTask.FromResult(Completion.Normal);
     }

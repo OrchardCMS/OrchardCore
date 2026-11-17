@@ -19,6 +19,24 @@
         </div>
     </div>
 
+    <div class="ocat-wrapper" asp-validation-class-for="Url">
+        <label asp-for="Url" class="ocat-label">@T["URL"]</label>
+        <div class="ocat-end">
+            <input type="text" asp-for="Url" class="form-control" />
+            <span asp-validation-for="Url"></span>
+            <span class="hint">@T["The optional page the notification opens, for example ~/blog. Start a page of this site with ~/. You may use Liquid syntax."]</span>
+        </div>
+    </div>
+
+    <div class="ocat-wrapper" asp-validation-class-for="NotificationType">
+        <label asp-for="NotificationType" class="ocat-label">@T["Type"]</label>
+        <div class="ocat-end">
+            <input type="text" asp-for="NotificationType" class="form-control" />
+            <span asp-validation-for="NotificationType"></span>
+            <span class="hint">@T["The optional kind of notification, used to filter the notification center and for the preferences of users, for example Approval."]</span>
+        </div>
+    </div>
+
     <div class="ocat-wrapper" asp-validation-class-for="TextBody">
         <label asp-for="TextBody" class="ocat-label">@T["Text Body"]</label>
         <div class="ocat-end">

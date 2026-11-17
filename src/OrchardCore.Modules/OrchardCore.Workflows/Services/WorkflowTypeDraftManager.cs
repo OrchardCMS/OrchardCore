@@ -228,13 +228,21 @@ public sealed class WorkflowTypeDraftManager : IWorkflowTypeDraftManager
     {
         ArgumentNullException.ThrowIfNull(settings);
 
-        return ChangeAsync(workflowTypeId, expectedRevision, (_, draft) =>
+        return ChangeAsync(workflowTypeId, expectedRevision, async (workflowType, draft) =>
         {
             draft.Name = settings.Name?.Trim();
             draft.IsEnabled = settings.IsEnabled;
             settings.CopyExecutionSettingsTo(draft);
 
-            return Task.FromResult(new ChangeOutcome());
+            // Enabling or disabling isn't a change to what runs, so it applies to the workflow type at once rather
+            // than waiting for the draft to be published. Otherwise the list keeps showing the other state.
+            if (workflowType.IsEnabled != settings.IsEnabled)
+            {
+                workflowType.IsEnabled = settings.IsEnabled;
+                await _workflowTypeStore.SaveAsync(workflowType);
+            }
+
+            return new ChangeOutcome();
         });
     }
 
@@ -360,7 +368,7 @@ public sealed class WorkflowTypeDraftManager : IWorkflowTypeDraftManager
             _session.Delete(draft);
         }
 
-        if (drafts.Any())
+        if (drafts.Count > 0)
         {
             await NotifyAsync(WorkflowTypeChangeKind.DraftDiscarded, workflowTypeId, 0);
         }

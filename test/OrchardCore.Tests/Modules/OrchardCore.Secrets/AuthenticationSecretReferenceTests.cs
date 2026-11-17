@@ -43,7 +43,7 @@ public class AuthenticationSecretReferenceTests
     {
         _siteService.Setup(s => s.GetSiteSettingsAsync()).ReturnsAsync(_site);
         _siteService.Setup(s => s.LoadSiteSettingsAsync()).ReturnsAsync(_site);
-        _manager.Setup(m => m.GetSecretAsync<TextSecret>("reference")).ReturnsAsync(new TextSecret { Text = "resolved" });
+        _manager.Setup(m => m.GetSecretAsync("reference")).ReturnsAsync(new TextSecret { Text = "resolved" });
         _services = new ServiceCollection().AddSingleton(_manager.Object).BuildServiceProvider();
     }
 

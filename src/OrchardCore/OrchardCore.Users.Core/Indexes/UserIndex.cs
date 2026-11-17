@@ -19,7 +19,11 @@ public class UserIndexProvider : IndexProvider<User>
 {
     public override void Describe(DescribeContext<User> context)
     {
+        // A user is a document with a single record here, so a query that only joins indexes with a single record per document
+        // isn't grouped by document, and its count reads this table without joining the Document table.
         context.For<UserIndex>()
+            .ExclusiveToDocumentType()
+            .SingleRecordPerDocument()
             .Map(user =>
             {
                 return new UserIndex

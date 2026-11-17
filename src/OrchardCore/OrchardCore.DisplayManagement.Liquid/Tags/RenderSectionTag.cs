@@ -9,7 +9,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags;
 
 public class RenderSectionTag
 {
-    public static async ValueTask<Completion> WriteToAsync(IReadOnlyList<FilterArgument> argumentsList, TextWriter writer, TextEncoder encoder, TemplateContext context)
+    public static async ValueTask<Completion> WriteToAsync(IReadOnlyList<FilterArgument> argumentsList, IFluidOutput output, TextEncoder encoder, TemplateContext context)
     {
         var services = ((LiquidTemplateContext)context).Services;
 
@@ -19,10 +19,10 @@ public class RenderSectionTag
         var arguments = new NamedExpressionList(argumentsList);
 
         var nameExpression = arguments["name", 0] ?? throw new ArgumentException("render_section tag requires a name argument");
-        var name = (await nameExpression.EvaluateAsync(context)).ToStringValue();
+        var name = (await nameExpression.EvaluateAsync(context)).ToStringValue(context);
 
         var requiredExpression = arguments["required", 1];
-        var required = requiredExpression != null && (await requiredExpression.EvaluateAsync(context)).ToBooleanValue();
+        var required = requiredExpression != null && (await requiredExpression.EvaluateAsync(context)).ToBooleanValue(context);
 
         var zone = layout.Zones[name];
 
@@ -37,7 +37,7 @@ public class RenderSectionTag
         }
 
         var htmlContent = await displayHelper.ShapeExecuteAsync(zone);
-        htmlContent.WriteTo(writer, (HtmlEncoder)encoder);
+        output.Write(htmlContent, (HtmlEncoder)encoder);
 
         return Completion.Normal;
     }

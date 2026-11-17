@@ -78,12 +78,9 @@ public sealed class Startup : StartupBase
         services.AddSingleton<IBackgroundTask, RemoteMediaCacheBackgroundTask>();
 
         services
-            .Configure<TemplateOptions>(o =>
+            .Configure<TemplateOptionsBuilder>(o =>
             {
-                o.MemberAccessStrategy.Register<DisplayMediaFieldViewModel>();
-                o.MemberAccessStrategy.Register<Anchor>();
-
-                o.Filters.AddFilter("img_tag", MediaFilters.ImgTag);
+                o.AddFilter("img_tag", MediaFilters.ImgTag);
             })
             .AddLiquidFilter<AssetUrlFilter>("asset_url")
             .AddLiquidFilter<ResizeUrlFilter>("resize_url");
