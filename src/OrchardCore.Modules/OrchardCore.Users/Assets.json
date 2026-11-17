@@ -33,6 +33,13 @@
   },
   {
     "action": "parcel",
+    "name": "passkeys",
+    "source": "Assets/ts/passkeys.ts",
+    "dest": "wwwroot/Scripts/passkeys/",
+    "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
     "name": "login-form-credentials",
     "source": "Assets/ts/login-form-credentials.ts",
     "dest": "wwwroot/Scripts/login-form-credentials/",

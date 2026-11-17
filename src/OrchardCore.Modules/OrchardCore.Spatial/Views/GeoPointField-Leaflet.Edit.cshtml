@@ -12,7 +12,7 @@
         <div class="ocat-wrapper col-md-4 col-lg-3">
             <label asp-for="Latitude" class="ocat-label @(settings.Required ? "ocat-label-required" : "")">@T["Latitude"]</label>
             <div class="ocat-end">
-                <input asp-for="Latitude" type="number" min="-90.000000" max="90.000000" step=".000001" placeholder="00.000000" class="form-control content-preview-text" required="@settings.Required" data-latitude />
+                <input asp-for="Latitude" type="number" min="-90.000000" max="90.000000" step="any" placeholder="00.000000" class="form-control content-preview-text" required="@settings.Required" data-latitude />
                 @if (!string.IsNullOrEmpty(settings.Hint))
                 {
                     @await DisplayAsync(await New.Hint_Admin(Hint: settings.Hint))
@@ -22,7 +22,7 @@
         <div class="ocat-wrapper col-md-4 col-lg-3">
             <label asp-for="Longitude" class="ocat-label @(settings.Required ? "ocat-label-required" : "")">@T["Longitude"]</label>
             <div class="ocat-end">
-                <input asp-for="Longitude" type="number" min="-180.000000" max="180.000000" step=".000001" placeholder="00.000000" class="form-control content-preview-text" required="@settings.Required" data-longitude />
+                <input asp-for="Longitude" type="number" min="-180.000000" max="180.000000" step="any" placeholder="00.000000" class="form-control content-preview-text" required="@settings.Required" data-longitude />
                 @if (!string.IsNullOrEmpty(settings.Hint))
                 {
                     @await DisplayAsync(await New.Hint_Admin(Hint: settings.Hint))

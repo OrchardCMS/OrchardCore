@@ -175,3 +175,10 @@ msgstr ""
 msgctxt "OrchardCore.AdminDashboard.Views.DashboardWidget.SummaryAdmin"
 msgid "Actions"
 msgstr ""
+
+#. Format arguments: {0}: contentItem.DisplayText
+#: Views/DashboardWidget.SummaryAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.AdminDashboard.Views.DashboardWidget.SummaryAdmin"
+msgid "Select {0}"
+msgstr ""

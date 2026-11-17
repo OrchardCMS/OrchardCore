@@ -5,5 +5,5 @@
 
 <div class="form-check">
     <input type="checkbox" class="form-check-input" value="@Model.Value.Id" name="ruleIds" id="ruleIds-@Model.Value.Id">
-    <label class="form-check-label" for="ruleIds-@Model.Value.Id">&nbsp;</label>
+    <label class="form-check-label" for="ruleIds-@Model.Value.Id">&nbsp;<span class="visually-hidden">@T["Select {0}", Model.Value.Name]</span></label>
 </div>

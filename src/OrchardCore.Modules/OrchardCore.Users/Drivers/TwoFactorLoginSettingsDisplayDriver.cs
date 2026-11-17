@@ -37,7 +37,6 @@ public sealed class TwoFactorLoginSettingsDisplayDriver : SiteDisplayDriver<TwoF
             model.NumberOfRecoveryCodesToGenerate = settings.NumberOfRecoveryCodesToGenerate;
             model.RequireTwoFactorAuthentication = settings.RequireTwoFactorAuthentication;
             model.AllowRememberClientTwoFactorAuthentication = settings.AllowRememberClientTwoFactorAuthentication;
-            model.UseSiteTheme = settings.UseSiteTheme;
         }).Location("Content:5#Two-Factor Authentication")
         .RenderWhen(static (driver) => driver._authorizationService.AuthorizeAsync(driver._httpContextAccessor.HttpContext?.User, UsersPermissions.ManageUsers), this)
         .OnGroup(SettingsGroupId);

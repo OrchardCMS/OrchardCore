@@ -14,6 +14,7 @@ public class BackgroundServiceOptions
 
     /// <summary>
     /// Gets or sets the polling time for the background tasks, i.e. how much to wait between executing all the background tasks of a given tenant.
+    /// It also bounds how long the background service waits for a task before running the others, unless the <see cref="MinimumIdleTime" /> is longer.
     /// </summary>
     public TimeSpan PollingTime { get; set; } = TimeSpan.FromMinutes(1);
 
