@@ -833,6 +833,60 @@ input[type=password]::-ms-clear {
   text-decoration: underline;
 }
 
+.alert .hint,
+.alert .form-text,
+.alert .text-muted {
+  color: var(--bs-alert-color) !important;
+}
+
+.bg-primary-subtle .hint,
+.bg-primary-subtle .form-text,
+.bg-primary-subtle .text-muted {
+  color: var(--bs-primary-text-emphasis) !important;
+}
+
+.bg-secondary-subtle .hint,
+.bg-secondary-subtle .form-text,
+.bg-secondary-subtle .text-muted {
+  color: var(--bs-secondary-text-emphasis) !important;
+}
+
+.bg-success-subtle .hint,
+.bg-success-subtle .form-text,
+.bg-success-subtle .text-muted {
+  color: var(--bs-success-text-emphasis) !important;
+}
+
+.bg-info-subtle .hint,
+.bg-info-subtle .form-text,
+.bg-info-subtle .text-muted {
+  color: var(--bs-info-text-emphasis) !important;
+}
+
+.bg-warning-subtle .hint,
+.bg-warning-subtle .form-text,
+.bg-warning-subtle .text-muted {
+  color: var(--bs-warning-text-emphasis) !important;
+}
+
+.bg-danger-subtle .hint,
+.bg-danger-subtle .form-text,
+.bg-danger-subtle .text-muted {
+  color: var(--bs-danger-text-emphasis) !important;
+}
+
+.bg-light-subtle .hint,
+.bg-light-subtle .form-text,
+.bg-light-subtle .text-muted {
+  color: var(--bs-light-text-emphasis) !important;
+}
+
+.bg-dark-subtle .hint,
+.bg-dark-subtle .form-text,
+.bg-dark-subtle .text-muted {
+  color: var(--bs-dark-text-emphasis) !important;
+}
+
 .g-recaptcha {
   margin-bottom: 1rem;
 }
