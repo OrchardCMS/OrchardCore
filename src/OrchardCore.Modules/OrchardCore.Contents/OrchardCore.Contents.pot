@@ -66,6 +66,11 @@ msgid_plural "'{1}' was not restored, the version is not valid. Errors: {2}"
 msgstr[0] ""
 msgstr[1] ""
 
+#: AuditTrail/Drivers/AuditTrailContentEventDisplayDriver.cs
+msgctxt "OrchardCore.Contents.AuditTrail.Drivers.AuditTrailContentEventDisplayDriver"
+msgid "Content Item Info"
+msgstr ""
+
 #: AuditTrail/Drivers/AuditTrailPartSettingsDisplayDriver.cs
 msgctxt "OrchardCore.Contents.AuditTrail.Drivers.AuditTrailPartSettingsDisplayDriver"
 msgid "Settings"
@@ -1312,11 +1317,6 @@ msgstr ""
 #: Views/Items/AuditTrailContentEventDetail.DetailAdmin.cshtml
 msgctxt "OrchardCore.Contents.Views.Items.AuditTrailContentEventDetail.DetailAdmin"
 msgid "Content Item Id"
-msgstr ""
-
-#: Views/Items/AuditTrailContentEventDetail.DetailAdmin.cshtml
-msgctxt "OrchardCore.Contents.Views.Items.AuditTrailContentEventDetail.DetailAdmin"
-msgid "Content Item Info"
 msgstr ""
 
 #: Views/Items/AuditTrailContentEventDetail.DetailAdmin.cshtml

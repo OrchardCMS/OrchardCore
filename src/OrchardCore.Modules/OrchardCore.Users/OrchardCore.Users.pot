@@ -136,6 +136,11 @@ msgctxt "OrchardCore.Users.AuditTrail.DeploymentStartup"
 msgid "User Audit Trail settings"
 msgstr ""
 
+#: AuditTrail/Drivers/AuditTrailUserEventDisplayDriver.cs
+msgctxt "OrchardCore.Users.AuditTrail.Drivers.AuditTrailUserEventDisplayDriver"
+msgid "User Info"
+msgstr ""
+
 #: AuditTrail/Permissions.cs
 msgctxt "OrchardCore.Users.AuditTrail.Permissions"
 msgid "Manage Audit Trail settings for user events"
@@ -1675,11 +1680,6 @@ msgstr ""
 #: Views/Items/AuditTrailUserEventDetail.DetailAdmin.cshtml
 msgctxt "OrchardCore.Users.Views.Items.AuditTrailUserEventDetail.DetailAdmin"
 msgid "User ID"
-msgstr ""
-
-#: Views/Items/AuditTrailUserEventDetail.DetailAdmin.cshtml
-msgctxt "OrchardCore.Users.Views.Items.AuditTrailUserEventDetail.DetailAdmin"
-msgid "User Info"
 msgstr ""
 
 #: Views/Items/AuditTrailUserEventDetail.DetailAdmin.cshtml

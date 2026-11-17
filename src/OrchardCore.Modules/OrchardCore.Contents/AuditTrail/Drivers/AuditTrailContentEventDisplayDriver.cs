@@ -1,4 +1,5 @@
 using System.Text.Json.Nodes;
+using Microsoft.Extensions.Localization;
 using OrchardCore.AuditTrail.Drivers;
 using OrchardCore.AuditTrail.Indexes;
 using OrchardCore.AuditTrail.Models;
@@ -20,12 +21,16 @@ public sealed class AuditTrailContentEventDisplayDriver : AuditTrailEventSection
     private readonly IAuditTrailManager _auditTrailManager;
     private readonly ISession _session;
 
+    internal readonly IStringLocalizer S;
+
     public AuditTrailContentEventDisplayDriver(
         IAuditTrailManager auditTrailManager,
-        ISession session)
+        ISession session,
+        IStringLocalizer<AuditTrailContentEventDisplayDriver> stringLocalizer)
     {
         _auditTrailManager = auditTrailManager;
         _session = session;
+        S = stringLocalizer;
     }
 
     public override async Task<IDisplayResult> DisplayAsync(AuditTrailEvent auditTrailEvent, AuditTrailContentEvent contentEvent, BuildDisplayContext context)
@@ -78,7 +83,7 @@ public sealed class AuditTrailContentEventDisplayDriver : AuditTrailEventSection
                     m.Previous = previous.ToString();
                     m.Current = current.ToString();
                 }
-            }).Location(OrchardCoreConstants.DisplayType.DetailAdmin, "Content:5"),
+            }).Location(OrchardCoreConstants.DisplayType.DetailAdmin, l => l.Zone("Content", "5").Card(S["Content Item Info"], "5")),
             Initialize<AuditTrailContentEventDetailViewModel>("AuditTrailContentEventDiff_DetailAdmin", async m =>
             {
                 BuildSummaryViewModel(m, auditTrailEvent, contentEvent, descriptor, latestVersionId);

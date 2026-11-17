@@ -26,6 +26,11 @@ msgctxt "OrchardCore.AuditTrail.DeploymentStartup"
 msgid "Exports the audit trail trimming settings."
 msgstr ""
 
+#: Drivers/AuditTrailEventDisplayDriver.cs
+msgctxt "OrchardCore.AuditTrail.Drivers.AuditTrailEventDisplayDriver"
+msgid "Event Info"
+msgstr ""
+
 #: Drivers/AuditTrailSettingsDisplayDriver.cs
 msgctxt "OrchardCore.AuditTrail.Drivers.AuditTrailSettingsDisplayDriver"
 msgid "Events"
@@ -424,11 +429,6 @@ msgstr ""
 #: Views/AuditTrailEventDetail.DetailAdmin.cshtml
 msgctxt "OrchardCore.AuditTrail.Views.AuditTrailEventDetail.DetailAdmin"
 msgid "Client IP address"
-msgstr ""
-
-#: Views/AuditTrailEventDetail.DetailAdmin.cshtml
-msgctxt "OrchardCore.AuditTrail.Views.AuditTrailEventDetail.DetailAdmin"
-msgid "Event Info"
 msgstr ""
 
 #: Views/AuditTrailEventDetail.DetailAdmin.cshtml

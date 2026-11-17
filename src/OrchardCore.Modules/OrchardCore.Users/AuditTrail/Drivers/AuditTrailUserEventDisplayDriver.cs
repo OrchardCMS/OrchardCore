@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Localization;
 using OrchardCore.AuditTrail.Drivers;
 using OrchardCore.AuditTrail.Models;
 using OrchardCore.DisplayManagement.Handlers;
@@ -14,12 +15,16 @@ public sealed class AuditTrailUserEventDisplayDriver : AuditTrailEventSectionDis
     private readonly IAuthorizationService _authorizationService;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
+    internal readonly IStringLocalizer S;
+
     public AuditTrailUserEventDisplayDriver(
         IAuthorizationService authorizationService,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        IStringLocalizer<AuditTrailUserEventDisplayDriver> stringLocalizer)
     {
         _authorizationService = authorizationService;
         _httpContextAccessor = httpContextAccessor;
+        S = stringLocalizer;
     }
 
     public override IDisplayResult Display(AuditTrailEvent auditTrailEvent, AuditTrailUserEvent userEvent, BuildDisplayContext context) =>
@@ -31,5 +36,5 @@ public sealed class AuditTrailUserEventDisplayDriver : AuditTrailEventSectionDis
             .RenderWhen(async () =>
                 _httpContextAccessor.HttpContext?.User is { Identity.IsAuthenticated: true } claimsPrincipal &&
                 await _authorizationService.AuthorizeAsync(claimsPrincipal, Permissions.ViewUserAuditTrailEvents, userEvent))
-            .Location(OrchardCoreConstants.DisplayType.DetailAdmin, "Content:10");
+            .Location(OrchardCoreConstants.DisplayType.DetailAdmin, l => l.Zone("Content", "10").Card(S["User Info"], "10"));
 }
