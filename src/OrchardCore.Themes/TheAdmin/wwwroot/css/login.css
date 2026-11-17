@@ -63,7 +63,7 @@
   --ta-font-size-xl: 1.375rem;
   --ta-font-size-page-title: 1.75rem;
   --ta-font-weight-normal: 400;
-  --ta-font-weight-strong: 700;
+  --ta-font-weight-strong: 600;
   --ta-line-height: 1.5;
   --ta-line-height-tight: 1.25;
   --ta-surface-padding-x: calc(1.25rem * var(--ta-density));
@@ -236,7 +236,7 @@ html {
   font-family: "Lato";
   font-style: normal;
   font-display: swap;
-  font-weight: 700;
+  font-weight: 600 700;
   src: url("../fonts/lato-latin-ext-700-normal.woff2") format("woff2");
   unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
@@ -245,7 +245,7 @@ html {
   font-family: "Lato";
   font-style: normal;
   font-display: swap;
-  font-weight: 700;
+  font-weight: 600 700;
   src: url("../fonts/lato-latin-700-normal.woff2") format("woff2");
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
@@ -450,7 +450,12 @@ h1, h2, h3, h4, h5, h6,
 }
 
 .btn, .button {
-  font-weight: 600;
+  font-weight: var(--ta-font-weight-strong);
+}
+
+strong,
+b {
+  font-weight: var(--ta-font-weight-strong);
 }
 
 .btn-primary, .button {

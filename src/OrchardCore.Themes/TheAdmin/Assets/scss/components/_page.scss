@@ -6,6 +6,30 @@
     letter-spacing: -0.01em;
 }
 
+// The headings of the content step down from the page title: a section heading (h2, h3) stays under it, and the small
+// headings of cards and widgets (h4 to h6) are close to the body size.
+.ta-content {
+    h2, .h2 {
+        font-size: var(--ta-font-size-xl);
+    }
+
+    h3, .h3 {
+        font-size: 1.25rem;
+    }
+
+    h4, .h4 {
+        font-size: var(--ta-font-size-lg);
+    }
+
+    h5, .h5 {
+        font-size: var(--ta-font-size-md);
+    }
+
+    h6, .h6 {
+        font-size: var(--ta-font-size-sm);
+    }
+}
+
 // The scrollbars of the content take a shade of the scheme.
 .ta-admin {
     scrollbar-color: rgba(var(--ta-navy-rgb), 0.3) transparent;

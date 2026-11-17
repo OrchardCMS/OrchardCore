@@ -65,7 +65,7 @@
   --ta-font-size-xl: 1.375rem;
   --ta-font-size-page-title: 1.75rem;
   --ta-font-weight-normal: 400;
-  --ta-font-weight-strong: 700;
+  --ta-font-weight-strong: 600;
   --ta-line-height: 1.5;
   --ta-line-height-tight: 1.25;
   --ta-surface-padding-x: calc(1.25rem * var(--ta-density));
@@ -238,7 +238,7 @@ html {
   font-family: "Lato";
   font-style: normal;
   font-display: swap;
-  font-weight: 700;
+  font-weight: 600 700;
   src: url("../fonts/lato-latin-ext-700-normal.woff2") format("woff2");
   unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
@@ -247,7 +247,7 @@ html {
   font-family: "Lato";
   font-style: normal;
   font-display: swap;
-  font-weight: 700;
+  font-weight: 600 700;
   src: url("../fonts/lato-latin-700-normal.woff2") format("woff2");
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
@@ -452,7 +452,12 @@ h1, h2, h3, h4, h5, h6,
 }
 
 .btn, .button {
-  font-weight: 600;
+  font-weight: var(--ta-font-weight-strong);
+}
+
+strong,
+b {
+  font-weight: var(--ta-font-weight-strong);
 }
 
 .btn-primary, .button {
@@ -1196,7 +1201,7 @@ html:has(.action-bar-bottom) {
   background-color: transparent;
   color: var(--bs-dropdown-link-color);
   font-size: var(--bs-dropdown-font-size);
-  font-weight: 400;
+  font-weight: var(--ta-font-weight-normal);
   text-align: start;
   box-shadow: none;
 }
@@ -1479,7 +1484,7 @@ html:has(.action-bar-bottom) {
 }
 
 .badge {
-  font-weight: 600;
+  font-weight: var(--ta-font-weight-strong);
   letter-spacing: 0.01em;
 }
 
@@ -11722,6 +11727,26 @@ div.editor-widget.find-widget .button.codicon:active {
   letter-spacing: -0.01em;
 }
 
+.ta-content h2, .ta-content .h2 {
+  font-size: var(--ta-font-size-xl);
+}
+
+.ta-content h3, .ta-content .h3 {
+  font-size: 1.25rem;
+}
+
+.ta-content h4, .ta-content .h4 {
+  font-size: var(--ta-font-size-lg);
+}
+
+.ta-content h5, .ta-content .h5 {
+  font-size: var(--ta-font-size-md);
+}
+
+.ta-content h6, .ta-content .h6 {
+  font-size: var(--ta-font-size-sm);
+}
+
 .ta-admin {
   scrollbar-color: rgba(var(--ta-navy-rgb), 0.3) transparent;
 }
@@ -11821,13 +11846,13 @@ ul.pager {
 .ta-scheme-preview-menu .ta-scheme-preview-brand {
   margin-bottom: 0.5rem;
   color: var(--ta-menu-strong);
-  font-weight: 700;
+  font-weight: var(--ta-font-weight-strong);
 }
 
 .ta-scheme-preview-menu .ta-scheme-preview-current {
   background-color: var(--ta-menu-active-bg);
   color: var(--ta-menu-active-color);
-  font-weight: 700;
+  font-weight: var(--ta-font-weight-strong);
 }
 
 .ta-scheme-preview-page {
@@ -11843,7 +11868,7 @@ ul.pager {
   font-family: var(--ta-heading-font-family);
   color: var(--ta-heading);
   font-size: 1.125rem;
-  font-weight: 700;
+  font-weight: var(--ta-font-weight-strong);
 }
 
 .ta-scheme-preview-page .ta-scheme-preview-card {
@@ -11857,7 +11882,7 @@ ul.pager {
   padding: 0.375rem 0.625rem;
   background-color: var(--ta-toolbar-bg);
   color: var(--ta-toolbar-fg);
-  font-weight: 700;
+  font-weight: var(--ta-font-weight-strong);
 }
 
 .ta-scheme-preview-page .ta-scheme-preview-row {
@@ -11895,7 +11920,7 @@ ul.pager {
   border-radius: var(--ta-radius-sm);
   background-color: var(--ta-primary);
   color: var(--ta-on-primary);
-  font-weight: 700;
+  font-weight: var(--ta-font-weight-strong);
 }
 
 .ta-color-field {
@@ -11992,7 +12017,7 @@ ul.ui-sortable:not(:has(> li)) {
   border-radius: 0;
   background-color: transparent;
   color: var(--ta-muted);
-  font-weight: 600;
+  font-weight: var(--ta-font-weight-strong);
   transition: color 0.15s ease-in-out, border-color 0.15s ease-in-out;
 }
 
@@ -12027,7 +12052,7 @@ ul.ui-sortable:not(:has(> li)) {
 
 .nav-pills .nav-link {
   border-radius: var(--bs-border-radius);
-  font-weight: 600;
+  font-weight: var(--ta-font-weight-strong);
 }
 
 .trumbowyg {

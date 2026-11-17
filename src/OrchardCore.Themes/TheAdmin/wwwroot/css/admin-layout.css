@@ -331,7 +331,7 @@ body.ta-admin {
 .item-label > .title {
   flex: 1 1 auto;
   min-width: 0;
-  font-size: var(--ta-font-size-sm);
+  font-size: 0.90625rem;
   font-weight: var(--ta-font-weight-normal);
   overflow-wrap: break-word;
 }
@@ -405,10 +405,6 @@ body.ta-admin {
 
 .nav-group-label:hover, .nav-group-label:focus-visible {
   color: var(--oc-admin-menu-font-color-hover);
-}
-
-#left-nav > ul > li > figure > figcaption > .item-label > .title {
-  font-size: 0.90625rem;
 }
 
 #left-nav > ul > li > figure > figcaption > .item-label > .icon {

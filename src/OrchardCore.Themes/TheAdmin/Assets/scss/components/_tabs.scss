@@ -16,7 +16,7 @@
         border-radius: 0;
         background-color: transparent;
         color: var(--ta-muted);
-        font-weight: 600;
+        font-weight: var(--ta-font-weight-strong);
         transition: color 0.15s ease-in-out, border-color 0.15s ease-in-out;
 
         &:hover {
@@ -54,5 +54,5 @@
 // Pills are rounded rectangles, like the buttons.
 .nav-pills .nav-link {
     border-radius: var(--bs-border-radius);
-    font-weight: 600;
+    font-weight: var(--ta-font-weight-strong);
 }

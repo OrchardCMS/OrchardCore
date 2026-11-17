@@ -31,8 +31,10 @@ $ta-font-stack-fallback: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetic
     --ta-font-size-lg: 1.125rem;
     --ta-font-size-xl: 1.375rem;
     --ta-font-size-page-title: 1.75rem;
+    // Two weights only: regular for text, and one strong weight for everything set apart (headings, titles, buttons,
+    // badges, tabs, column headers, the current page of the menu). Lato has no semibold; its bold face serves it.
     --ta-font-weight-normal: 400;
-    --ta-font-weight-strong: 700;
+    --ta-font-weight-strong: 600;
     --ta-line-height: 1.5;
     --ta-line-height-tight: 1.25;
 

@@ -21,7 +21,7 @@
 $menu-pill-inset: 0.75rem;
 $menu-pill-radius: calc(0.625rem * var(--ta-radius-scale, 1));
 
-// The size of the labels of the first level rows, a step above the items they hold.
+// The size of every label of the menu, first level and nested alike.
 $menu-label-size: 0.90625rem;
 
 // Keyboard focus must stay visible: the hover background alone is far too faint to carry it, so every control of the
@@ -245,7 +245,7 @@ $menu-label-size: 0.90625rem;
     > .title {
         flex: 1 1 auto;
         min-width: 0;
-        font-size: var(--ta-font-size-sm);
+        font-size: $menu-label-size;
         font-weight: var(--ta-font-weight-normal);
         // Long words, such as a content type name, break rather than overflow.
         overflow-wrap: break-word;
@@ -330,10 +330,6 @@ $menu-label-size: 0.90625rem;
 
 // The icon of each first level row sits on a quiet rounded tile, a wash of the menu's own text color, so the icons
 // stand out without adding colors. On the current page the tile is a wash of the row's text color.
-#left-nav > ul > li > figure > figcaption > .item-label > .title {
-    font-size: $menu-label-size;
-}
-
 #left-nav > ul > li > figure > figcaption > .item-label > .icon {
     align-self: center;
     width: 2rem;
