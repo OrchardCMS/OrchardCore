@@ -230,6 +230,36 @@ describe("ServerFormHost", () => {
         expect(wrapper.find(".field-validation-error").exists()).toBe(false);
     });
 
+    it("apply_ValidAfterInvalidWithEditsWhilePosting_KeepsTheEdits", async () => {
+        let resolveValid: (result: FormApplyResult) => void = () => {};
+        const submit = vi
+            .fn<(form: FormData) => Promise<FormApplyResult>>()
+            .mockResolvedValueOnce({ valid: false, content: '<input name="Activity.Message" value="" /><span class="field-validation-error">Required</span>', scripts: "", styles: "" })
+            .mockImplementationOnce(() => new Promise((resolve) => (resolveValid = resolve)));
+        const { wrapper, load } = mountHost({ submit });
+        await flushPromises();
+        const host = wrapper.vm as unknown as { apply: () => Promise<boolean> };
+
+        await wrapper.get("input").trigger("input");
+        await host.apply();
+        await flushPromises();
+
+        await wrapper.get("input").trigger("input");
+        const applying = host.apply();
+        await flushPromises();
+
+        // The user keeps typing while the valid apply is posted.
+        const input = wrapper.get("input").element as HTMLInputElement;
+        input.value = "Typed meanwhile";
+        await wrapper.get("input").trigger("input");
+        resolveValid({ valid: true });
+        await applying;
+        await flushPromises();
+
+        expect(load).toHaveBeenCalledTimes(1);
+        expect((wrapper.get("input").element as HTMLInputElement).value).toBe("Typed meanwhile");
+    });
+
     it("apply_ServerAsksToReloadTheEditor_LoadsTheFormAgain", async () => {
         const { wrapper, load } = mountHost({ submit: () => Promise.resolve({ valid: true, reloadEditor: true }) });
         await flushPromises();
