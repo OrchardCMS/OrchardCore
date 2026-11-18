@@ -31,6 +31,40 @@ public sealed class MediaAppTests : IAsyncLifetime
         return ValueTask.CompletedTask;
     }
 
+    [Theory]
+    [InlineData("", "mediafields/temp/test-user", "mediafields/temp/test-user/upload.csv")]
+    [InlineData("?path=library", "mediafields/temp/test-user", "library/upload.csv")]
+    [InlineData("?path=", "mediafields/temp/test-user", "upload.csv")]
+    [InlineData("", null, "upload.csv")]
+    public async Task Upload_QueryAndFormPaths_StoresFileAtExpectedPath(string query, string formPath, string expectedPath)
+    {
+        var page = await _fixture.CreatePageAsync();
+        var prefix = $"/{_tenant.Prefix}";
+        await AuthHelper.LoginAsync(page, prefix);
+        await MediaHelper.NavigateToMediaAsync(page, prefix);
+
+        var form = page.APIRequest.CreateFormData();
+        form.Set("__RequestVerificationToken", await page.Locator("input[name='__RequestVerificationToken']").First.InputValueAsync());
+        form.Set("files", new FilePayload
+        {
+            Name = "upload.csv",
+            MimeType = "text/csv",
+            Buffer = "a,b"u8.ToArray(),
+        });
+        if (formPath is not null)
+        {
+            form.Set("path", formPath);
+        }
+
+        var response = await page.APIRequest.PostAsync($"{prefix}/api/media/Upload{query}", new() { Multipart = form });
+        Assert.True(response.Ok, await response.TextAsync());
+        var result = await response.JsonAsync();
+        var uploaded = Assert.Single(result.Value.GetProperty("files").EnumerateArray());
+        Assert.Equal(expectedPath, uploaded.GetProperty("filePath").GetString());
+
+        await page.CloseAsync();
+    }
+
     [Fact]
     public async Task ShouldUploadSingleFile()
     {

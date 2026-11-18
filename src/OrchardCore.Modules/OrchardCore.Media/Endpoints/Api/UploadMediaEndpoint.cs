@@ -51,25 +51,30 @@ public static class UploadMediaEndpoint
         string path,
         string extensions)
     {
-        if (string.IsNullOrEmpty(path))
-        {
-            path = string.Empty;
-        }
-
-        if (!await authorizationService.AuthorizeAsync(httpContext.User, MediaPermissions.ManageMedia)
-            || !await authorizationService.AuthorizeAsync(httpContext.User, MediaPermissions.ManageMediaFolder, (object)path))
+        if (!await authorizationService.AuthorizeAsync(httpContext.User, MediaPermissions.ManageMedia))
         {
             return httpContext.ApiForbidProblem();
         }
 
         var mediaOptions = options.Value;
+        ApplyMediaSizeLimit(httpContext, mediaOptions.MaxFileSize);
+
+        // Older Attached media editors send the destination in the multipart form.
+        if (path is null && httpContext.Request.HasFormContentType)
+        {
+            var form = await httpContext.Request.ReadFormAsync(httpContext.RequestAborted);
+            path = form["path"].ToString();
+        }
+
+        path ??= string.Empty;
+        if (!await authorizationService.AuthorizeAsync(httpContext.User, MediaPermissions.ManageMediaFolder, (object)path))
+        {
+            return httpContext.ApiForbidProblem();
+        }
+
         var canUploadRestrictedMedia = await authorizationService.AuthorizeAsync(
             httpContext.User,
             MediaPermissions.UploadRestrictedMedia);
-
-        // Replicate the [MediaSizeLimit] filter: cap the multipart body / request size using the
-        // configured MaxFileSize before the form is read by the chunk upload service.
-        ApplyMediaSizeLimit(httpContext, mediaOptions.MaxFileSize);
 
         var requestedExtensions = MediaEndpointHelpers.GetRequestedExtensions(extensions);
 
