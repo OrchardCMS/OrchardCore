@@ -33,12 +33,6 @@ internal sealed class TwoFactorUserSecurityDisplayDriver : DisplayDriver<UserSec
         _twoFactorOptions = twoFactorOptions.Value;
     }
 
-    // The form of the shape posts to the TwoFactorAuthentication controller, which binds its fields without a prefix.
-    protected override void BuildPrefix(UserSecurity model, string htmlFieldPrefix)
-    {
-        Prefix = string.Empty;
-    }
-
     public override IDisplayResult Display(UserSecurity model, BuildDisplayContext context)
     {
         return Initialize<TwoFactorAuthenticationViewModel>("UserSecurityTwoFactor", async viewModel =>
