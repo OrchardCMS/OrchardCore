@@ -35,7 +35,7 @@ public sealed class ArchiveLaterPartDisplayDriver : ContentPartDisplayDriver<Arc
     public override IDisplayResult Edit(ArchiveLaterPart part, BuildPartEditorContext context)
         => Initialize<ArchiveLaterPartViewModel, ArchiveLaterPartDisplayDriver, ArchiveLaterPart>(
             GetEditorShapeType(context),
-            static (model, driver, part) => driver.PopulateViewModel(part, model), this, part).Location("Actions:10.5");
+            static (model, driver, part) => driver.PopulateViewModel(part, model), this, part).Location("Actions:20.5");
 
     public override async Task<IDisplayResult> UpdateAsync(ArchiveLaterPart part, UpdatePartEditorContext context)
     {

@@ -106,18 +106,20 @@ public sealed class ContentsDriver : ContentDisplayDriver
 
         var user = _httpContextAccessor.HttpContext.User;
 
+        // The actions are ordered from the least to the most important one, so that the main action, "Publish", is the last one
+        // of the action bar, and "Cancel" the first one.
         return Combine(
-            Dynamic("Content_PublishButton").Location("Actions:10")
-                .RenderWhen(() => _authorizationService.AuthorizeAsync(user, CommonPermissions.PublishContent, contentItem)),
+            Dynamic("Content_DeleteButton").Location("Actions:10")
+                .RenderWhen(async () => contentItem.Id != 0
+                    && await _authorizationService.AuthorizeAsync(user, CommonPermissions.DeleteContent, contentItem)),
             Dynamic("Content_UnpublishButton").Location("Actions:20")
                 .RenderWhen(async () => contentItem.Published
                     && await _authorizationService.AuthorizeAsync(user, CommonPermissions.PublishContent, contentItem)),
             Dynamic("Content_SaveDraftButton").Location("Actions:30")
                 .RenderWhen(async () => contentTypeDefinition.IsDraftable()
                     && await _authorizationService.AuthorizeAsync(user, CommonPermissions.EditContent, contentItem)),
-            Dynamic("Content_DeleteButton").Location("Actions:40")
-                .RenderWhen(async () => contentItem.Id != 0
-                    && await _authorizationService.AuthorizeAsync(user, CommonPermissions.DeleteContent, contentItem))
+            Dynamic("Content_PublishButton").Location("Actions:40")
+                .RenderWhen(() => _authorizationService.AuthorizeAsync(user, CommonPermissions.PublishContent, contentItem))
             );
     }
 }

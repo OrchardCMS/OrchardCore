@@ -199,8 +199,8 @@ const policyDetailsComponent = {
                 </div>
             </div>
             <div class="action-bar-bottom">
-                <button type="button" class="btn btn-primary" v-on:click="$emit('ok', policy, $event)">{{ t.Save }}</button>
                 <button type="button" class="btn btn-secondary" v-on:click="$emit('back')">{{ t.Cancel }}</button>
+                <button type="button" class="btn btn-primary" v-on:click="$emit('ok', policy, $event)">{{ t.Save }}</button>
             </div>
         </div>
     `,

@@ -662,8 +662,21 @@ Use `ocat-end-offset` for alerts, notices, legends, and headings that belong to 
 </div>
 ```
 
+### Action bar
+
+Render the submit buttons in a `<div class="action-bar-bottom">` at the end of the form, ordered from the least to the most important action on every page: **Cancel** first, then the secondary actions marked with `action-bar-secondary` (such as **Delete** or **Preview**), and the main action (**Save**, **Create**, **Publish**) last. Keep that order in the markup, not with CSS, and give shapes placed in an `Actions` zone positions that follow it. See the `orchardcore-admin-edit-views` skill.
+
+```cshtml
+<div class="action-bar-bottom">
+    <a class="btn btn-secondary cancel" role="button" asp-action="Index">@T["Cancel"]</a>
+    <a class="btn btn-danger action-bar-secondary" asp-action="Delete" data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+    <button class="btn btn-primary save" type="submit">@T["Save"]</button>
+</div>
+```
+
 ### Avoid
 
+- The main action before **Cancel** or the secondary actions in the action bar
 - `mb-3`, `form-group`, or `form-label` as the row layout pattern
 - Legacy helper methods such as `@Orchard.GetWrapperClasses()` or `@Orchard.GetLimitedWidthWrapperClasses()`
 - Using `ocat-limited-wrapper` for text inputs, selects, paths, IDs, or other non-number fields unless the user explicitly requests compact width
