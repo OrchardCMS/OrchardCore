@@ -304,6 +304,15 @@ Render the submit buttons of an admin edit page in a `<div class="action-bar-bot
 
 Keep the DOM in this order instead of reordering with CSS, so the keyboard focus follows what is shown. Use the same button styles on every page: `btn-secondary` for **Cancel** and alternative actions (e.g. **Save & Configure**, **Create & Setup**), `btn-danger` for destructive ones, and `btn-primary` for the main action. Only the content item **Publish** button uses `btn-success`, to stand apart from **Save Draft**.
 
+Modal dialog footers (`.modal-footer`, and the dialog opened by `confirmDialog()`) use the same order: **Cancel** or **Close** first, any secondary action (e.g. **Reset Anchor**) next, and the confirming action (**OK**, **Save**, **Delete**) last.
+
+```html
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@T["Cancel"]</button>
+    <button type="button" class="btn btn-primary" v-on:click="save">@T["OK"]</button>
+</div>
+```
+
 ```html
 <div class="action-bar-bottom">
     <a class="btn btn-secondary cancel" role="button" asp-action="Index">@T["Cancel"]</a>
