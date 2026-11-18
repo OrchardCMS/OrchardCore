@@ -3,7 +3,7 @@
 <div class="ocat-wrapper">
     <label asp-for="UserName" class="ocat-label @(Model.AllowEditing ? "ocat-label-required" : null)">@T["User name"]</label>
     <div class="ocat-end">
-        <div class="input-group col-md-4">
+        <div class="input-group has-validation col-md-4">
             <span class="input-group-text"><i class="fa-solid fa-user" aria-hidden="true"></i></span>
             <input asp-for="UserName" class="form-control" autofocus asp-is-disabled="@(!Model.AllowEditing)" />
         </div>
