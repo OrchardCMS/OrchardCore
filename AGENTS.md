@@ -664,7 +664,7 @@ Use `ocat-end-offset` for alerts, notices, legends, and headings that belong to 
 
 ### Action bar
 
-Render the submit buttons in a `<div class="action-bar-bottom">` at the end of the form, ordered from the least to the most important action on every page: **Cancel** first, then the secondary actions marked with `action-bar-secondary` (such as **Delete** or **Preview**), and the main action (**Save**, **Create**, **Publish**) last. Keep that order in the markup, not with CSS, and give shapes placed in an `Actions` zone positions that follow it. See the `orchardcore-admin-edit-views` skill.
+Render the submit buttons in a `<div class="action-bar-bottom">` at the end of the form, ordered from the least to the most important action on every page: **Cancel** first, then the secondary actions marked with `action-bar-secondary` (such as **Delete** or **Preview**), and the main action (**Save**, **Create**, **Publish**) last. Keep that order in the markup, not with CSS, and give shapes placed in an `Actions` zone positions that follow it. Style **Cancel** and alternative actions with `btn-secondary`, destructive ones with `btn-danger`, and the main action with `btn-primary` (only the content item **Publish** uses `btn-success`). See the `orchardcore-admin-edit-views` skill.
 
 ```cshtml
 <div class="action-bar-bottom">

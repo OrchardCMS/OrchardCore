@@ -302,7 +302,7 @@ Render the submit buttons of an admin edit page in a `<div class="action-bar-bot
 2. The secondary actions, marked with `action-bar-secondary`: alternative saves such as **Save & Configure**, **Preview**, **Delete**. In the `Menu` actions layout and on small screens they move into the "more actions" menu, opened by the ⋮ toggle at the end of the bar, where destructive actions are listed last.
 3. The main action last, such as **Save**, **Create** or **Publish**, or its `btn-group` with a **Save and continue** dropdown.
 
-Keep the DOM in this order instead of reordering with CSS, so the keyboard focus follows what is shown.
+Keep the DOM in this order instead of reordering with CSS, so the keyboard focus follows what is shown. Use the same button styles on every page: `btn-secondary` for **Cancel** and alternative actions (e.g. **Save & Configure**, **Create & Setup**), `btn-danger` for destructive ones, and `btn-primary` for the main action. Only the content item **Publish** button uses `btn-success`, to stand apart from **Save Draft**.
 
 ```html
 <div class="action-bar-bottom">
