@@ -1,5 +1,9 @@
 # Content Types (`OrchardCore.ContentTypes`)
 
+## Changing a content type's stereotype
+
+You can change a stereotype and any visible settings in the same save. For example, clear **Creatable** when assigning the `CustomUserSettings` stereotype to remove the **Create New** action for that type. When you remove a stereotype, any settings it hid keep their saved values. Reopen the type to edit the settings that are visible again.
+
 ## View Components
 
 ### `SelectContentTypes`
