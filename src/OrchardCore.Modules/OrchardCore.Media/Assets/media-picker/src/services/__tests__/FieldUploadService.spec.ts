@@ -403,7 +403,7 @@ describe("useFieldUpload", () => {
       await vi.waitFor(() => expect(xhrInstances).toHaveLength(1));
       const xhr = xhrInstances[0];
 
-      expect(xhr.open).toHaveBeenCalledWith("POST", "/custom/upload");
+      expect(xhr.open).toHaveBeenCalledWith("POST", "/custom/upload?path=%2Fmy-temp");
 
       // Resolve the promise
       xhr.status = 200;
