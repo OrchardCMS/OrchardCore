@@ -111,6 +111,7 @@ const doApply = async () => {
     syncing = false;
 
     const data = new FormData(element);
+    const wasInvalid = invalid.value;
     applying.value = true;
 
     try {
@@ -127,8 +128,9 @@ const doApply = async () => {
         dirty.value = false;
         emit("applied", result);
 
-        // The server asks for the form again when the applied settings change it (EditorApplied.reloadEditor).
-        if (reloadWhenApplied || result.reloadEditor) {
+        // The server asks for the form again when the applied settings change it (EditorApplied.reloadEditor). A form
+        // rendered by an invalid apply still shows its errors, which the valid one doesn't replace: it is loaded again.
+        if (reloadWhenApplied || result.reloadEditor || wasInvalid) {
             reloadWhenApplied = false;
             await reload();
         }

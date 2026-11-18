@@ -208,6 +208,28 @@ describe("ServerFormHost", () => {
         expect(wrapper.emitted("error")).toHaveLength(1);
     });
 
+    it("apply_ValidAfterInvalid_LoadsTheFormAgainWithoutTheErrors", async () => {
+        const submit = vi
+            .fn<(form: FormData) => Promise<FormApplyResult>>()
+            .mockResolvedValueOnce({ valid: false, content: '<input name="Activity.Message" value="" /><span class="field-validation-error">Required</span>', scripts: "", styles: "" })
+            .mockResolvedValueOnce({ valid: true });
+        const { wrapper, load } = mountHost({ submit });
+        await flushPromises();
+        const host = wrapper.vm as unknown as { apply: () => Promise<boolean> };
+
+        await wrapper.get("input").trigger("input");
+        await host.apply();
+        await flushPromises();
+        expect(wrapper.find(".field-validation-error").exists()).toBe(true);
+
+        await wrapper.get("input").trigger("input");
+        await host.apply();
+        await flushPromises();
+
+        expect(load).toHaveBeenCalledTimes(2);
+        expect(wrapper.find(".field-validation-error").exists()).toBe(false);
+    });
+
     it("apply_ServerAsksToReloadTheEditor_LoadsTheFormAgain", async () => {
         const { wrapper, load } = mountHost({ submit: () => Promise.resolve({ valid: true, reloadEditor: true }) });
         await flushPromises();
