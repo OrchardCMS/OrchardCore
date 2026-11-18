@@ -1,0 +1,5 @@
+@* The Grid layout of admin lists renders a row as SummaryAdminGrid: the user shows as the same badge as in the List layout. *@
+<span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@Model.Title">
+    @await DisplayAsAsync(Model, "UserDisplayNameIcon")
+    @await DisplayAsAsync(Model, "UserDisplayNameText")
+</span>
