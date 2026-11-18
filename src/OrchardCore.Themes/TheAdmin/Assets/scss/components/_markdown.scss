@@ -58,12 +58,12 @@ html .EasyMDEContainer {
     &:has(.CodeMirror-focused) .editor-toolbar:not(.fullscreen) {
         border-color: var(--ta-focus-color);
         box-shadow: var(--ta-focus-halo);
-        clip-path: inset(-2px -2px 0 -2px);
+        clip-path: inset(-0.5rem -0.5rem 0 -0.5rem);
     }
 
     &:has(.editor-toolbar:not(.fullscreen)) > .CodeMirror-focused:not(.CodeMirror-fullscreen) {
         border-top-color: var(--ta-border);
-        clip-path: inset(0 -2px -2px -2px);
+        clip-path: inset(0 -0.5rem -0.5rem -0.5rem);
     }
 
     .editor-statusbar {

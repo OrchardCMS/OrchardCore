@@ -55,9 +55,9 @@ $ta-font-stack-fallback: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetic
     --ta-radius-lg: calc(1rem * var(--ta-radius-scale));
 
     // The focus of a field: its border takes the focus color, which is what passes the 3:1 a focus indicator needs
-    // (WCAG 2.4.7, 1.4.11), and a soft glow of that color inside it makes it easy to spot without a hard outline. The
-    // glow stays inside the field, so it never spills over the buttons of an input group.
-    --ta-focus-halo: inset 0 0 0 0.1875rem rgba(var(--ta-link-rgb), 0.12);
+    // (WCAG 2.4.7, 1.4.11), and a soft halo of that color around it makes it easy to spot without a hard outline.
+    // The admin and its log in pages share it.
+    --ta-focus-halo: 0 0 0 0.25rem rgba(var(--ta-link-rgb), 0.18);
 
     // Shadows: neutral, soft, never colored.
     --ta-shadow-sm: 0 1px 2px rgba(16, 42, 67, 0.05);
