@@ -1,0 +1,19 @@
+@using OrchardCore.DisplayManagement.Views
+@model ShapeViewModel<ThemeSchemeEntry>
+
+@*
+    The four colors of the scheme. A theme can draw them with its own stylesheet instead, with the alternate
+    'ThemeScheme.Swatch.SummaryAdmin-{ThemeId}.cshtml'.
+*@
+@{
+    var colors = new[] { Model.Value.Scheme.Primary, Model.Value.Scheme.Deep, Model.Value.Scheme.Ink, Model.Value.Scheme.Accent };
+}
+<span class="d-inline-flex gap-1 align-middle" role="img" aria-label="@T["Colors of {0}", Model.Value.Scheme.Name]">
+    @foreach (var value in colors)
+    {
+        if (ThemeColor.TryParse(value, out var color))
+        {
+            <span class="d-inline-block rounded-circle border" style="width: 1rem; height: 1rem; background-color: @color.ToHex();"></span>
+        }
+    }
+</span>

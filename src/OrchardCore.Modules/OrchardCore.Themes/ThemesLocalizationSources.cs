@@ -12,4 +12,7 @@ internal static class ThemesLocalizationSources
 {
     /// <summary>Gets the "Theming" text.</summary>
     public static readonly LocalizationSource Theming = LocalizationSource.Create("Theming", typeof(ThemesLocalizationSources));
+
+    /// <summary>Gets the "Theme schemes" text.</summary>
+    public static readonly LocalizationSource ThemeSchemes = LocalizationSource.Create("Theme schemes", typeof(ThemesLocalizationSources));
 }

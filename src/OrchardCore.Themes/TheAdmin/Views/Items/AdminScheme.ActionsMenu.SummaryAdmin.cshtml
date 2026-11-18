@@ -1,5 +1,0 @@
-@model ShapeViewModel<AdminScheme>
-
-<a asp-action="Delete" asp-controller="Schemes" asp-area="TheAdmin" asp-route-id="@Model.Value.Id" class="dropdown-item text-danger"
-   data-title="@T["Delete"]" data-message="@T["Delete the scheme {0}? Users who picked it go back to the site's default scheme.", Model.Value.Name]"
-   data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>

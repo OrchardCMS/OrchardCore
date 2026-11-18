@@ -1,10 +1,9 @@
 @using OrchardCore.DisplayManagement
 @using OrchardCore.DisplayManagement.ModelBinding
 @using OrchardCore.Themes.Services
-@using OrchardCore.Themes.TheAdmin.Services
 
 @inject ThemeTogglerService ThemeTogglerService
-@inject AdminSchemeService AdminSchemes
+@inject ThemeSchemeService ThemeSchemes
 @inject IOptions<AdminOptions> AdminOptions
 @inject IOptionsMonitor<AdminListOptions> AdminListOptions
 @inject IDisplayManager<Navbar> DisplayManager
@@ -31,10 +30,10 @@
     var navbar = await DisplayAsync(await DisplayManager.BuildDisplayAsync(UpdateModelAccessor.ModelUpdater, "DetailAdmin"));
 
     // The schemes of the site, after every other stylesheet so their rules apply over the stylesheet's fallback.
-    var schemesUrl = await AdminSchemes.GetStylesheetUrlAsync(Url);
+    var schemesUrl = await ThemeSchemes.GetStylesheetUrlAsync(TheAdminConstants.ThemeId, Url);
 }
 <!DOCTYPE html>
-<html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()" data-bs-theme="@await ThemeTogglerService.CurrentTheme()" data-tenant="@ThemeTogglerService.CurrentTenant" data-ta-scheme="@(await AdminSchemes.GetSchemeAttributeAsync())" data-admin-prefix="@Url.Content("~/" + AdminOptions.Value.AdminUrlPrefix)">
+<html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()" data-bs-theme="@await ThemeTogglerService.CurrentTheme()" data-tenant="@ThemeTogglerService.CurrentTenant" data-ta-scheme="@(await ThemeSchemes.GetSchemeAttributeAsync(TheAdminConstants.ThemeId))" data-admin-prefix="@Url.Content("~/" + AdminOptions.Value.AdminUrlPrefix)">
 <head>
     <title>@RenderTitleSegments(Site.SiteName, "before")</title>
     <meta charset="utf-8">

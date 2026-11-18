@@ -1,21 +1,20 @@
-@using OrchardCore.Themes.TheAdmin.Services
 
-@inject AdminSchemeService Schemes
+@inject ThemeSchemeService Schemes
 
 @*
     The light / dark toggle, with the schemes of the admin under it. The mode buttons keep the markup the theme manager
     script drives (#bd-theme, .theme-icon-active, data-bs-theme-value). The scheme buttons are driven by
-    admin-scheme-picker.js, which stores the choice in the cookie the layouts read. 'Site default' clears that cookie, so
-    the user follows the scheme picked in Settings > Admin again.
+    theme-scheme-picker.js of the Themes module, which stores the choice in the cookie the layouts read. 'Site default'
+    clears that cookie, so the user follows the default scheme picked on Design > Themes > Schemes again.
 *@
 
 @{
-    var userScheme = await Schemes.GetUserSchemeAsync();
-    var siteScheme = await Schemes.GetSiteSchemeAsync();
-    var schemes = await Schemes.ListAsync();
+    var userScheme = await Schemes.GetUserSchemeAsync(TheAdminConstants.ThemeId);
+    var siteScheme = await Schemes.GetSiteSchemeAsync(TheAdminConstants.ThemeId);
+    var schemes = await Schemes.ListAsync(TheAdminConstants.ThemeId);
 }
 
-<script asp-name="admin-scheme-picker" at="Foot"></script>
+<script asp-name="theme-scheme-picker" at="Foot"></script>
 
 <li class="nav-item">
     <div class="dropdown">
@@ -49,15 +48,15 @@
             {
                 <div class="dropdown-divider"></div>
                 <h6 class="dropdown-header">@T["Scheme"]</h6>
-                <div class="ta-scheme-list" role="group" aria-label="@T["Scheme"]" data-cookie-name="@Schemes.CookieName" data-site-scheme="@siteScheme">
-                    <button type="button" class="dropdown-item ta-scheme-option@(userScheme is null ? " active" : string.Empty)" data-ta-scheme-value="" aria-pressed="@(userScheme is null ? "true" : "false")">
+                <div class="ta-scheme-list" role="group" aria-label="@T["Scheme"]" data-theme-scheme-picker data-scheme-attribute="@TheAdminSchemeProvider.AttributeName" data-cookie-name="@Schemes.CookieName(TheAdminConstants.ThemeId)" data-site-scheme="@siteScheme">
+                    <button type="button" class="dropdown-item ta-scheme-option@(userScheme is null ? " active" : string.Empty)" data-theme-scheme-value="" aria-pressed="@(userScheme is null ? "true" : "false")">
                         <span class="ta-scheme-name">@T["Site default"]</span>
                         <span class="ta-scheme-swatch" data-scheme="@siteScheme" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
                     </button>
                     @foreach (var scheme in schemes)
                     {
                         var isPicked = scheme.Id == userScheme;
-                        <button type="button" class="dropdown-item ta-scheme-option@(isPicked ? " active" : string.Empty)" data-ta-scheme-value="@scheme.Id" aria-pressed="@(isPicked ? "true" : "false")">
+                        <button type="button" class="dropdown-item ta-scheme-option@(isPicked ? " active" : string.Empty)" data-theme-scheme-value="@scheme.Id" aria-pressed="@(isPicked ? "true" : "false")">
                             <span class="ta-scheme-name">@scheme.Name</span>
                             <span class="ta-scheme-swatch" data-scheme="@scheme.Id" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
                         </button>

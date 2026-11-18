@@ -190,7 +190,7 @@ These classes enable targeted styling of specific content type editors without r
 
 ## Admin Schemes
 
-The look of **TheAdmin** comes from a scheme: its colors, typefaces, base font size, density and corners. Schemes are records admins manage on **Design > Admin schemes** (they need the `ManageAdminSettings` permission). The default scheme of the site is set on **Settings > Admin**, and each user can pick another one from the theme menu of the top bar.
+The look of **TheAdmin** comes from a scheme: its colors, typefaces, base font size, density and corners. Schemes come from the **Theme Schemes** feature of the Themes module (`OrchardCore.Themes.Schemes`), which TheAdmin depends on and any other theme can opt into (see [Theme Schemes](../modules/Themes/Schemes.md)). Admins manage the schemes of a theme from the **Schemes** button of its card on **Design > Themes** (they need the `ApplyTheme` permission). Each theme has its own default scheme, set with the **Set as default** action of the list and shown with a **Default** badge; the default scheme can't be deleted. Each user can pick another scheme of TheAdmin from the theme menu of the top bar.
 
 A scheme is made of four colors, from which every other color of the admin is derived for the light and the dark mode, each checked against the surfaces it is drawn on so that text reaches 4.5:1 and the boundaries of controls and focus indicators 3:1 (WCAG 2.2 AA):
 
@@ -213,15 +213,18 @@ Optional settings fine tune what is derived: the hue and saturation of the page,
 
 The fonts are served by the theme; the admin never calls a font CDN.
 
-Schemes are exported with the `AdminSchemes` deployment step and imported with the `AdminSchemes` recipe step:
+TheAdmin seeds eight schemes (Blue, the default, Gray, Ocean, Forest, Plum, Sunset, Graphite and Gold) the first time its schemes are read. They are ordinary records from then on, and a theme is seeded once: deleting all of its schemes doesn't bring them back.
+
+Schemes are exported with the `ThemeSchemes` deployment step and imported with the `ThemeSchemes` recipe step. Each entry names its theme (`ThemeId`) and its id (`ItemId`); an entry whose `ItemId` matches a scheme of that theme replaces it. The optional `Defaults` object maps a theme id to the id of its default scheme. Entries of a theme that doesn't support schemes, or isn't enabled, are skipped with an error.
 
 ```json
 {
   "steps": [
     {
-      "name": "AdminSchemes",
+      "name": "ThemeSchemes",
       "Schemes": [
         {
+          "ThemeId": "TheAdmin",
           "ItemId": "harbor",
           "Name": "Harbor",
           "Primary": "#1f6f8b",
@@ -233,11 +236,20 @@ Schemes are exported with the `AdminSchemes` deployment step and imported with t
           "Density": 1,
           "RadiusScale": 1
         }
-      ]
+      ],
+      "Defaults": {
+        "TheAdmin": "harbor"
+      }
     }
   ]
 }
 ```
+
+The schemes of a theme are served as one cached stylesheet, `~/Themes/schemes/{themeId}.css`, versioned by the schemes' document.
+
+### Supporting schemes in your theme
+
+Any theme can offer schemes the way TheAdmin does: it depends on the `OrchardCore.Themes.Schemes` feature, implements and registers an `IThemeSchemeProvider`, and applies the current scheme in its layout. See [Theme Schemes](../modules/Themes/Schemes.md) for the full guide.
 
 ### Design Tokens
 

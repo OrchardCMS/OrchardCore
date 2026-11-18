@@ -1,0 +1,4 @@
+@model ShapeViewModel<ThemeSchemeEntry>
+
+@* The scheme's colors, from the schemes stylesheet of the theme, which every admin page loads. *@
+<span class="ta-scheme-swatch" data-scheme="@Model.Value.Scheme.Id" role="img" aria-label="@T["Colors of {0}", Model.Value.Scheme.Name]"><span></span><span></span><span></span><span></span></span>

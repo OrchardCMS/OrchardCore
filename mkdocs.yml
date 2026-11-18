@@ -224,6 +224,7 @@ nav:
               - Templates: reference/modules/Templates/README.md
               - Placements: reference/modules/Placements/README.md
               - Themes: reference/modules/Themes/README.md
+              - Theme Schemes: reference/modules/Themes/Schemes.md
               - Admin Theme Conventions: reference/themes/admin-theme.md
               - Liquid: reference/modules/Liquid/README.md
               - Media:

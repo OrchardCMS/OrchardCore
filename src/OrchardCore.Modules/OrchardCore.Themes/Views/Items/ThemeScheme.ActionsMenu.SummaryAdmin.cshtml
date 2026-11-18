@@ -1,0 +1,16 @@
+@using OrchardCore.DisplayManagement.Views
+@model ShapeViewModel<ThemeSchemeEntry>
+
+@if (!Model.Value.IsDefault)
+{
+    <a asp-action="SetDefault" asp-controller="Schemes" asp-area="OrchardCore.Themes" asp-route-themeId="@Model.Value.ThemeId" asp-route-id="@Model.Value.Scheme.Id" class="dropdown-item"
+       data-url-af="UnsafeUrl">@T["Set as default"]</a>
+    <a asp-action="Delete" asp-controller="Schemes" asp-area="OrchardCore.Themes" asp-route-themeId="@Model.Value.ThemeId" asp-route-id="@Model.Value.Scheme.Id" class="dropdown-item text-danger"
+       data-title="@T["Delete"]" data-message="@T["Delete the scheme {0}? Users who picked it go back to the site's default scheme.", Model.Value.Scheme.Name]"
+       data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+}
+else
+{
+    @* The default scheme can't be deleted: another one must be made the default first. *@
+    <button type="button" class="dropdown-item text-danger" disabled title="@T["The default scheme can't be deleted. Set another scheme as the default first."]">@T["Delete"]</button>
+}

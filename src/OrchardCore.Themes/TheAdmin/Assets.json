@@ -52,13 +52,6 @@
     "tags": ["theme", "js"]
   },
   {
-    "action": "min",
-    "name": "theme-theadmin-schemes",
-    "source": "Assets/js/admin-scheme-*.js",
-    "dest": "wwwroot/js/",
-    "tags": ["theme", "js"]
-  },
-  {
     "action": "copy",
     "name": "theme-theadmin-fonts",
     "source": [
