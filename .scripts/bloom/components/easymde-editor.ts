@@ -52,6 +52,17 @@ const initEasyMdeEditor = (
 
     const mde = new EasyMDE(buildOptions(markdownElement, customOptions));
 
+    // The editor types into a textarea of its own, which the field's label does not point to: it takes the label's
+    // text as its name, so screen readers announce the field.
+    const label = markdownElement.id
+        ? document.querySelector<HTMLLabelElement>(`label[for="${CSS.escape(markdownElement.id)}"]`)
+        : null;
+
+    if (label) {
+        label.id ||= `${markdownElement.id}-label`;
+        mde.codemirror.getInputField().setAttribute("aria-labelledby", label.id);
+    }
+
     initializeMdeShortcodeWrapper(mde);
 
     mde.codemirror.on("change", () => {
