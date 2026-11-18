@@ -84,7 +84,9 @@ body.ta-auth {
         opacity: 1;
     }
 
-    .btn {
+    // The buttons of the page are a little taller; a button inside an input group (show password) keeps the height
+    // of the field it belongs to.
+    .btn:not(.input-group > .btn) {
         padding-block: 0.5625rem;
     }
 }

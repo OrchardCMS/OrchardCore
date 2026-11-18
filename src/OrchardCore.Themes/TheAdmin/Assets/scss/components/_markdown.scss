@@ -57,7 +57,7 @@ html .EasyMDEContainer {
 
     &:has(.CodeMirror-focused) .editor-toolbar:not(.fullscreen) {
         border-color: var(--ta-focus-color);
-        box-shadow: 0 0 0 1px var(--ta-focus-color);
+        box-shadow: var(--ta-focus-halo);
         clip-path: inset(-2px -2px 0 -2px);
     }
 

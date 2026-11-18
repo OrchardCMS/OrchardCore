@@ -16,7 +16,7 @@ html .CodeMirror {
 
 html .CodeMirror-focused {
     border-color: var(--ta-focus-color);
-    box-shadow: 0 0 0 1px var(--ta-focus-color);
+    box-shadow: var(--ta-focus-halo);
 }
 
 html .CodeMirror-gutters {

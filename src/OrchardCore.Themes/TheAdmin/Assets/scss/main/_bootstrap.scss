@@ -112,7 +112,7 @@ b {
 
 // Focus rings and form controls.
 // The boundary of a field is drawn in the control border color (3:1 against the page, WCAG 1.4.11), and the focus
-// is a solid 2px ring in the focus color (the border plus a 1px shadow), not a pale halo.
+// takes the focus color on the border, which carries the contrast, with a soft halo of it around the field.
 .form-control,
 .form-select,
 .form-check-input {
@@ -123,7 +123,7 @@ b {
 .form-select:focus,
 .form-check-input:focus {
     border-color: var(--ta-focus-color);
-    box-shadow: 0 0 0 1px var(--ta-focus-color);
+    box-shadow: var(--ta-focus-halo);
 }
 
 .form-check-input:checked,
@@ -165,8 +165,8 @@ b {
     background-color: var(--ta-primary);
 }
 
-// Buttons, links and every other control show a solid outline when focused from the keyboard. Bootstrap's own
-// halo is a 50% tint, under the 3:1 a focus indicator needs.
+// Buttons, links and every other control show a solid outline when focused from the keyboard: Bootstrap's own halo is a
+// 50% tint, under the 3:1 a focus indicator needs. Fields, even those with a tabindex, keep the focus of a field above.
 .btn:focus-visible,
 .btn-close:focus-visible,
 .page-link:focus-visible,
@@ -176,7 +176,7 @@ b {
 .accordion-button:focus-visible,
 a:focus-visible,
 summary:focus-visible,
-[tabindex]:focus-visible {
+[tabindex]:not(input, select, textarea, .form-control, .form-select, .form-check-input):focus-visible {
     outline: 2px solid var(--ta-focus-color);
     outline-offset: 2px;
     box-shadow: none;

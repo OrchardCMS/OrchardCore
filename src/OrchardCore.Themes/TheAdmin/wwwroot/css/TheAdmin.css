@@ -79,6 +79,7 @@
   --ta-radius-md: calc(0.5rem * var(--ta-radius-scale));
   --ta-radius: calc(0.75rem * var(--ta-radius-scale));
   --ta-radius-lg: calc(1rem * var(--ta-radius-scale));
+  --ta-focus-halo: inset 0 0 0 0.1875rem rgba(var(--ta-link-rgb), 0.12);
   --ta-shadow-sm: 0 1px 2px rgba(16, 42, 67, 0.05);
   --ta-shadow: 0 1px 2px rgba(16, 42, 67, 0.04), 0 6px 20px rgba(16, 42, 67, 0.06);
   --ta-shadow-lg: 0 12px 32px rgba(8, 27, 38, 0.16);
@@ -505,7 +506,7 @@ b {
 .form-select:focus,
 .form-check-input:focus {
   border-color: var(--ta-focus-color);
-  box-shadow: 0 0 0 1px var(--ta-focus-color);
+  box-shadow: var(--ta-focus-halo);
 }
 
 .form-check-input:checked,
@@ -555,7 +556,7 @@ b {
 .accordion-button:focus-visible,
 a:focus-visible,
 summary:focus-visible,
-[tabindex]:focus-visible {
+[tabindex]:not(input, select, textarea, .form-control, .form-select, .form-check-input):focus-visible {
   outline: 2px solid var(--ta-focus-color);
   outline-offset: 2px;
   box-shadow: none;
@@ -1637,7 +1638,7 @@ html .CodeMirror {
 
 html .CodeMirror-focused {
   border-color: var(--ta-focus-color);
-  box-shadow: 0 0 0 1px var(--ta-focus-color);
+  box-shadow: var(--ta-focus-halo);
 }
 
 html .CodeMirror-gutters {
@@ -10966,7 +10967,7 @@ html .EasyMDEContainer:has(.editor-toolbar:not(.fullscreen)) > .CodeMirror:not(.
 
 html .EasyMDEContainer:has(.CodeMirror-focused) .editor-toolbar:not(.fullscreen) {
   border-color: var(--ta-focus-color);
-  box-shadow: 0 0 0 1px var(--ta-focus-color);
+  box-shadow: var(--ta-focus-halo);
   clip-path: inset(-2px -2px 0 -2px);
 }
 
