@@ -7,7 +7,7 @@
     var roles = (await RoleService.GetRolesAsync()).ToDictionary(x => x.RoleName, x => x, StringComparer.OrdinalIgnoreCase);
 }
 
-<div class="d-inline-flex flex-wrap gap-1" data-bs-toggle="tooltip" title="@T["The roles this user has"]">
+<div data-bs-toggle="tooltip" title="@T["The roles this user has"]">
     @foreach (var roleName in Model.User.RoleNames.OrderBy(r => r))
     {
         if (!roles.TryGetValue(roleName, out var role))
@@ -15,6 +15,6 @@
             continue;
         }
 
-        <span class="badge ta-badge fw-normal">@role.RoleName</span>
+        <span class="badge ta-badge">@role.RoleName</span>
     }
 </div>

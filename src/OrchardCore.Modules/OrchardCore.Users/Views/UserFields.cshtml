@@ -3,40 +3,23 @@
 @model SummaryAdminUserViewModel
 
 @inject UserManager<IUser> UserManager
-@inject IAuthorizationService AuthorizationService
 
-@* The user name is the title of the row, a link to the editor like the title of a content item; the email and the
-   states of the account are badges beside it, like the other metadata of an admin list. *@
-
-@if (await AuthorizationService.AuthorizeAsync(User, UsersPermissions.EditUsers, Model.User))
-{
-    <a asp-action="Edit" asp-route-id="@Model.User.UserId">@Model.User.UserName</a>
-}
-else
-{
-    <span>@Model.User.UserName</span>
-}
-@if (!string.IsNullOrEmpty(Model.User.Email))
-{
-    <span class="badge ta-badge fw-normal" title="@T["Email"]">
-        <i class="fa-solid fa-envelope" aria-hidden="true"></i> @Model.User.Email
-    </span>
-}
+<h5 class="float-start">@Model.User.UserName <span class="hint dashed">@Model.User.Email</span></h5>
 @if (!await UserManager.IsEmailConfirmedAsync(Model.User))
 {
-    <span class="badge text-bg-warning" title="@T["The email address '{0}' has not been confirmed.", Model.User.Email]">
+    <span class="badge text-bg-warning ms-2" title="@T["The email address '{0}' has not been confirmed.", Model.User.Email]">
         <i class="fa-solid fa-envelope-open" aria-hidden="true"></i> @T["Unconfirmed"]
     </span>
 }
 @if (await UserManager.IsLockedOutAsync(Model.User))
 {
-    <span class="badge text-bg-danger" title="@T["The user is currently locked out."]">
+    <span class="badge text-bg-danger ms-2" title="@T["The user is currently locked out."]">
         <i class="fa-solid fa-lock" aria-hidden="true"></i> @T["Locked"]
     </span>
 }
 @if (!Model.User.IsEnabled)
 {
-    <span class="badge text-bg-danger" title="@T["Disabled"]">
+    <span class="badge text-bg-danger ms-2" title="@T["Disabled"]">
         <i class="fa-solid fa-user-slash" aria-hidden="true"></i> @T["Disabled"]
     </span>
 }
