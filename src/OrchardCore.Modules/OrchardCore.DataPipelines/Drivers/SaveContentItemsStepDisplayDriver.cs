@@ -65,6 +65,9 @@ public sealed class SaveContentItemsStepDisplayDriver : DataPipelineStepDisplayD
 
     protected override ValueTask UpdateAsync(DataPipelineStep step, SaveContentItemsStepSettings settings, SaveContentItemsStepViewModel model, UpdateEditorContext context)
     {
+        // The editor shows the other settings only once a content type is chosen: until then, they keep their defaults.
+        var hasContentType = !string.IsNullOrEmpty(settings.ContentType);
+
         if (model.ContentType != settings.ContentType)
         {
             // Another content type has other parts and fields: start the mappings over.
@@ -77,6 +80,11 @@ public sealed class SaveContentItemsStepDisplayDriver : DataPipelineStepDisplayD
             settings.Mappings = (model.Mappings ?? [])
                 .Where(mapping => !string.IsNullOrEmpty(mapping?.Target) || !string.IsNullOrEmpty(mapping?.Source))
                 .ToList();
+        }
+
+        if (!hasContentType)
+        {
+            return ValueTask.CompletedTask;
         }
 
         if (model.BatchSize is < 1 or > 10_000)
