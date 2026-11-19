@@ -46,4 +46,23 @@ public sealed class ActionBarTests : CmsTestBase<BlogFixture>, IClassFixture<Blo
         Assert.Empty(consoleErrors);
         await page.CloseAsync();
     }
+
+    [Fact]
+    public async Task ContentEditor_Actions_AreOrderedFromCancelToPublish()
+    {
+        var page = await Fixture.CreatePageAsync();
+        await page.LoginAsync();
+
+        await page.GotoAndAssertOkAsync("/Admin/Contents/ContentTypes/Article/Create?returnUrl=%2FAdmin%2FContents%2FContentItems");
+
+        // The visible controls of the bar, a split button counting as its main button.
+        var labels = await page.Locator(
+            ".action-bar-bottom > a:visible, .action-bar-bottom > button:visible, .action-bar-bottom > .btn-group:visible > button[type='submit']")
+            .AllInnerTextsAsync();
+
+        // Cancel first, then the secondary actions, and the main action last.
+        Assert.Equal(["Cancel", "Preview", "Save Draft", "Publish"], labels.Select(label => label.Trim()));
+
+        await page.CloseAsync();
+    }
 }

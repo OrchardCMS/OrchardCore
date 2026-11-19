@@ -166,7 +166,10 @@ public sealed class AdminController : Controller
 
         if (model.FeatureIds == null || model.FeatureIds.Length == 0)
         {
-            ModelState.AddModelError(nameof(BulkActionViewModel.FeatureIds), S["Please select one or more features."]);
+            // The action redirects, so an error of the model state would never be shown.
+            await _notifier.WarningAsync(H["Please select one or more features."]);
+
+            return RedirectToAction(nameof(Features));
         }
 
         if (ModelState.IsValid)

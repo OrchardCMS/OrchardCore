@@ -214,7 +214,7 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
         => RedirectToTwoFactorIndex();
 
     [HttpPost]
-    public async Task<IActionResult> Index(TwoFactorAuthenticationViewModel model)
+    public async Task<IActionResult> Index([Bind(Prefix = nameof(UserSecurity))] TwoFactorAuthenticationViewModel model)
     {
         var user = await UserManager.GetUserAsync(User);
         if (user == null)

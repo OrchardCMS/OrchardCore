@@ -294,6 +294,35 @@ For displaying information without a form input:
 </div>
 ```
 
+## Action Bar
+
+Render the submit buttons of an admin edit page in a `<div class="action-bar-bottom">`, the last child of the form. The admin theme fixes it to the bottom of the viewport. Order its children from the least to the most important action, the same on every page:
+
+1. **Cancel** (or **Back**) first, a `btn-secondary` link with the `cancel` class.
+2. The secondary actions, marked with `action-bar-secondary`: alternative saves such as **Save & Configure**, **Preview**, **Delete**. In the `Menu` actions layout and on small screens they move into the "more actions" menu, opened by the ⋮ toggle at the end of the bar, where destructive actions are listed last.
+3. The main action last, such as **Save**, **Create** or **Publish**, or its `btn-group` with a **Save and continue** dropdown.
+
+Keep the DOM in this order instead of reordering with CSS, so the keyboard focus follows what is shown. Use the same button styles on every page: `btn-secondary` for **Cancel** and alternative actions (e.g. **Save & Configure**, **Create & Setup**), `btn-danger` for destructive ones, and `btn-primary` for the main action. Only the content item **Publish** button uses `btn-success`, to stand apart from **Save Draft**.
+
+Modal dialog footers (`.modal-footer`, and the dialog opened by `confirmDialog()`) use the same order: **Cancel** or **Close** first, any secondary action (e.g. **Reset Anchor**) next, and the confirming action (**OK**, **Save**, **Delete**) last.
+
+```html
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@T["Cancel"]</button>
+    <button type="button" class="btn btn-primary" v-on:click="save">@T["OK"]</button>
+</div>
+```
+
+```html
+<div class="action-bar-bottom">
+    <a class="btn btn-secondary cancel" role="button" asp-action="Index">@T["Cancel"]</a>
+    <a class="btn btn-danger action-bar-secondary" asp-action="Delete" data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+    <button class="btn btn-primary save" type="submit">@T["Save"]</button>
+</div>
+```
+
+Shapes placed in an `Actions` zone follow the same order through their positions: on content items **Preview** is at `Actions:5`, **Delete** `10`, **Unpublish** `20`, **Save Draft** `30` and **Publish** `40`, and the content editor renders **Cancel** before the zone.
+
 ## Migration: Old to New Classes
 
 When updating existing views, apply these replacements:

@@ -290,11 +290,6 @@ msgctxt "OrchardCore.Themes.Views.Items.ThemeScheme.ActionsMenu.SummaryAdmin"
 msgid "Set as default"
 msgstr ""
 
-#: Views/Items/ThemeScheme.ActionsMenu.SummaryAdmin.cshtml
-msgctxt "OrchardCore.Themes.Views.Items.ThemeScheme.ActionsMenu.SummaryAdmin"
-msgid "The default scheme can't be deleted. Set another scheme as the default first."
-msgstr ""
-
 #: Views/Items/ThemeScheme.Buttons.SummaryAdmin.cshtml
 msgctxt "OrchardCore.Themes.Views.Items.ThemeScheme.Buttons.SummaryAdmin"
 msgid "Edit"
