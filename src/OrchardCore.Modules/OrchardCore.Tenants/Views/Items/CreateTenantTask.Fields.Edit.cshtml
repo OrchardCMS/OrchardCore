@@ -5,7 +5,7 @@
     <div class="ocat-wrapper" asp-validation-class-for="TenantNameExpression">
         <label asp-for="TenantNameExpression" class="ocat-label">@T["Name"]</label>
         <div class="ocat-end">
-            <input type="text" asp-for="TenantNameExpression" class="form-control code" autofocus />
+            <textarea asp-for="TenantNameExpression" rows="1" class="form-control code" autofocus></textarea>
             <span asp-validation-for="TenantNameExpression"></span>
             <span class="hint">@T["Select the name of the tenant to create."]</span>
         </div>
@@ -14,7 +14,7 @@
     <div class="ocat-wrapper" asp-validation-class-for="DescriptionExpression">
         <label asp-for="DescriptionExpression" class="ocat-label">@T["Description"]</label>
         <div class="ocat-end">
-            <input type="text" asp-for="DescriptionExpression" class="form-control code" autofocus />
+            <textarea asp-for="DescriptionExpression" rows="1" class="form-control code"></textarea>
             <span asp-validation-for="DescriptionExpression"></span>
             <span class="hint">@T["(Optional) the description of the tenant to create."]</span>
         </div>

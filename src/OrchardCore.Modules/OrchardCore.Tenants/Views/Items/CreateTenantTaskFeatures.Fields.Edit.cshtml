@@ -5,7 +5,7 @@
     <div class="ocat-wrapper" asp-validation-class-for="FeatureProfileExpression">
         <label asp-for="FeatureProfileExpression" class="ocat-label">@T["Feature Profile"]</label>
         <div class="ocat-end">
-            <input type="text" asp-for="FeatureProfileExpression" class="form-control code" />
+            <textarea asp-for="FeatureProfileExpression" rows="1" class="form-control code"></textarea>
             <span asp-validation-for="FeatureProfileExpression"></span>
         </div>
     </div>

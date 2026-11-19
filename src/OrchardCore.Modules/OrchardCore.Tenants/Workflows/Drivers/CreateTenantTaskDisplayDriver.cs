@@ -45,8 +45,8 @@ public sealed class CreateTenantTaskDisplayDriver : TenantTaskDisplayDriver<Crea
 
     protected override void UpdateActivity(CreateTenantTaskViewModel model, CreateTenantTask activity)
     {
-        activity.TenantName = new WorkflowExpression<string>(model.DescriptionExpression);
-        activity.Description = new WorkflowExpression<string>(model.TenantNameExpression);
+        activity.TenantName = new WorkflowExpression<string>(model.TenantNameExpression);
+        activity.Description = new WorkflowExpression<string>(model.DescriptionExpression);
         activity.RequestUrlPrefix = new WorkflowExpression<string>(model.RequestUrlPrefixExpression);
         activity.RequestUrlHost = new WorkflowExpression<string>(model.RequestUrlHostExpression);
         activity.DatabaseProvider = new WorkflowExpression<string>(model.DatabaseProviderExpression);
