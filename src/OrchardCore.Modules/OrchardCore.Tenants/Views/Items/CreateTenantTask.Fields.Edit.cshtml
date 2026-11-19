@@ -5,7 +5,7 @@
     <div class="ocat-wrapper" asp-validation-class-for="TenantNameExpression">
         <label asp-for="TenantNameExpression" class="ocat-label">@T["Name"]</label>
         <div class="ocat-end">
-            <input type="text" asp-for="TenantNameExpression" class="form-control code" autofocus />
+            <textarea asp-for="TenantNameExpression" rows="1" class="form-control code" autofocus></textarea>
             <span asp-validation-for="TenantNameExpression"></span>
             <span class="hint">@T["Select the name of the tenant to create."]</span>
         </div>
@@ -14,7 +14,7 @@
     <div class="ocat-wrapper" asp-validation-class-for="DescriptionExpression">
         <label asp-for="DescriptionExpression" class="ocat-label">@T["Description"]</label>
         <div class="ocat-end">
-            <input type="text" asp-for="DescriptionExpression" class="form-control code" autofocus />
+            <textarea asp-for="DescriptionExpression" rows="1" class="form-control code"></textarea>
             <span asp-validation-for="DescriptionExpression"></span>
             <span class="hint">@T["(Optional) the description of the tenant to create."]</span>
         </div>
@@ -23,7 +23,7 @@
     <div class="ocat-wrapper" asp-validation-class-for="RequestUrlPrefixExpression">
         <label asp-for="RequestUrlPrefixExpression" class="ocat-label">@T["Url Prefix"]</label>
         <div class="ocat-end">
-            <input type="text" asp-for="RequestUrlPrefixExpression" class="form-control code" />
+            <textarea asp-for="RequestUrlPrefixExpression" rows="1" class="form-control code"></textarea>
             <span asp-validation-for="RequestUrlPrefixExpression"></span>
             <span class="hint">@T["(Optional) Example: If prefix is \"site1\", the tenant URL prefix is \"http://orchardproject.net/site1\"."]</span>
         </div>
@@ -32,7 +32,7 @@
     <div class="ocat-wrapper" asp-validation-class-for="RequestUrlHostExpression">
         <label asp-for="RequestUrlHostExpression" class="ocat-label">@T["Host name"]</label>
         <div class="ocat-end">
-            <input type="text" asp-for="RequestUrlHostExpression" class="form-control code" />
+            <textarea asp-for="RequestUrlHostExpression" rows="1" class="form-control code"></textarea>
             <span asp-validation-for="RequestUrlHostExpression"></span>
             <span class="hint">@T["Example: If host is \"orchardproject.net\", the tenant site URL is \"http://orchardproject.net/\". With Liquid support."]</span>
         </div>
@@ -41,7 +41,7 @@
     <div class="ocat-wrapper" asp-validation-class-for="DatabaseProviderExpression">
         <label asp-for="DatabaseProviderExpression" class="ocat-label">@T["What type of database to use?"]</label>
         <div class="ocat-end">
-            <input type="text" asp-for="DatabaseProviderExpression" class="form-control code" />
+            <textarea asp-for="DatabaseProviderExpression" rows="1" class="form-control code"></textarea>
             <span asp-validation-for="DatabaseProviderExpression"></span>
         </div>
     </div>
@@ -49,7 +49,7 @@
     <div class="ocat-wrapper" asp-validation-class-for="TablePrefixExpression">
         <label asp-for="TablePrefixExpression" class="ocat-label">@T["Table Prefix"]</label>
         <div class="ocat-end">
-            <input type="text" asp-for="TablePrefixExpression" class="form-control code" />
+            <textarea asp-for="TablePrefixExpression" rows="1" class="form-control code"></textarea>
             <span asp-validation-for="TablePrefixExpression"></span>
         </div>
     </div>
@@ -57,15 +57,15 @@
     <div class="ocat-wrapper" asp-validation-class-for="ConnectionStringExpression">
         <label asp-for="ConnectionStringExpression" class="ocat-label">@T["Connection string"]</label>
         <div class="ocat-end">
-            <input type="text" asp-for="ConnectionStringExpression" class="form-control code" />
+            <textarea asp-for="ConnectionStringExpression" rows="1" class="form-control code"></textarea>
             <span asp-validation-for="ConnectionStringExpression"></span>
         </div>
     </div>
 
     <div class="ocat-wrapper" asp-validation-class-for="SchemaExpression">
-        <label asp-for="TablePrefixExpression" class="ocat-label">@T["Schema"]</label>
+        <label asp-for="SchemaExpression" class="ocat-label">@T["Schema"]</label>
         <div class="ocat-end">
-            <input type="text" asp-for="SchemaExpression" class="form-control code" />
+            <textarea asp-for="SchemaExpression" rows="1" class="form-control code"></textarea>
             <span asp-validation-for="SchemaExpression"></span>
             <div class="hint">@T["When left blank, the default value on the server will be used."] @T["For example, '{0}' for SQL Server.", "dbo"]</div>
         </div>
@@ -74,7 +74,7 @@
     <div class="ocat-wrapper" asp-validation-class-for="RecipeNameExpression">
         <label asp-for="RecipeNameExpression" class="ocat-label">@T["Recipe"]</label>
         <div class="ocat-end">
-            <input type="text" asp-for="RecipeNameExpression" class="form-control code" />
+            <textarea asp-for="RecipeNameExpression" rows="1" class="form-control code"></textarea>
             <span asp-validation-for="RecipeNameExpression"></span>
         </div>
     </div>
@@ -82,7 +82,7 @@
     <div class="ocat-wrapper" asp-validation-class-for="FeatureProfileExpression">
         <label asp-for="FeatureProfileExpression" class="ocat-label">@T["Feature Profile"]</label>
         <div class="ocat-end">
-            <input type="text" asp-for="FeatureProfileExpression" class="form-control code" />
+            <textarea asp-for="FeatureProfileExpression" rows="1" class="form-control code"></textarea>
             <span asp-validation-for="FeatureProfileExpression"></span>
         </div>
     </div>
