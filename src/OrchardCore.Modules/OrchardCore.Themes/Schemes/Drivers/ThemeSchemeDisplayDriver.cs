@@ -35,6 +35,7 @@ internal sealed class ThemeSchemeDisplayDriver : DisplayDriver<ThemeSchemeEntry>
                 .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "Colors:5")
                 .Displaying(displaying => displaying.Shape.Metadata.Alternates.Add("ThemeScheme_Swatch_SummaryAdmin__" + entry.ThemeId.EncodeAlternateElement())),
             View("ThemeScheme_Buttons_SummaryAdmin", entry).Location("Actions:5"),
-            View("ThemeScheme_ActionsMenu_SummaryAdmin", entry).Location("ActionsMenu:10"));
+            // The default scheme can't be deleted, nor made the default again: its row has no menu of actions.
+            View("ThemeScheme_ActionsMenu_SummaryAdmin", entry).Location("ActionsMenu:10").RenderWhen(() => Task.FromResult(!entry.IsDefault)));
     }
 }

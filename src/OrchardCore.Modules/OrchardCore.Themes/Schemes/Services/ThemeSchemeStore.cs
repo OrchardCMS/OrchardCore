@@ -156,7 +156,9 @@ public sealed partial class ThemeSchemeStore
 
         var list = await ListAsync(themeId);
 
-        return list.Count > 0 ? list[0].Id : null;
+        // A theme whose schemes were all removed (outside the admin, which never deletes the default) falls back to the
+        // scheme of its options, which the stylesheet writes in their place.
+        return list.Count > 0 ? list[0].Id : _options.Get(themeId).GetFallbackScheme().Id;
     }
 
     /// <summary>
@@ -269,7 +271,10 @@ public sealed partial class ThemeSchemeStore
         {
             entry.SlidingExpiration = TimeSpan.FromHours(1);
 
-            var css = BuildStylesheet(themeId, GetSchemes(document, themeId).Values);
+            // A theme with no stored scheme still gets the rules of its fallback scheme, so it never renders without its
+            // tokens.
+            var stored = GetSchemes(document, themeId).Values;
+            var css = BuildStylesheet(themeId, stored.Count > 0 ? stored : [_options.Get(themeId).GetFallbackScheme()]);
 
             return Task.FromResult(new CachedStylesheet(css, ThemeSchemeStylesheet.ComputeVersion(css)));
         });

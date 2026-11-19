@@ -162,4 +162,13 @@ public sealed class ThemeSchemeOptions
     // The schemes to seed: the theme's own, or the neutral one.
     internal IEnumerable<ThemeScheme> GetSchemesToSeed()
         => Defaults is { Count: > 0 } ? Defaults : [CreateNeutralScheme()];
+
+    // The scheme the theme uses when it has no stored scheme at all, for example when its schemes were removed outside
+    // the admin: its default scheme among the ones it seeds, or the first of them. It is never stored.
+    internal ThemeScheme GetFallbackScheme()
+    {
+        var seeds = GetSchemesToSeed().ToList();
+
+        return seeds.FirstOrDefault(scheme => string.Equals(scheme.Id, DefaultSchemeId, StringComparison.Ordinal)) ?? seeds[0];
+    }
 }

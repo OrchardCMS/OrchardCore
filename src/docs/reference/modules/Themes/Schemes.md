@@ -15,7 +15,9 @@ On **Design > Themes**, the card of a theme that supports schemes has a **Scheme
 The button opens the schemes of that theme, at `/Admin/Themes/Schemes/{themeId}` (the theme id is matched without regard to case, so `/Admin/Themes/Schemes/theadmin` opens the schemes of `TheAdmin`). From there, admins:
 
 - add, edit and delete schemes. The editor shows a live preview of the scheme, drawn by the theme;
-- pick the default scheme of the theme with the **Set as default** action. The default scheme is marked with a **Default** badge and can't be deleted. Users who haven't picked a scheme of their own see the default one.
+- pick the default scheme of the theme with the **Set as default** action. The default scheme is marked with a **Default** badge and has no **Delete** action: make another scheme the default first. Users who haven't picked a scheme of their own see the default one.
+
+A theme never breaks for want of a scheme. The `ThemeSchemes` recipe step only adds or replaces schemes, and the store refuses to delete a theme's default. If the default is removed anyway, for example straight from the database, the theme falls back to the default scheme of its options (`DefaultSchemeId`), then to its first scheme. If none is left at all, its stylesheet still writes the rules of the default scheme of its options, which is never stored; a user's choice of a scheme that no longer exists is ignored.
 
 The schemes of each theme are kept apart: the schemes of one theme are never listed for another.
 

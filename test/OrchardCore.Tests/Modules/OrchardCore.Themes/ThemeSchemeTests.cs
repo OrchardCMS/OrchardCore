@@ -427,8 +427,19 @@ public sealed class ThemeSchemeTests
         var (later, _, _) = CreateStore(documents: documents);
 
         Assert.Empty(await later.ListAsync(ThemeA));
-        Assert.Null(await later.GetDefaultIdAsync(ThemeA));
         Assert.Equal(2, documents.Updates);
+
+        // The theme is not broken: it falls back to the default scheme of its options, written in the stylesheet but
+        // never stored, and the page still links the stylesheet and names that scheme.
+        var fallbackId = await later.GetDefaultIdAsync(ThemeA);
+        var (css, _) = await later.GetStylesheetAsync(ThemeA);
+        var service = new ThemeSchemeService(new HttpContextAccessor { HttpContext = new DefaultHttpContext() }, new ShellSettings { Name = "Default" }, later);
+
+        Assert.NotNull(fallbackId);
+        Assert.Contains($"=\"{fallbackId}\"]", css, StringComparison.Ordinal);
+        Assert.NotNull(await service.GetStylesheetUrlAsync(ThemeA, CreateUrlHelper()));
+        Assert.Equal(fallbackId, await service.GetSchemeAttributeAsync(ThemeA));
+        Assert.Empty(documents.Document.Themes[ThemeA]);
     }
 
     [Fact]
