@@ -76,7 +76,7 @@
         var translationsJson = Json.Serialize(translations).ToString();
     }
 
-    <style asp-name="admin-menu-permission-picker" asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu-permission-picker.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu-permission-picker.css"></style>
+    <style asp-name="admin-menu-permission-picker" asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu-permission-picker.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu-permission-picker.css" depends-on="vue-multiselect"></style>
 
     <label asp-for="SelectedPermissionNames" class="ocat-label">@T["Permissions"]</label>
     <div class="ocat-end">

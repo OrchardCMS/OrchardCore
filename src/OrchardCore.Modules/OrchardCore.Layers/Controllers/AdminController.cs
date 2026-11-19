@@ -41,6 +41,7 @@ public sealed class AdminController : Controller
     private readonly IConditionIdGenerator _conditionIdGenerator;
     private readonly IEnumerable<IConditionFactory> _conditionFactories;
     private readonly INotifier _notifier;
+    private readonly IShapeFactory _shapeFactory;
     private readonly ILogger _logger;
 
     internal readonly IStringLocalizer S;
@@ -64,6 +65,7 @@ public sealed class AdminController : Controller
         IStringLocalizer<AdminController> stringLocalizer,
         IHtmlLocalizer<AdminController> htmlLocalizer,
         INotifier notifier,
+        IShapeFactory shapeFactory,
         ILogger<AdminController> logger)
     {
         _contentDefinitionManager = contentDefinitionManager;
@@ -81,6 +83,7 @@ public sealed class AdminController : Controller
         _conditionIdGenerator = conditionIdGenerator;
         _conditionFactories = conditionFactories;
         _notifier = notifier;
+        _shapeFactory = shapeFactory;
         S = stringLocalizer;
         H = htmlLocalizer;
         _logger = logger;
@@ -124,10 +127,12 @@ public sealed class AdminController : Controller
             }
         }
 
-        // The AdminList shape renders the layers with the configured layout (List, Grid, ...).
+        // The AdminList shape renders the layers with the configured layout (List, Grid, ...), and places the button adding
+        // a layer at the top of the list, like the buttons of the other admin lists.
         model.List = new AdminListContext<Layer>
         {
             Source = model.Layers,
+            Actions = await _shapeFactory.CreateAsync("LayersCreateButton"),
         };
 
         return View(model);
