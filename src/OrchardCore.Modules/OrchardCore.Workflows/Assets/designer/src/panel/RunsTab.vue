@@ -61,7 +61,7 @@ watch(
         }
 
         if (record) {
-            requestAnimationFrame(() => document.getElementById(`${ids}-${record.sequence}`)?.scrollIntoView({ block: "nearest" }));
+            requestAnimationFrame(() => document.getElementById(`${ids}-${record.sequence}`)?.scrollIntoView?.({ block: "nearest" }));
         }
     },
     { immediate: true },

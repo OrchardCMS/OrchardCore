@@ -2696,6 +2696,11 @@ msgstr ""
 
 #: Views/UserFields.cshtml
 msgctxt "OrchardCore.Users.Views.UserFields"
+msgid "Email"
+msgstr ""
+
+#: Views/UserFields.cshtml
+msgctxt "OrchardCore.Users.Views.UserFields"
 msgid "Locked"
 msgstr ""
 

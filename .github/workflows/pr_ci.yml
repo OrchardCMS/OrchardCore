@@ -11,6 +11,14 @@ env:
 permissions:
   contents: read
 jobs:
+  translations:
+    runs-on: ubuntu-24.04
+    name: Translation Package Automation
+    steps:
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+    - name: Test release translation validation
+      shell: pwsh
+      run: ./.github/scripts/tests/TranslationsPackage.Tests.ps1
   build_test:
     runs-on: ${{ matrix.os }}
     strategy:

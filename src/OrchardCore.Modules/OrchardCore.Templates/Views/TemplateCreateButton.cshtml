@@ -1,6 +1,25 @@
-@* The button of the templates list, passed to the AdminList shape as its 'Actions' so the layout places it. *@
+@* The buttons of the templates list, passed to the AdminList shape as its 'Actions' so the layout places it. *@
+@using Microsoft.Extensions.DependencyInjection
 @{
     var adminTemplates = Model.AdminTemplates != null && (bool)Model.AdminTemplates;
+
+    // Registered by the Assisted Templates and the Shape Tracing features only.
+    var sourceTemplatesService = Context.RequestServices.GetService<OrchardCore.Templates.Services.SourceTemplatesService>();
+    var canInspect = Context.RequestServices.GetService<OrchardCore.Templates.Services.TemplateInspectionService>() != null;
 }
 
-<a asp-action="Create" asp-controller="Template" asp-route-admintemplates="@adminTemplates" asp-route-returnUrl="@FullRequestPath" class="btn btn-secondary create" role="button">@T["Add Template"]</a>
+@if (sourceTemplatesService != null)
+{
+    @* One button per template source, e.g. the active theme, listing the templates that can be overridden. *@
+    <div class="btn-group" role="group" aria-label="@T["Template sources"]">
+        @foreach (var source in sourceTemplatesService.Sources)
+        {
+            <a asp-action="Index" asp-controller="TemplateSource" asp-route-source="@source.Name" asp-route-options.admintemplates="@adminTemplates" class="btn btn-secondary" role="button">@source.DisplayName</a>
+        }
+    </div>
+    @if (canInspect)
+    {
+        <a asp-action="Index" asp-controller="TemplateInspector" asp-route-admintemplates="@adminTemplates" class="btn btn-secondary" role="button">@T["Inspect Content"]</a>
+    }
+}
+<a asp-action="Create" asp-controller="Template" asp-route-admintemplates="@adminTemplates" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary create" role="button">@T["Add Template"]</a>
