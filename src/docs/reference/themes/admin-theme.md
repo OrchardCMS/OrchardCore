@@ -245,11 +245,30 @@ Schemes are exported with the `ThemeSchemes` deployment step and imported with t
 }
 ```
 
-The schemes of a theme are served as one cached stylesheet, `~/Themes/schemes/{themeId}.css`, versioned by the schemes' document.
+The schemes of a theme are served as one stylesheet, `~/Themes/schemes/{themeId}.css`, built once per change and versioned by a short hash of its text.
 
 ### Supporting schemes in your theme
 
-Any theme can offer schemes the way TheAdmin does: it depends on the `OrchardCore.Themes.Schemes` feature, implements and registers an `IThemeSchemeProvider`, and applies the current scheme in its layout. See [Theme Schemes](../modules/Themes/Schemes.md) for the full guide.
+Any theme can offer schemes the way TheAdmin does: it depends on the `OrchardCore.Themes.Schemes` feature, registers itself with `services.AddThemeSchemes("MyTheme")`, and applies the current scheme in its layout. TheAdmin registers its attribute, its `ta` prefix, its eight schemes and the tokens only its layout uses (the menu, the toolbar of lists, the top bar, the page gradient and the icons of checked controls):
+
+```csharp
+services.AddThemeSchemes(TheAdminConstants.ThemeId, options =>
+{
+    options.AttributeName = TheAdminSchemes.AttributeName; // data-ta-scheme
+    options.TokenPrefix = TheAdminSchemes.TokenPrefix; // ta
+    options.DefaultSchemeId = TheAdminSchemes.DefaultId; // blue
+    options.Defaults = [.. TheAdminSchemes.CreateDefaults()];
+    options.AddTokens<TheAdminSchemeTokens>();
+
+    // Its Sass names a few generated tokens otherwise, e.g. --ta-navy for --ta-deep.
+    foreach (var (token, name) in TheAdminSchemes.TokenNames)
+    {
+        options.TokenNames[token] = name;
+    }
+});
+```
+
+See [Theme Schemes](../modules/Themes/Schemes.md) for the full guide.
 
 ### Design Tokens
 

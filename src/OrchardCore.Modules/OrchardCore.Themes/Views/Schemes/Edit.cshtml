@@ -68,7 +68,7 @@
     IShape preview = await New.ThemeSchemePreview(
         ThemeId: Model.ThemeId,
         SchemeId: SchemesController.PreviewSchemeId,
-        SchemeAttributeName: SchemeStore.GetProvider(Model.ThemeId)?.SchemeAttributeName,
+        SchemeAttributeName: SchemeStore.GetOptions(Model.ThemeId)?.AttributeName,
         Scheme: new ThemeScheme
         {
             Id = SchemesController.PreviewSchemeId,

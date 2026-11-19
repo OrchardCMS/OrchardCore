@@ -76,8 +76,9 @@ public sealed class ThemeSchemeService
         => await GetUserSchemeAsync(themeId) ?? await GetSiteSchemeAsync(themeId);
 
     /// <summary>
-    /// The URL of the stylesheet of the theme's schemes, versioned so browsers keep it until a scheme changes, or
-    /// <see langword="null"/> when the theme has no scheme.
+    /// The URL of the stylesheet of the theme's schemes, versioned with a short hash of its text so browsers keep it
+    /// until a scheme or the code that writes it changes, or <see langword="null"/> when the theme has no scheme. The
+    /// stylesheet is built once per change of the schemes and read from memory, not built per request.
     /// </summary>
     public async Task<string> GetStylesheetUrlAsync(string themeId, IUrlHelper url)
     {
@@ -88,6 +89,8 @@ public sealed class ThemeSchemeService
             return null;
         }
 
+        themeId = _store.GetThemeId(themeId);
+
         var document = await _store.GetAsync(themeId);
 
         if (!document.Themes.TryGetValue(themeId, out var schemes) || schemes is null || schemes.Count == 0)
@@ -95,6 +98,8 @@ public sealed class ThemeSchemeService
             return null;
         }
 
-        return url.Content($"~/{ThemeSchemeEndpoints.GetStylesheetPath(themeId)}?v={Uri.EscapeDataString(document.Identifier ?? string.Empty)}");
+        var (_, version) = await _store.GetStylesheetAsync(themeId);
+
+        return url.Content($"~/{ThemeSchemeEndpoints.GetStylesheetPath(themeId)}?v={version}");
     }
 }

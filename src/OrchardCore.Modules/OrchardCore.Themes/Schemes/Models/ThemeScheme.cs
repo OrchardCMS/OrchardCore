@@ -3,14 +3,14 @@ namespace OrchardCore.Themes.Schemes.Models;
 /// <summary>
 /// A scheme of a theme: a name and four colors, from which the theme derives its color tokens, light and dark, and
 /// the typography and shape of its pages. The optional settings fine tune what is derived; left empty, they are worked
-/// out from the four colors or take their default. Each theme uses the settings it understands (see
-/// <see cref="IThemeSchemeProvider"/>).
+/// out from the four colors or take their default (see <see cref="ThemeSchemePalette"/>). Each theme uses the
+/// settings it understands.
 /// </summary>
 public sealed class ThemeScheme
 {
     /// <summary>
-    /// The id: the value of the scheme attribute of the page (see
-    /// <see cref="IThemeSchemeProvider.SchemeAttributeName"/>). Lowercase letters, digits and dashes.
+    /// The id: the value of the scheme attribute of the page (see <see cref="ThemeSchemeOptions.AttributeName"/>).
+    /// Lowercase letters, digits and dashes.
     /// </summary>
     public string Id { get; set; }
 

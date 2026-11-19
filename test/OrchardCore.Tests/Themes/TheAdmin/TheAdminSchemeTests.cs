@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using OrchardCore.Documents;
 using OrchardCore.Tests.Modules.OrchardCore.Themes;
 using OrchardCore.Themes.Schemes;
 using OrchardCore.Themes.Schemes.Models;
@@ -11,32 +12,33 @@ namespace OrchardCore.Tests.Themes.TheAdmin;
 
 /// <summary>
 /// TheAdmin derives the color tokens of its fallback scheme (Blue) in Sass and those of every scheme record in C#
-/// (<see cref="TheAdminSchemeCssBuilder"/>, through its <see cref="TheAdminSchemeProvider"/>). These tests keep both derivations in step, check that whatever colors an
-/// admin picks the derived tokens meet WCAG 2.2 AA contrast, and cover the typography and shape tokens.
+/// (the generated tokens of <see cref="ThemeSchemeStylesheet"/>, a few renamed, and <see cref="TheAdminSchemeTokens"/>),
+/// registered by its startup. These tests keep both derivations in step, check that whatever colors an admin picks the
+/// derived tokens meet WCAG 2.2 AA contrast, and cover the typography and shape tokens.
 /// </summary>
 public sealed class TheAdminSchemeTests
 {
     // The definitions the theme's schemes were tuned with; the seeded records must reproduce them exactly.
     public static TheoryData<string> DefaultSchemes => ["blue", "gray", "ocean", "forest", "plum", "sunset", "graphite", "gold"];
 
-    private static readonly Dictionary<string, TheAdminSchemeDefinition> s_builtIn = new(StringComparer.Ordinal)
+    private static readonly Dictionary<string, ThemeScheme> s_builtIn = new(StringComparer.Ordinal)
     {
-        ["blue"] = new() { Primary = Color("#2a81bb"), Deep = Color("#144c71"), Ink = Color("#081b26"), Accent = Color("#5aa4ef"), Hue = 209, Saturation = 1 },
+        ["blue"] = new() { Id = "blue", Primary = "#2a81bb", Deep = "#144c71", Ink = "#081b26", Accent = "#5aa4ef", Hue = 209, Saturation = 1 },
         ["gray"] = new()
         {
-            Primary = Color("#0d6efd"), Deep = Color("#212529"), Ink = Color("#212529"), Accent = Color("#6ea8fe"),
-            Hue = 210, Saturation = 0.12, LightMenu = true, Page = Color("#fff"),
-            Tint = Color("#495057"), TintDark = Color("#adb5bd"), Toolbar = Color("#495057"),
+            Id = "gray", Primary = "#0d6efd", Deep = "#212529", Ink = "#212529", Accent = "#6ea8fe",
+            Hue = 210, Saturation = 0.12, LightMenu = true, Page = "#fff",
+            Tint = "#495057", TintDark = "#adb5bd", Toolbar = "#495057", FontFamily = ThemeSchemeTypography.SystemFont,
         },
-        ["ocean"] = new() { Primary = Color("#12868b"), Deep = Color("#0d4a52"), Ink = Color("#062227"), Accent = Color("#4fd1c5"), Hue = 187, Saturation = 0.9 },
-        ["forest"] = new() { Primary = Color("#2f855a"), Deep = Color("#1c4a36"), Ink = Color("#0b2018"), Accent = Color("#68d391"), Hue = 150, Saturation = 0.7 },
-        ["plum"] = new() { Primary = Color("#7b4fc0"), Deep = Color("#3d2a66"), Ink = Color("#170f2b"), Accent = Color("#b794f4"), Hue = 262, Saturation = 0.7 },
-        ["sunset"] = new() { Primary = Color("#c2551f"), Deep = Color("#5c2a1c"), Ink = Color("#24100b"), Accent = Color("#f6ad55"), Hue = 18, Saturation = 0.6 },
-        ["graphite"] = new() { Primary = Color("#4b6584"), Deep = Color("#2d3540"), Ink = Color("#121519"), Accent = Color("#94a8bf"), Hue = 213, Saturation = 0.2 },
+        ["ocean"] = new() { Id = "ocean", Primary = "#12868b", Deep = "#0d4a52", Ink = "#062227", Accent = "#4fd1c5", Hue = 187, Saturation = 0.9 },
+        ["forest"] = new() { Id = "forest", Primary = "#2f855a", Deep = "#1c4a36", Ink = "#0b2018", Accent = "#68d391", Hue = 150, Saturation = 0.7 },
+        ["plum"] = new() { Id = "plum", Primary = "#7b4fc0", Deep = "#3d2a66", Ink = "#170f2b", Accent = "#b794f4", Hue = 262, Saturation = 0.7 },
+        ["sunset"] = new() { Id = "sunset", Primary = "#c2551f", Deep = "#5c2a1c", Ink = "#24100b", Accent = "#f6ad55", Hue = 18, Saturation = 0.6 },
+        ["graphite"] = new() { Id = "graphite", Primary = "#4b6584", Deep = "#2d3540", Ink = "#121519", Accent = "#94a8bf", Hue = 213, Saturation = 0.2 },
         ["gold"] = new()
         {
-            Primary = Color("#eaa52c"), Deep = Color("#1e1e1e"), Ink = Color("#09080b"), Accent = Color("#eaa52c"),
-            Hue = 240, Saturation = 0.08, OnPrimary = Color("#1e1e1e"),
+            Id = "gold", Primary = "#eaa52c", Deep = "#1e1e1e", Ink = "#09080b", Accent = "#eaa52c",
+            Hue = 240, Saturation = 0.08, OnPrimary = "#1e1e1e",
         },
     };
 
@@ -52,44 +54,42 @@ public sealed class TheAdminSchemeTests
     // The stylesheet's fallback (Blue) is derived in Sass; every scheme record in C#. Both must agree.
     [Fact]
     public void CSharpDerivation_MatchesTheSassOne_InLightMode()
-        => AssertSameTokens("blue", ReadBlock(":root", mustContain: "--ta-primary:"), TheAdminSchemeCssBuilder.BuildLight(s_builtIn["blue"]));
+        => AssertSameTokens("blue", ReadBlock(":root", mustContain: "--ta-primary:"), Light(s_builtIn["blue"]));
 
     [Fact]
     public void CSharpDerivation_MatchesTheSassOne_InDarkMode()
-        => AssertSameTokens("blue", ReadBlock(":root[data-bs-theme=dark]", mustContain: "--ta-link:"), TheAdminSchemeCssBuilder.BuildDark(s_builtIn["blue"]));
+        => AssertSameTokens("blue", ReadBlock(":root[data-bs-theme=dark]", mustContain: "--ta-link:"), Dark(s_builtIn["blue"]));
 
     [Theory]
     [MemberData(nameof(DefaultSchemes))]
     public void SeededDefaults_ReproduceTheSchemesTheyWereTunedAs(string id)
     {
-        var seed = new TheAdminSchemeProvider().CreateDefaults().Single(scheme => scheme.Id == id);
-        var definition = TheAdminSchemeDefinition.FromScheme(seed);
+        var seed = TheAdminSchemes.CreateDefaults().Single(scheme => scheme.Id == id);
 
-        Assert.NotNull(definition);
-        Assert.Equal(TheAdminSchemeCssBuilder.BuildLight(s_builtIn[id]), TheAdminSchemeCssBuilder.BuildLight(definition));
-        Assert.Equal(TheAdminSchemeCssBuilder.BuildDark(s_builtIn[id]), TheAdminSchemeCssBuilder.BuildDark(definition));
+        Assert.NotNull(ThemeSchemePalette.FromScheme(seed));
+        Assert.Equal(Light(s_builtIn[id]), Light(seed));
+        Assert.Equal(Dark(s_builtIn[id]), Dark(seed));
     }
 
     [Fact]
     public void SeededDefaults_HaveValidUniqueIds_AndAnOrder_StartingWithTheDefault()
     {
-        var defaults = new TheAdminSchemeProvider().CreateDefaults();
+        var defaults = TheAdminSchemes.CreateDefaults();
 
         Assert.All(defaults, scheme => Assert.True(ThemeSchemeStore.IsValidId(scheme.Id), scheme.Id));
         Assert.All(defaults, scheme => Assert.True(ThemeSchemeStore.HasValidTypography(scheme), scheme.Id));
         Assert.Equal(defaults.Count, defaults.Select(scheme => scheme.Id).Distinct(StringComparer.Ordinal).Count());
         Assert.Equal(defaults.OrderBy(scheme => scheme.Position).Select(scheme => scheme.Id), defaults.Select(scheme => scheme.Id));
-        Assert.Equal("blue", TheAdminSchemeProvider.DefaultId);
+        Assert.Equal("blue", TheAdminSchemes.DefaultId);
         Assert.Equal(["blue", "gray"], defaults.Take(2).Select(scheme => scheme.Id));
     }
 
     [Fact]
     public void SeededGray_KeepsTheSystemFontOfTheFormerTheAdmin()
     {
-        var gray = new TheAdminSchemeProvider().CreateDefaults().Single(scheme => scheme.Id == "gray");
-        var tokens = ToDictionary(TheAdminSchemeCssBuilder.BuildTypography(TheAdminSchemeDefinition.FromScheme(gray)));
+        var gray = TheAdminSchemes.CreateDefaults().Single(scheme => scheme.Id == "gray");
 
-        Assert.StartsWith("system-ui,", tokens["--ta-font-family"], StringComparison.Ordinal);
+        Assert.StartsWith("system-ui,", Light(gray)["--ta-font-family"], StringComparison.Ordinal);
     }
 
     [Theory]
@@ -101,9 +101,9 @@ public sealed class TheAdminSchemeTests
     {
         foreach (var lightMenu in new[] { false, true })
         {
-            var scheme = TheAdminSchemeDefinition.FromColors(Color(primary), Color(deep), Color(ink), Color(accent), lightMenu);
-            var light = ToDictionary(TheAdminSchemeCssBuilder.BuildLight(scheme));
-            var dark = ToDictionary(TheAdminSchemeCssBuilder.BuildDark(scheme));
+            var scheme = new ThemeScheme { Id = "custom-a", Primary = primary, Deep = deep, Ink = ink, Accent = accent, LightMenu = lightMenu };
+            var light = Light(scheme);
+            var dark = Dark(scheme);
 
             foreach (var (mode, tokens) in new[] { ("light", light), ("dark", Merge(light, dark)) })
             {
@@ -126,40 +126,48 @@ public sealed class TheAdminSchemeTests
     [Fact]
     public void FromColors_PutsDarkTextOnALightPrimary()
     {
-        var gold = TheAdminSchemeDefinition.FromColors(Color("#eaa52c"), Color("#1e1e1e"), Color("#09080b"), Color("#eaa52c"), lightMenu: false);
-        var blue = TheAdminSchemeDefinition.FromColors(Color("#2a81bb"), Color("#144c71"), Color("#081b26"), Color("#5aa4ef"), lightMenu: false);
+        var gold = ThemeSchemePalette.FromColors(Color("#eaa52c"), Color("#1e1e1e"), Color("#09080b"), Color("#eaa52c"));
+        var blue = ThemeSchemePalette.FromColors(Color("#2a81bb"), Color("#144c71"), Color("#081b26"), Color("#5aa4ef"));
 
-        Assert.NotNull(gold.OnPrimary);
-        Assert.True(gold.OnPrimary.Value.Luminance < 0.1);
-        Assert.Null(blue.OnPrimary);
+        Assert.True(gold.OnPrimary.Luminance < 0.1);
+        Assert.False(gold.HasLightTextOnPrimary);
+        Assert.Equal(ThemeColor.White, blue.OnPrimary);
+        Assert.True(blue.HasLightTextOnPrimary);
     }
 
     [Fact]
-    public void Provider_IsTheOneOfTheTheme_AndWritesItsOwnAttribute()
+    public void Startup_RegistersTheTheme_WithItsOwnAttributePrefixAndDefaults()
     {
-        var provider = new TheAdminSchemeProvider();
+        var options = Options;
 
-        Assert.Equal("TheAdmin", provider.ThemeId);
-        Assert.Equal(TheAdminConstants.ThemeId, provider.ThemeId);
-        Assert.Equal("blue", provider.DefaultSchemeId);
-        Assert.Equal("data-ta-scheme", provider.SchemeAttributeName);
-        Assert.Contains(provider.CreateDefaults(), scheme => scheme.Id == provider.DefaultSchemeId);
+        Assert.Equal(TheAdminConstants.ThemeId, options.ThemeId);
+        Assert.Equal("data-ta-scheme", options.AttributeName);
+        Assert.Equal(TheAdminSchemes.AttributeName, options.AttributeName);
+        Assert.Equal("ta", options.TokenPrefix);
+        Assert.Equal("blue", options.DefaultSchemeId);
+        Assert.Equal("[data-bs-theme=\"dark\"]", options.DarkModeSelector);
+        Assert.Equal(TheAdminSchemes.CreateDefaults().Select(scheme => scheme.Id), options.Defaults.Select(scheme => scheme.Id));
+        Assert.Contains(options.Defaults, scheme => scheme.Id == options.DefaultSchemeId);
+
+        // Its Sass maps the tokens onto Bootstrap's variables itself.
+        Assert.Equal([typeof(TheAdminSchemeTokens)], options.TokenContributors);
+        Assert.Null(options.CssWriter);
     }
 
     [Fact]
-    public void Provider_WritesNothingForASchemeWithAnInvalidColor()
-    {
-        var css = new StringBuilder();
-
-        new TheAdminSchemeProvider().AppendCss(css, "custom-a", new ThemeScheme { Id = "custom-a", Name = "A", Primary = "blue", Deep = "#144c71", Ink = "#081b26", Accent = "#5aa4ef" });
-
-        Assert.Equal(0, css.Length);
-    }
+    public void Stylesheet_WritesNothingForASchemeWithAnInvalidColor()
+        => Assert.Empty(Build([new ThemeScheme { Id = "custom-a", Name = "A", Primary = "blue", Deep = "#144c71", Ink = "#081b26", Accent = "#5aa4ef" }]));
 
     [Fact]
     public async Task Store_SeedsTheDefaultsOfTheTheme_AndBlueIsTheSiteDefault()
     {
-        var store = new ThemeSchemeStore(new InMemoryThemeSchemesDocumentManager(), [new TheAdminSchemeProvider()], new MemoryCache(new MemoryCacheOptions()));
+        var services = CreateServices();
+        services.AddSingleton<IDocumentManager<ThemeSchemesDocument>>(new InMemoryThemeSchemesDocumentManager());
+        services.AddMemoryCache();
+        services.AddScoped<ThemeSchemeStore>();
+
+        using var provider = services.BuildServiceProvider();
+        var store = provider.GetRequiredService<ThemeSchemeStore>();
 
         var schemes = await store.ListAsync(TheAdminConstants.ThemeId);
 
@@ -170,13 +178,14 @@ public sealed class TheAdminSchemeTests
 
         Assert.Contains("[data-ta-scheme=\"gold\"]{", css, StringComparison.Ordinal);
         Assert.Contains("[data-bs-theme=\"dark\"][data-ta-scheme=\"blue\"]{", css, StringComparison.Ordinal);
+        Assert.Contains(".ta-scheme-swatch[data-scheme=\"blue\"]>span:nth-child(4){background-color:#5aa4ef}", css, StringComparison.Ordinal);
+        Assert.DoesNotContain("--bs-", css, StringComparison.Ordinal);
     }
 
     [Fact]
     public void Stylesheet_HoldsEveryValidScheme_AndSkipsTheRest()
     {
-        var css = ThemeSchemeStore.BuildStylesheet(
-            new TheAdminSchemeProvider(),
+        var css = Build(
         [
             new ThemeScheme { Id = "custom-ok", Name = "Ok", Primary = "#2a81bb", Deep = "#144c71", Ink = "#081b26", Accent = "#5aa4ef" },
             new ThemeScheme { Id = "custom-bad-color", Name = "Bad", Primary = "blue", Deep = "#144c71", Ink = "#081b26", Accent = "#5aa4ef" },
@@ -193,8 +202,7 @@ public sealed class TheAdminSchemeTests
     [Fact]
     public void Typography_DefaultsToLato_TheBodyFontForHeadings_AndUnitScales()
     {
-        var definition = TheAdminSchemeDefinition.FromScheme(new ThemeScheme { Id = "custom-a", Name = "A", Primary = "#2a81bb", Deep = "#144c71", Ink = "#081b26", Accent = "#5aa4ef" });
-        var tokens = ToDictionary(TheAdminSchemeCssBuilder.BuildTypography(definition));
+        var tokens = Typography(new ThemeScheme { Id = "custom-a", Name = "A", Primary = "#2a81bb", Deep = "#144c71", Ink = "#081b26", Accent = "#5aa4ef" });
 
         Assert.Equal(s_typographyTokens.Order(StringComparer.Ordinal), tokens.Keys.Order(StringComparer.Ordinal));
         Assert.Equal("\"Lato\", system-ui, -apple-system, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif", tokens["--ta-font-family"]);
@@ -214,7 +222,7 @@ public sealed class TheAdminSchemeTests
             // A culture with a decimal comma: CSS needs a dot.
             CultureInfo.CurrentCulture = new CultureInfo("fr-FR");
 
-            var definition = TheAdminSchemeDefinition.FromScheme(new ThemeScheme
+            var tokens = Typography(new ThemeScheme
             {
                 Id = "custom-a", Name = "A", Primary = "#2a81bb", Deep = "#144c71", Ink = "#081b26", Accent = "#5aa4ef",
                 FontFamily = ThemeSchemeTypography.Inter,
@@ -223,7 +231,6 @@ public sealed class TheAdminSchemeTests
                 RadiusScale = 0,
                 Density = 1.25,
             });
-            var tokens = ToDictionary(TheAdminSchemeCssBuilder.BuildTypography(definition));
 
             Assert.StartsWith("\"Inter\", system-ui,", tokens["--ta-font-family"], StringComparison.Ordinal);
             Assert.StartsWith("\"Source Sans 3\", system-ui,", tokens["--ta-heading-font-family"], StringComparison.Ordinal);
@@ -240,7 +247,7 @@ public sealed class TheAdminSchemeTests
     [Fact]
     public void Typography_ClampsScalesOutOfRange_AndFallsBackOnUnknownFonts()
     {
-        var definition = TheAdminSchemeDefinition.FromScheme(new ThemeScheme
+        var tokens = Typography(new ThemeScheme
         {
             Id = "custom-a", Name = "A", Primary = "#2a81bb", Deep = "#144c71", Ink = "#081b26", Accent = "#5aa4ef",
             FontFamily = "comic-sans",
@@ -249,7 +256,6 @@ public sealed class TheAdminSchemeTests
             RadiusScale = -1,
             Density = 0.1,
         });
-        var tokens = ToDictionary(TheAdminSchemeCssBuilder.BuildTypography(definition));
 
         Assert.StartsWith("\"Lato\",", tokens["--ta-font-family"], StringComparison.Ordinal);
         Assert.Equal("var(--ta-font-family)", tokens["--ta-heading-font-family"]);
@@ -261,8 +267,7 @@ public sealed class TheAdminSchemeTests
     [Fact]
     public void Stylesheet_WritesTypographyOnce_InTheLightBlock()
     {
-        var css = ThemeSchemeStore.BuildStylesheet(
-            new TheAdminSchemeProvider(),
+        var css = Build(
         [
             new ThemeScheme { Id = "custom-a", Name = "A", Primary = "#2a81bb", Deep = "#144c71", Ink = "#081b26", Accent = "#5aa4ef", FontScale = 1.0625 },
         ]);
@@ -279,14 +284,52 @@ public sealed class TheAdminSchemeTests
         Assert.DoesNotContain("--ta-radius-scale", dark, StringComparison.Ordinal);
     }
 
-    private static void AssertSameTokens(string scheme, Dictionary<string, string> sass, IReadOnlyList<KeyValuePair<string, string>> csharp)
-    {
-        var generated = ToDictionary(csharp);
+    private static ThemeSchemeOptions Options
+        => Provider.GetRequiredService<IOptionsMonitor<ThemeSchemeOptions>>().Get(TheAdminConstants.ThemeId);
 
-        // The typography tokens are not part of the color derivation.
+    // The services of TheAdmin's startup, which registers its schemes.
+    private static ServiceProvider Provider { get; } = CreateServices().BuildServiceProvider();
+
+    private static ServiceCollection CreateServices()
+    {
+        var services = new ServiceCollection();
+        new global::OrchardCore.Themes.TheAdmin.Startup().ConfigureServices(services);
+
+        return services;
+    }
+
+    private static string Build(IEnumerable<ThemeScheme> schemes)
+        => ThemeSchemeStylesheet.Build(Options, schemes, Provider);
+
+    // Every token of the light rule of a scheme, typography included.
+    private static Dictionary<string, string> Light(ThemeScheme scheme)
+        => Tokens(scheme, ThemeSchemeMode.Light);
+
+    private static Dictionary<string, string> Dark(ThemeScheme scheme)
+        => Tokens(scheme, ThemeSchemeMode.Dark);
+
+    private static Dictionary<string, string> Typography(ThemeScheme scheme)
+        => Light(scheme).Where(token => s_typographyTokens.Contains(token.Key)).ToDictionary(StringComparer.Ordinal);
+
+    private static Dictionary<string, string> Tokens(ThemeScheme scheme, ThemeSchemeMode mode)
+    {
+        var options = Options;
+        var palette = ThemeSchemePalette.FromScheme(scheme);
+
+        Assert.NotNull(palette);
+
+        return ToDictionary(ThemeSchemeStylesheet.BuildTokens(scheme, palette, mode, options, ThemeSchemeStylesheet.CreateContributors(options, Provider)));
+    }
+
+    private static void AssertSameTokens(string scheme, Dictionary<string, string> sass, Dictionary<string, string> csharp)
+    {
+        var generated = new Dictionary<string, string>(csharp, StringComparer.Ordinal);
+
+        // The typography tokens are not part of the color derivation. The order of the tokens does not matter.
         foreach (var name in s_typographyTokens)
         {
             sass.Remove(name);
+            generated.Remove(name);
         }
 
         Assert.Equal(sass.Keys.Order(StringComparer.Ordinal), generated.Keys.Order(StringComparer.Ordinal));

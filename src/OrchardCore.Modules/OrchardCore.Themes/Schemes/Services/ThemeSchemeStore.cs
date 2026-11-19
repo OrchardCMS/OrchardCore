@@ -1,6 +1,7 @@
-using System.Text;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
 using OrchardCore.Documents;
 using OrchardCore.Themes.Schemes.Models;
 
@@ -8,8 +9,9 @@ namespace OrchardCore.Themes.Schemes.Services;
 
 /// <summary>
 /// The schemes of the themes that support them, in the cached <see cref="ThemeSchemesDocument"/>, and the stylesheet
-/// of each theme, built by its <see cref="IThemeSchemeProvider"/> once per version of the document and kept in memory.
-/// Reads of a theme that is not registered find nothing; writes to it throw an <see cref="ArgumentException"/>.
+/// of each theme, built from the theme's <see cref="ThemeSchemeOptions"/> once per version of the document and kept in
+/// memory with the hash that versions its URL. Reads of a theme that is not registered find nothing; writes to it
+/// throw an <see cref="ArgumentException"/>.
 /// </summary>
 public sealed partial class ThemeSchemeStore
 {
@@ -21,8 +23,10 @@ public sealed partial class ThemeSchemeStore
     private static readonly Dictionary<string, ThemeScheme> s_noSchemes = new(StringComparer.Ordinal);
 
     private readonly IDocumentManager<ThemeSchemesDocument> _documents;
+    private readonly ThemeSchemesOptions _themes;
+    private readonly IOptionsMonitor<ThemeSchemeOptions> _options;
+    private readonly IServiceProvider _serviceProvider;
     private readonly IMemoryCache _memoryCache;
-    private readonly Dictionary<string, IThemeSchemeProvider> _providers = new(StringComparer.OrdinalIgnoreCase);
 
     // The document this scope seeded, read in place of the cached one, which is only refreshed once the scope commits.
     private ThemeSchemesDocument _seeded;
@@ -32,43 +36,45 @@ public sealed partial class ThemeSchemeStore
     /// </summary>
     public ThemeSchemeStore(
         IDocumentManager<ThemeSchemesDocument> documents,
-        IEnumerable<IThemeSchemeProvider> providers,
+        IOptions<ThemeSchemesOptions> themes,
+        IOptionsMonitor<ThemeSchemeOptions> options,
+        IServiceProvider serviceProvider,
         IMemoryCache memoryCache)
     {
         _documents = documents;
+        _themes = themes.Value;
+        _options = options;
+        _serviceProvider = serviceProvider;
         _memoryCache = memoryCache;
-
-        foreach (var provider in providers)
-        {
-            _providers.TryAdd(provider.ThemeId, provider);
-        }
     }
 
     /// <summary>
     /// The ids of the themes that support schemes.
     /// </summary>
     public IEnumerable<string> ThemeIds
-        => _providers.Keys;
+        => _themes.Themes;
 
     /// <summary>
     /// Whether the theme supports schemes.
     /// </summary>
     public bool IsRegistered(string themeId)
-        => !string.IsNullOrEmpty(themeId) && _providers.ContainsKey(themeId);
+        => !string.IsNullOrEmpty(themeId) && _themes.Themes.Contains(themeId);
 
     /// <summary>
-    /// The provider of the theme, or <see langword="null"/> when the theme does not support schemes. The id is matched
+    /// The options of the theme, or <see langword="null"/> when the theme does not support schemes. The id is matched
     /// without regard to case.
     /// </summary>
-    public IThemeSchemeProvider GetProvider(string themeId)
-        => string.IsNullOrEmpty(themeId) ? null : _providers.GetValueOrDefault(themeId);
+    public ThemeSchemeOptions GetOptions(string themeId)
+        => IsRegistered(themeId) ? _options.Get(GetThemeId(themeId)) : null;
 
     /// <summary>
     /// The id of the theme as the theme spells it, whatever the case of <paramref name="themeId"/>; or
     /// <paramref name="themeId"/> itself when the theme does not support schemes. The stored schemes are keyed by it.
     /// </summary>
     public string GetThemeId(string themeId)
-        => GetProvider(themeId)?.ThemeId ?? themeId;
+        => IsRegistered(themeId)
+            ? _themes.Themes.First(id => string.Equals(id, themeId, StringComparison.OrdinalIgnoreCase))
+            : themeId;
 
     /// <summary>
     /// The schemes, read from the cache, with the defaults of the theme seeded the first time; never change what it
@@ -80,14 +86,12 @@ public sealed partial class ThemeSchemeStore
 
         var document = _seeded ?? await _documents.GetOrCreateImmutableAsync();
 
-        var provider = GetProvider(themeId);
-
-        if (provider is null || document.Seeded.Contains(themeId))
+        if (!IsRegistered(themeId) || document.Seeded.Contains(themeId))
         {
             return document;
         }
 
-        return await SeedAsync(provider);
+        return await SeedAsync(themeId, _options.Get(themeId));
     }
 
     /// <summary>
@@ -123,7 +127,7 @@ public sealed partial class ThemeSchemeStore
     }
 
     /// <summary>
-    /// The site's default scheme of the theme: the one the site picked, or else the provider's default, or else the
+    /// The site's default scheme of the theme: the one the site picked, or else the theme's default, or else the
     /// first one; <see langword="null"/> when the theme has no scheme.
     /// </summary>
     public async Task<string> GetDefaultIdAsync(string themeId)
@@ -143,11 +147,11 @@ public sealed partial class ThemeSchemeStore
             return picked;
         }
 
-        var providerDefault = _providers[themeId].DefaultSchemeId;
+        var themeDefault = _options.Get(themeId).DefaultSchemeId;
 
-        if (providerDefault is not null && schemes.ContainsKey(providerDefault))
+        if (themeDefault is not null && schemes.ContainsKey(themeDefault))
         {
-            return providerDefault;
+            return themeDefault;
         }
 
         var list = await ListAsync(themeId);
@@ -249,7 +253,9 @@ public sealed partial class ThemeSchemeStore
     }
 
     /// <summary>
-    /// The stylesheet of the schemes of the theme, and the version it was built from, which changes on every save.
+    /// The stylesheet of the schemes of the theme, and its version: a short hash of its text, which changes when either
+    /// the schemes (a save) or the code that writes them change. Built once per version of the document, then read
+    /// from memory.
     /// </summary>
     public async Task<(string Css, string Version)> GetStylesheetAsync(string themeId)
     {
@@ -258,36 +264,30 @@ public sealed partial class ThemeSchemeStore
         EnsureRegistered(themeId);
 
         var document = await GetAsync(themeId);
-        var version = document.Identifier ?? string.Empty;
 
-        var css = await _memoryCache.GetOrCreateAsync($"ThemeSchemes.Css:{themeId}:{version}", entry =>
+        var stylesheet = await _memoryCache.GetOrCreateAsync($"ThemeSchemes.Css:{themeId}:{document.Identifier}", entry =>
         {
             entry.SlidingExpiration = TimeSpan.FromHours(1);
 
-            return Task.FromResult(BuildStylesheet(_providers[themeId], GetSchemes(document, themeId).Values));
+            var css = BuildStylesheet(themeId, GetSchemes(document, themeId).Values);
+
+            return Task.FromResult(new CachedStylesheet(css, ThemeSchemeStylesheet.ComputeVersion(css)));
         });
 
-        return (css, version);
+        return (stylesheet.Css, stylesheet.Version);
     }
 
     /// <summary>
-    /// The CSS of the given schemes, written by the theme's provider; the schemes with an invalid id are skipped.
+    /// Builds the CSS of the given schemes with the theme's options and contributors; the schemes with an invalid id
+    /// or an invalid color are skipped. Not cached, unlike <see cref="GetStylesheetAsync"/>.
     /// </summary>
-    public static string BuildStylesheet(IThemeSchemeProvider provider, IEnumerable<ThemeScheme> schemes)
+    public string BuildStylesheet(string themeId, IEnumerable<ThemeScheme> schemes)
     {
-        ArgumentNullException.ThrowIfNull(provider);
+        themeId = GetThemeId(themeId);
 
-        var css = new StringBuilder();
+        EnsureRegistered(themeId);
 
-        foreach (var scheme in schemes)
-        {
-            if (scheme is not null && IsValidId(scheme.Id))
-            {
-                provider.AppendCss(css, scheme.Id, scheme);
-            }
-        }
-
-        return css.ToString();
+        return ThemeSchemeStylesheet.Build(_options.Get(themeId), schemes, _serviceProvider);
     }
 
     /// <summary>
@@ -324,19 +324,20 @@ public sealed partial class ThemeSchemeStore
             && ThemeSchemeTypography.IsValidDensity(scheme.Density);
     }
 
-    private async Task<ThemeSchemesDocument> SeedAsync(IThemeSchemeProvider provider)
+    private async Task<ThemeSchemesDocument> SeedAsync(string themeId, ThemeSchemeOptions options)
     {
         var document = await _documents.GetOrCreateMutableAsync();
 
-        if (document.Seeded.Add(provider.ThemeId))
+        if (document.Seeded.Add(themeId))
         {
-            var schemes = GetOrAddSchemes(document, provider.ThemeId);
+            var schemes = GetOrAddSchemes(document, themeId);
 
-            foreach (var scheme in provider.CreateDefaults())
+            foreach (var scheme in options.GetSchemesToSeed())
             {
                 if (scheme is not null && IsValidId(scheme.Id))
                 {
-                    schemes.TryAdd(scheme.Id, scheme);
+                    // A copy: the options keep their own instances.
+                    schemes.TryAdd(scheme.Id, JsonSerializer.Deserialize<ThemeScheme>(JsonSerializer.SerializeToUtf8Bytes(scheme)));
                 }
             }
 
@@ -387,6 +388,8 @@ public sealed partial class ThemeSchemeStore
 
     private static bool IsEmptyOrColor(string value)
         => string.IsNullOrWhiteSpace(value) || ThemeColor.TryParse(value, out _);
+
+    private sealed record CachedStylesheet(string Css, string Version);
 
     [GeneratedRegex("^[a-z][a-z0-9-]*$")]
     private static partial Regex IdRegex();

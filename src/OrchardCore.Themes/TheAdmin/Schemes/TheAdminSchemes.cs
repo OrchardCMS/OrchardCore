@@ -1,4 +1,3 @@
-using System.Text;
 using OrchardCore.Themes.Schemes;
 using OrchardCore.Themes.Schemes.Models;
 
@@ -6,10 +5,11 @@ namespace OrchardCore.Themes.TheAdmin.Schemes;
 
 /// <summary>
 /// The schemes of TheAdmin: the ones it seeds the first time its schemes are read (Blue, Gray, Ocean...), which are
-/// ordinary records from then on, and the CSS of a scheme, derived by <see cref="TheAdminSchemeCssBuilder"/> and set
-/// on <c>&lt;html data-ta-scheme="..."&gt;</c>.
+/// ordinary records from then on, its default one, and how its stylesheet names things. Its tokens are the generated
+/// ones under the <c>ta</c> prefix, a few of them renamed (see <see cref="TokenNames"/>), and the ones of
+/// <see cref="TheAdminSchemeTokens"/>, set on <c>&lt;html data-ta-scheme="..."&gt;</c>.
 /// </summary>
-public sealed class TheAdminSchemeProvider : IThemeSchemeProvider
+public static class TheAdminSchemes
 {
     /// <summary>
     /// The scheme used when the site names no default: also the look of the stylesheet's own fallback, so the admin
@@ -22,19 +22,28 @@ public sealed class TheAdminSchemeProvider : IThemeSchemeProvider
     /// </summary>
     public const string AttributeName = "data-ta-scheme";
 
-    /// <inheritdoc/>
-    public string ThemeId => TheAdminConstants.ThemeId;
+    /// <summary>
+    /// The prefix of the theme's tokens.
+    /// </summary>
+    public const string TokenPrefix = "ta";
 
-    /// <inheritdoc/>
-    public string DefaultSchemeId => DefaultId;
-
-    /// <inheritdoc/>
-    public string SchemeAttributeName => AttributeName;
+    /// <summary>
+    /// The generated tokens TheAdmin's Sass names otherwise, by generic name: copied to
+    /// <see cref="ThemeSchemeOptions.TokenNames"/>.
+    /// </summary>
+    public static IReadOnlyDictionary<string, string> TokenNames { get; } = new Dictionary<string, string>(StringComparer.Ordinal)
+    {
+        ["deep"] = "navy",
+        ["accent"] = "sky",
+        ["page"] = "page-bg",
+        ["focus"] = "focus-color",
+        ["row-hover"] = "row-hover-bg",
+    };
 
     /// <summary>
     /// The schemes to seed, in the order of the pickers.
     /// </summary>
-    public IReadOnlyList<ThemeScheme> CreateDefaults()
+    public static IReadOnlyList<ThemeScheme> CreateDefaults()
         =>
         [
             new() { Id = DefaultId, Name = "Blue", Position = 0, Primary = "#2a81bb", Deep = "#144c71", Ink = "#081b26", Accent = "#5aa4ef", Hue = 209, Saturation = 1 },
@@ -60,18 +69,4 @@ public sealed class TheAdminSchemeProvider : IThemeSchemeProvider
                 Primary = "#eaa52c", Deep = "#1e1e1e", Ink = "#09080b", Accent = "#eaa52c", Hue = 240, Saturation = 0.08, OnPrimary = "#1e1e1e",
             },
         ];
-
-    /// <inheritdoc/>
-    public void AppendCss(StringBuilder css, string schemeId, ThemeScheme scheme)
-    {
-        ArgumentNullException.ThrowIfNull(css);
-        ArgumentNullException.ThrowIfNull(scheme);
-
-        var definition = TheAdminSchemeDefinition.FromScheme(scheme);
-
-        if (definition is not null)
-        {
-            TheAdminSchemeCssBuilder.Append(css, schemeId, definition);
-        }
-    }
 }

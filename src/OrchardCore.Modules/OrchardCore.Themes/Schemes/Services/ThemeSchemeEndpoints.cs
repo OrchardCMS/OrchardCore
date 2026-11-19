@@ -8,9 +8,10 @@ namespace OrchardCore.Themes.Schemes.Services;
 
 /// <summary>
 /// Serves the stylesheet of the schemes of each theme that supports them. It holds colors, fonts and scales only, and
-/// pages that need no sign in (e.g. the log in page of the admin) use it too, so it is public. A request naming the
-/// current version is cached by the browser for a year: the layouts link to it with the version of the document,
-/// which changes on every save, so a change is picked up on the next page.
+/// pages that need no sign in (e.g. the log in page of the admin) use it too, so it is public. It is built once per
+/// change of the schemes and served from memory. A request naming the current version (a short hash of the
+/// stylesheet) is cached by the browser for a year: the layouts link to it with that version, which changes when a
+/// scheme is saved or the code that writes the stylesheet changes, so a change is picked up on the next page.
 /// </summary>
 public static class ThemeSchemeEndpoints
 {

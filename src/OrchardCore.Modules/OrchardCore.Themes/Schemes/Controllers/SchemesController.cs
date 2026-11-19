@@ -1,4 +1,3 @@
-using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -313,9 +312,7 @@ public sealed class SchemesController : Controller
     [HttpPost]
     public async Task<IActionResult> Preview(string themeId, ThemeSchemeViewModel model)
     {
-        var provider = _store.GetProvider(themeId);
-
-        if (provider is null)
+        if (!_store.IsRegistered(themeId))
         {
             return NotFound();
         }
@@ -332,10 +329,7 @@ public sealed class SchemesController : Controller
             return BadRequest();
         }
 
-        var css = new StringBuilder();
-        provider.AppendCss(css, PreviewSchemeId, scheme);
-
-        return Content(css.ToString(), "text/css; charset=utf-8");
+        return Content(_store.BuildStylesheet(themeId, [scheme]), "text/css; charset=utf-8");
     }
 
     private string GetThemeName(string themeId)

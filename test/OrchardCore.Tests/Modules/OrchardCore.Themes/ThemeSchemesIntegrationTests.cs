@@ -18,7 +18,8 @@ public sealed class ThemeSchemesIntegrationTests
 
         // The admin page is rendered in the site's default scheme of TheAdmin, with the theme's schemes stylesheet.
         Assert.Contains("data-ta-scheme=\"blue\"", themes, StringComparison.Ordinal);
-        Assert.Contains("/Themes/schemes/TheAdmin.css?v=", themes, StringComparison.Ordinal);
+        // Versioned by a short hash of the stylesheet.
+        Assert.Matches(@"/Themes/schemes/TheAdmin\.css\?v=[0-9a-f]{16}""", themes);
 
         // Only TheAdmin supports schemes, so it alone has the button.
         Assert.Contains("/Admin/Themes/Schemes/TheAdmin\"", themes, StringComparison.Ordinal);
@@ -43,7 +44,9 @@ public sealed class ThemeSchemesIntegrationTests
 
         var css = await GetPageAsync(context, "Themes/schemes/TheAdmin.css");
 
-        Assert.Contains("[data-ta-scheme=\"blue\"]{", css, StringComparison.Ordinal);
+        Assert.Contains("[data-ta-scheme=\"blue\"]{--ta-primary:", css, StringComparison.Ordinal);
+        Assert.Contains("--ta-navy:", css, StringComparison.Ordinal);
+        Assert.DoesNotContain("--bs-", css, StringComparison.Ordinal);
 
         using var unknownList = await context.Client.GetAsync("Admin/Themes/Schemes/TheTheme", TestContext.Current.CancellationToken);
         Assert.Equal(HttpStatusCode.NotFound, unknownList.StatusCode);

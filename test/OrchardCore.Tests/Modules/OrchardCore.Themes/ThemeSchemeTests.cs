@@ -1,5 +1,6 @@
 using System.Text.Json.Nodes;
 using OrchardCore.Deployment;
+using OrchardCore.Documents;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Implementation;
@@ -22,8 +23,9 @@ using OrchardCore.Themes.Schemes.ViewModels;
 namespace OrchardCore.Tests.Modules.OrchardCore.Themes;
 
 /// <summary>
-/// The generic side of theme schemes: the store, the runtime service, the controller, the recipe and deployment
-/// steps, and the Schemes button of the themes list, with two themes that support schemes.
+/// The generic side of theme schemes: the options and their registration, the store, the stylesheet and its cache,
+/// the runtime service, the controller, the recipe and deployment steps, and the Schemes button of the themes list,
+/// with two themes that support schemes and a few registered with no options at all.
 /// </summary>
 public sealed class ThemeSchemeTests
 {
@@ -103,23 +105,289 @@ public sealed class ThemeSchemeTests
     }
 
     [Fact]
-    public void AddThemeSchemes_RegistersTheProvider_AndItsTheme()
+    public void AddThemeSchemes_RegistersTheTheme_AndCombinesTheConfigurationOfEachCall()
     {
         var services = new ServiceCollection();
-        services.AddThemeSchemes<FakeProviderA>();
-        services.AddThemeSchemes<FakeProviderB>();
-        services.AddThemeSchemes<FakeProviderA>();
+        services.AddThemeSchemes(ThemeA, options => options.AttributeName = "data-a-scheme");
+        services.AddThemeSchemes(ThemeB);
+        services.AddThemeSchemes(ThemeA.ToLowerInvariant(), options => options.TokenPrefix = "a");
 
         using var provider = services.BuildServiceProvider();
 
-        Assert.Equal([ThemeA, ThemeB], provider.GetServices<IThemeSchemeProvider>().Select(p => p.ThemeId));
         Assert.Equal([ThemeA, ThemeB], provider.GetRequiredService<IOptions<ThemeSchemesOptions>>().Value.Themes.Order(StringComparer.Ordinal));
+
+        var optionsA = provider.GetRequiredService<IOptionsMonitor<ThemeSchemeOptions>>().Get(ThemeA);
+
+        Assert.Equal(ThemeA, optionsA.ThemeId);
+        Assert.Equal("data-a-scheme", optionsA.AttributeName);
+        Assert.Equal("a", optionsA.TokenPrefix);
+
+        // The other theme keeps every default.
+        var optionsB = provider.GetRequiredService<IOptionsMonitor<ThemeSchemeOptions>>().Get(ThemeB);
+
+        Assert.Equal(ThemeB, optionsB.ThemeId);
+        Assert.Equal("data-scheme", optionsB.AttributeName);
+        Assert.Equal("themeb", optionsB.TokenPrefix);
+    }
+
+    [Fact]
+    public void Options_HaveDefaults_ForEveryProperty()
+    {
+        var options = new ThemeSchemeOptions { ThemeId = "My.Theme_2" };
+
+        Assert.Equal("data-scheme", options.AttributeName);
+        Assert.Equal("my-theme-2", options.TokenPrefix);
+        Assert.Equal("[data-bs-theme=\"dark\"]", options.DarkModeSelector);
+        Assert.Empty(options.Defaults);
+        Assert.Empty(options.TokenContributors);
+        Assert.Empty(options.TokenNames);
+        Assert.Null(options.CssWriter);
+
+        // With no default schemes, a neutral one is seeded and is the default.
+        Assert.Equal(ThemeSchemeOptions.NeutralSchemeId, options.DefaultSchemeId);
+        var neutral = ThemeSchemeOptions.CreateNeutralScheme();
+        Assert.Equal("default", neutral.Id);
+        Assert.Equal("Default", neutral.Name);
+        Assert.True(ThemeSchemeStore.HasValidColors(neutral));
+
+        // The first default scheme is the default, unless the theme names one.
+        options.Defaults = [Scheme("first", "First"), Scheme("second", "Second")];
+        Assert.Equal("first", options.DefaultSchemeId);
+
+        options.DefaultSchemeId = "second";
+        options.TokenPrefix = "mine";
+        Assert.Equal("second", options.DefaultSchemeId);
+        Assert.Equal("mine", options.TokenPrefix);
+
+        Assert.Equal("theadmin", ThemeSchemeOptions.CreateTokenPrefix("TheAdmin"));
+    }
+
+    [Fact]
+    public void Options_AddEachContributorOnce()
+    {
+        var options = new ThemeSchemeOptions { ThemeId = "MyTheme" };
+
+        options.UseBootstrap().UseBootstrap().AddTokens<BrandTokens>();
+
+        Assert.Equal([typeof(BootstrapThemeSchemeTokens), typeof(BrandTokens)], options.TokenContributors);
+    }
+
+    [Fact]
+    public async Task ThemeWithNoOptions_SeedsANeutralScheme_AndWritesItsOwnTokens_WithNoFrameworkVariables()
+    {
+        var (store, documents, _) = CreateStore(services => services.AddThemeSchemes("MyTheme"));
+
+        Assert.True(store.IsRegistered("mytheme"));
+        Assert.Equal(["default"], (await store.ListAsync("MyTheme")).Select(scheme => scheme.Id));
+        Assert.Equal("default", await store.GetDefaultIdAsync("MyTheme"));
+        Assert.Contains("MyTheme", documents.Document.Seeded);
+
+        var (css, version) = await store.GetStylesheetAsync("MyTheme");
+        var (light, dark) = ReadRules(css, "[data-scheme=\"default\"]", "[data-bs-theme=\"dark\"][data-scheme=\"default\"]");
+
+        // Every generic token, under the theme's prefix.
+        foreach (var token in s_lightTokens)
+        {
+            Assert.True(light.ContainsKey("--mytheme-" + token), token);
+        }
+
+        foreach (var token in s_darkTokens)
+        {
+            Assert.True(dark.ContainsKey("--mytheme-" + token), token);
+        }
+
+        Assert.Equal("#2563eb", light["--mytheme-primary"]);
+        Assert.Equal("var(--mytheme-font-family)", light["--mytheme-heading-font-family"]);
+        Assert.DoesNotContain("--mytheme-font-family", dark.Keys);
+        Assert.DoesNotContain("--bs-", css, StringComparison.Ordinal);
+        Assert.DoesNotContain("data-ta-scheme", css, StringComparison.Ordinal);
+        Assert.Matches("^[0-9a-f]{16}$", version);
+    }
+
+    [Fact]
+    public async Task UseBootstrap_AlsoWritesBootstrapsVariables_FromTheTokens()
+    {
+        var (store, _, _) = CreateStore(services => services.AddThemeSchemes("MyTheme", options => options.UseBootstrap()));
+
+        var (css, _) = await store.GetStylesheetAsync("MyTheme");
+        var (light, dark) = ReadRules(css, "[data-scheme=\"default\"]", "[data-bs-theme=\"dark\"][data-scheme=\"default\"]");
+
+        Assert.Equal("var(--mytheme-primary)", light["--bs-primary"]);
+        Assert.Equal("var(--mytheme-primary-rgb)", light["--bs-primary-rgb"]);
+        Assert.Equal("var(--mytheme-link)", light["--bs-link-color"]);
+        Assert.Equal("var(--mytheme-link-rgb)", light["--bs-link-color-rgb"]);
+        Assert.Equal("var(--mytheme-link-hover)", light["--bs-link-hover-color"]);
+        Assert.Equal("var(--mytheme-page)", light["--bs-body-bg"]);
+        Assert.Equal("var(--mytheme-muted)", light["--bs-secondary-color"]);
+        Assert.Equal("var(--mytheme-border)", light["--bs-border-color"]);
+        Assert.Equal("var(--mytheme-heading)", light["--bs-heading-color"]);
+        Assert.Equal("rgba(var(--mytheme-link-rgb), 0.25)", light["--bs-focus-ring-color"]);
+        Assert.Equal("var(--mytheme-font-family)", light["--bs-body-font-family"]);
+        Assert.Equal("calc(0.375rem * var(--mytheme-radius-scale))", light["--bs-border-radius"]);
+        Assert.Equal("calc(2rem * var(--mytheme-radius-scale))", light["--bs-border-radius-xxl"]);
+
+        // The dark rule repeats the colors, so they win over Bootstrap's own dark rule, and adds the dark body colors.
+        Assert.Equal("var(--mytheme-primary)", dark["--bs-primary"]);
+        Assert.Equal("var(--mytheme-body-color)", dark["--bs-body-color"]);
+        Assert.Equal("var(--mytheme-secondary-bg)", dark["--bs-secondary-bg"]);
+        Assert.DoesNotContain("--bs-border-radius", dark.Keys);
+    }
+
+    [Fact]
+    public async Task Contributors_AreCreatedThroughDependencyInjection_AndAddTokensAndRules()
+    {
+        var (store, _, _) = CreateStore(services =>
+        {
+            services.AddSingleton(new BrandService("#123456"));
+            services.AddThemeSchemes("MyTheme", options => options.AddTokens<BrandTokens>());
+        });
+
+        var (css, _) = await store.GetStylesheetAsync("MyTheme");
+        var (light, dark) = ReadRules(css, "[data-scheme=\"default\"]", "[data-bs-theme=\"dark\"][data-scheme=\"default\"]");
+
+        Assert.Equal("#123456", light["--mytheme-brand"]);
+        Assert.Equal("light", light["--mytheme-mode"]);
+        Assert.Equal("dark", dark["--mytheme-mode"]);
+        Assert.Contains(".brand[data-scheme=\"default\"]{color:var(--mytheme-brand)}", css, StringComparison.Ordinal);
+
+        // A contributor may also replace a generated token in place.
+        Assert.Equal("#000000", dark["--mytheme-heading"]);
+    }
+
+    [Fact]
+    public async Task CssWriter_ReplacesTheGeneratedCss()
+    {
+        var (store, _, _) = CreateStore(services => services.AddThemeSchemes("MyTheme", options =>
+        {
+            options.AddTokens<BrandTokens>();
+            options.CssWriter = context => context.Css
+                .Append(context.Selector)
+                .Append("{--only:").Append(context.Palette.Light.Primary.ToHex()).Append(";}\n");
+        }));
+
+        var (css, _) = await store.GetStylesheetAsync("MyTheme");
+
+        Assert.Equal("[data-scheme=\"default\"]{--only:#2563eb;}\n", css);
+
+        // A writer can wrap the generated CSS too.
+        var (wrapped, _, _) = CreateStore(services => services.AddThemeSchemes("MyTheme", options =>
+            options.CssWriter = context =>
+            {
+                context.Css.Append("/* before */\n");
+                context.WriteDefault();
+            }));
+
+        var (wrappedCss, _) = await wrapped.GetStylesheetAsync("MyTheme");
+
+        Assert.StartsWith("/* before */\n[data-scheme=\"default\"]{--mytheme-primary:", wrappedCss, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task DarkModeSelector_Null_WritesNoDarkRule()
+    {
+        var (store, _, _) = CreateStore(services => services.AddThemeSchemes("MyTheme", options => options.DarkModeSelector = null));
+
+        var (css, _) = await store.GetStylesheetAsync("MyTheme");
+
+        Assert.Single(css.Split('\n', StringSplitOptions.RemoveEmptyEntries));
+        Assert.StartsWith("[data-scheme=\"default\"]{", css, StringComparison.Ordinal);
+        Assert.DoesNotContain("dark", css, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task DarkModeSelector_IsTheThemes()
+    {
+        var (store, _, _) = CreateStore(services => services.AddThemeSchemes("MyTheme", options => options.DarkModeSelector = ".dark "));
+
+        var (css, _) = await store.GetStylesheetAsync("MyTheme");
+
+        Assert.Contains("\n.dark [data-scheme=\"default\"]{", css, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task TokenNames_RenameGeneratedTokens_AndTheirRgbTriplets()
+    {
+        var (store, _, _) = CreateStore(services => services.AddThemeSchemes("MyTheme", options => options.TokenNames["deep"] = "navy"));
+
+        var (css, _) = await store.GetStylesheetAsync("MyTheme");
+
+        Assert.Contains("--mytheme-navy:#1e3a8a;", css, StringComparison.Ordinal);
+        Assert.Contains("--mytheme-navy-rgb:30, 58, 138;", css, StringComparison.Ordinal);
+        Assert.DoesNotContain("--mytheme-deep", css, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task Stylesheet_IsBuiltOnce_AcrossRequests_AndAgainAfterASave()
+    {
+        var counter = new BuildCounter();
+        var (store, _, _) = CreateStore(services =>
+        {
+            services.AddSingleton(counter);
+            services.AddThemeSchemes("MyTheme", options => options.AddTokens<CountingTokens>());
+        });
+        var service = new ThemeSchemeService(new HttpContextAccessor { HttpContext = new DefaultHttpContext() }, new ShellSettings { Name = "Default" }, store);
+        var url = CreateUrlHelper();
+
+        var (_, version) = await store.GetStylesheetAsync("MyTheme");
+        await store.GetStylesheetAsync("MyTheme");
+        await store.GetStylesheetAsync("mytheme");
+        var link = await service.GetStylesheetUrlAsync("MyTheme", url);
+        await service.GetStylesheetUrlAsync("MyTheme", url);
+
+        Assert.Equal(1, counter.Builds);
+        Assert.Equal($"/Themes/schemes/MyTheme.css?v={version}", link);
+
+        await store.SaveAsync("MyTheme", Scheme("custom-new", "New"));
+        await store.GetStylesheetAsync("MyTheme");
+        await service.GetStylesheetUrlAsync("MyTheme", url);
+
+        Assert.Equal(2, counter.Builds);
+    }
+
+    [Fact]
+    public async Task StylesheetVersion_IsAHashOfTheCss_StableForTheSameData()
+    {
+        var (store, documents, _) = CreateStore();
+
+        var (css, version) = await store.GetStylesheetAsync(ThemeA);
+
+        Assert.Equal(version, (await store.GetStylesheetAsync(ThemeA)).Version);
+        Assert.Equal(ThemeSchemeStylesheet.ComputeVersion(css), version);
+        Assert.Matches("^[0-9a-f]{16}$", version);
+
+        // Another store, over the same schemes, with a cache of its own: the same version.
+        var (other, _, _) = CreateStore(documents: documents);
+
+        Assert.Equal(version, (await other.GetStylesheetAsync(ThemeA)).Version);
+    }
+
+    [Fact]
+    public async Task StylesheetVersion_ChangesWhenASchemeIsSaved()
+    {
+        var (store, _, _) = CreateStore();
+        var (_, before) = await store.GetStylesheetAsync(ThemeA);
+
+        await store.SaveAsync(ThemeA, Scheme("custom-new", "New"));
+
+        Assert.NotEqual(before, (await store.GetStylesheetAsync(ThemeA)).Version);
+    }
+
+    [Fact]
+    public async Task StylesheetVersion_ChangesWhenTheCodeThatWritesTheCssChanges_ForTheSameData()
+    {
+        var (store, documents, _) = CreateStore(services => services.AddThemeSchemes("MyTheme"));
+        var (_, plain) = await store.GetStylesheetAsync("MyTheme");
+
+        // The same document, read by a theme that also writes Bootstrap's variables.
+        var (withBootstrap, _, _) = CreateStore(services => services.AddThemeSchemes("MyTheme", options => options.UseBootstrap()), documents);
+
+        Assert.NotEqual(plain, (await withBootstrap.GetStylesheetAsync("MyTheme")).Version);
     }
 
     [Fact]
     public async Task Store_KeepsTheSchemesOfEachThemeApart()
     {
-        var (store, _) = CreateStore();
+        var (store, _, _) = CreateStore();
 
         await store.SaveAsync(ThemeA, Scheme("custom-only-a", "Only A"));
 
@@ -142,13 +410,11 @@ public sealed class ThemeSchemeTests
     [Fact]
     public async Task Store_SeedsATheme_OnlyOnce_AndNeverAgainOnceEmptied()
     {
-        var providerA = new FakeProviderA();
-        var documents = new InMemoryThemeSchemesDocumentManager();
-        var store = new ThemeSchemeStore(documents, [providerA, new FakeProviderB()], new MemoryCache(new MemoryCacheOptions()));
+        var (store, documents, _) = CreateStore();
 
         Assert.Equal(2, (await store.ListAsync(ThemeA)).Count);
         Assert.Equal(2, (await store.ListAsync(ThemeA)).Count);
-        Assert.Equal(1, providerA.Seeds);
+        Assert.Equal(1, documents.Updates);
         Assert.Contains(ThemeA, documents.Document.Seeded);
 
         // A theme is seeded when it is first read, not before.
@@ -158,17 +424,17 @@ public sealed class ThemeSchemeTests
         documents.Document.Themes[ThemeA].Clear();
         await documents.UpdateAsync(documents.Document);
 
-        var later = new ThemeSchemeStore(documents, [providerA, new FakeProviderB()], new MemoryCache(new MemoryCacheOptions()));
+        var (later, _, _) = CreateStore(documents: documents);
 
         Assert.Empty(await later.ListAsync(ThemeA));
         Assert.Null(await later.GetDefaultIdAsync(ThemeA));
-        Assert.Equal(1, providerA.Seeds);
+        Assert.Equal(2, documents.Updates);
     }
 
     [Fact]
     public async Task Store_SeedsBeforeTheFirstSave_SoTheDefaultsAreNotLost()
     {
-        var (store, documents) = CreateStore();
+        var (store, documents, _) = CreateStore();
 
         await store.SaveAsync(ThemeA, Scheme("custom-first", "First"));
 
@@ -176,9 +442,9 @@ public sealed class ThemeSchemeTests
     }
 
     [Fact]
-    public async Task Store_DefaultIs_ThePickedScheme_ThenTheProvidersDefault_ThenTheFirst()
+    public async Task Store_DefaultIs_ThePickedScheme_ThenTheThemesDefault_ThenTheFirst()
     {
-        var (store, documents) = CreateStore();
+        var (store, documents, _) = CreateStore();
 
         Assert.Equal("a-two", await store.GetDefaultIdAsync(ThemeA));
 
@@ -186,11 +452,11 @@ public sealed class ThemeSchemeTests
         Assert.Equal("a-one", await store.GetDefaultIdAsync(ThemeA));
         Assert.Equal("a-one", documents.Document.Defaults[ThemeA]);
 
-        // A theme's default is its own: the other theme keeps its provider's.
+        // A theme's default is its own: the other theme keeps its own.
         Assert.Equal("b-one", await store.GetDefaultIdAsync(ThemeB));
         Assert.False(await store.SetDefaultAsync(ThemeB, "a-one"));
 
-        // A picked default that is gone (e.g. removed by a recipe) falls back on the provider's default.
+        // A picked default that is gone (e.g. removed by a recipe) falls back on the theme's default.
         documents.Document.Themes[ThemeA].Remove("a-one");
         Assert.Equal("a-two", await store.GetDefaultIdAsync(ThemeA));
 
@@ -203,7 +469,7 @@ public sealed class ThemeSchemeTests
     [Fact]
     public async Task Store_RefusesToDeleteTheDefault()
     {
-        var (store, _) = CreateStore();
+        var (store, _, _) = CreateStore();
 
         Assert.False(await store.DeleteAsync(ThemeA, "a-two"));
         Assert.NotNull(await store.FindAsync(ThemeA, "a-two"));
@@ -217,7 +483,7 @@ public sealed class ThemeSchemeTests
     [Fact]
     public async Task Store_RejectsAThemeThatIsNotRegistered()
     {
-        var (store, documents) = CreateStore();
+        var (store, documents, _) = CreateStore();
 
         Assert.False(store.IsRegistered(Unregistered));
         Assert.Empty(await store.ListAsync(Unregistered));
@@ -233,22 +499,27 @@ public sealed class ThemeSchemeTests
     [Fact]
     public void Stylesheet_SkipsSchemesWithAnInvalidId()
     {
-        var css = ThemeSchemeStore.BuildStylesheet(new FakeProviderA(), [Scheme("custom-ok", "Ok"), Scheme("Bad Id", "Bad")]);
+        var (store, _, _) = CreateStore();
+        var badColor = Scheme("custom-bad-color", "Bad color");
+        badColor.Primary = "blue";
+
+        var css = store.BuildStylesheet(ThemeA, [Scheme("custom-ok", "Ok"), Scheme("Bad Id", "Bad"), badColor]);
 
         Assert.Contains("[data-a-scheme=\"custom-ok\"]", css, StringComparison.Ordinal);
         Assert.DoesNotContain("Bad Id", css, StringComparison.Ordinal);
+        Assert.DoesNotContain("custom-bad-color", css, StringComparison.Ordinal);
     }
 
     [Fact]
-    public async Task Service_ResolvesTheUsersCookie_ThenTheSiteDefault_ThenTheProvidersDefault()
+    public async Task Service_ResolvesTheUsersCookie_ThenTheSiteDefault_ThenTheThemesDefault()
     {
-        var (store, _) = CreateStore();
+        var (store, _, _) = CreateStore();
         var httpContext = new DefaultHttpContext();
         var service = new ThemeSchemeService(new HttpContextAccessor { HttpContext = httpContext }, new ShellSettings { Name = "Default" }, store);
 
         Assert.Equal("Default-ThemeA-scheme", service.CookieName(ThemeA));
 
-        // No cookie, no site default: the provider's default.
+        // No cookie, no site default: the theme's default.
         Assert.Equal("a-two", await service.GetSchemeAttributeAsync(ThemeA));
         Assert.Null(await service.GetUserSchemeAsync(ThemeA));
 
@@ -269,23 +540,27 @@ public sealed class ThemeSchemeTests
     }
 
     [Fact]
-    public async Task Service_LinksToTheStylesheetOfTheTheme_VersionedByTheDocument()
+    public async Task Service_LinksToTheStylesheetOfTheTheme_VersionedByTheHashOfItsCss()
     {
-        var (store, documents) = CreateStore();
+        var (store, _, _) = CreateStore();
         var service = new ThemeSchemeService(new HttpContextAccessor { HttpContext = new DefaultHttpContext() }, new ShellSettings { Name = "Default" }, store);
-        var url = new Mock<IUrlHelper>();
-        url.Setup(u => u.Content(It.IsAny<string>())).Returns((string path) => path.Replace("~/", "/", StringComparison.Ordinal));
+        var url = CreateUrlHelper();
 
-        var link = await service.GetStylesheetUrlAsync(ThemeA, url.Object);
+        var link = await service.GetStylesheetUrlAsync(ThemeA, url);
+        var (css, version) = await store.GetStylesheetAsync(ThemeA);
 
-        Assert.Equal($"/Themes/schemes/ThemeA.css?v={documents.Document.Identifier}", link);
-        Assert.Null(await service.GetStylesheetUrlAsync(Unregistered, url.Object));
+        Assert.Equal($"/Themes/schemes/ThemeA.css?v={version}", link);
+        Assert.Equal(ThemeSchemeStylesheet.ComputeVersion(css), version);
+
+        // The theme's own spelling, whatever the case asked for.
+        Assert.Equal(link, await service.GetStylesheetUrlAsync(ThemeA.ToUpperInvariant(), url));
+        Assert.Null(await service.GetStylesheetUrlAsync(Unregistered, url));
     }
 
     [Fact]
     public async Task Controller_ServesOnlyRegisteredThemes()
     {
-        var (store, documents) = CreateStore();
+        var (store, documents, _) = CreateStore();
         var controller = CreateController(store);
         var model = new ThemeSchemeViewModel { Name = "X", FontFamily = ThemeSchemeTypography.Lato };
 
@@ -306,12 +581,16 @@ public sealed class ThemeSchemeTests
     [Fact]
     public async Task ThemeIds_MatchWithoutCase_AndAreStoredAsTheThemeSpellsThem()
     {
-        var (store, documents) = CreateStore();
+        var (store, documents, _) = CreateStore();
         var upper = ThemeA.ToUpperInvariant();
         var lower = ThemeA.ToLowerInvariant();
 
         Assert.True(store.IsRegistered(lower));
         Assert.Equal(ThemeA, store.GetThemeId(upper));
+        Assert.Equal("data-a-scheme", store.GetOptions(upper).AttributeName);
+        Assert.Equal(ThemeA, store.GetOptions(lower).ThemeId);
+        Assert.Null(store.GetOptions(Unregistered));
+        Assert.Contains("[data-a-scheme=\"a-one\"]", (await store.GetStylesheetAsync(lower)).Css, StringComparison.Ordinal);
 
         await store.SaveAsync(upper, Scheme("custom", "Custom"));
 
@@ -334,7 +613,7 @@ public sealed class ThemeSchemeTests
     [Fact]
     public async Task Controller_ListsTheSchemesOfTheTheme_WithItsDefault()
     {
-        var (store, _) = CreateStore();
+        var (store, _, _) = CreateStore();
         var controller = CreateController(store);
 
         var view = Assert.IsType<ViewResult>(await controller.Index(ThemeA));
@@ -349,7 +628,7 @@ public sealed class ThemeSchemeTests
     [Fact]
     public async Task Controller_RefusesToDeleteTheDefault_AndSetsTheDefault()
     {
-        var (store, _) = CreateStore();
+        var (store, _, _) = CreateStore();
         var controller = CreateController(store);
 
         Assert.IsType<RedirectToActionResult>(await controller.Delete(ThemeA, "a-two"));
@@ -363,9 +642,9 @@ public sealed class ThemeSchemeTests
     }
 
     [Fact]
-    public async Task Controller_PreviewsWithTheProviderOfTheTheme()
+    public async Task Controller_PreviewsWithTheOptionsOfTheTheme()
     {
-        var (store, _) = CreateStore();
+        var (store, _, _) = CreateStore();
         var controller = CreateController(store);
 
         var result = Assert.IsType<ContentResult>(await controller.Preview(ThemeB, new ThemeSchemeViewModel { Name = "P" }));
@@ -377,7 +656,7 @@ public sealed class ThemeSchemeTests
     [Fact]
     public async Task DeploymentAndRecipe_RoundTripEverySetting_AndTheDefaults()
     {
-        var (sourceStore, _) = CreateStore();
+        var (sourceStore, _, _) = CreateStore();
         var scheme = new ThemeScheme
         {
             Id = "custom-round-trip", Name = "Round trip", Position = 3,
@@ -398,7 +677,7 @@ public sealed class ThemeSchemeTests
         Assert.Equal(ThemeB, step["Schemes"].AsArray().Single(entry => entry["ItemId"]?.GetValue<string>() == scheme.Id)["ThemeId"]?.GetValue<string>());
         Assert.Equal("a-two", step["Defaults"]?[ThemeA]?.GetValue<string>());
 
-        var (targetStore, _) = CreateStore();
+        var (targetStore, _, _) = CreateStore();
         var context = new RecipeExecutionContext { Name = "ThemeSchemes", Step = step };
         await new ThemeSchemesStep(targetStore, CreateLocalizer()).ExecuteAsync(context);
 
@@ -413,7 +692,7 @@ public sealed class ThemeSchemeTests
     [Fact]
     public async Task Recipe_SkipsThemesThatAreNotRegistered_AndInvalidSchemes()
     {
-        var (store, documents) = CreateStore();
+        var (store, documents, _) = CreateStore();
         var step = JsonNode.Parse("""
             {
               "name": "ThemeSchemes",
@@ -477,11 +756,77 @@ public sealed class ThemeSchemeTests
         Assert.Equal(rendered, row.Zones.IsNotEmpty("FooterEnd"));
     }
 
-    private static (ThemeSchemeStore Store, InMemoryThemeSchemesDocumentManager Documents) CreateStore()
-    {
-        var documents = new InMemoryThemeSchemesDocumentManager();
+    // The generic tokens, without the prefix.
+    private static readonly string[] s_lightTokens =
+    [
+        "primary", "primary-rgb", "primary-hover", "primary-active", "primary-subtle", "primary-border-subtle", "primary-emphasis", "on-primary",
+        "deep", "deep-rgb", "ink", "accent", "accent-rgb",
+        "link", "link-rgb", "link-hover", "link-hover-rgb", "focus",
+        "page", "surface", "surface-rgb", "surface-muted",
+        "heading", "label", "muted",
+        "border", "control-border", "control-checked-border", "row-hover",
+        "font-family", "heading-font-family", "font-scale", "radius-scale", "density",
+    ];
 
-        return (new ThemeSchemeStore(documents, [new FakeProviderA(), new FakeProviderB()], new MemoryCache(new MemoryCacheOptions())), documents);
+    private static readonly string[] s_darkTokens =
+    [
+        "primary-hover", "primary-active", "primary-subtle", "primary-border-subtle", "primary-emphasis",
+        "link", "link-rgb", "link-hover", "link-hover-rgb", "focus",
+        "page", "surface", "surface-rgb", "surface-muted", "secondary-bg", "body-color", "body-color-rgb",
+        "heading", "label", "muted",
+        "border", "control-border", "control-checked-border", "row-hover",
+    ];
+
+    // Two themes with options of their own, plus whatever the test registers; a document shared with another store
+    // when given.
+    private static (ThemeSchemeStore Store, InMemoryThemeSchemesDocumentManager Documents, IServiceProvider Services) CreateStore(
+        Action<IServiceCollection> configure = null,
+        InMemoryThemeSchemesDocumentManager documents = null)
+    {
+        documents ??= new InMemoryThemeSchemesDocumentManager();
+
+        var services = new ServiceCollection();
+        services.AddSingleton<IDocumentManager<ThemeSchemesDocument>>(documents);
+        services.AddMemoryCache();
+        services.AddScoped<ThemeSchemeStore>();
+        services.AddThemeSchemes(ThemeA, options =>
+        {
+            options.AttributeName = "data-a-scheme";
+            options.DefaultSchemeId = "a-two";
+            options.Defaults = [Scheme("a-one", "A-ONE", 0), Scheme("a-two", "A-TWO", 1)];
+        });
+        services.AddThemeSchemes(ThemeB, options =>
+        {
+            options.AttributeName = "data-b-scheme";
+            options.Defaults = [Scheme("b-one", "B-ONE", 0)];
+        });
+        configure?.Invoke(services);
+
+        var provider = services.BuildServiceProvider();
+
+        return (provider.GetRequiredService<ThemeSchemeStore>(), documents, provider);
+    }
+
+    private static IUrlHelper CreateUrlHelper()
+    {
+        var url = new Mock<IUrlHelper>();
+        url.Setup(u => u.Content(It.IsAny<string>())).Returns((string path) => path.Replace("~/", "/", StringComparison.Ordinal));
+
+        return url.Object;
+    }
+
+    // The custom properties of the light and the dark rule of a scheme.
+    private static (Dictionary<string, string> Light, Dictionary<string, string> Dark) ReadRules(string css, string lightSelector, string darkSelector)
+        => (ReadRule(css, lightSelector), ReadRule(css, darkSelector));
+
+    private static Dictionary<string, string> ReadRule(string css, string selector)
+    {
+        var line = Assert.Single(css.Split('\n'), line => line.StartsWith(selector + "{", StringComparison.Ordinal));
+
+        return line[(selector.Length + 1)..^1]
+            .Split(';', StringSplitOptions.RemoveEmptyEntries)
+            .Select(declaration => declaration.Split(':', 2))
+            .ToDictionary(pair => pair[0], pair => pair[1], StringComparer.Ordinal);
     }
 
     private static SchemesController CreateController(ThemeSchemeStore store)
@@ -555,53 +900,51 @@ public sealed class ThemeSchemeTests
     private static ThemeScheme Scheme(string id, string name, int position = 10)
         => new() { Id = id, Name = name, Position = position, Primary = "#2a81bb", Deep = "#144c71", Ink = "#081b26", Accent = "#5aa4ef" };
 
-    private abstract class FakeProvider : IThemeSchemeProvider
+    private sealed record BrandService(string Color);
+
+    // Takes a service, writes a token in each mode, replaces a generated one, and adds a rule.
+    private sealed class BrandTokens : IThemeSchemeTokenContributor
     {
-        public int Seeds { get; private set; }
+        private readonly BrandService _brand;
 
-        public abstract string ThemeId { get; }
-
-        public abstract string DefaultSchemeId { get; }
-
-        public abstract string SchemeAttributeName { get; }
-
-        protected abstract IEnumerable<string> DefaultIds { get; }
-
-        public IReadOnlyList<ThemeScheme> CreateDefaults()
+        public BrandTokens(BrandService brand = null)
         {
-            Seeds++;
-
-            return [.. DefaultIds.Select((id, position) => Scheme(id, id.ToUpperInvariant(), position))];
+            _brand = brand;
         }
 
-        public void AppendCss(StringBuilder css, string schemeId, ThemeScheme scheme)
+        public void WriteTokens(ThemeScheme scheme, ThemeSchemePalette palette, ThemeSchemeMode mode, ThemeSchemeTokenWriter tokens)
         {
-            if (ThemeSchemeStore.HasValidColors(scheme))
+            tokens.Add("mode", mode == ThemeSchemeMode.Dark ? "dark" : "light");
+
+            if (mode == ThemeSchemeMode.Light)
             {
-                css.Append('[').Append(SchemeAttributeName).Append("=\"").Append(schemeId).Append("\"]{--primary:").Append(scheme.Primary).Append("}\n");
+                tokens.Add("brand", _brand?.Color ?? "#000000");
+            }
+            else
+            {
+                tokens.Add("heading", ThemeColor.Black);
             }
         }
+
+        public void AppendRules(StringBuilder css, ThemeScheme scheme, ThemeSchemePalette palette)
+            => css.Append(".brand[data-scheme=\"").Append(scheme.Id).Append("\"]{color:var(--mytheme-brand)}\n");
     }
 
-    private sealed class FakeProviderA : FakeProvider
+    private sealed class BuildCounter
     {
-        public override string ThemeId => ThemeA;
-
-        public override string DefaultSchemeId => "a-two";
-
-        public override string SchemeAttributeName => "data-a-scheme";
-
-        protected override IEnumerable<string> DefaultIds => ["a-one", "a-two"];
+        public int Builds { get; set; }
     }
 
-    private sealed class FakeProviderB : FakeProvider
+    // Created once per build of the stylesheet.
+    private sealed class CountingTokens : IThemeSchemeTokenContributor
     {
-        public override string ThemeId => ThemeB;
+        public CountingTokens(BuildCounter counter)
+        {
+            counter.Builds++;
+        }
 
-        public override string DefaultSchemeId => "b-one";
-
-        public override string SchemeAttributeName => "data-b-scheme";
-
-        protected override IEnumerable<string> DefaultIds => ["b-one"];
+        public void WriteTokens(ThemeScheme scheme, ThemeSchemePalette palette, ThemeSchemeMode mode, ThemeSchemeTokenWriter tokens)
+        {
+        }
     }
 }

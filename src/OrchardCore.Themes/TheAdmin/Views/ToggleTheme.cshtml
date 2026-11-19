@@ -48,7 +48,7 @@
             {
                 <div class="dropdown-divider"></div>
                 <h6 class="dropdown-header">@T["Scheme"]</h6>
-                <div class="ta-scheme-list" role="group" aria-label="@T["Scheme"]" data-theme-scheme-picker data-scheme-attribute="@TheAdminSchemeProvider.AttributeName" data-cookie-name="@Schemes.CookieName(TheAdminConstants.ThemeId)" data-site-scheme="@siteScheme">
+                <div class="ta-scheme-list" role="group" aria-label="@T["Scheme"]" data-theme-scheme-picker data-scheme-attribute="@TheAdminSchemes.AttributeName" data-cookie-name="@Schemes.CookieName(TheAdminConstants.ThemeId)" data-site-scheme="@siteScheme">
                     <button type="button" class="dropdown-item ta-scheme-option@(userScheme is null ? " active" : string.Empty)" data-theme-scheme-value="" aria-pressed="@(userScheme is null ? "true" : "false")">
                         <span class="ta-scheme-name">@T["Site default"]</span>
                         <span class="ta-scheme-swatch" data-scheme="@siteScheme" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
