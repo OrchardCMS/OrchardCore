@@ -11,6 +11,9 @@ namespace OrchardCore.Diagnostics;
 
 public sealed class DiagnosticsStartupFilter : IStartupFilter
 {
+    // The key of the action context cached by 'HttpContextExtensions.GetActionContextAsync()'.
+    private const string ActionContextKey = "OrchardCore:ActionContext";
+
     private readonly FileExtensionContentTypeProvider _contentTypeProvider = new();
 
     private readonly IHostEnvironment _hostEnvironment;
@@ -60,14 +63,14 @@ public sealed class DiagnosticsStartupFilter : IStartupFilter
 
     private static Task ExecuteInErrorScopeAsync(HttpContext context, RequestDelegate next)
     {
-        // RequestServices already follows the ambient ShellScope through ShellScopeServices.
+        // A scope on the current shell context, rather than one from 'IShellHost', keeps the error page on the
+        // shell that handled the request. RequestServices already follows the ambient ShellScope through ShellScopeServices.
         return new ShellScope(ShellScope.Context).UsingAsync(async scope =>
         {
             var razorViewFeature = context.Features.Get<RazorViewFeature>();
-            var hasActionContext = context.Items.TryGetValue("OrchardCore:ActionContext", out var actionContext);
+            var hasActionContext = context.Items.Remove(ActionContextKey, out var actionContext);
 
             context.Features.Set<RazorViewFeature>(null);
-            context.Items.Remove("OrchardCore:ActionContext");
 
             try
             {
@@ -76,13 +79,11 @@ public sealed class DiagnosticsStartupFilter : IStartupFilter
             finally
             {
                 context.Features.Set(razorViewFeature);
+                context.Items.Remove(ActionContextKey);
+
                 if (hasActionContext)
                 {
-                    context.Items["OrchardCore:ActionContext"] = actionContext;
-                }
-                else
-                {
-                    context.Items.Remove("OrchardCore:ActionContext");
+                    context.Items[ActionContextKey] = actionContext;
                 }
             }
         }, activateShell: false);

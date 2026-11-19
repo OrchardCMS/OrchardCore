@@ -104,13 +104,9 @@ This is the same as `<shape type="MyShape" prop-foo="1" prop-bar="a" prop-conten
 
 ### Layout recovery during error handling
 
-If adding the view body or rendering the zones or layout fails in `ThemeLayout`, it resets the layout's zones and rethrows the original exception. An error handler can then render using the same layout without reusing the failed body, partially rendered zones, or widgets. This does not depend on the middleware used to handle the exception.
+If adding the view body or rendering the zones or the layout fails in `ThemeLayout`, the layout's zones and cached output are cleared and the original exception is rethrown. An error handler can then render with the same layout without reusing the failed body, partially rendered zones, or widgets. The layout shape, its metadata and alternates, and its non-shape properties are kept, while every `IShape`-valued property is treated as a zone and removed. Other scoped services, such as the page title builder, keep their state.
 
-The reset preserves the layout shape itself, its metadata and alternates, and non-shape properties. It clears cached layout output and every `IShape`-valued property, treating these properties as zones just as layout rendering does. This includes rendered zones, zones assigned directly through `Properties`, and zones created by dynamic access such as `Layout.Footer`. Other scoped services, including the page title builder and resource manager, retain their state. A reset does not repair a layout template or a widget that also fails when rendering the error page.
-
-Custom rendering code can call `IZoneHolding.ResetZones()` to discard a shape's zones without replacing the shape or its zone factory. Retrieve zone shapes again through `Zones` after a reset; previously retrieved zone shapes are detached.
-
-Failures before `ThemeLayout` starts (including shapes rendered in the view body), failures while writing the rendered output, and successful request re-executions do not trigger this reset.
+Failures before `ThemeLayout` starts, failures while writing the rendered output, and successful request re-executions don't reset the layout. Custom rendering code can call `IZoneHolding.ResetZones()` to discard a shape's zones, and must then retrieve them again through `Zones`, as zone shapes retrieved before the reset are detached.
 
 ### Shape debug information
 

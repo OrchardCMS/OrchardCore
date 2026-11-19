@@ -26,6 +26,7 @@ public sealed class LayerFilter : IAsyncResultFilter
 {
     private const string WidgetsKey = "OrchardCore.Layers.LayerFilter:AllWidgets";
     private const string LayerWidgetName = "OrchardCore.Layers.LayerFilter:Widget";
+    private const string WidgetsAddedKey = "OrchardCore.Layers.LayerFilter:WidgetsAdded";
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly ILayoutAccessor _layoutAccessor;
     private readonly IContentItemDisplayManager _contentItemDisplayManager;
@@ -69,17 +70,20 @@ public sealed class LayerFilter : IAsyncResultFilter
             return;
         }
 
-        var layout = await _layoutAccessor.GetLayoutAsync();
-
         // Re-execution can reuse the layout, but must reevaluate layers for the new path,
-        // including when it renders an admin page.
-        foreach (var property in layout.Properties)
+        // including when it renders an admin page. Only a request that added widgets can hold stale ones.
+        if (context.HttpContext.Items.ContainsKey(WidgetsAddedKey))
         {
-            if (property.Value is Shape zone)
+            var previousLayout = await _layoutAccessor.GetLayoutAsync();
+
+            foreach (var property in previousLayout.Properties)
             {
-                while (zone.Named(LayerWidgetName) is not null)
+                if (property.Value is Shape zone)
                 {
-                    zone.Remove(LayerWidgetName);
+                    while (zone.Named(LayerWidgetName) is not null)
+                    {
+                        zone.Remove(LayerWidgetName);
+                    }
                 }
             }
         }
@@ -118,6 +122,7 @@ public sealed class LayerFilter : IAsyncResultFilter
 
             var layers = (await _layerService.GetLayersAsync()).Layers;
 
+            var layout = await _layoutAccessor.GetLayoutAsync();
             var updater = _modelUpdaterAccessor.ModelUpdater;
 
             // The display state of a layer is only evaluated once, even if it holds multiple widgets.
@@ -179,6 +184,8 @@ public sealed class LayerFilter : IAsyncResultFilter
 
                     var contentZone = layout.Zones[widget.Zone];
 
+                    // The value isn't important, it's just a marker for a later re-execution.
+                    context.HttpContext.Items[WidgetsAddedKey] = null;
                     await contentZone.AddAsync(wrapper, "");
                 }
             }

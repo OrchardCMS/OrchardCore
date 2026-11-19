@@ -113,11 +113,8 @@ public class ZoneOnDemand : Shape
         if (_parent is not null && _zoneVersion != _parent.ZoneVersion)
         {
             _zoneVersion = _parent.ZoneVersion;
-            _zone = _parent.Zones[_potentialZoneName];
-            if (_zone is ZoneOnDemand)
-            {
-                _zone = null;
-            }
+            _parent.Properties.TryGetValue(_potentialZoneName, out var zone);
+            _zone = zone is ZoneOnDemand ? null : zone as IShape;
         }
 
         if (item == null)
