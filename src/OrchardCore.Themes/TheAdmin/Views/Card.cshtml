@@ -7,8 +7,8 @@
 
 @*
     A card of a content zone, grouping the shapes placed in the same card, e.g. with a "Content:5%Server;10"
-    placement, rendered as a Bootstrap card, or as a fieldset in a tab, always expanded: it groups fields, it doesn't
-    hide them. The shapes placed in no card are grouped under the "Content" key: they render as they are.
+    placement, rendered as a fieldset styled as a Bootstrap card, or as a plain fieldset in a tab, always expanded:
+    it groups fields, it doesn't hide them. The shapes placed in no card are grouped under the "Content" key: they render as they are.
 *@
 
 @{
@@ -33,8 +33,6 @@
         return;
     }
 
-    var titleId = $"card-{Model.Identifier}-{name}".HtmlClassify();
-
     // In a tab, which already frames them, the groups of fields are fieldsets titled by their legends, e.g. in the
     // general, email and SMS settings. A group holding a table, e.g. the events of the audit trail, stays a card.
     var inTab = Model.Grouping.OfType<IShape>().Any(shape => shape.Metadata.TabGrouping.HasValue) &&
@@ -56,10 +54,11 @@ else if (inTab)
 }
 else
 {
-    <div class="card mb-3 ocat-card @($"ocat-card-{name}".HtmlClassify())" role="group" aria-labelledby="@titleId">
-        <div class="card-header ocat-card-title" id="@titleId">@name</div>
+    // A group of fields is a fieldset titled by its legend, its native semantics, styled as a Bootstrap card.
+    <fieldset class="card mb-3 ocat-card @($"ocat-card-{name}".HtmlClassify())">
+        <legend class="card-header fs-6 mb-0 ocat-card-title">@name</legend>
         <div class="card-body ocat-card-body">
             @Html.Raw(html)
         </div>
-    </div>
+    </fieldset>
 }

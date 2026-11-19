@@ -13,6 +13,7 @@
     @await DisplayAsync(Model.Editor)
 
     <div class="action-bar-bottom">
+        <a class="btn btn-secondary cancel" role="button" asp-route-action="List">@T["Cancel"]</a>
         <button class="btn btn-primary create" type="submit">@T["Create"]</button>
     </div>
 </form>

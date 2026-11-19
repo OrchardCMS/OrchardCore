@@ -500,6 +500,11 @@ msgstr ""
 
 #: Views/Admin/Create.cshtml
 msgctxt "OrchardCore.ContentTypes.Views.Admin.Create"
+msgid "Cancel"
+msgstr ""
+
+#: Views/Admin/Create.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.Admin.Create"
 msgid "Content Types"
 msgstr ""
 
@@ -511,6 +516,11 @@ msgstr ""
 #: Views/Admin/Create.cshtml
 msgctxt "OrchardCore.ContentTypes.Views.Admin.Create"
 msgid "New Content Type"
+msgstr ""
+
+#: Views/Admin/CreatePart.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.Admin.CreatePart"
+msgid "Cancel"
 msgstr ""
 
 #: Views/Admin/CreatePart.cshtml

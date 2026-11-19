@@ -69,7 +69,9 @@ public sealed class ContentTypeSettingsDisplayDriver : ContentTypeDefinitionDisp
             context.Updater.ModelState.AddModelError(nameof(ContentTypeSettingsViewModel.Stereotype), S["The stereotype should be alphanumeric."]);
         }
 
-        var options = await GetOptionsAsync(contentTypeDefinition, stereotype);
+        // Apply the settings the editor showed, which depend on the stereotype the type had when the editor was built.
+        // The options of the posted stereotype would ignore the settings cleared in the same save.
+        var options = await GetOptionsAsync(contentTypeDefinition, contentTypeDefinition.GetSettings<ContentTypeSettings>().Stereotype);
 
         Apply(context, model, options);
 

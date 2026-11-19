@@ -16,6 +16,16 @@
     @await DisplayAsync(Model.Editor)
 
     <div class="action-bar-bottom">
+        @if (Url.IsLocalUrl(returnUrl))
+        {
+            <a class="btn btn-secondary cancel" role="button" href="@returnUrl">@T["Cancel"]</a>
+        }
+
+        @if (!Model.AdminTemplates)
+        {
+            <a class="btn btn-info action-bar-secondary" role="button" href="@Url.Action("Index", "Preview", new { area = "OrchardCore.Templates" })" target="_blank">@T["Preview"]</a>
+        }
+
         <div class="btn-group"
              role="group"
              aria-label="@T["Save actions"]"
@@ -32,16 +42,6 @@
                 <button class="dropdown-item save-continue" name="submit" type="submit" value="SaveAndContinue">@T["and continue"]</button>
             </div>
         </div>
-
-        @if (Url.IsLocalUrl(returnUrl))
-        {
-            <a class="btn btn-secondary cancel" role="button" href="@returnUrl">@T["Cancel"]</a>
-        }
-
-        @if (!Model.AdminTemplates)
-        {
-            <a class="btn btn-info action-bar-secondary" role="button" href="@Url.Action("Index", "Preview", new { area = "OrchardCore.Templates" })" target="_blank">@T["Preview"]</a>
-        }
     </div>
 </form>
 

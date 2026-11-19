@@ -671,12 +671,25 @@ Use `ocat-end-offset` for alerts and notices that belong to the form but do not 
 - **Screens built by display drivers** (site settings, users, content definition settings, workflow activities, deployment steps, ...): declare the card in the placement location of each editor shape, with a name localized by the driver, e.g. `.Location(l => l.Zone("Content", "1").Card(S["Server"], "10"))`. Shapes placed in the same card share it. Split a view holding several sections into one shape per card. Their views hold no card markup.
 - **Content item editors** are not grouped in cards: the editor shapes of content parts and content fields don't declare cards.
 - **Admin pages with a form** (a controller editing a view model, e.g. a template or an OpenID application): the page renders an editor built by the display drivers of its view model, `@await DisplayAsync(Model.Editor)`, and the drivers place its shapes in cards. Follow `OrchardCore.Templates` (`TemplateController`, `TemplateDisplayDriver`) and the skill.
-- The admin theme renders cards as Bootstrap cards (`card`, `card-header`, `card-body`), and as fieldsets titled by their legends in a tab (e.g. the general, email and SMS settings), unless they hold a table, always expanded: never group fields in accordions, collapses or `<details>`.
+- The admin theme renders cards as fieldsets styled as Bootstrap cards (`card`, a `card-header` legend, `card-body`), and as plain fieldsets titled by their legends in a tab (e.g. the general, email and SMS settings), unless they hold a table, always expanded: never group fields in accordions, collapses or `<details>`.
+
+### Action bar
+
+Render the submit buttons in a `<div class="action-bar-bottom">` at the end of the form, ordered from the least to the most important action on every page: **Cancel** first, then the secondary actions marked with `action-bar-secondary` (such as **Delete** or **Preview**), and the main action (**Save**, **Create**, **Publish**) last. Keep that order in the markup, not with CSS, and give shapes placed in an `Actions` zone positions that follow it. Style **Cancel** and alternative actions with `btn-secondary`, destructive ones with `btn-danger`, and the main action with `btn-primary` (only the content item **Publish** uses `btn-success`). Modal dialog footers follow the same order: **Cancel** or **Close** first, the confirming action (**OK**, **Save**, **Delete**) last. See the `orchardcore-admin-edit-views` skill.
+
+```cshtml
+<div class="action-bar-bottom">
+    <a class="btn btn-secondary cancel" role="button" asp-action="Index">@T["Cancel"]</a>
+    <a class="btn btn-danger action-bar-secondary" asp-action="Delete" data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+    <button class="btn btn-primary save" type="submit">@T["Save"]</button>
+</div>
+```
 
 ### Avoid
 
 - A form, or a section of a form, outside of a card, card markup written in a view instead of a placement card, a heading row (`<h5>`, `<legend>`) starting a section, or fields grouped in an accordion or a collapse
 - A hand-written list of content type checkboxes: render `@await Component.InvokeAsync("SelectContentTypes", new { selectedContentTypes, htmlName })`, a searchable picker showing the selection as tags, with select all
+- The main action before **Cancel** or the secondary actions in the action bar or a modal dialog footer
 - `mb-3`, `form-group`, or `form-label` as the row layout pattern
 - Legacy helper methods such as `@Orchard.GetWrapperClasses()` or `@Orchard.GetLimitedWidthWrapperClasses()`
 - Using `ocat-limited-wrapper` for text inputs, selects, paths, IDs, or other non-number fields unless the user explicitly requests compact width

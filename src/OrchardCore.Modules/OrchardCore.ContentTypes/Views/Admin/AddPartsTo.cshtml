@@ -18,8 +18,8 @@
     @await DisplayAsync(Model.Editor)
 
     <div class="action-bar-bottom">
-        <button id="add-selected-parts-button" class="btn btn-primary save" type="submit" name="submit.Save" value="Save" hidden="@(!hasSelectedParts)">@T["Add Selected Parts"]</button>
         <a class="btn btn-secondary cancel" role="button" asp-route-action="Edit" asp-route-id="@Model.Type.Name">@T["Cancel"]</a>
+        <button id="add-selected-parts-button" class="btn btn-primary save" type="submit" name="submit.Save" value="Save" hidden="@(!hasSelectedParts)">@T["Add Selected Parts"]</button>
     </div>
 </form>
 

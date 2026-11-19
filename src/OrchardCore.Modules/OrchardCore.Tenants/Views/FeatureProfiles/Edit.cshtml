@@ -14,6 +14,8 @@
     @await DisplayAsync(Model.Editor)
 
     <div class="action-bar-bottom">
+        <a class="btn btn-secondary cancel" role="button" asp-route-action="Index">@T["Cancel"]</a>
+
         <div class="btn-group"
              role="group"
              aria-label="@T["Save actions"]"
@@ -30,8 +32,6 @@
                 <button class="dropdown-item save-continue" name="submit" type="submit" value="SaveAndContinue">@T["and continue"]</button>
             </div>
         </div>
-
-        <a class="btn btn-secondary cancel" role="button" asp-route-action="Index">@T["Cancel"]</a>
     </div>
 </form>
 

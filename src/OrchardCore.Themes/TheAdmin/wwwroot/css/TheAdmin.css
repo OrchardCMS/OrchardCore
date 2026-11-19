@@ -338,15 +338,15 @@ body[data-actions-layout=menu] .action-bar-bottom:not(.action-bar-ready) .action
 }
 
 .action-bar-menu-items {
-  min-width: 16rem;
+  min-width: 14rem;
   max-width: calc(100vw - 1.5rem);
-  padding: 0.5rem;
+  padding: 0.25rem;
 }
 
 .action-bar-menu-items.show {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.125rem;
 }
 
 .action-bar-menu-items > * {
@@ -354,8 +354,55 @@ body[data-actions-layout=menu] .action-bar-bottom:not(.action-bar-ready) .action
   margin: 0 !important;
 }
 
-.action-bar-menu-items > .btn, .action-bar-menu-items > .button {
+.action-bar-menu-items > .btn, .action-bar-menu-items > .button,
+.action-bar-menu-items > .btn-group > .btn,
+.action-bar-menu-items > .btn-group > .button {
+  --bs-btn-color: var(--bs-body-color);
+  --bs-btn-bg: transparent;
+  --bs-btn-border-color: transparent;
+  --bs-btn-hover-color: var(--bs-emphasis-color);
+  --bs-btn-hover-bg: var(--bs-tertiary-bg);
+  --bs-btn-hover-border-color: transparent;
+  --bs-btn-active-color: var(--bs-emphasis-color);
+  --bs-btn-active-bg: var(--bs-secondary-bg);
+  --bs-btn-active-border-color: transparent;
+  --bs-btn-disabled-color: var(--bs-secondary-color);
+  --bs-btn-disabled-bg: transparent;
+  --bs-btn-disabled-border-color: transparent;
+  --bs-btn-font-weight: 400;
+  --bs-btn-padding-x: 0.75rem;
+  --bs-btn-padding-y: 0.375rem;
   text-align: start;
+  border-radius: var(--bs-border-radius) !important;
+}
+
+.action-bar-menu-items > .btn-danger,
+.action-bar-menu-items > .btn-outline-danger,
+.action-bar-menu-items > .btn-group > .btn-danger,
+.action-bar-menu-items > .btn-group > .btn-outline-danger {
+  --bs-btn-color: var(--bs-danger-text-emphasis);
+  --bs-btn-hover-color: var(--bs-danger-text-emphasis);
+  --bs-btn-hover-bg: var(--bs-danger-bg-subtle);
+  --bs-btn-active-color: var(--bs-danger-text-emphasis);
+  --bs-btn-active-bg: var(--bs-danger-bg-subtle);
+}
+
+.action-bar-menu-items > :is(.btn-danger, .btn-outline-danger) {
+  order: 1;
+}
+
+.action-bar-menu-items:has(> :not(.btn-danger, .btn-outline-danger)) > :is(.btn-danger, .btn-outline-danger):not(:is(.btn-danger, .btn-outline-danger) ~ *) {
+  position: relative;
+  margin-top: 0.5rem !important;
+}
+
+.action-bar-menu-items:has(> :not(.btn-danger, .btn-outline-danger)) > :is(.btn-danger, .btn-outline-danger):not(:is(.btn-danger, .btn-outline-danger) ~ *)::before {
+  content: "";
+  position: absolute;
+  top: calc(-0.25rem - var(--bs-border-width));
+  left: 0;
+  right: 0;
+  border-top: var(--bs-border-width) solid var(--bs-border-color-translucent);
 }
 
 .action-bar-menu-items > .btn-group {
@@ -364,7 +411,10 @@ body[data-actions-layout=menu] .action-bar-bottom:not(.action-bar-ready) .action
 
 .action-bar-menu-items > .btn-group > .btn:not(.dropdown-toggle-split), .action-bar-menu-items > .btn-group > .button:not(.dropdown-toggle-split) {
   flex: 1 1 auto;
-  text-align: start;
+}
+
+.action-bar-menu-items > .btn-group > .dropdown-toggle-split {
+  flex: 0 0 auto;
 }
 
 .action-bar-menu-items .input-group {
