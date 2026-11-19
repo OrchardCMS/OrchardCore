@@ -155,7 +155,6 @@ export function useFieldUpload(config: IFieldUploadConfig) {
     const uniqueName = generateUUID() + file.name;
     const formData = new FormData();
     formData.append("files", file, uniqueName);
-    formData.append("path", config.tempUploadFolder);
     formData.append("__RequestVerificationToken", getAntiForgeryToken());
 
     // Acquire the bearer token up front (the Promise executor below is synchronous). Null in
@@ -200,7 +199,9 @@ export function useFieldUpload(config: IFieldUploadConfig) {
         reject(new Error("Network error"));
       });
 
-      xhr.open("POST", config.uploadAction);
+      // The upload endpoint reads the destination folder from the query string, as the media library uploader sends it.
+      const separator = config.uploadAction.includes("?") ? "&" : "?";
+      xhr.open("POST", `${config.uploadAction}${separator}path=${encodeURIComponent(config.tempUploadFolder)}`);
       if (bearerToken) {
         xhr.setRequestHeader("Authorization", `Bearer ${bearerToken}`);
       }

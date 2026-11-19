@@ -231,11 +231,6 @@ msgstr ""
 
 #: Views/Admin/Index.cshtml
 msgctxt "OrchardCore.Layers.Views.Admin.Index"
-msgid "Add"
-msgstr ""
-
-#: Views/Admin/Index.cshtml
-msgctxt "OrchardCore.Layers.Views.Admin.Index"
 msgid "Add Widget"
 msgstr ""
 
@@ -434,4 +429,9 @@ msgstr ""
 #: Views/LayerSettings.Edit.cshtml
 msgctxt "OrchardCore.Layers.Views.LayerSettings.Edit"
 msgid "Available zones for Layers"
+msgstr ""
+
+#: Views/LayersCreateButton.cshtml
+msgctxt "OrchardCore.Layers.Views.LayersCreateButton"
+msgid "Add Layer"
 msgstr ""

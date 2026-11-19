@@ -25,6 +25,7 @@ public sealed class TemplateController : Controller
     private readonly IAuthorizationService _authorizationService;
     private readonly TemplatesManager _templatesManager;
     private readonly AdminTemplatesManager _adminTemplatesManager;
+    private readonly TemplateOverridesManager _templateOverridesManager;
     private readonly IShapeFactory _shapeFactory;
     private readonly PagerOptions _pagerOptions;
     private readonly INotifier _notifier;
@@ -36,6 +37,7 @@ public sealed class TemplateController : Controller
         IAuthorizationService authorizationService,
         TemplatesManager templatesManager,
         AdminTemplatesManager adminTemplatesManager,
+        TemplateOverridesManager templateOverridesManager,
         IShapeFactory shapeFactory,
         IOptions<PagerOptions> pagerOptions,
         IStringLocalizer<TemplateController> stringLocalizer,
@@ -45,6 +47,7 @@ public sealed class TemplateController : Controller
         _authorizationService = authorizationService;
         _templatesManager = templatesManager;
         _adminTemplatesManager = adminTemplatesManager;
+        _templateOverridesManager = templateOverridesManager;
         _shapeFactory = shapeFactory;
         _pagerOptions = pagerOptions.Value;
         _notifier = notifier;
@@ -283,6 +286,11 @@ public sealed class TemplateController : Controller
                 : _templatesManager.UpdateTemplateAsync(model.Name, template)
                 );
 
+            if (!string.Equals(sourceName, model.Name, StringComparison.OrdinalIgnoreCase))
+            {
+                await _templateOverridesManager.ForgetClonesAsync([sourceName], model.AdminTemplates);
+            }
+
             if (submit != "SaveAndContinue")
             {
                 return RedirectToReturnUrlOrIndex(returnUrl);
@@ -319,6 +327,8 @@ public sealed class TemplateController : Controller
                 ? _adminTemplatesManager.RemoveTemplateAsync(name)
                 : _templatesManager.RemoveTemplateAsync(name));
 
+        await _templateOverridesManager.ForgetClonesAsync([name], adminTemplates);
+
         await _notifier.SuccessAsync(H["Template deleted successfully."]);
 
         return RedirectToReturnUrlOrIndex(returnUrl);
@@ -344,7 +354,8 @@ public sealed class TemplateController : Controller
                         ? await _adminTemplatesManager.LoadTemplatesDocumentAsync()
                         : await _templatesManager.LoadTemplatesDocumentAsync();
                     var checkedContentItemIds = templatesDocument.Templates.Keys
-                        .Intersect(itemIds, StringComparer.OrdinalIgnoreCase);
+                        .Intersect(itemIds, StringComparer.OrdinalIgnoreCase)
+                        .ToList();
 
                     foreach (var id in checkedContentItemIds)
                     {
@@ -352,6 +363,8 @@ public sealed class TemplateController : Controller
                             ? _adminTemplatesManager.RemoveTemplateAsync(id)
                             : _templatesManager.RemoveTemplateAsync(id));
                     }
+
+                    await _templateOverridesManager.ForgetClonesAsync(checkedContentItemIds, options.AdminTemplates);
 
                     await _notifier.SuccessAsync(H["Templates successfully removed."]);
                 }
@@ -377,19 +390,8 @@ public sealed class TemplateController : Controller
         }
     }
 
-    private async Task<bool> IsAuthorizedAsync(bool adminTemplates)
-    {
-        if (!await _authorizationService.AuthorizeAsync(User, OrchardCore.Liquid.Permissions.ManageLiquidTemplates))
-        {
-            return false;
-        }
-
-        var permission = adminTemplates
-            ? AdminTemplatesPermissions.ManageAdminTemplates
-            : Permissions.ManageTemplates;
-
-        return await _authorizationService.AuthorizeAsync(User, permission);
-    }
+    private Task<bool> IsAuthorizedAsync(bool adminTemplates)
+        => _authorizationService.AuthorizeTemplatesAsync(User, adminTemplates);
 
     private async Task ValidateModelAsync(TemplateViewModel model, TemplatesDocument templatesDocument = null, string sourceName = null)
     {
