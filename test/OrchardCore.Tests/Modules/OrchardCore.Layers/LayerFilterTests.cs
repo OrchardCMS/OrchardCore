@@ -118,6 +118,19 @@ public class LayerFilterTests
     }
 
     [Fact]
+    public async Task OnResultExecutionAsync_AdminPage_RemovesPreviousWidgets()
+    {
+        using var test = new LayerFilterContext(CreateWidget("footer", "Footer", "Always"));
+        await test.CreateFilter().OnResultExecutionAsync(test.ResultContext, test.Next);
+        Assert.Single(test.Layout.Zones["Footer"].Items);
+
+        AdminAttribute.Apply(test.HttpContext);
+        await test.CreateFilter().OnResultExecutionAsync(test.ResultContext, test.Next);
+
+        Assert.Empty(test.Layout.Zones["Footer"].Items);
+    }
+
+    [Fact]
     public async Task OnResultExecutionAsync_WidgetBuildFails_RemovesPartialContributionsOnReexecution()
     {
         using var test = new LayerFilterContext(

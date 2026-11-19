@@ -21,7 +21,7 @@ public class ZoneOnDemand : Shape
         _zoneFactory = zoneFactory;
         _parent = parent;
         _potentialZoneName = potentialZoneName;
-        _zoneVersion = parent.ZoneVersion;
+        _zoneVersion = parent?.ZoneVersion ?? 0;
     }
 
     internal ZoneOnDemand(ZoneHolding parent, string potentialZoneName)
@@ -110,7 +110,7 @@ public class ZoneOnDemand : Shape
 
     public override async ValueTask<IShape> AddAsync(object item, string position)
     {
-        if (_zoneVersion != _parent.ZoneVersion)
+        if (_parent is not null && _zoneVersion != _parent.ZoneVersion)
         {
             _zoneVersion = _parent.ZoneVersion;
             _zone = _parent.Zones[_potentialZoneName];

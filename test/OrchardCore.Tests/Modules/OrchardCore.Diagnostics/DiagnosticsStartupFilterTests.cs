@@ -25,7 +25,7 @@ public class DiagnosticsStartupFilterTests
     [InlineData(404, false, true)]
     [InlineData(404, true, false)]
     [InlineData(404, true, true)]
-    public async Task ErrorRenderingUsesAnIsolatedShellScope(int statusCode, bool asynchronous, bool renderingFails)
+    public async Task Pipeline_ErrorReExecution_UsesIsolatedShellScope(int statusCode, bool asynchronous, bool renderingFails)
     {
         await UsingRequestScopeAsync(async (context, requestScope) =>
         {
@@ -144,7 +144,7 @@ public class DiagnosticsStartupFilterTests
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
-    public async Task ErrorRenderingRestoresMissingCaches(bool renderingFails)
+    public async Task Pipeline_ErrorReExecutionWithoutCaches_RestoresMissingCaches(bool renderingFails)
     {
         await UsingRequestScopeAsync(async (context, requestScope) =>
         {
@@ -181,7 +181,7 @@ public class DiagnosticsStartupFilterTests
     [InlineData(200, "Production", "/original", false)]
     [InlineData(404, "Production", "/missing.css", false)]
     [InlineData(404, "Development", "/original", true)]
-    public async Task OnlyErrorReExecutionCreatesAScope(int statusCode, string environment, string path, bool reExecute)
+    public async Task Pipeline_StatusCode_CreatesScopeOnlyForErrorReExecution(int statusCode, string environment, string path, bool reExecute)
     {
         await UsingRequestScopeAsync(async (context, requestScope) =>
         {
@@ -205,7 +205,7 @@ public class DiagnosticsStartupFilterTests
     }
 
     [Fact]
-    public async Task DevelopmentDoesNotHandleExceptions()
+    public async Task Pipeline_DevelopmentEnvironment_DoesNotHandleExceptions()
     {
         await UsingRequestScopeAsync(async (context, requestScope) =>
         {
@@ -260,13 +260,20 @@ public class DiagnosticsStartupFilterTests
         public override Task ExecuteAsync() => Task.CompletedTask;
     }
 
-    private sealed class ScopedResource(bool asynchronous) : IAsyncDisposable
+    private sealed class ScopedResource : IAsyncDisposable
     {
+        private readonly bool _asynchronous;
+
+        public ScopedResource(bool asynchronous)
+        {
+            _asynchronous = asynchronous;
+        }
+
         public bool Disposed { get; private set; }
 
         public ValueTask DisposeAsync()
         {
-            if (asynchronous)
+            if (_asynchronous)
             {
                 return Awaited();
             }

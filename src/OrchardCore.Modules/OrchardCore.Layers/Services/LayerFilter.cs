@@ -63,27 +63,30 @@ public sealed class LayerFilter : IAsyncResultFilter
 
     public async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
     {
-        // Should only run on the front-end for a full view
-        if (context.IsViewOrPageResult() && !AdminAttribute.IsApplied(context.HttpContext))
+        if (!context.IsViewOrPageResult())
         {
-            var layout = await _layoutAccessor.GetLayoutAsync();
+            await next.Invoke();
+            return;
+        }
 
-            // Re-execution can reuse the layout, but must reevaluate layers for the new path.
-            foreach (var property in layout.Properties)
+        var layout = await _layoutAccessor.GetLayoutAsync();
+
+        // Re-execution can reuse the layout, but must reevaluate layers for the new path,
+        // including when it renders an admin page.
+        foreach (var property in layout.Properties)
+        {
+            if (property.Value is Shape zone)
             {
-                if (property.Value is Shape zone && zone.HasItems)
+                while (zone.Named(LayerWidgetName) is not null)
                 {
-                    var items = zone.Items;
-                    for (var i = items.Count - 1; i >= 0; i--)
-                    {
-                        if (items[i] is WidgetWrapper wrapper && wrapper.Metadata.Name == LayerWidgetName)
-                        {
-                            zone.Remove(LayerWidgetName);
-                        }
-                    }
+                    zone.Remove(LayerWidgetName);
                 }
             }
+        }
 
+        // Should only run on the front-end for a full view
+        if (!AdminAttribute.IsApplied(context.HttpContext))
+        {
             // Even if the Admin attribute is not applied we might be using the admin theme, for instance in Login views.
             // In this case don't render Layers.
             var selectedTheme = (await _themeManager.GetThemeAsync())?.Id;
