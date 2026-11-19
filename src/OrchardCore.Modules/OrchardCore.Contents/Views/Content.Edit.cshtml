@@ -21,7 +21,6 @@
         @if (Model.Actions != null)
         {
             <div class="edit-item-actions action-bar-bottom">
-                @await DisplayAsync(Model.Actions)
                 @{
                     var returnUrl = Context.Request.Query["returnUrl"];
                 }
@@ -29,6 +28,7 @@
                 {
                     <a class="btn btn-secondary cancel" role="button" href="@returnUrl">@T["Cancel"]</a>
                 }
+                @await DisplayAsync(Model.Actions)
             </div>
         }
     </div>

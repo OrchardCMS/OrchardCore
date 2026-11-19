@@ -9,7 +9,7 @@
     <div class="col-xl-9 col-sm-12 title">
         <div class="form-check float-start">
             <input type="checkbox" class="form-check-input" value="@contentItem.Id" name="itemIds" id="itemIds-@contentItem.Id">
-            <label class="form-check-label" for="itemIds-@contentItem.Id"></label>
+            <label class="form-check-label" for="itemIds-@contentItem.Id"><span class="visually-hidden">@T["Select {0}", contentItem.DisplayText]</span></label>
         </div>
         @if (await AuthorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem))
         {

@@ -18,7 +18,7 @@
 <ul class="list-group">
     <li class="list-group-item text-bg-theme">
         <div class="my-1">
-            @T.Plural(Model.Links.Count, "{0} item", "{0} items")<span class="text-muted">@T.Plural(Model.TotalCount, " / {0} item in total", " / {0} items in total")</span>
+            @T.Plural(Model.Links.Count, "{0} item", "{0} items")<span>@T.Plural(Model.TotalCount, " / {0} item in total", " / {0} items in total")</span>
             <span class="hint ms-2">@T["A link works only for its recipients, once signed in. A link is deleted a day after it stops working."]</span>
         </div>
     </li>

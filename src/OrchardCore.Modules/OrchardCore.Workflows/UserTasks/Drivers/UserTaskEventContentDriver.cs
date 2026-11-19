@@ -55,7 +55,7 @@ public sealed class UserTaskEventContentDriver : ContentDisplayDriver
             Initialize<UserTaskEventContentViewModel>("Content_UserTaskButton", async model => {
                 var actions = await GetUserTaskActionsAsync(contentItem.ContentItemId);
                 model.Actions = actions;
-            }).Location("Actions:30"),
+            }).Location("Actions:28"),
         };
 
         return CombineAsync(results);

@@ -136,6 +136,7 @@
           <img
             ref="anchorImageRef"
             :src="selectedMedia.url"
+            :alt="selectedMedia.name"
             class="tw:max-w-full"
           />
           <div
@@ -150,8 +151,8 @@
         </div>
       </div>
       <div class="mf-modal-footer">
-        <button type="button" class="mf-btn-secondary" @click="resetAnchor">{{ t.resetAnchor }}</button>
         <button type="button" class="mf-btn-secondary" @click="cancelAnchor">{{ t.cancel }}</button>
+        <button type="button" class="mf-btn-secondary" @click="resetAnchor">{{ t.resetAnchor }}</button>
         <button type="button" class="mf-btn-primary" @click="saveAnchor">{{ t.ok }}</button>
       </div>
     </VueFinalModal>

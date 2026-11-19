@@ -317,11 +317,11 @@
     }
 
     <div class="action-bar-bottom" v-if="!isReadOnly">
+        <span v-if="isDirty" class="badge text-bg-warning align-self-center" role="status">@T["Unsaved changes"]</span>
         <button type="button" class="btn btn-primary save" @@click="saveTranslations" :disabled="!isDirty || isSaving" title="@T["Save (Ctrl+S)"]">
             <span v-if="isSaving" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
             @T["Save"]
         </button>
-        <span v-if="isDirty" class="badge text-bg-warning align-self-center" role="status">@T["Unsaved changes"]</span>
     </div>
 </div>
 

@@ -585,6 +585,13 @@ msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTaskEntry.Buttons.SummaryAd
 msgid "Enable"
 msgstr ""
 
+#. Format arguments: {0}: Model.Value.Name
+#: Views/BackgroundTaskEntry.Checkbox.SummaryAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTaskEntry.Checkbox.SummaryAdmin"
+msgid "Select {0}"
+msgstr ""
+
 #: Views/BackgroundTaskEntry.DefaultTags.SummaryAdmin.cshtml
 msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTaskEntry.DefaultTags.SummaryAdmin"
 msgid "Disabled"

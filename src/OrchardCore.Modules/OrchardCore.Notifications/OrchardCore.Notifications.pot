@@ -558,6 +558,13 @@ msgctxt "OrchardCore.Notifications.Views.NotificationsButtonActions_SummaryAdmin
 msgid "Yes"
 msgstr ""
 
+#. Format arguments: {0}: Model.Notification.Summary
+#: Views/NotificationsCheckbox_SummaryAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Notifications.Views.NotificationsCheckbox_SummaryAdmin"
+msgid "Select {0}"
+msgstr ""
+
 #: Views/NotificationsRestricted_SummaryAdmin.cshtml
 msgctxt "OrchardCore.Notifications.Views.NotificationsRestricted_SummaryAdmin"
 msgid "You no longer have access to this notification."

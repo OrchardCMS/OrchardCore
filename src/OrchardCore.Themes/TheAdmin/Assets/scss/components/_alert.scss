@@ -1,0 +1,4 @@
+.alert a:not(.btn):not(.alert-link) {
+    color: var(--bs-alert-link-color);
+    text-decoration: underline;
+}

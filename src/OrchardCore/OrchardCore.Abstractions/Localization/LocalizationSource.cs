@@ -1,3 +1,6 @@
+using System.Text.Json.Serialization;
+using OrchardCore.Json.Serialization;
+
 namespace OrchardCore.Localization;
 
 /// <summary>
@@ -8,7 +11,9 @@ namespace OrchardCore.Localization;
 /// when the value is displayed. Sources can be shared across instances, tenants, and cultures.
 /// Use <see cref="Create(string, Type)"/> or <see cref="Create{T}(string)"/> to declare sources
 /// with explicit calls that source-extraction tools can discover.
+/// A source is serialized to JSON as its <see cref="Value"/> only; see <see cref="LocalizationSourceJsonConverter"/>.
 /// </remarks>
+[JsonConverter(typeof(LocalizationSourceJsonConverter))]
 public sealed record LocalizationSource
 {
     /// <summary>

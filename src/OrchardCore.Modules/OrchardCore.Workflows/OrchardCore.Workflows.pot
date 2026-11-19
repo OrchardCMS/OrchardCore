@@ -4543,6 +4543,13 @@ msgctxt "OrchardCore.Workflows.Views.WorkflowEntry.Buttons.SummaryAdmin"
 msgid "Restart"
 msgstr ""
 
+#. Format arguments: {0}: Model.Value.Workflow.WorkflowId
+#: Views/WorkflowEntry.Checkbox.SummaryAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Views.WorkflowEntry.Checkbox.SummaryAdmin"
+msgid "Select {0}"
+msgstr ""
+
 #: Views/WorkflowEntry.DefaultMeta.SummaryAdmin.cshtml
 msgctxt "OrchardCore.Workflows.Views.WorkflowEntry.DefaultMeta.SummaryAdmin"
 msgid "Created"
@@ -5121,6 +5128,13 @@ msgstr ""
 #: Views/WorkflowTypeEntry.Buttons.SummaryAdmin.cshtml
 msgctxt "OrchardCore.Workflows.Views.WorkflowTypeEntry.Buttons.SummaryAdmin"
 msgid "Edit"
+msgstr ""
+
+#. Format arguments: {0}: Model.Value.Name
+#: Views/WorkflowTypeEntry.Checkbox.SummaryAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Workflows.Views.WorkflowTypeEntry.Checkbox.SummaryAdmin"
+msgid "Select {0}"
 msgstr ""
 
 #: Views/WorkflowTypeEntry.DefaultTags.SummaryAdmin.cshtml

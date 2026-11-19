@@ -11,6 +11,7 @@ interface CodeMirrorEditor {
     getValue(): string;
     setValue(value: string): void;
     setOption(key: string, value: unknown): void;
+    getInputField(): HTMLElement;
     display: { wrapper: HTMLElement };
 }
 
