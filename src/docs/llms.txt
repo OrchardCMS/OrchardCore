@@ -81,6 +81,7 @@ Orchard Core consists of two different targets:
 - [Navigation](reference/modules/Navigation/README.md): Navigation providers and menu rendering.
 - [Admin](reference/modules/Admin/README.md): Admin panel UI and configuration.
 - [Admin Dashboard](reference/modules/AdminDashboard/README.md): Customizable admin dashboard with widgets.
+- [Dashboards](reference/modules/Dashboards/README.md): Dashboards made of widgets, with types registered by modules, shared or per user.
 - [Admin Menu](reference/modules/AdminMenu/README.md): Admin navigation menu management.
 - [Taxonomies](reference/modules/Taxonomies/README.md): Hierarchical taxonomy management for categorizing content.
 - [Users](reference/modules/Users/README.md): User management, registration, and authentication settings.

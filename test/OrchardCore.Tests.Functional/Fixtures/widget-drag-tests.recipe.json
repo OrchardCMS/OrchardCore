@@ -1,7 +1,7 @@
 {
   "name": "WidgetDragTests",
   "displayName": "WidgetDragTests",
-  "description": "Testing the SortableJS-based WidgetsListPart, AdminDashboard, and DateField-Localized editors, none of which any shipped recipe configures.",
+  "description": "Testing the SortableJS-based WidgetsListPart, AdminDashboard, My Dashboard, and DateField-Localized editors, none of which any shipped recipe configures.",
   "author": "The Orchard Core Team",
   "website": "https://orchardcore.net",
   "version": "1.0.0",
@@ -36,6 +36,7 @@
         "OrchardCore.ContentFields",
         "OrchardCore.Contents",
         "OrchardCore.ContentTypes",
+        "OrchardCore.Dashboards.User",
         "OrchardCore.Html",
         "OrchardCore.Title",
         "OrchardCore.Widgets",

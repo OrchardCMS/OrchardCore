@@ -2,7 +2,7 @@
 
 The `OrchardCore.AdminDashboard` module lets you compose the landing page of the admin area (`/admin`) from widgets. Each widget is a regular content item, so it can be edited, secured, versioned and localized like any other content.
 
-This page describes the options available to customize the dashboard: permissions, the built-in widget types, widget configuration, arranging widgets, and how to override their look.
+The admin dashboard is the `Admin` dashboard type of the [Dashboards](../Dashboards/README.md) module, which provides the widgets, their editor and the arrangement of the page. This page describes what is specific to the admin dashboard: its permissions, URLs and breadcrumbs.
 
 ## Permissions
 
@@ -13,13 +13,22 @@ This page describes the options available to customize the dashboard: permission
 
 By default `ManageAdminDashboard` is granted to the `Administrator` role, while `AccessAdminDashboard` is also granted to the `Editor`, `Moderator`, `Author` and `Contributor` roles.
 
-A user with only `AccessAdminDashboard` additionally needs the `ViewContent` permission (or a per-type view permission) on a widget for that widget to be displayed.
+A user with only `AccessAdminDashboard` additionally needs the `ViewContent` permission (or a per-type view permission) on a widget for that widget to be displayed. A user who can't view the admin dashboard, or sees none of its widgets, gets the default landing page of the admin.
+
+## URLs
+
+| URL | Description |
+|-----|-------------|
+| `/admin` | The admin dashboard. |
+| `/admin/dashboard/manage` | The manage mode of the admin dashboard, where widgets are added and arranged. |
+
+The admin dashboard is also served at the URLs of every dashboard type, `/Admin/dashboards/Admin` and `/Admin/dashboards/Admin/manage`.
 
 ## Dashboard widgets
 
-Admin widgets are created using content items and can be secured like any other content item. To create a content type that can be used as a dashboard widget, set its stereotype to `DashboardWidget`.
+Admin widgets are created using content items and can be secured like any other content item. To create a content type that can be used as a dashboard widget, set its stereotype to `DashboardWidget`, see [Widgets](../Dashboards/README.md#widgets).
 
-Adding the `DashboardPart` to the type is optional: the module attaches it automatically to every type whose stereotype is `DashboardWidget`. `DashboardPart` is what stores the position and size of the widget.
+The `Admin` dashboard type is the default type of the dashboards: a widget saved without a dashboard type, for example by a recipe, is added to the admin dashboard.
 
 ### Creating a New Widget
 
@@ -30,29 +39,9 @@ To create a new widget of the recently created content type, perform the followi
 3. Click the `Add Widget` button and select the newly created content type.
 4. Complete the form and click the `Publish` button.
 
-Please note that users lacking the `ManageAdminDashboard` permission will require the `AccessAdminDashboard` permission to view the admin dashboard, in addition to the `ViewContent` or permission.
-
-### Built-in widget types
-
-The module ships with a few widget types you can use out of the box:
-
-| Content type           | Description                                                                 |
-|------------------------|-----------------------------------------------------------------------------|
-| `HtmlDashboardWidget`  | A widget whose body is authored with the `HtmlBodyPart`. Useful for links, notes or any custom HTML. |
-| `ContentsMetadata`     | Displays the metadata (author, dates, …) of content items.                  |
-| `ContentsTags`         | Displays the tags of content items.                                         |
-
-You can create your own widget types at any time by adding a content type with the `DashboardWidget` stereotype.
-
 ### Widget Configuration
 
-Each widget has the following customizable settings, stored on the `DashboardPart`:
-
-| Option     | Description                                                                                                                                                               |
-|------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `Position` | A numeric value indicating the widget's order on the page.                                                                                                                |
-| `Width`    | An integer value between 1 and 6, representing the widget's width on the screen. Please note that 1 indicates (1/6) of the screen, while 6 signifies full screen width.   |
-| `Height`   | An integer value between 1 and 6, representing the widget's height on the screen. Please note that 1 indicates (1/6) of the screen, while 6 signifies full screen height. |
+Each widget stores its dashboard, position and size on the `DashboardPart`, see [Widgets](../Dashboards/README.md#widgets). The widgets of the admin dashboard have `Admin` as their `DashboardType`.
 
 ### Arranging widgets
 
@@ -150,6 +139,7 @@ Dashboard widgets are content items, so they can be created from a recipe using 
           "Published": true,
           "HtmlDashboardWidget": {},
           "DashboardPart": {
+            "DashboardType": "Admin",
             "Position": 0.0,
             "Width": 1.0,
             "Height": 2.0

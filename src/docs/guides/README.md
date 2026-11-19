@@ -16,6 +16,7 @@ These guides are specific to Orchard Core CMS
 
 - [Creating an Orchard Core CMS website](create-cms-application/README.md)
 - [Adding a Menu Item to the Admin Navigation](add-admin-menu/README.md)
+- [Creating a Dashboard Type](create-dashboard-type/README.md)
 - [Installing Localization Files](install-localization-files/README.md)
 - [How to use the assets manager](assets-manager/README.md)
 - [Old (deprecated) Gulp pipeline docs (historical reference)](gulp-pipeline/README.md)
