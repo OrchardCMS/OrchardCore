@@ -6,6 +6,7 @@ using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.ContentTypes.ViewModels;
 using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.ContentTypes;
 
@@ -36,7 +37,7 @@ public class ContentTypeSettingsDisplayDriverTests
             ShowVersionable = false,
         };
         var driver = new ContentTypeSettingsDisplayDriver(
-            Mock.Of<IStringLocalizer<ContentTypeSettingsDisplayDriver>>(),
+            new StringLocalizer<ContentTypeSettingsDisplayDriver>(new NullStringLocalizerFactory()),
             Options.Create(options),
             Mock.Of<IStereotypeService>(),
             Mock.Of<IContentDefinitionManager>());
