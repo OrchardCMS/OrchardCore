@@ -1,4 +1,6 @@
 using System.Text.Json.Nodes;
+using AngleSharp.Html.Dom;
+using AngleSharp.Html.Parser;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Testing.Handlers;
 using Microsoft.Extensions.DependencyInjection;
@@ -1069,14 +1071,25 @@ public class PasskeyControllerTests
         await context.UsingTenantScopeAsync(async scope =>
         {
             var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IUser>>();
-            var user = await userManager.FindByNameAsync(AdminUserName) as User;
+            var user = await userManager.FindByNameAsync(AdminUserName);
 
             await userManager.ResetAuthenticatorKeyAsync(user);
-
-            user.Put(new TwoFactorPreference { DefaultProvider = TokenOptions.DefaultAuthenticatorProvider });
-
-            await userManager.UpdateAsync(user);
         });
+
+        var parser = new HtmlParser();
+        var securityPage = await registrationClient.GetStringAsync("Security", TestContext.Current.CancellationToken);
+        foreach (var provider in new[] { UserConstants.PasskeyTwoFactorProvider, TokenOptions.DefaultAuthenticatorProvider })
+        {
+            var select = Assert.IsAssignableFrom<IHtmlSelectElement>(parser.ParseDocument(securityPage)
+                .QuerySelector("select[name='UserSecurity.PreferredProvider']"));
+            var response = await PostAsync(registrationClient, select.Form.GetAttribute("action"),
+                AntiForgeryHelper.ExtractAntiForgeryToken(securityPage), new() { [select.Name] = provider });
+
+            Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
+            securityPage = await registrationClient.GetStringAsync(response.Headers.Location, TestContext.Current.CancellationToken);
+            var selected = parser.ParseDocument(securityPage).QuerySelector("select[name='UserSecurity.PreferredProvider'] option[selected]");
+            Assert.Equal(provider, selected?.GetAttribute("value"));
+        }
 
         var client = CreateClient(context, out _);
         var loginResponse = await LoginWithPasswordAsync(client);

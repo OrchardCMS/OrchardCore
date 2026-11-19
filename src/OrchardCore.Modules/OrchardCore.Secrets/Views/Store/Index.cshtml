@@ -95,11 +95,11 @@
             </div>
 
             <div class="action-bar-bottom">
-                <button type="submit" class="btn btn-primary">@T["Move"]</button>
                 @if (isSingleSecret)
                 {
                     <a asp-controller="Admin" asp-action="Index" class="btn btn-secondary">@T["Cancel"]</a>
                 }
+                <button type="submit" class="btn btn-primary">@T["Move"]</button>
             </div>
         }
     </form>

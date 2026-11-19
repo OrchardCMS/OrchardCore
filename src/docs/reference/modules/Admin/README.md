@@ -556,13 +556,15 @@ The submit buttons of admin edit pages, such as **Publish**, **Save** and **Canc
 
 ```cshtml
 <div class="action-bar-bottom">
-    <button class="btn btn-primary save" type="submit">@T["Save"]</button>
-    <a class="btn btn-danger action-bar-secondary" asp-action="Delete">@T["Delete"]</a>
     <a class="btn btn-secondary cancel" asp-action="Index">@T["Cancel"]</a>
+    <a class="btn btn-danger action-bar-secondary" asp-action="Delete">@T["Delete"]</a>
+    <button class="btn btn-primary save" type="submit">@T["Save"]</button>
 </div>
 ```
 
-Mark every action other than the main ones with the `action-bar-secondary` class. A secondary action can be a single button or a whole control group, for example the date input and the button of **Publish Later**. When the **Actions layout** setting resolves to `Menu`, the admin theme moves the secondary actions into a single menu opened by an ellipsis button, and keeps only the main actions visible. On small screens the secondary actions are always moved into this menu, whatever the setting. The page content is padded so the bar never hides the end of the form.
+Every page orders its actions the same way, from the least to the most important one: **Cancel** first, then the secondary actions, and the main action, such as **Save**, **Create** or **Publish**, last. Keep this order in the markup rather than reordering the buttons with CSS, so the keyboard focus follows the visual order. Style the buttons the same way on every page too: **Cancel** and the alternative actions with `btn-secondary`, destructive actions with `btn-danger`, and the main action with `btn-primary`, except **Publish**, which uses `btn-success` next to **Save Draft**. The footers of modal dialogs, including the confirmation dialog opened by `confirmDialog()`, follow the same order: **Cancel** or **Close** first, then any secondary action, and the action that confirms the dialog, such as **OK**, last. Shapes rendered in the `Actions` zone of a content item editor follow it through their positions: **Preview** is at `Actions:5`, **Delete** at `Actions:10`, **Unpublish** at `Actions:20`, **Archive Later** at `Actions:20.5`, **Publish Later** at `Actions:25`, the workflow user task actions at `Actions:28`, **Save Draft** at `Actions:30` and **Publish** at `Actions:40`, and the editor renders **Cancel** before the zone.
+
+Mark every action other than the main ones with the `action-bar-secondary` class. A secondary action can be a single button or a whole control group, for example the date input and the button of **Publish Later**. When the **Actions layout** setting resolves to `Menu`, the admin theme moves the secondary actions into a single menu opened by an ellipsis button at the end of the bar, and keeps only the main actions visible. The menu lists the destructive actions, those with the `btn-danger` or `btn-outline-danger` class, last, below a divider. On small screens the secondary actions are always moved into this menu, whatever the setting. The page content is padded so the bar never hides the end of the form.
 
 #### Remembering the last used action
 

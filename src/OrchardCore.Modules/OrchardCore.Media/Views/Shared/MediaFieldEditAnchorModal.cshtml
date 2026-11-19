@@ -14,13 +14,9 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <div class="d-flex w-100 justify-content-between">
-                        <button type="button" class="btn btn-primary " v-on:click="resetAnchor">@T["Reset Anchor"]</button>
-                        <div>
-                            <button type="button" class="btn btn-success" data-bs-dismiss="modal">@T["OK"]</button>
-                            <button type="button" class="btn btn-secondary" v-on:click="cancelAnchoringModal">@T["Cancel"]</button>
-                        </div>
-                    </div>
+                    <button type="button" class="btn btn-secondary" v-on:click="cancelAnchoringModal">@T["Cancel"]</button>
+                    <button type="button" class="btn btn-secondary" v-on:click="resetAnchor">@T["Reset Anchor"]</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">@T["OK"]</button>
                 </div>
             </div>
         </div>

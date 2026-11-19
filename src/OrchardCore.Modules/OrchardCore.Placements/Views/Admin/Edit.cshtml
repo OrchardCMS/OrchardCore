@@ -39,6 +39,13 @@
     </div>
 
     <div class="action-bar-bottom">
+        <a class="btn btn-secondary cancel" role="button" href="@returnUrl">@T["Cancel"]</a>
+
+        @if (!Model.Creating)
+        {
+            <a asp-route-action="Delete" asp-route-area="OrchardCore.Placements" asp-route-shapeType="@Model.ShapeType" class="btn btn-danger action-bar-secondary" role="button" data-url-af="UnsafeUrl RemoveUrl">@T["Delete"]</a>
+        }
+
         <div class="btn-group"
              role="group"
              aria-label="@T["Save actions"]"
@@ -55,13 +62,6 @@
                 <button class="dropdown-item" name="submit" type="submit" value="SaveAndContinue">@T["and continue"]</button>
             </div>
         </div>
-
-        @if (!Model.Creating)
-        {
-            <a asp-route-action="Delete" asp-route-area="OrchardCore.Placements" asp-route-shapeType="@Model.ShapeType" class="btn btn-danger action-bar-secondary" role="button" data-url-af="UnsafeUrl RemoveUrl">@T["Delete"]</a>
-        }
-
-        <a class="btn btn-secondary cancel" role="button" href="@returnUrl">@T["Cancel"]</a>
     </div>
 </form>
 

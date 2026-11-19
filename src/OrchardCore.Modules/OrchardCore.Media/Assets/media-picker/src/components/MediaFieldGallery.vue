@@ -85,8 +85,8 @@
         </div>
       </div>
       <div class="mf-modal-footer">
-        <button type="button" class="mf-btn-secondary" @click="resetAnchor">{{ t.resetAnchor }}</button>
         <button type="button" class="mf-btn-secondary" @click="cancelAnchor">{{ t.cancel }}</button>
+        <button type="button" class="mf-btn-secondary" @click="resetAnchor">{{ t.resetAnchor }}</button>
         <button type="button" class="mf-btn-primary" @click="saveAnchor">{{ t.ok }}</button>
       </div>
     </VueFinalModal>

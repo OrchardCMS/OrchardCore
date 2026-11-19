@@ -27,8 +27,8 @@ function confirmDialog({ callback, ...options }: { callback: ConfirmDialogCallba
                     <p>${message}</p>
                 </div>
                 <div class="modal-footer">
-                    <button id="modalOkButton" type="button" class="btn ${okClass}">${okText}</button>
                     <button id="modalCancelButton" type="button" class="btn ${cancelClass}" data-bs-dismiss="modal">${cancelText}</button>
+                    <button id="modalOkButton" type="button" class="btn ${okClass}">${okText}</button>
                 </div>
             </div>
         </div>
