@@ -9,7 +9,9 @@ theme:
     - content.tabs.link
     - header.autohide
     - navigation.footer
+    - navigation.indexes
     - navigation.instant
+    - navigation.tabs
     - navigation.top
   palette:
     - media: "(prefers-color-scheme: light)"
@@ -42,6 +44,14 @@ extra:
     - icon: fontawesome/brands/linkedin
       link: https://www.linkedin.com/groups/13605669/
 
+extra_css:
+  - assets/css/header.css
+  - assets/css/manuals.css
+  - assets/css/theme.css
+
+extra_javascript:
+  - assets/js/search-filter.js
+
 # Repository
 repo_name: OrchardCMS/OrchardCore
 repo_url: https://github.com/OrchardCMS/OrchardCore
@@ -62,8 +72,14 @@ not_in_nav: |
   releases/4.0.0.md
   llms.txt
 
+# Links the User Manual and the Technical Manual to each other, from the `technical_manual` front matter of User Manual pages.
+hooks:
+  - .scripts/docs/manuals.py
+
 # Extensions
 markdown_extensions:
+  - attr_list
+  - md_in_html
   - markdown.extensions.admonition
   - markdown.extensions.codehilite
   - markdown.extensions.def_list
@@ -127,265 +143,359 @@ plugins:
 
 # Page tree
 nav:
-  - About Orchard Core: README.md
-  - Getting started:
-      - AI Quick Start: getting-started/ai-quick-start.md
-      - Development Tools: getting-started/development-tools.md
-      - Create a CMS Web application: getting-started/README.md
-      - Test drive Orchard Core: getting-started/test-drive-orchard-core.md
-      - Configure Preview package source: getting-started/preview-package-source.md
-      - Recipes and Starter Themes: getting-started/starter-recipes.md
-      - Code Generation Templates: getting-started/templates/README.md
-      - Create a Theme: getting-started/theme.md
-      - External Resources: getting-started/external-resources.md
-  - Guides:
-      - Follow the Guides: guides/README.md
-      - Create a modular application: guides/create-modular-application-mvc/README.md
-      - Create a website: guides/create-cms-application/README.md
-      - Leverage CSPROJ meta information: guides/leverage-csproj-meta-info/README.md
-      - Create a Decoupled CMS site: guides/decoupled-cms/README.md
-      - Create a Decoupled CMS site with a .NET Blazor Application (Server Side): guides/create-blazor-cms/README.md
-      - Create a webshop using the Commerce module: https://commerce.orchardcore.net/en/latest/guides/create-webshop/
-      - Add an admin menu: guides/add-admin-menu/README.md
-      - Implement Full Text search: guides/implement-fulltext-search/README.md
-      - Install localization files: guides/install-localization-files/README.md
-      - Integrate Facebook plugins: guides/integrate-facebook-plugins/README.md
-      - Run code on startup: guides/run-code-on-startup/README.md
-      - Creating an Admin Theme: guides/create-admin-theme/README.md
-      - Create a Custom Module: guides/create-install-custom-module/README.md  
-      - Customize encoding settings: guides/encoding-settings/README.md
-      - Understanding Content Definitions Stores: guides/content-definitions/README.md
-      - Change password configuration: guides/password-configuration/README.md
-      - Change lockout configuration: guides/lockout-configuration/README.md
-      - Microsoft Entra ID (Azure AD) integration: guides/microsoft-entra-id-integration/README.md
-      - Create a Liquid Widget: guides/create-liquid-widget/README.md
-      - Query Content Items Based on Taxonomy: guides/query-content-items-based-on-taxonomy/README.md
-      - Data Protection: guides/data-protection/README.md
-      - Manage Assets and NPM dependencies:
-        - Assets manager: guides/assets-manager/README.md
-        - Using NPM aliases: guides/assets-manager/NPM_ALIASING_GUIDE.md
-        - Gulp pipeline: guides/gulp-pipeline/README.md
-      - Lucene Query Syntax: guides/lucene-query-syntax/README.md
-      - Upgrading the .NET SDK Version: guides/upgrading-sdk-version/README.md
-  - Key Topics:
-      - Manage your Content: topics/content-management/README.md
-      - Content Relationships: topics/content-relationships/README.md
-      - Customize the Display:
-          - Overview: topics/display/README.md
-          - Shapes: topics/display/shapes.md
-          - Create a Theme from an HTML Template: topics/display/theme-from-html-template.md
-      - Localize your site: topics/localize/README.md
-      - Handle the Media:
-          - Overview: topics/media/README.md
-          - Media Picker: topics/media/media-picker.md
-      - Navigate between pages: topics/navigation/README.md
-      - Query and Search data: topics/search/README.md
-      - Secure your application:
-          - Overview: topics/security/README.md
-          - Users: topics/security/users.md
-          - Roles and Permissions: topics/security/roles.md
-          - Login: topics/security/login.md
-          - Registration: topics/security/registration.md
-          - Security Settings: topics/security/security-settings.md
-      - Data:
-          - Overview: topics/data/README.md
-          - How YesSql works: topics/data/yessql.md
-      - Configuration: topics/configuration/README.md
-      - Workflows: topics/workflows/README.md
-      - Publishing a new release: topics/publishing-releases/README.md
-      - Using Docker: topics/docker/README.md
-      - Using local NuGet packages: topics/local-nuget-packages/README.md
-      - Managing the Orchard Core Red Hat Ecosystem Catalog certification: topics/red-hat-ecosystem-catalog-certification/README.md
-      - Source Generators: topics/source-generators/README.md
-  - Reference:
-      - Modules:
-          - Overview: reference/README.md
-          - CMS Modules:
-              - Content Types: reference/modules/ContentTypes/README.md
-              - Content Parts:
-                  - Add Parts to your Content: reference/modules/ContentParts/README.md
-                  - Title: reference/modules/Title/README.md
-                  - Autoroute: reference/modules/Autoroute/README.md
-                  - Alias: reference/modules/Alias/README.md
-                  - Archive Later: reference/modules/ArchiveLater/README.md
-                  - Html: reference/modules/Html/README.md
-                  - Markdown: reference/modules/Markdown/README.md
-                  - List: reference/modules/Lists/README.md
-                  - Flow: reference/modules/Flow/README.md
-                  - Bag: reference/modules/Flow/BagPart.md
-                  - Publish Later: reference/modules/PublishLater/README.md
-                  - SEO Meta: reference/modules/Seo/README.md
-              - Content Fields: reference/modules/ContentFields/README.md
-              - Content Preview: reference/modules/ContentPreview/README.md
-              - Content Localization: reference/modules/ContentLocalization/README.md
-              - Layers: reference/modules/Layers/README.md
-              - Widgets: reference/modules/Widgets/README.md
-              - Forms: reference/modules/Forms/README.md
-              - Templates: reference/modules/Templates/README.md
-              - Placements: reference/modules/Placements/README.md
-              - Themes: reference/modules/Themes/README.md
-              - Admin Theme Conventions: reference/themes/admin-theme.md
-              - Liquid: reference/modules/Liquid/README.md
-              - Media:
-                  - Media: reference/modules/Media/README.md
-                  - Media Gallery: reference/modules/Media/MediaGallery.md
-                  - Media Slugify: reference/modules/Media.Slugify/README.md
-                  - Antivirus: reference/modules/Antivirus/README.md
-                  - Media Amazon S3: reference/modules/Media.AmazonS3/README.md
-                  - Media Azure: reference/modules/Media.Azure/README.md
-              - ReCaptcha: reference/modules/ReCaptcha/README.md
-              - Resources: reference/modules/Resources/README.md
-              - Rules: reference/modules/Rules/README.md
-              - Search, Indexing, Querying:
-                  - Search: reference/modules/Search/README.md
-                  - Azure AI Search: reference/modules/AzureAISearch/README.md
-                  - Elasticsearch: reference/modules/Elasticsearch/README.md
-                  - Indexing: reference/modules/Indexing/README.md
-                  - Lucene: reference/modules/Lucene/README.md
-                  - SQL Indexing: reference/modules/SQLIndexing/README.md
-                  - Queries: reference/modules/Queries/README.md
-              - Data Sources and Pipelines:
-                  - Data Sources: reference/modules/DataSources/README.md
-                  - Data Pipelines: reference/modules/DataPipelines/README.md
-              - Shortcodes: reference/modules/Shortcodes/README.md
-              - Sitemaps: reference/modules/Sitemaps/README.md
-              - SMS: reference/modules/Sms/README.md
-              - Azure Communication SMS: reference/modules/Sms.Azure/README.md
-              - Spatial: reference/modules/Spatial/README.md
-              - XML-RPC: reference/modules/XmlRpc/README.md
-              - Menu: reference/modules/Menu/README.md
-              - Navigation: reference/modules/Navigation/README.md
-              - Admin: reference/modules/Admin/README.md
-              - Admin Dashboard: reference/modules/AdminDashboard/README.md
-              - Admin Menu: reference/modules/AdminMenu/README.md
-              - Taxonomies: reference/modules/Taxonomies/README.md
-              - Authentication:
-                  - Microsoft: reference/modules/Microsoft.Authentication/README.md
-                  - Facebook: reference/modules/Facebook/README.md
-                  - X (Twitter): reference/modules/X/README.md
-                  - GitHub: reference/modules/GitHub/README.md
-                  - Google: reference/modules/Google/README.md
-              - Users:
-                  - Overview: reference/modules/Users/README.md
-                  - Custom User Settings: reference/modules/Users/CustomUserSettings/README.md
-                  - Notifications: reference/modules/Notifications/README.md
-                  - Ticket store: reference/modules/Users/TicketStore.md
-              - Home Route: reference/modules/HomeRoute/README.md
-              - Feeds: reference/modules/Feeds/README.md
-              - Commerce: https://commerce.orchardcore.net/en/latest
-          - Core Modules:
-              - Display Management: reference/modules/DisplayManagement/README.md
-              - Audit Trail: reference/modules/AuditTrail/README.md
-              - Auto Setup: reference/modules/AutoSetup/README.md
-              - Features: reference/modules/Features/README.md
-              - File Upload Security: reference/core/file-upload-security.md
-              - Temporary File Storage: reference/core/temporary-file-storage.md
-              - Contents: reference/modules/Contents/README.md
-              - Configuration: reference/modules/Configuration/README.md
-              - Cors: reference/modules/Cors/README.md
-              - Custom Settings: reference/modules/CustomSettings/README.md
-              - Settings: reference/modules/Settings/README.md
-              - Deployment: reference/modules/Deployment/README.md
-              - Placement: reference/modules/Placement/README.md
-              - Data: reference/modules/Data/README.md
-              - Data Migrations: reference/modules/Migrations/README.md
-              - Diagnostics: reference/modules/Diagnostics/README.md
-              - Dynamic Cache: reference/modules/DynamicCache/README.md
-              - Email: reference/modules/Email/README.md
-              - SMTP Provider: reference/modules/Email.Smtp/README.md
-              - Azure Email Provider: reference/modules/Email.Azure/README.md
-              - GraphQL: reference/modules/Apis.GraphQL/README.md
-              - GraphQL queries: reference/modules/Apis.GraphQL.Abstractions/README.md
-              - Health Check: reference/modules/HealthChecks/README.md
-              - HTTPS: reference/modules/Https/README.md
-              - Key Vault (Azure): reference/modules/KeyVault.Azure/README.md
-              - Localization: reference/modules/Localize/README.md
-              - JavaScript Localization: reference/modules/Localize/javascript-localization.md
-              - Data Localization: reference/modules/DataLocalization/README.md
-              - Logging Serilog: reference/modules/Logging.Serilog/README.md
-              - Mini Profiler: reference/modules/MiniProfiler/README.md
-              - Modules: reference/modules/Modules/README.md
-              - OpenApi: reference/modules/OpenApi/README.md
-              - OpenId: reference/modules/OpenId/README.md
-              - OpenTelemetry: reference/modules/OpenTelemetry/README.md
-              - Permissions: reference/modules/Security/Permissions.md
-              - Razor Helpers: reference/modules/Razor/README.md
-              - Rate Limits: reference/modules/RateLimits/README.md
-              - Recipes: reference/modules/Recipes/README.md
-              - Redis: reference/modules/Redis/README.md
-              - Remote Deployment: reference/modules/Deployment.Remote/README.md
-              - Response Compression: reference/modules/ResponseCompression/README.md
-              - Roles: reference/modules/Roles/README.md
-              - Sanitizer: reference/modules/Sanitizer/README.md
-              - Scripting: reference/modules/Scripting/README.md
-              - Secrets: reference/modules/Secrets/README.md
-              - Security: reference/modules/Security/README.md
-              - Setup: reference/modules/Setup/README.md
-              - Shells: reference/modules/Shells/README.md
-              - SignalR: reference/modules/SignalR/README.md
-              - Tenants: reference/modules/Tenants/README.md
-              - Workflows: reference/modules/Workflows/README.md
-              - DataProtection (Azure Storage): reference/modules/DataProtection.Azure/README.md
-              - Background Tasks: reference/modules/BackgroundTasks/README.md
-              - URL Rewriting: reference/modules/UrlRewriting/README.md
-              - Reverse Proxy: reference/modules/ReverseProxy/README.md
-      - Branding: reference/branding/README.md
-      - Libraries: reference/libraries/README.md
-      - Glossary: reference/glossary/README.md
-  - Releases Notes:
-      - 3.0.1: releases/3.0.1.md
-      - 3.0.0: releases/3.0.0.md
-      - 2.2.1: releases/2.2.1.md
-      - 2.2.0: releases/2.2.0.md
-      - 2.1.9: releases/2.1.9.md
-      - 2.1.8: releases/2.1.8.md
-      - 2.1.7: releases/2.1.7.md
-      - 2.1.6: releases/2.1.6.md
-      - 2.1.5: releases/2.1.5.md
-      - 2.1.4: releases/2.1.4.md
-      - 2.1.3: releases/2.1.3.md
-      - 2.1.2: releases/2.1.2.md
-      - 2.1.1: releases/2.1.1.md
-      - 2.1.0: releases/2.1.0.md
-      - 2.0.2: releases/2.0.2.md
-      - 2.0.1: releases/2.0.1.md
-      - 2.0.0: releases/2.0.0.md
-      - 1.8.4: releases/1.8.4.md
-      - 1.8.3: releases/1.8.3.md
-      - 1.8.2: releases/1.8.2.md
-      - 1.8.1: releases/1.8.1.md
-      - 1.8.0: releases/1.8.0.md
-      - 1.7.2: releases/1.7.2.md
-      - 1.7.1: releases/1.7.1.md
-      - 1.7.0: releases/1.7.0.md
-      - 1.6.0: releases/1.6.0.md
-      - 1.5.0: releases/1.5.0.md
-      - 1.4.0: releases/1.4.0.md
-      - 1.3.0: releases/1.3.0.md
-      - 1.2.2: releases/1.2.2.md
-      - 1.2.1: releases/1.2.1.md
-      - 1.2.0: releases/1.2.0.md
-      - 1.1.0: releases/1.1.0.md
-      - 1.0.0: releases/1.0.0.md
-      - 1.0.0-rc2: releases/1.0.0-rc2.md
-      - 1.0.0-rc1: releases/1.0.0-rc1.md
-      - 1.0.0-beta3: releases/1.0.0-beta3.md
-      - 1.0.0-beta2: releases/1.0.0-beta2.md
-      - 1.0.0-beta1: releases/1.0.0-beta1.md
-  - Contributing:
-      - Overview: contributing/README.md
-      - Opening and managing issues: contributing/managing-issues.md
-      - Contributing code: contributing/contributing-code.md
-      - Contributing documentation: contributing/contributing-documentation.md
-      - Reviewing pull requests: contributing/reviewing-pull-requests.md
-      - Using agent skills: contributing/using-skills.md
-      - Benchmarking: contributing/benchmarking.md
-      - Contributing to orchardcore.net: contributing/contributing-to-orchardcore-net.md
-      - Developer Meetings: contributing/meetings.md
-  - Community:
-      - Contributors: community/contributors/README.md
-      - Contributors Map: community/contributors/Map.md
-      - Feature Owners: community/owners/README.md
-      - Honorable Contributors:
-          - Jean-Thierry Kéchichian: community/jean-thierry/README.md
-      - Jean-Thierry Kéchichian Community Award: community/jean-thierry-community-award/README.md
+  - Home: README.md
+  - User Manual:
+      - user-manual/index.md
+      - Getting started:
+          - user-manual/getting-started/index.md
+          - Training paths: user-manual/getting-started/training-paths.md
+          - Find your way around: user-manual/getting-started/finding-your-way.md
+          - Sign in and manage your profile: user-manual/getting-started/signing-in.md
+          - Roles and permissions: user-manual/getting-started/roles-and-permissions.md
+      - Use cases:
+          - user-manual/use-cases/index.md
+          - Build a blog: user-manual/use-cases/build-a-blog.md
+          - Add a contact form: user-manual/use-cases/contact-form.md
+          - Build a landing page: user-manual/use-cases/landing-page-with-widgets.md
+          - Add site search: user-manual/use-cases/site-search.md
+          - Run a multilingual site: user-manual/use-cases/multilingual-site.md
+          - Set up content approval: user-manual/use-cases/content-approval.md
+          - Give an editor limited access: user-manual/use-cases/editor-with-limited-access.md
+          - Copy content between sites: user-manual/use-cases/copy-content-between-sites.md
+      - Write and publish:
+          - user-manual/content/index.md
+          - Content items: user-manual/content/content-items.md
+          - Edit text: user-manual/content/editing-text.md
+          - Fields: user-manual/content/fields.md
+          - Titles, URLs and the home page: user-manual/content/urls-and-homepage.md
+          - Preview: user-manual/content/preview.md
+          - Schedule publishing: user-manual/content/scheduling.md
+          - Translate content: user-manual/content/localization.md
+          - Media library: user-manual/media/media-library.md
+      - Organize content:
+          - user-manual/organize/index.md
+          - Lists and blogs: user-manual/content/lists-and-blogs.md
+          - Taxonomies: user-manual/content/taxonomies.md
+          - Flows and bags: user-manual/content/flows-and-bags.md
+          - Menus: user-manual/design/menus.md
+      - Search and discovery:
+          - user-manual/search/index.md
+          - Site search and indexes: user-manual/search/site-search.md
+          - Queries: user-manual/search/queries.md
+          - SEO: user-manual/content/seo.md
+          - Sitemaps: user-manual/search/sitemaps.md
+          - RSS feeds: user-manual/search/feeds.md
+      - Design:
+          - user-manual/design/index.md
+          - Themes: user-manual/design/themes.md
+          - Content types: user-manual/content/content-types.md
+          - Widgets and layers: user-manual/design/widgets-and-layers.md
+          - Templates and placements: user-manual/design/templates-and-placements.md
+          - Shortcodes: user-manual/design/shortcodes.md
+      - Forms and automation:
+          - user-manual/forms-and-automation/index.md
+          - Forms: user-manual/forms-and-automation/forms.md
+          - Workflows: user-manual/forms-and-automation/workflows.md
+          - Workflow activities: user-manual/forms-and-automation/workflow-activities.md
+          - Notifications: user-manual/forms-and-automation/notifications.md
+          - Data pipelines: user-manual/forms-and-automation/data-pipelines.md
+          - Data pipeline steps: user-manual/forms-and-automation/data-pipeline-steps.md
+          - Shared links: user-manual/forms-and-automation/shared-links.md
+          - Data sources: user-manual/forms-and-automation/data-sources.md
+      - Users and access:
+          - user-manual/users/index.md
+          - Users: user-manual/users/users.md
+          - Manage roles: user-manual/users/roles.md
+          - Login and registration: user-manual/users/login-and-registration.md
+          - External sign-in: user-manual/users/external-sign-in.md
+          - Custom user settings: user-manual/users/custom-user-settings.md
+          - OpenID Connect server: user-manual/users/openid-server.md
+      - Site settings:
+          - user-manual/settings/index.md
+          - General settings: user-manual/settings/general.md
+          - Email: user-manual/settings/email.md
+          - SMS: user-manual/settings/sms.md
+          - Media settings: user-manual/media/media-settings.md
+          - Custom settings: user-manual/settings/custom-settings.md
+          - Security: user-manual/settings/security.md
+          - Analytics and social: user-manual/settings/analytics-and-social.md
+      - Administration:
+          - user-manual/administration/index.md
+          - Features: user-manual/getting-started/features.md
+          - Set up a site: user-manual/getting-started/setting-up-a-site.md
+          - Tenants: user-manual/administration/tenants.md
+          - Recipes: user-manual/administration/recipes.md
+          - Import and export: user-manual/administration/import-and-export.md
+          - Remote deployment: user-manual/administration/remote-deployment.md
+          - Audit trail: user-manual/content/audit-trail.md
+          - Background tasks: user-manual/settings/background-tasks.md
+          - URL rewriting: user-manual/settings/url-rewriting.md
+          - Secrets: user-manual/settings/secrets.md
+          - Admin menus: user-manual/design/admin-menu.md
+          - Admin dashboard: user-manual/design/dashboard.md
+          - Developer tools: user-manual/settings/developer-tools.md
+      - Troubleshooting: user-manual/troubleshooting.md
+      - Glossary: user-manual/glossary.md
+  - Technical Manual:
+      - technical-manual/index.md
+      - Getting started:
+          - AI Quick Start: getting-started/ai-quick-start.md
+          - Development Tools: getting-started/development-tools.md
+          - Create a CMS Web application: getting-started/README.md
+          - Test drive Orchard Core: getting-started/test-drive-orchard-core.md
+          - Configure Preview package source: getting-started/preview-package-source.md
+          - Recipes and Starter Themes: getting-started/starter-recipes.md
+          - Code Generation Templates: getting-started/templates/README.md
+          - Create a Theme: getting-started/theme.md
+          - External Resources: getting-started/external-resources.md
+      - Guides:
+          - Follow the Guides: guides/README.md
+          - Create a modular application: guides/create-modular-application-mvc/README.md
+          - Create a website: guides/create-cms-application/README.md
+          - Leverage CSPROJ meta information: guides/leverage-csproj-meta-info/README.md
+          - Create a Decoupled CMS site: guides/decoupled-cms/README.md
+          - Create a Decoupled CMS site with a .NET Blazor Application (Server Side): guides/create-blazor-cms/README.md
+          - Create a webshop using the Commerce module: https://commerce.orchardcore.net/en/latest/guides/create-webshop/
+          - Add an admin menu: guides/add-admin-menu/README.md
+          - Implement Full Text search: guides/implement-fulltext-search/README.md
+          - Install localization files: guides/install-localization-files/README.md
+          - Integrate Facebook plugins: guides/integrate-facebook-plugins/README.md
+          - Run code on startup: guides/run-code-on-startup/README.md
+          - Creating an Admin Theme: guides/create-admin-theme/README.md
+          - Create a Custom Module: guides/create-install-custom-module/README.md  
+          - Customize encoding settings: guides/encoding-settings/README.md
+          - Understanding Content Definitions Stores: guides/content-definitions/README.md
+          - Change password configuration: guides/password-configuration/README.md
+          - Change lockout configuration: guides/lockout-configuration/README.md
+          - Microsoft Entra ID (Azure AD) integration: guides/microsoft-entra-id-integration/README.md
+          - Create a Liquid Widget: guides/create-liquid-widget/README.md
+          - Query Content Items Based on Taxonomy: guides/query-content-items-based-on-taxonomy/README.md
+          - Data Protection: guides/data-protection/README.md
+          - Manage Assets and NPM dependencies:
+            - Assets manager: guides/assets-manager/README.md
+            - Using NPM aliases: guides/assets-manager/NPM_ALIASING_GUIDE.md
+            - Gulp pipeline: guides/gulp-pipeline/README.md
+          - Lucene Query Syntax: guides/lucene-query-syntax/README.md
+          - Upgrading the .NET SDK Version: guides/upgrading-sdk-version/README.md
+      - Key topics:
+          - Manage your Content: topics/content-management/README.md
+          - Content Relationships: topics/content-relationships/README.md
+          - Customize the Display:
+              - Overview: topics/display/README.md
+              - Shapes: topics/display/shapes.md
+              - Create a Theme from an HTML Template: topics/display/theme-from-html-template.md
+          - Localize your site: topics/localize/README.md
+          - Handle the Media:
+              - Overview: topics/media/README.md
+              - Media Picker: topics/media/media-picker.md
+          - Navigate between pages: topics/navigation/README.md
+          - Query and Search data: topics/search/README.md
+          - Secure your application:
+              - Overview: topics/security/README.md
+              - Users: topics/security/users.md
+              - Roles and Permissions: topics/security/roles.md
+              - Login: topics/security/login.md
+              - Registration: topics/security/registration.md
+              - Security Settings: topics/security/security-settings.md
+          - Data:
+              - Overview: topics/data/README.md
+              - How YesSql works: topics/data/yessql.md
+          - Configuration: topics/configuration/README.md
+          - Workflows: topics/workflows/README.md
+          - Publishing a new release: topics/publishing-releases/README.md
+          - Using Docker: topics/docker/README.md
+          - Using local NuGet packages: topics/local-nuget-packages/README.md
+          - Managing the Orchard Core Red Hat Ecosystem Catalog certification: topics/red-hat-ecosystem-catalog-certification/README.md
+          - Source Generators: topics/source-generators/README.md
+      - Reference:
+          - Modules:
+              - Overview: reference/README.md
+              - CMS Modules:
+                  - Content Types: reference/modules/ContentTypes/README.md
+                  - Content Parts:
+                      - Add Parts to your Content: reference/modules/ContentParts/README.md
+                      - Title: reference/modules/Title/README.md
+                      - Autoroute: reference/modules/Autoroute/README.md
+                      - Alias: reference/modules/Alias/README.md
+                      - Archive Later: reference/modules/ArchiveLater/README.md
+                      - Html: reference/modules/Html/README.md
+                      - Markdown: reference/modules/Markdown/README.md
+                      - List: reference/modules/Lists/README.md
+                      - Flow: reference/modules/Flow/README.md
+                      - Bag: reference/modules/Flow/BagPart.md
+                      - Publish Later: reference/modules/PublishLater/README.md
+                      - SEO Meta: reference/modules/Seo/README.md
+                  - Content Fields: reference/modules/ContentFields/README.md
+                  - Content Preview: reference/modules/ContentPreview/README.md
+                  - Content Localization: reference/modules/ContentLocalization/README.md
+                  - Layers: reference/modules/Layers/README.md
+                  - Widgets: reference/modules/Widgets/README.md
+                  - Forms: reference/modules/Forms/README.md
+                  - Templates: reference/modules/Templates/README.md
+                  - Placements: reference/modules/Placements/README.md
+                  - Themes: reference/modules/Themes/README.md
+                  - Admin Theme Conventions: reference/themes/admin-theme.md
+                  - Liquid: reference/modules/Liquid/README.md
+                  - Media:
+                      - Media: reference/modules/Media/README.md
+                      - Media Gallery: reference/modules/Media/MediaGallery.md
+                      - Media Slugify: reference/modules/Media.Slugify/README.md
+                      - Antivirus: reference/modules/Antivirus/README.md
+                      - Media Amazon S3: reference/modules/Media.AmazonS3/README.md
+                      - Media Azure: reference/modules/Media.Azure/README.md
+                  - ReCaptcha: reference/modules/ReCaptcha/README.md
+                  - Resources: reference/modules/Resources/README.md
+                  - Rules: reference/modules/Rules/README.md
+                  - Search, Indexing, Querying:
+                      - Search: reference/modules/Search/README.md
+                      - Azure AI Search: reference/modules/AzureAISearch/README.md
+                      - Elasticsearch: reference/modules/Elasticsearch/README.md
+                      - Indexing: reference/modules/Indexing/README.md
+                      - Lucene: reference/modules/Lucene/README.md
+                      - SQL Indexing: reference/modules/SQLIndexing/README.md
+                      - Queries: reference/modules/Queries/README.md
+                  - Data Sources and Pipelines:
+                      - Data Sources: reference/modules/DataSources/README.md
+                      - Data Pipelines: reference/modules/DataPipelines/README.md
+                  - Shortcodes: reference/modules/Shortcodes/README.md
+                  - Sitemaps: reference/modules/Sitemaps/README.md
+                  - SMS: reference/modules/Sms/README.md
+                  - Azure Communication SMS: reference/modules/Sms.Azure/README.md
+                  - Spatial: reference/modules/Spatial/README.md
+                  - XML-RPC: reference/modules/XmlRpc/README.md
+                  - Menu: reference/modules/Menu/README.md
+                  - Navigation: reference/modules/Navigation/README.md
+                  - Admin: reference/modules/Admin/README.md
+                  - Admin Dashboard: reference/modules/AdminDashboard/README.md
+                  - Admin Menu: reference/modules/AdminMenu/README.md
+                  - Taxonomies: reference/modules/Taxonomies/README.md
+                  - Authentication:
+                      - Microsoft: reference/modules/Microsoft.Authentication/README.md
+                      - Facebook: reference/modules/Facebook/README.md
+                      - X (Twitter): reference/modules/X/README.md
+                      - GitHub: reference/modules/GitHub/README.md
+                      - Google: reference/modules/Google/README.md
+                  - Users:
+                      - Overview: reference/modules/Users/README.md
+                      - Custom User Settings: reference/modules/Users/CustomUserSettings/README.md
+                      - Notifications: reference/modules/Notifications/README.md
+                      - Ticket store: reference/modules/Users/TicketStore.md
+                  - Home Route: reference/modules/HomeRoute/README.md
+                  - Feeds: reference/modules/Feeds/README.md
+                  - Commerce: https://commerce.orchardcore.net/en/latest
+              - Core Modules:
+                  - Display Management: reference/modules/DisplayManagement/README.md
+                  - Audit Trail: reference/modules/AuditTrail/README.md
+                  - Auto Setup: reference/modules/AutoSetup/README.md
+                  - Features: reference/modules/Features/README.md
+                  - File Upload Security: reference/core/file-upload-security.md
+                  - Temporary File Storage: reference/core/temporary-file-storage.md
+                  - Contents: reference/modules/Contents/README.md
+                  - Configuration: reference/modules/Configuration/README.md
+                  - Cors: reference/modules/Cors/README.md
+                  - Custom Settings: reference/modules/CustomSettings/README.md
+                  - Settings: reference/modules/Settings/README.md
+                  - Deployment: reference/modules/Deployment/README.md
+                  - Placement: reference/modules/Placement/README.md
+                  - Data: reference/modules/Data/README.md
+                  - Data Migrations: reference/modules/Migrations/README.md
+                  - Diagnostics: reference/modules/Diagnostics/README.md
+                  - Dynamic Cache: reference/modules/DynamicCache/README.md
+                  - Email: reference/modules/Email/README.md
+                  - SMTP Provider: reference/modules/Email.Smtp/README.md
+                  - Azure Email Provider: reference/modules/Email.Azure/README.md
+                  - GraphQL: reference/modules/Apis.GraphQL/README.md
+                  - GraphQL queries: reference/modules/Apis.GraphQL.Abstractions/README.md
+                  - Health Check: reference/modules/HealthChecks/README.md
+                  - HTTPS: reference/modules/Https/README.md
+                  - Key Vault (Azure): reference/modules/KeyVault.Azure/README.md
+                  - Localization: reference/modules/Localize/README.md
+                  - JavaScript Localization: reference/modules/Localize/javascript-localization.md
+                  - Data Localization: reference/modules/DataLocalization/README.md
+                  - Logging Serilog: reference/modules/Logging.Serilog/README.md
+                  - Mini Profiler: reference/modules/MiniProfiler/README.md
+                  - Modules: reference/modules/Modules/README.md
+                  - OpenApi: reference/modules/OpenApi/README.md
+                  - OpenId: reference/modules/OpenId/README.md
+                  - OpenTelemetry: reference/modules/OpenTelemetry/README.md
+                  - Permissions: reference/modules/Security/Permissions.md
+                  - Razor Helpers: reference/modules/Razor/README.md
+                  - Rate Limits: reference/modules/RateLimits/README.md
+                  - Recipes: reference/modules/Recipes/README.md
+                  - Redis: reference/modules/Redis/README.md
+                  - Remote Deployment: reference/modules/Deployment.Remote/README.md
+                  - Response Compression: reference/modules/ResponseCompression/README.md
+                  - Roles: reference/modules/Roles/README.md
+                  - Sanitizer: reference/modules/Sanitizer/README.md
+                  - Scripting: reference/modules/Scripting/README.md
+                  - Secrets: reference/modules/Secrets/README.md
+                  - Security: reference/modules/Security/README.md
+                  - Setup: reference/modules/Setup/README.md
+                  - Shells: reference/modules/Shells/README.md
+                  - SignalR: reference/modules/SignalR/README.md
+                  - Tenants: reference/modules/Tenants/README.md
+                  - Workflows: reference/modules/Workflows/README.md
+                  - DataProtection (Azure Storage): reference/modules/DataProtection.Azure/README.md
+                  - Background Tasks: reference/modules/BackgroundTasks/README.md
+                  - URL Rewriting: reference/modules/UrlRewriting/README.md
+                  - Reverse Proxy: reference/modules/ReverseProxy/README.md
+          - Branding: reference/branding/README.md
+          - Libraries: reference/libraries/README.md
+          - Glossary: reference/glossary/README.md
+      - Release Notes:
+          - 3.0.1: releases/3.0.1.md
+          - 3.0.0: releases/3.0.0.md
+          - 2.2.1: releases/2.2.1.md
+          - 2.2.0: releases/2.2.0.md
+          - 2.1.9: releases/2.1.9.md
+          - 2.1.8: releases/2.1.8.md
+          - 2.1.7: releases/2.1.7.md
+          - 2.1.6: releases/2.1.6.md
+          - 2.1.5: releases/2.1.5.md
+          - 2.1.4: releases/2.1.4.md
+          - 2.1.3: releases/2.1.3.md
+          - 2.1.2: releases/2.1.2.md
+          - 2.1.1: releases/2.1.1.md
+          - 2.1.0: releases/2.1.0.md
+          - 2.0.2: releases/2.0.2.md
+          - 2.0.1: releases/2.0.1.md
+          - 2.0.0: releases/2.0.0.md
+          - 1.8.4: releases/1.8.4.md
+          - 1.8.3: releases/1.8.3.md
+          - 1.8.2: releases/1.8.2.md
+          - 1.8.1: releases/1.8.1.md
+          - 1.8.0: releases/1.8.0.md
+          - 1.7.2: releases/1.7.2.md
+          - 1.7.1: releases/1.7.1.md
+          - 1.7.0: releases/1.7.0.md
+          - 1.6.0: releases/1.6.0.md
+          - 1.5.0: releases/1.5.0.md
+          - 1.4.0: releases/1.4.0.md
+          - 1.3.0: releases/1.3.0.md
+          - 1.2.2: releases/1.2.2.md
+          - 1.2.1: releases/1.2.1.md
+          - 1.2.0: releases/1.2.0.md
+          - 1.1.0: releases/1.1.0.md
+          - 1.0.0: releases/1.0.0.md
+          - 1.0.0-rc2: releases/1.0.0-rc2.md
+          - 1.0.0-rc1: releases/1.0.0-rc1.md
+          - 1.0.0-beta3: releases/1.0.0-beta3.md
+          - 1.0.0-beta2: releases/1.0.0-beta2.md
+          - 1.0.0-beta1: releases/1.0.0-beta1.md
+      - Contributing:
+          - Overview: contributing/README.md
+          - Opening and managing issues: contributing/managing-issues.md
+          - Contributing code: contributing/contributing-code.md
+          - Contributing documentation: contributing/contributing-documentation.md
+          - Reviewing pull requests: contributing/reviewing-pull-requests.md
+          - Using agent skills: contributing/using-skills.md
+          - Benchmarking: contributing/benchmarking.md
+          - Contributing to orchardcore.net: contributing/contributing-to-orchardcore-net.md
+          - Developer Meetings: contributing/meetings.md
+      - Community:
+          - Contributors: community/contributors/README.md
+          - Contributors Map: community/contributors/Map.md
+          - Feature Owners: community/owners/README.md
+          - Honorable Contributors:
+              - Jean-Thierry Kéchichian: community/jean-thierry/README.md
+          - Jean-Thierry Kéchichian Community Award: community/jean-thierry-community-award/README.md

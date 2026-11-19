@@ -1,0 +1,211 @@
+/* Styles for the User Manual / Technical Manual split. */
+
+/* "Choose your manual" cards on the home page. */
+.md-typeset .oc-manuals {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: 1rem;
+  margin: 1.2rem 0 2rem;
+}
+
+.md-typeset .oc-manual {
+  --oc-accent: var(--oc-teal);
+  --oc-accent-text: var(--oc-teal-text);
+  display: flex;
+  flex-direction: column;
+  padding: 1.2rem 1.3rem 1.3rem;
+  border: 0.05rem solid color-mix(in srgb, var(--oc-accent) 30%, transparent);
+  border-radius: var(--oc-radius);
+  background: color-mix(in srgb, var(--oc-accent) 7%, var(--md-default-bg-color));
+  transition: border-color 0.25s;
+}
+
+.md-typeset .oc-manual:hover,
+.md-typeset .oc-manual:focus-within {
+  border-color: var(--oc-accent);
+}
+
+.md-typeset .oc-manual--tech {
+  --oc-accent: var(--oc-indigo);
+  --oc-accent-text: var(--oc-indigo-text);
+}
+
+[data-md-color-scheme="slate"] .md-typeset .oc-manual {
+  background: color-mix(in srgb, var(--oc-accent) 14%, var(--md-default-bg-color));
+}
+
+/* Icon and title, vertically centered on one line. */
+.md-typeset .oc-manual__header {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 0.8rem;
+}
+
+.md-typeset .oc-manual__icon {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: var(--oc-radius);
+  background: var(--oc-accent);
+  color: var(--oc-on-accent);
+}
+
+.md-typeset .oc-manual__icon svg {
+  width: 1.5rem;
+  height: 1.5rem;
+  fill: currentColor;
+}
+
+.md-typeset .oc-manual__eyebrow {
+  white-space: nowrap;
+  margin: 0;
+  color: var(--oc-accent-text);
+  font-size: 0.7rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.md-typeset .oc-manual__title {
+  margin: 0;
+  color: var(--md-default-fg-color);
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.md-typeset .oc-manual > p {
+  margin: 0 0 0.6rem;
+}
+
+.md-typeset .oc-manual > ul {
+  margin: 0 0 0.4rem;
+}
+
+.md-typeset .oc-manual > ul li {
+  margin: 0.25rem 0;
+}
+
+.md-typeset .oc-manual > ul > li::marker {
+  color: var(--oc-accent);
+}
+
+/* Buttons pinned to the bottom, so both cards line up. */
+.md-typeset .oc-manual__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  margin-top: auto;
+  padding-top: 0.8rem;
+}
+
+.md-typeset .oc-manual__actions p {
+  display: contents;
+}
+
+.md-typeset .oc-manual .md-button {
+  margin: 0;
+  padding: 0.45em 1.2em;
+  border-color: var(--oc-accent);
+  border-radius: var(--oc-radius-small);
+  color: var(--oc-accent-text);
+  font-size: 0.75rem;
+}
+
+.md-typeset .oc-manual .md-button--primary {
+  background: var(--oc-accent);
+  color: var(--oc-on-accent);
+}
+
+.md-typeset .oc-manual .md-button:hover,
+.md-typeset .oc-manual .md-button:focus {
+  border-color: var(--oc-accent);
+  background: color-mix(in srgb, var(--oc-accent) 85%, #000);
+  color: var(--oc-on-accent);
+}
+
+/* Two-column "label | value" tables, such as the Menu / Permission / Feature table, have an empty header row (both cells empty): hide it. */
+.md-typeset table:not([class]):has(thead th:first-child:empty + th:last-child:empty) thead {
+  display: none;
+}
+
+.md-typeset table:not([class]):has(thead th:first-child:empty + th:last-child:empty) td:first-child {
+  white-space: nowrap;
+}
+
+/* Keep the label tables the same width on every page. */
+.md-typeset .md-typeset__table:has(thead th:first-child:empty + th:last-child:empty) {
+  display: block;
+}
+
+.md-typeset .md-typeset__table:has(thead th:first-child:empty + th:last-child:empty) table:not([class]) {
+  display: table;
+  width: 100%;
+}
+
+/* The line under the Menu / Permission / Feature table. */
+.md-typeset .oc-access-note {
+  margin-top: -0.4em;
+  color: var(--md-default-fg-color--light);
+  font-size: 0.7rem;
+}
+
+/* Boxes linking the two manuals. */
+.md-typeset .oc-crosslink .admonition {
+  font-size: 0.7rem;
+}
+
+.md-typeset .oc-crosslink .admonition ul {
+  margin-top: 0.3em;
+  margin-bottom: 0.3em;
+}
+
+.md-typeset .oc-crosslink .admonition li {
+  margin-bottom: 0.1em;
+}
+
+/* "Search in" filter at the top of the search results (theme/partials/search.html, assets/js/search-filter.js). */
+.oc-search-filter {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3rem 1rem;
+  padding: 0.5rem 0.8rem;
+  border-bottom: 0.05rem solid var(--md-default-fg-color--lightest);
+  background-color: var(--md-default-bg-color);
+  color: var(--md-default-fg-color--light);
+  font-size: 0.64rem;
+}
+
+.oc-search-filter__label {
+  font-weight: 700;
+}
+
+.oc-search-filter__option {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: var(--md-default-fg-color);
+  cursor: pointer;
+}
+
+.oc-search-filter__option input {
+  width: 0.75rem;
+  height: 0.75rem;
+  margin: 0;
+  accent-color: var(--md-primary-fg-color);
+  cursor: pointer;
+}
+
+.md-search-result__item.oc-search-result--hidden {
+  display: none;
+}
+
+/* The filter only makes sense once results show. */
+[data-md-toggle="search"]:not(:checked) ~ .md-header .oc-search-filter {
+  display: none;
+}
