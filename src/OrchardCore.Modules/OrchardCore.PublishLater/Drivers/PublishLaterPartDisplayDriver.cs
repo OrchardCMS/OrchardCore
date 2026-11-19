@@ -38,7 +38,7 @@ public sealed class PublishLaterPartDisplayDriver : ContentPartDisplayDriver<Pub
     {
         return Initialize<PublishLaterPartViewModel>(GetEditorShapeType(context),
             model => PopulateViewModel(part, model))
-        .Location("Actions:10");
+        .Location("Actions:25");
     }
 
     public override async Task<IDisplayResult> UpdateAsync(PublishLaterPart part, UpdatePartEditorContext context)

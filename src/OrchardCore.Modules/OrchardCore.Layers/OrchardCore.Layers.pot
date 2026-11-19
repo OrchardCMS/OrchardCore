@@ -159,6 +159,11 @@ msgstr ""
 
 #: Views/Admin/Create.cshtml
 msgctxt "OrchardCore.Layers.Views.Admin.Create"
+msgid "Cancel"
+msgstr ""
+
+#: Views/Admin/Create.cshtml
+msgctxt "OrchardCore.Layers.Views.Admin.Create"
 msgid "Create"
 msgstr ""
 
@@ -180,6 +185,11 @@ msgstr ""
 #: Views/Admin/Create.cshtml
 msgctxt "OrchardCore.Layers.Views.Admin.Create"
 msgid "Widgets and Layers"
+msgstr ""
+
+#: Views/Admin/Edit.cshtml
+msgctxt "OrchardCore.Layers.Views.Admin.Edit"
+msgid "Cancel"
 msgstr ""
 
 #: Views/Admin/Edit.cshtml
@@ -385,6 +395,11 @@ msgstr ""
 #: Views/LayerRule/Create.cshtml
 msgctxt "OrchardCore.Layers.Views.LayerRule.Create"
 msgid "Widgets and Layers"
+msgstr ""
+
+#: Views/LayerRule/Edit.cshtml
+msgctxt "OrchardCore.Layers.Views.LayerRule.Edit"
+msgid "Cancel"
 msgstr ""
 
 #. Format arguments: {0}: Model.Name

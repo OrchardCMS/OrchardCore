@@ -28,7 +28,7 @@
     @await DisplayAsync(Model.Editor)
 
     <div class="action-bar-bottom">
-        <button class="btn btn-primary" type="submit">@T["Add Limiter"]</button>
         <a asp-action="Edit" asp-controller="Admin" asp-route-policyId="@ViewContext.RouteData.Values["policyId"]" class="btn btn-secondary">@T["Cancel"]</a>
+        <button class="btn btn-primary" type="submit">@T["Add Limiter"]</button>
     </div>
 </form>
