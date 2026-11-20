@@ -1,7 +1,10 @@
 name: Validate Pull Request
 
 on:
+  # Target-branch updates can introduce conflicts in other open PRs.
+  # PR branch updates are already handled by pull_request_target.
   push:
+    branches: [ main, release/** ]
   pull_request_target:
     types: [opened, synchronize]
 
