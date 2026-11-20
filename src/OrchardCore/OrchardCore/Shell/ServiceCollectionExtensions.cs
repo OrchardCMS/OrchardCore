@@ -33,6 +33,7 @@ public static class ServiceCollectionExtensions
 
         services.AddSingleton<IRunningShellTable, RunningShellTable>();
 
+        services.AddSingleton<ShellOptionsEvents>();
         services.AddHostedService<DistributedShellHostedService>();
 
         services.AddSingleton<IShellRemovalManager, ShellRemovalManager>();
