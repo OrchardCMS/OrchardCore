@@ -28,6 +28,15 @@
     </breadcrumb>
 </zone>
 
+@if (contentTypeDefinition?.IsCreatable() == true)
+{
+    <div class="mb-3">
+        <a asp-controller="Batch" asp-action="BatchCreate" asp-area="OrchardCore.Contents" asp-route-id="@contentItem.ContentType" class="btn btn-outline-secondary">
+            @T["Create multiple {0}", localizedTypeDisplayName]
+        </a>
+    </div>
+}
+
 <form asp-action="Create" asp-route-returnUrl="@Context.Request.Query["ReturnUrl"]" method="post" enctype="multipart/form-data" class="no-multisubmit">
     @if (!ViewContext.ModelState.IsValid)
     {
