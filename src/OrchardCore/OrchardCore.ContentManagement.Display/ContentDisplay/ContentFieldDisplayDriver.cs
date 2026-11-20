@@ -70,8 +70,8 @@ public abstract class ContentFieldDisplayDriver<TField> : DisplayDriverBase, ICo
                 var cachedAlternates = ContentFieldAlternatesFactory.GetAlternates(typePartDefinition, partFieldDefinition, shapeType, displayType);
                 ctx.Shape.Metadata.Alternates.AddRange(cachedAlternates);
 
-                // A grid column already shows the name of the field in its header.
-                if (displayFieldName && displayType != OrchardCoreConstants.DisplayType.SummaryAdminGrid)
+                // The wrapper renders the name of the field, and decides for which display types.
+                if (displayFieldName)
                 {
                     ctx.Shape.Properties[ContentFieldDisplayConstants.PartFieldDefinitionProperty] = partFieldDefinition;
                     ctx.Shape.Metadata.Wrappers.Add(ContentFieldDisplayConstants.WrapperShapeType);

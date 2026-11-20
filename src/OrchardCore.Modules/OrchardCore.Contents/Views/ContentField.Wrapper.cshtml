@@ -1,3 +1,5 @@
+@model IShape
+@using OrchardCore
 @using OrchardCore.Admin
 @using OrchardCore.ContentFields
 @using OrchardCore.ContentManagement.Display.ContentDisplay
@@ -6,13 +8,13 @@
 @inject IDataLocalizer D
 @{
     // Wraps the display of a content field whose 'Display the field name' setting is enabled, to show its name next to its value.
-    var shape = (IShape)Model;
-    shape.Properties.TryGetValue(ContentFieldDisplayConstants.PartFieldDefinitionProperty, out var value);
+    Model.Properties.TryGetValue(ContentFieldDisplayConstants.PartFieldDefinitionProperty, out var value);
     var partFieldDefinition = value as ContentPartFieldDefinition;
 }
-@if (partFieldDefinition is null)
+@* A grid column of an admin list already shows the name of the field in its header. *@
+@if (partFieldDefinition is null || Model.Metadata.DisplayType == OrchardCoreConstants.DisplayType.SummaryAdminGrid)
 {
-    @shape.Metadata.ChildContent
+    @Model.Metadata.ChildContent
 }
 else
 {
@@ -24,7 +26,7 @@ else
         <div class="ocat-wrapper field-display field-display-@fieldName">
             <div class="ocat-label">@displayName</div>
             <div class="ocat-end">
-                @shape.Metadata.ChildContent
+                @Model.Metadata.ChildContent
             </div>
         </div>
     }
@@ -32,7 +34,7 @@ else
     {
         <div class="field-display field-display-@fieldName">
             <strong class="field-display-name">@displayName</strong>
-            @shape.Metadata.ChildContent
+            @Model.Metadata.ChildContent
         </div>
     }
 }

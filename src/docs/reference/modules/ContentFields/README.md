@@ -55,7 +55,7 @@ Every field has two display settings, stored in `ContentPartFieldSettings` and e
 | `DisplayFieldName` | `true` | Shows the name of the field next to its value when the content item is displayed. |
 | `AlwaysDisplay` | `false` | Displays the field even when it has no value. When `false`, a field without a value isn't displayed. |
 
-When `DisplayFieldName` is enabled, the display shape of the field gets the `ContentField_Wrapper` wrapper (`ContentField.Wrapper.cshtml`), which renders the localized name of the field followed by the field shape. In the admin, the wrapper uses the `ocat-wrapper`, `ocat-label` and `ocat-end` classes of the admin theme. A grid column of an admin list (the `SummaryAdminGrid` display type) already names the field in its header, so it doesn't get the wrapper. Override `ContentField.Wrapper.cshtml` in a theme to change how the name is rendered.
+When `DisplayFieldName` is enabled, the display shape of the field gets the `ContentField_Wrapper` wrapper (`ContentField.Wrapper.cshtml`), which renders the localized name of the field followed by the field shape. In the admin, the wrapper uses the `ocat-wrapper`, `ocat-label` and `ocat-end` classes of the admin theme. A grid column of an admin list (the `SummaryAdminGrid` display type) already names the field in its header, so there the wrapper renders the value only. Override `ContentField.Wrapper.cshtml` in a theme to change how the name is rendered, or for which display types, using `Model.Metadata.DisplayType`.
 
 Set both settings from a recipe, in the `ContentPartFieldSettings` of the field:
 
