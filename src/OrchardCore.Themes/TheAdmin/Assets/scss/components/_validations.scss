@@ -105,6 +105,7 @@ textarea.form-control.input-validation-error {
     z-index: 4;
 }
 
+// Obsolete, for the 'vue-multiselect' resource: will be removed with it in the next major version.
 .has-validation-error.is-invalid.multiselect {
     border: var(--bs-border-width) solid var(--bs-border-color);
     border-radius: var(--bs-border-radius);
