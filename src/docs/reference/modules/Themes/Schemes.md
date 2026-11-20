@@ -21,7 +21,7 @@ A theme never breaks for want of a scheme. The `ThemeSchemes` recipe step only a
 
 The schemes of each theme are kept apart: the schemes of one theme are never listed for another.
 
-The first time the schemes of a theme are read, the theme seeds its own defaults (TheAdmin seeds Blue, its default, Gray, Ocean, Forest, Plum, Sunset, Graphite and Gold). They're ordinary records from then on, and a theme is seeded only once: deleting all of its schemes doesn't bring them back.
+The first time the schemes of a theme are read, the theme seeds its own defaults (TheAdmin seeds Gray, its default, Blue, Ocean, Forest, Plum, Sunset, Graphite and Gold). They're ordinary records from then on, and a theme is seeded only once: deleting all of its schemes doesn't bring them back.
 
 Each user can pick another scheme, when the theme offers a picker. TheAdmin shows one in the theme menu of its top bar, under the light and dark modes. The choice is kept per tenant and per theme, in the `{tenant}-{themeId}-scheme` cookie.
 

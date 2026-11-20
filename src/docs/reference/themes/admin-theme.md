@@ -213,7 +213,7 @@ Optional settings fine tune what is derived: the hue and saturation of the page,
 
 The fonts are served by the theme; the admin never calls a font CDN.
 
-TheAdmin seeds eight schemes (Blue, the default, Gray, Ocean, Forest, Plum, Sunset, Graphite and Gold) the first time its schemes are read. They are ordinary records from then on, and a theme is seeded once: deleting all of its schemes doesn't bring them back.
+TheAdmin seeds eight schemes (Gray, the default, which keeps the look of the previous TheAdmin, Blue, Ocean, Forest, Plum, Sunset, Graphite and Gold) the first time its schemes are read. They are ordinary records from then on, and a theme is seeded once: deleting all of its schemes doesn't bring them back.
 
 Schemes are exported with the `ThemeSchemes` deployment step and imported with the `ThemeSchemes` recipe step. Each entry names its theme (`ThemeId`) and its id (`ItemId`); an entry whose `ItemId` matches a scheme of that theme replaces it. The optional `Defaults` object maps a theme id to the id of its default scheme. Entries of a theme that doesn't support schemes, or isn't enabled, are skipped with an error.
 
@@ -256,7 +256,7 @@ services.AddThemeSchemes(TheAdminConstants.ThemeId, options =>
 {
     options.AttributeName = TheAdminSchemes.AttributeName; // data-ta-scheme
     options.TokenPrefix = TheAdminSchemes.TokenPrefix; // ta
-    options.DefaultSchemeId = TheAdminSchemes.DefaultId; // blue
+    options.DefaultSchemeId = TheAdminSchemes.DefaultId; // gray
     options.Defaults = [.. TheAdminSchemes.CreateDefaults()];
     options.AddTokens<TheAdminSchemeTokens>();
 

@@ -17,7 +17,7 @@ public sealed class ThemeSchemesIntegrationTests
         var themes = await GetPageAsync(context, "Admin/Themes");
 
         // The admin page is rendered in the site's default scheme of TheAdmin, with the theme's schemes stylesheet.
-        Assert.Contains("data-ta-scheme=\"blue\"", themes, StringComparison.Ordinal);
+        Assert.Contains("data-ta-scheme=\"gray\"", themes, StringComparison.Ordinal);
         // Versioned by a short hash of the stylesheet.
         Assert.Matches(@"/Themes/schemes/TheAdmin\.css\?v=[0-9a-f]{16}""", themes);
 
@@ -29,9 +29,9 @@ public sealed class ThemeSchemesIntegrationTests
 
         Assert.Contains("The Admin Theme schemes", index, StringComparison.Ordinal);
         Assert.Contains("/Admin/Themes/Schemes/TheAdmin/Edit/gold\"", index, StringComparison.Ordinal);
-        Assert.Contains("/Admin/Themes/Schemes/TheAdmin/SetDefault/gray\"", index, StringComparison.Ordinal);
-        Assert.DoesNotContain("/Admin/Themes/Schemes/TheAdmin/SetDefault/blue\"", index, StringComparison.Ordinal);
-        Assert.DoesNotContain("/Admin/Themes/Schemes/TheAdmin/Delete/blue\"", index, StringComparison.Ordinal);
+        Assert.Contains("/Admin/Themes/Schemes/TheAdmin/SetDefault/blue\"", index, StringComparison.Ordinal);
+        Assert.DoesNotContain("/Admin/Themes/Schemes/TheAdmin/SetDefault/gray\"", index, StringComparison.Ordinal);
+        Assert.DoesNotContain("/Admin/Themes/Schemes/TheAdmin/Delete/gray\"", index, StringComparison.Ordinal);
 
         var edit = await GetPageAsync(context, "Admin/Themes/Schemes/TheAdmin/Edit/gray");
 

@@ -11,7 +11,7 @@ using Match = System.Text.RegularExpressions.Match;
 namespace OrchardCore.Tests.Themes.TheAdmin;
 
 /// <summary>
-/// TheAdmin derives the color tokens of its fallback scheme (Blue) in Sass and those of every scheme record in C#
+/// TheAdmin derives the color tokens of its fallback scheme (Gray) in Sass and those of every scheme record in C#
 /// (the generated tokens of <see cref="ThemeSchemeStylesheet"/>, a few renamed, and <see cref="TheAdminSchemeTokens"/>),
 /// registered by its startup. These tests keep both derivations in step, check that whatever colors an admin picks the
 /// derived tokens meet WCAG 2.2 AA contrast, and cover the typography and shape tokens.
@@ -19,7 +19,7 @@ namespace OrchardCore.Tests.Themes.TheAdmin;
 public sealed class TheAdminSchemeTests
 {
     // The definitions the theme's schemes were tuned with; the seeded records must reproduce them exactly.
-    public static TheoryData<string> DefaultSchemes => ["blue", "gray", "ocean", "forest", "plum", "sunset", "graphite", "gold"];
+    public static TheoryData<string> DefaultSchemes => ["gray", "blue", "ocean", "forest", "plum", "sunset", "graphite", "gold"];
 
     private static readonly Dictionary<string, ThemeScheme> s_builtIn = new(StringComparer.Ordinal)
     {
@@ -51,14 +51,14 @@ public sealed class TheAdminSchemeTests
     private static readonly Regex s_colorRegex = new(@"#[0-9a-fA-F]{3,8}\b|rgba?\([^)]*\)", RegexOptions.Compiled);
     private static readonly Regex s_numberRegex = new(@"-?\d+(\.\d+)?", RegexOptions.Compiled);
 
-    // The stylesheet's fallback (Blue) is derived in Sass; every scheme record in C#. Both must agree.
+    // The stylesheet's fallback (Gray) is derived in Sass; every scheme record in C#. Both must agree.
     [Fact]
     public void CSharpDerivation_MatchesTheSassOne_InLightMode()
-        => AssertSameTokens("blue", ReadBlock(":root", mustContain: "--ta-primary:"), Light(s_builtIn["blue"]));
+        => AssertSameTokens("gray", ReadBlock(":root", mustContain: "--ta-primary:"), Light(s_builtIn["gray"]));
 
     [Fact]
     public void CSharpDerivation_MatchesTheSassOne_InDarkMode()
-        => AssertSameTokens("blue", ReadBlock(":root[data-bs-theme=dark]", mustContain: "--ta-link:"), Dark(s_builtIn["blue"]));
+        => AssertSameTokens("gray", ReadBlock(":root[data-bs-theme=dark]", mustContain: "--ta-link:"), Dark(s_builtIn["gray"]));
 
     [Theory]
     [MemberData(nameof(DefaultSchemes))]
@@ -80,8 +80,8 @@ public sealed class TheAdminSchemeTests
         Assert.All(defaults, scheme => Assert.True(ThemeSchemeStore.HasValidTypography(scheme), scheme.Id));
         Assert.Equal(defaults.Count, defaults.Select(scheme => scheme.Id).Distinct(StringComparer.Ordinal).Count());
         Assert.Equal(defaults.OrderBy(scheme => scheme.Position).Select(scheme => scheme.Id), defaults.Select(scheme => scheme.Id));
-        Assert.Equal("blue", TheAdminSchemes.DefaultId);
-        Assert.Equal(["blue", "gray"], defaults.Take(2).Select(scheme => scheme.Id));
+        Assert.Equal("gray", TheAdminSchemes.DefaultId);
+        Assert.Equal(["gray", "blue"], defaults.Take(2).Select(scheme => scheme.Id));
     }
 
     [Fact]
@@ -144,7 +144,7 @@ public sealed class TheAdminSchemeTests
         Assert.Equal("data-ta-scheme", options.AttributeName);
         Assert.Equal(TheAdminSchemes.AttributeName, options.AttributeName);
         Assert.Equal("ta", options.TokenPrefix);
-        Assert.Equal("blue", options.DefaultSchemeId);
+        Assert.Equal("gray", options.DefaultSchemeId);
         Assert.Equal("[data-bs-theme=\"dark\"]", options.DarkModeSelector);
         Assert.Equal(TheAdminSchemes.CreateDefaults().Select(scheme => scheme.Id), options.Defaults.Select(scheme => scheme.Id));
         Assert.Contains(options.Defaults, scheme => scheme.Id == options.DefaultSchemeId);
@@ -159,7 +159,7 @@ public sealed class TheAdminSchemeTests
         => Assert.Empty(Build([new ThemeScheme { Id = "custom-a", Name = "A", Primary = "blue", Deep = "#144c71", Ink = "#081b26", Accent = "#5aa4ef" }]));
 
     [Fact]
-    public async Task Store_SeedsTheDefaultsOfTheTheme_AndBlueIsTheSiteDefault()
+    public async Task Store_SeedsTheDefaultsOfTheTheme_AndGrayIsTheSiteDefault()
     {
         var services = CreateServices();
         services.AddSingleton<IDocumentManager<ThemeSchemesDocument>>(new InMemoryThemeSchemesDocumentManager());
@@ -171,8 +171,8 @@ public sealed class TheAdminSchemeTests
 
         var schemes = await store.ListAsync(TheAdminConstants.ThemeId);
 
-        Assert.Equal(["blue", "gray", "ocean", "forest", "plum", "sunset", "graphite", "gold"], schemes.Select(scheme => scheme.Id));
-        Assert.Equal("blue", await store.GetDefaultIdAsync(TheAdminConstants.ThemeId));
+        Assert.Equal(["gray", "blue", "ocean", "forest", "plum", "sunset", "graphite", "gold"], schemes.Select(scheme => scheme.Id));
+        Assert.Equal("gray", await store.GetDefaultIdAsync(TheAdminConstants.ThemeId));
 
         var (css, _) = await store.GetStylesheetAsync(TheAdminConstants.ThemeId);
 
