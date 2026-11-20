@@ -5,6 +5,7 @@ using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Theming;
+using OrchardCore.DisplayManagement.Zones;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Localization;
 using OrchardCore.Telemetry;
@@ -90,6 +91,38 @@ public class DefaultDisplayManagerTests
             Value = shape,
             ServiceProvider = _serviceProvider,
         };
+    }
+
+    [Fact]
+    public async Task ResetZones_RenderedLayout_DiscardsCachedOutput()
+    {
+        var displayManager = _serviceProvider.GetRequiredService<IHtmlDisplay>();
+        var layout = new ZoneHolding(() => ValueTask.FromResult<IShape>(new Shape()));
+        layout.Metadata.Type = "ResettableLayout";
+        var descriptor = new ShapeDescriptor { ShapeType = "ResettableLayout" };
+        descriptor.Bindings["ResettableLayout"] = new ShapeBinding
+        {
+            BindingName = "ResettableLayout",
+            BindingAsync = context => Task.FromResult((IHtmlContent)((IZoneHolding)context.Value).Zones["Content"]),
+        };
+        AddShapeDescriptor(descriptor);
+        layout.Zones["Content"] = (IShape)PositionWrapper.TryWrap(new HtmlString("original"), "");
+        var original = await displayManager.ExecuteAsync(CreateDisplayContext(layout));
+        Assert.Equal("original", ToHtml(original));
+        Assert.NotNull(layout.Metadata.ChildContent);
+
+        layout.ResetZones();
+        layout.Zones["Content"] = (IShape)PositionWrapper.TryWrap(new HtmlString("error"), "");
+        var recovered = await displayManager.ExecuteAsync(CreateDisplayContext(layout));
+
+        Assert.Equal("error", ToHtml(recovered));
+
+        static string ToHtml(IHtmlContent content)
+        {
+            using var writer = new StringWriter();
+            content.WriteTo(writer, HtmlEncoder.Default);
+            return writer.ToString();
+        }
     }
 
     [Fact]

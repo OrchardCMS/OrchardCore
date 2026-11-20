@@ -102,6 +102,12 @@ Properties can be passed to a shape by adding attributes to the shape tag helper
 
 This is the same as `<shape type="MyShape" prop-foo="1" prop-bar="a" prop-content="@someHtmlContentVariable" />` where you'd have to construct `someHtmlContentVariable` separately. Of course, you can mix and match the different formats, for example, to only use `<add-property>` when you want to pass HTML content as property.
 
+### Layout recovery during error handling
+
+If adding the view body or rendering the zones or the layout fails in `ThemeLayout`, the layout's zones and cached output are cleared and the original exception is rethrown. An error handler can then render with the same layout without reusing the failed body, partially rendered zones, or widgets. The layout shape, its metadata and alternates, and its non-shape properties are kept, while every `IShape`-valued property is treated as a zone and removed. Other scoped services, such as the page title builder, keep their state.
+
+Failures before `ThemeLayout` starts, failures while writing the rendered output, and successful request re-executions don't reset the layout. Custom rendering code can call `IZoneHolding.ResetZones()` to discard a shape's zones, and must then retrieve them again through `Zones`, as zone shapes retrieved before the reset are detached.
+
 ### Shape debug information
 
 You can instruct Orchard Core to write HTML comments around rendered shapes. This makes it easier to determine which Razor or Liquid template produced a specific fragment in the final page output.

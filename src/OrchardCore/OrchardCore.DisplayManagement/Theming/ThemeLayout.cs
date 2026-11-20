@@ -21,39 +21,56 @@ public class ThemeLayout : Razor.RazorPage<dynamic>
 
         if (ThemeLayout != null)
         {
-            // Then is added to the Content zone of the Layout shape.
-            await ThemeLayout.Zones["Content"].AddAsync(body);
-
-            // Pre-render all shapes and replace the zone content with it.
-            ThemeLayout.Zones["Content"] = PositionWrapper.TryWrap(await DisplayAsync(ThemeLayout.Zones["Content"]), "") as IShape;
-
-            // Render each layout zone.
-            foreach (var zone in ThemeLayout.Properties.ToArray())
+            IHtmlContent content;
+            try
             {
-                if (zone.Value is IShape shape)
-                {
-                    // Check if the shape is null or empty.
-                    if (shape.IsNullOrEmpty())
-                    {
-                        continue;
-                    }
-
-                    // Check if the shape is pre-rendered.
-                    if (shape is IHtmlContent)
-                    {
-                        continue;
-                    }
-
-                    ThemeLayout.Zones[zone.Key] = PositionWrapper.TryWrap(await DisplayAsync(shape), "") as IShape;
-                }
+                content = await RenderThemeLayoutAsync(body);
+            }
+            catch
+            {
+                // Let an error handler render with the same layout, without the failed body and zones.
+                ThemeLayout.ResetZones();
+                throw;
             }
 
             // Finally we render the Layout Shape's HTML to the page's output.
-            Write(await DisplayAsync(ThemeLayout));
+            Write(content);
         }
         else
         {
             Write(body);
         }
+    }
+
+    private async Task<IHtmlContent> RenderThemeLayoutAsync(IHtmlContent body)
+    {
+        // Then is added to the Content zone of the Layout shape.
+        await ThemeLayout.Zones["Content"].AddAsync(body);
+
+        // Pre-render all shapes and replace the zone content with it.
+        ThemeLayout.Zones["Content"] = PositionWrapper.TryWrap(await DisplayAsync(ThemeLayout.Zones["Content"]), "") as IShape;
+
+        // Render each layout zone.
+        foreach (var zone in ThemeLayout.Properties.ToArray())
+        {
+            if (zone.Value is IShape shape)
+            {
+                // Check if the shape is null or empty.
+                if (shape.IsNullOrEmpty())
+                {
+                    continue;
+                }
+
+                // Check if the shape is pre-rendered.
+                if (shape is IHtmlContent)
+                {
+                    continue;
+                }
+
+                ThemeLayout.Zones[zone.Key] = PositionWrapper.TryWrap(await DisplayAsync(shape), "") as IShape;
+            }
+        }
+
+        return await DisplayAsync(ThemeLayout);
     }
 }
