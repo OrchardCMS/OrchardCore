@@ -24,3 +24,19 @@
 .multiselect__spinner {
     background-color: var(--bs-body-bg) !important;
 }
+
+.multiselect__tag,
+.multiselect__option--highlight,
+.multiselect__option--highlight::after {
+    background-color: var(--bs-success) !important;
+}
+
+.multiselect__tag-icon:hover,
+.multiselect__tag-icon:focus {
+    background-color: var(--bs-success-text-emphasis) !important;
+}
+
+.multiselect__option--selected.multiselect__option--highlight,
+.multiselect__option--selected.multiselect__option--highlight::after {
+    background-color: var(--bs-danger) !important;
+}

@@ -152,3 +152,10 @@ using any of the other recipes.
 You can create your own recipes for deployment of your Orchard Core websites.
 
 See the [Recipes](../reference/modules/Recipes/README.md) document for more information.
+
+## Video
+
+This video compares the starter recipes you can choose from when you set up a site.
+
+<!-- video:starter-recipes -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/VtnARneJ6GY" title="Starter Recipes: Choose How Your Site Starts" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

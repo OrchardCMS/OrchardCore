@@ -19,3 +19,10 @@ A background task (`Content Items Archiver`) runs every minute. It finds publish
     Archiving here means the item is **unpublished** — it is removed from the published frontend while its latest draft is preserved.
 
 See also [Publish Later](../PublishLater/README.md) for scheduling the opposite operation.
+
+## Video
+
+This video schedules content with Publish Later and Archive Later.
+
+<!-- video:publish-later-archive-later -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/_s-RUUfGr_o" title="Publish Later and Archive Later: Schedule Your Content" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

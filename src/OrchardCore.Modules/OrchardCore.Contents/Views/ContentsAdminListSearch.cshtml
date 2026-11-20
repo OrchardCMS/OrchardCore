@@ -13,7 +13,7 @@
     }
 }
 <div class="input-group">
-    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" id="filter-dropdown" aria-haspopup="true" aria-expanded="false">
+    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" id="filter-dropdown" aria-label="@T["Filters"]" aria-haspopup="true" aria-expanded="false">
         <i class="fa-solid fa-filter" title="@T["Filters"]" aria-hidden="true"></i>
     </button>
     <ul class="@string.Join(' ', dropdownClassList)" aria-labelledby="filter-dropdown">
@@ -26,7 +26,7 @@
 
     <label asp-for="SearchText" class="visually-hidden">@T["Search"]</label>
     <input asp-for="SearchText" class="form-control" placeholder="@T["Search"]" inputmode="search" type="search" autofocus />
-    <button type="submit" name="submit.Filter" class="btn btn-outline-secondary" title="@T["Search"]" aria-label="@T["Search"]"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></button>
+    <button type="submit" name="submit.Filter" value="submit.Filter" class="btn btn-outline-secondary" title="@T["Search"]" aria-label="@T["Search"]"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></button>
 </div>
 
 <zone name="Footer">

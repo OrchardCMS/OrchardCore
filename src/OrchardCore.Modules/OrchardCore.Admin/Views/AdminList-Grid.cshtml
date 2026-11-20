@@ -156,11 +156,12 @@
     }
 
     // One track per column: "auto" hugs the widest cell of the column, a width is used as is, and the columns
-    // without a width share the remaining space.
+    // without a width share the remaining space, down to a floor that keeps a word of a title whole when the columns
+    // hugging their content take most of the row.
     static string GridTrack(AdminListColumn column)
         => column.HasAutoWidth
             ? "max-content"
-            : string.IsNullOrEmpty(column.Width) ? "minmax(0, 1fr)" : column.Width;
+            : string.IsNullOrEmpty(column.Width) ? "minmax(8rem, 1fr)" : column.Width;
 }
 
 @{

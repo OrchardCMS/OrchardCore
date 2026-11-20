@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
@@ -269,6 +270,11 @@ public sealed class SaveContentItemsStep : DataPipelineStepType<SaveContentItems
         {
             column.Write(item, index < row.Length ? row[index] : null);
         }
+
+        // The values are written to the JSON of the item, but the content manager reads the parts and fields it
+        // already created, such as the ones of a new item, when it validates them. Merging nothing drops them, so
+        // that they are read again with the new values, such as by the check of a required field.
+        item.Merge(new JsonObject());
     }
 
     private List<string> Validate(SaveContentItemsStepSettings settings, IReadOnlyList<DataField> input, List<ContentDataColumn> columns)

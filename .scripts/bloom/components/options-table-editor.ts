@@ -398,8 +398,8 @@ const jsonModalComponent = {
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-primary btn-submit" v-on:click="closeModal()">{{ t[okKey] }}</button>
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ t[cancelKey] }}</button>
+                        <button type="button" class="btn btn-primary btn-submit" v-on:click="closeModal()">{{ t[okKey] }}</button>
                     </div>
                 </div>
             </div>

@@ -1,0 +1,6 @@
+@using OrchardCore.ContentManagement
+@using OrchardCore.DisplayManagement.Views
+@model ShapeViewModel<ContentItem>
+
+@* An item of the actions menu of a content item: no <li>, the menu renders it. *@
+<a asp-action="Index" asp-controller="TemplateInspector" asp-route-area="OrchardCore.Templates" asp-route-contentItemId="@Model.Value.ContentItemId" class="dropdown-item btn-sm">@T["Inspect templates"]</a>

@@ -50,6 +50,11 @@ let loadToken = 0;
 // whose fields it lists): the form is loaded again once the change is applied.
 let reloadWhenApplied = false;
 
+// Whether the form shows the errors of an invalid apply, and the number of edits, so that an apply knows whether the
+// form changed while it was posted.
+let showsErrors = false;
+let edits = 0;
+
 // The Apply button turns into a green "Saved!" for a moment, so the user sees the changes were kept.
 const showSaved = () => {
     clearTimeout(savedTimer);
@@ -86,6 +91,7 @@ const reload = async () => {
 
         if (token === loadToken) {
             await render(fragment);
+            showsErrors = false;
             emit("loaded");
         }
     } catch (error) {
@@ -111,6 +117,7 @@ const doApply = async () => {
     syncing = false;
 
     const data = new FormData(element);
+    const editsWhenPosted = edits;
     applying.value = true;
 
     try {
@@ -119,6 +126,7 @@ const doApply = async () => {
         if (!result.valid) {
             invalid.value = true;
             await render(result);
+            showsErrors = true;
 
             return false;
         }
@@ -127,8 +135,10 @@ const doApply = async () => {
         dirty.value = false;
         emit("applied", result);
 
-        // The server asks for the form again when the applied settings change it (EditorApplied.reloadEditor).
-        if (reloadWhenApplied || result.reloadEditor) {
+        // The server asks for the form again when the applied settings change it (EditorApplied.reloadEditor). A form
+        // rendered by an invalid apply still shows its errors, which the valid one doesn't replace: it is loaded again,
+        // unless it changed since it was posted, so that the new edits are kept until the next apply.
+        if (reloadWhenApplied || result.reloadEditor || (showsErrors && edits === editsWhenPosted)) {
             reloadWhenApplied = false;
             await reload();
         }
@@ -169,6 +179,7 @@ const onChange = (event: Event) => {
         reloadWhenApplied = true;
     }
 
+    edits++;
     dirty.value = true;
     saved.value = false;
     clearTimeout(timer);
@@ -176,6 +187,7 @@ const onChange = (event: Event) => {
 };
 
 const onInput = () => {
+    edits++;
     dirty.value = true;
     saved.value = false;
 };

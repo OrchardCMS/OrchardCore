@@ -225,10 +225,10 @@ const selectOptionsModal = {
                             </div>
                         </div>
                         <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" v-on:click="closeModal(false)">{{ t.Cancel }}</button>
                             <button type="button" class="btn btn-primary btn-submit"
                             :disabled="!isValid"
                             v-on:click="closeModal(true)">{{ t.Ok }}</button>
-                            <button type="button" class="btn btn-secondary" v-on:click="closeModal(false)">{{ t.Cancel }}</button>
                         </div>
                     </div>
                 </div>

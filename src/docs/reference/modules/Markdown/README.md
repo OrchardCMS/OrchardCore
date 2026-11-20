@@ -223,3 +223,15 @@ services
             pipeline.UseEmojiAndSmiley();
         }));
 ```
+
+## Videos
+
+This video writes the body of a content item with the Html and Markdown editors.
+
+<!-- video:html-and-markdown-editors -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/3clJc4yscS0" title="Html and Markdown: Write the Body of Your Content" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video covers the link, rich text, Markdown and YouTube fields.
+
+<!-- video:content-fields-links-html-youtube -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/t495H9BAZVA" title="Content Fields: Links, Rich Text, Markdown and YouTube Videos" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

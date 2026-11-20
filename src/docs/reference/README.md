@@ -157,3 +157,10 @@ Here's a categorized overview of all built-in Orchard Core features at a glance.
 - [Elasticsearch](modules/Elasticsearch/README.md)
 - [Queries](modules/Queries/README.md)
 - [Indexing](modules/Indexing/README.md)
+
+## Video
+
+This video explains what Orchard Core is and what you can build with it.
+
+<!-- video:orchard-core-overview -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/2LDUXKVdbrU" title="Orchard Core: What It Is and What You Can Build" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
