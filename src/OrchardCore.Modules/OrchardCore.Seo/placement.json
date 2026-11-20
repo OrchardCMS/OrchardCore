@@ -27,16 +27,58 @@
       "differentiator": "SeoMetaPart-TwitterImage"
     },
     {
-      "place": "Parts:20%Social;1",
+      "place": "Parts:1%General;10",
       "differentiator": "SocialMetaSettings-DefaultSocialImage"
     },
     {
-      "place": "Parts:25%Social;2",
+      "place": "Parts:8%Open Graph;20",
       "differentiator": "SocialMetaSettings-OpenGraphImage"
     },
     {
-      "place": "Parts:30%Social;3",
+      "place": "Parts:13%Twitter;30",
       "differentiator": "SocialMetaSettings-TwitterImage"
+    }
+  ],
+  "TextField_Edit": [
+    {
+      "place": "Parts:0%General;10",
+      "differentiator": "SocialMetaSettings-DefaultMetaDescription"
+    },
+    {
+      "place": "Parts:4%Open Graph;20",
+      "differentiator": "SocialMetaSettings-OpenGraphType"
+    },
+    {
+      "place": "Parts:5%Open Graph;20",
+      "differentiator": "SocialMetaSettings-DefaultOpenGraphDescription"
+    },
+    {
+      "place": "Parts:6%Open Graph;20",
+      "differentiator": "SocialMetaSettings-OpenGraphSiteName"
+    },
+    {
+      "place": "Parts:7%Open Graph;20",
+      "differentiator": "SocialMetaSettings-OpenGraphAppId"
+    },
+    {
+      "place": "Parts:9%Twitter;30",
+      "differentiator": "SocialMetaSettings-TwitterCard"
+    },
+    {
+      "place": "Parts:10%Twitter;30",
+      "differentiator": "SocialMetaSettings-DefaultTwitterDescription"
+    },
+    {
+      "place": "Parts:11%Twitter;30",
+      "differentiator": "SocialMetaSettings-TwitterCreator"
+    },
+    {
+      "place": "Parts:12%Twitter;30",
+      "differentiator": "SocialMetaSettings-TwitterSite"
+    },
+    {
+      "place": "Parts:14%Google Schema;40",
+      "differentiator": "SocialMetaSettings-GoogleSchema"
     }
   ]
 }

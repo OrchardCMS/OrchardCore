@@ -6,6 +6,16 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-OrchardCore-Catalog-Schema: 1\n"
 
+#: Analytics/Drivers/GoogleAnalyticsSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Google.Analytics.Drivers.GoogleAnalyticsSettingsDisplayDriver"
+msgid "Tracking"
+msgstr ""
+
+#: Authentication/Drivers/GoogleAuthenticationSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Google.Authentication.Drivers.GoogleAuthenticationSettingsDisplayDriver"
+msgid "Application"
+msgstr ""
+
 #: Authentication/Drivers/GoogleSecretMigrationDisplayDriver.cs
 msgctxt "OrchardCore.Google.Authentication.Drivers.GoogleSecretMigrationDisplayDriver"
 msgid "Client secret"
@@ -126,9 +136,9 @@ msgctxt "OrchardCore.Google.Permissions"
 msgid "Manage Google Tag Manager settings"
 msgstr ""
 
-#: Views/GoogleAnalyticsSettings.Edit.cshtml
-msgctxt "OrchardCore.Google.Views.GoogleAnalyticsSettings.Edit"
-msgid "Google Analytics Settings"
+#: TagManager/Drivers/GoogleTagManagerSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Google.TagManager.Drivers.GoogleTagManagerSettingsDisplayDriver"
+msgid "Container"
 msgstr ""
 
 #: Views/GoogleAnalyticsSettings.Edit.cshtml
@@ -159,11 +169,6 @@ msgstr ""
 #: Views/GoogleAuthenticationSettings.Edit.cshtml
 msgctxt "OrchardCore.Google.Views.GoogleAuthenticationSettings.Edit"
 msgid "Client ID"
-msgstr ""
-
-#: Views/GoogleAuthenticationSettings.Edit.cshtml
-msgctxt "OrchardCore.Google.Views.GoogleAuthenticationSettings.Edit"
-msgid "Google Authentication Settings"
 msgstr ""
 
 #: Views/GoogleAuthenticationSettings.Edit.cshtml
@@ -204,11 +209,6 @@ msgstr ""
 #: Views/GoogleTagManagerSettings.Edit.cshtml
 msgctxt "OrchardCore.Google.Views.GoogleTagManagerSettings.Edit"
 msgid "Container ID"
-msgstr ""
-
-#: Views/GoogleTagManagerSettings.Edit.cshtml
-msgctxt "OrchardCore.Google.Views.GoogleTagManagerSettings.Edit"
-msgid "Google Tag Manager Settings"
 msgstr ""
 
 #: Views/GoogleTagManagerSettings.Edit.cshtml

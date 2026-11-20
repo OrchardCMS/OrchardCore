@@ -1,0 +1,14 @@
+@model OrchardCore.DisplayManagement.ViewModels.GroupViewModel
+@using OrchardCore.DisplayManagement
+
+@*
+    The cards of a content zone, one after the other. The cards of the admin forms are always expanded, so the
+    container is not an accordion.
+*@
+
+<div class="ocat-cards">
+    @foreach (var card in Model.Items.OfType<IShape>())
+    {
+        @await DisplayAsync(card)
+    }
+</div>

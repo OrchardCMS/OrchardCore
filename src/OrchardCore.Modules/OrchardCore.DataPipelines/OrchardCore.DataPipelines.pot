@@ -142,6 +142,11 @@ msgctxt "OrchardCore.DataPipelines.DataPipelinesLocalizationSources"
 msgid "Data Pipelines"
 msgstr ""
 
+#: Deployment/DataPipelinesDeploymentStepDriver.cs
+msgctxt "OrchardCore.DataPipelines.Deployment.DataPipelinesDeploymentStepDriver"
+msgid "Data pipelines"
+msgstr ""
+
 #: Drivers/TransformStepDisplayDrivers.cs
 msgctxt "OrchardCore.DataPipelines.Drivers.ConvertTimeZoneStepDisplayDriver"
 msgid "Choose a time zone."
@@ -150,6 +155,11 @@ msgstr ""
 #: Drivers/SourceAndFileStepDisplayDrivers.cs
 msgctxt "OrchardCore.DataPipelines.Drivers.CreateFileStepDisplayDriver"
 msgid "Choose the format of the file."
+msgstr ""
+
+#: Drivers/DataPipelineCreateDisplayDriver.cs
+msgctxt "OrchardCore.DataPipelines.Drivers.DataPipelineCreateDisplayDriver"
+msgid "General"
 msgstr ""
 
 #: Drivers/SourceAndFileStepDisplayDrivers.cs
@@ -746,16 +756,6 @@ msgstr ""
 #: Views/Admin/Create.cshtml
 msgctxt "OrchardCore.DataPipelines.Views.Admin.Create"
 msgid "Data Pipelines"
-msgstr ""
-
-#: Views/Admin/Create.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.Admin.Create"
-msgid "Name"
-msgstr ""
-
-#: Views/Admin/Create.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.Admin.Create"
-msgid "You design the pipeline next: add a source to read data from, then the steps that transform and deliver it."
 msgstr ""
 
 #. Format arguments: {0}: count
@@ -1415,6 +1415,16 @@ msgstr ""
 #: Views/CreateFile.Fields.Edit.cshtml
 msgctxt "OrchardCore.DataPipelines.Views.CreateFile.Fields.Edit"
 msgid "Worksheet names"
+msgstr ""
+
+#: Views/DataPipelineCreateGeneral.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataPipelineCreateGeneral.Edit"
+msgid "Name"
+msgstr ""
+
+#: Views/DataPipelineCreateGeneral.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataPipelineCreateGeneral.Edit"
+msgid "You design the pipeline next: add a source to read data from, then the steps that transform and deliver it."
 msgstr ""
 
 #: Views/DataPipelineDesigner/DataPipelineDesignerSettings.cshtml

@@ -13,6 +13,11 @@ msgctxt "OrchardCore.ContentPreview.Settings.PreviewPartSettingsDisplayDriver"
 msgid "Pattern doesn't contain a valid Liquid expression. Details: {0}"
 msgstr ""
 
+#: Settings/PreviewPartSettingsDisplayDriver.cs
+msgctxt "OrchardCore.ContentPreview.Settings.PreviewPartSettingsDisplayDriver"
+msgid "Settings"
+msgstr ""
+
 #: Views/ContentPreview.Button.cshtml
 msgctxt "OrchardCore.ContentPreview.Views.ContentPreview.Button"
 msgid "Preview"

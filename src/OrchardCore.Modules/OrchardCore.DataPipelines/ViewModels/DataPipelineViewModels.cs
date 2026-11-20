@@ -1,6 +1,8 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using OrchardCore.DataPipelines.Models;
 using OrchardCore.DataPipelines.SharedLinks;
+using OrchardCore.DisplayManagement;
 
 namespace OrchardCore.DataPipelines.ViewModels;
 
@@ -26,13 +28,19 @@ public sealed class DataPipelineEntryViewModel
     public DataPipelineRun LastRun { get; set; }
 }
 
-public sealed class DataPipelineCreateViewModel
+public class DataPipelineCreateViewModel
 {
     [Required]
     [StringLength(255)]
     public string Name { get; set; }
 
     public string Description { get; set; }
+
+    /// <summary>
+    /// Gets or sets the editor of the pipeline to add, built by the display drivers of <see cref="DataPipelineCreateViewModel"/>.
+    /// </summary>
+    [BindNever]
+    public IShape Editor { get; set; }
 }
 
 public sealed class DataPipelineSettingsViewModel

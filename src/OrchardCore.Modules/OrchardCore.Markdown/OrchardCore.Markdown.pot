@@ -36,9 +36,29 @@ msgctxt "OrchardCore.Markdown.GraphQL.MarkdownFieldQueryObjectType"
 msgid "the markdown value"
 msgstr ""
 
+#: Settings/MarkdownBodyPartSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Markdown.Settings.MarkdownBodyPartSettingsDisplayDriver"
+msgid "Settings"
+msgstr ""
+
+#: Settings/MarkdownBodyPartWysiwygEditorSettingsDriver.cs
+msgctxt "OrchardCore.Markdown.Settings.MarkdownBodyPartWysiwygEditorSettingsDriver"
+msgid "Editor"
+msgstr ""
+
 #: Settings/MarkdownBodyPartWysiwygEditorSettingsDriver.cs
 msgctxt "OrchardCore.Markdown.Settings.MarkdownBodyPartWysiwygEditorSettingsDriver"
 msgid "The options are written in an incorrect format."
+msgstr ""
+
+#: Settings/MarkdownFieldSettingsDriver.cs
+msgctxt "OrchardCore.Markdown.Settings.MarkdownFieldSettingsDriver"
+msgid "Settings"
+msgstr ""
+
+#: Settings/MarkdownFieldWysiwygEditorSettingsDriver.cs
+msgctxt "OrchardCore.Markdown.Settings.MarkdownFieldWysiwygEditorSettingsDriver"
+msgid "Editor"
 msgstr ""
 
 #: Settings/MarkdownFieldWysiwygEditorSettingsDriver.cs

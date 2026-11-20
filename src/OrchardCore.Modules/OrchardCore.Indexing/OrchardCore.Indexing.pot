@@ -177,9 +177,34 @@ msgctxt "OrchardCore.Indexing.Deployments.IndexProfileDeploymentStepDisplayDrive
 msgid "At least one index profile is required."
 msgstr ""
 
+#: Deployments/IndexProfileDeploymentStepDisplayDriver.cs
+msgctxt "OrchardCore.Indexing.Deployments.IndexProfileDeploymentStepDisplayDriver"
+msgid "Index profiles"
+msgstr ""
+
+#: Deployments/RebuildIndexDeploymentStepDriver.cs
+msgctxt "OrchardCore.Indexing.Deployments.RebuildIndexDeploymentStepDriver"
+msgid "Indexes"
+msgstr ""
+
+#: Deployments/ResetIndexDeploymentStepDriver.cs
+msgctxt "OrchardCore.Indexing.Deployments.ResetIndexDeploymentStepDriver"
+msgid "Indexes"
+msgstr ""
+
 #: Drivers/ContentIndexProfileDisplayDriver.cs
 msgctxt "OrchardCore.Indexing.Drivers.ContentIndexProfileDisplayDriver"
 msgid "At least one content type must be selected."
+msgstr ""
+
+#: Drivers/ContentIndexProfileDisplayDriver.cs
+msgctxt "OrchardCore.Indexing.Drivers.ContentIndexProfileDisplayDriver"
+msgid "Indexed content"
+msgstr ""
+
+#: Drivers/IndexProfileDisplayDriver.cs
+msgctxt "OrchardCore.Indexing.Drivers.IndexProfileDisplayDriver"
+msgid "General"
 msgstr ""
 
 #: Drivers/IndexProfileDisplayDriver.cs

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.ViewModels;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -9,6 +10,13 @@ namespace OrchardCore.ContentFields.Settings;
 
 public sealed class HtmlFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<HtmlField>
 {
+    internal readonly IStringLocalizer S;
+
+    public HtmlFieldSettingsDriver(IStringLocalizer<HtmlFieldSettingsDriver> stringLocalizer)
+    {
+        S = stringLocalizer;
+    }
+
     public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
     {
         return Initialize<HtmlFieldSettingsViewModel>("HtmlFieldSettings_Edit", model =>
@@ -17,7 +25,7 @@ public sealed class HtmlFieldSettingsDriver : ContentPartFieldDefinitionDisplayD
 
             model.SanitizeHtml = settings.SanitizeHtml;
             model.Hint = settings.Hint;
-        }).Location("Content:20");
+        }).Location(l => l.Zone("Content", "20").Card(S["Settings"], "20"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)

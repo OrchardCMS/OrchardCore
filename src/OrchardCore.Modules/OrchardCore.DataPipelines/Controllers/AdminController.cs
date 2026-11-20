@@ -10,6 +10,7 @@ using OrchardCore.DataPipelines.Models;
 using OrchardCore.DataPipelines.Services;
 using OrchardCore.DataPipelines.ViewModels;
 using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
 using OrchardCore.Settings;
@@ -29,6 +30,8 @@ public sealed class AdminController : Controller
     private readonly IDataPipelineStepTypeManager _stepTypeManager;
     private readonly IAuthorizationService _authorizationService;
     private readonly IShapeFactory _shapeFactory;
+    private readonly IDisplayManager<DataPipelineCreateViewModel> _createDisplayManager;
+    private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly ISiteService _siteService;
     private readonly INotifier _notifier;
     private readonly IStringLocalizerFactory _localizerFactory;
@@ -42,6 +45,8 @@ public sealed class AdminController : Controller
         IDataPipelineStepTypeManager stepTypeManager,
         IAuthorizationService authorizationService,
         IShapeFactory shapeFactory,
+        IDisplayManager<DataPipelineCreateViewModel> createDisplayManager,
+        IUpdateModelAccessor updateModelAccessor,
         ISiteService siteService,
         INotifier notifier,
         IStringLocalizerFactory localizerFactory,
@@ -55,6 +60,8 @@ public sealed class AdminController : Controller
         _localizerFactory = localizerFactory;
         _authorizationService = authorizationService;
         _shapeFactory = shapeFactory;
+        _createDisplayManager = createDisplayManager;
+        _updateModelAccessor = updateModelAccessor;
         _siteService = siteService;
         _notifier = notifier;
         H = htmlLocalizer;
@@ -98,7 +105,11 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        return View(new DataPipelineCreateViewModel());
+        var model = new DataPipelineCreateViewModel();
+
+        model.Editor = await _createDisplayManager.BuildEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: true);
+
+        return View(model);
     }
 
     [HttpPost]
@@ -110,6 +121,8 @@ public sealed class AdminController : Controller
         {
             return Forbid();
         }
+
+        model.Editor = await _createDisplayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: true);
 
         if (!ModelState.IsValid || string.IsNullOrWhiteSpace(model.Name))
         {

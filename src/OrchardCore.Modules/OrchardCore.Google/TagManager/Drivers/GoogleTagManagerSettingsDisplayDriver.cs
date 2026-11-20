@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -14,12 +15,16 @@ public sealed class GoogleTagManagerSettingsDisplayDriver : SiteDisplayDriver<Go
     private readonly IAuthorizationService _authorizationService;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
+    internal readonly IStringLocalizer S;
+
     public GoogleTagManagerSettingsDisplayDriver(
         IAuthorizationService authorizationService,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        IStringLocalizer<GoogleTagManagerSettingsDisplayDriver> stringLocalizer)
     {
         _authorizationService = authorizationService;
         _httpContextAccessor = httpContextAccessor;
+        S = stringLocalizer;
     }
 
     protected override string SettingsGroupId
@@ -36,7 +41,7 @@ public sealed class GoogleTagManagerSettingsDisplayDriver : SiteDisplayDriver<Go
         return Initialize<GoogleTagManagerSettingsViewModel>("GoogleTagManagerSettings_Edit", model =>
         {
             model.ContainerID = settings.ContainerID;
-        }).Location("Content:5")
+        }).Location(l => l.Zone("Content", "5").Card(S["Container"], "10"))
         .OnGroup(SettingsGroupId);
     }
 

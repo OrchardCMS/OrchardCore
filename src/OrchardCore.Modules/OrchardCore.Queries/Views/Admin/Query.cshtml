@@ -5,8 +5,6 @@
 @inject IContentManager ContentManager
 
 @{
-  var matchAllQuery = OrchardCore.Queries.Sql.ViewModels.AdminQueryViewModel.MatchAllQueryBase64;
-
   string sqlmode = MediaTypeNamesExtended.Text.SQL;
 
   if (Model.FactoryName.Contains("Sqlite"))
@@ -38,23 +36,7 @@
 <div asp-validation-summary="ModelOnly"></div>
 
 <form asp-action="Query" method="post" class="no-multisubmit">
-    <div class="ocat-wrapper" asp-validation-class-for="DecodedQuery">
-        <label asp-for="DecodedQuery" class="ocat-label">@T["Template"]</label>
-        <div class="ocat-end">
-            <textarea asp-for="DecodedQuery" rows="12" class="form-control codemirror-query-editor" data-mode="@MediaTypeNamesExtended.Text.PostgreSQL"></textarea>
-            <span asp-validation-for="DecodedQuery"></span>
-            <span class="hint">@T["You can <a href=\"{0}\">click here</a> to query all content items.", Html.Raw(Url.Action("Query", "Admin", new { area = "OrchardCore.Queries", Query = matchAllQuery }))]</span>
-            <span class="hint">@T["The SQL query uses standard SQL92 syntax and is converted based on the actual database. Tables will be prefixed automatically."]</span>
-        </div>
-    </div>
-
-    <div class="ocat-wrapper">
-        <label asp-for="Parameters" class="ocat-label">@T["Parameters"]</label>
-        <div class="ocat-end">
-            <textarea asp-for="Parameters" rows="1" class="form-control codemirror-query-editor" data-options='{"json":true}'></textarea>
-            <span class="hint">@T["An optional Json object containing the parameter values for this query."]</span>
-        </div>
-    </div>
+    @await DisplayAsync(Model.Editor)
 
     <div class="action-bar-bottom">
         <button type="submit" class="btn btn-primary">@T["Query"]</button>

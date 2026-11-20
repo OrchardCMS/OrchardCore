@@ -1,1 +1,25 @@
+@using OrchardCore.DisplayManagement
+@using OrchardCore.DisplayManagement.Descriptors
+
+@*
+    The editor of a deployment step. The shapes placed in no card, such as the editor of a step whose driver doesn't
+    declare a card, are grouped in the "General" card, so that every deployment step editor is made of cards. A driver
+    places a shape in another card from its placement, e.g. .Location(l => l.Zone("Content", "2").Card(S["Metadata"], "20")).
+*@
+
+@{
+    if (Model.Content is IEnumerable<object> shapes)
+    {
+        var generalCard = new GroupingMetadata(T["General"].Value, "10");
+
+        foreach (var shape in shapes.OfType<IShape>())
+        {
+            if (!shape.Metadata.CardGrouping.HasValue)
+            {
+                shape.Metadata.CardGrouping = generalCard;
+            }
+        }
+    }
+}
+
 @await DisplayAsync(Model.Content)

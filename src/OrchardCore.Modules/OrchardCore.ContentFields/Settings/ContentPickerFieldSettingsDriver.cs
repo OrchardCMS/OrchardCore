@@ -37,7 +37,7 @@ public sealed class ContentPickerFieldSettingsDriver : ContentPartFieldDefinitio
             model.TitlePattern = settings.TitlePattern;
             model.Stereotypes = string.Join(',', settings.DisplayedStereotypes ?? []);
             model.Placeholder = settings.Placeholder;
-        }).Location("Content");
+        }).Location(l => l.Zone("Content").Card(S["Settings"], "20"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)

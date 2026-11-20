@@ -25,6 +25,8 @@ public sealed class AdminController : Controller
     private readonly ISitemapHelperService _sitemapService;
     private readonly IAuthorizationService _authorizationService;
     private readonly IDisplayManager<SitemapSource> _displayManager;
+    private readonly IDisplayManager<CreateSitemapViewModel> _createSitemapDisplayManager;
+    private readonly IDisplayManager<EditSitemapViewModel> _editSitemapDisplayManager;
     private readonly IEnumerable<ISitemapSourceFactory> _sourceFactories;
     private readonly ISitemapManager _sitemapManager;
     private readonly ISitemapIdGenerator _sitemapIdGenerator;
@@ -40,6 +42,8 @@ public sealed class AdminController : Controller
         ISitemapHelperService sitemapService,
         IAuthorizationService authorizationService,
         IDisplayManager<SitemapSource> displayManager,
+        IDisplayManager<CreateSitemapViewModel> createSitemapDisplayManager,
+        IDisplayManager<EditSitemapViewModel> editSitemapDisplayManager,
         IEnumerable<ISitemapSourceFactory> sourceFactories,
         ISitemapManager sitemapManager,
         ISitemapIdGenerator sitemapIdGenerator,
@@ -52,6 +56,8 @@ public sealed class AdminController : Controller
     {
         _sitemapService = sitemapService;
         _displayManager = displayManager;
+        _createSitemapDisplayManager = createSitemapDisplayManager;
+        _editSitemapDisplayManager = editSitemapDisplayManager;
         _sourceFactories = sourceFactories;
         _authorizationService = authorizationService;
         _sitemapManager = sitemapManager;
@@ -182,6 +188,8 @@ public sealed class AdminController : Controller
 
         var model = new CreateSitemapViewModel();
 
+        model.Editor = await _createSitemapDisplayManager.BuildEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: true);
+
         return View(model);
     }
 
@@ -192,6 +200,8 @@ public sealed class AdminController : Controller
         {
             return Forbid();
         }
+
+        model.Editor = await _createSitemapDisplayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: true);
 
         if (ModelState.IsValid)
         {
@@ -244,6 +254,8 @@ public sealed class AdminController : Controller
             Path = sitemap.Path,
         };
 
+        model.Editor = await _editSitemapDisplayManager.BuildEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: false);
+
         return View(model);
     }
 
@@ -261,6 +273,8 @@ public sealed class AdminController : Controller
         {
             return NotFound();
         }
+
+        model.Editor = await _editSitemapDisplayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: false);
 
         if (ModelState.IsValid)
         {

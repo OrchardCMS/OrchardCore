@@ -32,4 +32,16 @@ public class EditTypePartViewModel
     /// The display mode of the part.
     /// </summary>
     public string DisplayMode { get; set; }
+
+    /// <summary>
+    /// Gets or sets the names of the shapes rendering the options of the editor select, named <c>{PartName}_Option__{Editor}</c>.
+    /// </summary>
+    [BindNever]
+    public IEnumerable<string> EditorShapes { get; set; } = [];
+
+    /// <summary>
+    /// Gets or sets the names of the shapes rendering the options of the display mode select, named <c>{PartName}_DisplayOption__{DisplayMode}</c>.
+    /// </summary>
+    [BindNever]
+    public IEnumerable<string> DisplayShapes { get; set; } = [];
 }

@@ -23,6 +23,26 @@ msgstr ""
 
 #: Drivers/SecuritySettingsDisplayDriver.cs
 msgctxt "OrchardCore.Security.Drivers.SecuritySettingsDisplayDriver"
+msgid "Directives"
+msgstr ""
+
+#: Drivers/SecuritySettingsDisplayDriver.cs
+msgctxt "OrchardCore.Security.Drivers.SecuritySettingsDisplayDriver"
+msgid "Features"
+msgstr ""
+
+#: Drivers/SecuritySettingsDisplayDriver.cs
+msgctxt "OrchardCore.Security.Drivers.SecuritySettingsDisplayDriver"
+msgid "General"
+msgstr ""
+
+#: Drivers/SecuritySettingsDisplayDriver.cs
+msgctxt "OrchardCore.Security.Drivers.SecuritySettingsDisplayDriver"
+msgid "Policy"
+msgstr ""
+
+#: Drivers/SecuritySettingsDisplayDriver.cs
+msgctxt "OrchardCore.Security.Drivers.SecuritySettingsDisplayDriver"
 msgid "The current settings are coming from configuration sources, saving the settings will affect the AdminSettings not the configuration."
 msgstr ""
 
@@ -41,29 +61,89 @@ msgctxt "OrchardCore.Security.SecurityPermissions"
 msgid "Manage Security Headers Settings"
 msgstr ""
 
-#: Views/ContentSecurityPolicySettings.Edit.cshtml
-msgctxt "OrchardCore.Security.Views.ContentSecurityPolicySettings.Edit"
+#: Views/ContentSecurityPolicySettings-Directives.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.ContentSecurityPolicySettings-Directives.Edit"
 msgid "Allows administrators to control resources the user agent is allowed to load for a given page."
 msgstr ""
 
-#: Views/ContentSecurityPolicySettings.Edit.cshtml
-msgctxt "OrchardCore.Security.Views.ContentSecurityPolicySettings.Edit"
+#: Views/ContentSecurityPolicySettings-Directives.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.ContentSecurityPolicySettings-Directives.Edit"
 msgid "Base URI"
 msgstr ""
 
-#: Views/ContentSecurityPolicySettings.Edit.cshtml
-msgctxt "OrchardCore.Security.Views.ContentSecurityPolicySettings.Edit"
+#: Views/ContentSecurityPolicySettings-Directives.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.ContentSecurityPolicySettings-Directives.Edit"
 msgid "Child Source"
 msgstr ""
 
-#: Views/ContentSecurityPolicySettings.Edit.cshtml
-msgctxt "OrchardCore.Security.Views.ContentSecurityPolicySettings.Edit"
+#: Views/ContentSecurityPolicySettings-Directives.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.ContentSecurityPolicySettings-Directives.Edit"
 msgid "Connect Source"
 msgstr ""
 
-#: Views/ContentSecurityPolicySettings.Edit.cshtml
-msgctxt "OrchardCore.Security.Views.ContentSecurityPolicySettings.Edit"
+#: Views/ContentSecurityPolicySettings-Directives.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.ContentSecurityPolicySettings-Directives.Edit"
 msgid "Default Source"
+msgstr ""
+
+#: Views/ContentSecurityPolicySettings-Directives.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.ContentSecurityPolicySettings-Directives.Edit"
+msgid "Font Source"
+msgstr ""
+
+#: Views/ContentSecurityPolicySettings-Directives.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.ContentSecurityPolicySettings-Directives.Edit"
+msgid "Form Action"
+msgstr ""
+
+#: Views/ContentSecurityPolicySettings-Directives.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.ContentSecurityPolicySettings-Directives.Edit"
+msgid "Frame Ancestors"
+msgstr ""
+
+#: Views/ContentSecurityPolicySettings-Directives.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.ContentSecurityPolicySettings-Directives.Edit"
+msgid "Frame Source"
+msgstr ""
+
+#: Views/ContentSecurityPolicySettings-Directives.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.ContentSecurityPolicySettings-Directives.Edit"
+msgid "Image Source"
+msgstr ""
+
+#: Views/ContentSecurityPolicySettings-Directives.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.ContentSecurityPolicySettings-Directives.Edit"
+msgid "Manifest Source"
+msgstr ""
+
+#: Views/ContentSecurityPolicySettings-Directives.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.ContentSecurityPolicySettings-Directives.Edit"
+msgid "Media Source"
+msgstr ""
+
+#: Views/ContentSecurityPolicySettings-Directives.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.ContentSecurityPolicySettings-Directives.Edit"
+msgid "Name"
+msgstr ""
+
+#: Views/ContentSecurityPolicySettings-Directives.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.ContentSecurityPolicySettings-Directives.Edit"
+msgid "Object Source"
+msgstr ""
+
+#: Views/ContentSecurityPolicySettings-Directives.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.ContentSecurityPolicySettings-Directives.Edit"
+msgid "Sandbox"
+msgstr ""
+
+#: Views/ContentSecurityPolicySettings-Directives.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.ContentSecurityPolicySettings-Directives.Edit"
+msgid "Script Source"
+msgstr ""
+
+#: Views/ContentSecurityPolicySettings-Directives.Edit.cshtml
+msgctxt "OrchardCore.Security.Views.ContentSecurityPolicySettings-Directives.Edit"
+msgid "Style Source"
 msgstr ""
 
 #: Views/ContentSecurityPolicySettings.Edit.cshtml
@@ -74,66 +154,6 @@ msgstr ""
 #: Views/ContentSecurityPolicySettings.Edit.cshtml
 msgctxt "OrchardCore.Security.Views.ContentSecurityPolicySettings.Edit"
 msgid "Enables a sandbox for the requested resource similar to the iframe sandbox attribute."
-msgstr ""
-
-#: Views/ContentSecurityPolicySettings.Edit.cshtml
-msgctxt "OrchardCore.Security.Views.ContentSecurityPolicySettings.Edit"
-msgid "Font Source"
-msgstr ""
-
-#: Views/ContentSecurityPolicySettings.Edit.cshtml
-msgctxt "OrchardCore.Security.Views.ContentSecurityPolicySettings.Edit"
-msgid "Form Action"
-msgstr ""
-
-#: Views/ContentSecurityPolicySettings.Edit.cshtml
-msgctxt "OrchardCore.Security.Views.ContentSecurityPolicySettings.Edit"
-msgid "Frame Ancestors"
-msgstr ""
-
-#: Views/ContentSecurityPolicySettings.Edit.cshtml
-msgctxt "OrchardCore.Security.Views.ContentSecurityPolicySettings.Edit"
-msgid "Frame Source"
-msgstr ""
-
-#: Views/ContentSecurityPolicySettings.Edit.cshtml
-msgctxt "OrchardCore.Security.Views.ContentSecurityPolicySettings.Edit"
-msgid "Image Source"
-msgstr ""
-
-#: Views/ContentSecurityPolicySettings.Edit.cshtml
-msgctxt "OrchardCore.Security.Views.ContentSecurityPolicySettings.Edit"
-msgid "Manifest Source"
-msgstr ""
-
-#: Views/ContentSecurityPolicySettings.Edit.cshtml
-msgctxt "OrchardCore.Security.Views.ContentSecurityPolicySettings.Edit"
-msgid "Media Source"
-msgstr ""
-
-#: Views/ContentSecurityPolicySettings.Edit.cshtml
-msgctxt "OrchardCore.Security.Views.ContentSecurityPolicySettings.Edit"
-msgid "Name"
-msgstr ""
-
-#: Views/ContentSecurityPolicySettings.Edit.cshtml
-msgctxt "OrchardCore.Security.Views.ContentSecurityPolicySettings.Edit"
-msgid "Object Source"
-msgstr ""
-
-#: Views/ContentSecurityPolicySettings.Edit.cshtml
-msgctxt "OrchardCore.Security.Views.ContentSecurityPolicySettings.Edit"
-msgid "Sandbox"
-msgstr ""
-
-#: Views/ContentSecurityPolicySettings.Edit.cshtml
-msgctxt "OrchardCore.Security.Views.ContentSecurityPolicySettings.Edit"
-msgid "Script Source"
-msgstr ""
-
-#: Views/ContentSecurityPolicySettings.Edit.cshtml
-msgctxt "OrchardCore.Security.Views.ContentSecurityPolicySettings.Edit"
-msgid "Style Source"
 msgstr ""
 
 #: Views/ContentSecurityPolicySettings.Edit.cshtml

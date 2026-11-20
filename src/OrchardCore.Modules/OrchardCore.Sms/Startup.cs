@@ -9,6 +9,7 @@ using OrchardCore.Security.Permissions;
 using OrchardCore.Sms.Activities;
 using OrchardCore.Sms.Drivers;
 using OrchardCore.Sms.Services;
+using OrchardCore.Sms.ViewModels;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Options;
@@ -39,6 +40,9 @@ public sealed class Startup : StartupBase
         services.AddPermissionProvider<SmsPermissionProvider>();
         services.AddSiteDisplayDriver<SmsSettingsDisplayDriver>();
         services.AddNavigationProvider<AdminMenu>();
+
+        // Builds the editor of the test SMS page.
+        services.AddDisplayDriver<SmsTestViewModel, SmsTestDisplayDriver>();
     }
 }
 

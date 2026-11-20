@@ -15,8 +15,9 @@ public class SelectContentTypesViewComponent : ViewComponent
     }
 
     /// <summary>
-    /// Renders the content types to select, as checkboxes or, when <paramref name="displayMode"/> is
-    /// <c>Picker</c>, as a searchable list that shows the selected content types as tags.
+    /// Renders the content types to select as a searchable list that shows the selected content types as tags, with
+    /// select all. When <paramref name="displayMode"/> is <c>Picker</c>, its placeholder reads "Any content type",
+    /// for a filter where no selection means any content type; when it is <c>Checkboxes</c>, they are checkboxes.
     /// </summary>
     public async Task<IViewComponentResult> InvokeAsync(IEnumerable<string> selectedContentTypes, string htmlName, string stereotype, string displayMode)
     {
@@ -35,6 +36,11 @@ public class SelectContentTypesViewComponent : ViewComponent
             ContentTypeSelections = contentTypes,
         };
 
-        return displayMode == "Picker" ? View("Picker", model) : View(model);
+        return displayMode switch
+        {
+            "Picker" => View("Picker", model),
+            "Checkboxes" => View("Checkboxes", model),
+            _ => View(model),
+        };
     }
 }

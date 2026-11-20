@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.DisplayManagement;
 
 namespace OrchardCore.ContentTypes.ViewModels;
 
@@ -38,4 +39,10 @@ public class AddFieldViewModel
     /// </summary>
     [BindNever]
     public List<string> Fields { get; set; }
+
+    /// <summary>
+    /// Gets or sets the editor of the new field, built by the display drivers of <see cref="AddFieldViewModel"/>.
+    /// </summary>
+    [BindNever]
+    public IShape Editor { get; set; }
 }

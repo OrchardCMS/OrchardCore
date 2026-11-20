@@ -11,12 +11,16 @@ public sealed class PlaceholderAdminNodeDriver : DisplayDriver<MenuItem, Placeho
     private readonly IPermissionService _permissionService;
     private readonly IStringLocalizerFactory _stringLocalizerFactory;
 
+    internal readonly IStringLocalizer S;
+
     public PlaceholderAdminNodeDriver(
         IPermissionService permissionService,
-        IStringLocalizerFactory stringLocalizerFactory)
+        IStringLocalizerFactory stringLocalizerFactory,
+        IStringLocalizer<PlaceholderAdminNodeDriver> stringLocalizer)
     {
         _permissionService = permissionService;
         _stringLocalizerFactory = stringLocalizerFactory;
+        S = stringLocalizer;
     }
 
     public override Task<IDisplayResult> DisplayAsync(PlaceholderAdminNode treeNode, BuildDisplayContext context)
@@ -51,7 +55,7 @@ public sealed class PlaceholderAdminNodeDriver : DisplayDriver<MenuItem, Placeho
                     Name = p.Name,
                     DisplayText = stringLocalizerFactory.Localize(p.Description)?.Value,
                 }).ToArray();
-        }, treeNode, _permissionService, _stringLocalizerFactory).Location("Content");
+        }, treeNode, _permissionService, _stringLocalizerFactory).Location(l => l.Zone("Content").Card(S["Placeholder"], "10"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(PlaceholderAdminNode treeNode, UpdateEditorContext context)

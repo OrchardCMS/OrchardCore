@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.AuditTrail.Models;
 using OrchardCore.AuditTrail.Services;
 using OrchardCore.AuditTrail.Services.Models;
@@ -11,9 +12,14 @@ public sealed class AuditTrailEventDisplayDriver : DisplayDriver<AuditTrailEvent
 {
     private readonly IAuditTrailManager _auditTrailManager;
 
-    public AuditTrailEventDisplayDriver(IAuditTrailManager auditTrailManager)
+    internal readonly IStringLocalizer S;
+
+    public AuditTrailEventDisplayDriver(
+        IAuditTrailManager auditTrailManager,
+        IStringLocalizer<AuditTrailEventDisplayDriver> stringLocalizer)
     {
         _auditTrailManager = auditTrailManager;
+        S = stringLocalizer;
     }
 
     public override Task<IDisplayResult> DisplayAsync(AuditTrailEvent auditTrailEvent, BuildDisplayContext context)
@@ -34,7 +40,7 @@ public sealed class AuditTrailEventDisplayDriver : DisplayDriver<AuditTrailEvent
                 .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Actions:10")
                 .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "Actions:10"),
             Initialize<AuditTrailEventViewModel>("AuditTrailEventDetail_DetailAdmin", model => BuildViewModel(auditTrailEvent, model, descriptor))
-                .Location(OrchardCoreConstants.DisplayType.DetailAdmin, "Content:before")
+                .Location(OrchardCoreConstants.DisplayType.DetailAdmin, l => l.Zone("Content", "before").Card(S["Event Info"], "1"))
         );
     }
 
