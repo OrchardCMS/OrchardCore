@@ -102,3 +102,10 @@ The parts have no settings. See [Content types](content-types.md).
 
 !!! example "See it in practice"
     [Build a blog](../use-cases/build-a-blog.md) walks through this step by step.
+
+## Video
+
+This video schedules content with Publish Later and Archive Later.
+
+<!-- video:publish-later-archive-later -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/_s-RUUfGr_o" title="Publish Later and Archive Later: Schedule Your Content" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

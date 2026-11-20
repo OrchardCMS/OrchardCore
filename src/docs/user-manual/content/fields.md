@@ -245,3 +245,20 @@ Settings: **Required**, **Hint**.
 The **Content Fields Indexing (SQL)** feature (`OrchardCore.ContentFields.Indexing.SQL`) copies the values of text, Boolean, number, date, date and time, time, link, HTML, multi text and content picker fields into database tables. **Content Fields Indexing (SQL) - User Picker** (`OrchardCore.ContentFields.Indexing.SQL.UserPicker`) does the same for user picker fields.
 
 Nothing changes in the editor. These tables let developers and site builders write SQL queries that list or filter content by field values, for example all events after a date, in **Search > Queries**. See [Queries](../search/queries.md). Turn them on when a query needs them; your developer will tell you.
+
+## Videos
+
+This video covers the text, number, date and yes-or-no fields.
+
+<!-- video:content-fields-overview -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/mC1uIlK9bQs" title="Content Fields: Text, Numbers, Dates and Yes or No" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video covers the link, rich text, Markdown and YouTube fields.
+
+<!-- video:content-fields-links-html-youtube -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/t495H9BAZVA" title="Content Fields: Links, Rich Text, Markdown and YouTube Videos" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video shows how field editors and display modes give one field many faces.
+
+<!-- video:content-fields-editors -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/zujP0UIdETM" title="Field Editors and Display Modes: One Field, Many Faces" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

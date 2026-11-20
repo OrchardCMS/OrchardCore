@@ -83,3 +83,8 @@ The built-in display driver exposes the `PublishLaterPart_Edit` editor shape in 
 ## Video
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/E7UH8R14EUA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video schedules content with Publish Later and Archive Later.
+
+<!-- video:publish-later-archive-later -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/_s-RUUfGr_o" title="Publish Later and Archive Later: Schedule Your Content" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

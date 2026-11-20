@@ -82,6 +82,7 @@ First, clone the repository using the command `git clone https://github.com/Orch
 If you open the Orchard Core solution (`OrchardCore.sln` in the root) in Visual Studio or another IDE then you'll be able to browse the files in the `OrchardCore.Docs` project under the `docs` solution folder. If you use a Markdown editor (IDEs usually have built-in support for it, including Visual Studio) then you'll see all the Markdown formatting and embedded images in a WYSIWYG manner, and links will work too.
 
 - To embed YouTube videos, be sure to tick "Enable privacy-enhanced mode." when generating the embed code (this will create a code that references youtube-nocookie.com).
+- The videos of the [Orchard Core YouTube channel](https://www.youtube.com/@OrchardCore) are made in [OrchardCore.Videos](https://github.com/OrchardCMS/OrchardCore.Videos). A page shows one with a `<!-- video:<slug> -->` comment followed by its embed code; keep the comment, because it is how the embed code is updated when the video gets a new version.
 - If you rename or move a documentation page, external links to it will break. Please add a redirect from the old URL in the `mkdocs.yml` file, under the `redirect_maps` section.
 
 ## Adding docs for a new extension or topic

@@ -32,3 +32,13 @@ Orchard Core allows you to add Parts to a content type.
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/zp1veioH1CQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/Wjizx4XU2V4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
+This video explains how content types model the content of your site.
+
+<!-- video:content-types-overview -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/-wPGXu8ERwU" title="Content Types: Model the Content of Your Site" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video creates a reusable content part: a group of fields that several content types share.
+
+<!-- video:content-parts-reusable -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/W1Kl3Lekkvg" title="Content Parts: Create Reusable Groups of Fields" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
