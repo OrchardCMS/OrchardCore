@@ -117,3 +117,10 @@ You can use this manual to train the people who work on your site:
 2. Have them repeat each task on a test content item, or on a test site set up with the **Blog** recipe (see [Set up a site](getting-started/setting-up-a-site.md)).
 3. Walk them through the [use cases](use-cases/index.md) to show how the pieces fit together.
 4. Keep the [glossary](glossary.md) and [troubleshooting](troubleshooting.md) pages handy for the first weeks.
+
+## Video
+
+This video explains what Orchard Core is and what you can build with it.
+
+<!-- video:orchard-core-overview -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/2LDUXKVdbrU" title="Orchard Core: What It Is and What You Can Build" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

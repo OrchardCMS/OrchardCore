@@ -127,3 +127,10 @@ Which tags and attributes are allowed is set by your IT team, see the Technical 
 | **Enter the editor options, language is always set to `html` when saved.** | **Monaco editor** | The behavior of the code editor, in its configuration format. |
 
 For the parts and fields of content types in general, see [Content types](content-types.md).
+
+## Video
+
+This video writes the body of a content item with the Html and Markdown editors.
+
+<!-- video:html-and-markdown-editors -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/3clJc4yscS0" title="Html and Markdown: Write the Body of Your Content" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

@@ -827,3 +827,20 @@ The admin settings can be configured using the `Settings` recipe step:
 | `DisplayNewMenu`        | Boolean | Whether to display the 'New' menu in the admin navigation.        |
 | `DisplayTitlesInTopbar` | Boolean | Whether to display page titles in the top bar.                    |
 | `MenuBehavior`          | String  | How the sections of the admin menu open and close: `Focused` (default) or `Persistent`. See [Navigation menu behavior](#navigation-menu-behavior). |
+
+## Videos
+
+This video compares the starter recipes you can choose from when you set up a site.
+
+<!-- video:starter-recipes -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/VtnARneJ6GY" title="Starter Recipes: Choose How Your Site Starts" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video takes a tour of the admin: its menu, its search and its main screens.
+
+<!-- video:admin-tour -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/hQPLynQAPeY" title="The Admin: Find Your Way Around Orchard Core" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video shows the admin settings that tailor the admin for your editors.
+
+<!-- video:admin-settings -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/_87tZ98HO58" title="Admin Settings: Tailor the Admin for Your Editors" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

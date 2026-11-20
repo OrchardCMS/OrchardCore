@@ -137,3 +137,10 @@ The documentation lives in the [`src/docs`](https://github.com/OrchardCMS/Orchar
 - Both manuals describe the current code: menu paths, labels, permissions and behavior are checked against the source before they are written.
 
 See [Contributing to the documentation](contributing/contributing-documentation.md#the-user-manual-and-the-technical-manual) for the rules, the User Manual page template, and how to run the site locally.
+
+## Video
+
+This video explains what Orchard Core is and what you can build with it.
+
+<!-- video:orchard-core-overview -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/2LDUXKVdbrU" title="Orchard Core: What It Is and What You Can Build" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

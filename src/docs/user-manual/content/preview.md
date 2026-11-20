@@ -57,3 +57,10 @@ Some sites show their pages with a separate application (a "headless" or decoupl
 | **Pattern** | The address of the preview page, as a Liquid template, for example built from the item's permalink. Your developer gives you the value. |
 
 Without the **Preview** part, the preview uses the site's own theme, which is what most sites need.
+
+## Video
+
+This video previews the changes to a content item before they are published.
+
+<!-- video:content-preview -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/4pEEdtzAkXs" title="Content Preview: See Your Changes Before You Publish" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

@@ -207,3 +207,25 @@ Taxonomy terms are chosen with the **Taxonomy Field**, not a part. See [Taxonomi
 | --- | --- |
 | **Display date editor** | Editors can change the creation date of the content item. |
 | **Display owner editor** | Editors can change the owner of the content item. They also need the *Edit the owner of a content item* permission. |
+
+## Videos
+
+This video explains how content types model the content of your site.
+
+<!-- video:content-types-overview -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/-wPGXu8ERwU" title="Content Types: Model the Content of Your Site" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video creates a content type and adds parts and fields to it.
+
+<!-- video:content-types-create -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/7OLZiWph0vs" title="Content Types: Create a Type and Add Parts and Fields" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video goes through the settings of a content type: Creatable, Listable, Draftable and more.
+
+<!-- video:content-types-settings -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/OAoSBQ8vurM" title="Content Type Settings: Creatable, Listable, Draftable and More" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video creates a reusable content part: a group of fields that several content types share.
+
+<!-- video:content-parts-reusable -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/W1Kl3Lekkvg" title="Content Parts: Create Reusable Groups of Fields" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

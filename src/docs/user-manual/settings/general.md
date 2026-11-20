@@ -134,3 +134,10 @@ The **Orchard Diagnostics** feature (`OrchardCore.Diagnostics`) shows a friendly
 | Any other error | *An error occurred while executing this request.* |
 
 A designer can change how these pages look with a template; see [Templates and placements](../design/templates-and-placements.md). The details of an error are written to the site's logs, which your IT team reads.
+
+## Video
+
+This video goes through the general site settings: the site name, the time zone, the page size and more.
+
+<!-- video:site-settings-general -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/6jg2SpIKvVY" title="Site Settings: Name, Time Zone, Page Size and More" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

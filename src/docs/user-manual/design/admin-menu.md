@@ -115,3 +115,10 @@ On **Tools > Admin Menus**, open the row's **Actions** menu and click **Disable*
 Each admin menu creates a permission named *View Admin Menu - name*. Only people whose role has that permission see its entries. *View Admin Menu - View All* gives access to every admin menu, and *Manage the admin menu* includes both.
 
 Seeing an entry doesn't give access to the page it opens: people still need the permissions of that page. Use the **Permissions** box of a node to hide links people can't use anyway. Set the permissions in [Roles](../users/roles.md).
+
+## Video
+
+This video shows how to add your own links to the admin menu.
+
+<!-- video:admin-menus-custom -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/YEWzj98xntI" title="Admin Menus: Add Your Own Links to the Admin Navigation" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

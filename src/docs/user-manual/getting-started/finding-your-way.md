@@ -218,3 +218,15 @@ Administrators decide which of these tools everyone sees.
 | **Actions layout** | How the actions of each row, and the less common buttons at the bottom of edit pages, are shown: **Buttons**, or a single compact **Menu**. **Use configuration default** keeps the setting your IT team chose. On small screens the less common buttons of edit pages are always in a menu. |
 | **Let users choose the layout of a list** | Shows the **List** / **Grid** buttons on each list. On by default. Each person's choice applies to them only. |
 | **Recent content items in quick navigation** | Shown with the **Content Quick Navigation** feature. How many of the most recently updated content items quick navigation includes. Must be at least 1; the default is 50. |
+
+## Videos
+
+This video takes a tour of the admin: its menu, its search and its main screens.
+
+<!-- video:admin-tour -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/hQPLynQAPeY" title="The Admin: Find Your Way Around Orchard Core" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video shows the admin settings that tailor the admin for your editors.
+
+<!-- video:admin-settings -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/_87tZ98HO58" title="Admin Settings: Tailor the Admin for Your Editors" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

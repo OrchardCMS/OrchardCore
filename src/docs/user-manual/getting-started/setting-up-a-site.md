@@ -93,6 +93,18 @@ Every recipe except **Software as a Service** adds the roles **Moderator**, **Ed
 
 Your IT team can set up sites automatically from configuration with the **Auto Setup** feature (`OrchardCore.AutoSetup`), without anyone filling in the setup screen. They choose the site name, recipe, database and super user in the configuration. See the Technical Manual.
 
+## Videos
+
+This video walks through the setup screen and installs a first site.
+
+<!-- video:setup-first-site -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/0SlLT1du0A0" title="Setup: Install Your First Orchard Core Site" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video compares the starter recipes you can choose from when you set up a site.
+
+<!-- video:starter-recipes -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/VtnARneJ6GY" title="Starter Recipes: Choose How Your Site Starts" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
 ## Related pages
 
 - [Tenants](../administration/tenants.md): add a tenant and choose its recipe and database ahead of time.

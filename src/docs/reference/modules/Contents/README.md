@@ -725,3 +725,28 @@ Deletions are flushed in batches to keep the unit of work bounded, and a failure
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/j6xuupq9FYY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/wbTEUl_N0Lk" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video takes a tour of the admin: its menu, its search and its main screens.
+
+<!-- video:admin-tour -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/hQPLynQAPeY" title="The Admin: Find Your Way Around Orchard Core" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video creates, edits and publishes a content item.
+
+<!-- video:contents-create-edit-publish -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/gQgMKIZpCNY" title="Content Items: Create, Edit and Publish" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video searches and filters the content items list, and acts on several items at once.
+
+<!-- video:contents-list-search-filter -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/c6qgnS49bKQ" title="Content Items List: Search, Filter and Act on Many Items" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video shows how drafts and versions let you change content without changing the live page.
+
+<!-- video:contents-drafts-versions -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/wy2nPHfp2qE" title="Drafts and Versions: Change Content Without Losing the Live Page" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video sets up Content Version Pruning to remove old versions automatically.
+
+<!-- video:content-version-pruning -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/0c7PkSaO4Q4" title="Content Version Pruning: Remove Old Versions Automatically" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
