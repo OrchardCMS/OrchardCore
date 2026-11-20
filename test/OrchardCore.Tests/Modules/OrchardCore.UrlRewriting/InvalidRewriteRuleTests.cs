@@ -11,11 +11,22 @@ namespace OrchardCore.Tests.Modules.OrchardCore.UrlRewriting;
 public class InvalidRewriteRuleTests
 {
     [Theory]
+    [InlineData("^/old-page$", true)]
+    [InlineData("^/products/(.*)", true)]
+    [InlineData("^/old page$", false)]
+    [InlineData("^/old-page(", false)]
+    public void IsValidMatchPattern_ReturnsExpected(string pattern, bool expected)
+    {
+        Assert.Equal(expected, PatternHelper.IsValidMatchPattern(pattern));
+    }
+
+    [Theory]
     [InlineData("/new-page", true)]
     [InlineData("/products/$1", true)]
+    [InlineData("https://%{HTTP_HOST}/new-page", true)]
     [InlineData("/new-page$", false)]
     [InlineData("/new-page%", false)]
-    public void IsValidSubstitutionPattern(string pattern, bool expected)
+    public void IsValidSubstitutionPattern_ReturnsExpected(string pattern, bool expected)
     {
         Assert.Equal(expected, PatternHelper.IsValidSubstitutionPattern(pattern));
     }

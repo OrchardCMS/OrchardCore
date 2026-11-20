@@ -72,7 +72,7 @@ public sealed class UrlRedirectRuleDisplayDriver : DisplayDriver<RewriteRule>
         {
             context.Updater.ModelState.AddModelError(Prefix, nameof(model.Pattern), S["The Match URL Pattern is required."]);
         }
-        else if (!PatternHelper.IsValidRegex(model.Pattern))
+        else if (!PatternHelper.IsValidMatchPattern(model.Pattern))
         {
             context.Updater.ModelState.AddModelError(Prefix, nameof(model.Pattern), S["A valid Match URL Pattern is required."]);
         }

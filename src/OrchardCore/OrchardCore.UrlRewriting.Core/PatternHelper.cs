@@ -21,11 +21,17 @@ public static class PatternHelper
         }
     }
 
+    public static bool IsValidMatchPattern(string pattern)
+        => CanParseRule($"RewriteRule {pattern} -");
+
     public static bool IsValidSubstitutionPattern(string pattern)
+        => CanParseRule($"RewriteRule ^ {pattern}");
+
+    private static bool CanParseRule(string rule)
     {
         try
         {
-            using var reader = new StringReader($"RewriteRule ^ {pattern}");
+            using var reader = new StringReader(rule);
 
             new RewriteOptions().AddApacheModRewrite(reader);
 
