@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using OrchardCore.Localization;
 
 namespace OrchardCore.Workflows.Services;
@@ -34,6 +35,7 @@ public sealed class WorkflowVariableTypeDescriptor
     /// <summary>
     /// Gets the name of the type shown in the designer, to localize with <c>IStringLocalizerFactory.Localize</c>.
     /// </summary>
+    [JsonIgnore]
     public LocalizationSource DisplayName { get; }
 
     /// <summary>

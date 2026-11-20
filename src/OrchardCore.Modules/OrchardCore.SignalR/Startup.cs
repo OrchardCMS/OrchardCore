@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Json.Extensions;
 using OrchardCore.Modules;
 using OrchardCore.SignalR.Services;
 
@@ -17,6 +18,7 @@ public sealed class Startup : StartupBase
             .AddJsonProtocol(options =>
             {
                 options.PayloadSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+                options.PayloadSerializerOptions.IgnoreLocalizationSources();
 
                 foreach (var converter in JOptions.KnownConverters)
                 {

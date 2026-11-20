@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using OrchardCore.Localization;
 
 namespace OrchardCore.Notifications;
@@ -32,11 +33,13 @@ public sealed class NotificationTypeDescriptor
     /// <summary>
     /// Gets the name shown to users, in the type filter of the notification center and in their preferences.
     /// </summary>
+    [JsonIgnore]
     public LocalizationSource DisplayName { get; }
 
     /// <summary>
     /// Gets or sets an optional description shown to users in their notification preferences.
     /// </summary>
+    [JsonIgnore]
     public LocalizationSource Description { get; set; }
 
     /// <summary>
