@@ -1,0 +1,82 @@
+@model JobScheduleEditViewModel
+
+<zone Name="Title">
+    <breadcrumb name="JobSchedulesEdit" title="@(Model.IsNew ? T["Add Schedule"] : T["Edit Schedule"])">
+        <breadcrumb-item id="JobSchedules" action="Index" controller="JobSchedule" area="OrchardCore.Jobs" permission="@JobsPermissions.ViewJobs.Name">@T["Job Schedules"]</breadcrumb-item>
+    </breadcrumb>
+</zone>
+
+<div asp-validation-summary="ModelOnly"></div>
+<form asp-action="@(Model.IsNew ? "Create" : "Edit")" asp-route-scheduleId="@Model.ScheduleId" method="post" class="no-multisubmit">
+
+    <div class="ocat-wrapper" asp-validation-class-for="JobName">
+        <label asp-for="JobName" class="ocat-label @(Model.IsNew ? "ocat-label-required" : null)">@T["Job"]</label>
+        <div class="ocat-end">
+            @if (Model.IsNew)
+            {
+                <select asp-for="JobName" asp-items="Model.Jobs" class="form-select">
+                    <option value="">@T["Select a job"]</option>
+                </select>
+                <span asp-validation-for="JobName"></span>
+                <span class="hint">@T["The job the schedule runs. Only the jobs that can be run from the admin are listed."]</span>
+            }
+            else
+            {
+                <input type="text" class="form-control-plaintext" readonly value="@Model.Jobs.FirstOrDefault()?.Text" />
+            }
+        </div>
+    </div>
+
+    <div class="ocat-wrapper" asp-validation-class-for="Name">
+        <label asp-for="Name" class="ocat-label">@T["Name"]</label>
+        <div class="ocat-end">
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name"></span>
+            <span class="hint">@T["The name of the schedule, also shown next to the title of the job on its runs. It is optional."]</span>
+        </div>
+    </div>
+
+    <div class="ocat-wrapper" asp-validation-class-for="Cron">
+        <label asp-for="Cron" class="ocat-label ocat-label-required">@T["Schedule"]</label>
+        <div class="ocat-end">
+            <cron-expression-editor asp-for="Cron" default-value="@Model.DefaultCron" time-zone-for="TimeZoneId" />
+            <span asp-validation-for="Cron"></span>
+            <span class="hint">@T["A cron expression with five fields (minute, hour, day of the month, month, day of the week), in the time zone of the schedule. For example, {0} runs the job every day at 3:00.", "0 3 * * *"]</span>
+        </div>
+    </div>
+
+    <div class="ocat-wrapper" asp-validation-class-for="TimeZoneId">
+        <label asp-for="TimeZoneId" class="ocat-label">@T["Time zone"]</label>
+        <div class="ocat-end">
+            <select asp-for="TimeZoneId" asp-items="Model.TimeZones" class="form-select"></select>
+            <span asp-validation-for="TimeZoneId"></span>
+            <span class="hint">@T["The time zone the schedule applies to. With the time zone of the site, the schedule follows it when it changes. Select a time zone, which can be the same one, to keep the schedule in it."]</span>
+        </div>
+    </div>
+
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" asp-for="IsEnabled" />
+                <label class="form-check-label" asp-for="IsEnabled">@T["Enabled"]</label>
+            </div>
+            <span class="hint">@T["Whether the schedule queues runs. While the run of an occurrence didn't end, the following occurrences don't queue another one."]</span>
+        </div>
+    </div>
+
+    <div class="ocat-wrapper" asp-validation-class-for="Parameters">
+        <label asp-for="Parameters" class="ocat-label">@T["Parameters"]</label>
+        <div class="ocat-end">
+            <textarea asp-for="Parameters" class="form-control font-monospace" rows="6" spellcheck="false"></textarea>
+            <span asp-validation-for="Parameters"></span>
+            <span class="hint">@T["The parameters of the runs, as a JSON object. Leave empty for a job that takes none."]</span>
+        </div>
+    </div>
+
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
+            <button class="btn btn-primary save" type="submit">@T["Save"]</button>
+            <a class="btn btn-secondary cancel" role="button" asp-action="Index">@T["Cancel"]</a>
+        </div>
+    </div>
+</form>

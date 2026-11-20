@@ -12,7 +12,8 @@ using OrchardCore.Modules.Manifest;
     Name = "Indexing",
     Id = IndexingConstants.Feature.Area,
     Description = "Provides index management.",
-    Category = "Indexing"
+    Category = "Indexing",
+    Dependencies = ["OrchardCore.Jobs"]
 )]
 
 [assembly: Feature(

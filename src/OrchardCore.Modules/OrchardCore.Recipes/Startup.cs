@@ -6,6 +6,7 @@ using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Drivers;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Navigation;
+using OrchardCore.Recipes.Jobs;
 using OrchardCore.Recipes.RecipeSteps;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Security.Permissions;
@@ -30,6 +31,23 @@ public sealed class Startup : StartupBase
 
         services.AddDeploymentTargetHandler<RecipeDeploymentTargetHandler>();
 
+    }
+}
+
+/// <summary>
+/// Runs the recipes of the admin as jobs when the Jobs feature is enabled. The Recipes feature is always enabled, so
+/// it doesn't depend on it: without it, a recipe runs in the request.
+/// </summary>
+[RequireFeatures("OrchardCore.Jobs")]
+public sealed class JobsStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddJob<RecipeExecutionJob>(RecipeExecutionJob.Name, job =>
+        {
+            job.Title = RecipesLocalizationSources.ExecutionJobTitle;
+            job.Description = RecipesLocalizationSources.ExecutionJobDescription;
+        });
     }
 }
 

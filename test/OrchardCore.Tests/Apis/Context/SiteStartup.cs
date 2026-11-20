@@ -2,6 +2,7 @@ using OrchardCore.Data.YesSql;
 using OrchardCore.Modules;
 using OrchardCore.Modules.Manifest;
 using OrchardCore.Recipes.Services;
+using OrchardCore.Tests.Modules.OrchardCore.Jobs;
 
 namespace OrchardCore.Tests.Apis.Context;
 
@@ -35,6 +36,12 @@ public class SiteStartup
                 });
 
                 collection.AddScoped<IRecipeHarvester, TestRecipeHarvester>();
+
+                // The jobs of the tests of the jobs engine, which run on the tenants that enable the feature.
+                collection.AddJob<TestJob>(TestJob.Name, job => job.RetryDelay = TimeSpan.FromMilliseconds(100));
+                collection.AddJob<TestJob>(TestJob.DeclaredScheduleName, job => job.Schedule = "0 0 1 1 *");
+                collection.AddJob<TestJob>(TestJob.TransientName, job => job.KeepSucceededRuns = false);
+                collection.AddJob<TestJob>(TestJob.ManualName, job => job.AllowManualRun = true);
 
                 collection.AddScoped<IAuthorizationHandler, PermissionContextAuthorizationHandler>(sp =>
                 {

@@ -15,6 +15,7 @@ using OrchardCore.Indexing.DataMigrations;
 using OrchardCore.Indexing.Deployments;
 using OrchardCore.Indexing.Drivers;
 using OrchardCore.Indexing.Indexing;
+using OrchardCore.Indexing.Jobs;
 using OrchardCore.Indexing.Models;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
@@ -38,6 +39,13 @@ public sealed class Startup : StartupBase
 
         services.AddNavigationProvider<AdminMenu>();
         services.AddDisplayDriver<IndexProfile, IndexProfileDisplayDriver>();
+
+        // Synchronizes an index in the background when it is reset or rebuilt from the admin.
+        services.AddJob<IndexProfileSynchronizeJob>(IndexProfileSynchronizeJob.Name, job =>
+        {
+            job.Title = IndexingJobsLocalizationSources.SynchronizeJobTitle;
+            job.Description = IndexingJobsLocalizationSources.SynchronizeJobDescription;
+        });
         services.AddPermissionProvider<IndexingPermissionsProvider>();
         services.AddDataMigration<PreviewIndexingMigrations>();
 
@@ -91,5 +99,14 @@ public sealed class WorkerStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddSingleton<IBackgroundTask, ContentIndexingBackgroundTask>();
+
+        // Updates the indexes all the servers share. The background task queues it when they have changes to index,
+        // and its runs are not kept, as there can be one per minute.
+        services.AddJob<ContentIndexingJob>(ContentIndexingJob.Name, job =>
+        {
+            job.Title = IndexingJobsLocalizationSources.ContentIndexingJobTitle;
+            job.Description = IndexingJobsLocalizationSources.ContentIndexingJobDescription;
+            job.KeepSucceededRuns = false;
+        });
     }
 }

@@ -160,6 +160,16 @@ msgctxt "OrchardCore.OpenId.OpenIdLocalizationSources"
 msgid "OpenID Connect"
 msgstr ""
 
+#: OpenIdLocalizationSources.cs
+msgctxt "OrchardCore.OpenId.OpenIdLocalizationSources"
+msgid "OpenID Tokens Pruning"
+msgstr ""
+
+#: OpenIdLocalizationSources.cs
+msgctxt "OrchardCore.OpenId.OpenIdLocalizationSources"
+msgid "Removes the tokens that are no longer valid, and the authorizations that have no valid token anymore."
+msgstr ""
+
 #: Services/OpenIdClientService.cs
 msgctxt "OrchardCore.OpenId.Services.OpenIdClientService"
 msgid "The authority cannot be null or empty."

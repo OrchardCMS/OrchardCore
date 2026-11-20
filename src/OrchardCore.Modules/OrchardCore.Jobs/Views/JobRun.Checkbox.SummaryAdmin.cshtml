@@ -1,0 +1,10 @@
+@model JobRunRowViewModel
+
+@{
+    var checkboxId = Html.GenerateIdFromName("run-" + Model.Run.RunId);
+}
+
+<div class="form-check">
+    <input type="checkbox" class="form-check-input" name="runIds" value="@Model.Run.RunId" id="@checkboxId">
+    <label class="form-check-label" for="@checkboxId">&nbsp;</label>
+</div>

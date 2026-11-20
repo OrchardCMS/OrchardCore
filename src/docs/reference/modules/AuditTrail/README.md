@@ -32,7 +32,7 @@ If you navigate to Settings -> Audit Trail, you will see various configuration o
 
 - A list that contains every event that you can record using the Audit Trail module. Here you can enable or disable the recording of the given events.
 - You can enable client IP address logging. When you enable this, the client IP address will be recorded in Audit Trail events. Note that depending on the legislation your site operates in, you need to take special care to collect and store such Personal Identifiable Information.
-- The *Trimming* settings are about configuring how long you would like to keep the Audit Trail events in the database. You can disable trimming if you would like to keep the events indefinitely.
+- The *Trimming* settings are about configuring how long you would like to keep the Audit Trail events in the database. You can disable trimming if you would like to keep the events indefinitely. The events are trimmed by the **Audit Trail Trimming** [job](../Jobs/README.md), every day by default, on a single server whatever their number. Its schedule and its runs are under **Tools → Jobs**.
 - Further tabs can be added. E.g. the *Content* tab allows you to select items of which content types you want to record Audit Trail events for.
 
 ## Audit Trail Part

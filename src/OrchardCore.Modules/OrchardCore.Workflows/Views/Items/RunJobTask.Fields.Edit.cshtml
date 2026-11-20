@@ -1,0 +1,42 @@
+@model OrchardCore.Workflows.Jobs.RunJobTaskViewModel
+
+<div class="ocat-wrapper" asp-validation-class-for="JobName">
+    <label asp-for="JobName" class="ocat-label ocat-label-required">@T["Job"]</label>
+    <div class="ocat-end">
+        <select asp-for="JobName" class="form-select">
+            <option value="">@T["Choose a job"]</option>
+            @foreach (var (name, title) in Model.Jobs)
+            {
+                <option value="@name" selected="@(name == Model.JobName)">@title</option>
+            }
+        </select>
+        <span asp-validation-for="JobName"></span>
+        <span class="hint">@T["The jobs that can be run from the admin. The run is queued when the workflow is saved, and executed in the background by a single server, whatever their number."]</span>
+    </div>
+</div>
+
+<div class="ocat-wrapper">
+    <label asp-for="RunTitle" class="ocat-label">@T["Title"]</label>
+    <div class="ocat-end">
+        <input asp-for="RunTitle" class="form-control" />
+        <span class="hint">@T["What the run is about, shown next to the title of the job in the list of runs, with Liquid. It is optional."]</span>
+    </div>
+</div>
+
+<div class="ocat-wrapper">
+    <label asp-for="Parameters" class="ocat-label">@T["Parameters"]</label>
+    <div class="ocat-end">
+        <textarea asp-for="Parameters" rows="4" class="form-control font-monospace" spellcheck="false" placeholder='{ "name": "value" }'></textarea>
+        <span class="hint">@T["The parameters of the run, as a JSON object, with Liquid. Leave empty for a job that takes none."]</span>
+    </div>
+</div>
+
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="WaitForCompletion" />
+            <label class="form-check-label" asp-for="WaitForCompletion">@T["Wait for the run to end"]</label>
+            <span class="hint dashed">@T["The workflow then continues with the Succeeded or Failed outcome, and the run as its last result and its JobRun output. Otherwise it continues at once with the Queued outcome."]</span>
+        </div>
+    </div>
+</div>

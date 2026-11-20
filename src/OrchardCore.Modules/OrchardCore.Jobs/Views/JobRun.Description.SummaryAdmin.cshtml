@@ -1,0 +1,14 @@
+@model JobRunRowViewModel
+
+@if (Model.Run.Status == JobRunStatus.Failed && !string.IsNullOrEmpty(Model.Run.Error))
+{
+    <div class="admin-list-secondary text-danger">@Model.Run.Error</div>
+}
+else if (!Model.Run.IsCompleted && !string.IsNullOrEmpty(Model.Run.ProgressMessage))
+{
+    <div class="admin-list-secondary">@Model.Run.ProgressMessage</div>
+}
+else if (!Model.IsJobRegistered && !Model.Run.IsCompleted)
+{
+    <div class="admin-list-secondary">@T["The job of this run is not available, such as when its feature is disabled. The run waits for it."]</div>
+}

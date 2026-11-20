@@ -1,0 +1,6 @@
+@using OrchardCore.DisplayManagement.Views
+
+@model ShapeViewModel<JobEntry>
+
+@* Plain link, like the title of a content item in the Manage Content list. It lists the runs of the job. *@
+<a asp-action="Index" asp-controller="JobRun" asp-route-area="OrchardCore.Jobs" asp-route-Options.JobName="@Model.Value.Name">@Model.Value.Title</a>

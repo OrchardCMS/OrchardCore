@@ -1,0 +1,26 @@
+@model OrchardCore.Workflows.Jobs.JobRunCompletedEventViewModel
+
+<div class="ocat-wrapper">
+    <label asp-for="JobName" class="ocat-label">@T["Job"]</label>
+    <div class="ocat-end">
+        <select asp-for="JobName" class="form-select">
+            <option value="">@T["Any job"]</option>
+            @foreach (var (name, title) in Model.Jobs)
+            {
+                <option value="@name" selected="@(name == Model.JobName)">@title</option>
+            }
+        </select>
+    </div>
+</div>
+
+<div class="ocat-wrapper">
+    <label asp-for="Status" class="ocat-label">@T["Runs"]</label>
+    <div class="ocat-end">
+        <select asp-for="Status" class="form-select">
+            <option value="">@T["Every run"]</option>
+            <option value="Succeeded">@T["Runs that succeeded"]</option>
+            <option value="Failed">@T["Runs that failed or were canceled"]</option>
+        </select>
+        <span class="hint">@T["The run is the last result: its RunId, JobName, Title, Status, Error and Result."]</span>
+    </div>
+</div>

@@ -1,0 +1,34 @@
+@model JobIndexViewModel
+
+<zone Name="Title">
+    <breadcrumb name="Jobs" title="@T["Jobs"]" />
+</zone>
+
+<form asp-action="Index" method="post" class="no-multisubmit">
+    <input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
+
+    <div class="card text-bg-theme mb-3 position-sticky action-bar">
+        <div class="card-body">
+            <div class="row gx-2">
+                <div class="col">
+                    <div class="input-group">
+                        <input id="search-box" asp-for="Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus autocomplete="off" />
+                        <button type="submit" name="submit.Filter" class="btn btn-outline-secondary" title="@T["Search"]" aria-label="@T["Search"]"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* The jobs, the toolbar and the pager are rendered by the AdminList shape using the configured layout (List, Grid, ...). *@
+    <admin-list name="Jobs" context="Model.List"
+                empty-message="@T["<strong>Nothing here!</strong> No enabled feature provides a job for the moment."]">
+        <admin-list-list item-css-class="list-group-item" />
+        <admin-list-grid>
+            <admin-list-column name="Title" position="20" title="@T["Job"]" />
+            <admin-list-column name="Schedule" position="30" title="@T["Schedule"]" width="auto" />
+            <admin-list-column name="LastRun" position="40" title="@T["Last run"]" width="auto" />
+            <admin-list-column type="Actions" title="@T["Actions"]" />
+        </admin-list-grid>
+    </admin-list>
+</form>

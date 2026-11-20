@@ -4,9 +4,9 @@
 <div class="ocat-wrapper" asp-validation-class-for="CronExpression">
     <label asp-for="CronExpression" class="ocat-label ocat-label-required">@T["CRON Expression"]</label>
     <div class="ocat-end">
-        <input type="text" asp-for="CronExpression" class="form-control" autofocus />
+        <cron-expression-editor asp-for="CronExpression" utc="true" site-time-zone-for="UseLocalTime" autofocus />
         <span asp-validation-for="CronExpression"></span>
-        <span class="hint">@T["The CRON expression."]</span>
+        <span class="hint">@T["A CRON expression with five fields: minute, hour, day of the month, month, day of the week."]</span>
     </div>
 </div>
 <div class="ocat-wrapper" asp-validation-class-for="UseLocalTime">

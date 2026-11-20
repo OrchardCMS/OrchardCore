@@ -692,7 +692,7 @@ The same pattern is used by the [users admin list](../Users/README.md#documentin
 
 ## Content Version Pruning
 
-The `Content Version Pruning` feature (`OrchardCore.Contents.VersionPruning`) provides a background task that periodically deletes old **archived** content item versions — versions that are neither the *latest* nor the *published* one. On sites that are edited often, every save or publish leaves the previous version behind in the database. Over time, these accumulate, growing the storage footprint and slowing version-history queries. Pruning keeps that history bounded.
+The `Content Version Pruning` feature (`OrchardCore.Contents.VersionPruning`) provides a [job](../Jobs/README.md) that periodically deletes old **archived** content item versions — versions that are neither the *latest* nor the *published* one. On sites that are edited often, every save or publish leaves the previous version behind in the database. Over time, these accumulate, growing the storage footprint and slowing version-history queries. Pruning keeps that history bounded.
 
 The latest draft and the published version of an item are **never** deleted; only superseded (archived) versions are eligible.
 
@@ -709,7 +709,7 @@ Enable the feature, then configure it under **Configuration** → **Settings** �
 
 ### How it works
 
-A background task — *Content Version Pruning Background Task* — runs on a daily schedule (`0 0 * * *`). It is **disabled by default**; enable it under **Configuration** → **Tasks** → **Background Tasks** in addition to enabling the feature and selecting content types. When it runs, it:
+The *Content Version Pruning* job has a daily schedule (`0 0 * * *`), and runs on a single server whatever their number. Its schedule is **disabled by default**; enable it under **Tools** → **Jobs** → **Schedules** in addition to enabling the feature and selecting content types. Each run is listed under **Tools** → **Jobs** → **Runs** with the number of versions it deleted. When it runs, it:
 
 1. Skips entirely if the **Disable** setting is on, or if no content types are selected.
 2. Computes a retention threshold of `now - RetentionDays`.
@@ -718,7 +718,7 @@ A background task — *Content Version Pruning Background Task* — runs on a da
 Deletions are flushed in batches to keep the unit of work bounded, and a failure to delete one version is logged and skipped without aborting the run.
 
 !!! warning
-    Pruned versions are permanently removed from the database and cannot be restored. Choose a retention period and version-keep count that match your audit and rollback needs before enabling the task.
+    Pruned versions are permanently removed from the database and cannot be restored. Choose a retention period and version-keep count that match your audit and rollback needs before enabling the schedule.
 
 ## Videos
 

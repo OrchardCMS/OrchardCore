@@ -1,0 +1,16 @@
+@model JobScheduleRowViewModel
+
+@* In the List layout, a schedule without a name is already titled with its job. *@
+@if (Model.InGrid || !string.IsNullOrEmpty(Model.Schedule.Name))
+{
+    <span class="badge ta-badge fw-normal" title="@T["The job the schedule runs"]">
+        <i class="fa-solid fa-gears" aria-hidden="true"></i> @Model.JobTitle
+    </span>
+}
+
+@if (!Model.IsJobRegistered)
+{
+    <span class="badge fw-normal text-warning-emphasis bg-warning-subtle border border-warning-subtle" title="@T["The job is not available, such as when its feature is disabled. The schedule doesn't queue runs."]">
+        <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> @T["Unavailable"]
+    </span>
+}

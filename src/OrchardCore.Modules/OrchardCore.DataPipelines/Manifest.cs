@@ -13,6 +13,7 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.DataPipelines.Core",
     Name = "Data Pipelines Core",
     Description = "Provides the data sources, file formats, formula functions and data transforms that data pipelines and other features, such as reports, share.",
+    Dependencies = ["OrchardCore.Jobs"],
     EnabledByDependencyOnly = true,
     Category = "Data"
 )]

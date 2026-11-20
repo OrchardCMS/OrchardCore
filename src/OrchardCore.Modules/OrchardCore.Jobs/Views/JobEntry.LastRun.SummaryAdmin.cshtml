@@ -1,0 +1,32 @@
+@using OrchardCore.DisplayManagement.Views
+
+@model ShapeViewModel<JobEntry>
+
+@{
+    var lastRun = Model.Value.LastRun;
+    var inGrid = Model.Metadata.DisplayType == OrchardCoreConstants.DisplayType.SummaryAdminGrid;
+}
+
+@if (lastRun is not null)
+{
+    <partial name="_JobRunStatus" model="lastRun" />
+    <a asp-action="Details" asp-controller="JobRun" asp-route-area="OrchardCore.Jobs" asp-route-runId="@lastRun.RunId" class="badge ta-badge fw-normal text-decoration-none" title="@await DisplayAsync(await New.DateTime(Utc: lastRun.StartedUtc ?? lastRun.CreatedUtc, Format: "G"))">
+        <i class="fa-regular fa-clock" aria-hidden="true"></i>
+        @if (!inGrid)
+        {
+            <span class="fw-bold">@T["Last run"]</span>
+        }
+        @await DisplayAsync(await New.TimeSpan(Utc: lastRun.StartedUtc ?? lastRun.CreatedUtc))
+    </a>
+}
+else
+{
+    <span class="badge ta-badge fw-normal">
+        <i class="fa-solid fa-circle-minus text-secondary" aria-hidden="true"></i>
+        @if (!inGrid)
+        {
+            <span class="fw-bold">@T["Last run"]</span>
+        }
+        @T["never"]
+    </span>
+}

@@ -12,4 +12,10 @@ internal static class OpenIdLocalizationSources
 {
     /// <summary>Gets the "OpenID Connect" text.</summary>
     public static readonly LocalizationSource OpenIdConnect = LocalizationSource.Create("OpenID Connect", typeof(OpenIdLocalizationSources));
+
+    /// <summary>Gets the title of the pruning job.</summary>
+    public static readonly LocalizationSource PruningJobTitle = LocalizationSource.Create("OpenID Tokens Pruning", typeof(OpenIdLocalizationSources));
+
+    /// <summary>Gets the description of the pruning job.</summary>
+    public static readonly LocalizationSource PruningJobDescription = LocalizationSource.Create("Removes the tokens that are no longer valid, and the authorizations that have no valid token anymore.", typeof(OpenIdLocalizationSources));
 }

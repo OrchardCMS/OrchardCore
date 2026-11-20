@@ -25,6 +25,12 @@ public sealed class DataPipelineRun : Entity
     public string RunId { get; set; }
 
     /// <summary>
+    /// Gets or sets the identifier of the job run that executes this run. The job run is what a server takes, so a
+    /// single server executes the run.
+    /// </summary>
+    public string JobRunId { get; set; }
+
+    /// <summary>
     /// Gets or sets the identifier of the pipeline.
     /// </summary>
     public string PipelineId { get; set; }

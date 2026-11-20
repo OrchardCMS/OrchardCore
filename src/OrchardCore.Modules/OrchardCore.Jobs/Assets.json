@@ -1,0 +1,12 @@
+[
+  {
+    "action": "parcel",
+    "name": "jobs",
+    "source": [
+      "Assets/ts/job-runs-index.ts",
+      "Assets/ts/job-run-state.ts"
+    ],
+    "dest": "wwwroot/Scripts/jobs/",
+    "tags": ["admin", "dashboard", "js"]
+  }
+]

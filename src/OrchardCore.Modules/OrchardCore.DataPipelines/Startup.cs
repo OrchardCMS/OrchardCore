@@ -1,10 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.BackgroundTasks;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
-using OrchardCore.DataPipelines.BackgroundTasks;
 using OrchardCore.DataPipelines.Drivers;
 using OrchardCore.DataPipelines.Indexes;
+using OrchardCore.DataPipelines.Jobs;
 using OrchardCore.DataPipelines.Migrations;
 using OrchardCore.DataPipelines.Recipes;
 using OrchardCore.DataPipelines.Models;
@@ -14,6 +13,7 @@ using OrchardCore.DataPipelines.Steps;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Shell.Configuration;
+using OrchardCore.Jobs;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
@@ -52,9 +52,23 @@ public sealed class Startup : StartupBase
         services.AddSingleton<DataPipelineSecrets>();
         services.AddScoped<DataPipelineFileLinkHandler>();
         services.AddSharedLinkHandler<DataPipelineFileLinkHandler>();
-        services.AddSingleton<DataPipelineRunTracker>();
-        services.AddSingleton<DataPipelineRunDispatcher>();
-        services.AddSingleton<IBackgroundTask, DataPipelineRunsBackgroundTask>();
+
+        // A run of a pipeline executes as a job run, which a single server takes, whatever their number.
+        services.AddJob<DataPipelineRunJob>(DataPipelineRunJob.Name, job =>
+        {
+            job.Title = DataPipelinesLocalizationSources.RunJobTitle;
+            job.Description = DataPipelinesLocalizationSources.RunJobDescription;
+        });
+        services.AddScoped<IJobRunHandler, DataPipelineJobRunHandler>();
+        services.AddJob<DataPipelineRunsCleanupJob>(DataPipelineRunsCleanupJob.Name, job =>
+        {
+            job.Title = DataPipelinesLocalizationSources.RunsCleanupJobTitle;
+            job.Description = DataPipelinesLocalizationSources.RunsCleanupJobDescription;
+            job.Schedule = "0 * * * *";
+
+            // It runs often, and only its failures are worth keeping.
+            job.KeepSucceededRuns = false;
+        });
 
         services.AddScoped<IDisplayManager<DataPipelineStep>, DisplayManager<DataPipelineStep>>();
         services.AddDisplayDriver<DataPipelineStep, DataPipelineStepTitleDisplayDriver>();

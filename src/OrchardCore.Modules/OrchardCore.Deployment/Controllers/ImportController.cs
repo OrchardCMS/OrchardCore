@@ -7,11 +7,15 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
+using OrchardCore.Deployment.Jobs;
 using OrchardCore.Deployment.Services;
 using OrchardCore.Deployment.ViewModels;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.FileStorage;
+using OrchardCore.Jobs;
+using OrchardCore.Jobs.Models;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Recipes.Models;
 
@@ -26,6 +30,8 @@ public sealed class ImportController : Controller
     private readonly ILogger _logger;
     private readonly FileCreationService _fileCreationService;
     private readonly ITempDirectoryProvider _tempDirectoryProvider;
+    private readonly IEnumerable<IJobManager> _jobManagers;
+    private readonly JobOptions _jobOptions;
 
     internal readonly IHtmlLocalizer H;
     internal readonly IStringLocalizer S;
@@ -37,6 +43,8 @@ public sealed class ImportController : Controller
         ITempDirectoryProvider tempDirectoryProvider,
         INotifier notifier,
         ILogger<ImportController> logger,
+        IEnumerable<IJobManager> jobManagers,
+        IOptions<JobOptions> jobOptions,
         IHtmlLocalizer<ImportController> htmlLocalizer,
         IStringLocalizer<ImportController> stringLocalizer
     )
@@ -47,6 +55,10 @@ public sealed class ImportController : Controller
         _tempDirectoryProvider = tempDirectoryProvider;
         _notifier = notifier;
         _logger = logger;
+
+        // The Jobs feature is optional: without it, no job manager is registered.
+        _jobManagers = jobManagers;
+        _jobOptions = jobOptions.Value;
         H = htmlLocalizer;
         S = stringLocalizer;
     }
@@ -73,6 +85,7 @@ public sealed class ImportController : Controller
         {
             var tempArchiveName = _tempDirectoryProvider.GetTempFileName(Path.GetExtension(importedPackage.FileName));
             var tempArchiveFolder = _tempDirectoryProvider.GetTempFileName();
+            var queued = false;
 
             try
             {
@@ -112,6 +125,25 @@ public sealed class ImportController : Controller
                     return RedirectToAction(nameof(Index));
                 }
 
+                // With the Jobs feature, the package is imported in the background: a large package doesn't make the
+                // request wait, and its run tells how it went. This server holds its files, so it runs it.
+                if (_jobManagers.LastOrDefault() is { } jobManager && _jobOptions.Find(DeploymentImportJob.Name) is not null)
+                {
+                    var run = await jobManager.EnqueueAsync<DeploymentImportJob>(new DeploymentImportJobParameters { Folder = tempArchiveFolder }, request =>
+                    {
+                        request.Title = Path.GetFileName(importedPackage.FileName);
+                        request.Trigger = JobTriggers.Manual;
+                        request.RequireCurrentNode = true;
+                    });
+
+                    // The run deletes the files of the package when it ends.
+                    queued = true;
+
+                    await _notifier.SuccessAsync(H["The deployment package is imported in the background. <a href=\"{0}\">View its run</a>.", Url.Action("Details", "JobRun", new { area = "OrchardCore.Jobs", runId = run.RunId })]);
+
+                    return RedirectToAction(nameof(Index));
+                }
+
                 await _deploymentManager.ImportDeploymentPackageAsync(new PhysicalFileProvider(tempArchiveFolder));
 
                 await _notifier.SuccessAsync(H["Deployment package imported."]);
@@ -135,7 +167,7 @@ public sealed class ImportController : Controller
                     System.IO.File.Delete(tempArchiveName);
                 }
 
-                if (Directory.Exists(tempArchiveFolder))
+                if (!queued && Directory.Exists(tempArchiveFolder))
                 {
                     Directory.Delete(tempArchiveFolder, true);
                 }

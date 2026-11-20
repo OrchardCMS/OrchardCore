@@ -139,7 +139,37 @@ msgstr ""
 
 #: DataPipelinesLocalizationSources.cs
 msgctxt "OrchardCore.DataPipelines.DataPipelinesLocalizationSources"
+msgid "Data Pipeline"
+msgstr ""
+
+#: DataPipelinesLocalizationSources.cs
+msgctxt "OrchardCore.DataPipelines.DataPipelinesLocalizationSources"
+msgid "Data Pipeline Runs Cleanup"
+msgstr ""
+
+#: DataPipelinesLocalizationSources.cs
+msgctxt "OrchardCore.DataPipelines.DataPipelinesLocalizationSources"
 msgid "Data Pipelines"
+msgstr ""
+
+#: DataPipelinesLocalizationSources.cs
+msgctxt "OrchardCore.DataPipelines.DataPipelinesLocalizationSources"
+msgid "Deletes the old runs of the data pipelines, and queues again the runs that no job executes."
+msgstr ""
+
+#: DataPipelinesLocalizationSources.cs
+msgctxt "OrchardCore.DataPipelines.DataPipelinesLocalizationSources"
+msgid "Deletes the shared links that stopped working, and their resources."
+msgstr ""
+
+#: DataPipelinesLocalizationSources.cs
+msgctxt "OrchardCore.DataPipelines.DataPipelinesLocalizationSources"
+msgid "Executes a run of a data pipeline. The run history of the data pipelines shows what each run did."
+msgstr ""
+
+#: DataPipelinesLocalizationSources.cs
+msgctxt "OrchardCore.DataPipelines.DataPipelinesLocalizationSources"
+msgid "Shared Links Cleanup"
 msgstr ""
 
 #: Drivers/TransformStepDisplayDrivers.cs

@@ -7,16 +7,16 @@ using OrchardCore.DataPipelines.Models;
 using OrchardCore.DataPipelines.Steps;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Scope;
-using OrchardCore.Locking.Distributed;
+using OrchardCore.Jobs;
 using OrchardCore.Modules;
 using YesSql;
 
 namespace OrchardCore.DataPipelines.Services;
 
 /// <summary>
-/// Executes a queued run: claims it, runs its definition with the access of the user who published the pipeline,
-/// records its progress every few seconds, and records how it ended. One run of a pipeline executes at a time; the
-/// others wait in the queue.
+/// Executes a queued run, as its job run does: runs its definition with the access of the user who published the
+/// pipeline, records its progress every few seconds, and records how it ended. The job run is what makes a single
+/// server execute the run, and one run of a pipeline execute at a time.
 /// </summary>
 public sealed class DataPipelineRunExecutor
 {
@@ -24,8 +24,6 @@ public sealed class DataPipelineRunExecutor
 
     private readonly DataPipelineExecutor _executor;
     private readonly DataPipelineUserResolver _userResolver;
-    private readonly DataPipelineRunTracker _tracker;
-    private readonly IDistributedLock _distributedLock;
     private readonly IClock _clock;
     private readonly ShellSettings _shellSettings;
     private readonly IOptions<ShellOptions> _shellOptions;
@@ -35,8 +33,6 @@ public sealed class DataPipelineRunExecutor
     public DataPipelineRunExecutor(
         DataPipelineExecutor executor,
         DataPipelineUserResolver userResolver,
-        DataPipelineRunTracker tracker,
-        IDistributedLock distributedLock,
         IClock clock,
         ShellSettings shellSettings,
         IOptions<ShellOptions> shellOptions,
@@ -45,8 +41,6 @@ public sealed class DataPipelineRunExecutor
     {
         _executor = executor;
         _userResolver = userResolver;
-        _tracker = tracker;
-        _distributedLock = distributedLock;
         _clock = clock;
         _shellSettings = shellSettings;
         _shellOptions = shellOptions;
@@ -55,31 +49,28 @@ public sealed class DataPipelineRunExecutor
     }
 
     /// <summary>
-    /// Executes a queued run. It does nothing when the run is not queued, or when another run of the same pipeline
-    /// executes: the run then waits for the background task to try again.
+    /// Executes a queued run. It does nothing when the run is not queued anymore, such as when it was cancelled.
     /// </summary>
     /// <param name="runId">The run.</param>
+    /// <param name="jobContext">The context of the job run that executes the run.</param>
+    /// <param name="cancellationToken">A token that is cancelled when the job run is cancelled, or its server stops.</param>
     /// <returns>A task that completes when the run ends.</returns>
-    public async Task ExecuteAsync(string runId)
+    /// <exception cref="InvalidOperationException">The run failed, which fails its job run.</exception>
+    /// <exception cref="OperationCanceledException">The run was cancelled, or its server stops.</exception>
+    public async Task ExecuteAsync(string runId, JobExecutionContext jobContext, CancellationToken cancellationToken)
     {
+        ArgumentNullException.ThrowIfNull(jobContext);
+
         var queued = await LoadAsync(runId);
 
         if (queued is null || queued.Status != DataPipelineRunStatus.Queued)
         {
+            jobContext.LogInformation("The data pipeline run is not queued anymore.");
+
             return;
         }
 
-        // One run of a pipeline at a time, so two runs don't deliver the same data at once.
-        var (locker, locked) = await _distributedLock.TryAcquireLockAsync($"DataPipeline_{queued.PipelineId}", TimeSpan.FromMilliseconds(500), TimeSpan.FromHours(12));
-
-        if (!locked)
-        {
-            return;
-        }
-
-        await using var acquiredLock = locker;
-
-        var claimed = false;
+        var started = false;
 
         await UpdateAsync(runId, run =>
         {
@@ -94,34 +85,41 @@ public sealed class DataPipelineRunExecutor
             run.Steps = run.Definition.Steps
                 .Select(step => new DataPipelineStepRun { StepId = step.StepId, Type = step.Type, Title = step.Title })
                 .ToList();
-            claimed = true;
+            started = true;
 
             return true;
         });
 
-        if (!claimed)
+        if (!started)
         {
             return;
         }
 
-        using var cancellation = _tracker.Start(runId);
+        using var cancellation = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
-        try
+        var completed = await RunAsync(queued, cancellation, cancellationToken);
+
+        // The job run ends as the run did, so the runs of the jobs tell the same as the runs of the pipelines.
+        if (completed?.Status == DataPipelineRunStatus.Cancelled)
         {
-            await RunAsync(queued, cancellation);
+            throw new OperationCanceledException(completed.Error, cancellation.Token);
         }
-        finally
+
+        if (completed?.Status != DataPipelineRunStatus.Succeeded)
         {
-            _tracker.Complete(runId);
+            throw new InvalidOperationException(completed?.Error ?? "The data pipeline run failed.");
         }
+
+        jobContext.SetResult(new { Deliveries = completed.Deliveries.Count });
     }
 
-    private async Task RunAsync(DataPipelineRun queued, CancellationTokenSource cancellation)
+    private async Task<DataPipelineRun> RunAsync(DataPipelineRun queued, CancellationTokenSource cancellation, CancellationToken stopping)
     {
         var runId = queued.RunId;
         var observer = new RunObserver(_clock);
         var directory = Path.Combine(_shellOptions.Value.ShellsApplicationDataPath, _shellOptions.Value.ShellsContainerName, _shellSettings.Name, "DataPipelines", "Runs", runId);
         DataPipelineExecutionResult result = null;
+        DataPipelineRun completed = null;
 
         try
         {
@@ -134,58 +132,10 @@ public sealed class DataPipelineRunExecutor
                     Status = DataPipelineRunStatus.Failed,
                     Error = "The user who published the pipeline doesn't exist anymore, or is disabled. Publish the pipeline again to run it.",
                 };
-
-                return;
             }
-
-            Directory.CreateDirectory(directory);
-
-            var context = new DataPipelineRunContext
+            else
             {
-                RunId = runId,
-                PipelineId = queued.PipelineId,
-                PipelineName = queued.PipelineName,
-                VersionNumber = queued.VersionNumber,
-                User = user,
-                Services = _services,
-                Parameters = queued.Parameters.ToDictionary(pair => pair.Key, pair => (object)pair.Value, StringComparer.OrdinalIgnoreCase),
-                StartedUtc = _clock.UtcNow,
-                TemporaryDirectory = directory,
-                CancellationToken = cancellation.Token,
-                PreviewRowLimit = DataPipelineFormulas.GetOptions(_services).PreviewRowLimit,
-
-                // Steps run at the same time, so each one gets its own scope, and its own database session.
-                StepScope = (step, work) => ShellScope.UsingChildScopeAsync(scope => work(scope.ServiceProvider)),
-                State = await LoadStateAsync(queued.PipelineId),
-            };
-
-            var execution = _executor.ExecuteAsync(queued.Definition, context, observer);
-
-            using var delayCancellation = new CancellationTokenSource();
-
-            while (await Task.WhenAny(execution, Task.Delay(_progressInterval, delayCancellation.Token)) != execution)
-            {
-                await UpdateAsync(runId, run =>
-                {
-                    observer.Apply(run);
-                    run.HeartbeatUtc = _clock.UtcNow;
-
-                    if (run.CancellationRequested && !cancellation.IsCancellationRequested)
-                    {
-                        cancellation.Cancel();
-                    }
-
-                    return true;
-                });
-            }
-
-            delayCancellation.Cancel();
-
-            result = await execution;
-
-            if (result.Status == DataPipelineRunStatus.Succeeded)
-            {
-                await CommitAsync(queued.PipelineId, context, result, cancellation.Token);
+                result = await RunDefinitionAsync(queued, user, directory, observer, cancellation);
             }
         }
         catch (Exception ex)
@@ -202,8 +152,6 @@ public sealed class DataPipelineRunExecutor
         {
             DeleteDirectory(directory);
 
-            DataPipelineRun completed = null;
-
             await UpdateAsync(runId, run =>
             {
                 observer.Apply(run);
@@ -215,9 +163,9 @@ public sealed class DataPipelineRunExecutor
                 run.HeartbeatUtc = run.CompletedUtc;
                 run.Deliveries = result?.Deliveries?.ToList() ?? [];
 
-                if (run.Status == DataPipelineRunStatus.Cancelled && _tracker.Stopping.IsCancellationRequested)
+                if (run.Status == DataPipelineRunStatus.Cancelled && stopping.IsCancellationRequested && !run.CancellationRequested)
                 {
-                    run.Error = "The run was stopped because the site shut down.";
+                    run.Error = "The run was stopped, such as when the site shut down.";
                 }
 
                 foreach (var issue in result?.Issues ?? [])
@@ -245,6 +193,67 @@ public sealed class DataPipelineRunExecutor
                 await NotifyAsync(completed);
             }
         }
+
+        return completed;
+    }
+
+    // Runs the definition of the run, and records its progress every few seconds while it runs.
+    private async Task<DataPipelineExecutionResult> RunDefinitionAsync(DataPipelineRun queued, System.Security.Claims.ClaimsPrincipal user, string directory, RunObserver observer, CancellationTokenSource cancellation)
+    {
+        var runId = queued.RunId;
+
+        Directory.CreateDirectory(directory);
+
+        var context = new DataPipelineRunContext
+        {
+            RunId = runId,
+            PipelineId = queued.PipelineId,
+            PipelineName = queued.PipelineName,
+            VersionNumber = queued.VersionNumber,
+            User = user,
+            Services = _services,
+            Parameters = queued.Parameters.ToDictionary(pair => pair.Key, pair => (object)pair.Value, StringComparer.OrdinalIgnoreCase),
+            StartedUtc = _clock.UtcNow,
+            TemporaryDirectory = directory,
+            CancellationToken = cancellation.Token,
+            PreviewRowLimit = DataPipelineFormulas.GetOptions(_services).PreviewRowLimit,
+
+            // Steps run at the same time, so each one gets its own scope, and its own database session.
+            StepScope = (step, work) => ShellScope.UsingChildScopeAsync(scope => work(scope.ServiceProvider)),
+            State = await LoadStateAsync(queued.PipelineId),
+        };
+
+        var execution = _executor.ExecuteAsync(queued.Definition, context, observer);
+
+        using var delayCancellation = new CancellationTokenSource();
+
+        while (await Task.WhenAny(execution, Task.Delay(_progressInterval, delayCancellation.Token)) != execution)
+        {
+            await UpdateAsync(runId, run =>
+            {
+                observer.Apply(run);
+                run.HeartbeatUtc = _clock.UtcNow;
+
+                // Asked from the pipeline pages; the cancellation of the job run cancels the token as well.
+                if (run.CancellationRequested && !cancellation.IsCancellationRequested)
+                {
+                    cancellation.Cancel();
+                }
+
+                return true;
+            });
+        }
+
+        delayCancellation.Cancel();
+
+        var result = await execution;
+
+        if (result.Status == DataPipelineRunStatus.Succeeded)
+        {
+            await CommitAsync(queued.PipelineId, context, result, cancellation.Token);
+        }
+
+        return result;
     }
 
     // Runs the actions the steps asked for once the run succeeded, then saves the state of the pipeline. When one
