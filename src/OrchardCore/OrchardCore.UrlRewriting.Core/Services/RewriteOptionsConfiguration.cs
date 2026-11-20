@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
+using OrchardCore.Modules;
 using OrchardCore.UrlRewriting.Rules;
 
 namespace OrchardCore.UrlRewriting.Services;
@@ -12,15 +14,18 @@ public sealed class RewriteOptionsConfiguration : IConfigureOptions<RewriteOptio
     private readonly IRewriteRulesStore _rewriteRulesStore;
     private readonly IServiceProvider _serviceProvider;
     private readonly AdminOptions _adminOptions;
+    private readonly ILogger _logger;
 
     public RewriteOptionsConfiguration(
         IRewriteRulesStore rewriteRulesStore,
         IServiceProvider serviceProvider,
-        IOptions<AdminOptions> adminOptions)
+        IOptions<AdminOptions> adminOptions,
+        ILogger<RewriteOptionsConfiguration> logger)
     {
         _rewriteRulesStore = rewriteRulesStore;
         _serviceProvider = serviceProvider;
         _adminOptions = adminOptions.Value;
+        _logger = logger;
     }
 
     public void Configure(RewriteOptions options)
@@ -38,7 +43,14 @@ public sealed class RewriteOptionsConfiguration : IConfigureOptions<RewriteOptio
                 continue;
             }
 
-            source.Configure(options, rule);
+            try
+            {
+                source.Configure(options, rule);
+            }
+            catch (Exception ex) when (!ex.IsFatal())
+            {
+                _logger.LogError(ex, "Unable to configure the URL rewriting rule '{RuleName}'.", rule.Name);
+            }
         }
 
         if (options.Rules.Count > 0)

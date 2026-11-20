@@ -72,7 +72,7 @@ public sealed class UrlRewriteRuleDisplayDriver : DisplayDriver<RewriteRule>
         {
             context.Updater.ModelState.AddModelError(Prefix, nameof(model.SubstitutionPattern), S["The Substitution URL Pattern is required."]);
         }
-        else if (!PatternHelper.IsValidRegex(model.SubstitutionPattern))
+        else if (!PatternHelper.IsValidSubstitutionPattern(model.SubstitutionPattern))
         {
             context.Updater.ModelState.AddModelError(Prefix, nameof(model.SubstitutionPattern), S["A valid Substitution URL Pattern is required."]);
         }

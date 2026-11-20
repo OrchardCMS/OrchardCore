@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Rewrite;
 
 namespace OrchardCore.UrlRewriting;
 
@@ -16,6 +17,22 @@ public static class PatternHelper
         catch
         {
             // Any exception indicates an invalid pattern.
+            return false;
+        }
+    }
+
+    public static bool IsValidSubstitutionPattern(string pattern)
+    {
+        try
+        {
+            using var reader = new StringReader($"RewriteRule ^ {pattern}");
+
+            new RewriteOptions().AddApacheModRewrite(reader);
+
+            return true;
+        }
+        catch
+        {
             return false;
         }
     }
