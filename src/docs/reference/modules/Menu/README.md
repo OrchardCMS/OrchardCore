@@ -248,6 +248,12 @@ available on the `MenuItem` shape are still available.
     }
     ```
 
+## Editing menu items
+
+A menu item is not a content item of its own: it is stored in the content of its menu. Its editor saves it in the menu with a **Save Menu Item** button, and the menu is published from the menu editor, with its **Publish** button. Saving a menu item of a draftable menu saves a draft of the menu, so the change isn't visible on the site until the menu is published. When the menu has unpublished changes, the editor of a menu item shows a warning saying so.
+
+The actions of the editor of a menu item are rendered by the `MenuItemEditorActions` shape, which replaces the actions of a content item, such as **Publish** or **Delete**. Override `MenuItemEditorActions.cshtml` to change them.
+
 ## Menu item identifiers
 
 The menu editor finds a menu item by its `ContentItemId`, so every menu item needs one that is unique in its menu. A menu item without one cannot be edited or deleted: **Edit** and **Delete** return _Not Found_. Menu items in a recipe must set `ContentItemId`, for example to `"[js: uuid()]"`.

@@ -1,4 +1,6 @@
 @model dynamic
+@using OrchardCore.Admin
+@using OrchardCore.DisplayManagement.Zones
 
 @inject OrchardCore.DisplayManagement.IDisplayManager<MenuItem> MenuItemDisplayManager
 @inject OrchardCore.DisplayManagement.ModelBinding.IUpdateModelAccessor ModelUpdaterAccessor
@@ -8,6 +10,7 @@
     var menuType = menuItem.GetType();
     var children = menuItem.Items;
     var index = 0;
+    var canDisplay = Model.Content.Items.Count > 0;
 
     string disabledClass = "";
     var toggleButtonText = T["Toggle"];
@@ -20,49 +23,53 @@
     }
 }
 
+@* The buttons of the node go in its Actions and ActionsMenu zones, which are rendered in the actions layout configured
+   in the admin settings (Buttons, or a Menu holding them). *@
+@{
+    var zones = ((IZoneHolding)Model).Zones;
+
+    if (canDisplay)
+    {
+        Func<object, object> editAction =
+            @<a asp-action="Edit"
+                asp-controller="Node"
+                asp-route-id="@Model.AdminMenuId"
+                asp-route-treeNodeId="@Model.MenuItem.UniqueId"
+                class="btn btn-primary btn-sm">@T["Edit"]</a>;
+
+        Func<object, object> toggleAction =
+            @<a asp-controller="Node"
+                asp-action="Toggle"
+                asp-route-id="@Model.AdminMenuId"
+                asp-route-treeNodeId="@Model.MenuItem.UniqueId"
+                class="dropdown-item" data-url-af="UnsafeUrl">@toggleButtonText</a>;
+
+        await zones["Actions"].AddAsync(editAction(null), "10");
+        await zones["ActionsMenu"].AddAsync(toggleAction(null), "10");
+    }
+
+    Func<object, object> deleteAction =
+        @<a asp-action="Delete"
+            asp-controller="Node"
+            asp-route-id="@Model.AdminMenuId"
+            asp-route-treeNodeId="@Model.MenuItem.UniqueId"
+            class="btn btn-danger btn-sm"
+            data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>;
+
+    await zones["Actions"].AddAsync(deleteAction(null), "20");
+}
+
 <li class="menu-item display-summary list-group-item" id="menu-id-@Model.Index" data-index="@Model.Index" data-treenode-id="@Model.MenuItem.UniqueId">
     <div class="menu-item menu-item-title border rounded p-2 ps-3 mb-1 d-flex flex-row justify-content-between align-items-center @disabledClass" title="@Model.MenuItem.UniqueId">
-        @if (Model.Content.Items.Count < 1)
+        @if (canDisplay)
         {
-            <div class="float-end">
-                <a asp-action="Delete"
-                    asp-controller="Node"
-                    asp-route-id="@Model.AdminMenuId"
-                    asp-route-treeNodeId="@Model.MenuItem.UniqueId"
-                    class="btn btn-danger btn-sm"
-                    data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
-            </div>
-            <span class="text-warning">@T["Can't show the item of type: {0}. Maybe a required module has been disabled?", menuType]</span>
+            @await DisplayAsync(Model.Content)
         }
         else
         {
-            @await DisplayAsync(Model.Content)
-            <div class="float-end">
-                <a asp-action="Edit"
-                    asp-controller="Node"
-                    asp-route-id="@Model.AdminMenuId"
-                    asp-route-treeNodeId="@Model.MenuItem.UniqueId"
-                    class="btn btn-primary btn-sm">@T["Edit"]</a>
-
-                <div class="btn-group btn-group-sm">
-                    <a asp-action="Delete"
-                        asp-controller="Node"
-                        asp-route-id="@Model.AdminMenuId"
-                        asp-route-treeNodeId="@Model.MenuItem.UniqueId"
-                        class="btn btn-danger" data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
-                    <button type="button" class="btn btn-danger dropdown-toggle dropdown-toggle-split" data-reference="parent" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <span class="visually-hidden">@T["Toggle Dropdown"]</span>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a asp-controller="Node"
-                            asp-action="Toggle"
-                            asp-route-id="@Model.AdminMenuId"
-                            asp-route-treeNodeId="@Model.MenuItem.UniqueId"
-                            class="dropdown-item btn-sm" data-url-af="UnsafeUrl">@toggleButtonText</a></li>
-                    </ul>
-                </div>
-            </div>
+            <span class="text-warning">@T["Can't show the item of type: {0}. Maybe a required module has been disabled?", menuType]</span>
         }
+        @await DisplayAsync(await Factory.CreateAdminListActionsAsync((IShape)Model))
     </div>
 
     <ol class="menu-item menu-item-links">
