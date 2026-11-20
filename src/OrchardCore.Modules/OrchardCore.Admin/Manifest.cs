@@ -10,6 +10,7 @@ using OrchardCore.Modules.Manifest;
     Dependencies =
     [
         "OrchardCore.Resources",
-        "OrchardCore.Settings"
+        "OrchardCore.Settings",
+        "OrchardCore.Navigation"
     ]
 )]
