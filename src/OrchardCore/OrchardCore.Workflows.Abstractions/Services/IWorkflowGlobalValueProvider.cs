@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using OrchardCore.Localization;
 using OrchardCore.Workflows.Activities;
 
@@ -39,6 +40,7 @@ public sealed class WorkflowGlobalValue
     /// <summary>
     /// What it is, shown in the designer.
     /// </summary>
+    [JsonIgnore]
     public LocalizationSource Description { get; init; }
 
     /// <summary>

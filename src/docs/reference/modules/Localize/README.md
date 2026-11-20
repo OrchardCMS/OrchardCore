@@ -284,7 +284,7 @@ With string localization, no formatting is applied when no arguments are supplie
 !!! warning
     Use HTML localization only for trusted translation markup. It does not encode the translation itself. For plain labels, permission descriptions, attributes, and other text, use string localization and retain the rendering layer's encoding.
 
-`System.Text.Json` serializes a `LocalizationSource` as its `Value` only, for example `"Manage widgets"`, with the `LocalizationSourceJsonConverter` of `OrchardCore.Json.Serialization`. The source type is not written, and a source read back from JSON has no source type, because creating a type from a name read from a document isn't safe. Don't persist a source that must keep its PO context: read it from code, for example from a property override marked with `[JsonIgnore]`.
+A `LocalizationSource` is a static declaration owned by code, not data, so it is never serialized or deserialized: its source type can't be serialized, and creating a type from a name read from a document isn't safe. Mark every instance property of this type with `[JsonIgnore]`, for example on a descriptor, a deployment step or a model, and read the source from code instead of persisting it. `System.Text.Json` doesn't apply the attribute of a base property to an override, so repeat `[JsonIgnore]` on each override. Static properties are not serialized and don't need it. Without the attribute, serializing the object fails with a `NotSupportedException` for `System.Type`.
 
 ### Sharing `LocalizationSource` instances
 

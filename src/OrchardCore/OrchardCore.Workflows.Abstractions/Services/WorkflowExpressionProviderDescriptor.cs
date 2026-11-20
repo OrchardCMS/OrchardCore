@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using OrchardCore.Localization;
 
 namespace OrchardCore.Workflows.Services;
@@ -35,6 +36,7 @@ public sealed class WorkflowExpressionProviderDescriptor
     /// <summary>
     /// Gets the name shown in the expression editors, to localize with <c>IStringLocalizerFactory.Localize</c>.
     /// </summary>
+    [JsonIgnore]
     public LocalizationSource DisplayName { get; }
 
     /// <summary>
