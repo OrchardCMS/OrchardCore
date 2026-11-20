@@ -47,6 +47,13 @@ Settings that most fields share:
 | **Hint** | Help text shown under the field. |
 | **Placeholder** | Grey example text shown inside an empty box. |
 
+Settings that every field has, for how it is shown on the site and in the admin:
+
+| Setting | What it does |
+| --- | --- |
+| **Display the field name** | Shows the name of the field next to its value. On by default. |
+| **Always display** | Shows the field even when it has no value. Off by default: a field without a value isn't shown. |
+
 ## Text field
 
 A single line of text, such as a subtitle or a reference number.

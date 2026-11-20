@@ -42,6 +42,11 @@ public sealed class ContentPickerFieldDisplayDriver : ContentFieldDisplayDriver<
         _httpContextAccessor = httpContextAccessor;
     }
 
+    protected override bool IsEmpty(ContentPickerField field)
+    {
+        return field.ContentItemIds is null || field.ContentItemIds.Length == 0;
+    }
+
     public override IDisplayResult Display(ContentPickerField field, BuildFieldDisplayContext fieldDisplayContext)
     {
         return Initialize<DisplayContentPickerFieldViewModel, ContentPickerField, BuildFieldDisplayContext> (GetDisplayShapeType(fieldDisplayContext), static (model, field, fieldDisplayContext) =>

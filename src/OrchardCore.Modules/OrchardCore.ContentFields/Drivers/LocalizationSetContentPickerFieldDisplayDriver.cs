@@ -31,6 +31,11 @@ public sealed class LocalizationSetContentPickerFieldDisplayDriver : ContentFiel
         _contentLocalizationManager = contentLocalizationManager;
     }
 
+    protected override bool IsEmpty(LocalizationSetContentPickerField field)
+    {
+        return field.LocalizationSets is null || field.LocalizationSets.Length == 0;
+    }
+
     public override IDisplayResult Display(LocalizationSetContentPickerField field, BuildFieldDisplayContext context)
     {
         return Initialize<DisplayLocalizationSetContentPickerFieldViewModel>(GetDisplayShapeType(context), model =>

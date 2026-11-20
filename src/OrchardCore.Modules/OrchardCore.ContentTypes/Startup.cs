@@ -61,6 +61,7 @@ public sealed class Startup : StartupBase
         services.AddScoped<IContentTypeDefinitionDisplayDriver, ContentTypeSettingsDisplayDriver>();
         services.AddScoped<IContentTypeDefinitionDisplayDriver, DefaultContentTypeDisplayDriver>();
         services.AddScoped<IContentTypePartDefinitionDisplayDriver, ContentTypePartSettingsDisplayDriver>();
+        services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPartFieldDisplaySettingsDisplayDriver>();
 
         // TODO: Put in its own feature to be able to execute this recipe without having to enable
         // Content Types management UI

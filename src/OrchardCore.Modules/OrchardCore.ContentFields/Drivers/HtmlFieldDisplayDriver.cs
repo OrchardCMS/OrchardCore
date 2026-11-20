@@ -19,6 +19,11 @@ public sealed class HtmlFieldDisplayDriver : ContentFieldDisplayDriver<HtmlField
         _htmlDisplayService = htmlDisplayService;
     }
 
+    protected override bool IsEmpty(HtmlField field)
+    {
+        return string.IsNullOrWhiteSpace(field.Html);
+    }
+
     public override IDisplayResult Display(HtmlField field, BuildFieldDisplayContext context)
     {
         return Initialize<DisplayHtmlFieldViewModel, HtmlFieldDisplayDriver, HtmlField, BuildFieldDisplayContext>(GetDisplayShapeType(context), static async (model, driver, field, context) =>

@@ -20,6 +20,11 @@ public sealed class NumericFieldDisplayDriver : ContentFieldDisplayDriver<Numeri
         S = localizer;
     }
 
+    protected override bool IsEmpty(NumericField field)
+    {
+        return !field.Value.HasValue;
+    }
+
     public override IDisplayResult Display(NumericField field, BuildFieldDisplayContext context)
     {
         return Initialize<DisplayNumericFieldViewModel>(GetDisplayShapeType(context), model =>

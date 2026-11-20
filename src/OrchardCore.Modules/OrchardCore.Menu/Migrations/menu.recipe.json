@@ -192,6 +192,7 @@
               "Name": "SelectedContentItem",
               "Settings": {
                 "ContentPartFieldSettings": {
+                  "DisplayFieldName": false,
                   "DisplayName": "Selected Content Item",
                   "Position": "0"
                 },

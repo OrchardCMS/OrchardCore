@@ -591,6 +591,7 @@
               "Name": "Image",
               "Settings": {
                 "ContentPartFieldSettings": {
+                  "DisplayFieldName": false,
                   "DisplayName": "Banner Image",
                   "Position": "0"
                 },
@@ -616,6 +617,7 @@
               "Name": "Subtitle",
               "Settings": {
                 "ContentPartFieldSettings": {
+                  "DisplayFieldName": false,
                   "DisplayName": "Subtitle",
                   "Position": "0"
                 }
@@ -626,6 +628,7 @@
               "Name": "Image",
               "Settings": {
                 "ContentPartFieldSettings": {
+                  "DisplayFieldName": false,
                   "DisplayName": "Banner Image",
                   "Position": "1"
                 },
@@ -645,6 +648,7 @@
               "Name": "Tags",
               "Settings": {
                 "ContentPartFieldSettings": {
+                  "DisplayFieldName": false,
                   "DisplayName": "Tags",
                   "Editor": "Tags",
                   "DisplayMode": "Tags",
@@ -661,6 +665,7 @@
               "Name": "Category",
               "Settings": {
                 "ContentPartFieldSettings": {
+                  "DisplayFieldName": false,
                   "DisplayName": "Category",
                   "Position": "3"
                 },
@@ -682,6 +687,7 @@
               "Name": "Subtitle",
               "Settings": {
                 "ContentPartFieldSettings": {
+                  "DisplayFieldName": false,
                   "DisplayName": "Subtitle",
                   "Position": "0"
                 }
@@ -692,6 +698,7 @@
               "Name": "Image",
               "Settings": {
                 "ContentPartFieldSettings": {
+                  "DisplayFieldName": false,
                   "DisplayName": "Banner Image",
                   "Position": "0"
                 },
@@ -712,6 +719,7 @@
               "Name": "Quote",
               "Settings": {
                 "ContentPartFieldSettings": {
+                  "DisplayFieldName": false,
                   "DisplayName": "Quote",
                   "Editor": "TextArea",
                   "Position": "0"
@@ -731,6 +739,7 @@
               "Name": "Media",
               "Settings": {
                 "ContentPartFieldSettings": {
+                  "DisplayFieldName": false,
                   "DisplayName": "Image",
                   "Position": "0"
                 },
@@ -745,6 +754,7 @@
               "Name": "Caption",
               "Settings": {
                 "ContentPartFieldSettings": {
+                  "DisplayFieldName": false,
                   "DisplayName": "Caption",
                   "Position": "1"
                 },
@@ -764,6 +774,7 @@
               "Name": "Content",
               "Settings": {
                 "ContentPartFieldSettings": {
+                  "DisplayFieldName": false,
                   "DisplayName": "Content",
                   "Position": "0",
                   "Editor": "Wysiwyg"
@@ -781,6 +792,7 @@
               "Name": "Content",
               "Settings": {
                 "ContentPartFieldSettings": {
+                  "DisplayFieldName": false,
                   "DisplayName": "Content",
                   "Position": "0",
                   "Editor": "Multiline"
@@ -798,6 +810,7 @@
               "Name": "Icon",
               "Settings": {
                 "ContentPartFieldSettings": {
+                  "DisplayFieldName": false,
                   "DisplayName": "Icon",
                   "Editor": "IconPicker",
                   "Position": "0"

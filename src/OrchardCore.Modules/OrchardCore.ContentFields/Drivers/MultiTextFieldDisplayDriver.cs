@@ -18,6 +18,11 @@ public sealed class MultiTextFieldDisplayDriver : ContentFieldDisplayDriver<Mult
         S = localizer;
     }
 
+    protected override bool IsEmpty(MultiTextField field)
+    {
+        return field.Values is null || field.Values.Length == 0;
+    }
+
     public override IDisplayResult Display(MultiTextField field, BuildFieldDisplayContext context)
     {
         return Initialize<DisplayMultiTextFieldViewModel>(GetDisplayShapeType(context), model =>

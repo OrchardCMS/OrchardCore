@@ -584,6 +584,7 @@
               "Name": "IconClass",
               "Settings": {
                 "ContentPartFieldSettings": {
+                  "DisplayFieldName": false,
                   "DisplayName": "Icon Class",
                   "Position": "0"
                 },
@@ -603,6 +604,7 @@
               "Name": "Image",
               "Settings": {
                 "ContentPartFieldSettings": {
+                  "DisplayFieldName": false,
                   "DisplayName": "Image",
                   "Position": "1"
                 },
@@ -617,6 +619,7 @@
               "Name": "Category",
               "Settings": {
                 "ContentPartFieldSettings": {
+                  "DisplayFieldName": false,
                   "DisplayName": "Category",
                   "Position": "0"
                 },
@@ -636,6 +639,7 @@
               "Name": "Date",
               "Settings": {
                 "ContentPartFieldSettings": {
+                  "DisplayFieldName": false,
                   "DisplayName": "Date",
                   "Position": "0"
                 }
@@ -646,6 +650,7 @@
               "Name": "Image",
               "Settings": {
                 "ContentPartFieldSettings": {
+                  "DisplayFieldName": false,
                   "DisplayName": "Image",
                   "Position": "1"
                 },
@@ -666,6 +671,7 @@
               "Name": "Occupation",
               "Settings": {
                 "ContentPartFieldSettings": {
+                  "DisplayFieldName": false,
                   "DisplayName": "Occupation",
                   "Position": "0"
                 }
@@ -676,6 +682,7 @@
               "Name": "Picture",
               "Settings": {
                 "ContentPartFieldSettings": {
+                  "DisplayFieldName": false,
                   "DisplayName": "Picture",
                   "Position": "1"
                 },
@@ -690,6 +697,7 @@
               "Name": "Twitter",
               "Settings": {
                 "ContentPartFieldSettings": {
+                  "DisplayFieldName": false,
                   "DisplayName": "Twitter",
                   "Position": "2"
                 },
@@ -703,6 +711,7 @@
               "Name": "Facebook",
               "Settings": {
                 "ContentPartFieldSettings": {
+                  "DisplayFieldName": false,
                   "DisplayName": "Facebook",
                   "Position": "3"
                 },
@@ -716,6 +725,7 @@
               "Name": "LinkedIn",
               "Settings": {
                 "ContentPartFieldSettings": {
+                  "DisplayFieldName": false,
                   "DisplayName": "LinkedIn",
                   "Position": "4"
                 },
@@ -735,6 +745,7 @@
               "Name": "Logo",
               "Settings": {
                 "ContentPartFieldSettings": {
+                  "DisplayFieldName": false,
                   "DisplayName": "Logo",
                   "Position": "0"
                 },
@@ -749,6 +760,7 @@
               "Name": "Url",
               "Settings": {
                 "ContentPartFieldSettings": {
+                  "DisplayFieldName": false,
                   "DisplayName": "Url",
                   "Position": "1"
                 }
@@ -765,6 +777,7 @@
               "Name": "Content",
               "Settings": {
                 "ContentPartFieldSettings": {
+                  "DisplayFieldName": false,
                   "DisplayName": "Content",
                   "Editor": "Multiline",
                   "Position": "0"
@@ -782,6 +795,7 @@
               "Name": "Quote",
               "Settings": {
                 "ContentPartFieldSettings": {
+                  "DisplayFieldName": false,
                   "DisplayName": "Quote",
                   "Position": "0",
                   "Editor": "TextArea"
@@ -803,6 +817,7 @@
               "Name": "Media",
               "Settings": {
                 "ContentPartFieldSettings": {
+                  "DisplayFieldName": false,
                   "DisplayName": "Image",
                   "Position": "0"
                 },
@@ -817,6 +832,7 @@
               "Name": "Caption",
               "Settings": {
                 "ContentPartFieldSettings": {
+                  "DisplayFieldName": false,
                   "DisplayName": "Caption",
                   "Position": "1"
                 },
@@ -836,6 +852,7 @@
               "Name": "Content",
               "Settings": {
                 "ContentPartFieldSettings": {
+                  "DisplayFieldName": false,
                   "DisplayName": "Content",
                   "Position": "0",
                   "Editor": "Wysiwyg"

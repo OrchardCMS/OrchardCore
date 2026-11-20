@@ -28,6 +28,11 @@ public sealed class UserPickerFieldDisplayDriver : ContentFieldDisplayDriver<Use
         S = stringLocalizer;
     }
 
+    protected override bool IsEmpty(UserPickerField field)
+    {
+        return field.UserIds is null || field.UserIds.Length == 0;
+    }
+
     public override IDisplayResult Display(UserPickerField field, BuildFieldDisplayContext context)
     {
         return Initialize<DisplayUserPickerFieldViewModel>(GetDisplayShapeType(context), model =>
