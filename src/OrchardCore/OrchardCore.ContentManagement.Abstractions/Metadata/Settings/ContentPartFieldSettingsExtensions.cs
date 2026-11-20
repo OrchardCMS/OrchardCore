@@ -28,4 +28,20 @@ public static class ContentPartFieldSettingsExtensions
     {
         return builder.MergeSettings<ContentPartFieldSettings>(x => x.Position = position);
     }
+
+    /// <summary>
+    /// Sets whether the name of the field is displayed next to its value.
+    /// </summary>
+    public static ContentPartFieldDefinitionBuilder WithDisplayFieldName(this ContentPartFieldDefinitionBuilder builder, bool displayFieldName = true)
+    {
+        return builder.MergeSettings<ContentPartFieldSettings>(x => x.DisplayFieldName = displayFieldName);
+    }
+
+    /// <summary>
+    /// Sets whether the field is displayed when it has no value.
+    /// </summary>
+    public static ContentPartFieldDefinitionBuilder WithAlwaysDisplay(this ContentPartFieldDefinitionBuilder builder, bool alwaysDisplay = true)
+    {
+        return builder.MergeSettings<ContentPartFieldSettings>(x => x.AlwaysDisplay = alwaysDisplay);
+    }
 }

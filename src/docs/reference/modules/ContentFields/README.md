@@ -46,6 +46,40 @@ You can create custom editors and display modes by following the patterns in the
 !!! note
     The `MediaField`'s `Attached` editor is documented in the [Media module](../Media/README.md). It stores files under `mediafields/` and requires the `ManageAttachedMediaFieldsFolder` permission.
 
+## Field Name and Empty Values
+
+Every field has two display settings, stored in `ContentPartFieldSettings` and edited from the settings of the field:
+
+| Setting | Default | Description |
+|---------|---------|-------------|
+| `DisplayFieldName` | `true` | Shows the name of the field next to its value when the content item is displayed. |
+| `AlwaysDisplay` | `false` | Displays the field even when it has no value. When `false`, a field without a value isn't displayed. |
+
+When `DisplayFieldName` is enabled, the display shape of the field gets the `ContentField_Wrapper` wrapper (`ContentField.Wrapper.cshtml`), which renders the localized name of the field followed by the field shape. In the admin, the wrapper uses the `ocat-wrapper`, `ocat-label` and `ocat-end` classes of the admin theme. A grid column of an admin list (the `SummaryAdminGrid` display type) already names the field in its header, so it doesn't get the wrapper. Override `ContentField.Wrapper.cshtml` in a theme to change how the name is rendered.
+
+Set both settings from a recipe, in the `ContentPartFieldSettings` of the field:
+
+```json
+"ContentPartFieldSettings": {
+  "DisplayName": "Lead source",
+  "DisplayFieldName": true,
+  "AlwaysDisplay": false
+}
+```
+
+Or from a migration:
+
+```csharp
+await _contentDefinitionManager.AlterPartDefinitionAsync("Lead", part => part
+    .WithField("LeadSource", field => field
+        .OfType(nameof(ContentPickerField))
+        .WithDisplayName("Lead source")
+        .WithDisplayFieldName()
+        .WithAlwaysDisplay(false)));
+```
+
+Whether a field has a value is decided by its display driver, which overrides `ContentFieldDisplayDriver<TField>.IsEmpty(TField field)`. A field whose driver doesn't override it is always displayed.
+
 ## Usage
 
 From a `Content` template, you can reference a field's value like this
@@ -348,6 +382,9 @@ services.AddContentField<TextField>();
 ```
 
 ### Display Driver
+
+Override `IsEmpty` in the display driver so that the field isn't displayed without a value, unless its **Always display** setting is enabled. A display template doesn't need to render the name of the field, which is added by the `ContentField_Wrapper` wrapper when **Display the field name** is enabled.
+
 
 The display driver is the component that drives how the field is displayed on the front end, edited on
 the admin, updated and validated.

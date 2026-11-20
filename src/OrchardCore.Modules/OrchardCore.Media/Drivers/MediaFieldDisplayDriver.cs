@@ -37,6 +37,11 @@ public sealed class MediaFieldDisplayDriver : ContentFieldDisplayDriver<MediaFie
     private AttachedMediaFieldFileService AttachedMediaFieldFileService
         => _attachedMediaFieldFileService ??= _serviceProvider.GetRequiredService<AttachedMediaFieldFileService>();
 
+    protected override bool IsEmpty(MediaField field)
+    {
+        return field.Paths is null || field.Paths.Length == 0;
+    }
+
     public override IDisplayResult Display(MediaField field, BuildFieldDisplayContext context)
     {
         return Initialize<DisplayMediaFieldViewModel>(GetDisplayShapeType(context), model =>

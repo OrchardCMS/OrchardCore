@@ -112,8 +112,9 @@ Only parts marked **Reusable** are offered. When there are none, the screen says
 1. In the type editor, click **Edit** on the field's row.
 2. Change the **Display Name** if needed. The **Technical Name** is read only.
 3. Set the options of the field type, such as **Required**, **Hint**, **Placeholder** or **Default value**. Each field type has its own options, described on the [Fields](fields.md) page.
-4. When the field type has several editors, pick one in **What type of editor should be used?** (for example **Standard**, **Multi-line**, **Email** or **Url** for a text field). Pick how it is shown on the site in **What type of display mode should be used?**.
-5. Click **Save**.
+4. Check **Display the field name** to show the name of the field next to its value, and **Always display** to show the field even when it has no value.
+5. When the field type has several editors, pick one in **What type of editor should be used?** (for example **Standard**, **Multi-line**, **Email** or **Url** for a text field). Pick how it is shown on the site in **What type of display mode should be used?**.
+6. Click **Save**.
 
 The field settings may also show index options (**Include this element in the index**, ...), used by [site search](../search/site-search.md).
 

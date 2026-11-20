@@ -18,6 +18,11 @@ public sealed class MarkdownFieldDisplayDriver : ContentFieldDisplayDriver<Markd
         _markdownDisplayService = markdownDisplayService;
     }
 
+    protected override bool IsEmpty(MarkdownField field)
+    {
+        return string.IsNullOrWhiteSpace(field.Markdown);
+    }
+
     public override IDisplayResult Display(MarkdownField field, BuildFieldDisplayContext context)
     {
         return Initialize<MarkdownFieldViewModel>(GetDisplayShapeType(context), async model =>

@@ -263,6 +263,7 @@
               "Name": "IconClass",
               "Settings": {
                 "ContentPartFieldSettings": {
+                  "DisplayFieldName": false,
                   "DisplayName": "Icon Class",
                   "Editor": "IconPicker",
                   "Position": "0"
@@ -277,6 +278,7 @@
               "Name": "Url",
               "Settings": {
                 "ContentPartFieldSettings": {
+                  "DisplayFieldName": false,
                   "DisplayName": "Social Site Url",
                   "Position": "1"
                 },
@@ -297,6 +299,7 @@
               "Name": "Placeholder",
               "Settings": {
                 "ContentPartFieldSettings": {
+                  "DisplayFieldName": false,
                   "DisplayName": "Placeholder",
                   "Position": "0"
                 },
@@ -310,6 +313,7 @@
               "Name": "Button",
               "Settings": {
                 "ContentPartFieldSettings": {
+                  "DisplayFieldName": false,
                   "DisplayName": "Button",
                   "Position": "2"
                 },
@@ -323,6 +327,7 @@
               "Name": "InputFieldName",
               "Settings": {
                 "ContentPartFieldSettings": {
+                  "DisplayFieldName": false,
                   "DisplayName": "InputFieldName",
                   "Position": "1"
                 },

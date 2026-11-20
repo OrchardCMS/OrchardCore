@@ -30,6 +30,11 @@ public sealed class LiquidFieldDisplayDriver : ContentFieldDisplayDriver<LiquidF
         S = localizer;
     }
 
+    protected override bool IsEmpty(LiquidField field)
+    {
+        return string.IsNullOrWhiteSpace(field.Liquid);
+    }
+
     public override IDisplayResult Display(LiquidField field, BuildFieldDisplayContext context)
     {
         return Initialize<LiquidFieldViewModel>(GetDisplayShapeType(context), model =>

@@ -21,6 +21,11 @@ public sealed class GeoPointFieldDisplayDriver : ContentFieldDisplayDriver<GeoPo
         S = localizer;
     }
 
+    protected override bool IsEmpty(GeoPointField field)
+    {
+        return !field.Latitude.HasValue || !field.Longitude.HasValue;
+    }
+
     public override IDisplayResult Display(GeoPointField field, BuildFieldDisplayContext context)
     {
         return Initialize<DisplayGeoPointFieldViewModel>(GetDisplayShapeType(context), model =>

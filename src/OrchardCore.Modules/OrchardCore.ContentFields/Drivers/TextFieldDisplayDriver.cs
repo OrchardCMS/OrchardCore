@@ -19,6 +19,11 @@ public sealed class TextFieldDisplayDriver : ContentFieldDisplayDriver<TextField
         S = localizer;
     }
 
+    protected override bool IsEmpty(TextField field)
+    {
+        return string.IsNullOrWhiteSpace(field.Text);
+    }
+
     public override IDisplayResult Display(TextField field, BuildFieldDisplayContext context)
     {
         return Initialize<DisplayTextFieldViewModel>(GetDisplayShapeType(context), model =>

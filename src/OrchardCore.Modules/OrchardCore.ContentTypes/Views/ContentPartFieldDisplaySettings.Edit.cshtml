@@ -1,0 +1,21 @@
+@model ContentPartFieldDisplaySettingsViewModel
+
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input asp-for="DisplayFieldName" type="checkbox" class="form-check-input" />
+            <label class="form-check-label" asp-for="DisplayFieldName">@T["Display the field name"]</label>
+            <span class="hint dashed">@T["Shows the name of the field next to its value when the content item is displayed."]</span>
+        </div>
+    </div>
+</div>
+
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input asp-for="AlwaysDisplay" type="checkbox" class="form-check-input" />
+            <label class="form-check-label" asp-for="AlwaysDisplay">@T["Always display"]</label>
+            <span class="hint dashed">@T["Displays the field even when it has no value. When unchecked, a field without a value is not displayed."]</span>
+        </div>
+    </div>
+</div>

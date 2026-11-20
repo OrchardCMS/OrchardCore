@@ -1,5 +1,6 @@
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -12,6 +13,7 @@ public abstract class ContentFieldDisplayDriver<TField> : DisplayDriverBase, ICo
 
     private ContentTypePartDefinition _typePartDefinition;
     private ContentPartFieldDefinition _partFieldDefinition;
+    private bool _isDisplay;
 
     public override ShapeResult Factory<TBuilderState, TInitState>(string shapeType, Func<IBuildShapeContext, TBuilderState, ValueTask<IShape>> shapeBuilder, TBuilderState shapeBuilderState, Func<IShape, TInitState, ValueTask> initializingAsync, TInitState initializingState)
     {
@@ -59,6 +61,7 @@ public abstract class ContentFieldDisplayDriver<TField> : DisplayDriverBase, ICo
             // we need to cache it here for use in the displaying event to add alternates.
             var typePartDefinition = _typePartDefinition;
             var partFieldDefinition = _partFieldDefinition;
+            var displayFieldName = _isDisplay && partFieldDefinition.GetSettings<ContentPartFieldSettings>().DisplayFieldName;
             result.Displaying(ctx =>
             {
                 var displayType = ctx.Shape.Metadata.DisplayType;
@@ -66,6 +69,13 @@ public abstract class ContentFieldDisplayDriver<TField> : DisplayDriverBase, ICo
                 // Get cached alternates for this display type and add them efficiently
                 var cachedAlternates = ContentFieldAlternatesFactory.GetAlternates(typePartDefinition, partFieldDefinition, shapeType, displayType);
                 ctx.Shape.Metadata.Alternates.AddRange(cachedAlternates);
+
+                // A grid column already shows the name of the field in its header.
+                if (displayFieldName && displayType != OrchardCoreConstants.DisplayType.SummaryAdminGrid)
+                {
+                    ctx.Shape.Properties[ContentFieldDisplayConstants.PartFieldDefinitionProperty] = partFieldDefinition;
+                    ctx.Shape.Metadata.Wrappers.Add(ContentFieldDisplayConstants.WrapperShapeType);
+                }
             });
         }
 
@@ -83,17 +93,24 @@ public abstract class ContentFieldDisplayDriver<TField> : DisplayDriverBase, ICo
         var field = contentPart.Get<TField>(partFieldDefinition.Name);
         if (field != null)
         {
+            if (IsEmpty(field) && !partFieldDefinition.GetSettings<ContentPartFieldSettings>().AlwaysDisplay)
+            {
+                return Task.FromResult(default(IDisplayResult));
+            }
+
             BuildPrefix(typePartDefinition, partFieldDefinition, context.HtmlFieldPrefix);
 
             var fieldDisplayContext = new BuildFieldDisplayContext(contentPart, typePartDefinition, partFieldDefinition, context);
 
             _typePartDefinition = typePartDefinition;
             _partFieldDefinition = partFieldDefinition;
+            _isDisplay = true;
 
             var result = DisplayAsync(field, fieldDisplayContext);
 
             _typePartDefinition = null;
             _partFieldDefinition = null;
+            _isDisplay = false;
 
             return result;
         }
@@ -156,6 +173,17 @@ public abstract class ContentFieldDisplayDriver<TField> : DisplayDriverBase, ICo
         contentPart.Apply(partFieldDefinition.Name, field);
 
         return result;
+    }
+
+    /// <summary>
+    /// Returns whether the field has no value. A field without a value is only displayed when its
+    /// <see cref="ContentPartFieldSettings.AlwaysDisplay"/> setting is enabled.
+    /// </summary>
+    /// <param name="field">The field to check.</param>
+    /// <returns><see langword="true"/> when the field has no value to display; by default <see langword="false"/>.</returns>
+    protected virtual bool IsEmpty(TField field)
+    {
+        return false;
     }
 
     public virtual Task<IDisplayResult> DisplayAsync(TField field, BuildFieldDisplayContext fieldDisplayContext)

@@ -27,6 +27,11 @@ public sealed class TaxonomyFieldTagsDisplayDriver : ContentFieldDisplayDriver<T
         S = stringLocalizer;
     }
 
+    protected override bool IsEmpty(TaxonomyField field)
+    {
+        return field.TermContentItemIds is null || field.TermContentItemIds.Length == 0;
+    }
+
     public override IDisplayResult Display(TaxonomyField field, BuildFieldDisplayContext context)
     {
         return Initialize<DisplayTaxonomyFieldTagsViewModel>(GetDisplayShapeType(context), model =>

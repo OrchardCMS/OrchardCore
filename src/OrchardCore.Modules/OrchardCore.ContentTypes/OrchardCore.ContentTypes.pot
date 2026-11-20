@@ -894,6 +894,26 @@ msgctxt "OrchardCore.ContentTypes.Views.ContentPartEntry.Buttons.SummaryAdmin"
 msgid "Ok"
 msgstr ""
 
+#: Views/ContentPartFieldDisplaySettings.Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.ContentPartFieldDisplaySettings.Edit"
+msgid "Always display"
+msgstr ""
+
+#: Views/ContentPartFieldDisplaySettings.Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.ContentPartFieldDisplaySettings.Edit"
+msgid "Display the field name"
+msgstr ""
+
+#: Views/ContentPartFieldDisplaySettings.Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.ContentPartFieldDisplaySettings.Edit"
+msgid "Displays the field even when it has no value. When unchecked, a field without a value is not displayed."
+msgstr ""
+
+#: Views/ContentPartFieldDisplaySettings.Edit.cshtml
+msgctxt "OrchardCore.ContentTypes.Views.ContentPartFieldDisplaySettings.Edit"
+msgid "Shows the name of the field next to its value when the content item is displayed."
+msgstr ""
+
 #: Views/ContentPartSettings.Edit.cshtml
 msgctxt "OrchardCore.ContentTypes.Views.ContentPartSettings.Edit"
 msgid "Attachable"
