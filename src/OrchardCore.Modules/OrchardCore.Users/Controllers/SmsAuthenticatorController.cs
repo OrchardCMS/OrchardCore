@@ -67,7 +67,7 @@ public sealed class SmsAuthenticatorController : TwoFactorAuthenticationBaseCont
             return UserNotFound();
         }
 
-        var settings = await SiteService.GetSettingsAsync<LoginSettings>();
+        var settings = await SiteService.GetSettingsAsync<PhoneLoginSettings>();
 
         var currentPhoneNumber = await UserManager.GetPhoneNumberAsync(user);
 
@@ -76,7 +76,7 @@ public sealed class SmsAuthenticatorController : TwoFactorAuthenticationBaseCont
             PhoneNumber = currentPhoneNumber,
             AllowChangingPhoneNumber = settings.AllowChangingPhoneNumber
             || string.IsNullOrEmpty(currentPhoneNumber)
-            || !_phoneFormatValidator.IsValid(currentPhoneNumber),
+            || !_phoneFormatValidator.Validate(currentPhoneNumber).Succeeded,
         };
 
         return View(model);
@@ -92,21 +92,30 @@ public sealed class SmsAuthenticatorController : TwoFactorAuthenticationBaseCont
             return UserNotFound();
         }
 
-        var settings = await SiteService.GetSettingsAsync<LoginSettings>();
+        var settings = await SiteService.GetSettingsAsync<PhoneLoginSettings>();
 
         var currentPhoneNumber = await UserManager.GetPhoneNumberAsync(user);
 
         var canSetNewPhone = settings.AllowChangingPhoneNumber ||
             string.IsNullOrEmpty(currentPhoneNumber) ||
-            !_phoneFormatValidator.IsValid(currentPhoneNumber);
+            !_phoneFormatValidator.Validate(currentPhoneNumber).Succeeded;
 
         model.AllowChangingPhoneNumber = canSetNewPhone;
 
-        if (canSetNewPhone && !_phoneFormatValidator.IsValid(model.PhoneNumber))
+        if (canSetNewPhone)
         {
-            ModelState.AddModelError(nameof(model.PhoneNumber), S["Invalid phone number used."]);
+            var validationResult = _phoneFormatValidator.Validate(model.PhoneNumber);
+            if (!validationResult.Succeeded)
+            {
+                foreach (var error in validationResult.Errors)
+                {
+                    ModelState.AddModelError(nameof(model.PhoneNumber), error.Message);
+                }
 
-            return View(model);
+                return View(model);
+            }
+
+            model.PhoneNumber = validationResult.Value.E164Number;
         }
 
         var phoneNumber = canSetNewPhone ? model.PhoneNumber : currentPhoneNumber;

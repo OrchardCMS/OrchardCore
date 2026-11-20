@@ -1299,6 +1299,11 @@ msgctxt "OrchardCore.ContentFields.Views.NumericFieldSettings.Edit"
 msgid "Whether a value is required."
 msgstr ""
 
+#: Views/TextField-Advanced.DisplayOption.cshtml
+msgctxt "OrchardCore.ContentFields.Views.TextField-Advanced.DisplayOption"
+msgid "Advanced"
+msgstr ""
+
 #: Views/TextField-CodeMirror.Option.cshtml
 msgctxt "OrchardCore.ContentFields.Views.TextField-CodeMirror.Option"
 msgid "Code Mirror"
