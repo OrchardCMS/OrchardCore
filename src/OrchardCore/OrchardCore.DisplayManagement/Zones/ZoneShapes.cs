@@ -11,7 +11,7 @@ namespace OrchardCore.DisplayManagement.Zones;
 public class ZoneShapes : IShapeAttributeProvider
 {
     // By convention all placement delimiters default to the name 'Content' when not specified during placement.
-    private const string ContentKey = "Content";
+    private const string ContentKey = TabAndCardNames.Default;
 
     [Shape]
     public static async Task<IHtmlContent> Zone(IDisplayHelper DisplayAsync, IEnumerable<object> Shape)
