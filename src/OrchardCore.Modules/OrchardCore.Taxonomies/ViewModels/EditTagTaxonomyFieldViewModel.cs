@@ -9,8 +9,17 @@ public class EditTagTaxonomyFieldViewModel
 {
     public string TermContentItemIds { get; set; }
 
+    /// <summary>
+    /// Gets or sets the terms of the taxonomy, serialized as a JSON array of <see cref="TagTermEntry"/> objects.
+    /// </summary>
     [BindNever]
     public string TagTermEntries { get; set; }
+
+    /// <summary>
+    /// Gets or sets the terms of the taxonomy, the selected ones first in the order of the field.
+    /// </summary>
+    [BindNever]
+    public IList<TagTermEntry> TagTerms { get; set; } = [];
 
     [BindNever]
     public ContentItem Taxonomy { get; set; }

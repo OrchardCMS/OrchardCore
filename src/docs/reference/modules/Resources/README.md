@@ -67,12 +67,16 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 | list-management       | Script | 1.0.0        | -             |
 | trumbowyg             | Style  | 2.28.0       | -             |
 | trumbowyg             | Script | 2.28.0       | -             |
-| vue-multiselect       | Script | 2.1.6        | -             |
+| vue-multiselect       | Script | 3.2.0        | vuejs         |
+| vue-multiselect       | Style  | 3.2.0        | -             |
 | vuedraggable          | Script | 2.24.3       | Sortable      |
 | monaco-loader         | Script | 0.52.2       | -             |
 | monaco                | Script | 0.52.2       | monaco-loader |
 | nouislider            | Script | 15.6.1       | -             |
 | nouislider            | Style  | 15.6.1       | -             |
+
+!!! warning "Obsolete"
+    The `vue-multiselect` script and style resources are obsolete and will be removed in the next major version. Nothing in Orchard Core uses them anymore: use the `bootstrap-select` resources instead.
 
 ### Registering a Resource Manifest
 

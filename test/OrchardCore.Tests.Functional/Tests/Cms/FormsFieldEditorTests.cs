@@ -15,7 +15,7 @@ namespace OrchardCore.Tests.Functional.Tests.Cms;
 //
 // Writing this test caught a real, independently-shipped regression (see issue #19772):
 // select-part-editor.ts (and two shared bloom components with the identical pattern,
-// options-table-editor.ts and multiselect-picker.ts) registered vuedraggable's UMD global
+// options-table-editor.ts and the former multiselect-picker.ts) registered vuedraggable's UMD global
 // as `draggable: vuedraggable.default`. The vuedraggable@4.1.0 UMD bundle's wrapper ends
 // with `})["default"]`, which unwraps webpack's `__webpack_exports__["default"]` one level
 // before assigning to `root["vuedraggable"]` - so `window.vuedraggable` IS the component

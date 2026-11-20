@@ -1140,6 +1140,8 @@ public sealed class ResourceManagementOptionsConfiguration
             )
             .SetVersion("3.5.13");
 
+        // The 'vue-multiselect' script is obsolete and will be removed in the next major version: nothing in Orchard Core
+        // uses it, use the 'bootstrap-select' resources instead.
         manifest
             .DefineScript("vue-multiselect")
             .SetDependencies("vuejs")
@@ -1157,6 +1159,8 @@ public sealed class ResourceManagementOptionsConfiguration
             )
             .SetVersion("3.2.0");
 
+        // The 'vue-multiselect' style is obsolete and will be removed in the next major version: nothing in Orchard Core
+        // uses it, use the 'bootstrap-select' resources instead.
         manifest
             .DefineStyle("vue-multiselect")
             .SetUrl(
