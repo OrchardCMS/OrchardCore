@@ -265,6 +265,13 @@ msgctxt "OrchardCore.UrlRewriting.Views.RewriteRule.Buttons.SummaryAdmin"
 msgid "Edit"
 msgstr ""
 
+#. Format arguments: {0}: Model.Value.Name
+#: Views/RewriteRule.Checkbox.SummaryAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.UrlRewriting.Views.RewriteRule.Checkbox.SummaryAdmin"
+msgid "Select {0}"
+msgstr ""
+
 #: Views/RewriteRule.DefaultMeta.SummaryAdmin.cshtml
 msgctxt "OrchardCore.UrlRewriting.Views.RewriteRule.DefaultMeta.SummaryAdmin"
 msgid "Author"

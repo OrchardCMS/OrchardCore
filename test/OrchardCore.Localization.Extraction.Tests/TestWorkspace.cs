@@ -63,6 +63,10 @@ internal sealed class TestWorkspace : IDisposable
                 var fullPath = Path.Combine(directory, path);
                 trees.Add(CSharpSyntaxTree.ParseText(File.ReadAllText(fullPath), path: fullPath));
             }
+
+            // 'LocalizationSource' names its JSON converter in an attribute.
+            var converterPath = Path.Combine(RepositoryRoot, "src", "OrchardCore", "OrchardCore.Abstractions", "Json", "Serialization", "LocalizationSourceJsonConverter.cs");
+            trees.Add(CSharpSyntaxTree.ParseText(File.ReadAllText(converterPath), path: converterPath));
         }
         if (includePlurals)
         {

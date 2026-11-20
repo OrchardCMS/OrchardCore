@@ -38,11 +38,6 @@ msgctxt "OrchardCore.Widgets.Views.Widget.DetailAdmin"
 msgid "Manage Content"
 msgstr ""
 
-#: Views/Widget.SummaryAdmin.cshtml
-msgctxt "OrchardCore.Widgets.Views.Widget.SummaryAdmin"
-msgid "Actions"
-msgstr ""
-
 #: Views/WidgetsListPart.Edit.cshtml
 msgctxt "OrchardCore.Widgets.Views.WidgetsListPart.Edit"
 msgid "Add Widget"

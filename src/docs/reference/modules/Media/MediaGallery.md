@@ -82,6 +82,8 @@ The storage info popover (accessible from the toolbar) displays information abou
 
 ## Upload Behavior
 
+`POST api/media/Upload` accepts the destination folder in the `path` query parameter. If the parameter is missing, the endpoint uses the `path` field from the multipart form. To upload to the library root, send `?path=` or omit `path` from both the query and the form.
+
 ### File Size Validation
 
 The `MaxFileSize` setting is enforced at multiple layers:

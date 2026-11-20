@@ -779,6 +779,13 @@ msgctxt "OrchardCore.RateLimits.Views.RateLimitPolicy.Buttons.SummaryAdmin"
 msgid "Edit"
 msgstr ""
 
+#. Format arguments: {0}: Model.Value.Name
+#: Views/RateLimitPolicy.Checkbox.SummaryAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.RateLimits.Views.RateLimitPolicy.Checkbox.SummaryAdmin"
+msgid "Select {0}"
+msgstr ""
+
 #: Views/RateLimitPolicy.DefaultTags.SummaryAdmin.cshtml
 msgctxt "OrchardCore.RateLimits.Views.RateLimitPolicy.DefaultTags.SummaryAdmin"
 msgid "Disabled"

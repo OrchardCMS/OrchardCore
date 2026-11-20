@@ -52,7 +52,8 @@ const initActionBar = (bar: HTMLElement) => {
         });
 
         const { menu, toggle, items } = createMenu();
-        bar.prepend(menu);
+        // The "more" toggle is the last control of the bar, after the main actions.
+        bar.append(menu);
 
         let usesMenu: boolean | null = null;
 

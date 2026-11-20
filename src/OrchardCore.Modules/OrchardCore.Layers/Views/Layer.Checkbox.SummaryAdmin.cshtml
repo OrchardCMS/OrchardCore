@@ -6,5 +6,5 @@
 @* Checking a layer highlights its widgets in the zones beside the list. *@
 <div class="form-check">
     <input type="checkbox" class="form-check-input layer-check" id="@Model.Value.Name" value="@Model.Value.Name">
-    <label class="form-check-label" for="@Model.Value.Name">&nbsp;</label>
+    <label class="form-check-label" for="@Model.Value.Name">&nbsp;<span class="visually-hidden">@T["Select {0}", Model.Value.Name]</span></label>
 </div>

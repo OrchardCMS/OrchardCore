@@ -35,7 +35,7 @@ internal sealed class LazyViewLocalizer : IViewLocalizer
 
                 if (localizer is IViewContextAware contextable)
                 {
-                    contextable.Contextualize(_viewContext);
+                    contextable.Contextualize(GetPathViewContext(_viewContext));
                 }
 
                 _localizer = localizer;
@@ -43,6 +43,21 @@ internal sealed class LazyViewLocalizer : IViewLocalizer
 
             return _localizer;
         }
+    }
+
+    // The view localizer is named after the path of the view, which a view context created to render a shape outside
+    // a view doesn't have, e.g. by the IShapeHtmlRenderer: it's localized like the fallback view of the Liquid templates.
+    private static ViewContext GetPathViewContext(ViewContext viewContext)
+    {
+        if (viewContext.View is null || !string.IsNullOrEmpty(viewContext.ExecutingFilePath) || !string.IsNullOrEmpty(viewContext.View.Path))
+        {
+            return viewContext;
+        }
+
+        return new ViewContext(viewContext, viewContext.View, viewContext.ViewData, viewContext.Writer)
+        {
+            ExecutingFilePath = LiquidViewsFeatureProvider.DefaultRazorViewPath,
+        };
     }
 
     public LocalizedHtmlString this[string name] => Localizer[name];

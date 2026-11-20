@@ -159,6 +159,11 @@ msgstr ""
 
 #: Views/Admin/Create.cshtml
 msgctxt "OrchardCore.Layers.Views.Admin.Create"
+msgid "Cancel"
+msgstr ""
+
+#: Views/Admin/Create.cshtml
+msgctxt "OrchardCore.Layers.Views.Admin.Create"
 msgid "Create"
 msgstr ""
 
@@ -180,6 +185,11 @@ msgstr ""
 #: Views/Admin/Create.cshtml
 msgctxt "OrchardCore.Layers.Views.Admin.Create"
 msgid "Widgets and Layers"
+msgstr ""
+
+#: Views/Admin/Edit.cshtml
+msgctxt "OrchardCore.Layers.Views.Admin.Edit"
+msgid "Cancel"
 msgstr ""
 
 #: Views/Admin/Edit.cshtml
@@ -217,11 +227,6 @@ msgstr ""
 #: Views/Admin/Index.cshtml
 msgctxt "OrchardCore.Layers.Views.Admin.Index"
 msgid "Actions"
-msgstr ""
-
-#: Views/Admin/Index.cshtml
-msgctxt "OrchardCore.Layers.Views.Admin.Index"
-msgid "Add"
 msgstr ""
 
 #: Views/Admin/Index.cshtml
@@ -323,6 +328,13 @@ msgctxt "OrchardCore.Layers.Views.Layer.Buttons.SummaryAdmin"
 msgid "Edit"
 msgstr ""
 
+#. Format arguments: {0}: Model.Value.Name
+#: Views/Layer.Checkbox.SummaryAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Layers.Views.Layer.Checkbox.SummaryAdmin"
+msgid "Select {0}"
+msgstr ""
+
 #: Views/LayerMetadata.Edit.cshtml
 msgctxt "OrchardCore.Layers.Views.LayerMetadata.Edit"
 msgid "If checked, the title will be rendered with the widget."
@@ -380,6 +392,11 @@ msgctxt "OrchardCore.Layers.Views.LayerRule.Create"
 msgid "Widgets and Layers"
 msgstr ""
 
+#: Views/LayerRule/Edit.cshtml
+msgctxt "OrchardCore.Layers.Views.LayerRule.Edit"
+msgid "Cancel"
+msgstr ""
+
 #. Format arguments: {0}: Model.Name
 #: Views/LayerRule/Edit.cshtml
 #, csharp-format
@@ -412,4 +429,9 @@ msgstr ""
 #: Views/LayerSettings.Edit.cshtml
 msgctxt "OrchardCore.Layers.Views.LayerSettings.Edit"
 msgid "Available zones for Layers"
+msgstr ""
+
+#: Views/LayersCreateButton.cshtml
+msgctxt "OrchardCore.Layers.Views.LayersCreateButton"
+msgid "Add Layer"
 msgstr ""

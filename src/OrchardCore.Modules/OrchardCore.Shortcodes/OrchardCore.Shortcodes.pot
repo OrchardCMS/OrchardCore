@@ -378,6 +378,13 @@ msgctxt "OrchardCore.Shortcodes.Views.ShortcodeTemplateEntry.Buttons.SummaryAdmi
 msgid "Edit"
 msgstr ""
 
+#. Format arguments: {0}: Model.Value.Name
+#: Views/ShortcodeTemplateEntry.Checkbox.SummaryAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Shortcodes.Views.ShortcodeTemplateEntry.Checkbox.SummaryAdmin"
+msgid "Select {0}"
+msgstr ""
+
 #: Views/ShortcodeTemplateEntry.DefaultTags.SummaryAdmin.cshtml
 msgctxt "OrchardCore.Shortcodes.Views.ShortcodeTemplateEntry.DefaultTags.SummaryAdmin"
 msgid "Category"
