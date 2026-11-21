@@ -864,6 +864,20 @@ html:has(body.ta-admin) {
   z-index: var(--oc-action-bar-zindex);
 }
 
+.action-bar.card,
+.action-bar > .card {
+  transition: margin 0.15s ease-in-out, padding 0.15s ease-in-out, border-radius 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.action-bar.action-bar-stuck.card, .action-bar.action-bar-stuck > .card {
+  margin-inline: calc(-1 * var(--ta-content-padding-x));
+  padding-inline: var(--ta-content-padding-x);
+  border-top-color: transparent;
+  border-inline-color: transparent;
+  border-radius: 0;
+  box-shadow: var(--ta-topbar-shadow);
+}
+
 .second-action-bar {
   z-index: var(--oc-second-action-bar-zindex);
 }
