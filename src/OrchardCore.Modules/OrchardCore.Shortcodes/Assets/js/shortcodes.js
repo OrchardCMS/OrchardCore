@@ -27,7 +27,7 @@ const shortcodeBtnTemplate = `
 </button>
 `;
 
-// Wraps each .shortcode-modal-input class with a wrapper, and attaches detaches the shortcode app as required.
+// Only bind input buttons here; rich editors register their own insertion callbacks.
 document.addEventListener('DOMContentLoaded', () => {
     const inputs = document.querySelectorAll('.shortcode-modal-input');
     inputs.forEach(input => {
@@ -36,14 +36,8 @@ document.addEventListener('DOMContentLoaded', () => {
         input.parentElement.insertBefore(wrapper, input);
         wrapper.appendChild(input);
 
-        input.parentElement.insertAdjacentHTML('beforeend', shortcodeBtnTemplate);        
-    });
-
-    const buttons = document.querySelectorAll('.shortcode-modal-btn');
-    buttons.forEach(button => {
-        button.addEventListener('click', event => {
-            const input = event.target.closest('.shortcode-modal-wrapper').querySelector('.shortcode-modal-input');
-
+        wrapper.insertAdjacentHTML('beforeend', shortcodeBtnTemplate);
+        wrapper.querySelector('.shortcode-modal-btn').addEventListener('click', () => {
             shortcodesApp.init(defaultValue => {
                 insertAtCaret(input, defaultValue);
             });
@@ -55,6 +49,9 @@ var shortcodesApp;
 
 window.initializeShortcodesApp = function (element) {
     if (element && !shortcodesApp) {
+        // Bootstrap instances must not be proxied by Vue's reactive state.
+        let modal;
+
         shortcodesApp = Vue.createApp({
             data : function () {
                 
@@ -66,8 +63,7 @@ window.initializeShortcodesApp = function (element) {
                     allShortcodes: shortcodes,
                     filteredShortcodes: shortcodes,
                     categories: categories,
-                    defaultValue: '',
-                    modal: null
+                    defaultValue: ''
                 }
             },
             watch:
@@ -82,6 +78,11 @@ window.initializeShortcodesApp = function (element) {
                     }
                 }
             },            
+            mounted() {
+                element.addEventListener('shown.bs.modal', () => {
+                    this.$refs.filter.focus();
+                });
+            },
             methods: {
                 init(onClose)
                 {
@@ -89,16 +90,8 @@ window.initializeShortcodesApp = function (element) {
                         this.onClose = onClose;
                     }
                     this.selectedValue = '';
-                    // Vue 3's mount() renders the app's template INSIDE the container element
-                    // rather than replacing it (unlike Vue 2, where this.$el was the container
-                    // itself) - this.$el is now the modal-dialog div, not the .modal container,
-                    // so bootstrap.Modal must target the actual container (`element`, closed
-                    // over from initializeShortcodesApp's parameter) instead.
-                    this.modal = new bootstrap.Modal(element);
-                    this.modal.show();
-                    element.addEventListener('shown.bs.modal', () => {
-                        this.$refs.filter.focus();
-                    });
+                    modal ??= new bootstrap.Modal(element);
+                    modal.show();
                 },
                 onClose()
                 {
@@ -118,8 +111,8 @@ window.initializeShortcodesApp = function (element) {
                     return this.filteredShortcodes.some(s => s.name === name);
                 },
                 insertShortcode(event) {
-                    this.defaultValue =  event.target.dataset.defaultValue;
-                    this.modal.hide();
+                    this.defaultValue = event.target.dataset.defaultValue;
+                    modal.hide();
                     this.onClose(this.defaultValue);
                 }
             }

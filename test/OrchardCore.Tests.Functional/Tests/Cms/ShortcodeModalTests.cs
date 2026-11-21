@@ -61,18 +61,54 @@ public sealed class ShortcodeModalTests : CmsTestBase<EsModuleTestsFixture>, ICl
         await Assertions.Expect(modal).ToBeVisibleAsync();
         await Assertions.Expect(modal).ToHaveClassAsync(new System.Text.RegularExpressions.Regex("\\bshow\\b"));
 
-        // The modal being merely "visible" per Playwright's CSS-based definition isn't
-        // enough on its own to prove the bug is fixed (Playwright's visibility check doesn't
-        // care that a z-index'd backdrop sits on top) - clicking through to an element inside
-        // the modal only succeeds if the modal is genuinely interactive, i.e. not obscured by
-        // its own backdrop. No shortcode descriptors are registered in this test recipe, so
-        // click the modal's own Cancel button instead of a shortcode card - same principle,
-        // no seeded shortcode data required.
-        var cancelButton = modal.Locator(".modal-footer button", new LocatorLocatorOptions { HasText = "Cancel" });
+        var cancelButton = modal.Locator(".modal-footer button[data-bs-dismiss='modal']");
         await Assertions.Expect(cancelButton).ToBeVisibleAsync();
         await cancelButton.ClickAsync();
 
         await Assertions.Expect(modal).Not.ToBeVisibleAsync();
+        await Assertions.Expect(page.Locator(".modal-backdrop")).ToHaveCountAsync(0);
+        await Assertions.Expect(page.Locator("body")).Not.ToHaveClassAsync(new System.Text.RegularExpressions.Regex("\\bmodal-open\\b"));
+        await page.Locator("#TitlePart_Title").FillAsync("Still editable after Cancel");
+
+        await shortcodeButton.ClickAsync();
+        await Assertions.Expect(page.Locator(".modal-backdrop")).ToHaveCountAsync(1);
+        await cancelButton.ClickAsync();
+        await Assertions.Expect(modal).Not.ToBeVisibleAsync();
+        await Assertions.Expect(page.Locator(".modal-backdrop")).ToHaveCountAsync(0);
+
+        await page.CloseAsync();
+    }
+
+    [Fact]
+    public async Task InsertShortcode_FullPageCodeMirrorEditor_InsertsIntoEditor()
+    {
+        var page = await Fixture.CreatePageAsync();
+        await page.LoginAsync();
+        var consoleErrors = page.CollectConsoleErrors();
+
+        await page.GotoAndAssertOkAsync("/Admin/Contents/ContentItems/EsModuleTestPage");
+        await page.Locator("li.list-group-item").Filter(new LocatorFilterOptions { HasText = "ES Module Test Page" })
+            .Locator("a.edit").ClickAsync();
+
+        // Full-page module initialization precedes DOMContentLoaded. The input-button
+        // initializer must not replace the CodeMirror button's insertion callback.
+        var wrapper = page.Locator(".widget[data-content-type='EsModuleTestFieldsWidget'] .CodeMirror")
+            .Locator("..");
+        var modal = page.Locator("#shortcodeModal");
+        var addLocale = modal.Locator("button[data-default-value='[locale {language_code}] [/locale]']");
+
+        for (var i = 0; i < 2; i++)
+        {
+            await wrapper.Locator(".shortcode-modal-btn").ClickAsync();
+            await Assertions.Expect(modal).ToBeVisibleAsync();
+            await addLocale.ClickAsync();
+            await Assertions.Expect(modal).Not.ToBeVisibleAsync();
+            await Assertions.Expect(page.Locator(".modal-backdrop")).ToHaveCountAsync(0);
+        }
+
+        await Assertions.Expect(wrapper.Locator(".CodeMirror-code")).ToContainTextAsync(
+            "[locale {language_code}] [/locale][locale {language_code}] [/locale]");
+        Assert.Empty(consoleErrors);
 
         await page.CloseAsync();
     }

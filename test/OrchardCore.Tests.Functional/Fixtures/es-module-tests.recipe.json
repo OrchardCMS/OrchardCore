@@ -36,6 +36,7 @@
         "OrchardCore.Flows",
         "OrchardCore.Html",
         "OrchardCore.Liquid",
+        "OrchardCore.Localization",
         "OrchardCore.Title",
         "OrchardCore.Widgets",
 
