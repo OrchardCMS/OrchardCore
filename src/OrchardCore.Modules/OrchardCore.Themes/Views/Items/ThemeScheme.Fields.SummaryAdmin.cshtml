@@ -1,0 +1,8 @@
+@using OrchardCore.DisplayManagement.Views
+@model ShapeViewModel<ThemeSchemeEntry>
+
+<a asp-action="Edit" asp-controller="Schemes" asp-area="OrchardCore.Themes" asp-route-themeId="@Model.Value.ThemeId" asp-route-id="@Model.Value.Scheme.Id">@Model.Value.Scheme.Name</a>
+@if (Model.Value.IsDefault)
+{
+    <span class="badge text-bg-primary ms-1">@T["Default"]</span>
+}

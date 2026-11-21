@@ -1,35 +1,68 @@
+
+@inject ThemeSchemeService Schemes
+
+@*
+    The light / dark toggle, with the schemes of the admin under it. The mode buttons keep the markup the theme manager
+    script drives (#bd-theme, .theme-icon-active, data-bs-theme-value). The scheme buttons are driven by
+    theme-scheme-picker.js of the Themes module, which stores the choice in the cookie the layouts read. 'Site default'
+    clears that cookie, so the user follows the default scheme picked on Design > Themes > Schemes again.
+*@
+
+@{
+    var userScheme = await Schemes.GetUserSchemeAsync(TheAdminConstants.ThemeId);
+    var siteScheme = await Schemes.GetSiteSchemeAsync(TheAdminConstants.ThemeId);
+    var schemes = await Schemes.ListAsync(TheAdminConstants.ThemeId);
+}
+
+<script asp-name="theme-scheme-picker" at="Foot"></script>
+
 <li class="nav-item">
     <div class="dropdown">
         <button class="btn btn-link nav-link dropdown-toggle" id="bd-theme" type="button" aria-expanded="false" data-bs-toggle="dropdown" data-bs-display="static" aria-label="@T["Toggle theme"]">
             <span class="theme-icon-active" aria-hidden="true"><i class="fa-solid fa-circle-half-stroke"></i></span>
             <span class="d-none" id="bd-theme-text">@T["Toggle theme"]</span>
         </button>
-        <ul class="dropdown-menu dropdown-menu-end position-absolute">
-            <li>
-                <button type="button" class="dropdown-item" data-bs-theme-value="auto" aria-pressed="false">
-                    <span class="theme-icon" aria-hidden="true">
-                        <i class="fa-solid fa-circle-half-stroke"></i>
-                    </span>
-                    <span class="ps-2">@T["Auto"]</span>
-                </button>
-            </li>
-            <li>
-                <button type="button" class="dropdown-item active" data-bs-theme-value="light" aria-pressed="true">
-                    <span class="theme-icon" aria-hidden="true">
-                        <i class="fa-solid fa-sun"></i>
-                    </span>
-                    <span class="ps-2">@T["Light"]</span>
-                </button>
-            </li>
-            <li>
-                <button type="button" class="dropdown-item" data-bs-theme-value="dark" aria-pressed="false">
-                    <span class="theme-icon" aria-hidden="true">
-                        <i class="fa-solid fa-moon"></i>
-                    </span>
-                    <span class="ps-2">@T["Dark"]</span>
-                </button>
-            </li>
+        <div class="dropdown-menu dropdown-menu-end position-absolute ta-theme-menu">
+            <h6 class="dropdown-header">@T["Mode"]</h6>
+            <button type="button" class="dropdown-item" data-bs-theme-value="auto" aria-pressed="false">
+                <span class="theme-icon" aria-hidden="true">
+                    <i class="fa-solid fa-circle-half-stroke"></i>
+                </span>
+                <span class="ps-2">@T["Auto"]</span>
+            </button>
+            <button type="button" class="dropdown-item active" data-bs-theme-value="light" aria-pressed="true">
+                <span class="theme-icon" aria-hidden="true">
+                    <i class="fa-solid fa-sun"></i>
+                </span>
+                <span class="ps-2">@T["Light"]</span>
+            </button>
+            <button type="button" class="dropdown-item" data-bs-theme-value="dark" aria-pressed="false">
+                <span class="theme-icon" aria-hidden="true">
+                    <i class="fa-solid fa-moon"></i>
+                </span>
+                <span class="ps-2">@T["Dark"]</span>
+            </button>
             @await RenderSectionAsync("ToggleThemeItems", required: false)
-        </ul>
+
+            @if (schemes.Count > 0)
+            {
+                <div class="dropdown-divider"></div>
+                <h6 class="dropdown-header">@T["Scheme"]</h6>
+                <div class="ta-scheme-list" role="group" aria-label="@T["Scheme"]" data-theme-scheme-picker data-scheme-attribute="@TheAdminSchemes.AttributeName" data-cookie-name="@Schemes.CookieName(TheAdminConstants.ThemeId)" data-site-scheme="@siteScheme">
+                    <button type="button" class="dropdown-item ta-scheme-option@(userScheme is null ? " active" : string.Empty)" data-theme-scheme-value="" aria-pressed="@(userScheme is null ? "true" : "false")">
+                        <span class="ta-scheme-name">@T["Site default"]</span>
+                        <span class="ta-scheme-swatch" data-scheme="@siteScheme" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
+                    </button>
+                    @foreach (var scheme in schemes)
+                    {
+                        var isPicked = scheme.Id == userScheme;
+                        <button type="button" class="dropdown-item ta-scheme-option@(isPicked ? " active" : string.Empty)" data-theme-scheme-value="@scheme.Id" aria-pressed="@(isPicked ? "true" : "false")">
+                            <span class="ta-scheme-name">@scheme.Name</span>
+                            <span class="ta-scheme-swatch" data-scheme="@scheme.Id" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
+                        </button>
+                    }
+                </div>
+            }
+        </div>
     </div>
 </li>

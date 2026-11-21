@@ -11,6 +11,13 @@ msgctxt "TheAdmin.Views.Breadcrumb"
 msgid "Breadcrumb"
 msgstr ""
 
+#. Format arguments: {0}: Model.Value.Scheme.Name
+#: Views/Items/ThemeScheme.Swatch.SummaryAdmin-TheAdmin.cshtml
+#, csharp-format
+msgctxt "TheAdmin.Views.Items.ThemeScheme.Swatch.SummaryAdmin-TheAdmin"
+msgid "Colors of {0}"
+msgstr ""
+
 #: Views/Layout.cshtml
 msgctxt "TheAdmin.Views.Layout"
 msgid "Are you sure you want to remove this element?"
@@ -44,6 +51,11 @@ msgstr ""
 #: Views/Layout.cshtml
 msgctxt "TheAdmin.Views.Layout"
 msgid "Show / hide menu"
+msgstr ""
+
+#: Views/Layout.cshtml
+msgctxt "TheAdmin.Views.Layout"
+msgid "Skip to content"
 msgstr ""
 
 #: Views/Navigation-admin.cshtml
@@ -91,6 +103,76 @@ msgctxt "TheAdmin.Views.Pager_Previous"
 msgid "Go to previous page."
 msgstr ""
 
+#: Views/ThemeSchemePreview-TheAdmin.cshtml
+msgctxt "TheAdmin.Views.ThemeSchemePreview-TheAdmin"
+msgid "3 items"
+msgstr ""
+
+#: Views/ThemeSchemePreview-TheAdmin.cshtml
+msgctxt "TheAdmin.Views.ThemeSchemePreview-TheAdmin"
+msgid "A field"
+msgstr ""
+
+#: Views/ThemeSchemePreview-TheAdmin.cshtml
+msgctxt "TheAdmin.Views.ThemeSchemePreview-TheAdmin"
+msgid "A record"
+msgstr ""
+
+#: Views/ThemeSchemePreview-TheAdmin.cshtml
+msgctxt "TheAdmin.Views.ThemeSchemePreview-TheAdmin"
+msgid "Another record"
+msgstr ""
+
+#: Views/ThemeSchemePreview-TheAdmin.cshtml
+msgctxt "TheAdmin.Views.ThemeSchemePreview-TheAdmin"
+msgid "Content"
+msgstr ""
+
+#: Views/ThemeSchemePreview-TheAdmin.cshtml
+msgctxt "TheAdmin.Views.ThemeSchemePreview-TheAdmin"
+msgid "Content items"
+msgstr ""
+
+#: Views/ThemeSchemePreview-TheAdmin.cshtml
+msgctxt "TheAdmin.Views.ThemeSchemePreview-TheAdmin"
+msgid "Draft"
+msgstr ""
+
+#: Views/ThemeSchemePreview-TheAdmin.cshtml
+msgctxt "TheAdmin.Views.ThemeSchemePreview-TheAdmin"
+msgid "Page title"
+msgstr ""
+
+#: Views/ThemeSchemePreview-TheAdmin.cshtml
+msgctxt "TheAdmin.Views.ThemeSchemePreview-TheAdmin"
+msgid "Preview in dark mode"
+msgstr ""
+
+#: Views/ThemeSchemePreview-TheAdmin.cshtml
+msgctxt "TheAdmin.Views.ThemeSchemePreview-TheAdmin"
+msgid "Preview in light mode"
+msgstr ""
+
+#: Views/ThemeSchemePreview-TheAdmin.cshtml
+msgctxt "TheAdmin.Views.ThemeSchemePreview-TheAdmin"
+msgid "Published"
+msgstr ""
+
+#: Views/ThemeSchemePreview-TheAdmin.cshtml
+msgctxt "TheAdmin.Views.ThemeSchemePreview-TheAdmin"
+msgid "Save"
+msgstr ""
+
+#: Views/ThemeSchemePreview-TheAdmin.cshtml
+msgctxt "TheAdmin.Views.ThemeSchemePreview-TheAdmin"
+msgid "Settings"
+msgstr ""
+
+#: Views/ThemeSchemePreview-TheAdmin.cshtml
+msgctxt "TheAdmin.Views.ThemeSchemePreview-TheAdmin"
+msgid "Site"
+msgstr ""
+
 #: Views/ToggleTheme.cshtml
 msgctxt "TheAdmin.Views.ToggleTheme"
 msgid "Auto"
@@ -104,6 +186,21 @@ msgstr ""
 #: Views/ToggleTheme.cshtml
 msgctxt "TheAdmin.Views.ToggleTheme"
 msgid "Light"
+msgstr ""
+
+#: Views/ToggleTheme.cshtml
+msgctxt "TheAdmin.Views.ToggleTheme"
+msgid "Mode"
+msgstr ""
+
+#: Views/ToggleTheme.cshtml
+msgctxt "TheAdmin.Views.ToggleTheme"
+msgid "Scheme"
+msgstr ""
+
+#: Views/ToggleTheme.cshtml
+msgctxt "TheAdmin.Views.ToggleTheme"
+msgid "Site default"
 msgstr ""
 
 #: Views/ToggleTheme.cshtml

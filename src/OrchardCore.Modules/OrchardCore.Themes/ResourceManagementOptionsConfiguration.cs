@@ -28,6 +28,24 @@ public sealed class ResourceManagementOptionsConfiguration
             )
             .SetDependencies("theme-head")
             .SetVersion("1.0.0");
+
+        // The scheme picker of a theme that supports schemes.
+        s_manifest
+            .DefineScript("theme-scheme-picker")
+            .SetUrl(
+                "~/OrchardCore.Themes/Scripts/theme-scheme-picker.min.js",
+                "~/OrchardCore.Themes/Scripts/theme-scheme-picker.js"
+            )
+            .SetVersion("1.0.0");
+
+        // The editor of a scheme, with its live preview.
+        s_manifest
+            .DefineScript("theme-scheme-editor")
+            .SetUrl(
+                "~/OrchardCore.Themes/Scripts/theme-scheme-editor.min.js",
+                "~/OrchardCore.Themes/Scripts/theme-scheme-editor.js"
+            )
+            .SetVersion("1.0.0");
     }
 
     public void Configure(ResourceManagementOptions options)

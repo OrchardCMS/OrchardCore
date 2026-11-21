@@ -3,8 +3,13 @@
     background-color: var(--bs-body-bg) !important;
 }
 
-.multiselect__tags, .multiselect__content-wrapper {
+.multiselect__content-wrapper {
     border: var(--bs-border-width) solid var(--bs-border-color) !important;
+}
+
+// The field itself is outlined like the other fields.
+.multiselect__tags {
+    border: var(--bs-border-width) solid var(--ta-control-border) !important;
 }
 
 .multiselect__tags {

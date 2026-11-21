@@ -18,5 +18,12 @@
     "source": "Assets/ts/theme-head.ts",
     "dest": "wwwroot/Scripts/theme-head/",
     "tags": ["themes", "js"]
+  },
+  {
+    "action": "min",
+    "name": "themes-schemes",
+    "source": "Assets/js/theme-scheme-*.js",
+    "dest": "wwwroot/Scripts/",
+    "tags": ["themes", "js"]
   }
 ]

@@ -1,6 +1,27 @@
+@use '../config' as *;
+
 .action-bar {
     top: var(--oc-top-nav-height);
     z-index: var(--oc-action-bar-zindex);
+
+    // The surface of the bar: the bar itself when it is a card, or the card it wraps (e.g. a search form around it).
+    &.card,
+    > .card {
+        transition: margin 0.15s ease-in-out, padding 0.15s ease-in-out, border-radius 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    }
+
+    // Pinned under the top bar (stickyActionBar.ts sets .action-bar-stuck), the bar spans the whole content area like
+    // the top bar: it covers the content padding on both sides and loses its rounded corners. Its padding grows by the
+    // same amount, and its side borders only turn transparent, so the search box and the buttons keep their size.
+    &.action-bar-stuck.card,
+    &.action-bar-stuck > .card {
+        margin-inline: calc(-1 * var(--ta-content-padding-x));
+        padding-inline: var(--ta-content-padding-x);
+        border-top-color: transparent;
+        border-inline-color: transparent;
+        border-radius: 0;
+        box-shadow: var(--ta-topbar-shadow);
+    }
 }
 
 .second-action-bar {
@@ -23,11 +44,13 @@
     justify-content: flex-end;
     gap: 0.25rem;
     margin: 0 !important;
-    padding: 0.75rem 1rem calc(0.75rem + env(safe-area-inset-bottom, 0px));
+    padding: 0.75rem var(--ta-content-padding-x) calc(0.75rem + env(safe-area-inset-bottom, 0px));
     color: var(--bs-body-color);
-    background-color: var(--bs-tertiary-bg);
-    border-top: var(--bs-border-width) solid var(--bs-border-color);
-    transition: left 0.2s ease-in-out;
+    // The bar takes the color of the page, like the top bar, lifted by a soft shadow.
+    background-color: var(--ta-topbar-bg);
+    border-top: var(--bs-border-width) solid var(--ta-border);
+    box-shadow: var(--ta-bottombar-shadow);
+    transition: left 0.2s ease-in-out, right 0.2s ease-in-out;
 
     // Neutralizes the spacing utilities the buttons used when they were rendered below the form.
     > *,
@@ -108,7 +131,7 @@ body[data-actions-layout="menu"] .action-bar-bottom:not(.action-bar-ready) .acti
         --bs-btn-disabled-color: var(--bs-secondary-color);
         --bs-btn-disabled-bg: transparent;
         --bs-btn-disabled-border-color: transparent;
-        --bs-btn-font-weight: #{$font-weight-normal};
+        --bs-btn-font-weight: var(--ta-font-weight-normal);
         --bs-btn-padding-x: 0.75rem;
         --bs-btn-padding-y: 0.375rem;
         text-align: start;

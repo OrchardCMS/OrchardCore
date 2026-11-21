@@ -1,0 +1,99 @@
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using OrchardCore.Environment.Shell;
+using OrchardCore.Themes.Schemes.Models;
+
+namespace OrchardCore.Themes.Schemes.Services;
+
+/// <summary>
+/// Resolves the scheme of a theme for the current user: the one they picked, kept in a cookie per theme, or else the
+/// site's default scheme of the theme, or else the theme's own default, or else its first scheme. Every scheme lives
+/// in the <see cref="ThemeSchemeStore"/>.
+/// </summary>
+public sealed class ThemeSchemeService
+{
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly ThemeSchemeStore _store;
+    private readonly string _tenant;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ThemeSchemeService"/> class.
+    /// </summary>
+    public ThemeSchemeService(
+        IHttpContextAccessor httpContextAccessor,
+        ShellSettings shellSettings,
+        ThemeSchemeStore store)
+    {
+        _httpContextAccessor = httpContextAccessor;
+        _store = store;
+        _tenant = shellSettings.Name;
+    }
+
+    /// <summary>
+    /// The name of the cookie holding the scheme the user picked for the theme: '{tenant}-{themeId}-scheme', named per
+    /// tenant like the color mode cookie of the theme toggler.
+    /// </summary>
+    public string CookieName(string themeId)
+        => $"{_tenant}-{_store.GetThemeId(themeId)}-scheme";
+
+    /// <summary>
+    /// The schemes of the theme, in the order of the pickers.
+    /// </summary>
+    public Task<IReadOnlyList<ThemeScheme>> ListAsync(string themeId)
+        => _store.ListAsync(themeId);
+
+    /// <summary>
+    /// The scheme the user picked for the theme, or <see langword="null"/> when they follow the site's default (or
+    /// picked a scheme that was deleted since).
+    /// </summary>
+    public async Task<string> GetUserSchemeAsync(string themeId)
+    {
+        var request = _httpContextAccessor.HttpContext?.Request;
+
+        if (request is null
+            || !_store.IsRegistered(themeId)
+            || !request.Cookies.TryGetValue(CookieName(themeId), out var value)
+            || !ThemeSchemeStore.IsValidId(value))
+        {
+            return null;
+        }
+
+        return await _store.FindAsync(themeId, value) is not null ? value : null;
+    }
+
+    /// <summary>
+    /// The site's default scheme of the theme, or <see langword="null"/> when the theme has no scheme at all.
+    /// </summary>
+    public Task<string> GetSiteSchemeAsync(string themeId)
+        => _store.GetDefaultIdAsync(themeId);
+
+    /// <summary>
+    /// The value of the theme's scheme attribute on the page: the user's scheme, or else the site's default, or
+    /// <see langword="null"/> (Razor then leaves the attribute out, and the theme's stylesheet keeps its own fallback)
+    /// when the theme has no scheme at all.
+    /// </summary>
+    public async Task<string> GetSchemeAttributeAsync(string themeId)
+        => await GetUserSchemeAsync(themeId) ?? await GetSiteSchemeAsync(themeId);
+
+    /// <summary>
+    /// The URL of the stylesheet of the theme's schemes, versioned with a short hash of its text so browsers keep it
+    /// until a scheme or the code that writes it changes, or <see langword="null"/> when the theme does not support schemes. A
+    /// theme left with no scheme gets the rules of its fallback scheme. The
+    /// stylesheet is built once per change of the schemes and read from memory, not built per request.
+    /// </summary>
+    public async Task<string> GetStylesheetUrlAsync(string themeId, IUrlHelper url)
+    {
+        ArgumentNullException.ThrowIfNull(url);
+
+        if (!_store.IsRegistered(themeId))
+        {
+            return null;
+        }
+
+        themeId = _store.GetThemeId(themeId);
+
+        var (_, version) = await _store.GetStylesheetAsync(themeId);
+
+        return url.Content($"~/{ThemeSchemeEndpoints.GetStylesheetPath(themeId)}?v={version}");
+    }
+}

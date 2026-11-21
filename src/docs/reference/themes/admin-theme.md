@@ -188,6 +188,100 @@ If the part or field is a named part, also append the named-part-specific class:
 
 These classes enable targeted styling of specific content type editors without relying on C# helper extensions.
 
+## Admin Schemes
+
+The look of **TheAdmin** comes from a scheme: its colors, typefaces, base font size, density and corners. Schemes come from the **Theme Schemes** feature of the Themes module (`OrchardCore.Themes.Schemes`), which TheAdmin depends on and any other theme can opt into (see [Theme Schemes](../modules/Themes/Schemes.md)). Admins manage the schemes of a theme from the **Schemes** button of its card on **Design > Themes** (they need the `ApplyTheme` permission). Each theme has its own default scheme, set with the **Set as default** action of the list and shown with a **Default** badge; the default scheme can't be deleted. Each user can pick another scheme of TheAdmin from the theme menu of the top bar.
+
+A scheme is made of four colors, from which every other color of the admin is derived for the light and the dark mode, each checked against the surfaces it is drawn on so that text reaches 4.5:1 and the boundaries of controls and focus indicators 3:1 (WCAG 2.2 AA):
+
+| Color | Used for |
+|-------|----------|
+| Primary | Buttons, links, the current page of the menu, checked boxes, the toolbar of lists |
+| Deep | Headings, and the top of the menu |
+| Ink | The bottom of the menu, the darkest surface, the backdrop of the log in page |
+| Accent | Links and highlights on dark surfaces |
+
+Optional settings fine tune what is derived: the hue and saturation of the page, borders and dark mode surfaces, a light menu (light gray with dark text), the color of text on the primary, the page color, the toolbar color and the page gradient. A second group sets the typography and shape:
+
+| Setting | Values | CSS custom property |
+|---------|--------|---------------------|
+| Typeface | Lato, Inter, Source Sans 3, System font | `--ta-font-family` |
+| Heading typeface | The same choices, or the typeface of the body | `--ta-heading-font-family` |
+| Base font size | 14 px to 18 px, as a share of the browser's own size | `--ta-font-scale` |
+| Density | Compact, Default, Comfortable | `--ta-density` |
+| Corners | Square, Subtle, Default, Round | `--ta-radius-scale` |
+
+The fonts are served by the theme; the admin never calls a font CDN.
+
+TheAdmin seeds eight schemes (Gray, the default, which keeps the look of the previous TheAdmin, Blue, Ocean, Forest, Plum, Sunset, Graphite and Gold) the first time its schemes are read. They are ordinary records from then on, and a theme is seeded once: deleting all of its schemes doesn't bring them back.
+
+Schemes are exported with the `ThemeSchemes` deployment step and imported with the `ThemeSchemes` recipe step. Each entry names its theme (`ThemeId`) and its id (`ItemId`); an entry whose `ItemId` matches a scheme of that theme replaces it. The optional `Defaults` object maps a theme id to the id of its default scheme. Entries of a theme that doesn't support schemes, or isn't enabled, are skipped with an error.
+
+```json
+{
+  "steps": [
+    {
+      "name": "ThemeSchemes",
+      "Schemes": [
+        {
+          "ThemeId": "TheAdmin",
+          "ItemId": "harbor",
+          "Name": "Harbor",
+          "Primary": "#1f6f8b",
+          "Deep": "#123c4c",
+          "Ink": "#081a21",
+          "Accent": "#5bc0de",
+          "FontFamily": "inter",
+          "FontScale": 1,
+          "Density": 1,
+          "RadiusScale": 1
+        }
+      ],
+      "Defaults": {
+        "TheAdmin": "harbor"
+      }
+    }
+  ]
+}
+```
+
+The schemes of a theme are served as one stylesheet, `~/Themes/schemes/{themeId}.css`, built once per change and versioned by a short hash of its text.
+
+### Supporting schemes in your theme
+
+Any theme can offer schemes the way TheAdmin does: it depends on the `OrchardCore.Themes.Schemes` feature, registers itself with `services.AddThemeSchemes("MyTheme")`, and applies the current scheme in its layout. TheAdmin registers its attribute, its `ta` prefix, its eight schemes and the tokens only its layout uses (the menu, the toolbar of lists, the top bar, the page gradient and the icons of checked controls):
+
+```csharp
+services.AddThemeSchemes(TheAdminConstants.ThemeId, options =>
+{
+    options.AttributeName = TheAdminSchemes.AttributeName; // data-ta-scheme
+    options.TokenPrefix = TheAdminSchemes.TokenPrefix; // ta
+    options.DefaultSchemeId = TheAdminSchemes.DefaultId; // gray
+    options.Defaults = [.. TheAdminSchemes.CreateDefaults()];
+    options.AddTokens<TheAdminSchemeTokens>();
+
+    // Its Sass names a few generated tokens otherwise, e.g. --ta-navy for --ta-deep.
+    foreach (var (token, name) in TheAdminSchemes.TokenNames)
+    {
+        options.TokenNames[token] = name;
+    }
+});
+```
+
+See [Theme Schemes](../modules/Themes/Schemes.md) for the full guide.
+
+### Design Tokens
+
+Every component of the theme reads the same tokens, so a theme that depends on **TheAdmin** can restyle the admin by overriding them, without rebuilding its stylesheets:
+
+| Tokens | Purpose |
+|--------|---------|
+| `--ta-font-size-xs`, `-sm`, `-md`, `-lg`, `-xl`, `-page-title` | The type scale. Body text, fields and buttons are `md`; hints, column headers, breadcrumbs, metadata and the items of the menu are `sm`; badges are `xs`. |
+| `--ta-surface-padding-x`, `--ta-surface-padding-y`, `--ta-row-padding-y` | The padding inside every surface: card bodies and headers, list rows and toolbars, table cells, tab panes, alerts. |
+| `--ta-stack-gap`, `--ta-content-padding-x` | The space between the surfaces of a page, and around the page. |
+| `--ta-radius-sm`, `--ta-radius-md`, `--ta-radius`, `--ta-radius-lg` | The corners, from fields and buttons to cards and dialogs. |
+| `--ta-primary`, `--ta-link`, `--ta-heading`, `--ta-label`, `--ta-muted`, `--ta-border`, `--ta-control-border`, `--ta-page-bg`, `--ta-surface`, `--ta-toolbar-bg`, `--ta-row-hover-bg`, `--ta-menu-*` | The colors of the scheme. Bootstrap's own variables (`--bs-primary`, `--bs-link-color`, `--bs-border-color`, `--bs-secondary-color`...) read them. |
+
 ## The `[Admin]` Attribute
 
 To ensure a controller or a specific action uses the Admin Theme, decorate it with the `[Admin]` attribute. This is essential when creating custom administration pages.

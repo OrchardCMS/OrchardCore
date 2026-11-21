@@ -1,14 +1,13 @@
-@import "../../../../../node_modules/bootstrap/scss/functions";
-@import "../../../../../node_modules/bootstrap/scss/variables";
-
 .theme-card {
     margin-bottom: 15px;
 
+    // The thumbnail tops the card: its top corners follow the card's, so it does not paint square corners over them.
     .card-theme-thumbnail {
         height: 200px;
-        background-color: $gray-100;
+        background-color: var(--bs-tertiary-bg);
         background-size: cover;
-        border-top: 1px solid $gray-100;
-        border-bottom: 1px solid $gray-100;
+        border-bottom: var(--bs-border-width) solid var(--bs-border-color-translucent);
+        border-start-start-radius: var(--bs-card-inner-border-radius);
+        border-start-end-radius: var(--bs-card-inner-border-radius);
     }
 }
