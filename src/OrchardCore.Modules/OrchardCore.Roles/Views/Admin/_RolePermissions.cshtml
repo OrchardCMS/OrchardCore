@@ -52,6 +52,10 @@ else
             </div>
         </div>
 
+        <div id="permissions-alert" class="alert alert-info my-3 d-none text-center" role="alert">
+            @T["Your search returned no results."]
+        </div>
+
         @foreach (var group in Model.RoleCategoryPermissions.OrderBy(x => x.Key.Title).ThenBy(x => x.Key.Source))
         {
             var permissionsContext = $"Permissions{Constants.ContextSeparator}{group.Key.Title}";
