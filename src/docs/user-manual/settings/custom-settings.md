@@ -61,3 +61,10 @@ People with that role then see **Settings > Footer Settings**. See [Roles](../us
 A theme or a [template](../design/templates-and-placements.md) reads the values and shows them on the site, for example the footer text at the bottom of every page. Your developer or designer adds them to the theme and makes the settings available to templates; see the Technical Manual.
 
 Custom settings are also included when you export site settings with a [deployment plan](../administration/import-and-export.md), through the **Custom Settings** step.
+
+## Video
+
+This video turns a content type into a screen of site settings.
+
+<!-- video:custom-settings -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/f0x_gSmC4JA" title="Custom Settings: Turn a Content Type Into Site Settings" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

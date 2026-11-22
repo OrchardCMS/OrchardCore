@@ -400,3 +400,10 @@ Aliases are tenant-wide rather than scoped to a content type. Check drafts, publ
 ### An alias does not create a route
 
 Attach and configure `AutoroutePart`. `AliasPart` provides logical lookup, indexing, and shape alternates; it does not register an HTTP route.
+
+## Video
+
+This video gives content items a stable name with the Alias part.
+
+<!-- video:alias-part -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/JrAnXKPkCxg" title="Alias Part: Give Content Items a Stable Name" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

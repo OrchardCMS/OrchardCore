@@ -93,3 +93,15 @@ To give editors a menu entry for each list, add a **Lists** node to an admin men
 
 !!! example "See it in practice"
     [Build a blog](../use-cases/build-a-blog.md) walks through this step by step.
+
+## Videos
+
+This video groups content items in a container with the List part.
+
+<!-- video:lists-overview -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/vkE32ZCRHXE" title="Lists: Group Content Items in a Container" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video sets the order of a list, the number of items per page, and the types it can contain.
+
+<!-- video:lists-ordering-paging -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/qOUnxBy9_Tw" title="Lists: Ordering, Paging and Contained Types" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
