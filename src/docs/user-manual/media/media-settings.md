@@ -146,3 +146,25 @@ When a storage feature is on, a read-only page shows its configuration:
 
 !!! warning
     Turning on a cloud storage feature doesn't copy the files you already have. Ask your IT team to move them before switching, or the existing files show **Not Found**.
+
+## Videos
+
+This video resizes and crops images the same way everywhere with media profiles.
+
+<!-- video:media-profiles -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/kobmZSw_z_w" title="Media Profiles: Resize and Crop Images Consistently" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video goes through the media options, the allowed file types and the media API.
+
+<!-- video:media-settings -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/8UT6FKmFhSo" title="Media Settings: Options, Allowed Files and the Media API" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video covers web-friendly file names, resumable uploads and live updates of the media library.
+
+<!-- video:media-uploads -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/GPew_nIP47o" title="Media Uploads: Slugified Names, Resumable Uploads and Live Updates" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video purges the local copy of media files that are stored elsewhere.
+
+<!-- video:media-cache -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/MTkbtx3ykaE" title="Media Cache: Purge the Local Copy of Remote Media" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

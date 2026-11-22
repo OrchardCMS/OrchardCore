@@ -161,3 +161,8 @@ This video gives content items a stable name with the Alias part.
 
 <!-- video:alias-part -->
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/JrAnXKPkCxg" title="Alias Part: Give Content Items a Stable Name" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video gives content items friendly URLs with Autoroute.
+
+<!-- video:autoroute-urls -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/9mH6pyzOCw8" title="Autoroute: Friendly URLs for Your Content Items" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

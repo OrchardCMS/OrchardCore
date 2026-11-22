@@ -97,3 +97,15 @@ These themes keep the built menu in a cache, separately for each combination of 
 
 !!! example "See it in practice"
     [Build a blog](../use-cases/build-a-blog.md) walks through this step by step.
+
+## Videos
+
+This video builds the navigation of a site with menus.
+
+<!-- video:menus-overview -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/cXMmkEd_-SA" title="Menus: Build the Navigation of Your Site" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video goes through the menu item types: links, content items, HTML and items shown only to some people.
+
+<!-- video:menus-item-types -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/1JPj2SdNV0c" title="Menu Items: Links, Content Items, HTML and Permissions" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

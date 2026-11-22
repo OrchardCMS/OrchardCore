@@ -240,3 +240,20 @@ When someone without permission asks for a protected file, the site answers as i
 
 !!! warning "Turning on Secure Media changes access right away"
     By default only Administrators get *View media content in all folders* and *View others media content*, and the **Authenticated** role gets *View own media content*. Everyone else, including visitors of the public site, can no longer open media files until you give their roles view permissions. Plan the permissions before you turn the feature on, then review your roles in [Roles](../users/roles.md).
+
+## Videos
+
+This video gives an overview of how Orchard Core manages the files of your site.
+
+<!-- video:media-overview -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/rZ8-gT1Rcxg" title="Media: Manage the Files of Your Site" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video uploads, organizes and reuses files in the media library.
+
+<!-- video:media-library-basics -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/96HKBh1upho" title="Media Library: Upload, Organize and Reuse Files" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video controls who can see each media folder with Secure Media.
+
+<!-- video:media-secure-media -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/MD0S2Pc9Oo0" title="Secure Media: Control Who Sees Each Media Folder" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

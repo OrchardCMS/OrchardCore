@@ -272,3 +272,8 @@ This video adds a location to content items with the Geo Point field.
 
 <!-- video:spatial-geo-point-field -->
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/NyJDG0sIVs8" title="Geo Point Field: Add Locations to Content Items" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video attaches images and files to content items with the Media field.
+
+<!-- video:media-field -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/5wbolSzAOpg" title="Media Field: Attach Images and Files to Content" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
