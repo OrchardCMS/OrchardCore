@@ -93,3 +93,10 @@ Saving or deleting a rule reloads the site.
 ## Check that a rule works
 
 There is no test tool on the screen. After you save a rule, open a private browser window and type an address the rule should match. A redirect rule changes the address in the address bar; a rewrite rule shows the other page's content under the same address. If nothing happens, check the pattern and the order of the rules.
+
+## Video
+
+This video redirects and rewrites requests with URL rewriting rules.
+
+<!-- video:url-rewriting -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/qS6sm_CT4i0" title="URL Rewriting: Redirect and Rewrite Requests" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

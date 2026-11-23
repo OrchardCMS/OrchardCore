@@ -190,3 +190,8 @@ This video keeps the content definitions in the database or in a file.
 
 <!-- video:content-definition-stores -->
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/ybiJ2vcaFKc" title="Content Definition Stores: Keep Types in the Database or a File" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video changes the look of your site by choosing a theme.
+
+<!-- video:themes-choose -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/gi1KWyaQ7mI" title="Themes: Change the Look of Your Site" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

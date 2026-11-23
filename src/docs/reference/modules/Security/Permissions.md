@@ -160,3 +160,8 @@ This video purges the local copy of media files that are stored elsewhere.
 
 <!-- video:media-cache -->
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/MTkbtx3ykaE" title="Media Cache: Purge the Local Copy of Remote Media" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video tracks conversions from Meta ads with the Meta Pixel.
+
+<!-- video:meta-pixel -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/EWn1usAXo-U" title="Meta Pixel: Track Conversions From Meta Ads" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

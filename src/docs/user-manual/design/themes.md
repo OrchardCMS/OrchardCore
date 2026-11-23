@@ -81,3 +81,10 @@ Whether the switcher appears in the admin, and other admin options such as the m
 ## Customize a theme's look
 
 Themes don't have a settings screen for colors or fonts. To change how a page or part of a page looks without changing the theme's files, use [Templates](templates-and-placements.md). A new theme, or deeper changes, need a developer; see the Technical Manual.
+
+## Video
+
+This video changes the look of your site by choosing a theme.
+
+<!-- video:themes-choose -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/gi1KWyaQ7mI" title="Themes: Change the Look of Your Site" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

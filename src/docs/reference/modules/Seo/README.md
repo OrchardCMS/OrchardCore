@@ -55,3 +55,13 @@ SEO settings can be configured using the `Settings` recipe step:
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/bDf96bg-mBU" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/IchtAdYQF7g" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
+This video sets the titles, descriptions and social sharing cards of your pages.
+
+<!-- video:seo-meta -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/n0WUFjJtl0w" title="SEO Meta: Titles, Descriptions and Social Sharing Cards" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video tells search engines what to crawl with the robots.txt file.
+
+<!-- video:seo-robots -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/BDJ5ziPIOL8" title="Robots: Tell Search Engines What to Crawl" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

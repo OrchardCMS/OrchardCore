@@ -110,6 +110,11 @@ This video shows a list and its items in Liquid templates.
 <!-- video:lists-in-templates -->
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/IXGsED-FvrA" title="Lists in Templates: Liquid Filters for Containers and Their Items" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
+This video publishes an RSS feed of your content.
+
+<!-- video:feeds-rss -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/CbMGEGMzUcE" title="Feeds: Publish an RSS Feed of Your Content" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
 ## Lucene Indexing
 
 **Breaking Change**: Every content item that is contained in a list has a `ContainedPart` associated with it.

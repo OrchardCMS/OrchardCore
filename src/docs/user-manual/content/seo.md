@@ -116,3 +116,15 @@ Open `/robots.txt` on the site to check the result.
     If your developer has placed a real `robots.txt` file in the site's web folder, that file is served instead and these settings have no effect.
 
 Permission: *Manage SEO related settings*.
+
+## Videos
+
+This video sets the titles, descriptions and social sharing cards of your pages.
+
+<!-- video:seo-meta -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/n0WUFjJtl0w" title="SEO Meta: Titles, Descriptions and Social Sharing Cards" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video tells search engines what to crawl with the robots.txt file.
+
+<!-- video:seo-robots -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/BDJ5ziPIOL8" title="Robots: Tell Search Engines What to Crawl" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
