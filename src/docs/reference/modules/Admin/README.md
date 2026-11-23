@@ -844,3 +844,13 @@ This video shows the admin settings that tailor the admin for your editors.
 
 <!-- video:admin-settings -->
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/_87tZ98HO58" title="Admin Settings: Tailor the Admin for Your Editors" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video changes the look of your site by choosing a theme.
+
+<!-- video:themes-choose -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/gi1KWyaQ7mI" title="Themes: Change the Look of Your Site" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video creates an admin theme to restyle the admin.
+
+<!-- video:admin-theme-create -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/ht6M2TWKLaU" title="Create an Admin Theme: Restyle the Admin" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

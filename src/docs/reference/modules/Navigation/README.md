@@ -585,3 +585,8 @@ This video renders menus, breadcrumbs and pagers in a theme.
 
 <!-- video:navigation-in-themes -->
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/AVmhUepSEgQ" title="Navigation in Themes: Render Menus, Breadcrumbs and Pagers" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video changes the look of your site by choosing a theme.
+
+<!-- video:themes-choose -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/gi1KWyaQ7mI" title="Themes: Change the Look of Your Site" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

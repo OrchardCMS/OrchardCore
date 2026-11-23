@@ -248,3 +248,10 @@ If the theme is meant to be reusable, add a [recipe](../../reference/modules/Rec
 - Convert the main HTML page into `Views/Layout.liquid` (or `Views/Layout.cshtml`), replacing static parts with `render_body`, `render_section` zones, resource tags, and the menu shape.
 - Convert the inner pages into content templates using alternates, and tune the output with placement.
 - Optionally ship a setup recipe so the theme works out of the box.
+
+## Video
+
+This video turns an HTML template into an Orchard Core theme.
+
+<!-- video:theme-from-html-template -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/G34pofzTaVQ" title="Create a Theme From an HTML Template" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

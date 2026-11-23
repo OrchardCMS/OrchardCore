@@ -165,3 +165,8 @@ This video generates URLs from a Liquid pattern with Autoroute.
 
 <!-- video:autoroute-patterns -->
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/qJ_2eVT852Y" title="Autoroute Patterns: Generate URLs With Liquid" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video chooses what your site shows first: the home page.
+
+<!-- video:home-route -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/8Qm1voUuZW8" title="Home Page: Choose What Your Site Shows First" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

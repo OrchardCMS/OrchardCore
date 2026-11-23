@@ -146,3 +146,15 @@ With **Localized Content Item Sitemaps** (`OrchardCore.ContentLocalization.Sitem
 ## Copy sitemaps to another site
 
 Add the **All Sitemaps** step to a deployment plan to export every sitemap, see [Import and export](../administration/import-and-export.md).
+
+## Videos
+
+This video creates a sitemap that helps search engines find your pages.
+
+<!-- video:sitemaps-create -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/qysbJTqgEzY" title="Sitemaps: Help Search Engines Find Your Pages" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video groups sitemaps in a sitemap index and explains the sitemaps cache.
+
+<!-- video:sitemaps-indexes-and-cache -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/-UlSXMG0xPs" title="Sitemap Indexes and the Sitemaps Cache" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

@@ -52,3 +52,10 @@ Turn off the **Feeds** feature in **Tools > Features**, see [Features](../gettin
 
 !!! note
     Only lists have feeds. Other pages, such as taxonomy term pages or search results, don't offer one.
+
+## Video
+
+This video publishes an RSS feed of your content.
+
+<!-- video:feeds-rss -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/CbMGEGMzUcE" title="Feeds: Publish an RSS Feed of Your Content" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
