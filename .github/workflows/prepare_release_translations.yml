@@ -14,7 +14,7 @@ concurrency:
 jobs:
   prepare:
     if: github.repository == 'OrchardCMS/OrchardCore'
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
     - name: Check release branch and credentials
       shell: pwsh
