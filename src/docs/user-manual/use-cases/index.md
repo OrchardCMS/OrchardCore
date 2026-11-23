@@ -31,7 +31,7 @@ Use them to plan a new site, or as a checklist the first time you set something 
 Every use case has the same parts:
 
 - **Who it's for and what you get**: the goal, and what the site does once you're done.
-- **Before you start**: the features to turn on, the permissions you need, and anything your IT team must set up first. Features are turned on in **Tools > Features**; see [Features](../getting-started/features.md).
+- **Before you start**: the features to turn on, the permissions you need, and anything your IT team must set up first. Features are turned on in **Tools → Features**; see [Features](../getting-started/features.md).
 - **The steps**: one section per stage, each with numbered steps.
 - **Check that it works**: how to test the result as a visitor would see it.
 - **Tips**: common mistakes and good habits.

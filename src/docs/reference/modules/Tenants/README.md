@@ -29,7 +29,7 @@ This feature allows the `Default` tenant to create Feature Profiles which can re
 ### Creating a feature profile
 
 1. Enable the _Tenant Feature Profiles_ feature on the `Default` tenant.
-2. Go to the _Multi-Tenancy -> Feature Profiles_ menu.
+2. Go to the **Multi-Tenancy → Feature Profiles** menu.
 3. Select _Add Feature Profile_.
 4. Add a _Name_ and a set of _Rules_.
 
@@ -116,7 +116,7 @@ By using the `FeatureProfiles` recipe step, you can define profiles from recipes
 ### Selecting a feature profile
 
 1. Create a Feature Profile.
-2. Go to the _Multi-Tenancy -> Tenants_ menu.
+2. Go to the **Multi-Tenancy → Tenants** menu.
 3. Edit the tenant.
 4. Select a feature profile from the dropdown.
 
@@ -180,3 +180,18 @@ This is intended for shared-database providers that support table prefixes. The 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/aQAjTG2ma64" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/2nKvyP6lRWM" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video compares the starter recipes you can choose from when you set up a site.
+
+<!-- video:starter-recipes -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/VtnARneJ6GY" title="Starter Recipes: Choose How Your Site Starts" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video keeps the content definitions in the database or in a file.
+
+<!-- video:content-definition-stores -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/ybiJ2vcaFKc" title="Content Definition Stores: Keep Types in the Database or a File" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video changes the look of your site by choosing a theme.
+
+<!-- video:themes-choose -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/gi1KWyaQ7mI" title="Themes: Change the Look of Your Site" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

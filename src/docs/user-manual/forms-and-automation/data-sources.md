@@ -13,16 +13,16 @@ Data sources are what lets a [data pipeline](data-pipelines.md) read the data of
 
 | | |
 | --- | --- |
-| **Menu** | None of its own: you meet data sources in **Tools > Data Pipelines > Pipelines**, in the designer |
+| **Menu** | None of its own: you meet data sources in **Tools → Data Pipelines → Pipelines**, in the designer |
 | **Permission** | *Manage data pipelines* to add them to a pipeline, plus the permissions to see the data itself (see each data source below) |
 | **Feature** | **Data Pipelines Core** (`OrchardCore.DataPipelines.Core`), turned on automatically with **Data Pipelines** (`OrchardCore.DataPipelines`) |
 
 !!! note "No screen of its own"
-    You don't turn **Data Pipelines Core** on yourself: it turns on by itself when a feature that needs it, such as **Data Pipelines**, is turned on, and **Tools > Features** shows it only then. It has no page for data sources. The only screen it adds is **Tools > Shared Links**, described in [Shared links](shared-links.md).
+    You don't turn **Data Pipelines Core** on yourself: it turns on by itself when a feature that needs it, such as **Data Pipelines**, is turned on, and **Tools → Features** shows it only then. It has no page for data sources. The only screen it adds is **Tools → Shared Links**, described in [Shared links](shared-links.md).
 
 ## Where you choose a data source
 
-1. Open a pipeline in the designer (**Tools > Data Pipelines > Pipelines**, then **Edit**).
+1. Open a pipeline in the designer (**Tools → Data Pipelines → Pipelines**, then **Edit**).
 2. Click **Add a data source** in the toolbar. On an empty pipeline you can also click **Read a data source** under **Start with a source**, or drag **Read a data source** from the **Sources** of the toolbox.
 3. The **Add a data source** dialog lists every data set you may read, as cards with their name, their data source and their group. On the left, pick **All** or one data source (**Content items**, **Users**, **Queries**), each with its number of data sets. Type in **Filter** to search by name or description.
 4. Click **Add** on a data set.

@@ -9,7 +9,7 @@ It requires the `OrchardCore.Media` feature to be enabled, and the current user 
 
 ## Using the Media Picker with a Media Field
 
-Add a *Media Field* to a content type (or content part) from `Content → Content Definition` in the admin. When editing a content item of that type, the field displays an empty area with a `+` button that opens the Media Picker. From the dialog you can navigate folders, search, upload new files, and select existing ones.
+Add a *Media Field* to a content type (or content part) from **Content → Content Definition** in the admin. When editing a content item of that type, the field displays an empty area with a `+` button that opens the Media Picker. From the dialog you can navigate folders, search, upload new files, and select existing ones.
 
 ### Field settings
 
@@ -58,3 +58,10 @@ Or in Razor with the media tag helpers:
 ```
 
 See the [Media module documentation](../../reference/modules/Media/README.md) for the full list of filters, tag helpers, and resizing options.
+
+## Video
+
+This video attaches images and files to content items with the Media field.
+
+<!-- video:media-field -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/5wbolSzAOpg" title="Media Field: Attach Images and Files to Content" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

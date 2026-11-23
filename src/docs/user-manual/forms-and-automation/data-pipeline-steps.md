@@ -12,7 +12,7 @@ This page lists every step of the data pipeline designer, by category, with its 
 
 | | |
 | --- | --- |
-| **Menu** | **Tools > Data Pipelines > Pipelines**, then the **Steps** toolbox of the designer |
+| **Menu** | **Tools → Data Pipelines → Pipelines**, then the **Steps** toolbox of the designer |
 | **Permission** | *Manage data pipelines* |
 | **Feature** | **Data Pipelines** (`OrchardCore.DataPipelines`), **Data Pipelines - FTP** (`OrchardCore.DataPipelines.Ftp`), **Data Pipelines - SFTP** (`OrchardCore.DataPipelines.Sftp`) |
 

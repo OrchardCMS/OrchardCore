@@ -45,3 +45,10 @@ For example, to add the Cloudsmith feed:
 ```bash
 dotnet nuget add source https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json --name OrchardCorePreview
 ```
+
+## Video
+
+This video sets up the preview package feed and a local NuGet feed.
+
+<!-- video:development-tools -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/wUvs6BXgksc" title="Development Tools: Preview Packages and Local NuGet Feeds" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

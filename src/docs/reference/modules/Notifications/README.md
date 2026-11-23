@@ -640,7 +640,7 @@ This shape renders a single notification entry.
     To customize the admin toast item from the dashboard:
 
     1. Enable the `OrchardCore.AdminTemplates` feature.
-    2. Go to **Design** -> **Admin Templates**.
+    2. Go to **Design → Admin Templates**.
     3. Create or edit the `Message` template.
     4. Paste the Liquid template shown above and save it.
 
@@ -693,7 +693,7 @@ This shape renders the collection of notification entries. The default implement
 If you want to customize the full admin notification rendering from the dashboard instead of from a theme:
 
 1. Enable the `OrchardCore.AdminTemplates` feature.
-2. Go to **Design** -> **Admin Templates**.
+2. Go to **Design → Admin Templates**.
 3. Create or edit the `Message` template to change each notification item.
 4. Create or edit the `NotifyMessages` template to change the container and placement.
 5. Paste the Liquid versions shown above and save them.
@@ -720,3 +720,13 @@ Besides the subject, summary and bodies, both tasks have an optional **URL**, th
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/lGEsdPzHcog" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/b-lHY0NxZNI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
+This video compares the starter recipes you can choose from when you set up a site.
+
+<!-- video:starter-recipes -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/VtnARneJ6GY" title="Starter Recipes: Choose How Your Site Starts" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video changes the look of your site by choosing a theme.
+
+<!-- video:themes-choose -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/gi1KWyaQ7mI" title="Themes: Change the Look of Your Site" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

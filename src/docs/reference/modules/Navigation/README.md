@@ -366,7 +366,7 @@ Thus `Manage Content › Edit Article` becomes `Dashboard › Manage Content ›
 
 ### Disabling admin breadcrumbs
 
-The **Show breadcrumb** setting under *Configuration → Settings → Admin* (`AdminSettings.ShowBreadcrumb`, enabled by default) hides the admin trail but retains the heading and browser title according to `heading` and `page-title`.
+The **Show breadcrumb** setting under **Settings → Admin** (`AdminSettings.ShowBreadcrumb`, enabled by default) hides the admin trail but retains the heading and browser title according to `heading` and `page-title`.
 
 The helper checks the setting before any child or provider work. When `ShowBreadcrumb` is false, it never calls `GetChildContentAsync` and does not resolve, enumerate, construct, or invoke `IBreadcrumbProvider` implementations, including the Dashboard provider. It creates no `BreadcrumbContext` or `BreadcrumbItem` objects, not even the current title node. This title-only path applies regardless of provider registration.
 
@@ -456,7 +456,7 @@ The `Breadcrumb` shape carries the `oc-breadcrumb` class, alongside a class buil
 }
 ```
 
-The same template is where a theme drops the `oc-breadcrumb-title` block to let the trail stand in for the title, or skips the `IsCurrent` node so the current page is not repeated in the trail. To turn the trail off across the whole admin without touching a template, clear **Show breadcrumb** under *Configuration → Settings → Admin*; the page title is then rendered on its own.
+The same template is where a theme drops the `oc-breadcrumb-title` block to let the trail stand in for the title, or skips the `IsCurrent` node so the current page is not repeated in the trail. To turn the trail off across the whole admin without touching a template, clear **Show breadcrumb** under **Settings → Admin**; the page title is then rendered on its own.
 
 ### Content management trails
 
@@ -570,3 +570,23 @@ At this time, the Admin Menu is the only navigation with code dynamically adding
 ## Video
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/3w68lDwUzFQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video compares the starter recipes you can choose from when you set up a site.
+
+<!-- video:starter-recipes -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/VtnARneJ6GY" title="Starter Recipes: Choose How Your Site Starts" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video takes a tour of the admin: its menu, its search and its main screens.
+
+<!-- video:admin-tour -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/hQPLynQAPeY" title="The Admin: Find Your Way Around Orchard Core" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video renders menus, breadcrumbs and pagers in a theme.
+
+<!-- video:navigation-in-themes -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/AVmhUepSEgQ" title="Navigation in Themes: Render Menus, Breadcrumbs and Pagers" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video changes the look of your site by choosing a theme.
+
+<!-- video:themes-choose -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/gi1KWyaQ7mI" title="Themes: Change the Look of Your Site" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

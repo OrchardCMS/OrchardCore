@@ -3,15 +3,18 @@ using System.Text.Json.Settings;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.Extensions.Logging;
 using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
+using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Zones;
+using OrchardCore.Modules;
 using OrchardCore.Taxonomies.Models;
 using YesSql;
 
@@ -28,6 +31,9 @@ public sealed class AdminController : Controller
     private readonly INotifier _notifier;
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly IShapeFactory _shapeFactory;
+    private readonly IEnumerable<IContentHandler> _contentHandlers;
+    private readonly IEnumerable<IContentHandler> _reversedContentHandlers;
+    private readonly ILogger _logger;
 
     internal readonly IHtmlLocalizer H;
 
@@ -40,7 +46,9 @@ public sealed class AdminController : Controller
         INotifier notifier,
         IHtmlLocalizer<AdminController> localizer,
         IUpdateModelAccessor updateModelAccessor,
-        IShapeFactory shapeFactory)
+        IShapeFactory shapeFactory,
+        IEnumerable<IContentHandler> contentHandlers,
+        ILogger<AdminController> logger)
     {
         _contentManager = contentManager;
         _authorizationService = authorizationService;
@@ -50,6 +58,9 @@ public sealed class AdminController : Controller
         _notifier = notifier;
         _updateModelAccessor = updateModelAccessor;
         _shapeFactory = shapeFactory;
+        _contentHandlers = contentHandlers;
+        _reversedContentHandlers = contentHandlers.Reverse();
+        _logger = logger;
         H = localizer;
     }
 
@@ -124,6 +135,10 @@ public sealed class AdminController : Controller
         contentItem.Weld<TermPart>();
         contentItem.Alter<TermPart>(t => t.TaxonomyContentItemId = taxonomyContentItemId);
 
+        var createContentContext = new CreateContentContext(contentItem);
+
+        await _contentHandlers.InvokeAsync((handler, context) => handler.CreatingAsync(context), createContentContext, _logger);
+
         var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, true);
 
         if (!ModelState.IsValid)
@@ -132,6 +147,8 @@ public sealed class AdminController : Controller
 
             return View(model);
         }
+
+        await _reversedContentHandlers.InvokeAsync((handler, context) => handler.CreatedAsync(context), createContentContext, _logger);
 
         if (taxonomyItemId == null)
         {
@@ -269,6 +286,10 @@ public sealed class AdminController : Controller
         contentItem.Weld<TermPart>();
         contentItem.Alter<TermPart>(t => t.TaxonomyContentItemId = taxonomyContentItemId);
 
+        var updateContentContext = new UpdateContentContext(contentItem);
+
+        await _contentHandlers.InvokeAsync((handler, context) => handler.UpdatingAsync(context), updateContentContext, _logger);
+
         var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, false);
 
         if (!ModelState.IsValid)
@@ -277,6 +298,8 @@ public sealed class AdminController : Controller
 
             return View(model);
         }
+
+        await _reversedContentHandlers.InvokeAsync((handler, context) => handler.UpdatedAsync(context), updateContentContext, _logger);
 
         taxonomyItem.Merge((JsonObject)contentItem.Content, new JsonMergeSettings
         {

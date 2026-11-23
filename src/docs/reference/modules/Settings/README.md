@@ -8,7 +8,7 @@ For user-defined settings managed from the admin without writing code, see [Cust
 
 ## General settings
 
-The built-in **General** group is available in the admin under **Settings** > **General** (requires the `Manage general settings` permission). It exposes options such as:
+The built-in **General** group is available in the admin under **Settings → General** (requires the `Manage general settings` permission). It exposes options such as:
 
 | Setting             | Description                                                                 |
 |---------------------|-----------------------------------------------------------------------------|
@@ -123,3 +123,10 @@ Use the **Site Settings** deployment step to export and import the site settings
 The built-in site settings editor, setup screen, and user time zone editor all resolve their time zone `<option>` items through `ITimeZoneSelectListProvider`.
 
 Replace the default `DefaultTimeZoneSelectListProvider` service to change the rendered labels, ordering, or filtering of the available time zones anywhere Orchard Core consumes that shared list.
+
+## Video
+
+This video goes through the general site settings: the site name, the time zone, the page size and more.
+
+<!-- video:site-settings-general -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/6jg2SpIKvVY" title="Site Settings: Name, Time Zone, Page Size and More" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

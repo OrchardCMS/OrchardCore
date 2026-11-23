@@ -13,7 +13,7 @@ Two people who sign in to the same site often see different admin menus. That is
 
 | | |
 | --- | --- |
-| **Menu** | **Access Control > Roles** (to look at roles), **Access Control > Users** (to give roles to people) |
+| **Menu** | **Access Control → Roles** (to look at roles), **Access Control → Users** (to give roles to people) |
 | **Permission** | *View Roles* to look at roles, *Manage Roles* to change them |
 | **Feature** | **Roles** (`OrchardCore.Roles`) |
 
@@ -46,11 +46,11 @@ Every site has three **system roles**, which can't be deleted. The starter recip
 
 Editor, Author, Contributor and Moderator can also edit their own profile and, with the **Notifications** feature, manage their own notifications. With **Content Localization** on, Authors and Contributors can also translate their own content items.
 
-!!! note "Authors and Contributors don't see Content > Content Items"
+!!! note "Authors and Contributors don't see **Content → Content Items**"
     By default, only **Administrator** and **Editor** have *List content items*, so the content lists are hidden from Authors and Contributors. Before they start, an administrator adds *List content items* to their role, or the per-type permission such as *List Article content items* to show only some types. See [Roles](../users/roles.md).
 
 !!! note
-    The descriptions the starter roles carry (for example *Grants users the ability to moderate content.*) are only labels. What a role can really do is the ticked permissions. To check, open **Access Control > Roles** and the role.
+    The descriptions the starter roles carry (for example *Grants users the ability to moderate content.*) are only labels. What a role can really do is the ticked permissions. To check, open **Access Control → Roles** and the role.
 
 ## Why a menu or button is missing
 
@@ -60,7 +60,7 @@ When you can't find something:
 2. Read the **Menu**, the **Permission** and the **Feature** in the table at the top of the page.
 3. Check whether the menu is missing for everybody, or only for you.
 
-If the menu is missing for everybody, the feature is probably off. An administrator turns it on in **Tools > Features** (see [Features](features.md)). If a colleague sees it and you don't, your roles lack the permission.
+If the menu is missing for everybody, the feature is probably off. An administrator turns it on in **Tools → Features** (see [Features](features.md)). If a colleague sees it and you don't, your roles lack the permission.
 
 A few common examples:
 
@@ -69,7 +69,7 @@ A few common examples:
 | Open the admin at all | None of your roles has *Access admin panel*. |
 | Publish, only save drafts | You have *Edit own content* but not *Publish or unpublish own content* (the Contributor role works this way). |
 | Edit someone else's article | You have the "own" permissions only, not *Edit content for others*. |
-| See **Access Control > Users** | You don't have *List all users* or one of the "users in a role" permissions. |
+| See **Access Control → Users** | You don't have *List all users* or one of the "users in a role" permissions. |
 | See a **Settings** page | Each settings page has its own permission, often *Manage security settings and all users* or a *Manage ... settings* permission. |
 
 ## Ask your administrator for access
@@ -78,7 +78,7 @@ Send your administrator a message like this one, filled in with what you found i
 
 > Hi,
 >
-> I need access to **[screen or task, for example: Content > Content Items, publishing articles]** for my work on **[what you need to do]**.
+> I need access to **[screen or task, for example: **Content → Content Items**, publishing articles]** for my work on **[what you need to do]**.
 >
 > According to the User Manual, this needs:
 >

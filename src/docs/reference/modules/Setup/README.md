@@ -110,7 +110,7 @@ The following configuration values are used by default and can be customized:
 
 ## CDN disabled by default
 
-The `UseCdn` option, configured in the _Settings -> General_ section, is disabled by default.
+The `UseCdn` option, configured in the **Settings → General** section, is disabled by default.
 This is to allow access to resources when an internet connection is not available or in countries like China, where CDNs are not always accessible.  
 
 !!! note
@@ -127,3 +127,8 @@ Please refer to separate sections for additional information on setup:
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/usjGbjwbmNo" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/cQJeS21wZHw" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video walks through the setup screen and installs a first site.
+
+<!-- video:setup-first-site -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/0SlLT1du0A0" title="Setup: Install Your First Orchard Core Site" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

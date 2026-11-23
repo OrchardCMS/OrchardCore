@@ -36,7 +36,7 @@ Tips:
 
 ## Preview a saved draft from the list
 
-When an item has unpublished changes, its row in **Content > Content Items** shows a **Preview Draft** button.
+When an item has unpublished changes, its row in **Content → Content Items** shows a **Preview Draft** button.
 
 1. Find the item in the list. Its row shows the **Draft** badge.
 2. Click **Preview Draft**.
@@ -49,7 +49,7 @@ Some sites show their pages with a separate application (a "headless" or decoupl
 
 | | |
 | --- | --- |
-| **Menu** | **Design > Content Definition > Content Types**, **Edit** on the type, then **Edit** next to the **Preview** part |
+| **Menu** | **Design → Content Definition → Content Types**, **Edit** on the type, then **Edit** next to the **Preview** part |
 | **Permission** | *Edit content types.* |
 
 | Setting | What it does |
@@ -57,3 +57,10 @@ Some sites show their pages with a separate application (a "headless" or decoupl
 | **Pattern** | The address of the preview page, as a Liquid template, for example built from the item's permalink. Your developer gives you the value. |
 
 Without the **Preview** part, the preview uses the site's own theme, which is what most sites need.
+
+## Video
+
+This video previews the changes to a content item before they are published.
+
+<!-- video:content-preview -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/4pEEdtzAkXs" title="Content Preview: See Your Changes Before You Publish" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

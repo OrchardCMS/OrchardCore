@@ -21,3 +21,10 @@ The [Lists](../Lists/README.md) module is the most common consumer. When the `Fe
 ## Providing your own feed
 
 To syndicate something other than lists, implement `IFeedQueryProvider` (to produce the items) and, if you need a non-RSS format, `IFeedBuilderProvider`, then register them in your module's `Startup`. Call `services.AddFeeds()` to bring in the core feed services.
+
+## Video
+
+This video publishes an RSS feed of your content.
+
+<!-- video:feeds-rss -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/CbMGEGMzUcE" title="Feeds: Publish an RSS Feed of Your Content" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

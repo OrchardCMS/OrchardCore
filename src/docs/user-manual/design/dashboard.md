@@ -28,7 +28,7 @@ Without the **Admin Dashboard** feature, the dashboard shows *Welcome to Orchard
 | Card | Link | Opens |
 | --- | --- | --- |
 | **Create content** | **Go to content** | The content items list. See [Content items](../content/content-items.md). |
-| **Customize theme** | **Manage themes** | **Design > Themes**. See [Themes](themes.md). |
+| **Customize theme** | **Manage themes** | **Design → Themes**. See [Themes](themes.md). |
 | **Manage users** | **Go to users** | The users list. See [Users](../users/users.md). |
 | **Learn more** | **Documentation** | The Orchard Core documentation. |
 

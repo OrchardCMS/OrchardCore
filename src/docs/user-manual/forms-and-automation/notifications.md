@@ -59,7 +59,7 @@ If a notification is about something you can no longer open (your role changed, 
 
 Every notification goes to your notification center. With **Email Notifications** or **SMS Notifications** on, it can also be sent to you by email or by text message.
 
-1. Open your profile from the user menu at the top right (or, as an administrator, edit the user in **Access Control > Users**).
+1. Open your profile from the user menu at the top right (or, as an administrator, edit the user in **Access Control → Users**).
 2. Find **Notification Methods**. It lists the methods the site offers: **Email Notifications** and **SMS Notifications**.
 3. Check the methods you want, and uncheck the ones you don't.
 4. When there are several, drag them to put the most important one on top.
@@ -77,8 +77,8 @@ The notification center itself can't be turned off.
 
 ## Turn on email and SMS notifications
 
-1. Make sure email (or SMS) sending works: set up a provider in **Settings > Communication > Email** (or **SMS**) and try **Tools > Testing > Email Test** (or **SMS Test**). See [Email](../settings/email.md) and [SMS](../settings/sms.md).
-2. Open **Tools > Features** and enable **Email Notifications** or **SMS Notifications** (category **Notifications**). See [Features](../getting-started/features.md).
+1. Make sure email (or SMS) sending works: set up a provider in **Settings → Communication → Email** (or **SMS**) and try **Tools → Testing → Email Test** (or **SMS Test**). See [Email](../settings/email.md) and [SMS](../settings/sms.md).
+2. Open **Tools → Features** and enable **Email Notifications** or **SMS Notifications** (category **Notifications**). See [Features](../getting-started/features.md).
 
 From then on, each notification is also sent by the methods each person keeps checked. The email uses the notification's **Subject**, and its HTML body when **Use HTML Body when possible** is checked (otherwise the text body). The text message is the notification's text body.
 

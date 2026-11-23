@@ -7,7 +7,7 @@ description: Shape the site from the admin - choose its theme, build content typ
 
 This section is about the look and the structure of the site: which theme it uses, which kinds of content editors can create, which blocks appear around the pages, and how each piece of a page is shown. It is mostly for **site builders**. Templates and shortcodes use Liquid, a small template language, so some pages suit people comfortable with a little markup.
 
-These screens are under **Design** in the admin menu: **Design > Themes**, **Design > Content Definition** (**Content Types** and **Content Parts**), **Design > Widgets**, **Design > Templates**, **Design > Admin Templates**, **Design > Placements** and **Design > Shortcodes**. The zones of the theme are chosen in **Settings > Zones**.
+These screens are under **Design** in the admin menu: **Design → Themes**, **Design → Content Definition** (**Content Types** and **Content Parts**), **Design → Widgets**, **Design → Templates**, **Design → Admin Templates**, **Design → Placements** and **Design → Shortcodes**. The zones of the theme are chosen in **Settings → Zones**.
 
 ## I want to…
 

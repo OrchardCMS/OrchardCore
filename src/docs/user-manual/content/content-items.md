@@ -13,7 +13,7 @@ Everything you write on the site, such as pages, articles, blog posts or menus, 
 
 | | |
 | --- | --- |
-| **Menu** | **Content > Content Items**, or **Content >** a content type, such as **Content > Article** |
+| **Menu** | **Content → Content Items**, or **Content** a content type, such as **Content → Article** |
 | **Permission** | *List content items* to open the list. Then, for each action: *Edit own content* / *Edit content for others*, *Publish or unpublish own content* / *Publish or unpublish content for others*, *Delete own content* / *Delete content for others*, *Clone own content* / *Clone content*, *Preview own content* / *Preview content*. |
 | **Feature** | **Contents** (`OrchardCore.Contents`) |
 
@@ -43,7 +43,7 @@ Content types can be set up differently (see [Content types](content-types.md)):
 
 ## Find content
 
-Open **Content > Content Items**. The page is called **Manage Content** and lists the content items of every type you may see, most recently changed first. To see one content type only, click it under **Content** in the menu, for example **Content > Article**, or choose it in the content type menu above the list.
+Open **Content → Content Items**. The page is called **Manage Content** and lists the content items of every type you may see, most recently changed first. To see one content type only, click it under **Content** in the menu, for example **Content → Article**, or choose it in the content type menu above the list.
 
 Each row shows the title, the content type, the status badges, when it was last changed (hover for the exact date and time) and who changed it last. Click the title or **Edit** to open the item. Click the content type badge to list only items of that type.
 
@@ -76,19 +76,19 @@ The search box also accepts filter words. Click the funnel button, then **Filter
 
 You can combine filters with spaces, for example `status:Draft type:Article`. For the words of `text:`, a space means *or*, and you can use `AND`, `NOT`, brackets and quotes: `text:"summer sale"` finds the exact phrase.
 
-The menus and the search box stay in step: choosing **Sort > Title** adds `sort:Title` to the box.
+The menus and the search box stay in step: choosing **Sort → Title** adds `sort:Title` to the box.
 
 ## Create a content item
 
 ![The editor of a new Article](images/create-article.webp)
 
-1. Open **Content > Content Items** and click **New** at the top right, then choose a content type. On a single type's list, the button reads **New Article** (or the name of the type).
+1. Open **Content → Content Items** and click **New** at the top right, then choose a content type. On a single type's list, the button reads **New Article** (or the name of the type).
 2. Fill in the form. Required boxes are marked, and the boxes depend on the content type: see [Editing text](editing-text.md), [Fields](fields.md) and [URLs and the home page](urls-and-homepage.md).
 3. Click **Save Draft** to keep it hidden, or **Publish** to put it on the site.
 
 The message *Your Article draft has been saved.* or *Your Article has been published.* appears. Only content types marked **Creatable** are offered under **New**.
 
-When an administrator turns on **Display New menu** in **Settings > Admin**, a **New** section in the admin menu lets you start an item of any type from anywhere.
+When an administrator turns on **Display New menu** in **Settings → Admin**, a **New** section in the admin menu lets you start an item of any type from anywhere.
 
 ## Edit a content item
 
@@ -133,7 +133,7 @@ The **Actions** menu at the end of the row holds:
 | **Audit Trail** | The **Audit Trail** feature is on. | Shows the item's history, see [Audit trail](audit-trail.md). |
 | **View as JSON**, **Download as JSON** | The **View Or Download Content As JSON** feature is on and you have *Export Data*. | Shows or downloads the item in a technical format. With a draft, the menu offers the draft and the published version separately. |
 | **Add to Deployment Plan** | The **Add Content To Deployment Plan** feature is on. | Adds the item to a deployment plan, to copy it to another site. |
-| **Export to Deployment Target** | The **Export Content To Deployment Target** feature is on. | Sends the item straight to the deployment target set in **Settings > Deployment Targets**. |
+| **Export to Deployment Target** | The **Export Content To Deployment Target** feature is on. | Sends the item straight to the deployment target set in **Settings → Deployment Targets**. |
 
 The last three are for moving content between sites, see [Import and export](../administration/import-and-export.md).
 
@@ -178,11 +178,11 @@ Each publish of a versionable content type keeps the previous version. Over time
 
 | | |
 | --- | --- |
-| **Menu** | **Settings > Content Version Pruning** |
+| **Menu** | **Settings → Content Version Pruning** |
 | **Permission** | *Manage Content Version Pruning settings* (given to the **Administrator** role by default) |
 | **Feature** | **Content Version Pruning** (`OrchardCore.Contents.VersionPruning`) |
 
-1. Open **Settings > Content Version Pruning**.
+1. Open **Settings → Content Version Pruning**.
 2. Fill in the form (see the table).
 3. Click **Save**.
 
@@ -193,7 +193,29 @@ Each publish of a versionable content type keeps the previous version. Over time
 | **Archived versions to keep per item** | How many of the most recent old versions to keep for each item, whatever their age. The default is 1. Set 0 to keep none. |
 | **Content types to prune** | The content types to clean up. When none is ticked, nothing is deleted. |
 
-The latest version and the published version of an item are never deleted. The cleanup runs as the **Content Version Pruning Background Task**, which you can see in **Tools > Background Tasks**, see [Background tasks](../settings/background-tasks.md).
+The latest version and the published version of an item are never deleted. The cleanup runs as the **Content Version Pruning Background Task**, which you can see in **Tools → Background Tasks**, see [Background tasks](../settings/background-tasks.md).
 
 !!! warning
     Pruned versions are deleted for good. Keep enough days and versions to be able to go back to an older text when you need to.
+
+## Videos
+
+This video creates, edits and publishes a content item.
+
+<!-- video:contents-create-edit-publish -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/gQgMKIZpCNY" title="Content Items: Create, Edit and Publish" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video searches and filters the content items list, and acts on several items at once.
+
+<!-- video:contents-list-search-filter -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/c6qgnS49bKQ" title="Content Items List: Search, Filter and Act on Many Items" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video shows how drafts and versions let you change content without changing the live page.
+
+<!-- video:contents-drafts-versions -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/wy2nPHfp2qE" title="Drafts and Versions: Change Content Without Losing the Live Page" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video sets up Content Version Pruning to remove old versions automatically.
+
+<!-- video:content-version-pruning -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/0c7PkSaO4Q4" title="Content Version Pruning: Remove Old Versions Automatically" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

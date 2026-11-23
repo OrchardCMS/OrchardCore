@@ -10,3 +10,10 @@ Orchard Core allows you to define your [content types](../../reference/glossary/
 - [Preview your Content](../../reference/modules/ContentPreview/README.md)
 - [Use Widgets](../../reference/modules/Widgets/README.md)
 - [Layers and Zones](../../reference/modules/Layers/README.md)
+
+## Video
+
+This video creates, edits and publishes a content item.
+
+<!-- video:contents-create-edit-publish -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/gQgMKIZpCNY" title="Content Items: Create, Edit and Publish" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

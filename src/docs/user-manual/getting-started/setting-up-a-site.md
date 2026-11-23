@@ -16,16 +16,16 @@ A new Orchard Core site, or a new tenant, starts with a **Setup** screen. You an
 | --- | --- |
 | **Menu** | The **Setup** page, shown at the address of a site or tenant that isn't set up yet |
 | **Permission** | None. Anyone who can reach the page can fill it in, so set up a site as soon as it is installed. A tenant's setup page needs the link from the tenant list (see below). |
-| **Feature** | **Setup** (`OrchardCore.Setup`). It is only active on a site that isn't set up yet, so **Tools > Features** shows it as disabled afterward. |
+| **Feature** | **Setup** (`OrchardCore.Setup`). It is only active on a site that isn't set up yet, so **Tools → Features** shows it as disabled afterward. |
 
 !!! note "Who sees this screen"
-    The first site of an installation shows the setup screen the first time someone opens it. A tenant shows it after an administrator adds the tenant in **Multi-Tenancy > Tenants**, see [Tenants](../administration/tenants.md).
+    The first site of an installation shows the setup screen the first time someone opens it. A tenant shows it after an administrator adds the tenant in **Multi-Tenancy → Tenants**, see [Tenants](../administration/tenants.md).
 
 ## Open the setup screen of a tenant
 
 A tenant's setup page is protected by a secret link, so strangers can't set it up.
 
-1. On the main site, open **Multi-Tenancy > Tenants**.
+1. On the main site, open **Multi-Tenancy → Tenants**.
 2. Find the tenant. Its row shows **Uninitialized**.
 3. Click **Setup** in its row. You can also click **Create &amp; Setup** when you add the tenant.
 
@@ -47,9 +47,9 @@ Setup takes a few seconds to a minute, depending on the recipe. When it is done,
 | Field | What it does |
 | --- | --- |
 | **Change language** | Shown at the top right when the site supports more than one language. Changes the language of the setup screen. |
-| **What is the name of your site?** | Required. Used as the default title of your pages. You can change it later in **Settings > General**. |
+| **What is the name of your site?** | Required. Used as the default title of your pages. You can change it later in **Settings → General**. |
 | **Recipe** | The starter recipe to run, see the next section. The recipe tagged as the default is selected first; on a standard installation that is **Software as a Service**. Hidden when the tenant was created with a recipe already chosen. |
-| **Default Time Zone** | The time zone used to show and edit dates and times. It starts with the time zone of the server. You can change it later in **Settings > General**. |
+| **Default Time Zone** | The time zone used to show and edit dates and times. It starts with the time zone of the server. You can change it later in **Settings → General**. |
 | **What type of database to use?** | Where the site stores its settings and content: **Sql Server**, **Sqlite**, **MySql** or **Postgres**. **Sqlite** is selected by default and needs nothing else: it keeps the data in a file on the server. The other databases need a database server that your IT team provides. |
 | **Table Prefix** | Optional, shown for Sql Server, MySql and Postgres. A short word put in front of every table name, so several sites can share one database. |
 | **Connection String** | Required for Sql Server, MySql and Postgres. The address and credentials of the database, given by your IT team. The hint under the box shows an example. Click the eye button to show or hide what you typed. |
@@ -73,7 +73,7 @@ If the database fields are missing, your IT team has already chosen the database
 
 ## Choose a recipe
 
-A recipe is a ready-made starting point: it turns on a set of features, picks a theme, and can add content types, sample content, roles and settings. You can turn other features on later in **Tools > Features**, see [Features](features.md), and change the theme in **Design > Themes**, see [Themes](../design/themes.md).
+A recipe is a ready-made starting point: it turns on a set of features, picks a theme, and can add content types, sample content, roles and settings. You can turn other features on later in **Tools → Features**, see [Features](features.md), and change the theme in **Design → Themes**, see [Themes](../design/themes.md).
 
 Every recipe except **Software as a Service** adds the roles **Moderator**, **Editor**, **Author** and **Contributor**, next to the **Administrator**, **Authenticated** and **Anonymous** roles every site has. The features the recipe turns on give the roles their default permissions. See [Roles](../users/roles.md).
 
@@ -92,6 +92,18 @@ Every recipe except **Software as a Service** adds the roles **Moderator**, **Ed
 ## Set up a site without the setup screen
 
 Your IT team can set up sites automatically from configuration with the **Auto Setup** feature (`OrchardCore.AutoSetup`), without anyone filling in the setup screen. They choose the site name, recipe, database and super user in the configuration. See the Technical Manual.
+
+## Videos
+
+This video walks through the setup screen and installs a first site.
+
+<!-- video:setup-first-site -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/0SlLT1du0A0" title="Setup: Install Your First Orchard Core Site" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video compares the starter recipes you can choose from when you set up a site.
+
+<!-- video:starter-recipes -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/VtnARneJ6GY" title="Starter Recipes: Choose How Your Site Starts" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ## Related pages
 

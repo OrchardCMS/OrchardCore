@@ -71,3 +71,8 @@ public sealed class MyController : Controller
 ## Video
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/RuDsBx4wdT0" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video turns a content type into a screen of site settings.
+
+<!-- video:custom-settings -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/f0x_gSmC4JA" title="Custom Settings: Turn a Content Type Into Site Settings" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

@@ -11,11 +11,11 @@ technical_manual:
 
 # General settings
 
-The **Settings > General** screen holds the basic facts about your site: its name, its time zone, how many items a list shows per page, and how scripts and caches behave. Two related screens sit next to it: **Settings > Admin** changes how the admin looks and behaves for everyone, and **Settings > Debugging** helps a designer find which template drew a part of a page.
+The **Settings → General** screen holds the basic facts about your site: its name, its time zone, how many items a list shows per page, and how scripts and caches behave. Two related screens sit next to it: **Settings → Admin** changes how the admin looks and behaves for everyone, and **Settings → Debugging** helps a designer find which template drew a part of a page.
 
 | | |
 | --- | --- |
-| **Menu** | **Settings > General**, **Settings > Admin**, **Settings > Debugging** |
+| **Menu** | **Settings → General**, **Settings → Admin**, **Settings → Debugging** |
 | **Permission** | *Manage general settings* (General), *Manage Admin Settings* (Admin), *Manage debugging settings* (Debugging). The Administrator role has all three by default. |
 | **Feature** | **Settings** (`OrchardCore.Settings`, always on) and **Admin** (`OrchardCore.Admin`) |
 
@@ -23,7 +23,7 @@ The **Settings > General** screen holds the basic facts about your site: its nam
 
 Every settings screen has a **Save** button at the bottom. After a successful save you see *Site settings updated successfully.*
 
-Some screens show a yellow warning at the top: *The website might be restarted upon saving the settings, potentially leading to temporary unresponsiveness during the process.* On these screens, saving reloads the site so the new values take effect. The site may answer slowly for a few seconds; nothing is lost. **Settings > General** is one of these screens. Others are listed on their own pages, for example [Security](security.md) and [Analytics and social](analytics-and-social.md).
+Some screens show a yellow warning at the top: *The website might be restarted upon saving the settings, potentially leading to temporary unresponsiveness during the process.* On these screens, saving reloads the site so the new values take effect. The site may answer slowly for a few seconds; nothing is lost. **Settings → General** is one of these screens. Others are listed on their own pages, for example [Security](security.md) and [Analytics and social](analytics-and-social.md).
 
 !!! note
     Some settings can also be fixed by your developer or IT team in the site configuration. When that is the case, the screen may tell you that the current values come from configuration, and what you save there may not change what the site uses.
@@ -32,7 +32,7 @@ Some screens show a yellow warning at the top: *The website might be restarted u
 
 ![The General settings](images/general.webp)
 
-1. Open **Settings > General**. The screen has three tabs: **Site**, **Resources** and **Cache**.
+1. Open **Settings → General**. The screen has three tabs: **Site**, **Resources** and **Cache**.
 2. On the **Site** tab, change the fields you need.
 3. Click **Save**.
 
@@ -53,7 +53,7 @@ Some screens show a yellow warning at the top: *The website might be restarted u
 
 The **Resources** tab controls how the site loads its scripts and stylesheets (the files that make pages look and behave the way they do). Leave the defaults unless your developer asks you to change them.
 
-1. Open **Settings > General** and click the **Resources** tab.
+1. Open **Settings → General** and click the **Resources** tab.
 2. Change the options.
 3. Click **Save**.
 
@@ -68,7 +68,7 @@ The **Resources** tab controls how the site loads its scripts and stylesheets (t
 
 The **Dynamic Cache** feature (`OrchardCore.DynamicCache`, on by default in most sites) keeps a ready-made copy of parts of your pages, such as menus and widgets, so the site doesn't rebuild them on every visit. It has no screen of its own: you control it from the **Cache** tab.
 
-1. Open **Settings > General** and click the **Cache** tab.
+1. Open **Settings → General** and click the **Cache** tab.
 2. Pick a **Cache Mode**.
 3. Click **Save**.
 
@@ -84,11 +84,11 @@ The **Dynamic Cache** feature (`OrchardCore.DynamicCache`, on by default in most
 
 ## Change how the admin looks and behaves
 
-**Settings > Admin** changes the admin for everyone who uses it.
+**Settings → Admin** changes the admin for everyone who uses it.
 
 ![The Admin settings](images/admin-settings.webp)
 
-1. Open **Settings > Admin**.
+1. Open **Settings → Admin**.
 2. Check or clear the options, and pick the layouts.
 3. Click **Save**.
 
@@ -110,11 +110,11 @@ The changes apply to everyone at the next page they open.
 
 ## See which template drew a part of a page
 
-**Settings > Debugging** helps a site builder or designer who works on [templates](../design/templates-and-placements.md).
+**Settings → Debugging** helps a site builder or designer who works on [templates](../design/templates-and-placements.md).
 
 ![The Debugging settings](images/debugging.webp)
 
-1. Open **Settings > Debugging**.
+1. Open **Settings → Debugging**.
 2. Check **Write shape debug information**.
 3. Click **Save**.
 
@@ -134,3 +134,10 @@ The **Orchard Diagnostics** feature (`OrchardCore.Diagnostics`) shows a friendly
 | Any other error | *An error occurred while executing this request.* |
 
 A designer can change how these pages look with a template; see [Templates and placements](../design/templates-and-placements.md). The details of an error are written to the site's logs, which your IT team reads.
+
+## Video
+
+This video goes through the general site settings: the site name, the time zone, the page size and more.
+
+<!-- video:site-settings-general -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/6jg2SpIKvVY" title="Site Settings: Name, Time Zone, Page Size and More" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

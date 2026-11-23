@@ -109,3 +109,10 @@ Enter the required information about the site:
 Submit the form and your site is generated after a few seconds.
 
 Then, you can access the admin using the `/admin` URL. Enjoy.
+
+## Video
+
+This video creates a CMS web application with the `dotnet new` templates.
+
+<!-- video:create-cms-web-application -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/AL5UNqnC-W0" title="Create a CMS Web Application With dotnet new" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

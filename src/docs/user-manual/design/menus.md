@@ -12,19 +12,19 @@ A menu is the list of links visitors use to move around your site, usually shown
 
 | | |
 | --- | --- |
-| **Menu** | **Content > Menus** |
+| **Menu** | **Content → Menus** |
 | **Permission** | *Manage menus* to add, edit and delete menu items; the *List Menu content items* permission to see the menu entry |
 | **Feature** | **Menu** (`OrchardCore.Menu`), which uses **Navigation** (`OrchardCore.Navigation`, always on) |
 
 ## See your menus
 
-Open **Content > Menus**. It is the content items list, filtered to the **Menu** type, with each menu's title, status and actions. Click a menu's title or **Edit** to open it. The **Blog** recipe also adds a shortcut to the **Main Menu** at the top level of the admin menu.
+Open **Content → Menus**. It is the content items list, filtered to the **Menu** type, with each menu's title, status and actions. Click a menu's title or **Edit** to open it. The **Blog** recipe also adds a shortcut to the **Main Menu** at the top level of the admin menu.
 
 ![The editor of the Main Menu, with its menu items](images/menu.webp)
 
 ## Create a menu
 
-1. Open **Content > Menus** and click **New Menu**.
+1. Open **Content → Menus** and click **New Menu**.
 2. Type a **Title**, such as *Footer Menu*.
 3. Leave **Alias** empty to have it made from the title (for example `footer-menu`), or type your own. The theme finds a menu by its alias.
 4. Click **Publish** (or **Save Draft**).
@@ -97,3 +97,15 @@ These themes keep the built menu in a cache, separately for each combination of 
 
 !!! example "See it in practice"
     [Build a blog](../use-cases/build-a-blog.md) walks through this step by step.
+
+## Videos
+
+This video builds the navigation of a site with menus.
+
+<!-- video:menus-overview -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/cXMmkEd_-SA" title="Menus: Build the Navigation of Your Site" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video goes through the menu item types: links, content items, HTML and items shown only to some people.
+
+<!-- video:menus-item-types -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/1JPj2SdNV0c" title="Menu Items: Links, Content Items, HTML and Permissions" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

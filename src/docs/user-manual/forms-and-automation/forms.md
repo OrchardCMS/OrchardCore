@@ -15,7 +15,7 @@ This page is the full reference for forms. For a step-by-step walkthrough, see [
 
 | | |
 | --- | --- |
-| **Menu** | None of its own: you add the form widgets to any content item that has a **Flow** part (such as a **Page**), or in a zone through **Design > Widgets** |
+| **Menu** | None of its own: you add the form widgets to any content item that has a **Flow** part (such as a **Page**), or in a zone through **Design → Widgets** |
 | **Permission** | The permissions to edit the content item or the widgets the form lives in |
 | **Feature** | **Forms** (`OrchardCore.Forms`), which also turns on **Widgets** and **Flows** |
 
@@ -105,7 +105,7 @@ The **Select** widget adds:
 
 This example puts a contact form with a name, an email address and a message on a page. To receive the answers, you also need the workflow described in [Handle what visitors send](#handle-what-visitors-send).
 
-1. Open **Content > Content Items**, and create or edit a **Page**.
+1. Open **Content → Content Items**, and create or edit a **Page**.
 2. In its **Flow**, click the **+** button (**Add Widget**) and choose **Form**.
 3. In the Form widget, give it a **Title** such as *Contact form*. Leave **Method** on **POST** and **Anti Forgery Token** checked. Leave **Action** empty for now.
 4. Inside the Form widget's own Flow, click **Add Widget** and choose **Validation Summary**, so visitors see what's wrong if they forget a field.
