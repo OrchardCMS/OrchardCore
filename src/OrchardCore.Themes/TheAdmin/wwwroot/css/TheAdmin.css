@@ -1691,6 +1691,24 @@ html:has(.action-bar-bottom) {
   background-color: var(--ta-surface) !important;
 }
 
+.dashboard-card-icon {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: var(--bs-border-width) solid color-mix(in srgb, var(--bs-primary) 30%, transparent);
+  border-radius: var(--ta-radius);
+  background-color: color-mix(in srgb, var(--bs-primary) 12%, transparent);
+  color: var(--bs-primary-text-emphasis);
+  font-size: 1.125rem;
+}
+
+.dashboard-card-icon svg {
+  width: 1.125rem;
+}
+
 :root {
   --oc-mde-zindex: var(--oc-editor-fullscreen) !important;
 }
