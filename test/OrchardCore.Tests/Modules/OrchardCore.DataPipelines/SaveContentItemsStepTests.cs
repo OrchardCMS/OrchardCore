@@ -1,4 +1,6 @@
+using OrchardCore.ContentFields.Settings;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.DataPipelines.Services;
 using OrchardCore.DataPipelines.Steps;
@@ -57,6 +59,51 @@ public sealed class SaveContentItemsStepTests
             var first = items.Single(item => item.DisplayText == "Imported one");
             Assert.Equal("First", (string)first.Content.BlogPost.Subtitle.Text);
             Assert.Equal("Imported one", (string)first.Content.TitlePart.Title);
+        });
+    }
+
+    [Fact]
+    public async Task Execute_NewRowsWithARequiredField_CreatesTheRowsThatHaveAValue()
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            await scope.ServiceProvider.GetRequiredService<IContentDefinitionManager>().AlterPartDefinitionAsync("BlogPost", part => part
+                .WithField("Subtitle", field => field.MergeSettings<TextFieldSettings>(settings => settings.Required = true)));
+        });
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var settings = new SaveContentItemsStepSettings
+            {
+                ContentType = "BlogPost",
+                MatchBy = ContentItemMatch.DisplayText,
+                KeyField = "Title",
+                Mappings =
+                [
+                    new ContentFieldMapping { Target = "TitlePart.Title", Source = "Title" },
+                    new ContentFieldMapping { Target = "BlogPost.Subtitle", Source = "Subtitle" },
+                ],
+            };
+
+            using var host = await CreateHostAsync(scope, settings);
+            host.WithRows(_posts, ["k1", "With a subtitle", "First"], ["k2", "Without a subtitle", ""]);
+
+            // Act
+            await host.ExecuteAsync();
+
+            // Assert
+            var rejected = Assert.Single(host.Output(SaveContentItemsStep.Rejected).Rows);
+            Assert.Equal("Without a subtitle", rejected[1]);
+        });
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var item = Assert.Single(await FindAsync(scope, "With a subtitle", "Without a subtitle"));
+            Assert.Equal("With a subtitle", item.DisplayText);
+            Assert.Equal("First", (string)item.Content.BlogPost.Subtitle.Text);
         });
     }
 

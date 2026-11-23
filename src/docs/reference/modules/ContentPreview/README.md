@@ -230,6 +230,11 @@ Correct validation errors and verify the editor integration. The window continue
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/NDUjn5_KdEM" title="Content Preview demonstration" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
+This video previews the changes to a content item before they are published.
+
+<!-- video:content-preview -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/4pEEdtzAkXs" title="Content Preview: See Your Changes Before You Publish" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
 ## Credits
 
 ### JavaScript Cookie

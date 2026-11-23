@@ -138,3 +138,10 @@ services.Replace(ServiceDescriptor.Singleton<ITempDirectoryProvider, MyTempDirec
 ```
 
 Any replacement must honor the same contract: return **real local filesystem paths** that support random access and directory enumeration. This is why there is no Azure Blob or AWS S3 implementation of `ITempDirectoryProvider` — those object stores cannot satisfy the path-based, seekable contract the consumers depend on. To move temporary storage to the cloud, mount a file share (Azure Files, AWS EFS/FSx) and configure `Path`, as described above.
+
+## Video
+
+This video scans uploaded files for viruses and explains where temporary files go.
+
+<!-- video:file-upload-security -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/o8fWqsPk0Ds" title="File Upload Security: Antivirus Scanning and Temporary Files" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

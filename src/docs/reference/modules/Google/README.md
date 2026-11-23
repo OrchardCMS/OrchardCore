@@ -147,3 +147,10 @@ Google module settings can be configured using the `Settings` recipe step:
 | Property      | Type   | Description                                        |
 |---------------|--------|----------------------------------------------------|
 | `ContainerID` | String | The Google Tag Manager container ID. **Required.** |
+
+## Video
+
+This video measures your visitors with Google Analytics and Google Tag Manager.
+
+<!-- video:google-analytics-tag-manager -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/Vk-BUPp_Guo" title="Google Analytics and Tag Manager: Measure Your Visitors" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

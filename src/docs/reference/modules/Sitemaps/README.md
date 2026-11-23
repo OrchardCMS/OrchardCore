@@ -149,6 +149,21 @@ Sitemaps robots settings can be configured using the `Settings` recipe step:
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/fG_rFD0wffw" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
+This video creates a sitemap that helps search engines find your pages.
+
+<!-- video:sitemaps-create -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/qysbJTqgEzY" title="Sitemaps: Help Search Engines Find Your Pages" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video groups sitemaps in a sitemap index and explains the sitemaps cache.
+
+<!-- video:sitemaps-indexes-and-cache -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/-UlSXMG0xPs" title="Sitemap Indexes and the Sitemaps Cache" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video adds localized content and Razor Pages to sitemaps.
+
+<!-- video:sitemaps-localized-and-razor-pages -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/1nxII1bpURA" title="Sitemaps for Localized Content and Razor Pages" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
 ## CREDITS
 
 ### IDeliverable.Seo

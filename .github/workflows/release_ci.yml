@@ -54,6 +54,11 @@ jobs:
           Write-Error "CI must use exact SDK version from global.json."
           exit 1
         }
+    - name: Validate release translations
+      shell: pwsh
+      run: ./.github/scripts/Test-TranslationsPackage.ps1
+    - name: Disable the translation preview source
+      run: dotnet nuget disable source OrchardCoreTranslations --configfile NuGet.config
     - name: Set build number 
       if: matrix.os == 'ubuntu-24.04'
       run: echo "BuildNumber=$(( $GITHUB_RUN_NUMBER + 15471 ))" >> $GITHUB_ENV
@@ -111,7 +116,7 @@ jobs:
       uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
     - name: Login to DockerHub
       if: matrix.os == 'ubuntu-24.04'
-      uses: docker/login-action@81c6f93d4bc991e510b342a00b419b3bb4efc5c6 # v4.7.0
+      uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4.8.0
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_PASSWORD }}

@@ -39,3 +39,10 @@ This will download a file called `ContentDefinitions.zip` to your computer.
 ## Summary
 
 You just learnt how to create a `Deployment Plan` to migrate from the `File Content Definition` feature.
+
+## Video
+
+This video keeps the content definitions in the database or in a file.
+
+<!-- video:content-definition-stores -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/ybiJ2vcaFKc" title="Content Definition Stores: Keep Types in the Database or a File" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

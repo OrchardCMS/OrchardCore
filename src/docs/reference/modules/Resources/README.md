@@ -726,3 +726,18 @@ This is to allow access to resources when an internet connection is not availabl
 ## Video
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/jlv60tte8UE" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video compares the starter recipes you can choose from when you set up a site.
+
+<!-- video:starter-recipes -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/VtnARneJ6GY" title="Starter Recipes: Choose How Your Site Starts" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video changes the look of your site by choosing a theme.
+
+<!-- video:themes-choose -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/gi1KWyaQ7mI" title="Themes: Change the Look of Your Site" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video declares scripts and stylesheets as resources and includes them in pages.
+
+<!-- video:resources-scripts-styles -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/Iy_tJVNDFRs" title="Resources: Declare and Include Scripts and Stylesheets" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

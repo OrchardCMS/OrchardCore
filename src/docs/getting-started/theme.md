@@ -40,3 +40,10 @@ The themes we have in source code use only `Liquid` files, so their .csproj file
 If you want to use Razor templates in your theme, you simply need to change this .csproj first line to:
 
 `<Project Sdk="Microsoft.NET.Sdk.Razor">`
+
+## Video
+
+This video creates a first Orchard Core theme.
+
+<!-- video:theme-create -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/wvpy233VVd4" title="Create a Theme: Your First Orchard Core Theme" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

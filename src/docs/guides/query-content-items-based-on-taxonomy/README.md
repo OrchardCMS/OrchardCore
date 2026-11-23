@@ -190,3 +190,10 @@ This article is not intended to provide a complete implementation. However, as a
 ## Summary
 
 You just created the pieces needed to search through blogs to find only the ones with specific tags assigned.
+
+## Video
+
+This video finds the content items of a term in Liquid templates and queries.
+
+<!-- video:taxonomies-query-content -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/hwRD0KJ3e4o" title="Taxonomies in Code: Query Content Items by Term" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

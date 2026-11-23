@@ -361,6 +361,11 @@ msgctxt "OrchardCore.Roles.Views.Admin._RolePermissions"
 msgid "This system role provides comprehensive access by granting all available permissions."
 msgstr ""
 
+#: Views/Admin/_RolePermissions.cshtml
+msgctxt "OrchardCore.Roles.Views.Admin._RolePermissions"
+msgid "Your search returned no results."
+msgstr ""
+
 #: Views/CloneRoleGeneral.Edit.cshtml
 msgctxt "OrchardCore.Roles.Views.CloneRoleGeneral.Edit"
 msgid "Description"

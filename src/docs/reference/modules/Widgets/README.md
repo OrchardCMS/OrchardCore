@@ -139,3 +139,13 @@ If the part is attached as a named part, use that part name instead of `WidgetsL
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/NCvytsdED_o" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/mN4H6hIBzWI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video compares the starter recipes you can choose from when you set up a site.
+
+<!-- video:starter-recipes -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/VtnARneJ6GY" title="Starter Recipes: Choose How Your Site Starts" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video changes the look of your site by choosing a theme.
+
+<!-- video:themes-choose -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/gi1KWyaQ7mI" title="Themes: Change the Look of Your Site" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
