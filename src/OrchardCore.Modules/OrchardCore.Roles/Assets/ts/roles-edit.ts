@@ -6,6 +6,7 @@ const isVisible = (element: HTMLElement) =>
     !!(element.offsetWidth || element.offsetHeight || element.getClientRects().length);
 
 const searchBox = document.querySelector<HTMLInputElement>("#search-box");
+const noResults = document.getElementById("permissions-alert");
 
 if (searchBox) {
     searchBox.addEventListener("keyup", (event) => {
@@ -19,6 +20,7 @@ if (searchBox) {
             document.querySelectorAll<HTMLElement>(".permissions-list > table > tbody > tr").forEach((row) => {
                 setVisible(row, true);
             });
+            noResults?.classList.add("d-none");
         } else {
             document.querySelectorAll<HTMLElement>(".permissions-list > table > tbody > tr").forEach((row) => {
                 const text = (row.dataset.text ?? "").toLowerCase();
@@ -35,13 +37,18 @@ if (searchBox) {
                 }
             });
 
+            let anyVisible = false;
+
             document.querySelectorAll<HTMLElement>(".permissions-list").forEach((list) => {
                 const hasVisiblePermissions = Array.from(
                     list.querySelectorAll<HTMLElement>("table > tbody > tr"),
                 ).some(isVisible);
 
                 setVisible(list, hasVisiblePermissions);
+                anyVisible ||= hasVisiblePermissions;
             });
+
+            noResults?.classList.toggle("d-none", anyVisible);
         }
     });
 }
