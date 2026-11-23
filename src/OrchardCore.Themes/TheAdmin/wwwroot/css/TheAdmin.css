@@ -10999,7 +10999,7 @@ html .EasyMDEContainer .editor-toolbar:not(.fullscreen) {
   border-radius: var(--bs-border-radius) var(--bs-border-radius) 0 0;
   background-color: var(--ta-surface);
   opacity: 1;
-  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  transition: border-color 0.15s ease-in-out;
 }
 
 html .EasyMDEContainer .editor-toolbar:not(.fullscreen):hover {
@@ -11029,9 +11029,42 @@ html[dir="rtl"] .EasyMDEContainer .editor-toolbar i.separator {
 
 html .EasyMDEContainer .CodeMirror:not(.CodeMirror-fullscreen) {
   border-color: var(--ta-control-border);
+  border-bottom-left-radius: var(--bs-border-radius);
+  border-bottom-right-radius: var(--bs-border-radius);
 }
 
 html .EasyMDEContainer .CodeMirror-focused:not(.CodeMirror-fullscreen) {
+  border-color: var(--ta-focus-color);
+}
+
+html .EasyMDEContainer:not(:has(.CodeMirror-fullscreen)) {
+  border-radius: var(--bs-border-radius);
+  transition: box-shadow 0.15s ease-in-out;
+}
+
+html .EasyMDEContainer:not(:has(.CodeMirror-fullscreen)):has(.CodeMirror-focused) {
+  box-shadow: var(--ta-focus-halo);
+}
+
+html .EasyMDEContainer:not(:has(.CodeMirror-fullscreen)) > .CodeMirror {
+  box-shadow: none;
+}
+
+html .EasyMDEContainer:not(:has(.CodeMirror-fullscreen)) > .CodeMirror:has(~ .editor-statusbar) {
+  border-bottom: 0;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+html .EasyMDEContainer:not(:has(.CodeMirror-fullscreen)) > .editor-statusbar {
+  border: var(--bs-border-width) solid var(--ta-control-border);
+  border-top: 0;
+  border-radius: 0 0 var(--bs-border-radius) var(--bs-border-radius);
+  background-color: var(--ta-surface);
+  transition: border-color 0.15s ease-in-out;
+}
+
+html .EasyMDEContainer:not(:has(.CodeMirror-fullscreen)):has(.CodeMirror-focused) > .editor-statusbar {
   border-color: var(--ta-focus-color);
 }
 
@@ -11043,18 +11076,33 @@ html .EasyMDEContainer:has(.editor-toolbar:not(.fullscreen)) > .CodeMirror:not(.
 
 html .EasyMDEContainer:has(.CodeMirror-focused) .editor-toolbar:not(.fullscreen) {
   border-color: var(--ta-focus-color);
-  box-shadow: var(--ta-focus-halo);
-  clip-path: inset(-0.5rem -0.5rem 0 -0.5rem);
 }
 
 html .EasyMDEContainer:has(.editor-toolbar:not(.fullscreen)) > .CodeMirror-focused:not(.CodeMirror-fullscreen) {
   border-top-color: var(--ta-border);
-  clip-path: inset(0 -0.5rem -0.5rem -0.5rem);
 }
 
 html .EasyMDEContainer .editor-statusbar {
   color: var(--ta-muted);
   font-size: var(--ta-font-size-xs);
+}
+
+html .media-field-app {
+  --oc-media-border-color: var(--ta-control-border);
+  --oc-media-border-radius: var(--bs-border-radius);
+}
+
+html .media-field-app .tw\:rounded {
+  border-radius: var(--bs-border-radius);
+}
+
+html .media-field-app .mf-thumb-item .tw\:border-t,
+html .media-field-app .mf-gallery-card .tw\:border-t {
+  border-top-color: var(--ta-border);
+}
+
+html .oc-media-empty-state {
+  border-color: var(--ta-control-border);
 }
 
 #menu > li,

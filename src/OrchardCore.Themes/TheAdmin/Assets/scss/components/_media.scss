@@ -1,0 +1,23 @@
+// The media field (its attached files, as cards or a list, and the box shown when there are none) is drawn like the
+// other fields: the border color of a field and its corners. The media apps read these from their own custom
+// properties, which their stylesheet sets on ':root', after this one: 'html' sets them closer to the field.
+html .media-field-app {
+    --oc-media-border-color: var(--ta-control-border);
+    --oc-media-border-radius: var(--bs-border-radius);
+
+    // The cards and the list round their corners with Tailwind's fixed 'rounded' (0.25rem).
+    .tw\:rounded {
+        border-radius: var(--bs-border-radius);
+    }
+
+    // The divider above the name of a file stays a hairline, like the one under the toolbar of the Markdown editor.
+    .mf-thumb-item .tw\:border-t,
+    .mf-gallery-card .tw\:border-t {
+        border-top-color: var(--ta-border);
+    }
+}
+
+// The dashed boxes of the media library (no files yet, drop files here) take the border color of the fields too.
+html .oc-media-empty-state {
+    border-color: var(--ta-control-border);
+}
