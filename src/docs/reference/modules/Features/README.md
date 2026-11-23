@@ -4,7 +4,7 @@ The `OrchardCore.Features` module lets the administrator of a site manage the in
 
 ## Managing features
 
-Go to **Configuration** > **Features** in the admin (requires the `Manage features` permission). From there you can:
+Go to **Tools → Features** in the admin (requires the `Manage features` permission). From there you can:
 
 - Enable a feature, which also enables any feature it depends on.
 - Disable a feature, which also disables features that depend on it.

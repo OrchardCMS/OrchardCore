@@ -301,7 +301,7 @@ The connection types documentation and examples can be found [in the official El
 
 ### Indexing settings
 
-When editing an Elasticsearch-based index from the Index Management page (Search > Indexing), you can configure both general indexing settings and Elasticsearch-specific settings.
+When editing an Elasticsearch-based index from the Index Management page (**Search → Indexing**), you can configure both general indexing settings and Elasticsearch-specific settings.
 
 Under the Elasticsearch-specific settings, the following configuration options are available:
 

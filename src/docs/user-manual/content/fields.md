@@ -19,7 +19,7 @@ Fields are the boxes of a content item beyond its title and body: a subtitle, a 
 | | |
 | --- | --- |
 | **Menu** | The editor of a content item, see [Content items](content-items.md) |
-| **Where you set them up** | **Design > Content Definition > Content Types**, **Edit** on the type, then **Edit** next to the field |
+| **Where you set them up** | **Design → Content Definition → Content Types**, **Edit** on the type, then **Edit** next to the field |
 | **Permission** | To fill in: permission to edit the content item. To set up: *Edit content types.* |
 | **Feature** | **Content Fields** (`OrchardCore.ContentFields`), plus the features named for some fields below |
 
@@ -33,7 +33,7 @@ When a field is required, its label is marked as required and you can't save the
 
 ### Set up a field (site builders)
 
-1. Open **Design > Content Definition > Content Types** and click **Edit** on the content type.
+1. Open **Design → Content Definition → Content Types** and click **Edit** on the content type.
 2. Click **Edit** next to the field. To add a field, click **Add Field**, see [Content types](content-types.md).
 3. Choose the editor in **What type of editor should be used?** and, when offered, how it is shown on the site in **What type of display mode should be used?**.
 4. Fill in the settings of the field (described for each field below). The options change with the editor you choose.
@@ -244,7 +244,7 @@ Settings: **Required**, **Hint**.
 
 The **Content Fields Indexing (SQL)** feature (`OrchardCore.ContentFields.Indexing.SQL`) copies the values of text, Boolean, number, date, date and time, time, link, HTML, multi text and content picker fields into database tables. **Content Fields Indexing (SQL) - User Picker** (`OrchardCore.ContentFields.Indexing.SQL.UserPicker`) does the same for user picker fields.
 
-Nothing changes in the editor. These tables let developers and site builders write SQL queries that list or filter content by field values, for example all events after a date, in **Search > Queries**. See [Queries](../search/queries.md). Turn them on when a query needs them; your developer will tell you.
+Nothing changes in the editor. These tables let developers and site builders write SQL queries that list or filter content by field values, for example all events after a date, in **Search → Queries**. See [Queries](../search/queries.md). Turn them on when a query needs them; your developer will tell you.
 
 ## Videos
 

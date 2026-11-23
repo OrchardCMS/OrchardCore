@@ -16,7 +16,7 @@ The Remote Deployment module adds remote Orchard Core sites as execution targets
 
 The destination site authorizes incoming packages through a remote client:
 
-1. In the destination site's admin, go to **Tools** > **Deployments** > **Remote Clients**.
+1. In the destination site's admin, go to **Tools → Deployments → Remote Clients**.
 2. Select **Add Remote Client**.
 3. Enter a unique client name.
 4. Generate a strong API key, store a copy securely, and enter it in the **API Key** field.
@@ -28,7 +28,7 @@ The destination protects the remote client's API key using ASP.NET Core Data Pro
 
 Add the destination as a remote instance:
 
-1. In the source site's admin, go to **Tools** > **Deployments** > **Remote Instances**.
+1. In the source site's admin, go to **Tools → Deployments → Remote Instances**.
 2. Select **Add Remote Instance**.
 3. Enter a descriptive name.
 4. Set **URL** to the destination tenant's remote import endpoint:
@@ -47,7 +47,7 @@ Add the destination as a remote instance:
 
 ## Deploy a plan
 
-1. On the source site, go to **Tools** > **Deployments** > **Plans**.
+1. On the source site, go to **Tools → Deployments → Plans**.
 2. Open a deployment plan.
 3. Select **Execute**.
 4. Select the configured remote instance.

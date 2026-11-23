@@ -20,8 +20,8 @@ Some features are mostly for developers, integrators and power users: tools to e
 
 | Tool | Menu | Permission | Feature |
 | --- | --- | --- | --- |
-| GraphQL explorer | **Tools > GraphiQL** | *Execute GraphQL.* | **GraphQL** (`OrchardCore.Apis.GraphQL`) |
-| OpenAPI settings | **Settings > OpenApi** | *Manage OpenAPI settings and access interactive documentation UIs* | **OpenApi** (`OrchardCore.OpenApi`) |
+| GraphQL explorer | **Tools → GraphiQL** | *Execute GraphQL.* | **GraphQL** (`OrchardCore.Apis.GraphQL`) |
+| OpenAPI settings | **Settings → OpenApi** | *Manage OpenAPI settings and access interactive documentation UIs* | **OpenApi** (`OrchardCore.OpenApi`) |
 | Mini Profiler | No menu: a box on the pages | *View Mini Profiler widget on front end pages*, *View Mini Profiler widget on back end pages* | **Mini Profiler** (`OrchardCore.MiniProfiler`) |
 | Health checks | No screen | | **Health Checks** (`OrchardCore.HealthChecks`) |
 | Remote publishing | No screen | | **XML-RPC** (`OrchardCore.XmlRpc`), **Remote Publishing** (`OrchardCore.RemotePublishing`) |
@@ -30,11 +30,11 @@ The Administrator role has these permissions by default.
 
 ## Explore your content with GraphiQL
 
-GraphQL is a way for other applications, such as a mobile app or a separate website front end, to ask the site for exactly the content they need. **Tools > GraphiQL** opens GraphiQL, an explorer where you type a query on the left and see the answer on the right. The explorer suggests the content types, fields and parts of your site as you type, and its documentation panel lists everything you can ask for.
+GraphQL is a way for other applications, such as a mobile app or a separate website front end, to ask the site for exactly the content they need. **Tools → GraphiQL** opens GraphiQL, an explorer where you type a query on the left and see the answer on the right. The explorer suggests the content types, fields and parts of your site as you type, and its documentation panel lists everything you can ask for.
 
 ![The GraphiQL screen](images/graphiql.webp)
 
-1. Open **Tools > GraphiQL**.
+1. Open **Tools → GraphiQL**.
 2. Type a query in the left pane, for example `{ article { displayText } }` to list the titles of your articles.
 3. Click the run button (the triangle) at the top.
 
@@ -54,8 +54,8 @@ Type the page address after your site's address, for example `https://www.exampl
 
 ### Change the OpenAPI settings
 
-1. Open **Settings > OpenApi**.
-2. Under **API Documentation UIs**, check which documentation pages are **Enabled** or **Disabled**. To turn one on or off, use **Tools > Features**.
+1. Open **Settings → OpenApi**.
+2. Under **API Documentation UIs**, check which documentation pages are **Enabled** or **Disabled**. To turn one on or off, use **Tools → Features**.
 3. Under **API Schema Access**, check **Allow anonymous access to the API schema** only if outside tools must read the API description without signing in. It is off by default.
 4. Click **Save**. The site reloads.
 

@@ -18,18 +18,18 @@ Instead of a password kept by your site, people can sign in with an account they
 
 | Service | Menu | Permission | Feature |
 | --- | --- | --- | --- |
-| Microsoft account | **Settings > Security > Authentication > Microsoft** | *Manage Microsoft Authentication settings* | **Microsoft Account Authentication** (`OrchardCore.Microsoft.Authentication.MicrosoftAccount`) |
-| Microsoft Entra ID | **Settings > Security > Authentication > Microsoft Entra ID** | *Manage Microsoft Authentication settings* | **Microsoft Entra ID (Azure Active Directory) Authentication** (`OrchardCore.Microsoft.Authentication.AzureAD`) |
-| Google | **Settings > Security > Authentication > Google** | *Manage Google Authentication settings* | **Google Authentication** (`OrchardCore.Google.GoogleAuthentication`) |
-| Facebook | **Settings > Security > Authentication > Meta** | *View and edit the Facebook app.* | **Meta Login** (`OrchardCore.Facebook.Login`) |
-| GitHub | **Settings > Security > Authentication > GitHub** | *Manage GitHub Authentication settings* | **GitHub Authentication** (`OrchardCore.GitHub.Authentication`) |
-| X | **Settings > Security > Authentication > Sign In with X (Twitter)** | *Manage Sign in with X (Twitter) settings* | **Sign in with X (Twitter)** (`OrchardCore.Twitter.Signin`) |
-| Any OpenID Connect provider | **Settings > OpenID Connect > Authentication Client** | *View and edit the OpenID Connect client settings.* | **OpenID Connect Client Integration** (`OrchardCore.OpenId.Client`) |
+| Microsoft account | **Settings → Security → Authentication → Microsoft** | *Manage Microsoft Authentication settings* | **Microsoft Account Authentication** (`OrchardCore.Microsoft.Authentication.MicrosoftAccount`) |
+| Microsoft Entra ID | **Settings → Security → Authentication → Microsoft Entra ID** | *Manage Microsoft Authentication settings* | **Microsoft Entra ID (Azure Active Directory) Authentication** (`OrchardCore.Microsoft.Authentication.AzureAD`) |
+| Google | **Settings → Security → Authentication → Google** | *Manage Google Authentication settings* | **Google Authentication** (`OrchardCore.Google.GoogleAuthentication`) |
+| Facebook | **Settings → Security → Authentication → Meta** | *View and edit the Facebook app.* | **Meta Login** (`OrchardCore.Facebook.Login`) |
+| GitHub | **Settings → Security → Authentication → GitHub** | *Manage GitHub Authentication settings* | **GitHub Authentication** (`OrchardCore.GitHub.Authentication`) |
+| X | **Settings → Security → Authentication → Sign In with X (Twitter)** | *Manage Sign in with X (Twitter) settings* | **Sign in with X (Twitter)** (`OrchardCore.Twitter.Signin`) |
+| Any OpenID Connect provider | **Settings → OpenID Connect → Authentication Client** | *View and edit the OpenID Connect client settings.* | **OpenID Connect Client Integration** (`OrchardCore.OpenId.Client`) |
 
 Each of these features turns on **External Authentication** (`OrchardCore.Users.ExternalAuthentication`), which holds the shared options described in [Decide what happens at the first sign-in](#decide-what-happens-at-the-first-sign-in).
 
 !!! tip "Don't see a menu?"
-    Turn the feature on in **Tools > Features** (see [Features](../getting-started/features.md)). The menu also needs the permission in the table. See [Roles and permissions](../getting-started/roles-and-permissions.md).
+    Turn the feature on in **Tools → Features** (see [Features](../getting-started/features.md)). The menu also needs the permission in the table. See [Roles and permissions](../getting-started/roles-and-permissions.md).
 
 ## What people see
 
@@ -61,7 +61,7 @@ When the **Secrets** feature is on, each secret box has a list above it: **User-
 
 ![The Microsoft authentication settings](images/microsoft-account.webp)
 
-1. Open **Settings > Security > Authentication > Microsoft**.
+1. Open **Settings → Security → Authentication → Microsoft**.
 2. Fill in the fields and click **Save**.
 
 | Field | What it does |
@@ -75,7 +75,7 @@ When the **Secrets** feature is on, each secret box has a list above it: **User-
 
 Use this for work or school accounts in your organization's Microsoft Entra ID (formerly Azure Active Directory).
 
-1. Open **Settings > Security > Authentication > Microsoft Entra ID**.
+1. Open **Settings → Security → Authentication → Microsoft Entra ID**.
 2. Fill in the fields and click **Save**.
 
 | Field | What it does |
@@ -90,7 +90,7 @@ Use this for work or school accounts in your organization's Microsoft Entra ID (
 
 ![The Google authentication settings](images/google-authentication.webp)
 
-1. Open **Settings > Security > Authentication > Google**.
+1. Open **Settings → Security → Authentication → Google**.
 2. Fill in the fields and click **Save**.
 
 | Field | What it does |
@@ -104,8 +104,8 @@ Use this for work or school accounts in your organization's Microsoft Entra ID (
 
 Facebook sign-in uses the app you register for all Meta features.
 
-1. Open **Settings > Integrations > Meta App** and fill in **Application Identifier** and **Secret Key** from the Meta developer portal. Click **Save**. The other fields on that page are for Meta's social plugins, see [Analytics and social](../settings/analytics-and-social.md).
-2. Open **Settings > Security > Authentication > Meta**.
+1. Open **Settings → Integrations → Meta App** and fill in **Application Identifier** and **Secret Key** from the Meta developer portal. Click **Save**. The other fields on that page are for Meta's social plugins, see [Analytics and social](../settings/analytics-and-social.md).
+2. Open **Settings → Security → Authentication → Meta**.
 3. Optionally change **CallbackPath** (empty means `/signin-facebook`) and tick **Store tokens**.
 4. Click **Save**.
 
@@ -115,7 +115,7 @@ The Meta page reminds you that the **Meta Integration settings** must be configu
 
 ![The GitHub authentication settings](images/github-authentication.webp)
 
-1. Open **Settings > Security > Authentication > GitHub**.
+1. Open **Settings → Security → Authentication → GitHub**.
 2. Fill in **Client ID** and **Client secret** from your GitHub app.
 3. Optionally change **CallbackPath** (empty means `/signin-github`) and tick **Store tokens**.
 4. Click **Save**.
@@ -124,8 +124,8 @@ The Meta page reminds you that the **Meta Integration settings** must be configu
 
 Sign-in with X uses the keys of your X app.
 
-1. Open **Settings > Integrations > X (Twitter)** and fill in **API key**, **API secret key**, **Access Token** and **Access Token Secret** from the *Keys and tokens* tab of your X app. Click **Save**.
-2. Open **Settings > Security > Authentication > Sign In with X (Twitter)**.
+1. Open **Settings → Integrations → X (Twitter)** and fill in **API key**, **API secret key**, **Access Token** and **Access Token Secret** from the *Keys and tokens* tab of your X app. Click **Save**.
+2. Open **Settings → Security → Authentication → Sign In with X (Twitter)**.
 3. Optionally change **CallbackPath** and tick **Store tokens**. When **CallbackPath** is empty, the site uses `/signin-twitter`, even though the box shows `/signin-x` as an example. Give X the path the site really uses.
 4. Click **Save**.
 
@@ -133,7 +133,7 @@ Sign-in with X uses the keys of your X app.
 
 Many identity providers, such as Okta, Auth0, Keycloak or another Orchard Core site acting as a server, speak OpenID Connect. Setting this up usually takes a developer or the provider's administrator next to you: the right flow depends on the provider.
 
-1. Open **Settings > OpenID Connect > Authentication Client**.
+1. Open **Settings → OpenID Connect → Authentication Client**.
 2. Fill in the fields and click **Save**. The site checks the values and shows an error if something is missing, for example *The authority cannot be null or empty.*
 
 | Field | What it does |
@@ -162,7 +162,7 @@ Set the options in two places.
 
 ### Registration options
 
-Open **Settings > Security > Registration** and the **External Authentication** tab.
+Open **Settings → Security → Registration** and the **External Authentication** tab.
 
 | Option | What it does |
 | --- | --- |
@@ -176,7 +176,7 @@ When all three "Do not ask" options are on, the account is created without showi
 
 ### Login options
 
-Open **Settings > Security > User Login** and the **External Login** tab.
+Open **Settings → Security → User Login** and the **External Login** tab.
 
 | Option | What it does |
 | --- | --- |

@@ -74,7 +74,7 @@ Do it in this order: clicking **Archive Later** on the draft would publish it at
 You enter the date and time in your own time zone, and the site shows them back in your time zone:
 
 - With the **User Time Zone** feature, the **Default Time Zone** of your user account, if you chose one (see [Signing in](../getting-started/signing-in.md)).
-- Otherwise, the **Default Time Zone** of the site, in **Settings > General** (see [General settings](../settings/general.md)).
+- Otherwise, the **Default Time Zone** of the site, in **Settings → General** (see [General settings](../settings/general.md)).
 - If neither is set, the time zone of the server.
 
 The schedule is stored as an exact moment, so it happens at the right time for everyone, wherever they are. Avoid times that don't exist or happen twice when clocks change for daylight saving time.
@@ -83,7 +83,7 @@ The schedule is stored as an exact moment, so it happens at the right time for e
 
 The site checks for due items once a minute, with two background tasks: **Scheduled Content Items Publisher** and **Content Items Archiver**. An item is published or unpublished within about a minute after its time, never before. If you choose a time in the past, it happens at the next check.
 
-The tasks run only while the site is running. If a task is turned off in **Tools > Background Tasks**, or the site is stopped, due items wait until the next check after it runs again. See [Background tasks](../settings/background-tasks.md).
+The tasks run only while the site is running. If a task is turned off in **Tools → Background Tasks**, or the site is stopped, due items wait until the next check after it runs again. See [Background tasks](../settings/background-tasks.md).
 
 A scheduled publication works like a click on **Publish**: workflows, notifications, search indexes and everything else that reacts to publishing run as usual.
 
@@ -91,11 +91,11 @@ A scheduled publication works like a click on **Publish**: workflows, notificati
 
 | | |
 | --- | --- |
-| **Menu** | **Design > Content Definition > Content Types**, then **Edit** on the type |
+| **Menu** | **Design → Content Definition → Content Types**, then **Edit** on the type |
 | **Permission** | *Edit content types.* |
 
-1. Turn on the **Publish Later** or **Archive Later** feature in **Tools > Features**, see [Features](../getting-started/features.md).
-2. Open **Design > Content Definition > Content Types** and click **Edit** on the content type.
+1. Turn on the **Publish Later** or **Archive Later** feature in **Tools → Features**, see [Features](../getting-started/features.md).
+2. Open **Design → Content Definition → Content Types** and click **Edit** on the content type.
 3. Click **Add Parts**, tick **PublishLater** or **ArchiveLater**, and click **Add Selected Parts**.
 
 The parts have no settings. See [Content types](content-types.md).

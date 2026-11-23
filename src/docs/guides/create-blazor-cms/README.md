@@ -31,7 +31,7 @@ dotnet sln add ./BlazorCms
 
 ![Setup Default Orchard Core site](./images/image-002.PNG)
 
-- Once the setup is complete, log in to the admin and create a new content type as following. (By navigating to `Design` -> `Content Definition` -> `Content Types`) 
+- Once the setup is complete, log in to the admin and create a new content type as following. (By navigating to **Design → Content Definition → Content Types**) 
     - Create a 'MarkdownPage' content type.
     - Add Parts 
         - TitlePart
@@ -39,7 +39,7 @@ dotnet sln add ./BlazorCms
         - MarkdownBodyPart.
 - Create a new content item and publish it.
 - Alternatively, you can import the following recipe to create the content definition and content item that we are using for this guide.
-- To import the recipe, log in to administration, and go to `Tools` > `Deployments` > `JSON Import`
+- To import the recipe, log in to administration, and go to **Tools → Deployments → JSON Import**
 
 ```json
 {
@@ -140,7 +140,7 @@ dotnet sln add ./BlazorCms
 }
 ```
 
-- Go to `Content` -> `Content Items` and verify that the content item is available as shown in the image below.
+- Go to **Content → Content Items** and verify that the content item is available as shown in the image below.
  
 ![Content Item](./images/image-001.PNG)
 
@@ -776,13 +776,13 @@ One of the key features of Orchard Core is its multi-tenancy support. In this se
     
 ## Enable the tenant feature.
 
-In orchard core admin, go to `Tools` -> `Features` and enable the `Tenants` feature.
+In orchard core admin, go to **Tools → Features** and enable the `Tenants` feature.
 
 ![Enable tenants feature](./images/enable-tenants.jpg)
 
 ## Add the first tenant
 
-Navigate to `Multi-Tenancy` -> `Tenants` and add a new tenant with the following settings.
+Navigate to **Multi-Tenancy → Tenants** and add a new tenant with the following settings.
 
 ![Create first tenant](./images/create-tenant.png)
 
@@ -878,7 +878,7 @@ Now make sure the tenant 01 also imports the content type and content item, so w
 
 Import the following:
 
-Log in to administration, and go to `Tools` > `Deployments` > `JSON Import`
+Log in to administration, and go to **Tools → Deployments → JSON Import**
 
 ```json
 {

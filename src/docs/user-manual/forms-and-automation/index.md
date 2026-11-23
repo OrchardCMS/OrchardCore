@@ -7,7 +7,7 @@ description: Collect information from visitors with forms, let workflows act whe
 
 This section is about letting the site do work for you: forms that collect messages and sign-ups, workflows that react when a form is sent or a page is published, notifications that tell people what happened, and data pipelines that export, import and deliver data on a schedule. Forms, workflows and pipelines are usually built by **site builders** and **administrators**; everyone reads their own notifications.
 
-Forms have no menu of their own: you add form widgets to a page's flow, or to a zone in **Design > Widgets**. Workflows are in **Design > Workflows**. Data pipelines are in **Tools > Data Pipelines**, and the links they send in **Tools > Shared Links**. Your notifications are behind the bell in the top bar.
+Forms have no menu of their own: you add form widgets to a page's flow, or to a zone in **Design → Widgets**. Workflows are in **Design → Workflows**. Data pipelines are in **Tools → Data Pipelines**, and the links they send in **Tools → Shared Links**. Your notifications are behind the bell in the top bar.
 
 ## I want to…
 

@@ -6,7 +6,7 @@ Use it to investigate a specific performance problem. Profiling adds work to eve
 
 ## Enable the feature
 
-Enable the **Mini Profiler** feature from **Configuration → Features** for each tenant that you want to profile.
+Enable the **Mini Profiler** feature from **Tools → Features** for each tenant that you want to profile.
 
 ```json
 {
