@@ -1,0 +1,15 @@
+@using OrchardCore.DisplayManagement.Views
+
+@model ShapeViewModel<JobEntry>
+
+@* Bare items, never wrapped in <li>: AdminListActions renders the menu in a <div class="dropdown-menu">. *@
+@if (Model.Value.CanRunManually)
+{
+    <a asp-action="Run" asp-controller="Job" asp-route-area="OrchardCore.Jobs" asp-route-name="@Model.Value.Name" asp-route-returnUrl="@FullRequestPath" class="dropdown-item" data-url-af="UnsafeUrl">@T["Run now"]</a>
+    <a asp-action="RunWith" asp-controller="Job" asp-route-area="OrchardCore.Jobs" asp-route-name="@Model.Value.Name" class="dropdown-item">@T["Run with parameters"]</a>
+    <a asp-action="Create" asp-controller="JobSchedule" asp-route-area="OrchardCore.Jobs" asp-route-jobName="@Model.Value.Name" class="dropdown-item">@T["Add a schedule"]</a>
+}
+else
+{
+    <span class="dropdown-item-text text-muted small">@T["The runs of this job are queued by its feature."]</span>
+}

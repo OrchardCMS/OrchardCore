@@ -48,6 +48,7 @@ using OrchardCore.OpenId;
     [
         OpenIdConstants.Features.Core,
         OpenIdConstants.Features.Management,
+        "OrchardCore.Jobs",
     ]
 )]
 

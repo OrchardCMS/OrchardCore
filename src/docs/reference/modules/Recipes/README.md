@@ -73,6 +73,10 @@ Environment variables are only available through `configuration` when they are p
 
 ---
 
+## Running a Recipe from the Admin
+
+The recipes of the enabled features are listed under **Tools** > **Recipes**, where they can be run. When the [Jobs](../Jobs/README.md) feature is enabled, a recipe runs in the background, as a run of the **Recipe** job: a long recipe doesn't make the request wait, a recipe that is already running is not started again, and the page links to the run, which tells how the recipe went. Otherwise the recipe runs in the request.
+
 ## Custom Recipes
 
 To create a new recipe step, implement the `IRecipeStepHandler` interface and its `ExecuteAsync` method:

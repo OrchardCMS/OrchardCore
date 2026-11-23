@@ -14,12 +14,6 @@
               "minimum": 1,
               "default": 32
             },
-            "MaxConcurrentRuns": {
-              "type": "integer",
-              "description": "The number of runs of a tenant that execute at the same time. The other runs wait, queued, for one to end.",
-              "minimum": 1,
-              "default": 4
-            },
             "RunRetentionDays": {
               "type": "integer",
               "description": "The number of days the runs of a pipeline are kept; older runs are deleted. 0 keeps them.",

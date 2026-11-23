@@ -11,7 +11,6 @@ using OrchardCore.AuditTrail.Services;
 using OrchardCore.AuditTrail.Services.Models;
 using OrchardCore.AuditTrail.Settings;
 using OrchardCore.AuditTrail.ViewModels;
-using OrchardCore.BackgroundTasks;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Handlers;
@@ -40,7 +39,12 @@ public sealed class Startup : StartupBase
 
         services.AddDataMigration<Migrations>();
         services.AddIndexProvider<AuditTrailEventIndexProvider>();
-        services.AddSingleton<IBackgroundTask, AuditTrailBackgroundTask>();
+        services.AddJob<AuditTrailTrimmingJob>(AuditTrailTrimmingJob.Name, job =>
+        {
+            job.Title = AuditTrailLocalizationSources.TrimmingJobTitle;
+            job.Description = AuditTrailLocalizationSources.TrimmingJobDescription;
+            job.Schedule = "0 0 * * *";
+        });
 
         services.AddPermissionProvider<Permissions>();
         services.AddNavigationProvider<AuditTrailAdminMenu>();

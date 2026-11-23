@@ -45,6 +45,13 @@ public sealed class IndexingOptions
         AddIndexingProvider(providerName, configureProvider);
     }
 
+    /// <summary>
+    /// Returns whether each server keeps its own copy of the indexes of a provider, see <see cref="IndexingProviderOptionsEntry.IsLocal"/>.
+    /// </summary>
+    /// <param name="providerName">The name of the provider.</param>
+    public bool IsLocalProvider(string providerName)
+        => !string.IsNullOrEmpty(providerName) && _providers.TryGetValue(providerName, out var provider) && provider.IsLocal;
+
     public void AddIndexingProvider(string providerName, Action<IndexingProviderOptionsEntry> configure = null)
     {
         ArgumentException.ThrowIfNullOrEmpty(providerName);
@@ -92,6 +99,14 @@ public sealed class IndexingProviderOptionsEntry
     public string ProviderName { get; }
 
     public LocalizedString DisplayName { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether each server keeps its own copy of the indexes of this provider, such
+    /// as on its disk, instead of all the servers sharing one index in a remote service. Every server then keeps its
+    /// copy up to date, while a shared index is updated by a single server at a time. It is <see langword="false"/>
+    /// by default.
+    /// </summary>
+    public bool IsLocal { get; set; }
 }
 
 public sealed class IndexProfileKeyComparer : IEqualityComparer<IndexProfileKey>

@@ -57,7 +57,13 @@ public static class ServiceCollectionExtensions
         services
             .AddOptions<IndexingOptions>()
             .Configure<IStringLocalizer<LuceneLocalizationMarker>>((options, S) =>
-                options.AddIndexingProvider(LuceneConstants.ProviderName, provider => provider.DisplayName = S["Lucene"]));
+                options.AddIndexingProvider(LuceneConstants.ProviderName, provider =>
+                {
+                    provider.DisplayName = S["Lucene"];
+
+                    // The index and its cursor are files of the server, so each server updates its own.
+                    provider.IsLocal = true;
+                }));
 
         return services;
     }

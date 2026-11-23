@@ -1,8 +1,11 @@
 using System.Security.Claims;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DataPipelines.Indexes;
+using OrchardCore.DataPipelines.Jobs;
 using OrchardCore.DataPipelines.Models;
 using OrchardCore.Entities;
+using OrchardCore.Jobs;
+using OrchardCore.Jobs.Models;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Modules;
 using YesSql;
@@ -12,28 +15,28 @@ using IIdGenerator = OrchardCore.Entities.IIdGenerator;
 namespace OrchardCore.DataPipelines.Services;
 
 /// <summary>
-/// Queues runs of published pipelines, finds them, and cancels them. Runs execute in the background: a queued run
-/// starts once the request that queued it is done, or within a minute.
+/// Queues runs of published pipelines, finds them, and cancels them. Runs execute in the background, each as a job
+/// run that a single server takes: a queued run starts once the request that queued it is done, or within a minute.
 /// </summary>
 public sealed class DataPipelineRunManager
 {
     private readonly ISession _session;
     private readonly IIdGenerator _idGenerator;
     private readonly IClock _clock;
-    private readonly DataPipelineRunTracker _tracker;
+    private readonly IJobManager _jobManager;
     private readonly DataPipelineManager _pipelineManager;
 
     public DataPipelineRunManager(
         ISession session,
         IIdGenerator idGenerator,
         IClock clock,
-        DataPipelineRunTracker tracker,
+        IJobManager jobManager,
         DataPipelineManager pipelineManager)
     {
         _session = session;
         _idGenerator = idGenerator;
         _clock = clock;
-        _tracker = tracker;
+        _jobManager = jobManager;
         _pipelineManager = pipelineManager;
     }
 
@@ -78,16 +81,9 @@ public sealed class DataPipelineRunManager
 
         request.Alter?.Invoke(run);
 
+        // The job run is saved with the run, so it only starts once this scope committed both.
+        await EnqueueJobAsync(_jobManager, run);
         await _session.SaveAsync(run);
-
-        // Start the run once this scope committed it.
-        var runId = run.RunId;
-        ShellScope.AddDeferredTask(scope =>
-        {
-            scope.ServiceProvider.GetRequiredService<DataPipelineRunDispatcher>().Dispatch(runId);
-
-            return Task.CompletedTask;
-        });
 
         return run;
     }
@@ -190,29 +186,62 @@ public sealed class DataPipelineRunManager
             return false;
         }
 
-        run.Log.Add(new Steps.DataPipelineLogEntry
-        {
-            Level = Microsoft.Extensions.Logging.LogLevel.Warning,
-            Message = $"Cancellation requested by {user?.Identity?.Name ?? "the system"}.",
-        });
+        var canceledBy = user?.Identity?.Name;
 
         if (run.Status == DataPipelineRunStatus.Queued)
         {
+            // Its job run didn't start: cancelling it ends this run, and tells the handlers.
+            if (!string.IsNullOrEmpty(run.JobRunId) && await _jobManager.CancelAsync(run.JobRunId, canceledBy))
+            {
+                return true;
+            }
+
+            // No job executes the run, such as a run queued before an upgrade.
             run.Status = DataPipelineRunStatus.Cancelled;
             run.CompletedUtc = _clock.UtcNow;
             run.Error = "The run was cancelled before it started.";
-
-            // A running run tells the handlers itself when it stops.
+            await _session.SaveAsync(run);
             DataPipelineRunNotifications.NotifyAfterCommit(run);
-        }
-        else
-        {
-            run.CancellationRequested = true;
-            _tracker.TryCancel(run.RunId);
+
+            return true;
         }
 
+        run.Log.Add(new Steps.DataPipelineLogEntry
+        {
+            Level = Microsoft.Extensions.Logging.LogLevel.Warning,
+            Message = $"Cancellation requested by {canceledBy ?? "the system"}.",
+        });
+
+        run.CancellationRequested = true;
         await _session.SaveAsync(run);
 
+        // The server that executes the run stops it, at once when it is this one, within a few seconds otherwise.
+        // Its job run is only cancelled once this scope committed the run: the run that stops records how it ended,
+        // which this scope would otherwise overwrite with the run as it was read here.
+        if (!string.IsNullOrEmpty(run.JobRunId))
+        {
+            var jobRunId = run.JobRunId;
+
+            ShellScope.AddDeferredTask(scope => scope.ServiceProvider.GetRequiredService<IJobManager>().CancelAsync(jobRunId, canceledBy));
+        }
+
         return true;
+    }
+
+    /// <summary>
+    /// Queues the job run that executes a run, and links the run to it. One run of a pipeline executes at a time.
+    /// </summary>
+    internal static async Task EnqueueJobAsync(IJobManager jobManager, DataPipelineRun run)
+    {
+        var jobRun = await jobManager.EnqueueAsync<DataPipelineRunJob>(new DataPipelineRunJobParameters { RunId = run.RunId }, request =>
+        {
+            request.Title = run.PipelineName;
+            request.Trigger = run.Trigger ?? JobTriggers.Code;
+            request.TriggeredBy = run.TriggeredBy;
+            request.CorrelationId = run.RunId;
+            request.ConcurrencyKey = DataPipelineRunJob.GetConcurrencyKey(run.PipelineId);
+        });
+
+        run.JobRunId = jobRun.RunId;
     }
 }

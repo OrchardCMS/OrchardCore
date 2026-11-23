@@ -1,0 +1,17 @@
+@model JobRunRowViewModel
+
+@{
+    var run = Model.Run;
+}
+
+@if (run.IsCompleted && run.GetDuration() is { } duration)
+{
+    <span class="badge ta-badge fw-normal" title="@T["How long the last attempt of the run took"]">
+        <i class="fa-solid fa-stopwatch" aria-hidden="true"></i>
+        <partial name="_JobRunDuration" model="duration" />
+    </span>
+}
+else if (Model.InGrid)
+{
+    <span class="text-muted">&mdash;</span>
+}

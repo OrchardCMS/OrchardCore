@@ -6,6 +6,16 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-OrchardCore-Catalog-Schema: 1\n"
 
+#: PublishLaterLocalizationSources.cs
+msgctxt "OrchardCore.PublishLater.PublishLaterLocalizationSources"
+msgid "Publish Later"
+msgstr ""
+
+#: PublishLaterLocalizationSources.cs
+msgctxt "OrchardCore.PublishLater.PublishLaterLocalizationSources"
+msgid "Publishes a content item whose scheduled publish date and time arrived."
+msgstr ""
+
 #: Views/PublishLaterPart.Edit.cshtml
 msgctxt "OrchardCore.PublishLater.Views.PublishLaterPart.Edit"
 msgid "Cancel Publish Later"

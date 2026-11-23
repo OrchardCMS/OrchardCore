@@ -1,0 +1,24 @@
+@model JobScheduleRowViewModel
+
+@if (Model.Schedule.LastOccurrenceUtc is { } last && !string.IsNullOrEmpty(Model.Schedule.LastRunId))
+{
+    <a asp-action="Details" asp-controller="JobRun" asp-route-area="OrchardCore.Jobs" asp-route-runId="@Model.Schedule.LastRunId" class="badge ta-badge fw-normal text-decoration-none" title="@await DisplayAsync(await New.DateTime(Utc: last, Format: "G"))">
+        <i class="fa-regular fa-clock" aria-hidden="true"></i>
+        @if (!Model.InGrid)
+        {
+            <span class="fw-bold">@T["Last run"]</span>
+        }
+        @await DisplayAsync(await New.TimeSpan(Utc: last))
+    </a>
+}
+else
+{
+    <span class="badge ta-badge fw-normal">
+        <i class="fa-solid fa-circle-minus text-secondary" aria-hidden="true"></i>
+        @if (!Model.InGrid)
+        {
+            <span class="fw-bold">@T["Last run"]</span>
+        }
+        @T["never"]
+    </span>
+}

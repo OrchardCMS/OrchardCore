@@ -2909,6 +2909,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@orchardcore/jobs@workspace:src/OrchardCore.Modules/OrchardCore.Jobs/Assets":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/jobs@workspace:src/OrchardCore.Modules/OrchardCore.Jobs/Assets"
+  languageName: unknown
+  linkType: soft
+
 "@orchardcore/layers@workspace:src/OrchardCore.Modules/OrchardCore.Layers/Assets":
   version: 0.0.0-use.local
   resolution: "@orchardcore/layers@workspace:src/OrchardCore.Modules/OrchardCore.Layers/Assets"

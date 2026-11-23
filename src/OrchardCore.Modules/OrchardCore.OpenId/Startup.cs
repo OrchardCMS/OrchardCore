@@ -136,6 +136,17 @@ public sealed class ServerStartup : StartupBase
             ServiceDescriptor.Singleton<IBackgroundTask, OpenIdBackgroundTask>(),
         });
 
+        // The tokens and the authorizations are in the database, so a single server prunes them.
+        services.AddJob<OpenIdPruningJob>(OpenIdPruningJob.Name, job =>
+        {
+            job.Title = OpenIdLocalizationSources.PruningJobTitle;
+            job.Description = OpenIdLocalizationSources.PruningJobDescription;
+            job.Schedule = "*/30 * * * *";
+
+            // It runs often, and only its failures are worth keeping.
+            job.KeepSucceededRuns = false;
+        });
+
         services.AddRecipeExecutionStep<OpenIdServerSettingsStep>()
             .AddRecipeExecutionStep<OpenIdApplicationStep>()
             .AddRecipeExecutionStep<OpenIdScopeStep>();

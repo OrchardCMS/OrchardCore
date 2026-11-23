@@ -92,6 +92,16 @@
           "default": 60000,
           "description": "The expiration in milliseconds of the distributed lock acquired before removing a tenant. Only used when the distributed lock implementation is not a local lock."
         },
+        "Node": {
+          "type": "object",
+          "description": "Identifies this instance of the application among the servers that run it, such as the servers of a web farm. Read from the application configuration only, not per tenant.",
+          "properties": {
+            "Id": {
+              "type": "string",
+              "description": "The identifier of this server, unique among the running instances of the application. It tells which server runs a job. It defaults to the machine name followed by the process identifier."
+            }
+          }
+        },
         "BackgroundService": {
           "type": "object",
           "description": "Configures the host service that runs the background tasks of all tenants. Read from the application configuration only, not per tenant.",

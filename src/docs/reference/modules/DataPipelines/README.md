@@ -213,12 +213,13 @@ A run executes the published version of a pipeline. A run starts:
 
 A disabled pipeline, or one that was never published, doesn't run.
 
-Runs execute in the background, so a long run neither delays a response nor holds up the other background tasks. A run is queued, then starts once the request that queued it ends; a background task starts, every minute, the queued runs that haven't started yet.
+Runs execute in the background, so a long run neither delays a response nor holds up the background tasks. Each run executes as a run of the **Data Pipeline** [job](../Jobs/README.md): a single server executes it, whatever their number. A run is queued, then starts once the request that queued it ends; otherwise a server starts it within a minute.
 
 - A run reads and writes data with the access of the user who published the pipeline. When this user no longer exists or is disabled, the run fails until the pipeline is published again.
 - One run of a pipeline executes at a time, so two runs don't deliver the same data at once. The other runs of the pipeline wait in the queue.
-- At most `MaxConcurrentRuns` runs of the tenant (4 by default) execute at the same time. The other runs wait in the queue until one ends.
-- A run records its progress every few seconds. A running run that stops reporting its progress for 10 minutes, such as when the site restarted, is marked as failed.
+- The runs of the pipelines count among the job runs a server executes at the same time for the tenant, 4 by default (the `MaxConcurrentRuns` setting of the [Jobs](../Jobs/README.md#configuration) feature). The other runs wait in the queue until one ends, or another server takes them.
+- A run records its progress every few seconds. A run whose server stops, such as when the site restarted, is marked as failed within a few minutes.
+- Cancelling a run stops it on whichever server executes it, within a few seconds.
 - A step that fails stops the run.
 - The files a run creates, and the rows its steps write to temporary files, are kept in a temporary folder of the tenant (`App_Data/Sites/{TenantName}/DataPipelines/Runs/{RunId}`), deleted when the run ends.
 
@@ -439,7 +440,6 @@ The limits of the engine are the `DataPipelineOptions`, bound to the `OrchardCor
   "OrchardCore": {
     "DataPipelines": {
       "StepMemoryLimitMegabytes": 32,
-      "MaxConcurrentRuns": 4,
       "RunRetentionDays": 30,
       "PreviewRowLimit": 100
     }
@@ -450,7 +450,6 @@ The limits of the engine are the `DataPipelineOptions`, bound to the `OrchardCor
 | Option | Default | Description |
 |--------|---------|-------------|
 | `StepMemoryLimitMegabytes` | `32` | The memory, in megabytes, a step that must see many rows at once may use: the rows of **Sort rows**, the right input of **Join**, the groups of **Group and summarize**, and the keys of **Remove duplicates**. The rows that don't fit are written to temporary files of the run, so a step handles any number of rows with this much memory. |
-| `MaxConcurrentRuns` | `4` | The number of runs of the tenant that execute at the same time. The other runs wait in the queue until one ends. |
 | `RunRetentionDays` | `30` | The number of days the runs are kept after they end. `0` keeps them. |
 | `PreviewRowLimit` | `100` | The number of rows each source reads when a step is previewed. |
 
@@ -460,7 +459,6 @@ The options can also be set from code:
 services.Configure<DataPipelineOptions>(options =>
 {
     options.StepMemoryLimitMegabytes = 128;
-    options.MaxConcurrentRuns = 2;
 });
 ```
 

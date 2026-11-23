@@ -1,0 +1,34 @@
+@model JobScheduleIndexViewModel
+
+<zone Name="Title">
+    <breadcrumb name="JobSchedules" title="@T["Job Schedules"]" />
+</zone>
+
+<form asp-action="Index" method="post" class="no-multisubmit">
+    @if (Model.CanCreate)
+    {
+        <div class="card text-bg-theme mb-3 position-sticky action-bar">
+            <div class="card-body">
+                <div class="row gx-2">
+                    <div class="col text-end">
+                        <a asp-action="Create" class="btn btn-secondary create" role="button">@T["Add Schedule"]</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    @* The schedules and the toolbar are rendered by the AdminList shape using the configured layout (List, Grid, ...). *@
+    <admin-list name="JobSchedules" context="Model.List"
+                empty-message="@T["<strong>Nothing here!</strong> There are no schedules for the moment."]">
+        <admin-list-list item-css-class="list-group-item" />
+        <admin-list-grid>
+            <admin-list-column name="Name" position="20" title="@T["Name"]" />
+            <admin-list-column name="Job" position="30" title="@T["Job"]" width="auto" />
+            <admin-list-column name="Schedule" position="40" title="@T["Schedule"]" width="auto" />
+            <admin-list-column name="NextRun" position="50" title="@T["Next run"]" width="auto" />
+            <admin-list-column name="LastRun" position="60" title="@T["Last run"]" width="auto" />
+            <admin-list-column type="Actions" title="@T["Actions"]" />
+        </admin-list-grid>
+    </admin-list>
+</form>

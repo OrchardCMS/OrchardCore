@@ -170,6 +170,17 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IClientIPAddressAccessor, DefaultClientIPAddressAccessor>();
         services.AddSingleton<ISlugService, SlugService>();
 
+        // Identifies this instance among the servers running the application, e.g. to tell which one runs a job.
+        services.AddOptions<NodeOptions>()
+            .Configure<IConfiguration>((options, configuration) =>
+            {
+                var id = configuration["OrchardCore:Node:Id"];
+                if (!string.IsNullOrWhiteSpace(id))
+                {
+                    options.Id = id.Trim();
+                }
+            });
+
         builder.ConfigureServices((services, serviceProvider) =>
         {
             services.AddSingleton<LocalLock>();

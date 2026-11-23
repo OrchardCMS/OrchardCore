@@ -86,6 +86,13 @@ msgctxt "OrchardCore.Deployment.Controllers.ImportController"
 msgid "Recipe imported successfully!"
 msgstr ""
 
+#. Format arguments: {0}: Url.Action("Details", "JobRun", new { area = "OrchardCore.Jobs", runId = run.RunId })
+#: Controllers/ImportController.cs
+#, csharp-format
+msgctxt "OrchardCore.Deployment.Controllers.ImportController"
+msgid "The deployment package is imported in the background. <a href=\"{0}\">View its run</a>."
+msgstr ""
+
 #. Format arguments: {0}: string.Join(' ', e.StepResult.Errors)
 #: Controllers/ImportController.cs
 #, csharp-format
@@ -140,7 +147,17 @@ msgstr ""
 
 #: DeploymentLocalizationSources.cs
 msgctxt "OrchardCore.Deployment.DeploymentLocalizationSources"
+msgid "Deployment Package Import"
+msgstr ""
+
+#: DeploymentLocalizationSources.cs
+msgctxt "OrchardCore.Deployment.DeploymentLocalizationSources"
 msgid "Deployment Plans"
+msgstr ""
+
+#: DeploymentLocalizationSources.cs
+msgctxt "OrchardCore.Deployment.DeploymentLocalizationSources"
+msgid "Imports a deployment package uploaded from the admin."
 msgstr ""
 
 #: DeploymentLocalizationSources.cs

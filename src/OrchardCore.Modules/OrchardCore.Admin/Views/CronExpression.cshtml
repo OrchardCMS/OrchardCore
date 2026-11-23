@@ -1,0 +1,45 @@
+@using System.Globalization
+@using OrchardCore.Admin.Services
+@using OrchardCore.Modules
+@using OrchardCore.Settings
+@inject IClock Clock
+@inject ISiteService SiteService
+@{
+    var expression = (string)Model.Expression;
+    var placement = Model.Description is CronExpressionDescription value ? value : CronExpressionDescription.Text;
+
+    // The same clock time is another instant in another time zone, so the tooltip always tells the time zone.
+    var (timeZone, isSiteTimeZone) = await CronExpressionDescriber.GetTimeZoneAsync(Clock, SiteService, (string)Model.TimeZone, Model.Utc is bool utc && utc);
+    var timeZoneId = timeZone?.TimeZoneId ?? CronExpressionDescriber.Utc;
+
+    // The text of the description tells a time zone that is not the one of the site, such as "At 03:00 AM (JST)".
+    var description = placement switch
+    {
+        CronExpressionDescription.None => null,
+        CronExpressionDescription.Text => CronExpressionDescriber.Describe(expression, CultureInfo.CurrentUICulture, timeZone, isSiteTimeZone, Clock.UtcNow),
+        _ => CronExpressionDescriber.Describe(expression, CultureInfo.CurrentUICulture),
+    };
+
+    // The localized strings are written as they are, so their arguments are formatted and encoded.
+    var title = isSiteTimeZone
+        ? T["In the time zone of the site, {0}", timeZoneId]
+        : T["In the {0} time zone", timeZoneId];
+
+    if (placement == CronExpressionDescription.Tooltip && description is not null)
+    {
+        title = isSiteTimeZone
+            ? T["{0}, in the time zone of the site, {1}", description, timeZoneId]
+            : T["{0}, in the {1} time zone", description, timeZoneId];
+    }
+}
+
+@if (!string.IsNullOrWhiteSpace(expression))
+{
+    <span class="cron-expression" title="@title" data-cron-time-zone="@timeZoneId">
+        <code>@expression</code>
+        @if (placement == CronExpressionDescription.Text && description is not null)
+        {
+            <span class="cron-expression-description text-body-secondary">@description</span>
+        }
+    </span>
+}

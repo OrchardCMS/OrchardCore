@@ -8,6 +8,7 @@ using OrchardCore.Deployment.Core;
 using OrchardCore.Deployment.Deployment;
 using OrchardCore.Deployment.Drivers;
 using OrchardCore.Deployment.Indexes;
+using OrchardCore.Deployment.Jobs;
 using OrchardCore.Deployment.Recipes;
 using OrchardCore.Deployment.Steps;
 using OrchardCore.DisplayManagement.Handlers;
@@ -56,5 +57,22 @@ public sealed class Startup : StartupBase
 
         services.AddDeployment<JsonRecipeDeploymentSource, JsonRecipeDeploymentStep, JsonRecipeDeploymentStepDriver>();
 
+    }
+}
+
+/// <summary>
+/// Imports the deployment packages uploaded from the admin as jobs when the Jobs feature is enabled. Without it, a
+/// package is imported in the request.
+/// </summary>
+[RequireFeatures("OrchardCore.Jobs")]
+public sealed class JobsStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddJob<DeploymentImportJob>(DeploymentImportJob.Name, job =>
+        {
+            job.Title = DeploymentLocalizationSources.ImportJobTitle;
+            job.Description = DeploymentLocalizationSources.ImportJobDescription;
+        });
     }
 }

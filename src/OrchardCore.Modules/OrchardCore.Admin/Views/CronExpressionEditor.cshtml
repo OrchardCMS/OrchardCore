@@ -1,0 +1,77 @@
+@using System.Globalization
+@using Microsoft.AspNetCore.Mvc.Localization
+@using OrchardCore.Admin.Services
+@using OrchardCore.Modules
+@using OrchardCore.Settings
+@inject IClock Clock
+@inject ISiteService SiteService
+@{
+    var value = (string)Model.Value;
+    var defaultValue = (string)Model.DefaultValue;
+    var utc = Model.Utc is bool isUtc && isUtc;
+
+    // The script describes the expression again, with the time zone that is selected in the form at that time.
+    var (timeZone, isSiteTimeZone) = await CronExpressionDescriber.GetTimeZoneAsync(Clock, SiteService, (string)Model.TimeZone, utc);
+    var description = CronExpressionDescriber.Describe(value, CultureInfo.CurrentUICulture, timeZone, isSiteTimeZone, Clock.UtcNow);
+
+    var presets = new (string Expression, LocalizedHtmlString Label)[]
+    {
+        ("* * * * *", T["Every minute"]),
+        ("*/5 * * * *", T["Every 5 minutes"]),
+        ("*/15 * * * *", T["Every 15 minutes"]),
+        ("0 * * * *", T["Every hour"]),
+        ("0 0 * * *", T["Every day at midnight"]),
+        ("0 0 * * 1", T["Every Monday at midnight"]),
+        ("0 0 1 * *", T["The first day of every month at midnight"]),
+    };
+}
+
+<script asp-name="admin-cron-expression-editor" at="Foot"></script>
+
+@* The script replaces the placeholder of the label of the occurrences with their time zone. *@
+<div class="cron-expression-editor"
+     data-cron-editor
+     data-cron-describe-url="@Url.Action("Describe", "CronExpression", new { area = "OrchardCore.Admin" })"
+     data-cron-utc="@(utc ? "true" : "false")"
+     data-cron-site-time-zone-toggle="@Model.SiteTimeZoneToggleId"
+     data-cron-time-zone-input="@Model.TimeZoneInputId"
+     data-cron-occurrences-text="@T["Next occurrences, in the {0} time zone:", "{0}"]"
+     data-cron-never-text="@T["This expression never occurs."]">
+    @Model.Input
+    <div class="form-text d-flex flex-wrap justify-content-between column-gap-3">
+        <div data-cron-description aria-live="polite">@description</div>
+        <div class="d-flex flex-wrap column-gap-3">
+            <div class="dropdown">
+                <a href="#" role="button" class="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">@T["Common schedules"]</a>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    @foreach (var preset in presets)
+                    {
+                        <li>
+                            <button type="button" class="dropdown-item d-flex justify-content-between gap-4" data-cron-preset="@preset.Expression">
+                                <span>@preset.Label</span>
+                                <code>@preset.Expression</code>
+                            </button>
+                        </li>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(defaultValue))
+                    {
+                        <li><hr class="dropdown-divider" /></li>
+                        <li>
+                            <button type="button" class="dropdown-item d-flex justify-content-between gap-4" data-cron-preset="@defaultValue">
+                                <span>@T["Default"]</span>
+                                <code>@defaultValue</code>
+                            </button>
+                        </li>
+                    }
+                </ul>
+            </div>
+            <a href="https://crontab.guru/" target="_blank" rel="noopener noreferrer" data-cron-guru title="@T["Explain this expression on crontab.guru"]">
+                crontab.guru <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
+            </a>
+        </div>
+    </div>
+    <div class="form-text mt-0" data-cron-occurrences hidden>
+        <span data-cron-occurrences-label></span>
+        <ul class="list-unstyled mb-0" data-cron-occurrences-list></ul>
+    </div>
+</div>

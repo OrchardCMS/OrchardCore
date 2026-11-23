@@ -7,6 +7,13 @@
     "tags": ["admin", "js"]
   },
   {
+    "action": "parcel",
+    "name": "admin-cron-expression-editor",
+    "source": "Assets/js/cron-expression-editor.ts",
+    "dest": "wwwroot/Scripts/cron-expression-editor/",
+    "tags": ["admin", "js"]
+  },
+  {
     "action": "sass",
     "name": "admin-quick-navigation",
     "source": "Assets/scss/quick-navigation.scss",

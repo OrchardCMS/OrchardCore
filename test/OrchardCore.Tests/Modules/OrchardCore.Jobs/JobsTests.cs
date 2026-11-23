@@ -1,0 +1,982 @@
+using System.Diagnostics;
+using System.Text.Json.Nodes;
+using OrchardCore.Environment.Shell;
+using OrchardCore.Jobs;
+using OrchardCore.Jobs.BackgroundTasks;
+using OrchardCore.Jobs.Indexes;
+using OrchardCore.Jobs.Models;
+using OrchardCore.Jobs.Services;
+using OrchardCore.Modules;
+using OrchardCore.Settings;
+using OrchardCore.Tests.Apis.Context;
+using OrchardCore.Tests.Modules.OrchardCore.DataPipelines;
+using YesSql;
+using ISession = YesSql.ISession;
+
+namespace OrchardCore.Tests.Modules.OrchardCore.Jobs;
+
+public sealed class JobsTests
+{
+    [Fact]
+    public async Task Enqueue_RegisteredJob_RunsOnceAndRecordsTheRun()
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+        var key = NewKey();
+
+        // Act
+        var runId = await EnqueueAsync(context, new TestJobParameters { Key = key }, request => request.Title = "A title");
+        var run = await WaitForRunAsync(context, runId);
+
+        // Assert
+        Assert.True(run.Status == JobRunStatus.Succeeded, run.Error);
+        Assert.Equal(1, TestJob.GetState(key).Executions);
+        Assert.Equal(TestJob.Name, run.JobName);
+        Assert.Equal("A title", run.Title);
+        Assert.Equal(JobTriggers.Code, run.Trigger);
+        Assert.Equal(1, run.Attempt);
+        Assert.Equal(100, run.Progress);
+        Assert.NotNull(run.StartedUtc);
+        Assert.NotNull(run.CompletedUtc);
+        Assert.NotNull(run.DurationMilliseconds);
+        Assert.Equal(TimeSpan.FromMilliseconds(run.DurationMilliseconds.Value), run.GetDuration());
+        Assert.False(string.IsNullOrEmpty(run.NodeId));
+        Assert.Contains(run.Log, entry => entry.Message == "Execution 1");
+        Assert.Equal(1, run.Result?["Executions"]?.GetValue<int>());
+    }
+
+    [Fact]
+    public async Task Enqueue_UnknownJob_Throws()
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var manager = scope.ServiceProvider.GetRequiredService<IJobManager>();
+
+            // Act & Assert
+            await Assert.ThrowsAsync<InvalidOperationException>(() => manager.EnqueueAsync("NotAJob"));
+        });
+    }
+
+    [Fact]
+    public async Task Enqueue_FailingJob_FailsWithItsError()
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+        var key = NewKey();
+
+        // Act
+        var runId = await EnqueueAsync(context, new TestJobParameters { Key = key, FailCount = 1 });
+        var run = await WaitForRunAsync(context, runId);
+
+        // Assert
+        Assert.Equal(JobRunStatus.Failed, run.Status);
+        Assert.Equal("Test failure 1", run.Error);
+        Assert.Contains(nameof(InvalidOperationException), run.ErrorDetails, StringComparison.Ordinal);
+        Assert.Equal(1, TestJob.GetState(key).Executions);
+    }
+
+    [Fact]
+    public async Task Enqueue_FailingJobWithAttemptsLeft_RunsAgainAndSucceeds()
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+        var key = NewKey();
+
+        // Act
+        var runId = await EnqueueAsync(context, new TestJobParameters { Key = key, FailCount = 2 }, request => request.MaxAttempts = 3);
+        var run = await WaitForRunAsync(context, runId);
+
+        // Assert
+        Assert.True(run.Status == JobRunStatus.Succeeded, run.Error);
+        Assert.Equal(3, run.Attempt);
+        Assert.Equal(3, TestJob.GetState(key).Executions);
+        Assert.Null(run.Error);
+        Assert.Contains(run.Log, entry => entry.Message.StartsWith("Attempt 1 of 3 failed", StringComparison.Ordinal));
+        Assert.Contains(run.Log, entry => entry.Message.StartsWith("Attempt 2 of 3 failed", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public async Task Enqueue_SameDeduplicationKey_ReturnsTheActiveRun()
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+        var key = NewKey();
+        var due = DateTime.UtcNow.AddHours(1);
+
+        // Act
+        var first = await EnqueueAsync(context, new TestJobParameters { Key = key }, request =>
+        {
+            request.DeduplicationKey = key;
+            request.DueUtc = due;
+        });
+        var second = await EnqueueAsync(context, new TestJobParameters { Key = key }, request =>
+        {
+            request.DeduplicationKey = key;
+            request.DueUtc = due;
+        });
+
+        // Assert
+        Assert.Equal(first, second);
+        Assert.Equal(1, await CountRunsAsync(context, index => index.DeduplicationKey == key));
+    }
+
+    [Fact]
+    public async Task Enqueue_ReplaceQueued_ReschedulesTheRun()
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+        var key = NewKey();
+
+        var first = await EnqueueAsync(context, new TestJobParameters { Key = key, FailCount = 1 }, request =>
+        {
+            request.DeduplicationKey = key;
+            request.DueUtc = DateTime.UtcNow.AddHours(1);
+        });
+
+        // Act
+        var second = await EnqueueAsync(context, new TestJobParameters { Key = key }, request =>
+        {
+            request.DeduplicationKey = key;
+            request.ReplaceQueued = true;
+        });
+        var run = await WaitForRunAsync(context, second);
+
+        // Assert
+        Assert.Equal(first, second);
+        Assert.True(run.Status == JobRunStatus.Succeeded, run.Error);
+        Assert.Equal(1, TestJob.GetState(key).Executions);
+    }
+
+    [Fact]
+    public async Task Enqueue_DueLater_StartsWhenDue()
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+        var key = NewKey();
+        var due = DateTime.UtcNow.AddSeconds(3);
+
+        // Act
+        var runId = await EnqueueAsync(context, new TestJobParameters { Key = key }, request => request.DueUtc = due);
+        var queued = await GetRunAsync(context, runId);
+        var run = await WaitForRunAsync(context, runId);
+
+        // Assert
+        Assert.Equal(JobRunStatus.Queued, queued.Status);
+        Assert.True(run.Status == JobRunStatus.Succeeded, run.Error);
+        Assert.True(run.StartedUtc >= due.AddSeconds(-1.5), $"Started {run.StartedUtc:O}, due {due:O}.");
+    }
+
+    [Fact]
+    public async Task Cancel_ScheduledRun_CancelsItAtOnce()
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+        var key = NewKey();
+        var runId = await EnqueueAsync(context, new TestJobParameters { Key = key }, request => request.DueUtc = DateTime.UtcNow.AddHours(1));
+
+        // Act
+        var canceled = false;
+        await context.UsingTenantScopeAsync(async scope => canceled = await scope.ServiceProvider.GetRequiredService<IJobManager>().CancelAsync(runId, "a test"));
+        var run = await GetRunAsync(context, runId);
+
+        // Assert
+        Assert.True(canceled);
+        Assert.Equal(JobRunStatus.Canceled, run.Status);
+        Assert.NotNull(run.CompletedUtc);
+        Assert.Equal(0, TestJob.GetState(key).Executions);
+        Assert.Contains(run.Log, entry => entry.Message.Contains("a test", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public async Task Cancel_RunningRun_StopsIt()
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+        var key = NewKey();
+        var runId = await EnqueueAsync(context, new TestJobParameters { Key = key, WaitForCancellation = true });
+        await WaitForRunAsync(context, runId, run => run.Status == JobRunStatus.Running && TestJob.GetState(key).Executions == 1);
+
+        // Act
+        await context.UsingTenantScopeAsync(scope => scope.ServiceProvider.GetRequiredService<IJobManager>().CancelAsync(runId));
+        var run = await WaitForRunAsync(context, runId);
+
+        // Assert
+        Assert.Equal(JobRunStatus.Canceled, run.Status);
+        Assert.Equal(1, TestJob.GetState(key).Canceled);
+    }
+
+    [Fact]
+    public async Task Execute_SeveralServersAtOnce_RunsOnce()
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+        var key = NewKey();
+        var runId = await CreateRunAsync(context, new TestJobParameters { Key = key, DelayMilliseconds = 200 });
+
+        // Act: each scope stands for a server that found the queued run.
+        await Task.WhenAll(Enumerable.Range(0, 8).Select(_ => Task.Run(() =>
+            context.UsingTenantScopeAsync(scope => scope.ServiceProvider.GetRequiredService<JobRunExecutor>().ExecuteAsync(runId)))));
+        var run = await WaitForRunAsync(context, runId);
+
+        // Assert
+        Assert.True(run.Status == JobRunStatus.Succeeded, run.Error);
+        Assert.Equal(1, run.Attempt);
+        Assert.Equal(1, TestJob.GetState(key).Executions);
+    }
+
+    [Fact]
+    public async Task Execute_RunsQueuedAtOnceWithTheSameDeduplicationKey_ExecutesOne()
+    {
+        // Arrange: servers that queue the same work at the same time don't see the run of the others, so each of
+        // them saved one.
+        using var context = await CreateContextAsync();
+        var key = NewKey();
+        var runIds = new List<string>();
+
+        for (var i = 0; i < 3; i++)
+        {
+            runIds.Add(await CreateRunAsync(context, new TestJobParameters { Key = key, DelayMilliseconds = 200 }, run => run.DeduplicationKey = key));
+        }
+
+        // Act: several servers each try to execute every run at the same time.
+        await Task.WhenAll(runIds.SelectMany(runId => Enumerable.Range(0, 2).Select(_ => Task.Run(() =>
+            context.UsingTenantScopeAsync(scope => scope.ServiceProvider.GetRequiredService<JobRunExecutor>().ExecuteAsync(runId))))));
+
+        // Assert: a single run did the work, and the others are removed as if they had not been queued.
+        var remaining = new List<JobRun>();
+
+        foreach (var runId in runIds)
+        {
+            if (await GetRunAsync(context, runId) is { } run)
+            {
+                remaining.Add(run);
+            }
+        }
+
+        var executed = Assert.Single(remaining);
+        Assert.True(executed.Status == JobRunStatus.Succeeded, executed.Error);
+        Assert.Equal(1, TestJob.GetState(key).Executions);
+    }
+
+    [Fact]
+    public async Task Enqueue_CancelInProgressWhileARunWithTheKeyExecutes_ReplacesIt()
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+        var key = NewKey();
+        var concurrencyKey = NewKey();
+        var runningId = await EnqueueAsync(context, new TestJobParameters { Key = key, WaitForCancellation = true }, request => request.ConcurrencyKey = concurrencyKey);
+        await WaitForRunAsync(context, runningId, run => run.Status == JobRunStatus.Running && TestJob.GetState(key).Executions == 1);
+
+        // Act
+        var newKey = NewKey();
+        var newId = await EnqueueAsync(context, new TestJobParameters { Key = newKey }, request =>
+        {
+            request.ConcurrencyKey = concurrencyKey;
+            request.CancelInProgress = true;
+        });
+
+        var replaced = await WaitForRunAsync(context, runningId);
+        var replacing = await WaitForRunAsync(context, newId, dispatch: true);
+
+        // Assert: the run that executed stopped, and the new one started once it ended.
+        Assert.Equal(JobRunStatus.Canceled, replaced.Status);
+        Assert.True(replaced.Superseded);
+        Assert.Contains("superseded", replaced.Error, StringComparison.Ordinal);
+        Assert.Equal(1, TestJob.GetState(key).Canceled);
+
+        Assert.True(replacing.Status == JobRunStatus.Succeeded, replacing.Error);
+        Assert.False(replacing.Superseded);
+        Assert.True(replacing.StartedUtc >= replaced.CompletedUtc);
+        Assert.Equal(1, TestJob.GetState(newKey).Executions);
+    }
+
+    [Fact]
+    public async Task Enqueue_CancelInProgress_CancelsTheRunsWithTheKeyThatDidNotStart()
+    {
+        // Arrange: a run that is due later, and a run with another key.
+        using var context = await CreateContextAsync();
+        var key = NewKey();
+        var concurrencyKey = NewKey();
+
+        var laterId = await EnqueueAsync(context, new TestJobParameters { Key = key }, request =>
+        {
+            request.ConcurrencyKey = concurrencyKey;
+            request.DueUtc = DateTime.UtcNow.AddHours(1);
+        });
+
+        var otherId = await EnqueueAsync(context, new TestJobParameters { Key = key }, request =>
+        {
+            request.ConcurrencyKey = NewKey();
+            request.DueUtc = DateTime.UtcNow.AddHours(1);
+        });
+
+        // Act
+        var newId = await EnqueueAsync(context, new TestJobParameters { Key = key }, request =>
+        {
+            request.ConcurrencyKey = concurrencyKey;
+            request.CancelInProgress = true;
+        });
+
+        var replacing = await WaitForRunAsync(context, newId);
+        var replaced = await WaitForRunAsync(context, laterId);
+
+        // Assert
+        Assert.True(replacing.Status == JobRunStatus.Succeeded, replacing.Error);
+        Assert.Equal(JobRunStatus.Canceled, replaced.Status);
+        Assert.True(replaced.Superseded);
+        Assert.Equal(1, TestJob.GetState(key).Executions);
+
+        // The runs with another key are not its concern.
+        Assert.Equal(JobRunStatus.Queued, (await GetRunAsync(context, otherId)).Status);
+    }
+
+    [Fact]
+    public async Task Enqueue_CancelInProgressWithoutAConcurrencyKey_Throws()
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+
+        // Act & Assert
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var manager = scope.ServiceProvider.GetRequiredService<IJobManager>();
+
+            await Assert.ThrowsAsync<InvalidOperationException>(() => manager.EnqueueAsync<TestJob>(new TestJobParameters { Key = NewKey() }, request => request.CancelInProgress = true));
+        });
+    }
+
+    [Fact]
+    public async Task Execute_RunsThatCancelInProgressQueuedAtOnce_ExecutesTheMostRecent()
+    {
+        // Arrange: servers that queue runs at the same time don't see the run of the others.
+        using var context = await CreateContextAsync();
+        var key = NewKey();
+        var concurrencyKey = NewKey();
+        var now = DateTime.UtcNow;
+        var runIds = new List<string>();
+
+        for (var i = 3; i >= 1; i--)
+        {
+            var created = now.AddSeconds(-i);
+
+            runIds.Add(await CreateRunAsync(context, new TestJobParameters { Key = key, DelayMilliseconds = 200 }, run =>
+            {
+                run.ConcurrencyKey = concurrencyKey;
+                run.CancelInProgress = true;
+                run.CreatedUtc = created;
+            }));
+        }
+
+        // Act: several servers each try to execute every run at the same time.
+        await Task.WhenAll(runIds.SelectMany(runId => Enumerable.Range(0, 2).Select(_ => Task.Run(() =>
+            context.UsingTenantScopeAsync(scope => scope.ServiceProvider.GetRequiredService<JobRunExecutor>().ExecuteAsync(runId))))));
+
+        // Assert: whichever server looked at whichever run first, the most recent one does the work.
+        var mostRecent = await WaitForRunAsync(context, runIds[^1], dispatch: true);
+        Assert.True(mostRecent.Status == JobRunStatus.Succeeded, mostRecent.Error);
+
+        foreach (var runId in runIds[..^1])
+        {
+            var replaced = await WaitForRunAsync(context, runId);
+
+            Assert.Equal(JobRunStatus.Canceled, replaced.Status);
+            Assert.True(replaced.Superseded);
+        }
+
+        Assert.Equal(1, TestJob.GetState(key).Executions);
+    }
+
+    [Fact]
+    public async Task BackgroundTask_AbandonedRunThatWasAskedToStop_IsCanceledAndNotRunAgain()
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+        var key = NewKey();
+        var runId = await CreateRunAsync(context, new TestJobParameters { Key = key }, run =>
+        {
+            run.Status = JobRunStatus.Running;
+            run.NodeId = "another-server";
+            run.Attempt = 1;
+            run.MaxAttempts = 2;
+            run.CancellationRequested = true;
+            run.StartedUtc = DateTime.UtcNow.AddHours(-2);
+            run.HeartbeatUtc = DateTime.UtcNow.AddHours(-1);
+        });
+
+        // Act
+        await context.UsingTenantScopeAsync(scope => new JobsBackgroundTask().DoWorkAsync(scope.ServiceProvider, CancellationToken.None));
+        var run = await WaitForRunAsync(context, runId);
+
+        // Assert
+        Assert.Equal(JobRunStatus.Canceled, run.Status);
+        Assert.Equal(1, run.Attempt);
+        Assert.Equal(0, TestJob.GetState(key).Executions);
+    }
+
+    [Fact]
+    public async Task Delete_RunWhoseChildRunsQueuedRuns_DeletesThemAll()
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+        var completed = DateTime.UtcNow;
+
+        var parentId = await CreateRunAsync(context, new TestJobParameters { Key = NewKey() }, run => Complete(run, null));
+        var childId = await CreateRunAsync(context, new TestJobParameters { Key = NewKey() }, run => Complete(run, parentId));
+        var grandchildId = await CreateRunAsync(context, new TestJobParameters { Key = NewKey() }, run => Complete(run, childId));
+        var otherId = await CreateRunAsync(context, new TestJobParameters { Key = NewKey() }, run => Complete(run, null));
+
+        // Act
+        var deleted = false;
+        await context.UsingTenantScopeAsync(async scope => deleted = await scope.ServiceProvider.GetRequiredService<IJobManager>().DeleteAsync(parentId));
+
+        // Assert
+        Assert.True(deleted);
+        Assert.Null(await GetRunAsync(context, parentId));
+        Assert.Null(await GetRunAsync(context, childId));
+        Assert.Null(await GetRunAsync(context, grandchildId));
+        Assert.NotNull(await GetRunAsync(context, otherId));
+
+        void Complete(JobRun run, string parentRunId)
+        {
+            run.Status = JobRunStatus.Succeeded;
+            run.CompletedUtc = completed;
+            run.ParentRunId = parentRunId;
+        }
+    }
+
+    [Fact]
+    public async Task Execute_SameConcurrencyKey_RunsOneAtATime()
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+        var key = NewKey();
+        var runIds = new List<string>();
+
+        for (var i = 0; i < 4; i++)
+        {
+            runIds.Add(await CreateRunAsync(context, new TestJobParameters { Key = key, DelayMilliseconds = 300 }, run => run.ConcurrencyKey = key));
+        }
+
+        // Act: several servers each try to execute every run at the same time.
+        await Task.WhenAll(runIds.SelectMany(runId => Enumerable.Range(0, 2).Select(_ => Task.Run(() =>
+            context.UsingTenantScopeAsync(scope => scope.ServiceProvider.GetRequiredService<JobRunExecutor>().ExecuteAsync(runId))))));
+
+        foreach (var runId in runIds)
+        {
+            // The runs that waited are started as the others end.
+            var run = await WaitForRunAsync(context, runId, dispatch: true);
+            Assert.True(run.Status == JobRunStatus.Succeeded, run.Error);
+        }
+
+        // Assert
+        var state = TestJob.GetState(key);
+        Assert.Equal(4, state.Executions);
+        Assert.Equal(1, state.MaxConcurrent);
+    }
+
+    [Fact]
+    public async Task Enqueue_JobWithChildren_WaitsForThemAndSucceeds()
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+        var key = NewKey();
+
+        // Act
+        var runId = await EnqueueAsync(context, new TestJobParameters { Key = key, Children = 3 });
+        var run = await WaitForRunAsync(context, runId);
+
+        // Assert
+        Assert.True(run.Status == JobRunStatus.Succeeded, run.Error);
+
+        IReadOnlyList<JobRun> children = [];
+        await context.UsingTenantScopeAsync(async scope => children = await scope.ServiceProvider.GetRequiredService<IJobManager>().ListChildrenAsync(runId));
+
+        Assert.Equal(3, children.Count);
+        Assert.All(children, child =>
+        {
+            Assert.Equal(JobRunStatus.Succeeded, child.Status);
+            Assert.Equal(JobTriggers.Parent, child.Trigger);
+            Assert.True(child.CompletedUtc <= run.CompletedUtc);
+        });
+    }
+
+    [Fact]
+    public async Task Enqueue_JobWithFailingChild_Fails()
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+        var key = NewKey();
+
+        // Act
+        var runId = await EnqueueAsync(context, new TestJobParameters { Key = key, Children = 3, FailingChildren = 1 });
+        var run = await WaitForRunAsync(context, runId);
+
+        // Assert
+        Assert.Equal(JobRunStatus.Failed, run.Status);
+        Assert.Equal("1 of its 3 child runs didn't succeed.", run.Error);
+    }
+
+    [Fact]
+    public async Task QueueDue_SeveralServersAtOnce_QueuesOneRun()
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+        var key = NewKey();
+        string scheduleId = null;
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var manager = scope.ServiceProvider.GetRequiredService<IJobScheduleManager>();
+            var schedule = new JobSchedule
+            {
+                Name = "Every day",
+                JobName = TestJob.Name,
+                Cron = "0 3 * * *",
+                Parameters = JObject.FromObject(new TestJobParameters { Key = key }),
+            };
+
+            await manager.SaveAsync(schedule);
+            scheduleId = schedule.ScheduleId;
+
+            Assert.True(schedule.NextOccurrenceUtc > DateTime.UtcNow);
+
+            // The schedule is due.
+            schedule.NextOccurrenceUtc = DateTime.UtcNow.AddMinutes(-5);
+            await scope.ServiceProvider.GetRequiredService<ISession>().SaveAsync(schedule, collection: JobRun.Collection);
+        });
+
+        // Act: each scope stands for a server whose background task finds the due schedule.
+        await Task.WhenAll(Enumerable.Range(0, 6).Select(_ => Task.Run(() =>
+            context.UsingTenantScopeAsync(scope => scope.ServiceProvider.GetRequiredService<JobScheduleManager>().QueueDueAsync()))));
+
+        // Assert
+        Assert.Equal(1, await CountRunsAsync(context, index => index.ScheduleId == scheduleId));
+
+        JobSchedule saved = null;
+        await context.UsingTenantScopeAsync(async scope => saved = await scope.ServiceProvider.GetRequiredService<IJobScheduleManager>().GetAsync(scheduleId));
+
+        Assert.True(saved.NextOccurrenceUtc > DateTime.UtcNow);
+        Assert.NotNull(saved.LastRunId);
+
+        var run = await WaitForRunAsync(context, saved.LastRunId);
+        Assert.True(run.Status == JobRunStatus.Succeeded, run.Error);
+        Assert.Equal(JobTriggers.Schedule, run.Trigger);
+        Assert.Equal("Every day", run.Title);
+        Assert.Equal(1, TestJob.GetState(key).Executions);
+    }
+
+    [Theory]
+
+    // Neither time zone has daylight saving time, so noon is always the same time in UTC.
+    [InlineData("Asia/Tokyo", 3, 0)]
+    [InlineData("Asia/Kolkata", 6, 30)]
+    public async Task Save_ScheduleWithATimeZone_ComputesItsNextOccurrenceInIt(string timeZoneId, int utcHour, int utcMinute)
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+        var schedule = new JobSchedule { JobName = TestJob.Name, Cron = "0 12 * * *", TimeZoneId = timeZoneId };
+
+        // Act
+        await context.UsingTenantScopeAsync(scope => scope.ServiceProvider.GetRequiredService<IJobScheduleManager>().SaveAsync(schedule));
+
+        JobSchedule saved = null;
+        await context.UsingTenantScopeAsync(async scope => saved = await scope.ServiceProvider.GetRequiredService<IJobScheduleManager>().GetAsync(schedule.ScheduleId));
+
+        // Assert
+        Assert.Equal(timeZoneId, saved.TimeZoneId);
+        Assert.Equal(timeZoneId, saved.NextOccurrenceTimeZoneId);
+        Assert.Equal(new TimeSpan(utcHour, utcMinute, 0), saved.NextOccurrenceUtc.Value.TimeOfDay);
+        Assert.True(saved.NextOccurrenceUtc > DateTime.UtcNow);
+    }
+
+    [Fact]
+    public async Task Save_ScheduleWithAnUnknownTimeZone_Throws()
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var manager = scope.ServiceProvider.GetRequiredService<IJobScheduleManager>();
+            var schedule = new JobSchedule { JobName = TestJob.Name, Cron = "0 12 * * *", TimeZoneId = "Nowhere/Unknown" };
+
+            // Act & Assert
+            Assert.False(manager.IsValidTimeZone("Nowhere/Unknown"));
+            Assert.True(manager.IsValidTimeZone("Europe/Paris"));
+            Assert.True(manager.IsValidTimeZone(null));
+
+            await Assert.ThrowsAsync<ArgumentException>(() => manager.SaveAsync(schedule));
+        });
+    }
+
+    [Fact]
+    public async Task RefreshNextOccurrences_SiteTimeZoneChanged_MovesTheSchedulesThatFollowIt()
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+        var following = new JobSchedule { JobName = TestJob.Name, Cron = "0 12 * * *" };
+        var pinned = new JobSchedule { JobName = TestJob.Name, Cron = "0 12 * * *", TimeZoneId = "Asia/Tokyo" };
+
+        await SetSiteTimeZoneAsync(context, "Asia/Tokyo");
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var manager = scope.ServiceProvider.GetRequiredService<IJobScheduleManager>();
+
+            await manager.SaveAsync(following);
+            await manager.SaveAsync(pinned);
+        });
+
+        Assert.Null(following.TimeZoneId);
+        Assert.Equal("Asia/Tokyo", following.NextOccurrenceTimeZoneId);
+        Assert.Equal(new TimeSpan(3, 0, 0), following.NextOccurrenceUtc.Value.TimeOfDay);
+
+        // Act: the time zone of the site changes, and the background task of a server runs.
+        await SetSiteTimeZoneAsync(context, "Asia/Kolkata");
+        await context.UsingTenantScopeAsync(scope => scope.ServiceProvider.GetRequiredService<JobScheduleManager>().RefreshNextOccurrencesAsync());
+
+        JobSchedule savedFollowing = null;
+        JobSchedule savedPinned = null;
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var manager = scope.ServiceProvider.GetRequiredService<IJobScheduleManager>();
+
+            savedFollowing = await manager.GetAsync(following.ScheduleId);
+            savedPinned = await manager.GetAsync(pinned.ScheduleId);
+        });
+
+        // Assert: noon is now the one of the new time zone, without waiting for the run of the previous one.
+        Assert.Equal("Asia/Kolkata", savedFollowing.NextOccurrenceTimeZoneId);
+        Assert.Equal(new TimeSpan(6, 30, 0), savedFollowing.NextOccurrenceUtc.Value.TimeOfDay);
+
+        // The schedule with its own time zone stays in it.
+        Assert.Equal("Asia/Tokyo", savedPinned.NextOccurrenceTimeZoneId);
+        Assert.Equal(new TimeSpan(3, 0, 0), savedPinned.NextOccurrenceUtc.Value.TimeOfDay);
+    }
+
+    [Fact]
+    public async Task RefreshNextOccurrences_OccurrenceAlreadyDue_LeavesItToCreateItsRun()
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+        var schedule = new JobSchedule { JobName = TestJob.Name, Cron = "0 12 * * *" };
+        var due = DateTime.UtcNow.AddMinutes(-5);
+
+        await SetSiteTimeZoneAsync(context, "Asia/Tokyo");
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            await scope.ServiceProvider.GetRequiredService<IJobScheduleManager>().SaveAsync(schedule);
+
+            schedule.NextOccurrenceUtc = due;
+            await scope.ServiceProvider.GetRequiredService<ISession>().SaveAsync(schedule, collection: JobRun.Collection);
+        });
+
+        // Act
+        await SetSiteTimeZoneAsync(context, "Asia/Kolkata");
+        await context.UsingTenantScopeAsync(scope => scope.ServiceProvider.GetRequiredService<JobScheduleManager>().RefreshNextOccurrencesAsync());
+
+        JobSchedule saved = null;
+        await context.UsingTenantScopeAsync(async scope => saved = await scope.ServiceProvider.GetRequiredService<IJobScheduleManager>().GetAsync(schedule.ScheduleId));
+
+        // Assert
+        Assert.Equal(due, saved.NextOccurrenceUtc.Value, TimeSpan.FromSeconds(1));
+        Assert.Equal("Asia/Tokyo", saved.NextOccurrenceTimeZoneId);
+    }
+
+    [Fact]
+    public async Task List_JobDeclaringASchedule_CreatesItOnce()
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+        IReadOnlyList<JobSchedule> first = [];
+        IReadOnlyList<JobSchedule> second = [];
+
+        // Act
+        await context.UsingTenantScopeAsync(async scope => first = await scope.ServiceProvider.GetRequiredService<IJobScheduleManager>().ListAsync());
+        await context.UsingTenantScopeAsync(async scope => second = await scope.ServiceProvider.GetRequiredService<IJobScheduleManager>().ListAsync());
+
+        // Assert
+        var declared = Assert.Single(second, schedule => schedule.JobName == TestJob.DeclaredScheduleName);
+        Assert.Single(first, schedule => schedule.JobName == TestJob.DeclaredScheduleName);
+        Assert.True(declared.IsDeclared);
+        Assert.True(declared.IsEnabled);
+        Assert.Equal(TestJob.DeclaredScheduleName, declared.ScheduleId);
+        Assert.Equal("0 0 1 1 *", declared.Cron);
+        Assert.NotNull(declared.NextOccurrenceUtc);
+
+        // A declared schedule can't be deleted.
+        var deleted = true;
+        await context.UsingTenantScopeAsync(async scope => deleted = await scope.ServiceProvider.GetRequiredService<IJobScheduleManager>().DeleteAsync(declared.ScheduleId));
+        Assert.False(deleted);
+    }
+
+    [Fact]
+    public async Task BackgroundTask_AbandonedRunWithoutAttemptsLeft_Fails()
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+        var key = NewKey();
+        var runId = await CreateRunAsync(context, new TestJobParameters { Key = key }, run =>
+        {
+            run.Status = JobRunStatus.Running;
+            run.NodeId = "another-server";
+            run.Attempt = 1;
+            run.StartedUtc = DateTime.UtcNow.AddHours(-2);
+            run.HeartbeatUtc = DateTime.UtcNow.AddHours(-1);
+        });
+
+        // Act
+        await context.UsingTenantScopeAsync(scope => new JobsBackgroundTask().DoWorkAsync(scope.ServiceProvider, CancellationToken.None));
+        var run = await GetRunAsync(context, runId);
+
+        // Assert
+        Assert.Equal(JobRunStatus.Failed, run.Status);
+        Assert.Equal("The server that was executing the run stopped.", run.Error);
+        Assert.Equal(0, TestJob.GetState(key).Executions);
+    }
+
+    [Fact]
+    public async Task BackgroundTask_AbandonedRunWithAttemptsLeft_RunsAgain()
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+        var key = NewKey();
+        var runId = await CreateRunAsync(context, new TestJobParameters { Key = key }, run =>
+        {
+            run.Status = JobRunStatus.Running;
+            run.NodeId = "another-server";
+            run.Attempt = 1;
+            run.MaxAttempts = 2;
+            run.StartedUtc = DateTime.UtcNow.AddHours(-2);
+            run.HeartbeatUtc = DateTime.UtcNow.AddHours(-1);
+        });
+
+        // Act
+        await context.UsingTenantScopeAsync(scope => new JobsBackgroundTask().DoWorkAsync(scope.ServiceProvider, CancellationToken.None));
+        var run = await WaitForRunAsync(context, runId);
+
+        // Assert
+        Assert.True(run.Status == JobRunStatus.Succeeded, run.Error);
+        Assert.Equal(2, run.Attempt);
+        Assert.NotEqual("another-server", run.NodeId);
+        Assert.Equal(1, TestJob.GetState(key).Executions);
+    }
+
+    [Fact]
+    public async Task BackgroundTask_RunOfAnotherServerThatReports_IsLeftAlone()
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+        var key = NewKey();
+        var runId = await CreateRunAsync(context, new TestJobParameters { Key = key }, run =>
+        {
+            run.Status = JobRunStatus.Running;
+            run.NodeId = "another-server";
+            run.Attempt = 1;
+            run.StartedUtc = DateTime.UtcNow.AddHours(-2);
+            run.HeartbeatUtc = DateTime.UtcNow.AddSeconds(-5);
+        });
+
+        // Act
+        await context.UsingTenantScopeAsync(scope => new JobsBackgroundTask().DoWorkAsync(scope.ServiceProvider, CancellationToken.None));
+        var run = await GetRunAsync(context, runId);
+
+        // Assert
+        Assert.Equal(JobRunStatus.Running, run.Status);
+        Assert.Equal("another-server", run.NodeId);
+    }
+
+    [Fact]
+    public async Task Enqueue_JobNotKeepingSucceededRuns_DeletesTheRun()
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+        var key = NewKey();
+        string runId = null;
+
+        // Act
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            runId = (await scope.ServiceProvider.GetRequiredService<IJobManager>().EnqueueAsync(TestJob.TransientName, new TestJobParameters { Key = key })).RunId;
+        });
+
+        var stopwatch = Stopwatch.StartNew();
+        JobRun run;
+
+        while ((run = await GetRunAsync(context, runId)) is not null && stopwatch.Elapsed < TimeSpan.FromSeconds(60))
+        {
+            await Task.Delay(100, TestContext.Current.CancellationToken);
+        }
+
+        // Assert
+        Assert.Null(run);
+        Assert.Equal(1, TestJob.GetState(key).Executions);
+    }
+
+    [Fact]
+    public async Task Rerun_CompletedRun_QueuesANewRun()
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+        var key = NewKey();
+        var runId = await EnqueueAsync(context, new TestJobParameters { Key = key }, request => request.Title = "Again");
+        await WaitForRunAsync(context, runId);
+
+        // Act
+        string rerunId = null;
+        await context.UsingTenantScopeAsync(async scope => rerunId = (await scope.ServiceProvider.GetRequiredService<IJobManager>().RerunAsync(runId, "someone"))?.RunId);
+        var rerun = await WaitForRunAsync(context, rerunId);
+
+        // Assert
+        Assert.NotEqual(runId, rerunId);
+        Assert.True(rerun.Status == JobRunStatus.Succeeded, rerun.Error);
+        Assert.Equal("Again", rerun.Title);
+        Assert.Equal(JobTriggers.Manual, rerun.Trigger);
+        Assert.Equal("someone", rerun.TriggeredBy);
+        Assert.Equal(2, TestJob.GetState(key).Executions);
+    }
+
+    [Fact]
+    public async Task Delete_RunThatDidNotEnd_IsRefused()
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+        var runId = await EnqueueAsync(context, new TestJobParameters { Key = NewKey() }, request => request.DueUtc = DateTime.UtcNow.AddHours(1));
+
+        // Act
+        var deleted = true;
+        await context.UsingTenantScopeAsync(async scope => deleted = await scope.ServiceProvider.GetRequiredService<IJobManager>().DeleteAsync(runId));
+
+        // Assert
+        Assert.False(deleted);
+        Assert.NotNull(await GetRunAsync(context, runId));
+    }
+
+    private static string NewKey() => Guid.NewGuid().ToString("n");
+
+    private static Task SetSiteTimeZoneAsync(SiteContext context, string timeZoneId)
+    {
+        return context.UsingTenantScopeAsync(async scope =>
+        {
+            var siteService = scope.ServiceProvider.GetRequiredService<ISiteService>();
+            var site = await siteService.LoadSiteSettingsAsync();
+
+            site.TimeZoneId = timeZoneId;
+            await siteService.UpdateSiteSettingsAsync(site);
+        });
+    }
+
+    private static async Task<string> EnqueueAsync(SiteContext context, TestJobParameters parameters, Action<JobRequest> configure = null)
+    {
+        string runId = null;
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            runId = (await scope.ServiceProvider.GetRequiredService<IJobManager>().EnqueueAsync<TestJob>(parameters, configure)).RunId;
+        });
+
+        return runId;
+    }
+
+    // Saves a run without telling this server to execute it, as if another server had queued it.
+    private static async Task<string> CreateRunAsync(SiteContext context, TestJobParameters parameters, Action<JobRun> alter = null)
+    {
+        var run = new JobRun
+        {
+            RunId = Guid.NewGuid().ToString("n")[..26],
+            JobName = TestJob.Name,
+            Status = JobRunStatus.Queued,
+            Trigger = JobTriggers.Code,
+            Parameters = JObject.FromObject(parameters),
+            CreatedUtc = DateTime.UtcNow,
+            DueUtc = DateTime.UtcNow,
+        };
+
+        alter?.Invoke(run);
+
+        await context.UsingTenantScopeAsync(scope => scope.ServiceProvider.GetRequiredService<ISession>().SaveAsync(run, collection: JobRun.Collection));
+
+        return run.RunId;
+    }
+
+    private static async Task<JobRun> GetRunAsync(SiteContext context, string runId)
+    {
+        JobRun run = null;
+
+        await context.UsingTenantScopeAsync(async scope => run = await scope.ServiceProvider.GetRequiredService<IJobManager>().GetAsync(runId));
+
+        return run;
+    }
+
+    private static async Task<int> CountRunsAsync(SiteContext context, System.Linq.Expressions.Expression<Func<JobRunIndex, bool>> predicate)
+    {
+        var count = 0;
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            count = await scope.ServiceProvider.GetRequiredService<ISession>().QueryIndex(predicate, collection: JobRun.Collection).CountAsync();
+        });
+
+        return count;
+    }
+
+    private static async Task<JobRun> WaitForRunAsync(SiteContext context, string runId, Func<JobRun, bool> until = null, bool dispatch = false)
+    {
+        Assert.NotNull(runId);
+
+        until ??= run => run.IsCompleted;
+
+        var stopwatch = Stopwatch.StartNew();
+        JobRun run = null;
+
+        while (stopwatch.Elapsed < TimeSpan.FromSeconds(90))
+        {
+            run = await GetRunAsync(context, runId);
+
+            if (run is not null && until(run))
+            {
+                return run;
+            }
+
+            if (dispatch && run?.Status == JobRunStatus.Queued)
+            {
+                // What the background task of a server does every minute.
+                await context.UsingTenantScopeAsync(scope =>
+                {
+                    scope.ServiceProvider.GetRequiredService<JobRunDispatcher>().Dispatch(runId);
+
+                    return Task.CompletedTask;
+                });
+            }
+
+            await Task.Delay(100);
+        }
+
+        throw new TimeoutException($"The run didn't reach the expected state; its status is {run?.Status}, its error '{run?.Error}'.");
+    }
+
+    private static async Task<SiteContext> CreateContextAsync()
+    {
+        var context = new SiteContext();
+        await context.InitializeAsync();
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var featuresManager = scope.ServiceProvider.GetRequiredService<IShellFeaturesManager>();
+            var features = (await featuresManager.GetAvailableFeaturesAsync())
+                .Where(feature => feature.Id is "OrchardCore.Jobs")
+                .ToList();
+
+            await featuresManager.UpdateFeaturesAsync([], features, force: true);
+        });
+        await DataPipelineTestSites.WaitForFeaturesAsync(context);
+
+        return context;
+    }
+}

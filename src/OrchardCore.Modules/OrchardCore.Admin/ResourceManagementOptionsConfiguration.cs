@@ -18,6 +18,11 @@ public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<R
             .SetVersion("1.0.0");
 
         s_manifest
+            .DefineScript("admin-cron-expression-editor")
+            .SetUrl("~/OrchardCore.Admin/Scripts/cron-expression-editor/cron-expression-editor.min.js", "~/OrchardCore.Admin/Scripts/cron-expression-editor/cron-expression-editor.js")
+            .SetVersion("1.0.0");
+
+        s_manifest
             .DefineStyle("admin-quick-navigation")
             .SetDependencies("font-awesome:7")
             .SetUrl("~/OrchardCore.Admin/Styles/quick-navigation.min.css", "~/OrchardCore.Admin/Styles/quick-navigation.css")
