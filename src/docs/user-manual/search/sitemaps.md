@@ -12,16 +12,16 @@ A sitemap is an XML file, such as `https://www.example.com/sitemap.xml`, that li
 
 | | |
 | --- | --- |
-| **Menu** | **Tools > Search Engine Optimization > Sitemaps**, **Sitemap Indexes** and **Sitemaps Cache** |
+| **Menu** | **Tools → Search Engine Optimization → Sitemaps**, **Sitemap Indexes** and **Sitemaps Cache** |
 | **Permission** | *Manage sitemaps*. Administrators have it by default. |
 | **Feature** | **Sitemaps** (`OrchardCore.Sitemaps`) |
 
 !!! warning "Set the base URL first"
-    Sitemaps contain full addresses, so they need the site's address. If the sitemap screens show *The site settings 'Base url' property is empty, but is required to generate sitemaps.*, open **Settings > General** and fill in **Base url**, see [General settings](../settings/general.md).
+    Sitemaps contain full addresses, so they need the site's address. If the sitemap screens show *The site settings 'Base url' property is empty, but is required to generate sitemaps.*, open **Settings → General** and fill in **Base url**, see [General settings](../settings/general.md).
 
 ## Create a sitemap
 
-1. Open **Tools > Search Engine Optimization > Sitemaps** and click **Add Sitemap**.
+1. Open **Tools → Search Engine Optimization → Sitemaps** and click **Add Sitemap**.
 2. Type a **Name**.
 3. Type a **Permalink**, or leave it empty to build one from the name.
 4. Leave **Enabled** ticked.
@@ -36,7 +36,7 @@ A sitemap is an XML file, such as `https://www.example.com/sitemap.xml`, that li
 
 ## List content items in a sitemap
 
-1. Open **Tools > Search Engine Optimization > Sitemaps** and click **Manage Sources** in the sitemap's row.
+1. Open **Tools → Search Engine Optimization → Sitemaps** and click **Manage Sources** in the sitemap's row.
 2. Click **Add Source**.
 3. In **Available Sources**, click **Add** under **Sitemap Content Types**.
 4. Choose which content types to list (see below).
@@ -79,7 +79,7 @@ On the **Manage Sources** screen, each source has **Edit** and **Delete** button
 
 ![The Sitemaps list](images/sitemaps.webp)
 
-In **Tools > Search Engine Optimization > Sitemaps**, each row shows the sitemap's name and **Status** (**Enabled** or **Disabled**), with these buttons:
+In **Tools → Search Engine Optimization → Sitemaps**, each row shows the sitemap's name and **Status** (**Enabled** or **Disabled**), with these buttons:
 
 - **View** opens the sitemap as search engines see it.
 - **Manage Sources** opens its sources.
@@ -93,7 +93,7 @@ Type in **Search** to filter the list. To delete several sitemaps, tick them and
 
 A sitemap index is one address that points search engines to several sitemaps.
 
-1. Open **Tools > Search Engine Optimization > Sitemap Indexes** and click **Add Sitemap Index**.
+1. Open **Tools → Search Engine Optimization → Sitemap Indexes** and click **Add Sitemap Index**.
 2. Type a **Name** and a **Permalink**, for example `sitemap-index.xml`.
 3. Tick the sitemaps it contains under **Contained Sitemaps**.
 4. Leave **Enabled** ticked and click **Save**.
@@ -109,7 +109,7 @@ The list of sitemap indexes has the same **View**, **Edit**, **Delete**, **Enabl
 
 ## Tell search engines about your sitemaps
 
-Give the sitemap or sitemap index address to the search engines' webmaster tools (such as Google Search Console). With the **SEO** feature on, you can also list every sitemap in your `robots.txt` file: tick **Include all sitemaps.** in **Settings > Search > Search Engine Optimization > Robots**, see [SEO](../content/seo.md).
+Give the sitemap or sitemap index address to the search engines' webmaster tools (such as Google Search Console). With the **SEO** feature on, you can also list every sitemap in your `robots.txt` file: tick **Include all sitemaps.** in **Settings → Search → Search Engine Optimization → Robots**, see [SEO](../content/seo.md).
 
 ## Exclude or adjust one content item
 
@@ -128,7 +128,7 @@ Add the **Sitemap** part (`SitemapPart`) to a content type to control each item,
 
 The site builds each sitemap the first time it is requested and keeps the result in a cache file. Publishing or unpublishing content, or changing a sitemap, updates it. If a sitemap looks out of date, clear its cache:
 
-1. Open **Tools > Search Engine Optimization > Sitemaps Cache**.
+1. Open **Tools → Search Engine Optimization → Sitemaps Cache**.
 2. Click **Purge** in the row of a cached file, or **Purge All** to clear every one, and confirm.
 
 The next visit to the sitemap builds it again. Type in **Search** to find a file by name.
@@ -146,3 +146,15 @@ With **Localized Content Item Sitemaps** (`OrchardCore.ContentLocalization.Sitem
 ## Copy sitemaps to another site
 
 Add the **All Sitemaps** step to a deployment plan to export every sitemap, see [Import and export](../administration/import-and-export.md).
+
+## Videos
+
+This video creates a sitemap that helps search engines find your pages.
+
+<!-- video:sitemaps-create -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/qysbJTqgEzY" title="Sitemaps: Help Search Engines Find Your Pages" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video groups sitemaps in a sitemap index and explains the sitemaps cache.
+
+<!-- video:sitemaps-indexes-and-cache -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/-UlSXMG0xPs" title="Sitemap Indexes and the Sitemaps Cache" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

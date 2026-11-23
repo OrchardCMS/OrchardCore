@@ -153,3 +153,20 @@ When selected forces the route from relative to absolute.
 
 !!! note
     When you configure _container routing_ for a `BagPart` you will want to change the default display type of the part to `Summary` and create `Summary` and `Detail` templates, for use when the item is displayed within its _container_ and when it is displayed in detail via a route.
+
+## Videos
+
+This video gives content items friendly URLs with Autoroute.
+
+<!-- video:autoroute-urls -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/9mH6pyzOCw8" title="Autoroute: Friendly URLs for Your Content Items" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video generates URLs from a Liquid pattern with Autoroute.
+
+<!-- video:autoroute-patterns -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/qJ_2eVT852Y" title="Autoroute Patterns: Generate URLs With Liquid" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video chooses what your site shows first: the home page.
+
+<!-- video:home-route -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/8Qm1voUuZW8" title="Home Page: Choose What Your Site Shows First" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

@@ -1330,3 +1330,13 @@ MIT License
 ## Video
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/pi_WiSqp5x4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video explains the objects, filters and tags of Liquid in Orchard Core.
+
+<!-- video:liquid-basics -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/CnTlbB-g9EE" title="Liquid: Objects, Filters and Tags in Orchard Core" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video displays content items, shapes and zones in Liquid templates.
+
+<!-- video:liquid-display-content -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/LqerV-y6Rpc" title="Liquid: Display Content Items, Shapes and Zones" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

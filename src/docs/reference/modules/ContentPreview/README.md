@@ -5,7 +5,7 @@ form values in a separate window without saving or publishing the content item.
 
 ## Enable Content Preview
 
-Enable the **Content Preview** feature from **Tools** > **Features**. The feature depends on the Contents module.
+Enable the **Content Preview** feature from **Tools → Features**. The feature depends on the Contents module.
 
 The **Preview** button appears in the action area of a content item editor when the current user
 is authorized to preview that item. Placement rules can hide the button for specific content
@@ -32,7 +32,7 @@ scripts.
 
 To preview the complete frontend page:
 
-1. Go to **Content** > **Content Definition** > **Content Types**.
+1. Go to **Content → Content Definition → Content Types**.
 2. Edit the content type.
 3. Add `PreviewPart`.
 4. Set **Pattern** to a Liquid expression that returns the tenant-relative path of the frontend
@@ -229,6 +229,11 @@ Correct validation errors and verify the editor integration. The window continue
 ## Video
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/NDUjn5_KdEM" title="Content Preview demonstration" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video previews the changes to a content item before they are published.
+
+<!-- video:content-preview -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/4pEEdtzAkXs" title="Content Preview: See Your Changes Before You Publish" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ## Credits
 

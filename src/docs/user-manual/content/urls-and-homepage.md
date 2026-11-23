@@ -33,7 +33,7 @@ Depending on the content type, the title can be:
 
 ## Set the permalink of a content item
 
-The **Permalink** is the address of the item on the site, after the site's address. For example, the permalink `blog/summer-sale` gives `https://www.example.com/blog/summer-sale`. When the site's base address is set in **Settings > General**, it is shown before the box.
+The **Permalink** is the address of the item on the site, after the site's address. For example, the permalink `blog/summer-sale` gives `https://www.example.com/blog/summer-sale`. When the site's base address is set in **Settings → General**, it is shown before the box.
 
 1. Leave **Permalink** empty to let the site build it from the title, for example *Summer Sale* gives `summer-sale`.
 2. Or type the address you want, such as `offers/summer-sale`.
@@ -105,7 +105,7 @@ When the content type has a pattern, leave **Alias** empty to build it again fro
 
 | | |
 | --- | --- |
-| **Menu** | **Design > Content Definition > Content Types**, then **Edit** on the type, then **Edit** next to the part |
+| **Menu** | **Design → Content Definition → Content Types**, then **Edit** on the type, then **Edit** next to the part |
 | **Permission** | *Edit content types.* |
 
 Open the content type, click **Edit** next to the **Title**, **Autoroute** or **Alias** part, change the settings and click **Save**. To add one of these parts to a type, see [Content types](content-types.md).
@@ -149,3 +149,25 @@ To put every item of the type under a fixed start, add it before the pattern, fo
 
 !!! example "See it in practice"
     [Build a landing page](../use-cases/landing-page-with-widgets.md) walks through this step by step.
+
+## Videos
+
+This video sets the title of content items with the Title part, including titles generated from a pattern.
+
+<!-- video:title-part -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/Ah_1UmINVcU" title="Title Part: Titles, Generated Titles and Display Text" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video gives content items a stable name with the Alias part.
+
+<!-- video:alias-part -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/JrAnXKPkCxg" title="Alias Part: Give Content Items a Stable Name" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video gives content items friendly URLs with Autoroute.
+
+<!-- video:autoroute-urls -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/9mH6pyzOCw8" title="Autoroute: Friendly URLs for Your Content Items" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video chooses what your site shows first: the home page.
+
+<!-- video:home-route -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/8Qm1voUuZW8" title="Home Page: Choose What Your Site Shows First" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

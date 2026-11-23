@@ -76,7 +76,7 @@ To enable the blocks editor for a FlowPart or BagPart, set the **Editor** option
 
 This can be done in the admin UI:
 
-1. Navigate to **Design** → **Content Definition** → **Content Types**
+1. Navigate to **Design → Content Definition → Content Types**
 2. Edit the content type containing the FlowPart or BagPart
 3. Click **Edit** on the FlowPart or BagPart
 4. Set the **Editor** field to `Blocks`
@@ -98,3 +98,18 @@ _contentDefinitionManager.AlterTypeDefinition("MyContentType", type => type
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/9gARrrvoAY4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/JYES1i6BdWs" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video builds a page from widgets with the Flow part.
+
+<!-- video:flows-flow-part -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/kuIT3d1zubg" title="Flow Part: Build Pages From Widgets" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video embeds content items inside another content item with the Bag part.
+
+<!-- video:flows-bag-part -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/EBz1f1Bgcgw" title="Bag Part: Embed Content Items Inside a Content Item" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video writes templates and alternates for the widgets of a Flow part and a Bag part.
+
+<!-- video:flows-templates -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/bWLqMEdn8ec" title="Flow and Bag Parts: Templates and Alternates for Their Widgets" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

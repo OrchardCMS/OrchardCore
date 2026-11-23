@@ -236,7 +236,7 @@ It is usually better to **create a dedicated user for performing API calls**, ma
 }
 ```
 
-> This payload example model was obtained using the GraphiQL panel available in the Admin: _Tools_ → _GraphiQL_. In this [video](https://www.youtube.com/watch?v=8SbW3TLNhF0) you can find an overview of how to use GraphiQL. 
+> This payload example model was obtained using the GraphiQL panel available in the Admin: **Tools → GraphiQL**. In this [video](https://www.youtube.com/watch?v=8SbW3TLNhF0) you can find an overview of how to use GraphiQL. 
 
 ##### Responses
 
@@ -698,7 +698,7 @@ The latest draft and the published version of an item are **never** deleted; onl
 
 ### Settings
 
-Enable the feature, then configure it under **Settings** → **Content Version Pruning** (requires the `Manage Content Version Pruning settings` permission, granted to the `Administrator` role by default).
+Enable the feature, then configure it under **Settings → Content Version Pruning** (requires the `Manage Content Version Pruning settings` permission, granted to the `Administrator` role by default).
 
 | Setting                              | Default | Description                                                                                                                                  |
 |--------------------------------------|---------|--------------------------------------------------------------------------------------------------------------------------------------------|
@@ -709,7 +709,7 @@ Enable the feature, then configure it under **Settings** → **Content Version P
 
 ### How it works
 
-A background task — *Content Version Pruning Background Task* — runs on a daily schedule (`0 0 * * *`). It is **disabled by default**; enable it under **Tools** → **Background Tasks** in addition to enabling the feature and selecting content types. When it runs, it:
+A background task — *Content Version Pruning Background Task* — runs on a daily schedule (`0 0 * * *`). It is **disabled by default**; enable it under **Tools → Background Tasks** in addition to enabling the feature and selecting content types. When it runs, it:
 
 1. Skips entirely if the **Disable** setting is on, or if no content types are selected.
 2. Computes a retention threshold of `now - RetentionDays`.
@@ -725,3 +725,28 @@ Deletions are flushed in batches to keep the unit of work bounded, and a failure
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/j6xuupq9FYY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/wbTEUl_N0Lk" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video takes a tour of the admin: its menu, its search and its main screens.
+
+<!-- video:admin-tour -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/hQPLynQAPeY" title="The Admin: Find Your Way Around Orchard Core" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video creates, edits and publishes a content item.
+
+<!-- video:contents-create-edit-publish -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/gQgMKIZpCNY" title="Content Items: Create, Edit and Publish" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video searches and filters the content items list, and acts on several items at once.
+
+<!-- video:contents-list-search-filter -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/c6qgnS49bKQ" title="Content Items List: Search, Filter and Act on Many Items" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video shows how drafts and versions let you change content without changing the live page.
+
+<!-- video:contents-drafts-versions -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/wy2nPHfp2qE" title="Drafts and Versions: Change Content Without Losing the Live Page" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video sets up Content Version Pruning to remove old versions automatically.
+
+<!-- video:content-version-pruning -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/0c7PkSaO4Q4" title="Content Version Pruning: Remove Old Versions Automatically" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

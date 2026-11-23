@@ -21,6 +21,8 @@ The site has two manuals. A code change often needs both; update them in the sam
 | Never | Code, JSON, `appsettings.json`, recipes | Admin click-by-click steps (link the User Manual instead) |
 
 **Be honest**: take menu paths from `AdminMenu.cs`, labels from the Razor views (`T["..."]`, exact case), permission descriptions from the permission provider, feature names and ids from `Manifest.cs`, and check behavior in drivers, controllers and settings, or on a running site. Never write from memory or from older docs.
+**Menu paths**: write them as one bold run with → between the labels, like **Tools → Features**. Never `>`, `->`, italics or code formatting.
+
 
 **User Manual page template** (see `src/docs/contributing/contributing-documentation.md`):
 

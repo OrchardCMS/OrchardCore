@@ -187,3 +187,10 @@ Lock configuration parameters are optional and can be set via environment variab
 Please refer to separate sections for additional information on setup:
 
 - [OrchardCore.Setup - setting up an empty site](../Setup/README.md)
+
+## Video
+
+This video installs sites with Auto Setup, without the setup screen.
+
+<!-- video:auto-setup -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/kewT2I9Nwdk" title="Auto Setup: Install Sites Without the Setup Screen" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

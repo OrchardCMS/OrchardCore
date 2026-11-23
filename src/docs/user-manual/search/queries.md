@@ -14,7 +14,7 @@ A query is a saved question to the site's data, such as "the three latest blog p
 
 | | |
 | --- | --- |
-| **Menu** | **Search > Queries > All Queries**; **Search > Queries > Run SQL Query**; **Search > Queries > Run Lucene Query**; **Search > Queries > Run Elasticsearch Query** |
+| **Menu** | **Search → Queries → All Queries**; **Search → Queries → Run SQL Query**; **Search → Queries → Run Lucene Query**; **Search → Queries → Run Elasticsearch Query** |
 | **Permission** | *Manage queries* for **All Queries**. *Manage SQL Queries* for SQL queries and **Run SQL Query**. *Manage Lucene Indexes* for **Run Lucene Query**. *Manage Elasticsearch Indexes* for **Run Elasticsearch Query**. Administrators and Editors have *Manage queries* and *Manage SQL Queries* by default. |
 | **Feature** | **Queries** (`OrchardCore.Queries`), plus **SQL Queries** (`OrchardCore.Queries.Sql`), **Lucene** (`OrchardCore.Lucene`) or **Elasticsearch** (`OrchardCore.Elasticsearch`) for each kind of query |
 
@@ -27,7 +27,7 @@ A query is a saved question to the site's data, such as "the three latest blog p
 
 ![The All Queries list](images/queries.webp)
 
-Open **Search > Queries > All Queries**. Each row shows the query's name and its **Source** (**SQL query**, **Lucene query** or **Elasticsearch query**), with these buttons:
+Open **Search → Queries → All Queries**. Each row shows the query's name and its **Source** (**SQL query**, **Lucene query** or **Elasticsearch query**), with these buttons:
 
 - **Run** opens the matching Run Query screen with the query filled in, so you can try it.
 - **Edit** opens the query.
@@ -37,7 +37,7 @@ Type in **Search** to filter the list by name. To delete several queries, tick t
 
 ## Add a query
 
-1. Open **Search > Queries > All Queries** and click **Add Query**.
+1. Open **Search → Queries → All Queries** and click **Add Query**.
 2. In **Available Query Types**, click **Add** under **SQL**, **Lucene** or **Elasticsearch**. If the box says *You need to enable a feature which provides a query source.*, click **Go to Features** and turn on **SQL Queries**, **Lucene** or **Elasticsearch**.
 3. Type the **Name**.
 4. Fill in the fields of the query type, described below.
@@ -89,7 +89,7 @@ SELECT DocumentId FROM ContentItemIndex WHERE ContentType='BlogPost' ORDER BY Cr
 
 ![The Run SQL Query screen](images/run-sql-query.webp)
 
-1. Open **Search > Queries > Run SQL Query**.
+1. Open **Search → Queries → Run SQL Query**.
 2. Type the query in **Template**. To start from an example, click the **click here** link in the hint, which fills in a query for all content items.
 3. If the query has parameters, type their values in **Parameters** as JSON, for example `{"limit": 5}`.
 4. Click **Query**.
@@ -100,7 +100,7 @@ The screen shows the **Final SQL Query**, the query as the database runs it with
 
 ![The Run Lucene Query screen](images/run-lucene-query.webp)
 
-1. Open **Search > Queries > Run Lucene Query** or **Run Elasticsearch Query**. You can also choose **Query Index** in an index's **Actions** menu in **Search > Indexes**.
+1. Open **Search → Queries → Run Lucene Query** or **Run Elasticsearch Query**. You can also choose **Query Index** in an index's **Actions** menu in **Search → Indexes**.
 2. Pick the **Index**.
 3. Type the **Query**. The **Match All query** link in the hint fills in a query that returns every document of the index.
 4. Type values for any parameters in **Parameters**, as JSON.
@@ -112,7 +112,7 @@ The screen shows *Found ... result(s) in ... ms* and a table of the results. For
 
 Developers and template designers run saved queries by name from Liquid and Razor templates (see [Templates and placements](../design/templates-and-placements.md)), from GraphQL (with a **Schema**) and from the queries API. You can also export the content items a query returns with the **Queried Content Items** deployment step, see [Import and export](../administration/import-and-export.md).
 
-To let an application or a role run queries through the API, give the role one of these permissions in **Access Control > Roles**, see [Roles](../users/roles.md):
+To let an application or a role run queries through the API, give the role one of these permissions in **Access Control → Roles**, see [Roles](../users/roles.md):
 
 - *Execute Api - All queries* for every query.
 - *Execute Api - Name*, where *Name* is the name of the query. There is one for each query.

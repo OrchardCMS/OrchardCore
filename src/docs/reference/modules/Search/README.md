@@ -27,7 +27,7 @@ Results are paged using the site's configured page size, with "previous"/"next" 
 
 ## Settings
 
-Configure the search experience under **Search** > **Settings** > **Site Search** in the admin (requires the `Manage Search Settings` permission).
+Configure the search experience under **Search → Settings → Site Search** in the admin (requires the `Manage Search Settings` permission).
 
 | Setting               | Description                                                                                  |
 |-----------------------|----------------------------------------------------------------------------------------------|

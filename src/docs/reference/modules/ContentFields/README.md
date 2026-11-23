@@ -819,3 +819,23 @@ Example recipe snippet for creating fields:
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/NDUjn5_KdEM" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/bayT58i7DVY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
+This video covers the text, number, date and yes-or-no fields.
+
+<!-- video:content-fields-overview -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/mC1uIlK9bQs" title="Content Fields: Text, Numbers, Dates and Yes or No" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video covers the link, rich text, Markdown and YouTube fields.
+
+<!-- video:content-fields-links-html-youtube -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/t495H9BAZVA" title="Content Fields: Links, Rich Text, Markdown and YouTube Videos" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video shows how field editors and display modes give one field many faces.
+
+<!-- video:content-fields-editors -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/zujP0UIdETM" title="Field Editors and Display Modes: One Field, Many Faces" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video relates content items to each other and to users with the Content Picker and User Picker fields.
+
+<!-- video:content-picker-fields -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/6a2SSz2Ky60" title="Content Picker and User Picker Fields: Relate Content Items" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

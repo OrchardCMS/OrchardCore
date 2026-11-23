@@ -8,21 +8,21 @@ technical_manual:
 
 # Taxonomies
 
-A **taxonomy** is a list of words used to classify content: *Categories* (*News*, *Events*, *Tutorials*), *Tags* (*space*, *earth*, *exploration*), *Regions*, *Departments*. Each word is a **term**, and terms can have child terms to form a tree (*Europe > France > Paris*). Editors then pick terms on their content items with a **Taxonomy Field**, and each term gets a page on the site that lists the content items classified with it.
+A **taxonomy** is a list of words used to classify content: *Categories* (*News*, *Events*, *Tutorials*), *Tags* (*space*, *earth*, *exploration*), *Regions*, *Departments*. Each word is a **term**, and terms can have child terms to form a tree (**Europe → France → Paris**). Editors then pick terms on their content items with a **Taxonomy Field**, and each term gets a page on the site that lists the content items classified with it.
 
 | | |
 | --- | --- |
-| **Menu** | **Content > Content Items** (taxonomies are content items of the **Taxonomy** type), **Settings > Taxonomy Filters** |
+| **Menu** | **Content → Content Items** (taxonomies are content items of the **Taxonomy** type), **Settings → Taxonomy Filters** |
 | **Permission** | *Manage taxonomies* (add, edit, delete terms; settings) and the usual content permissions on the **Taxonomy** type |
 | **Feature** | **Taxonomies** (`OrchardCore.Taxonomies`), **Taxonomies Contents List Filters** (`OrchardCore.Taxonomies.ContentsAdminList`) |
 
-A site set up with the **Blog** recipe already has two taxonomies, **Tags** and **Categories**, used by the **Tags** and **Category** fields of blog posts. On that site, **Content > Taxonomy** lists them.
+A site set up with the **Blog** recipe already has two taxonomies, **Tags** and **Categories**, used by the **Tags** and **Category** fields of blog posts. On that site, **Content → Taxonomy** lists them.
 
 ## Prepare a term content type
 
 Each term is a small content item. Before you create a taxonomy, you need a content type for its terms (the Blog recipe has **Tag** and **Category**).
 
-1. Open **Design > Content Definition > Content Types** and click **Create new type**, for example *Region*.
+1. Open **Design → Content Definition → Content Types** and click **Create new type**, for example *Region*.
 2. Add the **Title** part, and the **Autoroute** part if each term should have its own page on the site.
 3. On the type, untick **Creatable** and **Listable**: terms are created only inside their taxonomy.
 4. Click **Save**.
@@ -31,7 +31,7 @@ To give each term a page, open the **Autoroute** part settings on the term type 
 
 ## Create a taxonomy
 
-1. Open **Content > Content Items**, click **New** (or the create button) and choose **Taxonomy**.
+1. Open **Content → Content Items**, click **New** (or the create button) and choose **Taxonomy**.
 2. Type the **Title**, for example *Regions*.
 3. Pick the **Term Content Type**, for example **Region**. This field is required. Only content types without a stereotype are offered.
 4. Tick **Route contained items** if the terms should have their own pages (the term type also needs **Autoroute**).
@@ -46,7 +46,7 @@ The taxonomy also has an **Alias** and a **Permalink**, both generated from the 
 
 ![The editor of a taxonomy, with its terms](images/taxonomy.webp)
 
-1. Open the taxonomy's editor (**Content > Content Items**, then **Edit** on the taxonomy).
+1. Open the taxonomy's editor (**Content → Content Items**, then **Edit** on the taxonomy).
 2. Click **Add ...** (for example **Add Region**) above the list of terms.
 3. Fill in the term's editor (**New ...**), at least its **Title**, and click **Publish**.
 4. You are back in the taxonomy editor. Click **Publish** on the taxonomy to make the new terms live.
@@ -68,7 +68,7 @@ To reorder terms or change their parent, drag a term up, down, or to the right u
 
 ## Add a Taxonomy field to a content type
 
-1. Open **Design > Content Definition > Content Types** and click **Edit** on the type, for example **Article**.
+1. Open **Design → Content Definition → Content Types** and click **Edit** on the type, for example **Article**.
 2. Click **Add Field**, type a **Display Name** (for example *Region*), pick **Taxonomy Field** and click **Save & Configure**.
 3. Fill in the settings below and click **Save**.
 
@@ -101,9 +101,9 @@ When the taxonomy has **Route contained items** ticked and the term type has an 
 
 ## Filter the content list by term
 
-With the **Taxonomies Contents List Filters** feature on, you can filter **Content > Content Items** by term.
+With the **Taxonomies Contents List Filters** feature on, you can filter **Content → Content Items** by term.
 
-1. Open **Settings > Taxonomy Filters**.
+1. Open **Settings → Taxonomy Filters**.
 2. Under **Taxonomies**, tick the taxonomies to offer as filters, for example **Tags** and **Categories**.
 3. Click **Save**.
 
@@ -111,3 +111,30 @@ The content items list now has one drop-down per taxonomy. Pick a term to show t
 
 !!! example "See it in practice"
     [Build a blog](../use-cases/build-a-blog.md) walks through this step by step.
+
+## Videos
+
+This video explains how taxonomies categorize your content.
+
+<!-- video:taxonomies-overview -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/ZamtKKu53Lo" title="Taxonomies: Categorize Your Content" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video creates a taxonomy and organizes its terms.
+
+<!-- video:taxonomies-create-terms -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/3VE0pO491kw" title="Taxonomies: Create a Taxonomy and Organize Its Terms" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video adds categories and tags to content items with the Taxonomy field.
+
+<!-- video:taxonomies-field-and-tags -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/Ev9Ie1MVrhM" title="Taxonomy Field: Categories and Tags on Your Content" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video shows the term pages that list the content items of a term.
+
+<!-- video:taxonomies-term-pages -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/NmtoLt7F65o" title="Taxonomies: Term Pages That List Their Content" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video filters the content items list by term.
+
+<!-- video:taxonomies-contents-list-filters -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/YthQGl_C0B0" title="Taxonomies: Filter the Content Items List by Term" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

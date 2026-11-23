@@ -684,7 +684,7 @@ typed model properties or `IShape.Properties`.
 
 ## Diagnose binding and placement problems
 
-Enable **Settings** > **Debugging** > **Write shape debug information** to add
+Enable **Settings → Debugging → Write shape debug information** to add
 comments around rendered shapes:
 
 ```html

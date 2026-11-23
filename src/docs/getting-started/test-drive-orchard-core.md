@@ -31,3 +31,10 @@ Docker images and parameters can be found at <https://hub.docker.com/u/orchardpr
 ## The full source code
 
 Of course, you can also clone and run the full source code of Orchard Core. See [the contribution docs](../contributing/contributing-code.md) for this.
+
+## Video
+
+This video runs Orchard Core from its source code to try it out.
+
+<!-- video:test-drive-orchard-core -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/yY0zPvmLsjg" title="Test Drive Orchard Core: Run It From Source" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

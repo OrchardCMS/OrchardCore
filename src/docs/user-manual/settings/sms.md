@@ -12,7 +12,7 @@ The site can send text messages (SMS), for example two-factor sign-in codes, not
 
 | | |
 | --- | --- |
-| **Menu** | **Settings > Communication > SMS**, **Tools > Testing > SMS Test** |
+| **Menu** | **Settings → Communication → SMS**, **Tools → Testing → SMS Test** |
 | **Permission** | *Manage SMS Settings* (the Administrator role has it by default) |
 | **Feature** | **SMS** (`OrchardCore.Sms`), which includes Twilio. For Azure, also **Azure Communication Services SMS** (`OrchardCore.Sms.Azure`). |
 
@@ -26,7 +26,7 @@ Get from your text message service:
 
 ## Set up Twilio
 
-1. Open **Settings > Communication > SMS** and click the **Twilio** tab.
+1. Open **Settings → Communication → SMS** and click the **Twilio** tab.
 2. Check **Enable Twilio Provider**.
 3. Fill in the **Twilio Account Info**: **Phone Number**, **Account SID** and **Auth Token**.
 4. Click **Save**.
@@ -44,7 +44,7 @@ If no default provider was chosen yet, Twilio becomes the default provider.
 
 This tab appears when the **Azure Communication Services SMS** feature is on.
 
-1. Open **Settings > Communication > SMS** and click the **Azure Communication Services** tab.
+1. Open **Settings → Communication → SMS** and click the **Azure Communication Services** tab.
 2. Check **Enable**.
 3. Type the **Phone Number** and paste the **Connection String**, or pick a [secret](secrets.md) that holds it.
 4. Click **Save**.
@@ -65,7 +65,7 @@ When the **Secrets** feature is on, **Auth Token** and **Connection String** hav
 
 ![The SMS settings](images/sms.webp)
 
-1. Open **Settings > Communication > SMS**. The **Providers** tab opens first.
+1. Open **Settings → Communication → SMS**. The **Providers** tab opens first.
 2. Pick the **Default SMS provider**.
 3. Click **Save**.
 
@@ -82,7 +82,7 @@ The list shows the providers that are turned on, by their short names:
 
 ![The SMS Test screen](images/sms-test.webp)
 
-1. Open **Tools > Testing > SMS Test**.
+1. Open **Tools → Testing → SMS Test**.
 2. Pick the **Provider**.
 3. Type the **Phone Number** that receives the test, with the country code.
 4. Click **Send**.

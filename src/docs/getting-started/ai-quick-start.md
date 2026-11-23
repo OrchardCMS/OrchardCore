@@ -167,6 +167,13 @@ Once connected, use natural language to build on top of your Orchard Core workfl
 !!! note
     The MCP server provides the AI with Orchard Core knowledge, but you remain responsible for reviewing generated code and recipes before running them in your application.
 
+## Video
+
+This video builds an Orchard Core site with a coding agent.
+
+<!-- video:ai-quick-start -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/9Q2x-Q2Gg0k" title="AI Quick Start: Build Orchard Core Sites With a Coding Agent" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
 ## Next steps
 
 - [Create a CMS Web application](README.md)

@@ -7,11 +7,11 @@ technical_manual:
 
 # Background tasks
 
-Background tasks are jobs the site runs on its own, on a schedule, without anyone opening a page: publishing content scheduled for later, cleaning up old audit trail events, abandoned uploads and old content versions, refreshing search indexes, running timed workflows. The features you turn on add their own tasks. **Tools > Background Tasks** shows them all, tells you when each one last ran and whether it worked, and lets you run, pause or reschedule them.
+Background tasks are jobs the site runs on its own, on a schedule, without anyone opening a page: publishing content scheduled for later, cleaning up old audit trail events, abandoned uploads and old content versions, refreshing search indexes, running timed workflows. The features you turn on add their own tasks. **Tools → Background Tasks** shows them all, tells you when each one last ran and whether it worked, and lets you run, pause or reschedule them.
 
 | | |
 | --- | --- |
-| **Menu** | **Tools > Background Tasks** |
+| **Menu** | **Tools → Background Tasks** |
 | **Permission** | *Manage background tasks* (the Administrator role has it by default) |
 | **Feature** | **Background Tasks** (`OrchardCore.BackgroundTasks`) |
 
@@ -19,7 +19,7 @@ Background tasks are jobs the site runs on its own, on a schedule, without anyon
 
 ![The Background Tasks list](images/background-tasks.webp)
 
-Open **Tools > Background Tasks**. Each row shows:
+Open **Tools → Background Tasks**. Each row shows:
 
 - The task's title and description.
 - **Enabled** or **Disabled**.

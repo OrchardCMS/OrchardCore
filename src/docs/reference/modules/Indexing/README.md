@@ -11,7 +11,7 @@ Although often used to index content items, the system is **not limited to conte
 
 ## Indexing UI
 
-Starting with Orchard Core version 3, the module provides a unified user interface under **Search** > **Indexes** in the admin dashboard. This UI supports the creation, configuration, and lifecycle management of indexes. You can:
+Starting with Orchard Core version 3, the module provides a unified user interface under **Search → Indexes** in the admin dashboard. This UI supports the creation, configuration, and lifecycle management of indexes. You can:
 
 * Create and configure index profiles
 * Reset or rebuild existing indexes

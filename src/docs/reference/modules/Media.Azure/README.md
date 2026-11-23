@@ -189,3 +189,10 @@ The following configuration values are used by default and can be customized:
 
 !!! note
     Templating the configuration and configuring a container per tenant work the same way as for Azure Media Storage; follow its documentation above.
+
+## Video
+
+This video keeps the media files in Azure Blob Storage.
+
+<!-- video:media-azure-blob-storage -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/SqUaSbUri9g" title="Azure Media Storage: Keep Media in Azure Blob Storage" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

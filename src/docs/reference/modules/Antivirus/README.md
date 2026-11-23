@@ -59,3 +59,10 @@ See [File Upload Security](../../core/file-upload-security.md) for the canonical
 - The currently audited upload surfaces covered by this change are media uploads plus deployment package imports, both local and remote.
 - Media uploads are scanned before storage because they flow through `DefaultMediaFileStore`.
 - Deployment package zip/json uploads are scanned before Orchard Core writes the uploaded file to a temporary archive location for import.
+
+## Video
+
+This video scans uploaded files for viruses and explains where temporary files go.
+
+<!-- video:file-upload-security -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/o8fWqsPk0Ds" title="File Upload Security: Antivirus Scanning and Temporary Files" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

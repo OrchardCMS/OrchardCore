@@ -14,7 +14,7 @@ A **content type** is the template for a kind of content: *Article*, *Blog Post*
 
 | | |
 | --- | --- |
-| **Menu** | **Design > Content Definition > Content Types**, **Design > Content Definition > Content Parts** |
+| **Menu** | **Design → Content Definition → Content Types**, **Design → Content Definition → Content Parts** |
 | **Permission** | *View content types.* (see the lists), *Edit content types.* (create, change and delete) |
 | **Feature** | **Content Types** (`OrchardCore.ContentTypes`) |
 
@@ -25,7 +25,7 @@ A **content type** is the template for a kind of content: *Article*, *Blog Post*
 
 ## Find a content type
 
-Open **Design > Content Definition > Content Types**. Each row shows the type's display name, its technical name and, when it has one, its stereotype and description. Type in the **Search** box to narrow the list as you type.
+Open **Design → Content Definition → Content Types**. Each row shows the type's display name, its technical name and, when it has one, its stereotype and description. Type in the **Search** box to narrow the list as you type.
 
 Each row has these buttons:
 
@@ -36,7 +36,7 @@ Each row has these buttons:
 
 ## Create a content type
 
-1. Open **Design > Content Definition > Content Types** and click **Create new type**.
+1. Open **Design → Content Definition → Content Types** and click **Create new type**.
 2. Type the **Display Name**, for example *Event*. The **Technical Name** fills in by itself as you type.
 3. Change the **Technical Name** if you want, then click **Create**.
 4. The **Add Parts** screen opens. Tick the parts the type needs (see [Add parts](#add-parts-to-a-content-type)) and click **Add Selected Parts**, or click **Cancel** to go straight to the type editor.
@@ -50,7 +50,7 @@ A new type is **Creatable**, **Listable**, **Draftable**, **Versionable** and **
 
 ## Change a content type's settings
 
-Open **Design > Content Definition > Content Types** and click **Edit** on the type. The top of the editor holds the type's settings. Click **Save** at the bottom to apply them, or open the arrow next to **Save** and choose **and continue** to save and stay on the page.
+Open **Design → Content Definition → Content Types** and click **Edit** on the type. The top of the editor holds the type's settings. Click **Save** at the bottom to apply them, or open the arrow next to **Save** and choose **and continue** to save and stay on the page.
 
 ![The editor of the Blog Post content type, with its settings, parts and fields](images/edit-content-type.webp)
 
@@ -60,7 +60,7 @@ Open **Design > Content Definition > Content Types** and click **Edit** on the t
 | **Display Name** | Required. The name shown on screens. |
 | **Description** | Optional. A short explanation shown under the type in the content type list and in pickers. |
 | **Creatable** | Editors can create content items of this type from the admin: the type appears in the **New** menu and has a **Create** button. Untick it for types that are only created inside another item, such as blog posts inside a blog. |
-| **Listable** | Content items of this type appear in **Content > Content Items** and in its content type filter. |
+| **Listable** | Content items of this type appear in **Content → Content Items** and in its content type filter. |
 | **Draftable** | Editors can save a draft without publishing. When it is off, the editor has no **Save Draft** button. |
 | **Versionable** | The site keeps the earlier versions of a content item when it is published again. The [audit trail](audit-trail.md) uses these versions to compare and restore. |
 | **Securable** | The type gets its own permissions in the role editor (for example *Publish or unpublish Event for others*), so you can let a role edit one type but not another. See [Roles](../users/roles.md). |
@@ -146,7 +146,7 @@ The **Remove** button is disabled for system-defined parts and fields, which the
 
 ## Delete a content type
 
-1. Open **Design > Content Definition > Content Types** and click **Delete** on the type's row, or click **Delete** at the bottom of the type editor.
+1. Open **Design → Content Definition → Content Types** and click **Delete** on the type's row, or click **Delete** at the bottom of the type editor.
 2. Confirm with **Ok**.
 
 The type and the part that held its fields are removed. The content items created with the type are not deleted, but they no longer show in the admin lists. Delete or move those content items first if you don't need them. System-defined types can't be deleted.
@@ -155,7 +155,7 @@ The type and the part that held its fields are removed. The content items create
 
 A part you build yourself is a group of fields you can add to several content types, for example an *Address* part with street, city and postal code fields.
 
-1. Open **Design > Content Definition > Content Parts** and click **Create new part**.
+1. Open **Design → Content Definition → Content Parts** and click **Create new part**.
 2. Type the **Name**, without spaces or special characters, for example *Address*, and click **Create**.
 3. The part editor opens. Fill in the settings below, add fields with **Add Field**, and click **Save**.
 4. Add the part to content types with **Add Parts** (or **Add Named Part** if you ticked **Reusable**).
@@ -207,3 +207,25 @@ Taxonomy terms are chosen with the **Taxonomy Field**, not a part. See [Taxonomi
 | --- | --- |
 | **Display date editor** | Editors can change the creation date of the content item. |
 | **Display owner editor** | Editors can change the owner of the content item. They also need the *Edit the owner of a content item* permission. |
+
+## Videos
+
+This video explains how content types model the content of your site.
+
+<!-- video:content-types-overview -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/-wPGXu8ERwU" title="Content Types: Model the Content of Your Site" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video creates a content type and adds parts and fields to it.
+
+<!-- video:content-types-create -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/7OLZiWph0vs" title="Content Types: Create a Type and Add Parts and Fields" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video goes through the settings of a content type: Creatable, Listable, Draftable and more.
+
+<!-- video:content-types-settings -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/OAoSBQ8vurM" title="Content Type Settings: Creatable, Listable, Draftable and More" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video creates a reusable content part: a group of fields that several content types share.
+
+<!-- video:content-parts-reusable -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/W1Kl3Lekkvg" title="Content Parts: Create Reusable Groups of Fields" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

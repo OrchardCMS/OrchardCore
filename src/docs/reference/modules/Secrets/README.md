@@ -154,7 +154,7 @@ Register the named client in the host as shown in [Azure Key Vault Store](#azure
 
 ### Enabling the Feature
 
-1. Navigate to **Tools → Features**
+1. Navigate to **Admin → Tools → Features**
 2. Search for "Secrets"
 3. Click **Enable** on the "Secrets" feature
 

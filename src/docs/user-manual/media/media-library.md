@@ -15,7 +15,7 @@ The media library holds the files your site uses: pictures, PDFs, office documen
 
 | | |
 | --- | --- |
-| **Menu** | **Media > Library** |
+| **Menu** | **Media → Library** |
 | **Permission** | *Manage Media* (see [Who can see and change which folders](#who-can-see-and-change-which-folders)) |
 | **Feature** | **Media** (`OrchardCore.Media`) |
 
@@ -23,7 +23,7 @@ The media library holds the files your site uses: pictures, PDFs, office documen
 
 ![The media library, with its folders on the left and the files on the right](images/media-library.webp)
 
-Open **Media > Library**. The screen has three areas:
+Open **Media → Library**. The screen has three areas:
 
 - **The folder tree**, on the left. The top folder is the root of the library. Click a folder to open it. Each folder has a **⋮** button (**Folder Action**) for creating a subfolder or deleting the folder.
 - **The top bar**, above the files. It shows the path of the open folder (click a part of the path to go back up), a drive icon (**Storage Info**) that shows the **Available Storage** when the storage can report it, and a gear icon (**Settings**).
@@ -55,7 +55,7 @@ Click the gear icon to change:
 | **Thumbnail size** | **Normal** or **Large** thumbnails in the grid view. |
 
 !!! note
-    If your IT team has turned thumbnails off, the library always uses the list view, and the grid icon and **Thumbnail size** are hidden. **Settings > Media > Options** shows **Thumbnails disabled** when this is the case.
+    If your IT team has turned thumbnails off, the library always uses the list view, and the grid icon and **Thumbnail size** are hidden. **Settings → Media → Options** shows **Thumbnails disabled** when this is the case.
 
 ### Select files
 
@@ -104,7 +104,7 @@ Uploads are checked against these rules:
 | **File size** | Files larger than the maximum (30,000,000 bytes, about 30 MB, by default) are refused with *This file exceeds the maximum upload size*. |
 | **Same name** | If any of the files has the same name as a file already in the folder, nothing is uploaded and the library says *A file with this name already exists in the current folder.* Rename the file on your computer, or delete the old one first. |
 
-Your site may use other values. **Settings > Media > Options** shows the ones in use; see [Media settings](media-settings.md#see-the-media-options).
+Your site may use other values. **Settings → Media → Options** shows the ones in use; see [Media settings](media-settings.md#see-the-media-options).
 
 !!! note
     If the site has **Media Slugify** turned on, new file and folder names are changed to web-friendly names, for example `The team (2020).jpg` becomes `the-team-2020.jpg`. See [Media settings](media-settings.md#make-file-names-web-friendly).
@@ -214,7 +214,7 @@ These permissions control the media library. Each one includes the ones below it
 | *Manage All Media Folders* | Everything in every folder, including other people's personal folders and attached uploads. |
 | *Manage Media For Others* | Work in the shared folders and in every user's personal folder. |
 | *Manage Own Media* | Work in the shared folders and in your own personal folder. |
-| *Manage Media* | Open **Media > Library** and work in the shared folders. |
+| *Manage Media* | Open **Media → Library** and work in the shared folders. |
 | *Manage Attached Media Fields Folder* | Upload with the attached editor of media fields (the `mediafields` folder). Includes *Manage Media*. |
 | *Upload media file extensions requiring additional permission* | Upload restricted file types such as `.svg`, `.js` or `.css`. Marked security critical. |
 
@@ -240,3 +240,20 @@ When someone without permission asks for a protected file, the site answers as i
 
 !!! warning "Turning on Secure Media changes access right away"
     By default only Administrators get *View media content in all folders* and *View others media content*, and the **Authenticated** role gets *View own media content*. Everyone else, including visitors of the public site, can no longer open media files until you give their roles view permissions. Plan the permissions before you turn the feature on, then review your roles in [Roles](../users/roles.md).
+
+## Videos
+
+This video gives an overview of how Orchard Core manages the files of your site.
+
+<!-- video:media-overview -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/rZ8-gT1Rcxg" title="Media: Manage the Files of Your Site" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video uploads, organizes and reuses files in the media library.
+
+<!-- video:media-library-basics -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/96HKBh1upho" title="Media Library: Upload, Organize and Reuse Files" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video controls who can see each media folder with Secure Media.
+
+<!-- video:media-secure-media -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/MD0S2Pc9Oo0" title="Secure Media: Control Who Sees Each Media Folder" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

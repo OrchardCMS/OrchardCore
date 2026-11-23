@@ -134,3 +134,8 @@ The following configuration is used by default and can be customized:
 ## Video
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/cwKa1OA48-4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video adds localized content and Razor Pages to sitemaps.
+
+<!-- video:sitemaps-localized-and-razor-pages -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/1nxII1bpURA" title="Sitemaps for Localized Content and Razor Pages" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

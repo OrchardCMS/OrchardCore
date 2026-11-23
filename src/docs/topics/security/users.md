@@ -2,7 +2,7 @@
 
 Orchard Core ships with a complete membership system, provided by the [Users module](../../reference/modules/Users/README.md), which is enabled by default in the CMS recipes.
 
-Users are managed in the admin under `Security → Users`. From there you can:
+Users are managed in the admin under **Security → Users**. From there you can:
 
 - Create, edit, disable, or delete users.
 - Assign one or several [roles](roles.md) to a user.

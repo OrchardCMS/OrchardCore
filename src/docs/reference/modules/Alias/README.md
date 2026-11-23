@@ -7,7 +7,7 @@ An alias is not a URL. Use [`AutoroutePart`](../Autoroute/README.md) when a cont
 
 ## Enable the feature
 
-Enable the **Alias** feature (`OrchardCore.Alias`) under **Tools** > **Features**.
+Enable the **Alias** feature (`OrchardCore.Alias`) under **Tools → Features**.
 The feature depends on `OrchardCore.ContentTypes`.
 
 To enable it from a recipe:
@@ -29,7 +29,7 @@ To enable it from a recipe:
 
 In the admin:
 
-1. Go to **Content** > **Content Definition** > **Content Types**.
+1. Go to **Content → Content Definition → Content Types**.
 2. Edit a content type and select **Add Parts**.
 3. Add **AliasPart**.
 4. Edit the part settings to configure its **Options** and **Pattern**.
@@ -400,3 +400,10 @@ Aliases are tenant-wide rather than scoped to a content type. Check drafts, publ
 ### An alias does not create a route
 
 Attach and configure `AutoroutePart`. `AliasPart` provides logical lookup, indexing, and shape alternates; it does not register an HTTP route.
+
+## Video
+
+This video gives content items a stable name with the Alias part.
+
+<!-- video:alias-part -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/JrAnXKPkCxg" title="Alias Part: Give Content Items a Stable Name" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
