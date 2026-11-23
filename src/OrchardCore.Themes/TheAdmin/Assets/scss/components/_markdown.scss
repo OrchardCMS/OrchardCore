@@ -48,6 +48,16 @@ html .EasyMDEContainer {
         }
     }
 
+    // The text area takes the border of a field. The Markdown module's stylesheet gives it Bootstrap's faint border color
+    // with a selector that outranks the theme's CodeMirror rule, so it is set again here.
+    .CodeMirror:not(.CodeMirror-fullscreen) {
+        border-color: var(--ta-control-border);
+    }
+
+    .CodeMirror-focused:not(.CodeMirror-fullscreen) {
+        border-color: var(--ta-focus-color);
+    }
+
     // The Shortcodes feature wraps the toolbar in a div of its own, so the text area is found from the container.
     &:has(.editor-toolbar:not(.fullscreen)) > .CodeMirror:not(.CodeMirror-fullscreen) {
         border-top-color: var(--ta-border);

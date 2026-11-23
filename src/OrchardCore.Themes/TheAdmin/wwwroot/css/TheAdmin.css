@@ -860,7 +860,7 @@ html:has(body.ta-admin) {
 }
 
 .action-bar {
-  top: var(--oc-top-nav-height);
+  top: calc(var(--oc-top-nav-height) + var(--ta-action-bar-offset, 0px));
   z-index: var(--oc-action-bar-zindex);
 }
 
@@ -876,6 +876,10 @@ html:has(body.ta-admin) {
   border-inline-color: transparent;
   border-radius: 0;
   box-shadow: var(--ta-topbar-shadow);
+}
+
+.action-bar.action-bar-stuck.action-bar-stacked.card, .action-bar.action-bar-stuck.action-bar-stacked > .card {
+  box-shadow: none;
 }
 
 .second-action-bar {
@@ -11021,6 +11025,14 @@ html[dir="ltr"] .EasyMDEContainer .editor-toolbar i.separator {
 html[dir="rtl"] .EasyMDEContainer .editor-toolbar i.separator {
   border-right-color: var(--ta-border);
   border-left-color: transparent;
+}
+
+html .EasyMDEContainer .CodeMirror:not(.CodeMirror-fullscreen) {
+  border-color: var(--ta-control-border);
+}
+
+html .EasyMDEContainer .CodeMirror-focused:not(.CodeMirror-fullscreen) {
+  border-color: var(--ta-focus-color);
 }
 
 html .EasyMDEContainer:has(.editor-toolbar:not(.fullscreen)) > .CodeMirror:not(.CodeMirror-fullscreen) {

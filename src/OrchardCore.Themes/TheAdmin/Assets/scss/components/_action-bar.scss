@@ -1,7 +1,8 @@
 @use '../config' as *;
 
 .action-bar {
-    top: var(--oc-top-nav-height);
+    // Under the top bar, and under the sticky bars before it on the page (stickyActionBar.ts sets the offset).
+    top: calc(var(--oc-top-nav-height) + var(--ta-action-bar-offset, 0px));
     z-index: var(--oc-action-bar-zindex);
 
     // The surface of the bar: the bar itself when it is a card, or the card it wraps (e.g. a search form around it).
@@ -21,6 +22,12 @@
         border-inline-color: transparent;
         border-radius: 0;
         box-shadow: var(--ta-topbar-shadow);
+    }
+
+    // In a stack of pinned bars, only the lowest one casts the shadow; the others are divided by their bottom border.
+    &.action-bar-stuck.action-bar-stacked.card,
+    &.action-bar-stuck.action-bar-stacked > .card {
+        box-shadow: none;
     }
 }
 
