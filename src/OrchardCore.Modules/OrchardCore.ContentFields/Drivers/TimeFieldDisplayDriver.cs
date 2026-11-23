@@ -19,11 +19,6 @@ public sealed class TimeFieldDisplayDriver : ContentFieldDisplayDriver<TimeField
         S = localizer;
     }
 
-    protected override bool IsEmpty(TimeField field)
-    {
-        return !field.Value.HasValue;
-    }
-
     public override IDisplayResult Display(TimeField field, BuildFieldDisplayContext context)
     {
         return Initialize<DisplayTimeFieldViewModel>(GetDisplayShapeType(context), model =>

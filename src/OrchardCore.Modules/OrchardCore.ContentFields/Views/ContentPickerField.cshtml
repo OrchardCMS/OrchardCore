@@ -9,20 +9,22 @@
     var contentItems = await ContentManager.GetAsync(Model.ContentItemIds);
 }
 
-<div class="field field-type-contentpickerfield field-name-@name">
-    @if (contentItems.Any())
-    {
-        foreach (var contentItem in contentItems)
+<content-field-display definition="Model.PartFieldDefinition" has-value="Model.ContentItemIds?.Length > 0">
+    <div class="field field-type-contentpickerfield field-name-@name">
+        @if (contentItems.Any())
         {
-            <span class="value"><a display-for="@contentItem">@contentItem.DisplayText</a></span>
-            if (contentItem != contentItems.Last())
+            foreach (var contentItem in contentItems)
             {
-                <span>,</span>
+                <span class="value"><a display-for="@contentItem">@contentItem.DisplayText</a></span>
+                if (contentItem != contentItems.Last())
+                {
+                    <span>,</span>
+                }
             }
         }
-    }
-    else
-    {
-        <span class="value">@T["No content items."]</span>
-    }
-</div>
+        else
+        {
+            <span class="value">@T["No content items."]</span>
+        }
+    </div>
+</content-field-display>

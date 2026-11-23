@@ -8,11 +8,6 @@ namespace OrchardCore.ContentFields.Drivers;
 
 public sealed class UserPickerFieldUserNamesDisplayDriver : ContentFieldDisplayDriver<UserPickerField>
 {
-    protected override bool IsEmpty(UserPickerField field)
-    {
-        return field.UserIds is null || field.UserIds.Length == 0;
-    }
-
     public override IDisplayResult Display(UserPickerField field, BuildFieldDisplayContext context)
     {
         return Initialize<DisplayUserPickerFieldUserNamesViewModel>(GetDisplayShapeType(context), model =>

@@ -9,11 +9,13 @@
     int height = settings.Height != default(int) ? settings.Height : 640;
 }
 
-<div class="field field-type-textfield field-name-@name">
-    @{
-        if (!string.IsNullOrEmpty(Model.EmbeddedAddress))
-        {
-            <iframe width="@width" height="@height" src="@Model.EmbeddedAddress" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+<content-field-display definition="Model.PartFieldDefinition" has-value="!string.IsNullOrWhiteSpace(Model.EmbeddedAddress)">
+    <div class="field field-type-textfield field-name-@name">
+        @{
+            if (!string.IsNullOrEmpty(Model.EmbeddedAddress))
+            {
+                <iframe width="@width" height="@height" src="@Model.EmbeddedAddress" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+            }
         }
-    }
-</div>
+    </div>
+</content-field-display>

@@ -20,11 +20,6 @@ public sealed class YoutubeFieldDisplayDriver : ContentFieldDisplayDriver<Youtub
         S = localizer;
     }
 
-    protected override bool IsEmpty(YoutubeField field)
-    {
-        return string.IsNullOrWhiteSpace(field.EmbeddedAddress);
-    }
-
     public override IDisplayResult Display(YoutubeField field, BuildFieldDisplayContext context)
     {
         return Initialize<YoutubeFieldDisplayViewModel>(GetDisplayShapeType(context), model =>

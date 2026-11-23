@@ -19,11 +19,6 @@ public sealed class DateFieldDisplayDriver : ContentFieldDisplayDriver<DateField
         S = localizer;
     }
 
-    protected override bool IsEmpty(DateField field)
-    {
-        return !field.Value.HasValue;
-    }
-
     public override IDisplayResult Display(DateField field, BuildFieldDisplayContext context)
     {
         return Initialize<DisplayDateFieldViewModel>(GetDisplayShapeType(context), model =>

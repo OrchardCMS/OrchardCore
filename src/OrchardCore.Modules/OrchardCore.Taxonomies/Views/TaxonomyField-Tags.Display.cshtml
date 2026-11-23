@@ -5,9 +5,11 @@
     var name = (Model.PartFieldDefinition.PartDefinition.Name + "-" + Model.PartFieldDefinition.Name).HtmlClassify();
 }
 
-<div class="field field-type-taxonomyfield field-display-mode-tags field-name-@name">
-    @foreach (var tagName in Model.TagNames)
-    {
-        <span class="taxonomy-tag-term">@tagName</span>
-    }
-</div>
+<content-field-display definition="Model.PartFieldDefinition" has-value="Model.TermContentItemIds?.Length > 0">
+    <div class="field field-type-taxonomyfield field-display-mode-tags field-name-@name">
+        @foreach (var tagName in Model.TagNames)
+        {
+            <span class="taxonomy-tag-term">@tagName</span>
+        }
+    </div>
+</content-field-display>

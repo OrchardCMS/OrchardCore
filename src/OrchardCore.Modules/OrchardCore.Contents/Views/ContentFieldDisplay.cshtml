@@ -1,0 +1,15 @@
+@model IShape
+@using OrchardCore.ContentFields
+@using OrchardCore.ContentManagement.Metadata.Models
+@using OrchardCore.Localization.Data
+@inject IDataLocalizer D
+@{
+    // Renders the name of a content field next to its value, for the field templates using the <content-field-display> tag helper.
+    var partFieldDefinition = (ContentPartFieldDefinition)Model.Properties["PartFieldDefinition"];
+    var fieldName = (partFieldDefinition.PartDefinition.Name + "-" + partFieldDefinition.Name).HtmlClassify();
+    string displayName = D[partFieldDefinition.DisplayName(), DataLocalizationContext.ContentField(partFieldDefinition.PartDefinition.Name)];
+}
+<div class="field-display field-display-@fieldName">
+    <strong class="field-display-name">@displayName</strong>
+    @Model.Properties["Content"]
+</div>

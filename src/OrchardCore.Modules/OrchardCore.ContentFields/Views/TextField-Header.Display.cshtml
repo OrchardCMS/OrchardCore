@@ -10,6 +10,8 @@
     tagBuilder.AddCssClass($"field field-type-textfield field-name-{name}");
 }
 
-@tagBuilder.RenderStartTag()
-@Model.Text
-@tagBuilder.RenderEndTag()
+<content-field-display definition="Model.PartFieldDefinition" has-value="!string.IsNullOrWhiteSpace(Model.Text)">
+    @tagBuilder.RenderStartTag()
+    @Model.Text
+    @tagBuilder.RenderEndTag()
+</content-field-display>

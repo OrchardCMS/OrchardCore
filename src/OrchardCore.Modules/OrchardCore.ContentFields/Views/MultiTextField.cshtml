@@ -4,12 +4,14 @@
     var name = (Model.PartFieldDefinition.PartDefinition.Name + "-" + Model.PartFieldDefinition.Name).HtmlClassify();
 }
 
-@if (Model.Values.Any())
-{
-<div class="field field-type-multitextfield field-name-@name">
-    @foreach (var value in Model.Values)
+<content-field-display definition="Model.PartFieldDefinition" has-value="Model.Values?.Length > 0">
+    @if (Model.Values.Any())
     {
-        <span class="value">@value</span>if (value != Model.Values.Last()){@T[", "]}
+    <div class="field field-type-multitextfield field-name-@name">
+        @foreach (var value in Model.Values)
+        {
+            <span class="value">@value</span>if (value != Model.Values.Last()){@T[", "]}
+        }
+    </div>
     }
-</div>
-}
+</content-field-display>

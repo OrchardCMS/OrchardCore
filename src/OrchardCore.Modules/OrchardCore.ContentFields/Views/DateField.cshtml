@@ -5,9 +5,11 @@
     var name = (Model.PartFieldDefinition.PartDefinition.Name + "-" + Model.PartFieldDefinition.Name).HtmlClassify();
 }
 
-@if (Model.Value.HasValue)
-{
-    <div class="field field-type-datefield field-name-@name">
-        @Model.Value.Value.ToShortDateString()
-    </div>
-}
+<content-field-display definition="Model.PartFieldDefinition" has-value="Model.Value.HasValue">
+    @if (Model.Value.HasValue)
+    {
+        <div class="field field-type-datefield field-name-@name">
+            @Model.Value.Value.ToShortDateString()
+        </div>
+    }
+</content-field-display>

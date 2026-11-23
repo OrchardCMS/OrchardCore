@@ -5,6 +5,8 @@
     var name = (Model.PartFieldDefinition.PartDefinition.Name + "-" + Model.PartFieldDefinition.Name).HtmlClassify();
 }
 
-<div class="field field-type-liquidfield field-name-@name">
-    @Html.Raw(Model.Html)
-</div>
+<content-field-display definition="Model.PartFieldDefinition" has-value="!string.IsNullOrWhiteSpace(Model.Liquid)">
+    <div class="field field-type-liquidfield field-name-@name">
+        @Html.Raw(Model.Html)
+    </div>
+</content-field-display>

@@ -5,6 +5,8 @@
     var name = (Model.PartFieldDefinition.PartDefinition.Name + "-" + Model.PartFieldDefinition.Name).HtmlClassify();
 }
 
-<div class="field field-type-booleanfield field-name-@name">
-    @Model.Value
-</div>
+<content-field-display definition="Model.PartFieldDefinition">
+    <div class="field field-type-booleanfield field-name-@name">
+        @Model.Value
+    </div>
+</content-field-display>

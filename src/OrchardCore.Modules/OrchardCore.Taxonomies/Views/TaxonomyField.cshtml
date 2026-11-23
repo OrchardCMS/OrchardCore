@@ -5,10 +5,12 @@
     var name = (Model.PartFieldDefinition.PartDefinition.Name + "-" + Model.PartFieldDefinition.Name).HtmlClassify();
 }
 
-<div class="field field-type-taxonomyfield field-name-@name">
-    @foreach (var contentItemId in Model.TermContentItemIds)
-    {
-        var term = await Orchard.GetTaxonomyTermAsync(Model.TaxonomyContentItemId, contentItemId);
-        <span class="taxonomy-term">@term</span>
-    }
-</div>
+<content-field-display definition="Model.PartFieldDefinition" has-value="Model.TermContentItemIds?.Length > 0">
+    <div class="field field-type-taxonomyfield field-name-@name">
+        @foreach (var contentItemId in Model.TermContentItemIds)
+        {
+            var term = await Orchard.GetTaxonomyTermAsync(Model.TaxonomyContentItemId, contentItemId);
+            <span class="taxonomy-term">@term</span>
+        }
+    </div>
+</content-field-display>

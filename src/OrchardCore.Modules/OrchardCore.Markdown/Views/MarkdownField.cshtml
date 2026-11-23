@@ -5,6 +5,8 @@
     var name = (Model.PartFieldDefinition.PartDefinition.Name + "-" + Model.PartFieldDefinition.Name).HtmlClassify();
 }
 
-<div class="field field-type-markdownfield field-name-@name">
-    @Html.Raw(Model.Html)
-</div>
+<content-field-display definition="Model.PartFieldDefinition" has-value="!string.IsNullOrWhiteSpace(Model.Markdown)">
+    <div class="field field-type-markdownfield field-name-@name">
+        @Html.Raw(Model.Html)
+    </div>
+</content-field-display>

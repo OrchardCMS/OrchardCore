@@ -1,0 +1,29 @@
+@model IShape
+@using OrchardCore
+@using OrchardCore.DisplayManagement
+@using OrchardCore.ContentFields
+@using OrchardCore.ContentManagement.Metadata.Models
+@using OrchardCore.Localization.Data
+@using OrchardCore.Mvc.Utilities
+@inject IDataLocalizer D
+@{
+    // Renders the name of a content field next to its value, for the field templates using the <content-field-display> tag helper.
+    var partFieldDefinition = (ContentPartFieldDefinition)Model.Properties["PartFieldDefinition"];
+}
+@* A grid column of an admin list already shows the name of the field in its header. *@
+@if (Model.Metadata.DisplayType == OrchardCoreConstants.DisplayType.SummaryAdminGrid)
+{
+    @Model.Properties["Content"]
+}
+else
+{
+    var fieldName = (partFieldDefinition.PartDefinition.Name + "-" + partFieldDefinition.Name).HtmlClassify();
+    string displayName = D[partFieldDefinition.DisplayName(), DataLocalizationContext.ContentField(partFieldDefinition.PartDefinition.Name)];
+
+    <div class="ocat-wrapper field-display field-display-@fieldName">
+        <div class="ocat-label">@displayName</div>
+        <div class="ocat-end">
+            @Model.Properties["Content"]
+        </div>
+    </div>
+}

@@ -5,20 +5,22 @@
     var users = await @Orchard.GetUsersByIdsAsync(Model.UserIds);
 }
 
-<div class="field field-type-userpickerfield field-name-@name">
-    @if (users.Any())
-    {
-        foreach (var user in users)
+<content-field-display definition="Model.PartFieldDefinition" has-value="Model.UserIds?.Length > 0">
+    <div class="field field-type-userpickerfield field-name-@name">
+        @if (users.Any())
         {
-            <span class="value">@user.UserName</span>
-            if (user != users.Last())
+            foreach (var user in users)
             {
-                <span>,</span>
+                <span class="value">@user.UserName</span>
+                if (user != users.Last())
+                {
+                    <span>,</span>
+                }
             }
         }
-    }
-    else
-    {
-        <span class="value">@T["No users."]</span>
-    }
-</div>
+        else
+        {
+            <span class="value">@T["No users."]</span>
+        }
+    </div>
+</content-field-display>

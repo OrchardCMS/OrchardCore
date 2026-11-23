@@ -55,7 +55,17 @@ Every field has two display settings, stored in `ContentPartFieldSettings` and e
 | `DisplayFieldName` | `true` | Shows the name of the field next to its value when the content item is displayed. |
 | `AlwaysDisplay` | `false` | Displays the field even when it has no value. When `false`, a field without a value isn't displayed. |
 
-When `DisplayFieldName` is enabled, the display shape of the field gets the `ContentField_Wrapper` wrapper (`ContentField.Wrapper.cshtml`), which renders the localized name of the field followed by the field shape. In the admin, the wrapper uses the `ocat-wrapper`, `ocat-label` and `ocat-end` classes of the admin theme. A grid column of an admin list (the `SummaryAdminGrid` display type) already names the field in its header, so there the wrapper renders the value only. Override `ContentField.Wrapper.cshtml` in a theme to change how the name is rendered, or for which display types, using `Model.Metadata.DisplayType`.
+The display templates of the built-in fields apply these settings with the `<content-field-display>` tag helper of `OrchardCore.ContentManagement.Display`. A template that overrides one of them keeps rendering what it renders, and applies the settings only if it uses the tag helper too:
+
+```razor
+@addTagHelper *, OrchardCore.ContentManagement.Display
+
+<content-field-display definition="Model.PartFieldDefinition" has-value="!string.IsNullOrWhiteSpace(Model.Text)">
+    <div class="field field-type-textfield">@Model.Text</div>
+</content-field-display>
+```
+
+The tag helper renders nothing when `has-value` is `false` and `AlwaysDisplay` isn't enabled, and renders its content alone when `DisplayFieldName` isn't enabled. Otherwise it renders the `ContentFieldDisplay` shape, which has the `PartFieldDefinition` and `Content` properties and the display type of the field shape. The Contents module renders it with the localized name of the field followed by the value, and the admin theme with the `ocat-wrapper`, `ocat-label` and `ocat-end` classes, except in a grid column of an admin list (the `SummaryAdminGrid` display type), whose header already names the field. Override `ContentFieldDisplay.cshtml` in a theme to change how the name is rendered.
 
 Set both settings from a recipe, in the `ContentPartFieldSettings` of the field:
 
@@ -77,8 +87,6 @@ await _contentDefinitionManager.AlterPartDefinitionAsync("Lead", part => part
         .WithDisplayFieldName()
         .WithAlwaysDisplay(false)));
 ```
-
-Whether a field has a value is decided by its display driver, which overrides `ContentFieldDisplayDriver<TField>.IsEmpty(TField field)`. A field whose driver doesn't override it is always displayed.
 
 ## Usage
 
@@ -383,7 +391,7 @@ services.AddContentField<TextField>();
 
 ### Display Driver
 
-Override `IsEmpty` in the display driver so that the field isn't displayed without a value, unless its **Always display** setting is enabled. A display template doesn't need to render the name of the field, which is added by the `ContentField_Wrapper` wrapper when **Display the field name** is enabled.
+In the display template of the field, render the value inside the `<content-field-display>` tag helper, described in [Field Name and Empty Values](#field-name-and-empty-values), so that the field honors its **Display the field name** and **Always display** settings.
 
 
 The display driver is the component that drives how the field is displayed on the front end, edited on

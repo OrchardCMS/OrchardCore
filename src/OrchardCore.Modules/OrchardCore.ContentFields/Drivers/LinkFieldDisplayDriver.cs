@@ -38,11 +38,6 @@ public sealed class LinkFieldDisplayDriver : ContentFieldDisplayDriver<LinkField
         _htmlencoder = htmlencoder;
     }
 
-    protected override bool IsEmpty(LinkField field)
-    {
-        return string.IsNullOrWhiteSpace(field.Url);
-    }
-
     public override IDisplayResult Display(LinkField field, BuildFieldDisplayContext context)
     {
         return Initialize<DisplayLinkFieldViewModel>(GetDisplayShapeType(context), model =>

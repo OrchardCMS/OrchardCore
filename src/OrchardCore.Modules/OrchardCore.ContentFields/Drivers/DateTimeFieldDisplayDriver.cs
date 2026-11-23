@@ -26,11 +26,6 @@ public sealed class DateTimeFieldDisplayDriver : ContentFieldDisplayDriver<DateT
         S = localizer;
     }
 
-    protected override bool IsEmpty(DateTimeField field)
-    {
-        return !field.Value.HasValue;
-    }
-
     public override IDisplayResult Display(DateTimeField field, BuildFieldDisplayContext context)
     {
         return Initialize<DisplayDateTimeFieldViewModel, DateTimeField, BuildFieldDisplayContext, ILocalClock>(GetDisplayShapeType(context), static async (model, field, context, localClock) =>

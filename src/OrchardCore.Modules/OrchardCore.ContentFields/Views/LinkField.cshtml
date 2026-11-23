@@ -45,6 +45,8 @@
 
     var target = !string.IsNullOrWhiteSpace(Model.Target) ? Model.Target : "_self";
 }
-<div class="field field-type-linkfield field-name-@name">
-    <a href="@href" target="@target">@text</a>
-</div>
+<content-field-display definition="Model.PartFieldDefinition" has-value="!string.IsNullOrWhiteSpace(Model.Url)">
+    <div class="field field-type-linkfield field-name-@name">
+        <a href="@href" target="@target">@text</a>
+    </div>
+</content-field-display>
