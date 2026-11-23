@@ -4,11 +4,11 @@ This module provides Content Management services.
 
 ## Content Quick Navigation
 
-Enable **Content Quick Navigation** (`OrchardCore.Contents.QuickNavigation`) from **Configuration → Features** to add recently updated content items to the [admin quick navigation palette](../Admin/README.md#quick-navigation). This feature is opt-in and depends on `OrchardCore.Contents` and `OrchardCore.Admin`.
+Enable **Content Quick Navigation** (`OrchardCore.Contents.QuickNavigation`) from **Tools → Features** to add recently updated content items to the [admin quick navigation palette](../Admin/README.md#quick-navigation). This feature is opt-in and depends on `OrchardCore.Contents` and `OrchardCore.Admin`.
 
 The `ContentItemNavigationSource` contributes the **50 most recently updated content items** by default. Each destination uses the item's full display text and opens its **Edit** view. Only items that the current user can edit are displayed, using the same content-item authorization as the edit page.
 
-Configure **Recent content items in quick navigation** under **Configuration → Settings → Admin**. The count must be at least 1 and defaults to 50. This field appears only while the feature is enabled and requires the **Manage Admin Settings** permission. Quick navigation itself must also be enabled in the Admin settings.
+Configure **Recent content items in quick navigation** under **Settings → Admin**. The count must be at least 1 and defaults to 50. This field appears only while the feature is enabled and requires the **Manage Admin Settings** permission. Quick navigation itself must also be enabled in the Admin settings.
 
 The source queries the latest content item versions, ordered by `ModifiedUtc` descending and then by content item ID for consistent ordering. This includes drafts and unpublished items, but not removed items or older versions. The limit is applied before filtering out items the user cannot edit or whose display text is empty, so fewer destinations may be displayed. Content translations remain separate content items with their own display text; the **Content** breadcrumb is localized for the current UI culture.
 
@@ -236,7 +236,7 @@ It is usually better to **create a dedicated user for performing API calls**, ma
 }
 ```
 
-> This payload example model was obtained using the GraphiQL panel available in the Admin: _Configuration_ → _GraphiQL_. In this [video](https://www.youtube.com/watch?v=8SbW3TLNhF0) you can find an overview of how to use GraphiQL. 
+> This payload example model was obtained using the GraphiQL panel available in the Admin: _Tools_ → _GraphiQL_. In this [video](https://www.youtube.com/watch?v=8SbW3TLNhF0) you can find an overview of how to use GraphiQL. 
 
 ##### Responses
 
@@ -698,7 +698,7 @@ The latest draft and the published version of an item are **never** deleted; onl
 
 ### Settings
 
-Enable the feature, then configure it under **Configuration** → **Settings** → **Content Version Pruning** (requires the `Manage Content Version Pruning settings` permission, granted to the `Administrator` role by default).
+Enable the feature, then configure it under **Settings** → **Content Version Pruning** (requires the `Manage Content Version Pruning settings` permission, granted to the `Administrator` role by default).
 
 | Setting                              | Default | Description                                                                                                                                  |
 |--------------------------------------|---------|--------------------------------------------------------------------------------------------------------------------------------------------|
@@ -709,7 +709,7 @@ Enable the feature, then configure it under **Configuration** → **Settings** �
 
 ### How it works
 
-A background task — *Content Version Pruning Background Task* — runs on a daily schedule (`0 0 * * *`). It is **disabled by default**; enable it under **Configuration** → **Tasks** → **Background Tasks** in addition to enabling the feature and selecting content types. When it runs, it:
+A background task — *Content Version Pruning Background Task* — runs on a daily schedule (`0 0 * * *`). It is **disabled by default**; enable it under **Tools** → **Background Tasks** in addition to enabling the feature and selecting content types. When it runs, it:
 
 1. Skips entirely if the **Disable** setting is on, or if no content types are selected.
 2. Computes a retention threshold of `now - RetentionDays`.

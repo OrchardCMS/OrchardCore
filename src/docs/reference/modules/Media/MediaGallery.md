@@ -4,7 +4,7 @@ The Media Gallery is a Vue 3 application that provides the admin UI for managing
 
 ## Authentication
 
-The gallery talks to the Media API — the `api/media` endpoints, the TUS upload endpoint, and the media SignalR hub. The API authenticates through one of two schemes, selected by the **Authentication scheme** setting (**Configuration → Settings → Media API**, `MediaApiSettings.AuthenticationScheme`). Exactly one is active at a time:
+The gallery talks to the Media API — the `api/media` endpoints, the TUS upload endpoint, and the media SignalR hub. The API authenticates through one of two schemes, selected by the **Authentication scheme** setting (**Settings → Media API**, `MediaApiSettings.AuthenticationScheme`). Exactly one is active at a time:
 
 ### Cookie (default)
 
@@ -16,7 +16,7 @@ The API accepts only Bearer tokens via the `"Api"` scheme, and the gallery acqui
 
 If you use this mode, you **must** enable the **OpenID Token Validation** feature (`OrchardCore.OpenId.Validation`) so Orchard Core can validate the `access_token` sent by the SPA and the SignalR client.
 
-To provision this mode, run the **Media API — Bearer/PKCE** recipe (Configuration → Recipes). It switches the authentication scheme to `Bearer`, enables the OpenID Server, Token Validation, and Management features, turns on the authorization-code flow with PKCE required, and registers a public (secret-less) `media_gallery` OpenID application whose redirect URI points at the gallery's silent-renew page. Adjust the recipe's `https://localhost:5001` origins to your tenant's real origin before running it, and make sure gallery users have roles granting the media permissions — the `roles` scope carries them into the token.
+To provision this mode, run the **Media API — Bearer/PKCE** recipe (Tools → Recipes). It switches the authentication scheme to `Bearer`, enables the OpenID Server, Token Validation, and Management features, turns on the authorization-code flow with PKCE required, and registers a public (secret-less) `media_gallery` OpenID application whose redirect URI points at the gallery's silent-renew page. Adjust the recipe's `https://localhost:5001` origins to your tenant's real origin before running it, and make sure gallery users have roles granting the media permissions — the `roles` scope carries them into the token.
 
 ### Standalone external app
 

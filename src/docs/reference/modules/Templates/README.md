@@ -4,7 +4,7 @@ The templates module allows editors to create custom Liquid templates.
 
 ## Assisted Templates
 
-The **Assisted Templates** feature (`OrchardCore.Templates.Assisted`) adds the tools below to the **Templates** page, and to the **Admin Templates** page when the **Admin Templates** feature is enabled: the **Theme Templates** and **Feature Templates** lists. It is not enabled by default: enable it in **Configuration > Features**.
+The **Assisted Templates** feature (`OrchardCore.Templates.Assisted`) adds the tools below to the **Templates** page, and to the **Admin Templates** page when the **Admin Templates** feature is enabled: the **Theme Templates** and **Feature Templates** lists. It is not enabled by default: enable it in **Tools > Features**.
 
 The **Shape Tracing** feature (`OrchardCore.Templates.ShapeTracing`) adds the tools that need the content items, and depends on the **Contents** and **Content Fields** features: the [alternates](#alternates) suggested for the content types, parts and fields of the site, and [Inspect Content](#inspect-content). It is not enabled by default either.
 

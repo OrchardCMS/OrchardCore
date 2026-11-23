@@ -6,7 +6,7 @@ A theme that supports schemes offers several looks that admins manage and users 
 
 ## Enabling the feature
 
-The Theme Schemes feature can't be enabled from **Configuration > Features**: it's enabled by the themes that depend on it (`EnabledByDependencyOnly`). Enabling a theme that supports schemes enables the feature.
+The Theme Schemes feature can't be enabled from **Tools > Features**: it's enabled by the themes that depend on it (`EnabledByDependencyOnly`). Enabling a theme that supports schemes enables the feature.
 
 ## Managing the schemes of a theme
 
