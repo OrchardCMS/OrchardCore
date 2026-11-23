@@ -123,7 +123,7 @@ public sealed class ThemeSchemesStep : NamedRecipeStepHandler
 
         if (!ThemeSchemeStore.HasValidTypography(scheme))
         {
-            context.Errors.Add(S["The scheme '{0}' has an unknown font family (use 'lato', 'inter', 'source-sans-3' or 'system'), or a FontScale (0.875 to 1.125), RadiusScale (0 to 1.5) or Density (0.75 to 1.25) out of range.", scheme.Id]);
+            context.Errors.Add(S["The scheme '{0}' has a FontFamily or HeadingFontFamily that is not a font name or a list of them separated by commas (letters, digits, spaces, dashes, underscores and dots), or a FontScale (0.875 to 1.125), RadiusScale (0 to 1.5) or Density (0.75 to 1.25) out of range.", scheme.Id]);
 
             return;
         }

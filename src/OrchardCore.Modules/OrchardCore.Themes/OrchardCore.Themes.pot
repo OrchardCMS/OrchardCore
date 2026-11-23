@@ -61,12 +61,12 @@ msgstr ""
 
 #: Schemes/Controllers/SchemesController.cs
 msgctxt "OrchardCore.Themes.Schemes.Controllers.SchemesController"
-msgid "Pick one of the fonts, or the same font as the text."
+msgid "Enter the name of a font, or several separated by commas, or leave it empty to use the font of the text. A name holds only letters, digits, spaces, dashes, underscores and dots."
 msgstr ""
 
 #: Schemes/Controllers/SchemesController.cs
 msgctxt "OrchardCore.Themes.Schemes.Controllers.SchemesController"
-msgid "Pick one of the fonts."
+msgid "Enter the name of a font, or several separated by commas. A name holds only letters, digits, spaces, dashes, underscores and dots."
 msgstr ""
 
 #. Format arguments: {0}: scheme.Name
@@ -108,7 +108,7 @@ msgstr ""
 #: Schemes/Recipes/ThemeSchemesStep.cs
 #, csharp-format
 msgctxt "OrchardCore.Themes.Schemes.Recipes.ThemeSchemesStep"
-msgid "The scheme '{0}' has an unknown font family (use 'lato', 'inter', 'source-sans-3' or 'system'), or a FontScale (0.875 to 1.125), RadiusScale (0 to 1.5) or Density (0.75 to 1.25) out of range."
+msgid "The scheme '{0}' has a FontFamily or HeadingFontFamily that is not a font name or a list of them separated by commas (letters, digits, spaces, dashes, underscores and dots), or a FontScale (0.875 to 1.125), RadiusScale (0 to 1.5) or Density (0.75 to 1.25) out of range."
 msgstr ""
 
 #. Format arguments: {0}: scheme.Id
@@ -618,12 +618,12 @@ msgstr ""
 
 #: Views/Schemes/Edit.cshtml
 msgctxt "OrchardCore.Themes.Views.Schemes.Edit"
-msgid "The font of page titles and headings."
+msgid "The font of page titles and headings. The font of the text when empty."
 msgstr ""
 
 #: Views/Schemes/Edit.cshtml
 msgctxt "OrchardCore.Themes.Views.Schemes.Edit"
-msgid "The font of the text."
+msgid "The font of the text. Pick one of the theme's fonts, or type the name of any font, e.g. a font installed on your users' devices, or several separated by commas."
 msgstr ""
 
 #: Views/Schemes/Edit.cshtml

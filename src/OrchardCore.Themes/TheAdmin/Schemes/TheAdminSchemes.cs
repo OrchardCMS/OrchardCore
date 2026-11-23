@@ -41,6 +41,24 @@ public static class TheAdminSchemes
     };
 
     /// <summary>
+    /// The font of a scheme that names none.
+    /// </summary>
+    public const string DefaultFontFamily = "lato";
+
+    private const string FallbackStack = ThemeSchemeTypography.FallbackStack;
+
+    /// <summary>
+    /// The fonts the theme ships, which the editor of schemes suggests: copied to <see cref="ThemeSchemeOptions.Fonts"/>.
+    /// A scheme may name any other font family too.
+    /// </summary>
+    public static IReadOnlyList<ThemeSchemeFont> Fonts { get; } =
+    [
+        new(DefaultFontFamily, "Lato", "\"Lato\", " + FallbackStack),
+        new("inter", "Inter", "\"Inter\", " + FallbackStack),
+        new("source-sans-3", "Source Sans 3", "\"Source Sans 3\", " + FallbackStack),
+    ];
+
+    /// <summary>
     /// The schemes to seed, in the order of the pickers.
     /// </summary>
     public static IReadOnlyList<ThemeScheme> CreateDefaults()

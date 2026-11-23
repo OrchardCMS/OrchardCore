@@ -41,13 +41,21 @@ public sealed class BootstrapThemeSchemeTokens : IThemeSchemeTokenContributor
             return;
         }
 
-        var radius = tokens.Var("radius-scale");
+        // The font and the corners are only mapped when the theme supports them, so their tokens were written.
+        if (tokens.Contains("font-family"))
+        {
+            tokens.AddVariable("--bs-body-font-family", tokens.Var("font-family"));
+        }
 
-        tokens.AddVariable("--bs-body-font-family", tokens.Var("font-family"))
-            .AddVariable("--bs-border-radius", $"calc(0.375rem * {radius})")
-            .AddVariable("--bs-border-radius-sm", $"calc(0.25rem * {radius})")
-            .AddVariable("--bs-border-radius-lg", $"calc(0.5rem * {radius})")
-            .AddVariable("--bs-border-radius-xl", $"calc(1rem * {radius})")
-            .AddVariable("--bs-border-radius-xxl", $"calc(2rem * {radius})");
+        if (tokens.Contains("radius-scale"))
+        {
+            var radius = tokens.Var("radius-scale");
+
+            tokens.AddVariable("--bs-border-radius", $"calc(0.375rem * {radius})")
+                .AddVariable("--bs-border-radius-sm", $"calc(0.25rem * {radius})")
+                .AddVariable("--bs-border-radius-lg", $"calc(0.5rem * {radius})")
+                .AddVariable("--bs-border-radius-xl", $"calc(1rem * {radius})")
+                .AddVariable("--bs-border-radius-xxl", $"calc(2rem * {radius})");
+        }
     }
 }

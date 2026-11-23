@@ -225,8 +225,8 @@ public sealed class TheAdminSchemeTests
             var tokens = Typography(new ThemeScheme
             {
                 Id = "custom-a", Name = "A", Primary = "#2a81bb", Deep = "#144c71", Ink = "#081b26", Accent = "#5aa4ef",
-                FontFamily = ThemeSchemeTypography.Inter,
-                HeadingFontFamily = ThemeSchemeTypography.SourceSans3,
+                FontFamily = "inter",
+                HeadingFontFamily = "Source Sans 3",
                 FontScale = 0.9375,
                 RadiusScale = 0,
                 Density = 1.25,
@@ -245,13 +245,13 @@ public sealed class TheAdminSchemeTests
     }
 
     [Fact]
-    public void Typography_ClampsScalesOutOfRange_AndFallsBackOnUnknownFonts()
+    public void Typography_ClampsScalesOutOfRange_AndFallsBackOnFontsThatAreNotFontNames()
     {
         var tokens = Typography(new ThemeScheme
         {
             Id = "custom-a", Name = "A", Primary = "#2a81bb", Deep = "#144c71", Ink = "#081b26", Accent = "#5aa4ef",
-            FontFamily = "comic-sans",
-            HeadingFontFamily = "papyrus",
+            FontFamily = "Comic Sans; color: red",
+            HeadingFontFamily = "papyrus{",
             FontScale = 3,
             RadiusScale = -1,
             Density = 0.1,
@@ -262,6 +262,28 @@ public sealed class TheAdminSchemeTests
         Assert.Equal("1.125", tokens["--ta-font-scale"]);
         Assert.Equal("0", tokens["--ta-radius-scale"]);
         Assert.Equal("0.75", tokens["--ta-density"]);
+    }
+
+    [Fact]
+    public void Typography_WritesAnyTypedFont_WithTheFallbackStack()
+    {
+        var tokens = Typography(new ThemeScheme
+        {
+            Id = "custom-a", Name = "A", Primary = "#2a81bb", Deep = "#144c71", Ink = "#081b26", Accent = "#5aa4ef",
+            FontFamily = "Segoe UI",
+            HeadingFontFamily = "Georgia, serif",
+        });
+
+        Assert.Equal("\"Segoe UI\", system-ui, -apple-system, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif", tokens["--ta-font-family"]);
+        Assert.Equal("\"Georgia\", serif", tokens["--ta-heading-font-family"]);
+    }
+
+    [Fact]
+    public void Options_SupportEverySetting_AndOfferTheFontsTheThemeShips()
+    {
+        Assert.Equal(ThemeSchemeFeatures.All, Options.Features);
+        Assert.Equal(["lato", "inter", "source-sans-3"], Options.Fonts.Select(font => font.Key));
+        Assert.Equal("lato", Options.DefaultFontFamily);
     }
 
     [Fact]

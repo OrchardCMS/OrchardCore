@@ -102,11 +102,14 @@ public sealed class SchemesController : Controller
             return Forbid();
         }
 
+        var options = _store.GetOptions(themeId);
+
         return View("Edit", new ThemeSchemeViewModel
         {
             ThemeId = themeId,
             ThemeName = GetThemeName(themeId),
             Position = await _store.NextPositionAsync(themeId),
+            FontFamily = ThemeSchemeTypography.GetDisplayName(options.DefaultFontFamily, options.Fonts),
         });
     }
 
@@ -130,14 +133,16 @@ public sealed class SchemesController : Controller
         model.Id = null;
         model.ThemeId = themeId;
         model.ThemeName = GetThemeName(themeId);
-        ValidateTypography(model);
+
+        var options = _store.GetOptions(themeId);
+        ValidateTypography(model, options);
 
         if (!ModelState.IsValid)
         {
             return View("Edit", model);
         }
 
-        var scheme = ToScheme(model, ThemeSchemeStore.NewId());
+        var scheme = ToScheme(model, ThemeSchemeStore.NewId(), options);
         await _store.SaveAsync(themeId, scheme);
         await _notifier.SuccessAsync(H["The scheme <strong>{0}</strong> was added.", scheme.Name]);
 
@@ -166,6 +171,8 @@ public sealed class SchemesController : Controller
             return NotFound();
         }
 
+        var options = _store.GetOptions(themeId);
+
         return View(new ThemeSchemeViewModel
         {
             ThemeId = themeId,
@@ -185,8 +192,9 @@ public sealed class SchemesController : Controller
             Toolbar = scheme.Toolbar,
             Tint = scheme.Tint,
             TintDark = scheme.TintDark,
-            FontFamily = ThemeSchemeTypography.FindFont(scheme.FontFamily)?.Key ?? ThemeSchemeTypography.DefaultFontFamily,
-            HeadingFontFamily = ThemeSchemeTypography.FindFont(scheme.HeadingFontFamily)?.Key,
+            // The fonts the theme ships show by their names.
+            FontFamily = ThemeSchemeTypography.GetDisplayName(string.IsNullOrWhiteSpace(scheme.FontFamily) ? options.DefaultFontFamily : scheme.FontFamily, options.Fonts),
+            HeadingFontFamily = ThemeSchemeTypography.GetDisplayName(scheme.HeadingFontFamily, options.Fonts),
             FontScale = scheme.FontScale ?? ThemeSchemeTypography.DefaultFontScale,
             RadiusScale = scheme.RadiusScale ?? ThemeSchemeTypography.DefaultRadiusScale,
             Density = scheme.Density ?? ThemeSchemeTypography.DefaultDensity,
@@ -220,7 +228,9 @@ public sealed class SchemesController : Controller
         model.Id = existing.Id;
         model.ThemeId = themeId;
         model.ThemeName = GetThemeName(themeId);
-        ValidateTypography(model);
+
+        var options = _store.GetOptions(themeId);
+        ValidateTypography(model, options);
 
         if (!ModelState.IsValid)
         {
@@ -228,7 +238,7 @@ public sealed class SchemesController : Controller
         }
 
         // The cached document is immutable: a new record replaces the stored one.
-        var scheme = ToScheme(model, existing.Id);
+        var scheme = ToScheme(model, existing.Id, options, existing);
         await _store.SaveAsync(themeId, scheme);
         await _notifier.SuccessAsync(H["The scheme <strong>{0}</strong> was saved.", scheme.Name]);
 
@@ -341,6 +351,36 @@ public sealed class SchemesController : Controller
             : themeId;
     }
 
+    // The settings the theme does not support are not in the form: they keep the values of the scheme being edited (set
+    // by a recipe, or before the theme stopped supporting them), and are left empty on a new scheme.
+    private static ThemeScheme ToScheme(ThemeSchemeViewModel model, string id, ThemeSchemeOptions options, ThemeScheme existing = null)
+    {
+        var scheme = ToScheme(model, id);
+
+        if (!options.Supports(ThemeSchemeFeatures.Fonts))
+        {
+            scheme.FontFamily = existing?.FontFamily;
+            scheme.HeadingFontFamily = existing?.HeadingFontFamily;
+        }
+
+        if (!options.Supports(ThemeSchemeFeatures.FontSize))
+        {
+            scheme.FontScale = existing?.FontScale;
+        }
+
+        if (!options.Supports(ThemeSchemeFeatures.Corners))
+        {
+            scheme.RadiusScale = existing?.RadiusScale;
+        }
+
+        if (!options.Supports(ThemeSchemeFeatures.Density))
+        {
+            scheme.Density = existing?.Density;
+        }
+
+        return scheme;
+    }
+
     private static ThemeScheme ToScheme(ThemeSchemeViewModel model, string id)
         => new()
         {
@@ -359,25 +399,33 @@ public sealed class SchemesController : Controller
             Toolbar = Optional(model.Toolbar),
             Tint = Optional(model.Tint),
             TintDark = Optional(model.TintDark),
-            FontFamily = model.FontFamily,
-            HeadingFontFamily = string.IsNullOrEmpty(model.HeadingFontFamily) ? null : model.HeadingFontFamily,
+            FontFamily = OptionalText(model.FontFamily),
+            HeadingFontFamily = OptionalText(model.HeadingFontFamily),
             FontScale = model.FontScale,
             RadiusScale = model.RadiusScale,
             Density = model.Density,
         };
 
-    private void ValidateTypography(ThemeSchemeViewModel model)
+    private void ValidateTypography(ThemeSchemeViewModel model, ThemeSchemeOptions options)
     {
-        if (ThemeSchemeTypography.FindFont(model.FontFamily) is null)
+        if (!options.Supports(ThemeSchemeFeatures.Fonts))
         {
-            ModelState.AddModelError(nameof(model.FontFamily), S["Pick one of the fonts."]);
+            return;
+        }
+
+        if (!ThemeSchemeTypography.IsValidFontFamily(model.FontFamily))
+        {
+            ModelState.AddModelError(nameof(model.FontFamily), S["Enter the name of a font, or several separated by commas. A name holds only letters, digits, spaces, dashes, underscores and dots."]);
         }
 
         if (!ThemeSchemeTypography.IsValidFontFamily(model.HeadingFontFamily))
         {
-            ModelState.AddModelError(nameof(model.HeadingFontFamily), S["Pick one of the fonts, or the same font as the text."]);
+            ModelState.AddModelError(nameof(model.HeadingFontFamily), S["Enter the name of a font, or several separated by commas, or leave it empty to use the font of the text. A name holds only letters, digits, spaces, dashes, underscores and dots."]);
         }
     }
+
+    private static string OptionalText(string value)
+        => string.IsNullOrWhiteSpace(value) ? null : value.Trim();
 
     private static string Optional(string color)
         => string.IsNullOrWhiteSpace(color) ? null : color.Trim().ToLowerInvariant();

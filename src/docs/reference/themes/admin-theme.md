@@ -198,20 +198,20 @@ A scheme is made of four colors, from which every other color of the admin is de
 |-------|----------|
 | Primary | Buttons, links, the current page of the menu, checked boxes, the toolbar of lists |
 | Deep | Headings, and the top of the menu |
-| Ink | The bottom of the menu, the darkest surface, the backdrop of the log in page |
+| Ink | The bottom of the menu, the darkest surface |
 | Accent | Links and highlights on dark surfaces |
 
 Optional settings fine tune what is derived: the hue and saturation of the page, borders and dark mode surfaces, a light menu (light gray with dark text), the color of text on the primary, the page color, the toolbar color and the page gradient. A second group sets the typography and shape:
 
 | Setting | Values | CSS custom property |
 |---------|--------|---------------------|
-| Typeface | Lato, Inter, Source Sans 3, System font | `--ta-font-family` |
-| Heading typeface | The same choices, or the typeface of the body | `--ta-heading-font-family` |
+| Font | Lato (the default), Inter, Source Sans 3, System font, or any font typed by name | `--ta-font-family` |
+| Heading font | The same, or the font of the text when empty | `--ta-heading-font-family` |
 | Base font size | 14 px to 18 px, as a share of the browser's own size | `--ta-font-scale` |
 | Density | Compact, Default, Comfortable | `--ta-density` |
 | Corners | Square, Subtle, Default, Round | `--ta-radius-scale` |
 
-The fonts are served by the theme; the admin never calls a font CDN.
+The fonts are typed, with the theme's fonts suggested. Lato, Inter and Source Sans 3 are served by the theme, and the admin never calls a font CDN; any other font, e.g. `Segoe UI` or `Georgia, serif`, must be installed on the users' devices. TheAdmin supports every setting of a scheme (`options.Features = ThemeSchemeFeatures.All`) and registers its fonts in `options.Fonts`.
 
 TheAdmin seeds eight schemes (Gray, the default, which keeps the look of the previous TheAdmin, Blue, Ocean, Forest, Plum, Sunset, Graphite and Gold) the first time its schemes are read. They are ordinary records from then on, and a theme is seeded once: deleting all of its schemes doesn't bring them back.
 

@@ -25,9 +25,13 @@
         (Name: nameof(Model.TintDark), Label: T["Dark page tint"], Value: Model.TintDark, Hint: T["The color of both ends of the page's gradient in dark mode. The accent and the primary when empty."]),
     };
 
-    // The font families, by key; Lato, Inter and Source Sans 3 are names, the system font is described.
-    var fonts = ThemeSchemeTypography.Fonts
-        .Select(font => (font.Key, Name: font.Key == ThemeSchemeTypography.SystemFont ? T["System font"].Value : font.Name))
+    // What the theme supports beyond colors, and the fonts it ships, which the font fields suggest with the system font.
+    var options = SchemeStore.GetOptions(Model.ThemeId);
+    var supportsFonts = options.Supports(ThemeSchemeFeatures.Fonts);
+    // The value is the font's name, which the stylesheet recognizes; only the label of the system font is translated.
+    var fonts = options.Fonts.Append(ThemeSchemeTypography.System)
+        .DistinctBy(font => font.Name, StringComparer.OrdinalIgnoreCase)
+        .Select(font => (Value: font.Name, Label: font.Key == ThemeSchemeTypography.SystemFont ? T["System font"].Value : font.Name))
         .ToArray();
 
     // The steps of each scale. A value set elsewhere (a recipe, say) that is not one of them is offered too, so saving
@@ -59,10 +63,12 @@
 
     var scales = new[]
     {
-        (Name: nameof(Model.FontScale), Label: T["Font size"], Value: Model.FontScale, Steps: fontScales, Hint: T["The base size of the text. Headings, labels and controls follow it."]),
-        (Name: nameof(Model.RadiusScale), Label: T["Corners"], Value: Model.RadiusScale, Steps: radiusScales, Hint: T["How round the corners of cards, buttons and fields are."]),
-        (Name: nameof(Model.Density), Label: T["Density"], Value: Model.Density, Steps: densities, Hint: T["How much space controls and the rows of lists take. Compact fits more on a page."]),
-    };
+        (Feature: ThemeSchemeFeatures.FontSize, Name: nameof(Model.FontScale), Label: T["Font size"], Value: Model.FontScale, Steps: fontScales, Hint: T["The base size of the text. Headings, labels and controls follow it."]),
+        (Feature: ThemeSchemeFeatures.Corners, Name: nameof(Model.RadiusScale), Label: T["Corners"], Value: Model.RadiusScale, Steps: radiusScales, Hint: T["How round the corners of cards, buttons and fields are."]),
+        (Feature: ThemeSchemeFeatures.Density, Name: nameof(Model.Density), Label: T["Density"], Value: Model.Density, Steps: densities, Hint: T["How much space controls and the rows of lists take. Compact fits more on a page."]),
+    }
+    .Where(scale => options.Supports(scale.Feature))
+    .ToArray();
 
     // The preview is the theme's own: 'ThemeSchemePreview-{ThemeId}.cshtml' when the theme has one, else a swatch.
     IShape preview = await New.ThemeSchemePreview(
@@ -132,57 +138,61 @@
         </div>
     </div>
 
-    <div class="card mb-3">
-        <div class="card-header">@T["Typography and shape"]</div>
-        <div class="card-body">
-            <div class="ocat-wrapper" asp-validation-class-for="FontFamily">
-                <label asp-for="FontFamily" class="ocat-label">@T["Font"]</label>
-                <div class="ocat-end">
-                    <select asp-for="FontFamily" class="form-select">
+    @* Only the settings the theme's stylesheet reads: a theme that supports none of them has colors only. *@
+    @if (supportsFonts || scales.Length > 0)
+    {
+        <div class="card mb-3">
+            <div class="card-header">@T["Typography and shape"]</div>
+            <div class="card-body">
+                @if (supportsFonts)
+                {
+                    @* The fonts are typed, so a scheme can name any font: the theme's suggested ones, or a system font. *@
+                    <datalist id="ThemeSchemeFonts">
                         @foreach (var font in fonts)
                         {
-                            <option value="@font.Key" selected="@(Model.FontFamily == font.Key)">@font.Name</option>
+                            <option value="@font.Value" label="@font.Label"></option>
                         }
-                    </select>
-                    <span asp-validation-for="FontFamily"></span>
-                    <span class="hint">@T["The font of the text."]</span>
-                </div>
-            </div>
+                    </datalist>
 
-            <div class="ocat-wrapper" asp-validation-class-for="HeadingFontFamily">
-                <label asp-for="HeadingFontFamily" class="ocat-label">@T["Heading font"]</label>
-                <div class="ocat-end">
-                    <select asp-for="HeadingFontFamily" class="form-select">
-                        <option value="" selected="@string.IsNullOrEmpty(Model.HeadingFontFamily)">@T["Same as the text"]</option>
-                        @foreach (var font in fonts)
-                        {
-                            <option value="@font.Key" selected="@(Model.HeadingFontFamily == font.Key)">@font.Name</option>
-                        }
-                    </select>
-                    <span asp-validation-for="HeadingFontFamily"></span>
-                    <span class="hint">@T["The font of page titles and headings."]</span>
-                </div>
-            </div>
-
-            @foreach (var scale in scales)
-            {
-                <div class="ocat-wrapper" asp-validation-class-for="@scale.Name">
-                    <label for="@scale.Name" class="ocat-label">@scale.Label</label>
-                    <div class="ocat-end">
-                        <select id="@scale.Name" name="@scale.Name" class="form-select">
-                            @foreach (var step in scale.Steps)
-                            {
-                                @* The value in the culture of the request, as the form posts are bound. *@
-                                <option value="@step.Value.ToString(CultureInfo.CurrentCulture)" selected="@(Math.Abs(step.Value - scale.Value) < 0.0001)">@step.Label</option>
-                            }
-                        </select>
-                        <span asp-validation-for="@scale.Name"></span>
-                        <span class="hint">@scale.Hint</span>
+                    <div class="ocat-wrapper" asp-validation-class-for="FontFamily">
+                        <label asp-for="FontFamily" class="ocat-label">@T["Font"]</label>
+                        <div class="ocat-end">
+                            <input asp-for="FontFamily" class="form-control" list="ThemeSchemeFonts" autocomplete="off" spellcheck="false" placeholder="@ThemeSchemeTypography.GetDisplayName(options.DefaultFontFamily, options.Fonts)" />
+                            <span asp-validation-for="FontFamily"></span>
+                            <span class="hint">@T["The font of the text. Pick one of the theme's fonts, or type the name of any font, e.g. a font installed on your users' devices, or several separated by commas."]</span>
+                        </div>
                     </div>
-                </div>
-            }
+
+                    <div class="ocat-wrapper" asp-validation-class-for="HeadingFontFamily">
+                        <label asp-for="HeadingFontFamily" class="ocat-label">@T["Heading font"]</label>
+                        <div class="ocat-end">
+                            <input asp-for="HeadingFontFamily" class="form-control" list="ThemeSchemeFonts" autocomplete="off" spellcheck="false" placeholder="@T["Same as the text"]" />
+                            <span asp-validation-for="HeadingFontFamily"></span>
+                            <span class="hint">@T["The font of page titles and headings. The font of the text when empty."]</span>
+                        </div>
+                    </div>
+                }
+
+                @foreach (var scale in scales)
+                {
+                    <div class="ocat-wrapper" asp-validation-class-for="@scale.Name">
+                        <label for="@scale.Name" class="ocat-label">@scale.Label</label>
+                        <div class="ocat-end">
+                            <select id="@scale.Name" name="@scale.Name" class="form-select">
+                                @foreach (var step in scale.Steps)
+                                {
+                                    @* The value in the culture of the request, as the form posts are bound. *@
+                                    <option value="@step.Value.ToString(CultureInfo.CurrentCulture)" selected="@(Math.Abs(step.Value - scale.Value) < 0.0001)">@step.Label</option>
+                                }
+                            </select>
+                            <span asp-validation-for="@scale.Name"></span>
+                            <span class="hint">@scale.Hint</span>
+                        </div>
+                    </div>
+                }
+            </div>
         </div>
-    </div>
+    }
 
     <div class="card mb-3">
         <div class="card-header">@T["Advanced"]</div>

@@ -20,6 +20,11 @@ public sealed class Startup : StartupBase
             options.TokenPrefix = TheAdminSchemes.TokenPrefix;
             options.DefaultSchemeId = TheAdminSchemes.DefaultId;
             options.Defaults = [.. TheAdminSchemes.CreateDefaults()];
+
+            // TheAdmin's stylesheet reads the fonts, the font size, the corners and the density of a scheme.
+            options.Features = ThemeSchemeFeatures.All;
+            options.Fonts = [.. TheAdminSchemes.Fonts];
+            options.DefaultFontFamily = TheAdminSchemes.DefaultFontFamily;
             options.AddTokens<TheAdminSchemeTokens>();
 
             foreach (var (token, name) in TheAdminSchemes.TokenNames)

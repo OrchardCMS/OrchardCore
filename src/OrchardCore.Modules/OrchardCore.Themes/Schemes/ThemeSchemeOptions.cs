@@ -101,6 +101,42 @@ public sealed class ThemeSchemeOptions
     public Action<ThemeSchemeCssContext> CssWriter { get; set; }
 
     /// <summary>
+    /// Gets or sets the settings of a scheme, beyond its colors, that the theme's stylesheet reads: its fonts, font size,
+    /// corners and density. The editor of schemes only shows these, and the stylesheet only writes their tokens.
+    /// Defaults to <see cref="ThemeSchemeFeatures.None"/>, colors only; <see cref="UseBootstrap"/> adds the fonts and the
+    /// corners, which Bootstrap's variables carry.
+    /// </summary>
+    public ThemeSchemeFeatures Features { get; set; }
+
+    /// <summary>
+    /// Gets or sets the fonts the theme ships (its <c>@font-face</c> rules), which the editor suggests and which a scheme
+    /// names by their key or name. A scheme may also name any other font family, e.g. one installed on the visitor's
+    /// device. The system font is always offered.
+    /// </summary>
+    public IList<ThemeSchemeFont> Fonts { get; set; } = [];
+
+    /// <summary>
+    /// Gets or sets the font of a scheme that names none: the key or the name of one of <see cref="Fonts"/>, or a list of
+    /// font families. Defaults to the system font.
+    /// </summary>
+    public string DefaultFontFamily { get; set; } = ThemeSchemeTypography.SystemFont;
+
+    /// <summary>
+    /// Whether the theme supports every one of the given settings.
+    /// </summary>
+    public bool Supports(ThemeSchemeFeatures features)
+        => (Features & features) == features;
+
+    /// <summary>
+    /// The CSS font stack of a font a scheme names, through the theme's <see cref="Fonts"/>; the stack of
+    /// <see cref="DefaultFontFamily"/> when the scheme names none, or names one that is not valid.
+    /// </summary>
+    public string GetFontStack(string fontFamily)
+        => ThemeSchemeTypography.GetFontStack(fontFamily, Fonts)
+            ?? ThemeSchemeTypography.GetFontStack(DefaultFontFamily, Fonts)
+            ?? ThemeSchemeTypography.System.Stack;
+
+    /// <summary>
     /// Adds a contributor of tokens and rules, created through dependency injection, so it can take services. Adding
     /// the same type twice adds it once.
     /// </summary>
@@ -118,10 +154,14 @@ public sealed class ThemeSchemeOptions
     /// <summary>
     /// Also writes Bootstrap 5.3's root variables (<c>--bs-primary</c>, <c>--bs-link-color</c>, <c>--bs-body-bg</c>,
     /// <c>--bs-border-radius</c>...) from the generated tokens, for a Bootstrap theme whose own CSS does not map the
-    /// tokens itself. See <see cref="BootstrapThemeSchemeTokens"/>.
+    /// tokens itself, and supports the fonts and the corners of schemes. See <see cref="BootstrapThemeSchemeTokens"/>.
     /// </summary>
     public ThemeSchemeOptions UseBootstrap()
-        => AddTokens<BootstrapThemeSchemeTokens>();
+    {
+        Features |= ThemeSchemeFeatures.Fonts | ThemeSchemeFeatures.Corners;
+
+        return AddTokens<BootstrapThemeSchemeTokens>();
+    }
 
     /// <summary>
     /// The neutral blue scheme seeded for a theme that names no default schemes.

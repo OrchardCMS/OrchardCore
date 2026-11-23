@@ -85,13 +85,13 @@ public sealed class ThemeSchemePalette
     public ThemeColor? PickedTintDark { get; private init; }
 
     /// <summary>
-    /// Gets the key of the body font in <see cref="ThemeSchemeTypography.Fonts"/>.
+    /// Gets the body font the scheme names, or <see langword="null"/> for the theme's default font (see
+    /// <see cref="ThemeSchemeOptions.GetFontStack"/>).
     /// </summary>
-    public string FontFamily { get; private init; } = ThemeSchemeTypography.DefaultFontFamily;
+    public string FontFamily { get; private init; }
 
     /// <summary>
-    /// Gets the key of the heading font in <see cref="ThemeSchemeTypography.Fonts"/>, or <see langword="null"/> for
-    /// the body font.
+    /// Gets the heading font the scheme names, or <see langword="null"/> for the body font.
     /// </summary>
     public string HeadingFontFamily { get; private init; }
 
@@ -169,8 +169,8 @@ public sealed class ThemeSchemePalette
             PickedToolbar = toolbar,
             PickedTint = tint,
             PickedTintDark = tintDark,
-            FontFamily = ThemeSchemeTypography.FindFont(scheme.FontFamily)?.Key ?? ThemeSchemeTypography.DefaultFontFamily,
-            HeadingFontFamily = ThemeSchemeTypography.FindFont(scheme.HeadingFontFamily)?.Key,
+            FontFamily = NormalizeFont(scheme.FontFamily),
+            HeadingFontFamily = NormalizeFont(scheme.HeadingFontFamily),
             FontScale = Clamp(scheme.FontScale, ThemeSchemeTypography.MinFontScale, ThemeSchemeTypography.MaxFontScale, ThemeSchemeTypography.DefaultFontScale),
             RadiusScale = Clamp(scheme.RadiusScale, ThemeSchemeTypography.MinRadiusScale, ThemeSchemeTypography.MaxRadiusScale, ThemeSchemeTypography.DefaultRadiusScale),
             Density = Clamp(scheme.Density, ThemeSchemeTypography.MinDensity, ThemeSchemeTypography.MaxDensity, ThemeSchemeTypography.DefaultDensity),
@@ -322,6 +322,10 @@ public sealed class ThemeSchemePalette
             Surfaces = surfaces,
         };
     }
+
+    // A font the scheme names, trimmed, or null when it names none or one that is not valid.
+    private static string NormalizeFont(string value)
+        => !string.IsNullOrWhiteSpace(value) && ThemeSchemeTypography.IsValidFontFamily(value) ? value.Trim() : null;
 
     private static double Clamp(double? value, double min, double max, double fallback)
         => value is { } number && double.IsFinite(number) ? Math.Clamp(number, min, max) : fallback;

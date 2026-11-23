@@ -1,6 +1,6 @@
 # Theme Schemes (`OrchardCore.Themes.Schemes`)
 
-A theme that supports schemes offers several looks that admins manage and users pick from. A scheme holds four colors (a primary, a deep color, an ink and an accent), optional fine tuning (the hue and saturation of the surfaces, a light menu, the color of text on the primary, the page and toolbar colors, the page tint), and the typography and shape of the theme: the body and heading typefaces, the base font size, the density of surfaces and the roundness of corners. The feature turns a scheme into CSS custom properties under the prefix of each theme, with the contrast WCAG 2.2 AA asks for, so the same scheme record fits any theme, whatever CSS framework it uses, or none.
+A theme that supports schemes offers several looks that admins manage and users pick from. A scheme holds four colors (a primary, a deep color, an ink and an accent), optional fine tuning (the hue and saturation of the surfaces, a light menu, the color of text on the primary, the page and toolbar colors, the page tint), and the typography and shape of the theme: the body and heading fonts, the base font size, the density of surfaces and the roundness of corners. A theme declares which of these settings its CSS reads, and the editor only shows those. The feature turns a scheme into CSS custom properties under the prefix of each theme, with the contrast WCAG 2.2 AA asks for, so the same scheme record fits any theme, whatever CSS framework it uses, or none.
 
 **TheAdmin** supports schemes. Any other theme, admin or front end, can support them too.
 
@@ -63,7 +63,7 @@ The `ThemeSchemes` deployment step exports the schemes of every theme that suppo
 | `OnPrimary`, `Page`, `Toolbar`, `Tint`, `TintDark` | Optional, `#rrggbb`. |
 | `Hue`, `Saturation` | Optional, `0` to `360` and `0` to `1`. |
 | `LightMenu` | Optional, `true` or `false`. |
-| `FontFamily`, `HeadingFontFamily` | Optional, `lato`, `inter`, `source-sans-3` or `system`. An empty `HeadingFontFamily` uses the body typeface. |
+| `FontFamily`, `HeadingFontFamily` | Optional. The key or name of one of the theme's fonts (e.g. `inter` or `Inter`), `system` for the system font, or any font families separated by commas (e.g. `Georgia, serif`). A family name holds only letters, digits, spaces, dashes, underscores and dots, and may be quoted. An empty `FontFamily` uses the theme's default font, and an empty `HeadingFontFamily` the body font. |
 | `FontScale` | Optional, `0.875` to `1.125` (14 px to 18 px base size). |
 | `Density` | Optional, `0.75` to `1.25`. |
 | `RadiusScale` | Optional, `0` to `1.5`. |
@@ -101,7 +101,7 @@ public sealed class Startup : StartupBase
 }
 ```
 
-The theme now has its **Schemes** button on **Design > Themes**. With no options, it gets a neutral blue scheme named **Default**, its tokens are written as `--mytheme-*` and the current scheme is held by the `data-scheme` attribute of `<html>`.
+The theme now has its **Schemes** button on **Design > Themes**. With no options, it gets a neutral blue scheme named **Default**, its tokens are written as `--mytheme-*`, the current scheme is held by the `data-scheme` attribute of `<html>`, and its schemes carry colors only: declare the other settings your CSS reads with `Features` (see step 3).
 
 ### 2. Apply the scheme in the layout
 
@@ -174,6 +174,11 @@ services.AddThemeSchemes("MyTheme", options =>
         new() { Id = "light", Name = "Light", Position = 0, Primary = "#0d6efd", Deep = "#212529", Ink = "#111111", Accent = "#6ea8fe" },
         new() { Id = "forest", Name = "Forest", Position = 1, Primary = "#2f855a", Deep = "#1c4a36", Ink = "#0b2018", Accent = "#68d391" },
     ];
+
+    // The CSS of step 2 reads the fonts and the corners; the editor shows only these, with the theme's own font suggested.
+    options.Features = ThemeSchemeFeatures.Fonts | ThemeSchemeFeatures.Corners;
+    options.Fonts = [new("inter", "Inter", "\"Inter\", " + ThemeSchemeTypography.FallbackStack)];
+    options.DefaultFontFamily = "inter";
 });
 ```
 
@@ -187,6 +192,9 @@ services.AddThemeSchemes("MyTheme", options =>
 | `DarkModeSelector` | `[data-bs-theme="dark"]` (Bootstrap 5.3's color mode attribute) | Put before the scheme's selector for its dark rule: `{DarkModeSelector}[{AttributeName}="{id}"]`, both on the same element by default. Use your own (e.g. `[data-mode="dark"]`), or `null` for a theme with no dark mode: no dark rule is written. |
 | `TokenNames` | Empty | Renames generated tokens, from the generic name to the theme's (e.g. `deep` to `navy`). The `-rgb` token of a renamed color follows it. |
 | `TokenContributors` | Empty | The contributors added with `AddTokens<T>()` and `UseBootstrap()`. |
+| `Features` | `None`, colors only (`UseBootstrap()` adds `Fonts` and `Corners`) | The settings beyond colors that the theme's CSS reads: `Fonts`, `FontSize`, `Corners` and `Density`, or `All`. The editor only shows these, and the stylesheet only writes their tokens. |
+| `Fonts` | Empty | The fonts the theme ships (its `@font-face` rules), as `ThemeSchemeFont(key, name, stack)`. The editor suggests them, with the system font, and a scheme names one by its key or name. |
+| `DefaultFontFamily` | `system` | The font of a scheme that names none: a key or name of `Fonts`, or font families. |
 | `CssWriter` | `null` | Writes the whole CSS of a scheme instead of the generated tokens. |
 
 The scheme's id is a valid CSS identifier (lowercase letters, digits and dashes), so it is safe in the selectors.
@@ -219,11 +227,13 @@ Every token is written as `--{prefix}-{name}`. The light rule, on `[{AttributeNa
 | `control-border` | The border of fields and other controls | Yes | Yes |
 | `control-checked-border` | The border of a checked check box, radio button or switch | Yes | Yes |
 | `row-hover` | A row of a list or table under the pointer | Yes | Yes |
-| `font-family` | The body font stack | Yes | |
-| `heading-font-family` | The heading font stack, or `var(--{prefix}-font-family)` | Yes | |
-| `font-scale` | The scale of the base font size, `0.875` to `1.125` | Yes | |
-| `density` | The scale of the spacing of controls and lists, `0.75` to `1.25` | Yes | |
-| `radius-scale` | The scale of the corner radii, `0` to `1.5` | Yes | |
+| `font-family` | The body font stack (with `Fonts`) | Yes | |
+| `heading-font-family` | The heading font stack, or `var(--{prefix}-font-family)` (with `Fonts`) | Yes | |
+| `font-scale` | The scale of the base font size, `0.875` to `1.125` (with `FontSize`) | Yes | |
+| `density` | The scale of the spacing of controls and lists, `0.75` to `1.25` (with `Density`) | Yes | |
+| `radius-scale` | The scale of the corner radii, `0` to `1.5` (with `Corners`) | Yes | |
+
+The last five are only written for a theme whose `Features` include the setting in brackets. A font that isn't one of the theme's is written as its families, each quoted, followed by the system's fonts (e.g. `"Georgia", system-ui, ..., sans-serif`), unless it ends with a generic family such as `serif`. The theme doesn't load such a font: it must be installed on the visitor's device, or loaded by the theme.
 
 The `-rgb` tokens hold `r, g, b`, for `rgba(var(--mytheme-primary-rgb), 0.5)`.
 
@@ -237,7 +247,7 @@ A Bootstrap 5.3 theme can have the feature write Bootstrap's root variables from
 services.AddThemeSchemes("MyTheme", options => options.UseBootstrap());
 ```
 
-It writes `--bs-primary`, `--bs-primary-rgb`, `--bs-primary-text-emphasis`, `--bs-primary-bg-subtle`, `--bs-primary-border-subtle`, `--bs-link-color`, `--bs-link-color-rgb`, `--bs-link-hover-color`, `--bs-link-hover-color-rgb`, `--bs-body-bg`, `--bs-secondary-color`, `--bs-border-color`, `--bs-heading-color` and `--bs-focus-ring-color` in both modes, `--bs-body-color`, `--bs-body-color-rgb` and `--bs-secondary-bg` in dark mode, and `--bs-body-font-family` and the `--bs-border-radius` scale (`-sm`, `-lg`, `-xl`, `-xxl`). Each one references a token, e.g. `--bs-primary: var(--mytheme-primary)`. Bootstrap's components that compile their colors in, such as `.btn-primary`, still need the theme's CSS to read the tokens. TheAdmin doesn't use it: its Sass maps its tokens onto Bootstrap's variables itself.
+It writes `--bs-primary`, `--bs-primary-rgb`, `--bs-primary-text-emphasis`, `--bs-primary-bg-subtle`, `--bs-primary-border-subtle`, `--bs-link-color`, `--bs-link-color-rgb`, `--bs-link-hover-color`, `--bs-link-hover-color-rgb`, `--bs-body-bg`, `--bs-secondary-color`, `--bs-border-color`, `--bs-heading-color` and `--bs-focus-ring-color` in both modes, `--bs-body-color`, `--bs-body-color-rgb` and `--bs-secondary-bg` in dark mode, and `--bs-body-font-family` and the `--bs-border-radius` scale (`-sm`, `-lg`, `-xl`, `-xxl`), the two settings it adds to the theme's `Features`. Each one references a token, e.g. `--bs-primary: var(--mytheme-primary)`. Bootstrap's components that compile their colors in, such as `.btn-primary`, still need the theme's CSS to read the tokens. TheAdmin doesn't use it: its Sass maps its tokens onto Bootstrap's variables itself.
 
 #### Your own tokens
 

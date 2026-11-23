@@ -65,8 +65,10 @@ public class ThemeSchemeViewModel
     [RegularExpression(OptionalColor)]
     public string TintDark { get; set; }
 
-    public string FontFamily { get; set; } = ThemeSchemeTypography.DefaultFontFamily;
+    [StringLength(ThemeSchemeTypography.MaxFontFamilyLength)]
+    public string FontFamily { get; set; }
 
+    [StringLength(ThemeSchemeTypography.MaxFontFamilyLength)]
     public string HeadingFontFamily { get; set; }
 
     [Range(ThemeSchemeTypography.MinFontScale, ThemeSchemeTypography.MaxFontScale)]

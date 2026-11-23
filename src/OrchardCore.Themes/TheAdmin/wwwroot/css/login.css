@@ -1047,7 +1047,9 @@ body, html {
 
 body.ta-auth {
   min-height: 100%;
-  background-color: var(--ta-ink);
+  background-color: var(--ta-page-bg);
+  background-image: var(--ta-page-gradient);
+  background-attachment: fixed;
 }
 
 .ta-auth-page {
@@ -1063,7 +1065,7 @@ body.ta-auth {
 .ta-auth-brand .ta-navbar-brand {
   display: block;
   margin: 0;
-  color: #fff;
+  color: var(--ta-heading);
   text-decoration: none;
 }
 
@@ -1093,7 +1095,7 @@ body.ta-auth {
 .ta-auth-card {
   margin: 0;
   padding: 2rem;
-  border: var(--bs-border-width) solid rgba(255, 255, 255, 0.12);
+  border: var(--bs-border-width) solid var(--ta-border);
   border-radius: var(--ta-radius-lg);
   background-color: var(--ta-surface);
   box-shadow: var(--ta-shadow-lg);

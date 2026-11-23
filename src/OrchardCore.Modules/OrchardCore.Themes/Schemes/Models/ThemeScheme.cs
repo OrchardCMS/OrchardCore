@@ -82,13 +82,14 @@ public sealed class ThemeScheme
     public string TintDark { get; set; }
 
     /// <summary>
-    /// The body font, one of the keys of <see cref="ThemeSchemeTypography.Fonts"/> ('lato', 'inter', 'source-sans-3',
-    /// 'system'); Lato when empty.
+    /// The body font: the key or the name of one of the theme's fonts (<see cref="ThemeSchemeOptions.Fonts"/>, e.g. 'lato'
+    /// or 'Lato'), 'system' for the system font, or a list of font families separated by commas (e.g. 'Georgia, serif').
+    /// The theme's default font when empty (<see cref="ThemeSchemeOptions.DefaultFontFamily"/>).
     /// </summary>
     public string FontFamily { get; set; }
 
     /// <summary>
-    /// The font of headings, one of the keys of <see cref="ThemeSchemeTypography.Fonts"/>; the body font when empty.
+    /// The font of headings, written like <see cref="FontFamily"/>; the body font when empty.
     /// </summary>
     public string HeadingFontFamily { get; set; }
 

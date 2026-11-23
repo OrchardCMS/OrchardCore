@@ -120,7 +120,7 @@ public static class ThemeSchemeStylesheet
         ArgumentNullException.ThrowIfNull(options);
 
         var tokens = new ThemeSchemeTokenWriter(options.TokenPrefix, options.TokenNames);
-        WriteTokens(palette, mode, tokens);
+        WriteTokens(palette, mode, tokens, options);
 
         foreach (var contributor in contributors ?? [])
         {
@@ -132,11 +132,12 @@ public static class ThemeSchemeStylesheet
 
     /// <summary>
     /// Writes the generated tokens of a mode: the brand colors, links and focus, surfaces, text, borders, and (in the
-    /// light rule, as both modes share them) the typography and shape. The dark rule holds only what changes in dark
-    /// mode.
+    /// light rule, as both modes share them) the typography and shape settings the theme supports
+    /// (<see cref="ThemeSchemeOptions.Features"/>). The dark rule holds only what changes in dark mode.
     /// </summary>
-    public static void WriteTokens(ThemeSchemePalette palette, ThemeSchemeMode mode, ThemeSchemeTokenWriter tokens)
+    public static void WriteTokens(ThemeSchemePalette palette, ThemeSchemeMode mode, ThemeSchemeTokenWriter tokens, ThemeSchemeOptions options)
     {
+        ArgumentNullException.ThrowIfNull(options);
         ArgumentNullException.ThrowIfNull(palette);
         ArgumentNullException.ThrowIfNull(tokens);
 
@@ -186,17 +187,32 @@ public static class ThemeSchemeStylesheet
             .Add("control-checked-border", colors.ControlCheckedBorder)
             .Add("row-hover", colors.RowHover);
 
-        if (mode == ThemeSchemeMode.Light)
+        if (mode != ThemeSchemeMode.Light)
         {
-            var body = ThemeSchemeTypography.FindFont(palette.FontFamily)
-                ?? ThemeSchemeTypography.FindFont(ThemeSchemeTypography.DefaultFontFamily);
-            var heading = ThemeSchemeTypography.FindFont(palette.HeadingFontFamily);
+            return;
+        }
 
-            tokens.Add("font-family", body.Stack)
-                .Add("heading-font-family", heading?.Stack ?? tokens.Var("font-family"))
-                .Add("font-scale", ThemeSchemeTypography.Format(palette.FontScale))
-                .Add("radius-scale", ThemeSchemeTypography.Format(palette.RadiusScale))
-                .Add("density", ThemeSchemeTypography.Format(palette.Density));
+        if (options.Supports(ThemeSchemeFeatures.Fonts))
+        {
+            var heading = ThemeSchemeTypography.GetFontStack(palette.HeadingFontFamily, options.Fonts);
+
+            tokens.Add("font-family", options.GetFontStack(palette.FontFamily))
+                .Add("heading-font-family", heading ?? tokens.Var("font-family"));
+        }
+
+        if (options.Supports(ThemeSchemeFeatures.FontSize))
+        {
+            tokens.Add("font-scale", ThemeSchemeTypography.Format(palette.FontScale));
+        }
+
+        if (options.Supports(ThemeSchemeFeatures.Corners))
+        {
+            tokens.Add("radius-scale", ThemeSchemeTypography.Format(palette.RadiusScale));
+        }
+
+        if (options.Supports(ThemeSchemeFeatures.Density))
+        {
+            tokens.Add("density", ThemeSchemeTypography.Format(palette.Density));
         }
     }
 

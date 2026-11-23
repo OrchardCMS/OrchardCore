@@ -54,16 +54,19 @@ public sealed class ThemeSchemeTests
     [InlineData(null, null, null, null, null, true)]
     [InlineData("lato", "system", 0.875, 0.0, 0.75, true)]
     [InlineData("source-sans-3", null, 1.125, 1.5, 1.25, true)]
-    [InlineData("Lato", null, null, null, null, false)]
-    [InlineData("comic-sans", null, null, null, null, false)]
-    [InlineData(null, "papyrus", null, null, null, false)]
+    [InlineData("Lato", "Georgia, serif", null, null, null, true)]
+    [InlineData("'Open Sans', \"Segoe UI\", sans-serif", "comic-sans", null, null, null, true)]
+    [InlineData("Comic Sans; color: red", null, null, null, null, false)]
+    [InlineData("Arial\"}body{color:red", null, null, null, null, false)]
+    [InlineData("Arial,,serif", null, null, null, null, false)]
+    [InlineData(null, "papyrus{", null, null, null, false)]
     [InlineData(null, null, 0.8, null, null, false)]
     [InlineData(null, null, 1.2, null, null, false)]
     [InlineData(null, null, null, 1.6, null, false)]
     [InlineData(null, null, null, -0.5, null, false)]
     [InlineData(null, null, null, null, 0.5, false)]
     [InlineData(null, null, null, null, 1.5, false)]
-    public void Typography_IsValidatedAgainstTheKnownFontsAndTheRanges(string font, string heading, double? fontScale, double? radiusScale, double? density, bool valid)
+    public void Typography_IsValidatedAsFontNamesAndTheRanges(string font, string heading, double? fontScale, double? radiusScale, double? density, bool valid)
         => Assert.Equal(valid, ThemeSchemeStore.HasValidTypography(new ThemeScheme
         {
             FontFamily = font,
@@ -101,7 +104,48 @@ public sealed class ThemeSchemeTests
         Assert.All(ThemeSchemeTypography.FontScales, value => Assert.True(ThemeSchemeTypography.IsValidFontScale(value)));
         Assert.All(ThemeSchemeTypography.RadiusScales, value => Assert.True(ThemeSchemeTypography.IsValidRadiusScale(value)));
         Assert.All(ThemeSchemeTypography.Densities, value => Assert.True(ThemeSchemeTypography.IsValidDensity(value)));
-        Assert.Equal(["lato", "inter", "source-sans-3", "system"], ThemeSchemeTypography.Fonts.Select(font => font.Key));
+    }
+
+    [Theory]
+    [InlineData("lato", "\"Lato\", system-ui")]
+    [InlineData("LATO", "\"Lato\", system-ui")]
+    [InlineData("Lato", "\"Lato\", system-ui")]
+    [InlineData("System font", "system-ui, -apple-system")]
+    [InlineData("system", "system-ui, -apple-system")]
+    [InlineData("Georgia", "\"Georgia\", system-ui, -apple-system")]
+    [InlineData(" Georgia , serif ", "\"Georgia\", serif")]
+    [InlineData("'Open Sans', \"Segoe UI\", sans-serif", "\"Open Sans\", \"Segoe UI\", sans-serif")]
+    [InlineData("ui-monospace, Consolas", "ui-monospace, \"Consolas\", system-ui")]
+    public void Fonts_AreTheThemesOwn_OrTheFamiliesTyped(string value, string stack)
+    {
+        var fonts = new[] { new ThemeSchemeFont("lato", "Lato", "\"Lato\", system-ui") };
+
+        Assert.StartsWith(stack, ThemeSchemeTypography.GetFontStack(value, fonts), StringComparison.Ordinal);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("  ")]
+    [InlineData("Comic Sans; color: red")]
+    [InlineData("a}b")]
+    public void Fonts_ThatAreEmptyOrNotFontNames_HaveNoStack_AndTheThemesDefaultIsUsed(string value)
+    {
+        Assert.Null(ThemeSchemeTypography.GetFontStack(value));
+
+        var options = new ThemeSchemeOptions { Fonts = [new("lato", "Lato", "\"Lato\", system-ui")], DefaultFontFamily = "lato" };
+        Assert.Equal("\"Lato\", system-ui", options.GetFontStack(value));
+        Assert.StartsWith("system-ui", new ThemeSchemeOptions().GetFontStack(value), StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void Fonts_ShowByTheNameOfTheThemesFont_OrAsTyped()
+    {
+        var fonts = new[] { new ThemeSchemeFont("source-sans-3", "Source Sans 3", "x") };
+
+        Assert.Equal("Source Sans 3", ThemeSchemeTypography.GetDisplayName("source-sans-3", fonts));
+        Assert.Equal("System font", ThemeSchemeTypography.GetDisplayName("system", fonts));
+        Assert.Equal("Georgia, serif", ThemeSchemeTypography.GetDisplayName(" Georgia, serif ", fonts));
+        Assert.Null(ThemeSchemeTypography.GetDisplayName(null, fonts));
     }
 
     [Fact]
@@ -173,6 +217,79 @@ public sealed class ThemeSchemeTests
     }
 
     [Fact]
+    public void Options_SupportColorsOnly_UntilTheThemeNamesMore_AndBootstrapAddsTheFontsAndTheCorners()
+    {
+        var options = new ThemeSchemeOptions { ThemeId = "MyTheme" };
+
+        Assert.Equal(ThemeSchemeFeatures.None, options.Features);
+        Assert.False(options.Supports(ThemeSchemeFeatures.Fonts));
+
+        options.UseBootstrap();
+
+        Assert.True(options.Supports(ThemeSchemeFeatures.Fonts | ThemeSchemeFeatures.Corners));
+        Assert.False(options.Supports(ThemeSchemeFeatures.FontSize));
+        Assert.False(options.Supports(ThemeSchemeFeatures.Density));
+    }
+
+    [Theory]
+    [InlineData(ThemeSchemeFeatures.None, new string[0])]
+    [InlineData(ThemeSchemeFeatures.Fonts, new[] { "font-family", "heading-font-family" })]
+    [InlineData(ThemeSchemeFeatures.FontSize, new[] { "font-scale" })]
+    [InlineData(ThemeSchemeFeatures.Corners | ThemeSchemeFeatures.Density, new[] { "radius-scale", "density" })]
+    [InlineData(ThemeSchemeFeatures.All, new[] { "font-family", "heading-font-family", "font-scale", "radius-scale", "density" })]
+    public async Task Stylesheet_WritesOnlyTheSettingsTheThemeSupports(ThemeSchemeFeatures features, string[] written)
+    {
+        var (store, _, _) = CreateStore(services => services.AddThemeSchemes("MyTheme", options => options.Features = features));
+
+        var (css, _) = await store.GetStylesheetAsync("MyTheme");
+        var (light, _) = ReadRules(css, "[data-scheme=\"default\"]", "[data-bs-theme=\"dark\"][data-scheme=\"default\"]");
+        var typography = new[] { "font-family", "heading-font-family", "font-scale", "radius-scale", "density" };
+
+        Assert.Equal(written, typography.Where(token => light.ContainsKey("--mytheme-" + token)));
+    }
+
+    [Fact]
+    public async Task UseBootstrap_MapsTheFontAndTheCorners_OnlyWhenTheThemeStillSupportsThem()
+    {
+        var (store, _, _) = CreateStore(services => services.AddThemeSchemes("MyTheme", options =>
+        {
+            options.UseBootstrap();
+            options.Features = ThemeSchemeFeatures.None;
+        }));
+
+        var (css, _) = await store.GetStylesheetAsync("MyTheme");
+        var (light, _) = ReadRules(css, "[data-scheme=\"default\"]", "[data-bs-theme=\"dark\"][data-scheme=\"default\"]");
+
+        Assert.Equal("var(--mytheme-primary)", light["--bs-primary"]);
+        Assert.DoesNotContain("--bs-body-font-family", light.Keys);
+        Assert.DoesNotContain("--bs-border-radius", light.Keys);
+    }
+
+    [Fact]
+    public async Task Controller_KeepsTheSettingsTheThemeDoesNotSupport_WhenAnEditorSavesTheScheme()
+    {
+        var (store, _, _) = CreateStore();
+        await store.SaveAsync(ThemeB, new ThemeScheme
+        {
+            Id = "custom-kept", Name = "Kept", Primary = "#2a81bb", Deep = "#144c71", Ink = "#081b26", Accent = "#5aa4ef",
+            FontFamily = "Georgia", FontScale = 1.0625, RadiusScale = 0.5, Density = 0.75,
+        });
+        var controller = CreateController(store);
+
+        Assert.IsType<RedirectToActionResult>(await controller.EditPost(ThemeB, "custom-kept", new ThemeSchemeViewModel
+        {
+            Name = "Renamed", Primary = "#2a81bb", Deep = "#144c71", Ink = "#081b26", Accent = "#5aa4ef", FontFamily = "Inter",
+        }));
+
+        var saved = await store.FindAsync(ThemeB, "custom-kept");
+        Assert.Equal("Renamed", saved.Name);
+        Assert.Equal("Georgia", saved.FontFamily);
+        Assert.Equal(1.0625, saved.FontScale);
+        Assert.Equal(0.5, saved.RadiusScale);
+        Assert.Equal(0.75, saved.Density);
+    }
+
+    [Fact]
     public async Task ThemeWithNoOptions_SeedsANeutralScheme_AndWritesItsOwnTokens_WithNoFrameworkVariables()
     {
         var (store, documents, _) = CreateStore(services => services.AddThemeSchemes("MyTheme"));
@@ -185,11 +302,13 @@ public sealed class ThemeSchemeTests
         var (css, version) = await store.GetStylesheetAsync("MyTheme");
         var (light, dark) = ReadRules(css, "[data-scheme=\"default\"]", "[data-bs-theme=\"dark\"][data-scheme=\"default\"]");
 
-        // Every generic token, under the theme's prefix.
+        // Every generic color token, under the theme's prefix; it supports no typography.
         foreach (var token in s_lightTokens)
         {
             Assert.True(light.ContainsKey("--mytheme-" + token), token);
         }
+
+        Assert.DoesNotContain("--mytheme-font-family", light.Keys);
 
         foreach (var token in s_darkTokens)
         {
@@ -197,7 +316,6 @@ public sealed class ThemeSchemeTests
         }
 
         Assert.Equal("#2563eb", light["--mytheme-primary"]);
-        Assert.Equal("var(--mytheme-font-family)", light["--mytheme-heading-font-family"]);
         Assert.DoesNotContain("--mytheme-font-family", dark.Keys);
         Assert.DoesNotContain("--bs-", css, StringComparison.Ordinal);
         Assert.DoesNotContain("data-ta-scheme", css, StringComparison.Ordinal);
@@ -573,7 +691,7 @@ public sealed class ThemeSchemeTests
     {
         var (store, documents, _) = CreateStore();
         var controller = CreateController(store);
-        var model = new ThemeSchemeViewModel { Name = "X", FontFamily = ThemeSchemeTypography.Lato };
+        var model = new ThemeSchemeViewModel { Name = "X", FontFamily = "lato" };
 
         Assert.IsType<NotFoundResult>(await controller.Index(Unregistered));
         Assert.IsType<NotFoundResult>(await controller.Create(Unregistered));
@@ -673,7 +791,7 @@ public sealed class ThemeSchemeTests
             Id = "custom-round-trip", Name = "Round trip", Position = 3,
             Primary = "#2a81bb", Deep = "#144c71", Ink = "#081b26", Accent = "#5aa4ef", LightMenu = true,
             Hue = 200, Saturation = 0.5, OnPrimary = "#ffffff", Page = "#fafafa", Toolbar = "#123456", Tint = "#abcdef", TintDark = "#fedcba",
-            FontFamily = ThemeSchemeTypography.SourceSans3, HeadingFontFamily = ThemeSchemeTypography.Inter,
+            FontFamily = "Source Sans 3", HeadingFontFamily = "Georgia, serif",
             FontScale = 1.0625, RadiusScale = 0.5, Density = 0.75,
         };
         await sourceStore.SaveAsync(ThemeB, scheme);
@@ -710,7 +828,7 @@ public sealed class ThemeSchemeTests
               "Schemes": [
                 { "ThemeId": "NoSchemes", "ItemId": "custom-elsewhere", "Name": "Elsewhere", "Primary": "#2a81bb", "Deep": "#144c71", "Ink": "#081b26", "Accent": "#5aa4ef" },
                 { "ItemId": "custom-no-theme", "Name": "No theme", "Primary": "#2a81bb", "Deep": "#144c71", "Ink": "#081b26", "Accent": "#5aa4ef" },
-                { "ThemeId": "ThemeA", "ItemId": "custom-font", "Name": "Font", "Primary": "#2a81bb", "Deep": "#144c71", "Ink": "#081b26", "Accent": "#5aa4ef", "FontFamily": "comic-sans" },
+                { "ThemeId": "ThemeA", "ItemId": "custom-font", "Name": "Font", "Primary": "#2a81bb", "Deep": "#144c71", "Ink": "#081b26", "Accent": "#5aa4ef", "FontFamily": "Comic Sans; color: red" },
                 { "ThemeId": "ThemeA", "ItemId": "custom-scale", "Name": "Scale", "Primary": "#2a81bb", "Deep": "#144c71", "Ink": "#081b26", "Accent": "#5aa4ef", "FontScale": 2 },
                 { "ThemeId": "ThemeA", "ItemId": "custom-ok", "Name": "Ok", "Primary": "#2a81bb", "Deep": "#144c71", "Ink": "#081b26", "Accent": "#5aa4ef", "FontFamily": "system", "Density": 1.25 }
               ],
@@ -776,7 +894,6 @@ public sealed class ThemeSchemeTests
         "page", "surface", "surface-rgb", "surface-muted",
         "heading", "label", "muted",
         "border", "control-border", "control-checked-border", "row-hover",
-        "font-family", "heading-font-family", "font-scale", "radius-scale", "density",
     ];
 
     private static readonly string[] s_darkTokens =
@@ -804,6 +921,7 @@ public sealed class ThemeSchemeTests
         {
             options.AttributeName = "data-a-scheme";
             options.DefaultSchemeId = "a-two";
+            options.Features = ThemeSchemeFeatures.All;
             options.Defaults = [Scheme("a-one", "A-ONE", 0), Scheme("a-two", "A-TWO", 1)];
         });
         services.AddThemeSchemes(ThemeB, options =>

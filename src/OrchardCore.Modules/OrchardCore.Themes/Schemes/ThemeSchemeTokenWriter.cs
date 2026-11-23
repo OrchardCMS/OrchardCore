@@ -47,6 +47,12 @@ public sealed class ThemeSchemeTokenWriter
     }
 
     /// <summary>
+    /// Whether a token was written, e.g. a typography token, which is only written for a theme that supports it.
+    /// </summary>
+    public bool Contains(string token)
+        => _positions.ContainsKey(NameOf(token));
+
+    /// <summary>
     /// A reference to a token, e.g. <c>var(--mytheme-primary)</c>.
     /// </summary>
     public string Var(string token)
