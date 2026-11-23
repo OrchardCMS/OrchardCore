@@ -8,7 +8,7 @@ Shortcodes can be implemented by enabling the Shortcode Templates feature or thr
 
 ## Shortcode Templates
 
-Shortcode templates with [Liquid](../Liquid/README.md) are created through the _Design -> Shortcodes_ menu.
+Shortcode templates with [Liquid](../Liquid/README.md) are created through the **Design → Shortcodes** menu.
 
 Shortcode templates are designed to be able to override a code based Shortcode of the same name.
 

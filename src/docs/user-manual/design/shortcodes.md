@@ -8,11 +8,11 @@ technical_manual:
 
 # Shortcodes
 
-A shortcode is a short word in square brackets, such as `[image]photo.jpg[/image]`, that you type into the text of a content item. When the page is shown, the site replaces it with something richer: an image from the media library, a block of HTML, text in the visitor's language. Shortcodes let editors add these things without writing HTML. You can use the built-in shortcodes, and create your own on **Design > Shortcodes**.
+A shortcode is a short word in square brackets, such as `[image]photo.jpg[/image]`, that you type into the text of a content item. When the page is shown, the site replaces it with something richer: an image from the media library, a block of HTML, text in the visitor's language. Shortcodes let editors add these things without writing HTML. You can use the built-in shortcodes, and create your own on **Design → Shortcodes**.
 
 | | |
 | --- | --- |
-| **Menu** | **Design > Shortcodes** |
+| **Menu** | **Design → Shortcodes** |
 | **Permission** | *Manage shortcode templates* |
 | **Feature** | **Shortcodes** (`OrchardCore.Shortcodes`) to use shortcodes; **Shortcode Templates** (`OrchardCore.Shortcodes.Templates`) to create your own |
 
@@ -53,7 +53,7 @@ You can also type shortcodes by hand. A shortcode has a name in brackets, option
 
 A shortcode template is your own shortcode, written in Liquid. For example, a `[primary]` shortcode that shows text in the theme's main color, or a `[site_name]` shortcode that shows the site's name.
 
-1. Open **Design > Shortcodes** and click **Add Shortcode Template**.
+1. Open **Design → Shortcodes** and click **Add Shortcode Template**.
 2. Fill in the fields below. As you type, a preview card shows how the shortcode will appear in the **Available Shortcodes** window.
 3. Click **Save**, or open the arrow next to it and click **and continue** to stay on the page.
 
@@ -91,6 +91,6 @@ The `sanitize` filter removes anything dangerous, such as scripts, from what edi
 
 ## Edit or delete shortcode templates
 
-Open **Design > Shortcodes**. Each template shows its name and categories, with **Edit** and **Delete** buttons. Type in **Search** and press Enter to filter. To delete several, tick them and choose **Delete** from the **Actions** menu.
+Open **Design → Shortcodes**. Each template shows its name and categories, with **Edit** and **Delete** buttons. Type in **Search** and press Enter to filter. To delete several, tick them and choose **Delete** from the **Actions** menu.
 
 When you delete a template, content that still uses its shortcode shows the shortcode as plain text, such as `[site_name]`.

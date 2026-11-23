@@ -10,7 +10,7 @@ A deployment plan is an ordered list of deployment steps. Each step contributes 
 
 To create and execute a plan:
 
-1. In the admin, go to **Tools** > **Deployments** > **Plans**.
+1. In the admin, go to **Tools → Deployments → Plans**.
 2. Select **Add Deployment Plan**, enter a name, and save the plan.
 3. Open the plan and select **Add Step**.
 4. Configure each step and arrange the steps in the order in which they should be added to the package.
@@ -30,7 +30,7 @@ The Deployment module provides these general-purpose steps:
 
 ## Import a package
 
-In the admin, go to **Tools** > **Deployments** and use one of these options:
+In the admin, go to **Tools → Deployments** and use one of these options:
 
 - **Package Import** accepts a `.zip` deployment package or a `.json` recipe file.
 - **JSON Import** accepts recipe JSON entered directly in the editor.

@@ -5,7 +5,7 @@ The Publish Later module schedules a draft content item to be published at a spe
 ## Enable and configure the module
 
 1. Enable the **Publish Later** feature.
-2. In **Content** → **Content Definition** → **Content Types**, edit the content type that should support scheduling.
+2. In **Content → Content Definition → Content Types**, edit the content type that should support scheduling.
 3. Add the **Publish Later Part** to the type and save the definition.
 
 The part is attachable and can be added to any content type. It stores the schedule on the content item as `PublishLaterPart.ScheduledPublishUtc`.

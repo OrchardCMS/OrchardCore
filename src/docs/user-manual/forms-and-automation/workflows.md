@@ -13,7 +13,7 @@ A workflow does work for you when something happens. *When* a visitor sends the 
 
 | | |
 | --- | --- |
-| **Menu** | **Design > Workflows**; **Settings > Workflow Trimming** |
+| **Menu** | **Design → Workflows**; **Settings → Workflow Trimming** |
 | **Permission** | *Manage workflows*; *Execute workflows* to run them from the designer and retry instances; *Manage workflow settings* for trimming |
 | **Feature** | **Workflows** (`OrchardCore.Workflows`), plus **HTTP Workflows Activities** (`OrchardCore.Workflows.Http`), **Timer Workflows Activities** (`OrchardCore.Workflows.Timers`) and **Session Workflows Activities** (`OrchardCore.Workflows.Session`) for their activities |
 
@@ -31,18 +31,18 @@ A workflow does work for you when something happens. *When* a visitor sends the 
 
 ## The workflows list
 
-Open **Design > Workflows**. Each row shows the workflow's name and badges: **Disabled** when it's turned off, **No startup task** when no activity is marked as the start, and **Instances** when it has runs.
+Open **Design → Workflows**. Each row shows the workflow's name and badges: **Disabled** when it's turned off, **No startup task** when no activity is marked as the start, and **Instances** when it has runs.
 
 ![The Workflows list](images/workflows.webp)
 
 - **Edit** opens the designer. The **Instances** badge opens the runs of that workflow. **Delete** deletes it.
 - The row's **Actions** menu has **Clone** (copy it under another name, with its settings) and **Export** (download it as a file, to import on another site; see [Import and export](../administration/import-and-export.md)).
-- **Search** finds workflows by name. Tick rows and use **Actions > Delete** to delete several.
+- **Search** finds workflows by name. Tick rows and use **Actions → Delete** to delete several.
 - **Instances** at the top lists the runs of every workflow.
 
 ## Create a workflow
 
-1. Open **Design > Workflows** and click **Create Workflow**.
+1. Open **Design → Workflows** and click **Create Workflow**.
 2. Type a **Name** that says what it does, such as *Email the office when the contact form is sent*.
 3. Optionally open **More settings** (the defaults suit most workflows, and you can change them later on the designer's **Workflow** tab).
 4. Click **Create and open the designer**.
@@ -117,7 +117,7 @@ Click **Publish**. If the workflow has warnings, the designer lists them and ask
 
 This workflow receives a contact form (see [Forms](forms.md#build-a-contact-form)), emails what the visitor typed, and shows a thank-you page. Email sending must be set up first; see [Email](../settings/email.md).
 
-1. Open **Design > Workflows**, click **Create Workflow**, name it *Contact form*, and click **Create and open the designer**.
+1. Open **Design → Workflows**, click **Create Workflow**, name it *Contact form*, and click **Create and open the designer**.
 2. Under **Start with an event**, click **Http Request Event**.
 3. In its settings, set **HTTP Method** to **POST**. Keep **Validate Antiforgery Token** checked.
 4. Click **Regenerate** next to **URL**, then **Copy**. Keep the URL (the part that starts with `/workflows/Invoke?token=`).
@@ -171,7 +171,7 @@ The **Activities** list groups activities by category. A category appears only w
 
 Instances pile up over time. A background task deletes old ones once a day.
 
-1. Open **Settings > Workflow Trimming**.
+1. Open **Settings → Workflow Trimming**.
 2. Set the **Retention period**: the number of days an instance is kept (90 by default).
 3. Under **Statuses**, check the statuses of the instances to delete: **Idle**, **Starting**, **Resuming**, **Executing**, **Halted**, **Finished**, **Faulted**, **Aborted**.
 4. Click **Save**.
@@ -187,7 +187,7 @@ Instances pile up over time. A background task deletes old ones once a day.
 | --- | --- | --- |
 | *Manage workflows* | Create, edit, publish, clone, export and delete workflows; see, restart, cancel and delete instances. | Administrator |
 | *Execute workflows* | Run workflows from the designer's **Run…** dialog, and retry faulted instances. | Administrator, Editor |
-| *Manage workflow settings* | Change **Settings > Workflow Trimming**. Anyone with *Manage workflows* has it too. | Administrator |
+| *Manage workflow settings* | Change **Settings → Workflow Trimming**. Anyone with *Manage workflows* has it too. | Administrator |
 
 *Manage workflows* is a powerful permission: a workflow can create users, give roles, create tenants and call other servers. Give it only to people you trust with the whole site.
 

@@ -11,7 +11,7 @@ The **audit trail** is the history of what happens in the admin: who created, sa
 
 | | |
 | --- | --- |
-| **Menu** | **Tools > Audit Trail**, **Settings > Audit Trail** |
+| **Menu** | **Tools → Audit Trail**, **Settings → Audit Trail** |
 | **Permission** | *View audit trail*, *Manage audit trail settings* |
 | **Feature** | **Audit Trail** (`OrchardCore.AuditTrail`) |
 
@@ -22,7 +22,7 @@ The **audit trail** is the history of what happens in the admin: who created, sa
 !!! warning "Content events are recorded only for the types you pick"
     Out of the box, no content type is selected, so no content event is recorded. Pick the content types on the **Content** tab of the settings before you rely on the audit trail.
 
-1. Open **Settings > Audit Trail**.
+1. Open **Settings → Audit Trail**.
 2. On the **Events** tab, under **Events to record**, tick the events to keep. Each category (**Content**, **User**) has a **Select all** box. All content events are ticked by default. An event that must always be recorded has a grayed-out box.
 3. Tick **Allow client IP address** to record the IP address of the person who triggered each event.
 4. On the **Content** tab, under **Allowed content types**, tick the types whose events are recorded, or **Select all**.
@@ -45,7 +45,7 @@ Deleted events, and the versions saved with them, can't be recovered.
 
 ## Browse the audit trail
 
-Open **Tools > Audit Trail**. Each row shows the event (for example **Published**), its category, the details, who triggered it, when, and the IP address if it is recorded.
+Open **Tools → Audit Trail**. Each row shows the event (for example **Published**), its category, the details, who triggered it, when, and the IP address if it is recorded.
 
 ![The Audit Trail list of events](images/audit-trail.webp)
 
@@ -61,7 +61,7 @@ The search box understands terms such as `username:alice`, `category:Content`, `
 
 ## See the history of one content item
 
-1. Open **Content > Content Items**.
+1. Open **Content → Content Items**.
 2. On the item's row, open **Actions** and click **Audit Trail**.
 
 The audit trail opens with only that item's events, and an extra drop-down to filter by event (for example only **Published**). The **Audit Trail** action is shown only to people with *View audit trail*.
@@ -93,10 +93,10 @@ The tab compares this version with the previous one, showing lines removed and a
 1. In the audit trail, find the **Removed** event of the item.
 2. Click **Restore** on its row and confirm with **Yes**.
 
-The item comes back as a draft. Open it from **Content > Content Items** and publish it.
+The item comes back as a draft. Open it from **Content → Content Items** and publish it.
 
 Restoring needs the permission to publish the item: *Publish or unpublish content for others*, *Publish or unpublish own content* for your own items, or the same permissions for that content type. Each restore is recorded as a **Restored** event.
 
 ## Ask editors for a comment
 
-Add the **AuditTrail** part to a content type (**Design > Content Definition > Content Types**, **Edit**, **Add Parts**) to give its editor a **Comment** box. What the editor types there is saved with the event and shown in its details. The part's setting **Show comment** (ticked by default) shows or hides the box.
+Add the **AuditTrail** part to a content type (**Design → Content Definition → Content Types**, **Edit**, **Add Parts**) to give its editor a **Comment** box. What the editor types there is saved with the event and shown in its details. The part's setting **Show comment** (ticked by default) shows or hides the box.

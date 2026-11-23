@@ -43,7 +43,7 @@ The remainder of this document describes the removed Gulp pipeline for historica
 
 Visual Studio 2022 and later comes with a built-in tool window named **Task Runner Explorer** that can be used to execute NPM tasks as well as tasks from different task runners such as Gulp and Grunt among others.
 
-To open Task Runner Explorer, select **View -> Other Windows -> Task Runner Explorer** from the menu. Alternatively, you can right-click on the file `gulpfile.js` in Solution Explorer and select **Task Runner Explorer** from there.
+To open Task Runner Explorer, select **View → Other Windows → Task Runner Explorer** from the menu. Alternatively, you can right-click on the file `gulpfile.js` in Solution Explorer and select **Task Runner Explorer** from there.
 
 Initially you may see an error message in Task Runner Explorer:
 
@@ -63,7 +63,7 @@ You can now double-click one of the tasks to execute it.
 
 Task Runner Explorer also has the ability to "bind" tasks to be executed automatically in response to Visual Studio solution events. Orchard Core is not preconfigured with any such bindings because all assets in the original code base are already processed and their outputs are included in source control, but it can be useful to configure these bindings temporarily while developing your own client-side assets or while working on modifications to the ones in Orchard Core.
 
-The most common scenario is to bind the **build** task to the **After Build** solution event. This way, each time you build Orchard Core (for example, by hitting `F5` or `Ctrl+F5` or selecting **Build -> Build Solution** from the menu) the asset pipeline's **build** task will be executed at the end of the build process. Any asset groups whose input files have changed since the last build will be refreshed.
+The most common scenario is to bind the **build** task to the **After Build** solution event. This way, each time you build Orchard Core (for example, by hitting `F5` or `Ctrl+F5` or selecting **Build → Build Solution** from the menu) the asset pipeline's **build** task will be executed at the end of the build process. Any asset groups whose input files have changed since the last build will be refreshed.
 
 To configure this binding, follow these steps:
 

@@ -12,7 +12,7 @@ Some content belongs inside other content: blog posts inside a blog, episodes in
 
 | | |
 | --- | --- |
-| **Menu** | The list's content item: **Content > Content Items**, then **List ... Items** on its row. Settings: **Design > Content Definition > Content Types** |
+| **Menu** | The list's content item: **Content → Content Items**, then **List ... Items** on its row. Settings: **Design → Content Definition → Content Types** |
 | **Permission** | The content permissions of the list and of its contained types (for example *Edit content for others*, *Publish or unpublish content for others*); *Edit content types* to change the list settings |
 | **Feature** | **Lists** (`OrchardCore.Lists`) |
 
@@ -22,14 +22,14 @@ A site set up with the **Blog** recipe has a ready-made list:
 
 - The **Blog** content type has a **List** part whose contained type is **Blog Post**, with 10 items per page.
 - One **Blog** content item exists. The **Blog** entry at the top of the admin menu opens it.
-- **Blog Post** is not **Creatable** or **Listable**, so it doesn't appear in the **New** menu or in **Content > Content Items**: you create and find posts through the blog.
+- **Blog Post** is not **Creatable** or **Listable**, so it doesn't appear in the **New** menu or in **Content → Content Items**: you create and find posts through the blog.
 - The permalink of a post starts with the blog's own address, for example `/blog/my-first-post`.
 
 ## Open the items of a list
 
 ![The items of the blog, with the Create Blog Post button](images/blog-items.webp)
 
-1. Open **Content > Content Items**.
+1. Open **Content → Content Items**.
 2. On the row of the list (for example your blog), click **List ... Items** (for example **List BlogPost Items**), or **List Items** when the list holds several types.
 
 On a Blog site, click **Blog** at the top of the admin menu instead.
@@ -69,7 +69,7 @@ Use the buttons of each row, exactly as in the content items list: **Edit**, **V
 
 ## Make a content type a list
 
-1. Open **Design > Content Definition > Content Types** and click **Edit** on the type that should hold items (create a type for the items first if needed).
+1. Open **Design → Content Definition → Content Types** and click **Edit** on the type that should hold items (create a type for the items first if needed).
 2. Click **Add Parts**, click **Add & Configure** on the **List** row.
 3. Fill in the settings below and click **Save**.
 

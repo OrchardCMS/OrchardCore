@@ -193,7 +193,7 @@ Some notable replacements:
 
 The `{% resources %}` tags render the stylesheets, scripts, and meta tags that other modules (and your own templates) register at runtime, so keep them even if the layout does not use them directly.
 
-The zones declared with `render_section` must also be listed in the site's zones (a setup recipe can do this with the `settings` step, or they can be edited in the admin under `Design → Settings → Zones`) so that widgets can be placed in them using layers. See [Layers](../../reference/modules/Layers/README.md).
+The zones declared with `render_section` must also be listed in the site's zones (a setup recipe can do this with the `settings` step, or they can be edited in the admin under **Design → Settings → Zones**) so that widgets can be placed in them using layers. See [Layers](../../reference/modules/Layers/README.md).
 
 ### Styling the menu
 

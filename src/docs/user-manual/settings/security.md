@@ -18,12 +18,12 @@ These screens protect your site and its visitors: they tell browsers what a page
 
 | Screen | Menu | Permission | Feature |
 | --- | --- | --- | --- |
-| Security headers | **Settings > Security > Security Headers** | *Manage Security Headers Settings* | **Security** (`OrchardCore.Security`) |
-| CORS | **Settings > Security > Cross-Origin Resource Sharing** | *Managing Cors Settings* | **CORS Configuration** (`OrchardCore.Cors`) |
+| Security headers | **Settings → Security → Security Headers** | *Manage Security Headers Settings* | **Security** (`OrchardCore.Security`) |
+| CORS | **Settings → Security → Cross-Origin Resource Sharing** | *Managing Cors Settings* | **CORS Configuration** (`OrchardCore.Cors`) |
 | reCAPTCHA | **Settings > Security > reCaptcha** | *Manage ReCaptcha Settings* | **ReCaptcha** (`OrchardCore.ReCaptcha`), **ReCaptcha Users** (`OrchardCore.ReCaptcha.Users`) |
-| Rate limits | **Tools > Rate Limits** | *Manage Rate Limits* | **Rate Limits** (`OrchardCore.RateLimits`) |
-| Reverse proxy | **Settings > Reverse Proxy** | *Manage Reverse Proxy Settings* | **Reverse Proxy Configuration** (`OrchardCore.ReverseProxy`) |
-| HTTPS | **Settings > Security > HTTPS** | *Manage HTTPS* | **HTTPS** (`OrchardCore.Https`) |
+| Rate limits | **Tools → Rate Limits** | *Manage Rate Limits* | **Rate Limits** (`OrchardCore.RateLimits`) |
+| Reverse proxy | **Settings → Reverse Proxy** | *Manage Reverse Proxy Settings* | **Reverse Proxy Configuration** (`OrchardCore.ReverseProxy`) |
+| HTTPS | **Settings → Security → HTTPS** | *Manage HTTPS* | **HTTPS** (`OrchardCore.Https`) |
 | Response compression | No screen | | **Response Compression** (`OrchardCore.ResponseCompression`) |
 
 The Administrator role has all these permissions by default.
@@ -37,7 +37,7 @@ Security headers are instructions the site sends to the browser with every page.
 
 ![The Security Headers settings](images/security-headers.webp)
 
-1. Open **Settings > Security > Security Headers**. The screen has three tabs.
+1. Open **Settings → Security → Security Headers**. The screen has three tabs.
 2. Change the values on the tabs you need.
 3. Click **Save**.
 
@@ -82,7 +82,7 @@ Browsers stop a web page on one website from reading data from another website, 
 
 ### Add a CORS policy
 
-1. Open **Settings > Security > Cross-Origin Resource Sharing**.
+1. Open **Settings → Security → Cross-Origin Resource Sharing**.
 2. Click **Add a policy**.
 3. Fill in the form (see the table below). A new policy starts with **Allow credentials**, **Allow any header** and **Allow any method** checked.
 4. To add an origin, header or method, type it in the box under **Allowed origins**, **Allowed headers**, **Allowed methods** or **Exposed headers**, and click **Add Origin**, **Add Header** or **Add Method**. Click **Delete** next to an entry to remove it.
@@ -143,7 +143,7 @@ Each signed-in user has their own allowance. Anonymous visitors are counted by t
 
 ### Read the list of policies
 
-Open **Tools > Rate Limits**. The **Rate Limit Policies** list shows your policies, with their status (**Enabled** or **Disabled**), author and target.
+Open **Tools → Rate Limits**. The **Rate Limit Policies** list shows your policies, with their status (**Enabled** or **Disabled**), author and target.
 
 - When the feature is first turned on, it adds a **Default Global Policy**: it applies to every request and allows 1000 requests per minute for each user or IP address. Raise it if many visitors share an IP address.
 - Under **Read-only Policies**, **Route limits** and **Group limits** list the limits set by features, such as the limits on the login, registration and password pages. You can't change them here.
@@ -152,7 +152,7 @@ Open **Tools > Rate Limits**. The **Rate Limit Policies** list shows your polici
 
 New policies start disabled, so you can prepare them without affecting the site.
 
-1. Open **Tools > Rate Limits** and click **Add Policy**.
+1. Open **Tools → Rate Limits** and click **Add Policy**.
 2. Type a **Policy name** (required, unique) and, optionally, a **Description**.
 3. Pick the **Policy type**:
     - **Global**: applies to every request to the site.
@@ -161,7 +161,7 @@ New policies start disabled, so you can prepare them without affecting the site.
 4. Click **Save and Continue**. The policy opens in **Edit Rate Limit Policy**.
 5. Click **Add Limiter**. In **Available Limiter Types**, click **Add** next to a limiter type, fill in its settings (see below), and click **Add Limiter**. You can add several limiters; a request must pass all of them. A policy without limiters limits nothing.
 6. Click **Save**.
-7. Go back to **Tools > Rate Limits**, and in the policy's row click **Actions > Enable**. Confirm. The site reloads and the policy applies.
+7. Go back to **Tools → Rate Limits**, and in the policy's row click **Actions → Enable**. Confirm. The site reloads and the policy applies.
 
 ### Limiter types
 
@@ -179,7 +179,7 @@ New policies start disabled, so you can prepare them without affecting the site.
 While a policy is enabled, you can still change its **Policy name** and **Description**, but its **Policy type**, target and limiters are locked: *This policy is enabled and cannot be modified. To modify it, disable it first or create another policy.*
 
 - **Edit**: opens the policy. Change the fields and the limiters (click **Edit** or **Delete** next to a limiter), then **Save**. Saving a disabled policy doesn't reload the site.
-- **Actions > Disable** / **Enable**: turns the policy off or on, after a confirmation. The site reloads.
+- **Actions → Disable** / **Enable**: turns the policy off or on, after a confirmation. The site reloads.
 - **Clone**: makes a disabled copy of the policy, with its limiters, that you can change and enable.
 - **Delete**: removes the policy, after a confirmation. Deleting an enabled policy reloads the site.
 
@@ -194,7 +194,7 @@ Many sites run behind another server, such as a load balancer, a CDN or a hostin
 
 ![The Reverse Proxy settings](images/reverse-proxy.webp)
 
-1. Open **Settings > Reverse Proxy**.
+1. Open **Settings → Reverse Proxy**.
 2. Check the options your IT team asks for.
 3. Click **Save**.
 
@@ -208,10 +208,10 @@ Turn these on only when the site really runs behind a proxy you trust; your IT t
 
 ## Require HTTPS
 
-The **HTTPS** feature makes sure visitors use a secure connection (`https://`). It is off by default; turn it on in **Tools > Features**.
+The **HTTPS** feature makes sure visitors use a secure connection (`https://`). It is off by default; turn it on in **Tools → Features**.
 
 1. Open the site with `https://` in the address bar. On a plain `http://` connection, the screen says *For safety, changing HTTPS-only settings over HTTP has been prevented.* and the fields can't be changed.
-2. Open **Settings > Security > HTTPS**.
+2. Open **Settings → Security → HTTPS**.
 3. Set the options (see the table below).
 4. Click **Save**.
 

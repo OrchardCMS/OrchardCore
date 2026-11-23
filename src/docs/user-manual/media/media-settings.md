@@ -17,7 +17,7 @@ Behind the [media library](media-library.md) are a few settings screens and seve
 
 | | |
 | --- | --- |
-| **Menu** | **Media > Profiles**; **Settings > Media > Options**; **Settings > Media > API**; **Settings > Media > Cache** |
+| **Menu** | **Media → Profiles**; **Settings → Media → Options**; **Settings → Media → API**; **Settings → Media → Cache** |
 | **Permission** | *Manage Media Profiles*; *View Media Options*; *Manage Media API authentication settings*; *Manage Asset Cache Folder* |
 | **Feature** | **Media** (`OrchardCore.Media`); **Media Cache** (`OrchardCore.Media.Cache`) for **Cache** |
 
@@ -31,11 +31,11 @@ Profiles only take effect where a theme or template uses them by name. Creating 
 
 ### See the profiles
 
-Open **Media > Profiles**. Each row shows the profile name and its hint, with **Edit** and **Delete** buttons. Type in **Search** and press Enter to filter by name. To delete several profiles, tick them and choose **Delete** from the **Actions** menu.
+Open **Media → Profiles**. Each row shows the profile name and its hint, with **Edit** and **Delete** buttons. Type in **Search** and press Enter to filter by name. To delete several profiles, tick them and choose **Delete** from the **Actions** menu.
 
 ### Add a media profile
 
-1. Open **Media > Profiles** and click **Add Media Profile**.
+1. Open **Media → Profiles** and click **Add Media Profile**.
 2. Fill in the fields below.
 3. Click **Save**, or open the arrow next to it and click **and continue** to save and stay on the page.
 
@@ -58,7 +58,7 @@ To change a profile, click **Edit** on its row; the form is the same. Changing a
 
 ## See the media options
 
-Open **Settings > Media > Options** to see how the media library is configured. The page is read-only: *Media is configured with appsettings.json.* Your IT team changes these values; see the Technical Manual.
+Open **Settings → Media → Options** to see how the media library is configured. The page is read-only: *Media is configured with appsettings.json.* Your IT team changes these values; see the Technical Manual.
 
 ![The media Options screen](images/media-options.webp)
 
@@ -86,9 +86,9 @@ Open **Settings > Media > Options** to see how the media library is configured. 
 
 ## Choose how the media library signs in
 
-The media library, the media pickers and uploads talk to the server through the Media API. **Settings > Media > API** decides how they prove who you are.
+The media library, the media pickers and uploads talk to the server through the Media API. **Settings → Media → API** decides how they prove who you are.
 
-1. Open **Settings > Media > API**.
+1. Open **Settings → Media → API**.
 2. Choose the **Media API authentication**:
     - **Cookie (default)** uses your admin sign-in. It works without any other setup.
     - **Bearer — OAuth2 + PKCE (requires OpenID Connect)** uses access tokens from the site's OpenID Connect server. It needs the **OpenID Connect Token Validation** feature and a registered client, which your IT team prepares, usually with a recipe.
@@ -105,7 +105,7 @@ When your files are stored in the cloud (Azure or Amazon S3), the **Media Cache*
 
 To clear these copies, for example after files were changed directly in the cloud storage:
 
-1. Open **Settings > Media > Cache**. The page is titled **Asset Cache**.
+1. Open **Settings → Media → Cache**. The page is titled **Asset Cache**.
 2. Click **Purge All**.
 3. Confirm with *Are you sure you want to purge the entire asset cache?*
 
@@ -137,12 +137,12 @@ By default the media files live on the web server's disk. These features keep th
 | **Amazon Media Storage** (`OrchardCore.Media.AmazonS3`) | Stores the media files in Amazon S3. |
 | **Amazon Media Image Cache** (`OrchardCore.Media.AmazonS3.ImageCache`) | Stores the resized copies of images in Amazon S3. |
 
-The features listed as **(Obsolete)** on **Tools > Features** are old names kept for existing sites; they turn on the image cache features above.
+The features listed as **(Obsolete)** on **Tools → Features** are old names kept for existing sites; they turn on the image cache features above.
 
 When a storage feature is on, a read-only page shows its configuration:
 
-- **Settings > Media > Azure Blob Options** (permission *View Azure Media Options*): **Connection String** (only **Configured** or **Not Configured**), **Container Name**, **Base Path**, **Create Container**, **Remove Container** and **Remove Files From Base Path**.
-- **Settings > Media > Amazon S3 Options** (permission *View Amazon S3 Media Options*): **Bucket Name**, **Base Path** and **Create Bucket**.
+- **Settings → Media → Azure Blob Options** (permission *View Azure Media Options*): **Connection String** (only **Configured** or **Not Configured**), **Container Name**, **Base Path**, **Create Container**, **Remove Container** and **Remove Files From Base Path**.
+- **Settings → Media → Amazon S3 Options** (permission *View Amazon S3 Media Options*): **Bucket Name**, **Base Path** and **Create Bucket**.
 
 !!! warning
     Turning on a cloud storage feature doesn't copy the files you already have. Ask your IT team to move them before switching, or the existing files show **Not Found**.

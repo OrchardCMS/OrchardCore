@@ -13,12 +13,12 @@ These screens connect your site to outside services: Google Analytics and Google
 
 | Screen | Menu | Permission | Feature |
 | --- | --- | --- | --- |
-| Google Analytics | **Settings > Integrations > Google Analytics** | *Manage Google Analytics settings* | **Google Analytics** (`OrchardCore.Google.Analytics`) |
-| Google Tag Manager | **Settings > Integrations > Google Tag Manager** | *Manage Google Tag Manager settings* | **Google Tag Manager** (`OrchardCore.Google.TagManager`) |
-| Meta app | **Settings > Integrations > Meta App** | *View and edit the Facebook app.* | **Meta Core Components** (`OrchardCore.Facebook`), turned on with the other Meta features |
-| Meta Pixel | **Settings > Integrations > Meta Pixel** | *Manage Facebook Pixel settings.* and *View and edit the Facebook app.* (see the note below) | **Meta Pixel** (`OrchardCore.Facebook.Pixel`) |
-| Meta widgets | **Design > Widgets** | The permissions of [widgets](../design/widgets-and-layers.md) | **Meta Social Plugins Widgets** (`OrchardCore.Facebook.Widgets`) |
-| X (Twitter) | **Settings > Integrations > X (Twitter)** | *Manage X (Twitter) settings* | **X (Twitter) Integration** (`OrchardCore.Twitter`) |
+| Google Analytics | **Settings → Integrations → Google Analytics** | *Manage Google Analytics settings* | **Google Analytics** (`OrchardCore.Google.Analytics`) |
+| Google Tag Manager | **Settings → Integrations → Google Tag Manager** | *Manage Google Tag Manager settings* | **Google Tag Manager** (`OrchardCore.Google.TagManager`) |
+| Meta app | **Settings → Integrations → Meta App** | *View and edit the Facebook app.* | **Meta Core Components** (`OrchardCore.Facebook`), turned on with the other Meta features |
+| Meta Pixel | **Settings → Integrations → Meta Pixel** | *Manage Facebook Pixel settings.* and *View and edit the Facebook app.* (see the note below) | **Meta Pixel** (`OrchardCore.Facebook.Pixel`) |
+| Meta widgets | **Design → Widgets** | The permissions of [widgets](../design/widgets-and-layers.md) | **Meta Social Plugins Widgets** (`OrchardCore.Facebook.Widgets`) |
+| X (Twitter) | **Settings → Integrations → X (Twitter)** | *Manage X (Twitter) settings* | **X (Twitter) Integration** (`OrchardCore.Twitter`) |
 
 The Administrator role has all these permissions by default. Signing in with a Google, Meta or X account is a different feature; see [External sign-in](../users/external-sign-in.md).
 
@@ -27,11 +27,11 @@ The Administrator role has all these permissions by default. Signing in with a G
 ![The Google Analytics settings](images/google-analytics.webp)
 
 1. In your Google Analytics account, copy the ID of your property's web data stream (it looks like `G-XXXXXXXXXX`).
-2. Open **Settings > Integrations > Google Analytics**.
+2. Open **Settings → Integrations → Google Analytics**.
 3. Paste it in **Tracking ID**.
 4. Click **Save**.
 
-The Google Analytics script is added to every page of the site (not to the admin). **Tracking ID** is required, so it can't be saved empty: to stop tracking, turn off the **Google Analytics** feature in **Tools > Features**.
+The Google Analytics script is added to every page of the site (not to the admin). **Tracking ID** is required, so it can't be saved empty: to stop tracking, turn off the **Google Analytics** feature in **Tools → Features**.
 
 ## Add Google Tag Manager
 
@@ -40,7 +40,7 @@ Google Tag Manager loads your marketing and analytics tags from one place, manag
 ![The Google Tag Manager settings](images/google-tag-manager.webp)
 
 1. In Google Tag Manager, copy the ID of your container (it looks like `GTM-XXXXXXX`).
-2. Open **Settings > Integrations > Google Tag Manager**.
+2. Open **Settings → Integrations → Google Tag Manager**.
 3. Paste it in **Container ID**.
 4. Click **Save**.
 
@@ -56,7 +56,7 @@ A Meta app connects your site to Meta's developer platform. The [Meta widgets](#
 ![The Meta App settings](images/meta-app.webp)
 
 1. On the Meta for Developers website, create an app and copy its App ID and App Secret.
-2. Open **Settings > Integrations > Meta App**.
+2. Open **Settings → Integrations → Meta App**.
 3. Fill in the fields (see the table below).
 4. Click **Save**. The site reloads.
 
@@ -76,7 +76,7 @@ The Meta Pixel tells Meta which visitors came from your ads and what they did on
 ![The Meta Pixel settings](images/meta-pixel.webp)
 
 1. In Meta Events Manager, copy your Pixel ID.
-2. Open **Settings > Integrations > Meta Pixel**.
+2. Open **Settings → Integrations → Meta Pixel**.
 3. Paste it in **Pixel Identifier**.
 4. Optionally, fill in the **Conversions API** fields (see below).
 5. Click **Save**.
@@ -116,14 +116,14 @@ With the **Meta Social Plugins Widgets** feature on, editors can add Meta's soci
 4. Click **Publish**.
 
 !!! warning "Check the default code"
-    The **Facebook Chat** widget contains `<PAGE_ID>`: replace it with the ID of your Facebook page. The **Facebook Save** widget's `data-uri` starts with another website's address: replace it with your own site's address. A site builder can change the default code of each widget type in **Design > Content Definition > Content Types**, in the settings of the type's Facebook plugin part.
+    The **Facebook Chat** widget contains `<PAGE_ID>`: replace it with the ID of your Facebook page. The **Facebook Save** widget's `data-uri` starts with another website's address: replace it with your own site's address. A site builder can change the default code of each widget type in **Design → Content Definition → Content Types**, in the settings of the type's Facebook plugin part.
 
 ## Post to X (Twitter) from a workflow
 
 The X (Twitter) integration lets a [workflow](../forms-and-automation/workflows.md) post on your X account, for example when an article is published.
 
 1. In the X developer portal, open your app's **Keys and tokens** tab, and copy the API key and secret, and an access token and its secret with write access.
-2. Open **Settings > Integrations > X (Twitter)**.
+2. Open **Settings → Integrations → X (Twitter)**.
 3. Fill in **API key**, **API secret key**, **Access Token** and **Access Token Secret**.
 4. Click **Save**. The site reloads.
 

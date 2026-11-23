@@ -27,8 +27,8 @@ When it's done:
 
 | You need | Where or who |
 | --- | --- |
-| The features **Indexing** (`OrchardCore.Indexing`), **Lucene** (`OrchardCore.Lucene`) and **Search** (`OrchardCore.Search`) | An administrator, in **Tools > Features** |
-| For PDFs: the feature **PDF Media Indexing** (`OrchardCore.Media.Indexing.Pdf`). **OpenXML Media Indexing** does the same for Word and PowerPoint files, and **Text Media Indexing** for `.txt` and `.md` files. | An administrator, in **Tools > Features** |
+| The features **Indexing** (`OrchardCore.Indexing`), **Lucene** (`OrchardCore.Lucene`) and **Search** (`OrchardCore.Search`) | An administrator, in **Tools → Features** |
+| For PDFs: the feature **PDF Media Indexing** (`OrchardCore.Media.Indexing.Pdf`). **OpenXML Media Indexing** does the same for Word and PowerPoint files, and **Text Media Indexing** for `.txt` and `.md` files. | An administrator, in **Tools → Features** |
 | The permissions *Manage Indexes*, *Manage Search Settings* and *Manage Roles* | Your administrator; see [Roles and permissions](../getting-started/roles-and-permissions.md) |
 
 !!! note "Elasticsearch or Azure AI Search instead?"
@@ -36,7 +36,7 @@ When it's done:
 
 ## Create the index
 
-1. Open **Search > Indexes**.
+1. Open **Search → Indexes**.
 2. Click **Add index**.
 3. Click **Add** next to **Content in Lucene**.
 4. Fill in the form:
@@ -57,7 +57,7 @@ When it's done:
 
 ## Make it the site's search index
 
-1. Open **Settings > Search > Site Search**.
+1. Open **Settings → Search → Site Search**.
 2. Choose your index in **Default search index**.
 3. Type a **Placeholder** for the search box if you like, such as *Search the site*.
 4. Click **Save**.
@@ -66,7 +66,7 @@ When it's done:
 
 The search page checks the visitor's permissions. Without this step, visitors who aren't signed in are sent to the sign-in page.
 
-1. Open **Access Control > Roles**.
+1. Open **Access Control → Roles**.
 2. Click **Edit** on **Anonymous**.
 3. Under **Indexing**, tick **Query 'Search' Index**.
 4. Click **Save**.
@@ -78,7 +78,7 @@ The permission is named after your index's **Name**. *Query any index* works too
 
 Visitors can type `/search` after your site's address, but a search box is friendlier. Add one with the **Search Form** widget:
 
-1. Open **Design > Widgets**.
+1. Open **Design → Widgets**.
 2. In a zone, such as **Content**, click **Add Widget**.
 3. Choose **Search Form**.
 4. Type a **Title** (required).
@@ -94,7 +94,7 @@ You can also add the **Search Form** widget to a single page's **Flow**. See [Wi
 The site reads the text of a PDF only when the PDF is attached to a content item through a **Media Field**, and only when that field is included in the index.
 
 1. Make sure **PDF Media Indexing** is on.
-2. Open **Design > Content Definition > Content Types**.
+2. Open **Design → Content Definition → Content Types**.
 3. Click **Edit** on the type that holds the files, such as **Article**.
 4. If the type doesn't have one, add a **Media Field** named, for example, *Attachment*.
 5. Click **Edit** on the field.
@@ -102,7 +102,7 @@ The site reads the text of a PDF only when the PDF is attached to a content item
 7. Click **Save**.
 8. Edit your articles and attach PDFs from the media library in **Attachment**.
 9. Publish the articles.
-10. Back in **Search > Indexes**, open your index's actions menu and click **Rebuild**.
+10. Back in **Search → Indexes**, open your index's actions menu and click **Rebuild**.
 11. Click **Yes** to confirm.
 12. Click **Edit** on the index.
 13. In **Query field names**, also tick the field that ends in `.FileText`, such as `Article.Attachment.FileText`.
@@ -119,7 +119,7 @@ See [Content types](../content/content-types.md) for adding a field. **Rebuild**
 
 ## Tips
 
-- **Search returns nothing?** Check that the index exists and has the right content types, that the item is published, and that the index is chosen in **Settings > Search > Site Search**. Then click **Rebuild** in the index's actions menu. See [Troubleshooting](../troubleshooting.md).
+- **Search returns nothing?** Check that the index exists and has the right content types, that the item is published, and that the index is chosen in **Settings → Search → Site Search**. Then click **Rebuild** in the index's actions menu. See [Troubleshooting](../troubleshooting.md).
 - **Visitors are sent to the sign-in page?** The **Anonymous** role lacks the **Query '...' Index** permission.
 - After you change which content types or fields an index covers, **Rebuild** it.
 - A page built only from widgets in a **Flow** is found by its title; its widgets' text isn't part of the full text. See [Site search](../search/site-search.md) for the index settings of parts and fields.

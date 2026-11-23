@@ -236,7 +236,7 @@ It is usually better to **create a dedicated user for performing API calls**, ma
 }
 ```
 
-> This payload example model was obtained using the GraphiQL panel available in the Admin: _Configuration_ → _GraphiQL_. In this [video](https://www.youtube.com/watch?v=8SbW3TLNhF0) you can find an overview of how to use GraphiQL. 
+> This payload example model was obtained using the GraphiQL panel available in the Admin: **Tools → GraphiQL**. In this [video](https://www.youtube.com/watch?v=8SbW3TLNhF0) you can find an overview of how to use GraphiQL. 
 
 ##### Responses
 
@@ -698,7 +698,7 @@ The latest draft and the published version of an item are **never** deleted; onl
 
 ### Settings
 
-Enable the feature, then configure it under **Settings** → **Content Version Pruning** (requires the `Manage Content Version Pruning settings` permission, granted to the `Administrator` role by default).
+Enable the feature, then configure it under **Settings → Content Version Pruning** (requires the `Manage Content Version Pruning settings` permission, granted to the `Administrator` role by default).
 
 | Setting                              | Default | Description                                                                                                                                  |
 |--------------------------------------|---------|--------------------------------------------------------------------------------------------------------------------------------------------|
@@ -709,7 +709,7 @@ Enable the feature, then configure it under **Settings** → **Content Version P
 
 ### How it works
 
-A background task — *Content Version Pruning Background Task* — runs on a daily schedule (`0 0 * * *`). It is **disabled by default**; enable it under **Tools** → **Background Tasks** in addition to enabling the feature and selecting content types. When it runs, it:
+A background task — *Content Version Pruning Background Task* — runs on a daily schedule (`0 0 * * *`). It is **disabled by default**; enable it under **Tools → Background Tasks** in addition to enabling the feature and selecting content types. When it runs, it:
 
 1. Skips entirely if the **Disable** setting is on, or if no content types are selected.
 2. Computes a retention threshold of `now - RetentionDays`.

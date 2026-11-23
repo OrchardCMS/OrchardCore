@@ -13,7 +13,7 @@ A data pipeline moves data for you, without code. It reads rows from a source, s
 
 | | |
 | --- | --- |
-| **Menu** | **Tools > Data Pipelines > Pipelines**, **Tools > Data Pipelines > Run History**, **Tools > Shared Links** |
+| **Menu** | **Tools → Data Pipelines → Pipelines**, **Tools → Data Pipelines → Run History**, **Tools → Shared Links** |
 | **Permission** | *View data pipelines and their runs*, *Run data pipelines*, *Manage data pipelines*, *Manage shared links* |
 | **Feature** | **Data Pipelines** (`OrchardCore.DataPipelines`), **Data Pipelines - FTP** (`OrchardCore.DataPipelines.Ftp`), **Data Pipelines - SFTP** (`OrchardCore.DataPipelines.Sftp`), **Data Pipelines Core** (`OrchardCore.DataPipelines.Core`) |
 
@@ -48,7 +48,7 @@ What a pipeline can read depends on the data sources of the site; see [Data sour
 
 ![The Pipelines list](images/data-pipelines.webp)
 
-Open **Tools > Data Pipelines > Pipelines**. Type in the **Search** box to find pipelines by name. Each row shows:
+Open **Tools → Data Pipelines → Pipelines**. Type in the **Search** box to find pipelines by name. Each row shows:
 
 - **Draft**, when the pipeline was never published, or **Version 1**, **Version 2** and so on, the published version that runs.
 - **Unpublished changes**, when the draft has changes that are not published yet.
@@ -67,7 +67,7 @@ Click **Edit** (or **View**, if you can't manage pipelines) to open the designer
 
 ## Add a pipeline
 
-1. Open **Tools > Data Pipelines > Pipelines** and click **Add Pipeline**.
+1. Open **Tools → Data Pipelines → Pipelines** and click **Add Pipeline**.
 2. Type a **Name**. It is required.
 3. Click **Create**.
 
@@ -183,7 +183,7 @@ Pipelines have no schedule setting of their own. To run one on a schedule, use a
 
 ## Read the run history
 
-Open **Tools > Data Pipelines > Run History** to see the runs of every pipeline, the most recent first, or choose **Run history** in a pipeline's **Actions** menu to see only its runs. Use **Search by pipeline** to find runs by pipeline name, and the **Status** menu to show **Every status** or only **Queued**, **Running**, **Succeeded**, **Failed** or **Cancelled** runs.
+Open **Tools → Data Pipelines → Run History** to see the runs of every pipeline, the most recent first, or choose **Run history** in a pipeline's **Actions** menu to see only its runs. Use **Search by pipeline** to find runs by pipeline name, and the **Status** menu to show **Every status** or only **Queued**, **Running**, **Succeeded**, **Failed** or **Cancelled** runs.
 
 ![The Run History list](images/data-pipeline-runs.webp)
 
@@ -246,7 +246,7 @@ Runs started by a workflow show **Workflow** as what started them in the run his
 
 ## Manage shared links
 
-The **Share a download link** step keeps the file on the site and emails each recipient a link to it. **Tools > Shared Links** lists these links, so you can see who received what and stop a link before it expires. See [Shared links](shared-links.md).
+The **Share a download link** step keeps the file on the site and emails each recipient a link to it. **Tools → Shared Links** lists these links, so you can see who received what and stop a link before it expires. See [Shared links](shared-links.md).
 
 ## Copy pipelines to another site
 
@@ -259,7 +259,7 @@ When **Deployment** is on, deployment plans have a **Data Pipelines** step that 
 | *View data pipelines and their runs* | See the list, open pipelines and their versions read-only, see the run history. | Administrator |
 | *Run data pipelines* | Run published pipelines and cancel runs. Includes viewing. | Administrator |
 | *Manage data pipelines* | Create, design, preview, publish, start over and delete pipelines. Includes running and viewing. Security critical. | Administrator |
-| *Manage shared links* | See, revoke and delete shared links on **Tools > Shared Links**. | Administrator |
+| *Manage shared links* | See, revoke and delete shared links on **Tools → Shared Links**. | Administrator |
 
 To give these to other roles, see [Roles](../users/roles.md).
 

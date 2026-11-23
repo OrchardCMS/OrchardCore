@@ -7,7 +7,7 @@ description: Group content in lists such as a blog, classify it with categories 
 
 Once content exists, it needs a structure: posts that belong to a blog, categories and tags that group related items, pages built from blocks, and menus that lead visitors to them. This section is mostly for **content managers** and **site builders**, and for editors who work inside a blog or a menu.
 
-Lists, taxonomies and menus are content items, so you find them under **Content**: **Content > Content Items**, **Content > Menus**, and on a site set up with the **Blog** recipe, **Blog** at the top of the admin menu and **Content > Taxonomy**. Flows and bags are boxes inside the content editor. Site builders set all of these up on the content type, in **Design > Content Definition > Content Types**.
+Lists, taxonomies and menus are content items, so you find them under **Content**: **Content → Content Items**, **Content → Menus**, and on a site set up with the **Blog** recipe, **Blog** at the top of the admin menu and **Content → Taxonomy**. Flows and bags are boxes inside the content editor. Site builders set all of these up on the content type, in **Design → Content Definition → Content Types**.
 
 ## I want to…
 

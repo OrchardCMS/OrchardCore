@@ -388,7 +388,7 @@ The **Issues** tab warns about a Set Variable activity or an output that names a
 
 ### Samples
 
-The **Workflow Variables Samples** recipe adds three sample workflows. Run it from **Tools** → **Recipes**; it also enables the **Workflows** and **HTTP Workflows Activities** features. Each sample starts with an HTTP request: open that activity's editor to generate its URL, then open the URL in a browser.
+The **Workflow Variables Samples** recipe adds three sample workflows. Run it from **Tools → Recipes**; it also enables the **Workflows** and **HTTP Workflows Activities** features. Each sample starts with an HTTP request: open that activity's editor to generate its URL, then open the URL in a browser.
 
 - **Sample: order total.** Its variables have defaults, and its activities set them one after the other:
     1. **Read the query string** (Script) sets `customer` and `quantity` with `setVariable()`. The text `3` becomes the number `3`, since `quantity` is a number.

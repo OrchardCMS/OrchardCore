@@ -640,7 +640,7 @@ This shape renders a single notification entry.
     To customize the admin toast item from the dashboard:
 
     1. Enable the `OrchardCore.AdminTemplates` feature.
-    2. Go to **Design** -> **Admin Templates**.
+    2. Go to **Design → Admin Templates**.
     3. Create or edit the `Message` template.
     4. Paste the Liquid template shown above and save it.
 
@@ -693,7 +693,7 @@ This shape renders the collection of notification entries. The default implement
 If you want to customize the full admin notification rendering from the dashboard instead of from a theme:
 
 1. Enable the `OrchardCore.AdminTemplates` feature.
-2. Go to **Design** -> **Admin Templates**.
+2. Go to **Design → Admin Templates**.
 3. Create or edit the `Message` template to change each notification item.
 4. Create or edit the `NotifyMessages` template to change the container and placement.
 5. Paste the Liquid versions shown above and save them.

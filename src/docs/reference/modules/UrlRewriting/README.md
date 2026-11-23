@@ -2,7 +2,7 @@
 
 The URL Rewriting feature allows you to configure URL rewrites and redirects for incoming HTTP requests, significantly improving your site's SEO and user experience. This feature enables you to control how URLs are presented to both users and search engines.
 
-Once enabled, you can manage your rewrite rules by navigating to **Tools** > **URL Rewriting**. The order of these rules is crucial, as they are processed sequentially based on their position. The first listed rule is evaluated first for matches. To facilitate this, the UI provides a drag-and-drop feature for easy sorting of the rules.
+Once enabled, you can manage your rewrite rules by navigating to **Tools → URL Rewriting**. The order of these rules is crucial, as they are processed sequentially based on their position. The first listed rule is evaluated first for matches. To facilitate this, the UI provides a drag-and-drop feature for easy sorting of the rules.
 
 ## Available Rule Sources
 

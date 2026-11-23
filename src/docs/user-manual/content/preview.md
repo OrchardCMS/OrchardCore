@@ -36,7 +36,7 @@ Tips:
 
 ## Preview a saved draft from the list
 
-When an item has unpublished changes, its row in **Content > Content Items** shows a **Preview Draft** button.
+When an item has unpublished changes, its row in **Content → Content Items** shows a **Preview Draft** button.
 
 1. Find the item in the list. Its row shows the **Draft** badge.
 2. Click **Preview Draft**.
@@ -49,7 +49,7 @@ Some sites show their pages with a separate application (a "headless" or decoupl
 
 | | |
 | --- | --- |
-| **Menu** | **Design > Content Definition > Content Types**, **Edit** on the type, then **Edit** next to the **Preview** part |
+| **Menu** | **Design → Content Definition → Content Types**, **Edit** on the type, then **Edit** next to the **Preview** part |
 | **Permission** | *Edit content types.* |
 
 | Setting | What it does |

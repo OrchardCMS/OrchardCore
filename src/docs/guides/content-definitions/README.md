@@ -15,7 +15,7 @@ To migrate your `ContentDefinition.json` file to the database use the following 
 
 ## Step One - Create a Deployment Plan
 
-- Go to the _Tools -> Deployments -> Plans_ menu
+- Go to the **Tools → Deployments → Plans** menu
 - Select _Add Deployment Plan_
 - Name your Deployment Plan: 'Content Definitions'
 - Select the 'Content Definitions' Deployment Plan
@@ -28,12 +28,12 @@ This will download a file called `ContentDefinitions.zip` to your computer.
 
 ## Step Two - Disable the File Content Definition Feature
 
-- Go to the _Tools -> Features_ menu
+- Go to the **Tools → Features** menu
 - Disable the Feature named `File Content Definition`
 
 ## Step Three - Import your Deployment Plan
 
-- Go to the _Tools -> Deployments -> Package Import_ menu
+- Go to the **Tools → Deployments → Package Import** menu
 - Choose the file you created in Step One, and select _Import_
 
 ## Summary

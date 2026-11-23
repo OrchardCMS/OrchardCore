@@ -27,13 +27,13 @@ When it's done:
 
 | You need | Where or who |
 | --- | --- |
-| The features **Flows** (`OrchardCore.Flows`), **Widgets** (`OrchardCore.Widgets`), **Layers** (`OrchardCore.Layers`), **Autoroute** (`OrchardCore.Autoroute`) and **Home Route** (`OrchardCore.HomeRoute`). The Blog recipe turns them all on. | An administrator, in **Tools > Features** |
+| The features **Flows** (`OrchardCore.Flows`), **Widgets** (`OrchardCore.Widgets`), **Layers** (`OrchardCore.Layers`), **Autoroute** (`OrchardCore.Autoroute`) and **Home Route** (`OrchardCore.HomeRoute`). The Blog recipe turns them all on. | An administrator, in **Tools → Features** |
 | A content type with a **Flow** part, such as **Page** in the Blog recipe, and some widget types (the Blog recipe has **Paragraph**, **Image**, **Blockquote**, **Container** and **Raw Html**) | Already there with the Blog recipe; otherwise see [Content types](../content/content-types.md) |
 | Permission to create and publish pages, the permission *Set homepage.* to change the home page, and *Manage layers* to place site-wide widgets | Your administrator; see [Roles and permissions](../getting-started/roles-and-permissions.md) |
 
 ## Build the page
 
-1. Open **Content > Content Items**.
+1. Open **Content → Content Items**.
 2. Click **New**.
 3. Choose **Page**.
 4. Type **Welcome** in **Title**.
@@ -87,9 +87,9 @@ The **Set as homepage** checkbox appears only on content types whose **Autoroute
 
 ## Add a banner on every page
 
-A widget placed through **Design > Widgets** isn't part of one page: it appears in a **zone** of the site's layout on every page where its **layer** applies. The Blog recipe has two layers: **Always** (every page) and **Homepage** (only the home page).
+A widget placed through **Design → Widgets** isn't part of one page: it appears in a **zone** of the site's layout on every page where its **layer** applies. The Blog recipe has two layers: **Always** (every page) and **Homepage** (only the home page).
 
-1. Open **Design > Widgets**.
+1. Open **Design → Widgets**.
 2. Under **Zones**, find the zone where the banner should go, such as **Content**.
 3. Click the zone's **Add Widget** button.
 4. Choose **Paragraph**.
@@ -102,13 +102,13 @@ A widget placed through **Design > Widgets** isn't part of one page: it appears 
 The banner shows in the **Content** zone of every page. Drag widgets within a zone to order them. To show the banner only on the home page, choose **Homepage** instead. See [Widgets and layers](../design/widgets-and-layers.md).
 
 !!! note "Which zones can I use?"
-    **Design > Widgets** lists the zones named in **Settings > Zones** (**Content** and **Footer** with the Blog recipe). A zone shows on the site only if the theme displays it. The Blog theme also displays **Header** and **Messages**; to use them, add their names in **Settings > Zones**. Ask your developer which zones your theme has.
+    **Design → Widgets** lists the zones named in **Settings → Zones** (**Content** and **Footer** with the Blog recipe). A zone shows on the site only if the theme displays it. The Blog theme also displays **Header** and **Messages**; to use them, add their names in **Settings → Zones**. Ask your developer which zones your theme has.
 
 ## Show a widget on some pages only
 
 A layer decides where its widgets appear through **rules**. To make one, for example for a summer sale section:
 
-1. In **Design > Widgets**, under **Layers**, click **Add**.
+1. In **Design → Widgets**, under **Layers**, click **Add**.
 2. Type a **Name**, such as *Summer sale*.
 3. Click **Create**.
 4. On the layer's page, click **Add** next to **Rules**.

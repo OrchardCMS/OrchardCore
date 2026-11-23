@@ -788,7 +788,7 @@ In this example, (if the admin prefix remains the default "Admin") you can reach
 
 ## Navigation menu behavior
 
-The **Navigation menu behavior** option of the admin settings (**Settings** > **Admin**) decides how the sections of the admin menu open and close:
+The **Navigation menu behavior** option of the admin settings (**Settings → Admin**) decides how the sections of the admin menu open and close:
 
 | Behavior | What it does |
 |----------|--------------|

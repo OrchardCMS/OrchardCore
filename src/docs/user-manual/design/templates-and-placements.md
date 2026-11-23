@@ -17,7 +17,7 @@ If you have never written HTML, start small, keep a copy of what you change, and
 
 | | |
 | --- | --- |
-| **Menu** | **Design > Templates**; **Design > Admin Templates**; **Design > Placements** |
+| **Menu** | **Design → Templates**; **Design → Admin Templates**; **Design → Placements** |
 | **Permission** | *Manage templates* and *Manage Liquid templates*; *Manage admin templates* and *Manage Liquid templates*; *Manage placements* |
 | **Feature** | **Templates** (`OrchardCore.Templates`); **Admin Templates** (`OrchardCore.AdminTemplates`); **Placements** (`OrchardCore.Placements`). Templates need **Liquid** (`OrchardCore.Liquid`). |
 
@@ -39,13 +39,13 @@ Every piece of a page, such as a whole content item, its title, a field or a men
 
 The full list, with the names used by fields, parts, menus and more, is in the Technical Manual.
 
-The easiest way to get the right name: open **Design > Content Definition > Content Types**, edit a type, and use the **Edit templates** button. It lists *Template for a ... content item in detail views* and *Template for a ... content item in summary views*, and opens the template editor with the name filled in. The **Edit** page of each part of the type, opened from the content type editor, has the same button.
+The easiest way to get the right name: open **Design → Content Definition → Content Types**, edit a type, and use the **Edit templates** button. It lists *Template for a ... content item in detail views* and *Template for a ... content item in summary views*, and opens the template editor with the name filled in. The **Edit** page of each part of the type, opened from the content type editor, has the same button.
 
 ## Create a template
 
 ![The Create Template screen](images/create-template.webp)
 
-1. Open **Design > Templates** and click **Add Template**.
+1. Open **Design → Templates** and click **Add Template**.
 2. Type the shape **Name**, such as `Content__Article`. It is required and must be unique.
 3. Optionally type a **Description** to remind you what the template is for.
 4. Write the template in **Content**, the Liquid editor. It is required.
@@ -66,17 +66,17 @@ Here is a small template for `Content__Article`. It shows the title in a heading
 
 ### Preview a template while you type
 
-On **Design > Templates**, while creating or editing a template, click **Preview** at the bottom of the form. A new tab, **Template Preview**, opens your site. As you type in the template editor, the preview tab refreshes with your unsaved template. Browse to a page that uses the template to see it. If the tabs lose contact, the preview shows *Preview Disconnected*; errors in the template show *Preview Error* with details.
+On **Design → Templates**, while creating or editing a template, click **Preview** at the bottom of the form. A new tab, **Template Preview**, opens your site. As you type in the template editor, the preview tab refreshes with your unsaved template. Browse to a page that uses the template to see it. If the tabs lose contact, the preview shows *Preview Disconnected*; errors in the template show *Preview Error* with details.
 
 ### Edit or delete a template
 
-Open **Design > Templates**. Each row has **Edit** and **Delete**. Type in **Search** and press Enter to filter by name. To delete several templates, tick them and choose **Delete** from the **Actions** menu.
+Open **Design → Templates**. Each row has **Edit** and **Delete**. Type in **Search** and press Enter to filter by name. To delete several templates, tick them and choose **Delete** from the **Actions** menu.
 
 Deleting a template puts back the theme's own design for that shape.
 
 ## Change the admin with admin templates
 
-**Design > Admin Templates** works the same way, but its templates replace shapes in the admin instead of the public site, for example to change how a content type looks in the admin list. Click **Add Template**, type the **Name** and **Content**, and save. There is no preview for admin templates.
+**Design → Admin Templates** works the same way, but its templates replace shapes in the admin instead of the public site, for example to change how a content type looks in the admin list. Click **Add Template**, type the **Name** and **Content**, and save. There is no preview for admin templates.
 
 !!! warning
     A broken admin template can make parts of the admin hard to use. Keep the original text so you can put it back, and delete the admin template to return to normal.
@@ -89,7 +89,7 @@ A content item is made of parts and fields, and each one is drawn as a shape pla
 
 ### Create a placement
 
-1. Open **Design > Placements** and click **Add Placement**.
+1. Open **Design → Placements** and click **Add Placement**.
 2. Type the **Shape type**, such as `TextField` or `TitlePart`. It is required.
 3. Write the **Placement rules**: a list of rules in JSON format. Each rule says which shapes it applies to and where they go.
 4. Click **Save**.
@@ -112,7 +112,7 @@ A rule must contain at least `place`, `shape`, `wrappers` or `alternates`; other
 
 ### Edit or delete a placement
 
-Open **Design > Placements**. Each shape type has one entry with **Edit** and **Delete**. In the editor, the shape type can't be changed, and **Delete** at the bottom removes all its rules. Saving an empty list of rules also deletes the placement.
+Open **Design → Placements**. Each shape type has one entry with **Edit** and **Delete**. In the editor, the shape type can't be changed, and **Delete** at the bottom removes all its rules. Saving an empty list of rules also deletes the placement.
 
 You can't create a second placement for a shape type that already has one: the site says *Placement rules for "..." already exists. Please edit existing rule.*
 

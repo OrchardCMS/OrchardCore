@@ -13,7 +13,7 @@ A role is a named set of permissions, such as *Editor* or *Translator*. You give
 
 | | |
 | --- | --- |
-| **Menu** | **Access Control > Roles** |
+| **Menu** | **Access Control → Roles** |
 | **Permission** | *View Roles* to see the list, *Manage Roles* to add, edit and delete roles |
 | **Feature** | **Roles** (`OrchardCore.Roles`) |
 
@@ -22,7 +22,7 @@ A role is a named set of permissions, such as *Editor* or *Translator*. You give
 
 ## See the roles
 
-Open **Access Control > Roles**. Each row shows the role name, its description, and a **System** badge for the roles that can't be deleted. Type in **Search** to filter the list by name as you type. With *Manage Roles*, each row has **Edit** and, except for system roles, **Delete**, and the top of the page has **Add Role**.
+Open **Access Control → Roles**. Each row shows the role name, its description, and a **System** badge for the roles that can't be deleted. Type in **Search** to filter the list by name as you type. With *Manage Roles*, each row has **Edit** and, except for system roles, **Delete**, and the top of the page has **Add Role**.
 
 ![The Roles list](images/roles.webp)
 
@@ -30,7 +30,7 @@ The grid layout shows the same information in **Name**, **Kind** and **Actions**
 
 ## Add a role
 
-1. Open **Access Control > Roles** and click **Add Role**.
+1. Open **Access Control → Roles** and click **Add Role**.
 2. On **Create Role**, type a **Name**. It is required, must be unique and can't contain `/`.
 3. Optionally type a **Description**, shown under the name in the list.
 4. Click **Save & Configure** to go straight to the permissions, or **Create** to go back to the list.
@@ -44,7 +44,7 @@ The site confirms *Role created successfully.* The name can't be changed later; 
 
 ![The editor of a role, with its permissions grouped by feature](images/role-editor.webp)
 
-1. Open **Access Control > Roles** and click **Edit** on the role (or click its name).
+1. Open **Access Control → Roles** and click **Edit** on the role (or click its name).
 2. Optionally change the **Description**.
 3. Tick the permissions the role needs in the **Allow** column. Type in **Search permissions** to find one quickly.
 4. Click **Save** to go back to the list, or open the arrow next to **Save** and choose **and continue** to stay on the page.
@@ -77,7 +77,7 @@ Editing **Administrator** shows *This system role provides comprehensive access 
 
 ## Delete a role
 
-1. Open **Access Control > Roles**.
+1. Open **Access Control → Roles**.
 2. Click **Delete** on the role's row and confirm.
 
 The site confirms *Role deleted successfully.* People who had the role lose its permissions and are signed out, the same way as after an edit. **Administrator**, **Authenticated** and **Anonymous** are system roles: they show the **System** badge, have no **Delete** button, and the site refuses to delete them.
@@ -97,7 +97,7 @@ When a feature is turned on for the first time, it adds its default permissions 
 
 ## Other places roles are used
 
-- **Settings > Security > User Login**, on the **Two-Factor Authentication** tab, can require two-factor authentication for chosen roles. See [Login and registration](login-and-registration.md).
+- **Settings → Security → User Login**, on the **Two-Factor Authentication** tab, can require two-factor authentication for chosen roles. See [Login and registration](login-and-registration.md).
 - OpenID Connect applications can be given roles for the client credentials flow. See [OpenID Connect server](openid-server.md).
 - Workflows can assign or remove a role, or find the users in a role. See the [User activities](../forms-and-automation/workflow-activities.md#user).
 - Deployment plans can export and import all roles. See [Import and export](../administration/import-and-export.md).

@@ -16,13 +16,13 @@ You will use a Razor file to call this query.
 
 To make this sample a little more interesting, we're going to edit the BlogPost content type to allow multiple Category assignments.
 
-Go to Design > Content Definition > Content Types and click to edit Blog Post. Then click Edit next to the "Category" Taxonomy field. Uncheck `Unique` and click `Save`. While we're here, since we want to make the 2 taxonomy fields (Category and Tags) searchable, you can do that now. Click to edit Category, then check the box for `Include this element in the index.`
+Go to **Design → Content Definition → Content Types** and click to edit Blog Post. Then click Edit next to the "Category" Taxonomy field. Uncheck `Unique` and click `Save`. While we're here, since we want to make the 2 taxonomy fields (Category and Tags) searchable, you can do that now. Click to edit Category, then check the box for `Include this element in the index.`
 
 Now do the same for the `Tags` field on the Blog Post content type.
 
-Be sure to rebuild the index by navigating to `Search > Indexing > Lucene Indices` and then clicking "Rebuild."
+Be sure to rebuild the index by navigating to **Search → Indexing → Lucene Indices** and then clicking "Rebuild."
 
-Then navigate to Content > Content Types > Taxonomy and click to edit Categories. Then click Add Category to add "Politics". Then publish the taxonomy.
+Then navigate to **Content → Content Types → Taxonomy** and click to edit Categories. Then click Add Category to add "Politics". Then publish the taxonomy.
 
 You will probably want to create a few more blog posts and assign various combinations of Tags and Categories so you can try out your filter.
 

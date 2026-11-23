@@ -366,7 +366,7 @@ Thus `Manage Content › Edit Article` becomes `Dashboard › Manage Content ›
 
 ### Disabling admin breadcrumbs
 
-The **Show breadcrumb** setting under *Settings → Admin* (`AdminSettings.ShowBreadcrumb`, enabled by default) hides the admin trail but retains the heading and browser title according to `heading` and `page-title`.
+The **Show breadcrumb** setting under **Settings → Admin** (`AdminSettings.ShowBreadcrumb`, enabled by default) hides the admin trail but retains the heading and browser title according to `heading` and `page-title`.
 
 The helper checks the setting before any child or provider work. When `ShowBreadcrumb` is false, it never calls `GetChildContentAsync` and does not resolve, enumerate, construct, or invoke `IBreadcrumbProvider` implementations, including the Dashboard provider. It creates no `BreadcrumbContext` or `BreadcrumbItem` objects, not even the current title node. This title-only path applies regardless of provider registration.
 
@@ -456,7 +456,7 @@ The `Breadcrumb` shape carries the `oc-breadcrumb` class, alongside a class buil
 }
 ```
 
-The same template is where a theme drops the `oc-breadcrumb-title` block to let the trail stand in for the title, or skips the `IsCurrent` node so the current page is not repeated in the trail. To turn the trail off across the whole admin without touching a template, clear **Show breadcrumb** under *Settings → Admin*; the page title is then rendered on its own.
+The same template is where a theme drops the `oc-breadcrumb-title` block to let the trail stand in for the title, or skips the `IsCurrent` node so the current page is not repeated in the trail. To turn the trail off across the whole admin without touching a template, clear **Show breadcrumb** under **Settings → Admin**; the page title is then rendered on its own.
 
 ### Content management trails
 
