@@ -69,3 +69,10 @@ For example, to hide the `TitlePart` editor row on the `Article` content type ed
 ```
 
 `TitlePart_Edit` only targets the inner editor shape. Use `ContentPart_Edit` when you want to hide or move the whole editor row, including its wrapper.
+
+## Video
+
+This video sets the title of content items with the Title part, including titles generated from a pattern.
+
+<!-- video:title-part -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/Ah_1UmINVcU" title="Title Part: Titles, Generated Titles and Display Text" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

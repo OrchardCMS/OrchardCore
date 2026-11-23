@@ -834,3 +834,8 @@ This video shows how field editors and display modes give one field many faces.
 
 <!-- video:content-fields-editors -->
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/zujP0UIdETM" title="Field Editors and Display Modes: One Field, Many Faces" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video relates content items to each other and to users with the Content Picker and User Picker fields.
+
+<!-- video:content-picker-fields -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/6a2SSz2Ky60" title="Content Picker and User Picker Fields: Relate Content Items" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

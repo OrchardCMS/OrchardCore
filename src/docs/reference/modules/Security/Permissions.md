@@ -148,3 +148,15 @@ When creating new permissions in Orchard Core, it is crucial to ensure that each
 **Note**: Always document new permissions thoroughly, including their descriptions and any security implications, especially if they are security critical permissions that allow users to elevate their permissions.
 
 By following these steps, you can help maintain a well-organized and secure permissions system in Orchard Core.
+
+## Videos
+
+This video controls who can see each media folder with Secure Media.
+
+<!-- video:media-secure-media -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/MD0S2Pc9Oo0" title="Secure Media: Control Who Sees Each Media Folder" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video purges the local copy of media files that are stored elsewhere.
+
+<!-- video:media-cache -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/MTkbtx3ykaE" title="Media Cache: Purge the Local Copy of Remote Media" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

@@ -149,3 +149,20 @@ To put every item of the type under a fixed start, add it before the pattern, fo
 
 !!! example "See it in practice"
     [Build a landing page](../use-cases/landing-page-with-widgets.md) walks through this step by step.
+
+## Videos
+
+This video sets the title of content items with the Title part, including titles generated from a pattern.
+
+<!-- video:title-part -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/Ah_1UmINVcU" title="Title Part: Titles, Generated Titles and Display Text" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video gives content items a stable name with the Alias part.
+
+<!-- video:alias-part -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/JrAnXKPkCxg" title="Alias Part: Give Content Items a Stable Name" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video gives content items friendly URLs with Autoroute.
+
+<!-- video:autoroute-urls -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/9mH6pyzOCw8" title="Autoroute: Friendly URLs for Your Content Items" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

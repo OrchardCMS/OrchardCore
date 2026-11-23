@@ -104,3 +104,15 @@ If a widget's content type no longer exists (or is no longer allowed in the flow
 
 !!! example "See it in practice"
     [Build a landing page](../use-cases/landing-page-with-widgets.md) walks through this step by step.
+
+## Videos
+
+This video builds a page from widgets with the Flow part.
+
+<!-- video:flows-flow-part -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/kuIT3d1zubg" title="Flow Part: Build Pages From Widgets" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video embeds content items inside another content item with the Bag part.
+
+<!-- video:flows-bag-part -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/EBz1f1Bgcgw" title="Bag Part: Embed Content Items Inside a Content Item" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
