@@ -27,29 +27,33 @@ const shortcodeBtnTemplate = `
 </button>
 `;
 
-// Wraps each .shortcode-modal-input class with a wrapper, and attaches detaches the shortcode app as required.
+// Wraps an element with a .shortcode-modal-wrapper and appends the shortcode button to it.
+// The click handler is attached to that exact button, never through a page-wide query, so a
+// button created for another editor (e.g. a CodeMirror editor wrapped by
+// initializeCodeMirrorShortcodeWrapper, which ES module editors call before DOMContentLoaded)
+// never gets a second handler.
+const wrapWithShortcodeButton = (element, onInsert) => {
+    const wrapper = document.createElement('div');
+    wrapper.classList.add('shortcode-modal-wrapper');
+    element.parentElement.insertBefore(wrapper, element);
+    wrapper.appendChild(element);
+
+    wrapper.insertAdjacentHTML('beforeend', shortcodeBtnTemplate);
+    wrapper.lastElementChild.addEventListener('click', () => {
+        shortcodesApp.init(onInsert);
+    });
+};
+
+// Wraps each .shortcode-modal-input with a wrapper and attaches the shortcode app as required.
 document.addEventListener('DOMContentLoaded', () => {
-    const inputs = document.querySelectorAll('.shortcode-modal-input');
-    inputs.forEach(input => {
-        const wrapper = document.createElement('div');
-        wrapper.classList.add('shortcode-modal-wrapper');
-        input.parentElement.insertBefore(wrapper, input);
-        wrapper.appendChild(input);
+    document.querySelectorAll('.shortcode-modal-input').forEach(input => {
+        if (input.parentElement.classList.contains('shortcode-modal-wrapper')) {
+            return;
+        }
 
-        input.parentElement.insertAdjacentHTML('beforeend', shortcodeBtnTemplate);        
+        wrapWithShortcodeButton(input, defaultValue => insertAtCaret(input, defaultValue));
     });
-
-    const buttons = document.querySelectorAll('.shortcode-modal-btn');
-    buttons.forEach(button => {
-        button.addEventListener('click', event => {
-            const input = event.target.closest('.shortcode-modal-wrapper').querySelector('.shortcode-modal-input');
-
-            shortcodesApp.init(defaultValue => {
-                insertAtCaret(input, defaultValue);
-            });
-        });
-    });
-})
+});
 
 var shortcodesApp;
 
@@ -94,11 +98,16 @@ window.initializeShortcodesApp = function (element) {
                     // itself) - this.$el is now the modal-dialog div, not the .modal container,
                     // so bootstrap.Modal must target the actual container (`element`, closed
                     // over from initializeShortcodesApp's parameter) instead.
-                    this.modal = new bootstrap.Modal(element);
+                    // A single Modal instance is reused: each extra instance on the same element
+                    // adds its own backdrop, which stays over the page once the modal is closed.
+                    // markRaw keeps Vue from wrapping the Bootstrap instance in a reactive proxy.
+                    if (!this.modal) {
+                        this.modal = Vue.markRaw(bootstrap.Modal.getOrCreateInstance(element));
+                        element.addEventListener('shown.bs.modal', () => {
+                            this.$refs.filter.focus();
+                        });
+                    }
                     this.modal.show();
-                    element.addEventListener('shown.bs.modal', () => {
-                        this.$refs.filter.focus();
-                    });
                 },
                 onClose()
                 {
@@ -131,17 +140,7 @@ window.initializeShortcodesApp = function (element) {
 
 // initializes a code mirror editor with a shortcode modal.
 window.initializeCodeMirrorShortcodeWrapper = function (editor) {
-    const codemirrorWrapper = editor.display.wrapper;
-
-    const wrapper = document.createElement('div');
-    wrapper.classList.add('shortcode-modal-wrapper');
-    codemirrorWrapper.parentElement.insertBefore(wrapper, codemirrorWrapper);
-    wrapper.appendChild(codemirrorWrapper);
-
-    codemirrorWrapper.parentElement.insertAdjacentHTML('beforeend', shortcodeBtnTemplate);
-    codemirrorWrapper.parentElement.querySelector('.shortcode-modal-btn').addEventListener('click', () => {
-        shortcodesApp.init(defaultValue => {
-            editor.replaceSelection(defaultValue);
-        });
+    wrapWithShortcodeButton(editor.display.wrapper, defaultValue => {
+        editor.replaceSelection(defaultValue);
     });
 };
