@@ -7,7 +7,7 @@ An alias is not a URL. Use [`AutoroutePart`](../Autoroute/README.md) when a cont
 
 ## Enable the feature
 
-Enable the **Alias** feature (`OrchardCore.Alias`) under **Configuration** > **Features**.
+Enable the **Alias** feature (`OrchardCore.Alias`) under **Tools** > **Features**.
 The feature depends on `OrchardCore.ContentTypes`.
 
 To enable it from a recipe:

@@ -14,16 +14,16 @@ It also ships UI explorers — Swagger UI, ReDoc, and Scalar — so developers c
 
 ## Getting Started
 
-1. Enable the **OrchardCore.OpenApi** feature and the desired UI sub-feature(s) — **OpenApi Swagger UI**, **OpenApi ReDoc UI**, **OpenApi Scalar UI** — from the admin dashboard (Configuration → Features).
+1. Enable the **OrchardCore.OpenApi** feature and the desired UI sub-feature(s) — **OpenApi Swagger UI**, **OpenApi ReDoc UI**, **OpenApi Scalar UI** — from the admin dashboard (Tools → Features).
 2. Log in with an account that has the **ViewOpenApiContent** permission (granted to Administrators by default).
-3. To make "Try it out" / "Send" requests work against secured API endpoints, run the **OpenAPI Documentation — Bearer/PKCE** recipe (Configuration → Recipes) — see [API Authentication](#api-authentication) below. Browsing the documentation itself needs no extra setup.
+3. To make "Try it out" / "Send" requests work against secured API endpoints, run the **OpenAPI Documentation — Bearer/PKCE** recipe (Tools → Recipes) — see [API Authentication](#api-authentication) below. Browsing the documentation itself needs no extra setup.
 4. Navigate to one of the explorer URLs listed above.
 
 > **Note:** All OpenAPI documentation endpoints (`/swagger`, `/redoc`, `/scalar`, `/openapi`) require authentication and the `ViewOpenApiContent` permission. Unauthenticated users are redirected to the admin login page. Authenticated users without the permission receive a `403 Forbidden` response. The JSON schema endpoints (e.g. `/swagger/v1/swagger.json`) also require the `ViewOpenApiContent` permission by default — unauthenticated requests receive `401 Unauthorized` — unless **Allow anonymous access to the API schema** is enabled in the OpenApi settings.
 
 ## Configuration
 
-The OpenAPI settings page (**Configuration → Settings → OpenApi**) shows the enablement status of each documentation UI (they are toggled on the **Features** page, not here; disabled UIs return `404 Not Found`) and exposes a single setting:
+The OpenAPI settings page (**Settings → OpenApi**) shows the enablement status of each documentation UI (they are toggled on the **Features** page, not here; disabled UIs return `404 Not Found`) and exposes a single setting:
 
 - **Allow anonymous access to the API schema** — disabled by default. When enabled, the JSON schema endpoints can be fetched without authentication, which external tools like NSwag rely on. The OpenApi generation recipes (`OpenApiGeneration` and the `OpenApiGenerationSetup` recipe used by `tools/OpenApiClientGenerator`) enable this setting automatically.
 
@@ -37,7 +37,7 @@ If the silent request can't complete because interaction is required — the adm
 
 ### Provisioning with the OpenApiPkce recipe
 
-Run the **OpenAPI Documentation — Bearer/PKCE** recipe (Configuration → Recipes). It:
+Run the **OpenAPI Documentation — Bearer/PKCE** recipe (Tools → Recipes). It:
 
 - enables the **OpenApi**, **OpenID Authorization Server**, **OpenID Token Validation**, and **OpenID Management** features;
 - turns on the authorization-code flow with **PKCE required** and enables local (same-tenant) token validation for the `"Api"` scheme;
@@ -86,7 +86,7 @@ The manual procedure below remains useful when you want to regenerate against a 
 
 2. **Running application** — the site must be running so NSwag can fetch the OpenAPI JSON.
 
-3. **Anonymous schema access** — the JSON schema endpoints require authentication by default, and the NSwag CLI fetches them anonymously. Run the **OpenApi Generation** recipe on the tenant (Configuration → Recipes), which enables the full API feature set *and* the **Allow anonymous access to the API schema** setting — or enable the setting manually in **Configuration → Settings → OpenApi**.
+3. **Anonymous schema access** — the JSON schema endpoints require authentication by default, and the NSwag CLI fetches them anonymously. Run the **OpenApi Generation** recipe on the tenant (Tools → Recipes), which enables the full API feature set *and* the **Allow anonymous access to the API schema** setting — or enable the setting manually in **Settings → OpenApi**.
 
     > **Warning:** the recipe's settings step **replaces the tenant's stored OpenApi settings**, so any configured OAuth2 authentication (client ID, endpoint URLs, scopes) is reset. Prefer running it on a throwaway generation tenant; on a configured tenant, enable the setting manually instead.
 
