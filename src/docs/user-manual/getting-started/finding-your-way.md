@@ -120,6 +120,8 @@ With the **Content Quick Navigation** feature (`OrchardCore.Contents.QuickNaviga
 
 Most admin pages show a breadcrumb above the title, for example **Dashboard / Manage Content / Article**. Click any part of it to go back to that page. Administrators can hide the breadcrumb with **Show breadcrumb**.
 
+When you create or edit an item that belongs to a list, such as a blog post in a blog, the breadcrumb includes the list, for example **Dashboard / Manage Content / Blog / New Blog Post**. Click the list's name to see all of its items.
+
 ## Work with admin lists
 
 Many admin pages show a list: content items, users, roles, queries, tenants and more. They all work the same way.
