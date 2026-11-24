@@ -228,11 +228,6 @@ msgctxt "TheAdmin.Views.Items.AdminSchemesDeploymentStep.Fields.Thumbnail"
 msgid "Exports the admin schemes (their colors, fonts, sizes, corners and spacing), and the default scheme."
 msgstr ""
 
-#: Views/Items/ThemeEntry-ButtonsSchemes.SummaryAdmin.cshtml
-msgctxt "TheAdmin.Views.Items.ThemeEntry-ButtonsSchemes.SummaryAdmin"
-msgid "Schemes"
-msgstr ""
-
 #: Views/Layout.cshtml
 msgctxt "TheAdmin.Views.Layout"
 msgid "Are you sure you want to remove this element?"
@@ -672,6 +667,11 @@ msgstr ""
 #: Views/Schemes/Index.cshtml
 msgctxt "TheAdmin.Views.Schemes.Index"
 msgid "Themes"
+msgstr ""
+
+#: Views/ThemeEntrySchemesButton.cshtml
+msgctxt "TheAdmin.Views.ThemeEntrySchemesButton"
+msgid "Schemes"
 msgstr ""
 
 #: Views/ToggleTheme.cshtml

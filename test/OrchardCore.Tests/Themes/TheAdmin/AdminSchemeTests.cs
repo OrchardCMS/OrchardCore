@@ -7,6 +7,7 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.DisplayManagement.Zones;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell;
@@ -467,11 +468,13 @@ public sealed class AdminSchemeTests
     }
 
     [Theory]
-    [InlineData("TheAdmin", true, true)]
-    [InlineData("theadmin", true, true)]
-    [InlineData("TheTheme", true, false)]
-    [InlineData("TheAdmin", false, false)]
-    public async Task SchemesButton_RendersOnTheCardOfTheAdmin_ForUsersWhoCanApplyThemes(string themeId, bool authorized, bool rendered)
+    [InlineData("TheAdmin", "TheAdmin", true, true)]
+    [InlineData("theadmin", "TheAdmin", true, true)]
+    [InlineData("TheTheme", "TheAdmin", true, false)]
+    [InlineData("TheAdmin", "TheAdmin", false, false)]
+    // Another admin theme is in use: TheAdmin's shapes, the button's included, are not there.
+    [InlineData("TheAdmin", "AdminThemeSample", true, false)]
+    public async Task SchemesButton_RendersOnTheCardOfTheAdmin_WhileItIsTheTheme_ForUsersWhoCanApplyThemes(string themeId, string currentThemeId, bool authorized, bool rendered)
     {
         var authorizationService = new Mock<IAuthorizationService>();
         authorizationService
@@ -485,7 +488,12 @@ public sealed class AdminSchemeTests
 
         // The driver is internal to the theme.
         var driverType = typeof(AdminSchemeStore).Assembly.GetType("OrchardCore.Themes.TheAdmin.Drivers.ThemeEntrySchemesDisplayDriver", throwOnError: true);
-        var driver = Assert.IsAssignableFrom<DisplayDriver<ThemeEntry>>(Activator.CreateInstance(driverType, authorizationService.Object, httpContextAccessor));
+        var currentTheme = new Mock<IExtensionInfo>();
+        currentTheme.SetupGet(x => x.Id).Returns(currentThemeId);
+        var themeManager = new Mock<IThemeManager>();
+        themeManager.Setup(x => x.GetThemeAsync()).ReturnsAsync(currentTheme.Object);
+
+        var driver = Assert.IsAssignableFrom<DisplayDriver<ThemeEntry>>(Activator.CreateInstance(driverType, authorizationService.Object, httpContextAccessor, themeManager.Object));
 
         var extension = new Mock<IExtensionInfo>();
         extension.SetupGet(x => x.Id).Returns(themeId);
