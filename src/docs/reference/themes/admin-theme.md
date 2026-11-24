@@ -190,7 +190,7 @@ These classes enable targeted styling of specific content type editors without r
 
 ## Admin Schemes
 
-The look of **TheAdmin** comes from a scheme: its colors, typefaces, base font size, density and corners. Admins manage the schemes from the **Schemes** button of TheAdmin's card on **Design > Themes** (they need the `ApplyTheme` permission). The default scheme is set with the **Set as default** action of the list and shown with a **Default** badge; it can't be deleted. Each user can pick another scheme from the theme menu of the top bar, under the light and dark modes; **Site default** follows the site's choice again. A user's pick is kept in a `{tenant}-TheAdmin-scheme` cookie.
+The look of **TheAdmin** comes from a scheme: its colors, typefaces, base font size, density and corners. Admins manage the schemes from the **Schemes** button of TheAdmin's card on **Design > Themes** (they need the `ApplyTheme` permission). The default scheme is set with the **Set as default** action of the list and shown with a **Default** badge; it can't be deleted. Each user can pick another scheme from the theme menu of the top bar, under the light and dark modes, where the default scheme is marked "(default)": picking it follows the site's choice again. A user's pick is kept in a `{tenant}-TheAdmin-scheme` cookie.
 
 A scheme is made of four colors, from which every other color of the admin is derived for the light and the dark mode, each checked against the surfaces it is drawn on so that text reaches 4.5:1 and the boundaries of controls and focus indicators 3:1 (WCAG 2.2 AA):
 
@@ -213,7 +213,7 @@ Optional settings fine tune what is derived: the hue and saturation of the page,
 
 The fonts are typed, with the theme's font suggested. Lato is served by the theme, and the admin never calls a font CDN; any other font, e.g. `Segoe UI` or `Georgia, serif`, must be installed on the users' devices.
 
-TheAdmin seeds eight schemes (Gray, the default, which keeps the look of the previous TheAdmin, Blue, Ocean, Forest, Plum, Sunset, Graphite and Gold) the first time its schemes are read. They are ordinary records from then on, and they are seeded once: deleting all of them doesn't bring them back.
+TheAdmin seeds seven schemes (Gray, the default, which keeps the look of the previous TheAdmin, Blue, Ocean, Forest, Plum, Sunset and Graphite) the first time its schemes are read. They are ordinary records from then on, and they are seeded once: deleting all of them doesn't bring them back.
 
 Schemes are exported with the **Admin schemes** deployment step and imported with the `AdminSchemes` recipe step. An entry whose `ItemId` matches a stored scheme replaces it; any other is added. The optional `DefaultSchemeId` makes a scheme the default one.
 

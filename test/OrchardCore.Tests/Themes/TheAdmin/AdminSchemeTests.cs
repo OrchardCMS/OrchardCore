@@ -296,9 +296,9 @@ public sealed class AdminSchemeTests
         Assert.Equal("blue", await service.GetSchemeAttributeAsync());
 
         // The user's pick.
-        httpContext.Request.Headers.Cookie = "Default-TheAdmin-scheme=gold";
-        Assert.Equal("gold", await service.GetUserSchemeAsync());
-        Assert.Equal("gold", await service.GetSchemeAttributeAsync());
+        httpContext.Request.Headers.Cookie = "Default-TheAdmin-scheme=plum";
+        Assert.Equal("plum", await service.GetUserSchemeAsync());
+        Assert.Equal("plum", await service.GetSchemeAttributeAsync());
 
         // A pick that was deleted since, or that is not a scheme id, is ignored.
         httpContext.Request.Headers.Cookie = "Default-TheAdmin-scheme=missing";
@@ -500,7 +500,7 @@ public sealed class AdminSchemeTests
         Assert.Equal(rendered, row.Zones.IsNotEmpty("FooterEnd"));
     }
 
-    private static readonly string[] s_defaultIds = ["gray", "blue", "ocean", "forest", "plum", "sunset", "graphite", "gold"];
+    private static readonly string[] s_defaultIds = ["gray", "blue", "ocean", "forest", "plum", "sunset", "graphite"];
 
     // A store over the given document, or a new one, with a cache of its own.
     private static (AdminSchemeStore Store, InMemoryAdminSchemesDocumentManager Documents) CreateStore(InMemoryAdminSchemesDocumentManager documents = null)

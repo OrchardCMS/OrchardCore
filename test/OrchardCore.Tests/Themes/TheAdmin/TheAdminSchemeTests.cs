@@ -16,7 +16,7 @@ namespace OrchardCore.Tests.Themes.TheAdmin;
 public sealed class TheAdminSchemeTests
 {
     // The definitions the theme's schemes were tuned with; the seeded records must reproduce them exactly.
-    public static TheoryData<string> DefaultSchemes => ["gray", "blue", "ocean", "forest", "plum", "sunset", "graphite", "gold"];
+    public static TheoryData<string> DefaultSchemes => ["gray", "blue", "ocean", "forest", "plum", "sunset", "graphite"];
 
     private static readonly Dictionary<string, AdminScheme> s_builtIn = new(StringComparer.Ordinal)
     {
@@ -32,11 +32,6 @@ public sealed class TheAdminSchemeTests
         ["plum"] = new() { Id = "plum", Primary = "#7b4fc0", Deep = "#3d2a66", Ink = "#170f2b", Accent = "#b794f4", Hue = 262, Saturation = 0.7 },
         ["sunset"] = new() { Id = "sunset", Primary = "#c2551f", Deep = "#5c2a1c", Ink = "#24100b", Accent = "#f6ad55", Hue = 18, Saturation = 0.6 },
         ["graphite"] = new() { Id = "graphite", Primary = "#4b6584", Deep = "#2d3540", Ink = "#121519", Accent = "#94a8bf", Hue = 213, Saturation = 0.2 },
-        ["gold"] = new()
-        {
-            Id = "gold", Primary = "#eaa52c", Deep = "#1e1e1e", Ink = "#09080b", Accent = "#eaa52c",
-            Hue = 240, Saturation = 0.08, OnPrimary = "#1e1e1e",
-        },
     };
 
     // The typography and shape tokens: the Sass writes them in a block of their own, and they are not colors.
@@ -160,12 +155,12 @@ public sealed class TheAdminSchemeTests
 
         var schemes = await store.ListAsync();
 
-        Assert.Equal(["gray", "blue", "ocean", "forest", "plum", "sunset", "graphite", "gold"], schemes.Select(scheme => scheme.Id));
+        Assert.Equal(["gray", "blue", "ocean", "forest", "plum", "sunset", "graphite"], schemes.Select(scheme => scheme.Id));
         Assert.Equal("gray", await store.GetDefaultIdAsync());
 
         var (css, _) = await store.GetStylesheetAsync();
 
-        Assert.Contains("[data-ta-scheme=\"gold\"]{", css, StringComparison.Ordinal);
+        Assert.Contains("[data-ta-scheme=\"graphite\"]{", css, StringComparison.Ordinal);
         Assert.Contains("[data-bs-theme=\"dark\"][data-ta-scheme=\"blue\"]{", css, StringComparison.Ordinal);
         Assert.Contains(".ta-scheme-swatch[data-scheme=\"blue\"]>span:nth-child(4){background-color:#5aa4ef}", css, StringComparison.Ordinal);
         Assert.DoesNotContain("--bs-", css, StringComparison.Ordinal);

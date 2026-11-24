@@ -132,7 +132,7 @@ b {
     border-color: var(--ta-control-checked-border);
 }
 
-// The marks are drawn in the color of text on the primary (dark on the gold scheme).
+// The marks are drawn in the color of text on the primary (dark on a light primary).
 .form-check-input:checked[type="checkbox"] {
     --bs-form-check-bg-image: var(--ta-check-icon);
 }

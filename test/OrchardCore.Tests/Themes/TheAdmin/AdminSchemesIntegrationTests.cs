@@ -27,7 +27,7 @@ public sealed class AdminSchemesIntegrationTests
         var index = await GetPageAsync(context, "Admin/TheAdmin/Schemes");
 
         Assert.Contains("Admin schemes", index, StringComparison.Ordinal);
-        Assert.Contains("/Admin/TheAdmin/Schemes/Edit/gold\"", index, StringComparison.Ordinal);
+        Assert.Contains("/Admin/TheAdmin/Schemes/Edit/graphite\"", index, StringComparison.Ordinal);
         Assert.Contains("/Admin/TheAdmin/Schemes/SetDefault/blue\"", index, StringComparison.Ordinal);
         Assert.DoesNotContain("/Admin/TheAdmin/Schemes/SetDefault/gray\"", index, StringComparison.Ordinal);
         Assert.DoesNotContain("/Admin/TheAdmin/Schemes/Delete/gray\"", index, StringComparison.Ordinal);

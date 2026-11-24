@@ -1,9 +1,10 @@
-// The scheme picker of a theme that supports schemes (e.g. ToggleTheme.cshtml of TheAdmin). The list of the picker
+// The scheme picker of TheAdmin's user menu (ToggleTheme.cshtml). The list of the picker
 // carries 'data-admin-scheme-picker', the attribute of <html> the theme's schemes stylesheet selects on
 // ('data-scheme-attribute'), the name of the cookie the layouts read ('data-cookie-name') and the site's default
 // scheme ('data-site-scheme'); each option carries its scheme in 'data-admin-scheme-value'. A pick is applied to the
 // page at once and kept in the cookie, so the next page is rendered in it by the server rather than repainted after it
-// loads. 'Site default' (an empty value) removes the cookie, so the user follows the site's default scheme again.
+// loads. The site's default scheme carries an empty value: picking it removes the cookie, so the user follows the
+// site's default scheme again.
 
 (() => {
     const oneYearInSeconds = 60 * 60 * 24 * 365;
@@ -22,7 +23,7 @@
         }
 
         list.querySelectorAll("[data-admin-scheme-value]").forEach((option) => {
-            const isChosen = option.dataset.themeSchemeValue === choice;
+            const isChosen = option.dataset.adminSchemeValue === choice;
             option.classList.toggle("active", isChosen);
             option.setAttribute("aria-pressed", isChosen ? "true" : "false");
         });
@@ -44,7 +45,7 @@
             return;
         }
 
-        const choice = option.dataset.themeSchemeValue;
+        const choice = option.dataset.adminSchemeValue;
         applyScheme(list, choice);
         storeScheme(list, choice);
     });

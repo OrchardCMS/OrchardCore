@@ -178,7 +178,7 @@ public sealed class AdminSchemePalette
 
     /// <summary>
     /// Resolves a scheme of four colors only, working out the rest: the hue and saturation from the deep color, and
-    /// dark text on the primary when white text would need the primary darkened too far (a light primary such as a
+    /// dark text on the primary when white text would need the primary darkened too far (a light primary, e.g. a
     /// gold).
     /// </summary>
     public static AdminSchemePalette FromColors(AdminColor primary, AdminColor deep, AdminColor ink, AdminColor accent, bool lightMenu = false)

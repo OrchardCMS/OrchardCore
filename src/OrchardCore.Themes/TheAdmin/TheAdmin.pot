@@ -701,10 +701,12 @@ msgstr ""
 
 #: Views/ToggleTheme.cshtml
 msgctxt "TheAdmin.Views.ToggleTheme"
-msgid "Site default"
+msgid "Toggle theme"
 msgstr ""
 
+#. Format arguments: {0}: scheme.Name
 #: Views/ToggleTheme.cshtml
+#, csharp-format
 msgctxt "TheAdmin.Views.ToggleTheme"
-msgid "Toggle theme"
+msgid "{0} (default)"
 msgstr ""
