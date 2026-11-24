@@ -62,7 +62,7 @@ A shortcode template is your own shortcode, written in Liquid. For example, a `[
 | **Name** | Required. The name editors type in brackets, without the brackets, such as `site_name`. Must be unique and a valid shortcode name: no spaces or brackets. A template with the name of a built-in shortcode replaces it. |
 | **Hint** | A short explanation shown in **Available Shortcodes**. |
 | **Usage** | An example of how to use it, shown in **Available Shortcodes**. Simple HTML is allowed, for example a small table of arguments. |
-| **Categories** | The categories it is listed under in **Available Shortcodes**. Pick existing ones or type a new one. |
+| **Categories** | The categories it is listed under in **Available Shortcodes**. Pick existing ones, or type a new one in the search box and press Enter (or click **Add the category: ...**). Click a category under the list to remove it. |
 | **Default Shortcode Value** | The text inserted when an editor clicks **Add**. Leave it empty to insert `[name]`. |
 | **Content** | Required. The Liquid template that produces the output. It must be valid Liquid, or saving fails with the error. |
 

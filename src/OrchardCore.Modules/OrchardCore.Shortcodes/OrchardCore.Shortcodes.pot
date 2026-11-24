@@ -58,29 +58,11 @@ msgctxt "OrchardCore.Shortcodes.Controllers.AdminController"
 msgid "The template doesn't contain a valid Liquid expression. Details: {0}"
 msgstr ""
 
-#: Services/ShortcodesJSLocalizer.cs
-msgctxt "OrchardCore.Shortcodes.Services.ShortcodesJSLocalizer"
-msgid "No categories found"
-msgstr ""
-
-#: Services/ShortcodesJSLocalizer.cs
-msgctxt "OrchardCore.Shortcodes.Services.ShortcodesJSLocalizer"
-msgid "Press enter to add a category"
-msgstr ""
-
-#: Services/ShortcodesJSLocalizer.cs
-msgctxt "OrchardCore.Shortcodes.Services.ShortcodesJSLocalizer"
-msgid "Remove"
-msgstr ""
-
-#: Services/ShortcodesJSLocalizer.cs
-msgctxt "OrchardCore.Shortcodes.Services.ShortcodesJSLocalizer"
-msgid "Select"
-msgstr ""
-
-#: Services/ShortcodesJSLocalizer.cs
-msgctxt "OrchardCore.Shortcodes.Services.ShortcodesJSLocalizer"
-msgid "Type to search"
+#. Format arguments: {0}: "{0}"
+#: Views/Admin/Create.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Shortcodes.Views.Admin.Create"
+msgid "Add the category: {0}"
 msgstr ""
 
 #: Views/Admin/Create.cshtml
@@ -123,6 +105,18 @@ msgctxt "OrchardCore.Shortcodes.Views.Admin.Create"
 msgid "Name"
 msgstr ""
 
+#. Format arguments: {0}: "{0}"
+#: Views/Admin/Create.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Shortcodes.Views.Admin.Create"
+msgid "No categories match {0}"
+msgstr ""
+
+#: Views/Admin/Create.cshtml
+msgctxt "OrchardCore.Shortcodes.Views.Admin.Create"
+msgid "Remove"
+msgstr ""
+
 #: Views/Admin/Create.cshtml
 msgctxt "OrchardCore.Shortcodes.Views.Admin.Create"
 msgid "Save"
@@ -136,6 +130,11 @@ msgstr ""
 #: Views/Admin/Create.cshtml
 msgctxt "OrchardCore.Shortcodes.Views.Admin.Create"
 msgid "Save and continue"
+msgstr ""
+
+#: Views/Admin/Create.cshtml
+msgctxt "OrchardCore.Shortcodes.Views.Admin.Create"
+msgid "Search"
 msgstr ""
 
 #: Views/Admin/Create.cshtml
@@ -175,12 +174,24 @@ msgstr ""
 
 #: Views/Admin/Create.cshtml
 msgctxt "OrchardCore.Shortcodes.Views.Admin.Create"
+msgid "Type to search"
+msgstr ""
+
+#: Views/Admin/Create.cshtml
+msgctxt "OrchardCore.Shortcodes.Views.Admin.Create"
 msgid "Usage"
 msgstr ""
 
 #: Views/Admin/Create.cshtml
 msgctxt "OrchardCore.Shortcodes.Views.Admin.Create"
 msgid "and continue"
+msgstr ""
+
+#. Format arguments: {0}: "{0}"
+#: Views/Admin/Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Shortcodes.Views.Admin.Edit"
+msgid "Add the category: {0}"
 msgstr ""
 
 #: Views/Admin/Edit.cshtml
@@ -223,6 +234,18 @@ msgctxt "OrchardCore.Shortcodes.Views.Admin.Edit"
 msgid "Name"
 msgstr ""
 
+#. Format arguments: {0}: "{0}"
+#: Views/Admin/Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Shortcodes.Views.Admin.Edit"
+msgid "No categories match {0}"
+msgstr ""
+
+#: Views/Admin/Edit.cshtml
+msgctxt "OrchardCore.Shortcodes.Views.Admin.Edit"
+msgid "Remove"
+msgstr ""
+
 #: Views/Admin/Edit.cshtml
 msgctxt "OrchardCore.Shortcodes.Views.Admin.Edit"
 msgid "Save"
@@ -236,6 +259,11 @@ msgstr ""
 #: Views/Admin/Edit.cshtml
 msgctxt "OrchardCore.Shortcodes.Views.Admin.Edit"
 msgid "Save and continue"
+msgstr ""
+
+#: Views/Admin/Edit.cshtml
+msgctxt "OrchardCore.Shortcodes.Views.Admin.Edit"
+msgid "Search"
 msgstr ""
 
 #: Views/Admin/Edit.cshtml
@@ -271,6 +299,11 @@ msgstr ""
 #: Views/Admin/Edit.cshtml
 msgctxt "OrchardCore.Shortcodes.Views.Admin.Edit"
 msgid "Toggle Dropdown"
+msgstr ""
+
+#: Views/Admin/Edit.cshtml
+msgctxt "OrchardCore.Shortcodes.Views.Admin.Edit"
+msgid "Type to search"
 msgstr ""
 
 #: Views/Admin/Edit.cshtml

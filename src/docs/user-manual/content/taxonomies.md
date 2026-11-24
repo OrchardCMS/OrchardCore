@@ -80,7 +80,7 @@ To reorder terms or change their parent, drag a term up, down, or to the right u
 | **Required** | At least one term must be selected. |
 | **Unique** | Only one term can be selected (radio buttons instead of check boxes). |
 | **Leaves only** | Only terms without child terms can be selected. |
-| **What type of editor should be used?** | **Standard** shows the whole tree with a check box (or radio button) per term. **Tags** shows a search box where editors type to find terms. |
+| **What type of editor should be used?** | **Standard** shows the whole tree with a check box (or radio button) per term. **Tags** shows a drop-down list with a search box where editors type to find terms. |
 | **Open** | Only for the **Tags** editor. Editors can create a tag by typing it and pressing Enter. Only the tag's title is set. |
 | **What type of display mode should be used?** | **Standard** or **Tags** (the selected terms shown as tags on the site). |
 
@@ -89,7 +89,7 @@ The Blog recipe uses the **Tags** editor for the **Tags** field and **Standard**
 ## Pick terms on a content item
 
 - With the **Standard** editor, tick the terms you want (or pick one radio button when only one is allowed). Grayed-out terms are parents that can't be picked because only leaves are allowed.
-- With the **Tags** editor, start typing in the box (*Type to search*) and pick a term from the list. Click a tag's remove button to take it off. When the field is **Open**, type a new word and press Enter to create it (*Press enter to create a tag*).
+- With the **Tags** editor, click the list (*Type to search*, or the field's placeholder), type in its search box, and pick a term. The picked terms are shown as tags under the list; click a tag to take it off. When the field is **Unique**, the list holds the picked term, and its **×** button clears it. When the field is **Open**, type a new word and press Enter, or click **Create the tag: ...**, to create it.
 
 A tag created this way is added at the top level of the taxonomy, and the taxonomy is published for you so the new tag can be used straight away. Creating tags needs the *Manage taxonomies* permission.
 

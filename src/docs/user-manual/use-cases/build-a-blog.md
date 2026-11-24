@@ -91,7 +91,7 @@ The changes to the taxonomy go live only when you publish it. In the Blog recipe
 7. Under **Banner Image**, click **Add media**.
 8. Choose an image in the media library, or upload one there.
 9. Click **OK**.
-10. In **Tags**, type a tag, or choose an existing tag from the suggestions, and press Enter. Repeat for each tag.
+10. Click **Tags**, type in the search box, and click an existing tag. Repeat for each tag.
 11. Under **Category**, choose one category.
 12. Click **Preview** to see the post as visitors will, in a new tab.
 13. Click **Publish**. To keep working on it first, click **Save Draft** instead.

@@ -65,7 +65,7 @@ The table below lists the different libraries used as resources:
 | [Popper](https://github.com/popperjs/popper-core) | Positioning tooltips and popovers. | [MIT](https://github.com/floating-ui/floating-ui/blob/v2.x/LICENSE.md) |
 | [Sortable](https://github.com/SortableJS/sortablejs) | Create and reorder lists with drag-and-drop. | [MIT](https://github.com/SortableJS/sortablejs/blob/master/LICENSE) |
 | [Trumbowyg](https://github.com/Alex-D/Trumbowyg) | A lightweight and amazing WYSIWYG JavaScript editor. | [MIT](https://github.com/Alex-D/Trumbowyg/blob/develop/LICENSE) |
-| [vue-multiselect](https://github.com/shentao/vue-multiselect) | Universal select/multiselect/tagging component for Vue.js. | | [MIT](https://github.com/shentao/vue-multiselect/blob/master/LICENSE) |
+| [vue-multiselect](https://github.com/shentao/vue-multiselect) | Universal select/multiselect/tagging component for Vue.js. Obsolete: still registered as a resource, but unused by Orchard Core, and removed in the next major version. | [MIT](https://github.com/shentao/vue-multiselect/blob/master/LICENSE) |
 | [Vue.Draggable](https://github.com/SortableJS/Vue.Draggable) | Vue drag-and-drop component based on Sortable.js. | [MIT](https://github.com/SortableJS/Vue.Draggable/blob/master/LICENSE) |
 
 The below table lists the different Client side libraries:
