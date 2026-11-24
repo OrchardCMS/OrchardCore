@@ -36,6 +36,7 @@
         "OrchardCore.Flows",
         "OrchardCore.Html",
         "OrchardCore.Liquid",
+        "OrchardCore.Shortcodes.Templates",
         "OrchardCore.Title",
         "OrchardCore.Widgets",
 
@@ -277,6 +278,18 @@
           ]
         }
       ]
+    },
+    {
+      "name": "ShortcodeTemplates",
+      "ShortcodeTemplates": {
+        "es_test": {
+          "Content": "es test",
+          "Hint": "Shortcode used by the shortcode modal tests.",
+          "Usage": "[es_test]",
+          "DefaultValue": "[es_test]",
+          "Categories": []
+        }
+      }
     },
     {
       "name": "content",

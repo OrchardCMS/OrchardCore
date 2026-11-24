@@ -16,7 +16,7 @@ This page covers every localization screen. For a step-by-step walkthrough, see 
 
 | | |
 | --- | --- |
-| **Menu** | **Settings > Localization > Cultures**, **Settings > Localization > Content Culture**, **Settings > Localization > Content Culture Picker**, **Settings > Localization > Dynamic Translations** |
+| **Menu** | **Settings → Localization → Cultures**, **Settings → Localization → Content Culture**, **Settings → Localization → Content Culture Picker**, **Settings → Localization → Dynamic Translations** |
 | **Permission** | *Manage supported culture*; *Localize content for others*, *Localize own content*; *Manage ContentCulturePicker settings*; *View dynamic translations and statistics*, *Manage all dynamic translations*, *Manage ... translations* (one per culture) |
 | **Feature** | **Localization** (`OrchardCore.Localization`), **Content Localization** (`OrchardCore.ContentLocalization`), **Content Culture Picker** (`OrchardCore.ContentLocalization.ContentCulturePicker`), **Admin Culture Picker** (`OrchardCore.Localization.AdminCulturePicker`), **Content Language Header** (`OrchardCore.Localization.ContentLanguageHeader`), **Data Localization** (`OrchardCore.DataLocalization`), **Localized Content Item Sitemaps** (`OrchardCore.ContentLocalization.Sitemaps`) |
 
@@ -24,7 +24,7 @@ This page covers every localization screen. For a step-by-step walkthrough, see 
 
 ![The Cultures settings](images/cultures.webp)
 
-1. Open **Settings > Localization > Cultures**.
+1. Open **Settings → Localization → Cultures**.
 2. Pick a culture in the drop-down list under the table, for example `fr-FR (French (France))`, and click **Add culture**. Repeat for each language.
 3. Choose the **Default culture** with the radio button in its row.
 4. To remove a culture, click the trash button (**Remove culture**) in its row.
@@ -43,7 +43,7 @@ The **Localization** feature also translates the admin screens and the theme's b
 
 ## Make a content type translatable
 
-1. Open **Design > Content Definition > Content Types** and click **Edit** on the type.
+1. Open **Design → Content Definition → Content Types** and click **Edit** on the type.
 2. Click **Add Parts**, tick **Localization** and click **Add Selected Parts**. The part is added right away; there is nothing else to save.
 
 Every content item of that type now has a culture, the default culture for new items. The content items list shows the culture of each item as a badge with a globe icon.
@@ -56,7 +56,7 @@ Every content item of that type now has a culture, the default culture for new i
 4. The site copies the item into a new content item in that culture and opens its editor, with the message *Localized version of the content created successfully.*
 5. Translate the texts and click **Publish** or **Save Draft**.
 
-You can also translate from **Content > Content Items**: open the **Localizations** menu on the item's row and click the culture to create (**+**) or edit (pencil).
+You can also translate from **Content → Content Items**: open the **Localizations** menu on the item's row and click the culture to create (**+**) or edit (pencil).
 
 Each translation is a separate content item, with its own permalink, status and versions, linked to the others of the same *localization set*. If a translation already exists, the site shows *A localization already exists for '...'.* and stays on the item.
 
@@ -69,7 +69,7 @@ You also need the permission to edit content items of the type.
 
 ## Find items by culture
 
-In **Content > Content Items**, use the **Culture** drop-down to show the items of one culture, or **All cultures**. You can also type `culture:fr-FR` in the search box.
+In **Content → Content Items**, use the **Culture** drop-down to show the items of one culture, or **All cultures**. You can also type `culture:fr-FR` in the search box.
 
 ## Let visitors switch language
 
@@ -79,7 +79,7 @@ When a visitor picks a culture, the site opens the translation of the page they 
 
 ### Content Culture Picker settings
 
-1. Open **Settings > Localization > Content Culture Picker**.
+1. Open **Settings → Localization → Content Culture Picker**.
 2. Set the options and click **Save**.
 
 | Setting | What it does |
@@ -91,7 +91,7 @@ When a visitor picks a culture, the site opens the translation of the page they 
 
 The **Content Culture Picker** feature also makes the site use the culture of the content item a visitor opens: opening the French translation of a page shows the whole page (menus, theme texts, dates) in French.
 
-1. Open **Settings > Localization > Content Culture**.
+1. Open **Settings → Localization → Content Culture**.
 2. Tick **Set Cookie** to remember that culture in the visitor's cookie, so the next pages they open stay in it.
 3. Click **Save**.
 
@@ -105,7 +105,7 @@ To let each user choose their culture in their profile instead, use the **User L
 
 ## Send the language to browsers and search engines
 
-The **Content Language Header** feature has no screen. When it is on, every page the site sends tells browsers and search engines its language (with the `Content-Language` response header). Turn it on from **Tools > Features**.
+The **Content Language Header** feature has no screen. When it is on, every page the site sends tells browsers and search engines its language (with the `Content-Language` response header). Turn it on from **Tools → Features**.
 
 ## Add translations to the sitemap
 
@@ -115,7 +115,7 @@ With the **Localized Content Item Sitemaps** feature on, content item sitemaps l
 
 **Data Localization** translates texts that people typed into the site rather than texts in the code, such as the display names of content types, the display names of content fields, and the texts of admin menu items. For example, a French editor can see *Article de blog* instead of *Blog Post*.
 
-1. Open **Settings > Localization > Dynamic Translations**.
+1. Open **Settings → Localization → Dynamic Translations**.
 2. Pick the **Culture** to translate into.
 3. Optionally pick a **Category** (such as the content types or the fields), type in **Search translations**, or tick **Missing only** to show only texts without a translation.
 4. Type the translation in the **Translation** column, next to the **Original** text.

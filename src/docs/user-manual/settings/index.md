@@ -7,7 +7,7 @@ description: Change how the whole site behaves - its name and time zone, email a
 
 This section covers the settings that apply to the whole site rather than to one content item: its name and time zone, the services it sends email and text messages through, its security options, and its connections to analytics and social networks. It is mostly for **administrators**; usually only they see the **Settings** menu.
 
-Most of these screens are under **Settings** in the admin menu, for example **Settings > General**, **Settings > Communication**, **Settings > Media**, **Settings > Security** and **Settings > Integrations**. A few live elsewhere: image profiles under **Media > Profiles**, the email and SMS tests under **Tools > Testing**, and rate limits under **Tools**.
+Most of these screens are under **Settings** in the admin menu, for example **Settings → General**, **Settings → Communication**, **Settings → Media**, **Settings → Security** and **Settings → Integrations**. A few live elsewhere: image profiles under **Media → Profiles**, the email and SMS tests under **Tools → Testing**, and rate limits under **Tools**.
 
 ## I want to…
 

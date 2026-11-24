@@ -14,7 +14,7 @@ Import and export moves content and configuration from one site to another: from
 
 | | |
 | --- | --- |
-| **Menu** | **Tools > Deployments > Plans**, **Package Import** and **JSON Import**; **Settings > Deployment Targets** |
+| **Menu** | **Tools → Deployments → Plans**, **Package Import** and **JSON Import**; **Settings → Deployment Targets** |
 | **Permission** | *Manage deployment plans* and *Export Data*, both, to open **Plans**, create and change plans and run them. *Import Data* to import. Administrators have them by default. |
 | **Feature** | **Deployment** (`OrchardCore.Deployment`) |
 
@@ -27,7 +27,7 @@ To send a plan straight to another site instead of downloading a file, see [Remo
 
 ![The Deployment Plans list](images/deployment-plans.webp)
 
-1. Open **Tools > Deployments > Plans** and click **Add Deployment Plan**.
+1. Open **Tools → Deployments → Plans** and click **Add Deployment Plan**.
 2. Type a **Name**. It is required and must be unique.
 3. Click **Create**.
 4. Click **Manage Steps** in the plan's row.
@@ -70,7 +70,7 @@ The steps offered depend on the features turned on in your site; each feature ad
 | **Themes** | The selected site theme and admin theme. |
 | **All Templates** | Every template. |
 | **All Admin Templates** | Every admin template. |
-| **All Placements** | Every placement defined in **Design > Placements**. |
+| **All Placements** | Every placement defined in **Design → Placements**. |
 
 ### Users, security and settings
 
@@ -111,7 +111,7 @@ The steps offered depend on the features turned on in your site; each feature ad
 
 ## Run a plan and download the package
 
-1. Open **Tools > Deployments > Plans**.
+1. Open **Tools → Deployments → Plans**.
 2. Click **Manage Steps** in the plan's row.
 3. Click **Execute**.
 4. In **Available Targets**, click **Select** under **File Download**.
@@ -120,13 +120,13 @@ Your browser downloads a `.zip` file named after the plan. It contains `Recipe.j
 
 ## Manage plans
 
-In **Tools > Deployments > Plans**, each row has **Manage Steps**, **Edit** (to rename the plan) and **Delete**. Type in **Search** to filter the list. To delete several plans, tick them and choose **Delete** in the **Actions** menu above the list.
+In **Tools → Deployments → Plans**, each row has **Manage Steps**, **Edit** (to rename the plan) and **Delete**. Type in **Search** to filter the list. To delete several plans, tick them and choose **Delete** in the **Actions** menu above the list.
 
 ## Import a package
 
 ![The Package Import screen](images/package-import.webp)
 
-1. Open **Tools > Deployments > Package Import** on the site that receives the data.
+1. Open **Tools → Deployments → Package Import** on the site that receives the data.
 2. Click **Select a file** and choose the `.zip` package, or a single `.json` recipe file.
 3. Click **Import**.
 
@@ -138,7 +138,7 @@ You see *Deployment package imported.* when it worked. If a step fails, you see 
 
 To import a recipe without a file, for example steps a developer sent you:
 
-1. Open **Tools > Deployments > JSON Import**.
+1. Open **Tools → Deployments → JSON Import**.
 2. Paste the recipe into **JSON**. It is required.
 3. Click **Import**.
 
@@ -146,7 +146,7 @@ You see *Recipe imported successfully!*. If the text isn't valid JSON, you see *
 
 ## Export content items from the content list
 
-Three features add export actions to **Content > Content Items**, see [Content items](../content/content-items.md):
+Three features add export actions to **Content → Content Items**, see [Content items](../content/content-items.md):
 
 | Feature | Actions it adds |
 | --- | --- |
@@ -161,7 +161,7 @@ Three features add export actions to **Content > Content Items**, see [Content i
 To use another plan:
 
 1. Create the plan and add the **Export Content To Deployment Target** step to it.
-2. Open **Settings > Deployment Targets**.
+2. Open **Settings → Deployment Targets**.
 3. Pick the plan in **Deployment Plan**.
 4. Click **Save**.
 

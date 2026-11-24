@@ -177,3 +177,10 @@ An export of a specific set of information (Configuration or Data).
 ### Deployment Plan
 
 A batch Export that executes multiple deployment steps.
+
+## Video
+
+This video explains what Orchard Core is and what you can build with it.
+
+<!-- video:orchard-core-overview -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/2LDUXKVdbrU" title="Orchard Core: What It Is and What You Can Build" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

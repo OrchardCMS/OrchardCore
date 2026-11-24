@@ -13,7 +13,7 @@ The site sends email for many tasks: password reset links, registration confirma
 
 | | |
 | --- | --- |
-| **Menu** | **Settings > Communication > Email** (providers), **Tools > Testing > Email Test** |
+| **Menu** | **Settings → Communication → Email** (providers), **Tools → Testing → Email Test** |
 | **Permission** | *Manage Email Settings* (the Administrator role has it by default) |
 | **Feature** | **Email** (`OrchardCore.Email`), with at least one provider: **SMTP Email Provider** (`OrchardCore.Email.Smtp`) or **Azure Communication Services Email** (`OrchardCore.Email.Azure`) |
 
@@ -27,7 +27,7 @@ Get the connection details from whoever runs your email service:
 
 ## Set up an SMTP provider
 
-1. Open **Settings > Communication > Email** and click the **SMTP** tab.
+1. Open **Settings → Communication → Email** and click the **SMTP** tab.
 2. Check **Enable SMTP Provider**. The rest of the form appears.
 3. Type the **Sender email address**.
 4. Leave **Delivery method** on **Network**, then fill in the **Network delivery options** (see the table below).
@@ -56,7 +56,7 @@ If no default provider was chosen yet, SMTP becomes the default provider. Send a
 
 ## Set up Azure Communication Services
 
-1. Open **Settings > Communication > Email** and click the **Azure Communication Services** tab.
+1. Open **Settings → Communication → Email** and click the **Azure Communication Services** tab.
 2. Check **Enable Azure Provider**.
 3. Type the **Sender email address**.
 4. Paste the **Connection String** of your Azure resource, or pick a [secret](secrets.md) that holds it.
@@ -85,7 +85,7 @@ When more than one provider is on, the site sends with the default one.
 
 ![The Email settings](images/email.webp)
 
-1. Open **Settings > Communication > Email**. The **Providers** tab opens first.
+1. Open **Settings → Communication → Email**. The **Providers** tab opens first.
 2. Pick the **Default provider**.
 3. Click **Save**.
 
@@ -103,7 +103,7 @@ If no provider is on, the tab says *No email providers are currently enabled.*
 
 ![The Email Test screen](images/email-test.webp)
 
-1. Open **Tools > Testing > Email Test**.
+1. Open **Tools → Testing → Email Test**.
 2. Pick the **Provider** to test. The default provider is selected for you.
 3. Fill in **To**, **Subject** and **Body**. The other fields are optional.
 4. Click **Send**.

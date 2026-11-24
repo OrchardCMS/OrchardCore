@@ -14,10 +14,10 @@ This is a technical area. An administrator can do everything below in the admin,
 
 | Screen | Menu | Permission | Feature |
 | --- | --- | --- | --- |
-| Server settings | **Settings > OpenID Connect > Authorization Server** | *View and edit the OpenID Connect server settings.* | **OpenID Connect Authorization Server** (`OrchardCore.OpenId.Server`) |
-| Token validation | **Settings > OpenID Connect > Token Validation** | *View and edit the OpenID Connect validation settings.* | **OpenID Connect Token Validation** (`OrchardCore.OpenId.Validation`) |
-| Applications | **Access Control > OpenID Connect > Applications** | *View, add, edit and remove the OpenID Connect applications.* | **OpenID Connect Management UI** (`OrchardCore.OpenId.Management`) |
-| Scopes | **Access Control > OpenID Connect > Scopes** | *View, add, edit and remove the OpenID Connect scopes.* | **OpenID Connect Management UI** (`OrchardCore.OpenId.Management`) |
+| Server settings | **Settings → OpenID Connect → Authorization Server** | *View and edit the OpenID Connect server settings.* | **OpenID Connect Authorization Server** (`OrchardCore.OpenId.Server`) |
+| Token validation | **Settings → OpenID Connect → Token Validation** | *View and edit the OpenID Connect validation settings.* | **OpenID Connect Token Validation** (`OrchardCore.OpenId.Validation`) |
+| Applications | **Access Control → OpenID Connect → Applications** | *View, add, edit and remove the OpenID Connect applications.* | **OpenID Connect Management UI** (`OrchardCore.OpenId.Management`) |
+| Scopes | **Access Control → OpenID Connect → Scopes** | *View, add, edit and remove the OpenID Connect scopes.* | **OpenID Connect Management UI** (`OrchardCore.OpenId.Management`) |
 
 Turning on the Authorization Server also turns on the Management UI and **OpenID Connect Core Services** (`OrchardCore.OpenId`). By default only the Administrator role has these permissions.
 
@@ -35,7 +35,7 @@ Turning on the Authorization Server also turns on the Management UI and **OpenID
 
 ![The Authorization Server settings](images/openid-server.webp)
 
-1. Open **Settings > OpenID Connect > Authorization Server**.
+1. Open **Settings → OpenID Connect → Authorization Server**.
 2. Set the options on **Configure OpenID Connect server settings**.
 3. Click **Save**.
 
@@ -87,7 +87,7 @@ With the **OpenID Connect Secrets** feature (`OrchardCore.OpenId.Secrets`, which
 
 ![The OpenID Connect Applications list](images/openid-applications.webp)
 
-1. Open **Access Control > OpenID Connect > Applications** and click **New application**.
+1. Open **Access Control → OpenID Connect → Applications** and click **New application**.
 2. Fill in the form on **Create a new application** (see the table).
 3. Click **Save**.
 
@@ -119,7 +119,7 @@ A scope is a named piece of access. A site may already list **Email**, **Phone**
 
 ![The OpenID Connect Scopes list](images/openid-scopes.webp)
 
-1. Open **Access Control > OpenID Connect > Scopes** and click **New scope**, or **Edit** on a row.
+1. Open **Access Control → OpenID Connect → Scopes** and click **New scope**, or **Edit** on a row.
 2. Fill in the fields.
 3. Click **Save**.
 
@@ -138,7 +138,7 @@ The **Token Validation** feature lets your site accept tokens, so that an applic
 
 ![The Token Validation settings](images/openid-validation.webp)
 
-1. Open **Settings > OpenID Connect > Token Validation**.
+1. Open **Settings → OpenID Connect → Token Validation**.
 2. Fill in the fields on **Configure OpenID Connect validation settings**.
 3. Click **Save**. Saving may restart the site for a moment.
 

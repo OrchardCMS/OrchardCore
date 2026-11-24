@@ -5,7 +5,7 @@ This module adds Twitter for Websites features to OrchardCore.
 ## X (Twitter) Integration
 
 Integrate with X. Provides a client to integrate with X API
-Configuration can be set through the _X -> X Integration_ menu in the admin dashboard.
+Configuration can be set through the **X → X Integration** menu in the admin dashboard.
 
 Available settings are:
 
@@ -25,7 +25,7 @@ Authenticates users with their X Account.
 Create an app in the [Twitter Developer Platform](https://developer.x.com) and enable Sign in with X.  
 In the app details, you must configure the Callback URL. The default url in OrchardCore is [tenant]/signin-x.
 
-Configuration can be set through the _X -> Sign in with X_ settings menu in the admin dashboard.
+Configuration can be set through the **X → Sign in with X** settings menu in the admin dashboard.
 
 Available settings are:
 

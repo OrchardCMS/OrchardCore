@@ -14,11 +14,11 @@ The **Flow** and **Bag** parts let a content item hold other content, edited rig
 - A **Flow** builds the body of a page from **widgets**: paragraphs, images, buttons, quotes, forms, containers. You stack them, drag them into order, and set the width and alignment of each one. The **Page** type of the Blog recipe uses a flow.
 - A **Bag** holds a collection of items of the types you choose, for example the slides of a slide show, the members of a team or the questions of an FAQ. The theme decides how the collection looks on the site.
 
-The widgets and items live inside the content item: they have no page of their own, don't appear in **Content > Content Items**, and are saved, published and versioned together with the item.
+The widgets and items live inside the content item: they have no page of their own, don't appear in **Content → Content Items**, and are saved, published and versioned together with the item.
 
 | | |
 | --- | --- |
-| **Menu** | The editor of a content item whose type has a **Flow** or **Bag** part (**Content > Content Items**). Settings: **Design > Content Definition > Content Types** |
+| **Menu** | The editor of a content item whose type has a **Flow** or **Bag** part (**Content → Content Items**). Settings: **Design → Content Definition → Content Types** |
 | **Permission** | The permission to edit the content item; *Edit content types* to change the part settings |
 | **Feature** | **Flows** (`OrchardCore.Flows`), which also turns on **Widgets** (`OrchardCore.Widgets`) |
 
@@ -68,7 +68,7 @@ Drag an item by its handle to reorder the bag, use the arrow buttons to collapse
 
 ## Set up a Flow part
 
-1. Open **Design > Content Definition > Content Types** and click **Edit** on the type.
+1. Open **Design → Content Definition → Content Types** and click **Edit** on the type.
 2. Add the part with **Add Parts** (**Flow**), or click **Edit** on its row if the type already has it.
 3. Fill in the settings and click **Save**.
 
@@ -104,3 +104,15 @@ If a widget's content type no longer exists (or is no longer allowed in the flow
 
 !!! example "See it in practice"
     [Build a landing page](../use-cases/landing-page-with-widgets.md) walks through this step by step.
+
+## Videos
+
+This video builds a page from widgets with the Flow part.
+
+<!-- video:flows-flow-part -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/kuIT3d1zubg" title="Flow Part: Build Pages From Widgets" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video embeds content items inside another content item with the Bag part.
+
+<!-- video:flows-bag-part -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/EBz1f1Bgcgw" title="Bag Part: Embed Content Items Inside a Content Item" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

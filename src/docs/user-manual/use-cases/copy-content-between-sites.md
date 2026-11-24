@@ -25,8 +25,8 @@ When it's done:
 
 | You need | Where or who |
 | --- | --- |
-| The feature **Deployment** (`OrchardCore.Deployment`) on both sites. The Blog recipe turns it on. | An administrator, in **Tools > Features** |
-| For a direct link: **Remote Deployment** (`OrchardCore.Deployment.Remote`) on both sites | An administrator, in **Tools > Features** |
+| The feature **Deployment** (`OrchardCore.Deployment`) on both sites. The Blog recipe turns it on. | An administrator, in **Tools → Features** |
+| For a direct link: **Remote Deployment** (`OrchardCore.Deployment.Remote`) on both sites | An administrator, in **Tools → Features** |
 | On the source site: *Manage deployment plans* and *Export Data*; for a direct link, *Manage remote instances* and *Export to remote instances* | The **Administrator** role has them |
 | On the destination site: *Import Data*; for a direct link, *Manage remote clients* | The **Administrator** role has them |
 | Both sites on compatible versions of Orchard Core, with the same features on | Your IT team |
@@ -36,7 +36,7 @@ When it's done:
 
 ## Create the deployment plan
 
-1. On the **source** site, open **Tools > Deployments > Plans**.
+1. On the **source** site, open **Tools → Deployments → Plans**.
 2. Click **Add Deployment Plan**.
 3. Type a **Name**, such as *Pages to live*.
 4. Click **Create**.
@@ -73,13 +73,13 @@ Your browser downloads a `.zip` file with what the steps export, including the m
 
 ### Import
 
-1. On the **destination** site, open **Tools > Deployments > Package Import**.
+1. On the **destination** site, open **Tools → Deployments → Package Import**.
 2. Under **Select a file**, choose the `.zip` file (a `.json` recipe file works too).
 3. Click **Import**.
 
 *Deployment package imported.* means it worked. If something's wrong, the message lists the errors, such as a content type that doesn't exist on the destination. Fix the plan (for example add **Update Content Definitions**) and try again.
 
-**Tools > Deployments > JSON Import** does the same with JSON you paste in the **JSON** box, which is handy for a small recipe someone sent you.
+**Tools → Deployments → JSON Import** does the same with JSON you paste in the **JSON** box, which is handy for a small recipe someone sent you.
 
 ## Copy directly to another site
 
@@ -87,7 +87,7 @@ Set up the link once; then each run sends the content in one click. The destinat
 
 ### On the destination site: allow a client
 
-1. Open **Tools > Deployments > Remote Clients**.
+1. Open **Tools → Deployments → Remote Clients**.
 2. Click **Add Remote Client**.
 3. Type a **Client Name**, such as *staging*.
 4. Type an **Api Key**: a long, random password.
@@ -97,7 +97,7 @@ Both fields are required. Keep the name and key for the next step, and share the
 
 ### On the source site: add the destination
 
-1. Open **Tools > Deployments > Remote Instances**.
+1. Open **Tools → Deployments → Remote Instances**.
 2. Click **Add Remote Instance**.
 3. Fill in:
 
@@ -121,11 +121,11 @@ See [Remote deployment](../administration/remote-deployment.md).
 
 ## Send single items from the content list
 
-With the **Export Content To Deployment Target** feature on, the content items list has an **Export to deployment target** action, for an item or for the items you tick. It sends them straight to a target you choose, such as **File Download** or a remote instance, through the plan chosen in **Settings > Deployment Targets**. See [Import and export](../administration/import-and-export.md).
+With the **Export Content To Deployment Target** feature on, the content items list has an **Export to deployment target** action, for an item or for the items you tick. It sends them straight to a target you choose, such as **File Download** or a remote instance, through the plan chosen in **Settings → Deployment Targets**. See [Import and export](../administration/import-and-export.md).
 
 ## Check that it works
 
-1. On the destination, open **Content > Content Items** and find the copied items.
+1. On the destination, open **Content → Content Items** and find the copied items.
 2. Open one on the site, and check its images and links.
 3. Check the publication state: items arrive published or as drafts, as they were on the source.
 

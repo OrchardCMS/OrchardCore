@@ -31,8 +31,8 @@ When it's done:
 | You need | Where or who |
 | --- | --- |
 | A site set up with the **Blog** recipe, or an existing site you add a blog to | Whoever sets up the site; see [Setting up a site](../getting-started/setting-up-a-site.md) |
-| The features **Lists**, **Taxonomies**, **Menu**, **Feeds** and **Media** (the Blog recipe turns them on) | An administrator, in **Tools > Features** |
-| The feature **Publish Later** (`OrchardCore.PublishLater`) to schedule posts. The Blog recipe doesn't turn it on. | An administrator, in **Tools > Features** |
+| The features **Lists**, **Taxonomies**, **Menu**, **Feeds** and **Media** (the Blog recipe turns them on) | An administrator, in **Tools → Features** |
+| The feature **Publish Later** (`OrchardCore.PublishLater`) to schedule posts. The Blog recipe doesn't turn it on. | An administrator, in **Tools → Features** |
 | Permission to create and publish content, to edit content types (to add Publish Later), and to manage menus | Your administrator; see [Roles and permissions](../getting-started/roles-and-permissions.md) |
 
 ## Set up the blog
@@ -54,12 +54,12 @@ See [Setting up a site](../getting-started/setting-up-a-site.md).
 
 Recipes that set up a whole site run only at setup, so on an existing site you build the two content types yourself.
 
-1. Open **Design > Content Definition > Content Types**.
+1. Open **Design → Content Definition → Content Types**.
 2. Create a **Blog Post** content type with the **Title**, **Autoroute** and **MarkdownBody** (or **HtmlBody**) parts.
 3. Add the fields you want to **Blog Post**, such as a **Media Field** for a banner image and **Taxonomy Field**s for tags and a category.
 4. Create a **Blog** content type with the **Title**, **Autoroute** and **List** parts.
 5. In the **List** part settings of **Blog**, tick **Blog Post** in **Contained Content Types**.
-6. Open **Content > Content Items > New > Blog** to create a **Blog** content item.
+6. Open **Content → Content Items → New → Blog** to create a **Blog** content item.
 7. Click **Publish**.
 
 See [Content types](../content/content-types.md) for creating types and adding fields, and [Lists and blogs](../content/lists-and-blogs.md) for the **List** part. The rest of this page uses the names from the Blog recipe.
@@ -68,7 +68,7 @@ See [Content types](../content/content-types.md) for creating types and adding f
 
 The **Tags** field lets editors type new tags as they write, so there is nothing to prepare. Categories are a fixed list you keep in the **Categories** taxonomy.
 
-1. Open **Content > Taxonomy**.
+1. Open **Content → Taxonomy**.
 2. Click **Edit** on the **Categories** row.
 3. Click **Add Category**.
 4. Type the **Title**, for example *Travel*.
@@ -82,7 +82,7 @@ The changes to the taxonomy go live only when you publish it. In the Blog recipe
 
 ## Write and publish a post
 
-1. Click **Blog** at the top of the admin menu (or open the **Blog** item from **Content > Content Items**).
+1. Click **Blog** at the top of the admin menu (or open the **Blog** item from **Content → Content Items**).
 2. Click **Create Blog Post**.
 3. Type the **Title**.
 4. Leave **Permalink** empty.
@@ -104,7 +104,7 @@ The post shows on the blog page, newest first. See [Content items](../content/co
 
 Scheduling needs the **Publish Later** part on the **Blog Post** content type. Add it once:
 
-1. Open **Design > Content Definition > Content Types**.
+1. Open **Design → Content Definition → Content Types**.
 2. Click **Edit** on **Blog Post**.
 3. Click **Add Parts**.
 4. Tick **PublishLater**.
@@ -121,13 +121,13 @@ Then, to schedule a post:
 The post stays a draft until that time. The site checks for scheduled items every minute and publishes the post when its time comes. In the blog's list of posts, a scheduled post shows a clock badge with the time left; hover over it to see the exact date. To call it off, open the post and click **Cancel Publish Later**. See [Scheduling](../content/scheduling.md).
 
 !!! note
-    The date and time are in your own time zone if your profile has one, otherwise in the site's time zone. Scheduled publishing relies on the site's background tasks; if they are turned off in **Tools > Background Tasks**, nothing gets published on time. See [Background tasks](../settings/background-tasks.md).
+    The date and time are in your own time zone if your profile has one, otherwise in the site's time zone. Scheduled publishing relies on the site's background tasks; if they are turned off in **Tools → Background Tasks**, nothing gets published on time. See [Background tasks](../settings/background-tasks.md).
 
 ## Add the blog to the menu
 
 With the Blog recipe the blog is the home page, so the **Home** link already opens it. If you made another page the home page, or added a blog to an existing site, add a link:
 
-1. Open **Content > Menus**. (The admin menu also has a **Main Menu** entry.)
+1. Open **Content → Menus**. (The admin menu also has a **Main Menu** entry.)
 2. Click **Edit** on **Main Menu**.
 3. Click **Add Menu Item**.
 4. Click **Add** next to **Content Menu Item**.

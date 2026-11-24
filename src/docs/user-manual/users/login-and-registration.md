@@ -16,7 +16,7 @@ These settings decide what people meet on the login page: whether they can stay 
 
 | | |
 | --- | --- |
-| **Menu** | **Settings > Security > User Login**, **Registration**, **Reset Password**, **Change Email** |
+| **Menu** | **Settings → Security → User Login**, **Registration**, **Reset Password**, **Change Email** |
 | **Permission** | *Manage security settings and all users* |
 | **Feature** | **Users** (`OrchardCore.Users`), plus the features named in each section |
 
@@ -27,7 +27,7 @@ These settings decide what people meet on the login page: whether they can stay 
 
 ![The User Login settings](images/user-login-settings.webp)
 
-1. Open **Settings > Security > User Login**.
+1. Open **Settings → Security → User Login**.
 2. Change the options on the **General** tab (see the table).
 3. Click **Save**.
 
@@ -45,11 +45,11 @@ The page has more tabs when features add them: **Two-Factor Authentication** (se
 
 ## Let visitors create an account
 
-Self-registration is open as soon as the **Users Registration** feature (`OrchardCore.Users.Registration`) is on. The login page then shows **Register as a new user**. There is no separate on/off switch: to stop registrations, turn the feature off in **Tools > Features**. The feature needs **Email**, and the site's email must be set up so confirmation emails can go out, see [Email](../settings/email.md).
+Self-registration is open as soon as the **Users Registration** feature (`OrchardCore.Users.Registration`) is on. The login page then shows **Register as a new user**. There is no separate on/off switch: to stop registrations, turn the feature off in **Tools → Features**. The feature needs **Email**, and the site's email must be set up so confirmation emails can go out, see [Email](../settings/email.md).
 
 ![The Registration settings](images/registration-settings.webp)
 
-1. Open **Settings > Security > Registration**.
+1. Open **Settings → Security → Registration**.
 2. Set the options on the **General** tab.
 3. Click **Save**.
 
@@ -72,10 +72,10 @@ The **External Authentication** tab on the same page holds the rules for people 
 
 | | |
 | --- | --- |
-| **Menu** | **Settings > Security > Reset Password** |
+| **Menu** | **Settings → Security → Reset Password** |
 | **Feature** | **Users Reset Password** (`OrchardCore.Users.ResetPassword`), which needs **Email** |
 
-1. Open **Settings > Security > Reset Password**.
+1. Open **Settings → Security → Reset Password**.
 2. Tick **Allow the users to reset their password**. An email with a reset link is sent to the person's address when they ask for it.
 3. Optionally tick **Use site theme for password reset page**.
 4. Click **Save**.
@@ -86,14 +86,14 @@ The login page then shows **Forgot your password?**. When the option is off, the
 
 | | |
 | --- | --- |
-| **Menu** | **Settings > Security > Change Email** |
+| **Menu** | **Settings → Security → Change Email** |
 | **Feature** | **Users Change Email** (`OrchardCore.Users.ChangeEmail`) |
 
 Tick **Allow the users to change their email** and click **Save**. Each person's user menu then has **Change Email**, which changes the address right away. This is separate from **Allow user to change their email address** on the User Login page, which unlocks the **Email** box on the profile.
 
 ## Set up two-factor authentication
 
-Two-factor authentication asks for a one-time code after the password. Turn on at least one method in **Tools > Features**:
+Two-factor authentication asks for a one-time code after the password. Turn on at least one method in **Tools → Features**:
 
 | Feature | Method |
 | --- | --- |
@@ -101,13 +101,13 @@ Two-factor authentication asks for a one-time code after the password. Turn on a
 | **Two-Factor Email Method** (`OrchardCore.Users.2FA.Email`) | Codes sent by email. Needs **Email** set up, see [Email](../settings/email.md). |
 | **Two-Factor SMS Method** (`OrchardCore.Users.2FA.Sms`) | Codes sent by text message. Needs **SMS** set up, see [SMS](../settings/sms.md). |
 
-Turning one on also turns on **Two-Factor Authentication Services** (`OrchardCore.Users.2FA`), which adds **Security** to everyone's user menu and the **Two-Factor Authentication** tab to **Settings > Security > User Login**.
+Turning one on also turns on **Two-Factor Authentication Services** (`OrchardCore.Users.2FA`), which adds **Security** to everyone's user menu and the **Two-Factor Authentication** tab to **Settings → Security → User Login**.
 
 Each person then sets up their own method from **Security** in the user menu, see [Signing in](../getting-started/signing-in.md#manage-your-two-factor-authentication).
 
 ### Two-Factor Authentication tab
 
-1. Open **Settings > Security > User Login** and the **Two-Factor Authentication** tab.
+1. Open **Settings → Security → User Login** and the **Two-Factor Authentication** tab.
 2. Set the options.
 3. Click **Save**.
 

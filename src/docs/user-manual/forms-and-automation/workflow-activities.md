@@ -13,7 +13,7 @@ This page lists every activity of the workflow designer. The **Activities** list
 
 | | |
 | --- | --- |
-| **Menu** | **Design > Workflows**, then the **Activities** list of the designer |
+| **Menu** | **Design → Workflows**, then the **Activities** list of the designer |
 | **Permission** | *Manage workflows* |
 | **Feature** | **Workflows** (`OrchardCore.Workflows`), plus **HTTP Workflows Activities** (`OrchardCore.Workflows.Http`), **Timer Workflows Activities** (`OrchardCore.Workflows.Timers`) and **Session Workflows Activities** (`OrchardCore.Workflows.Session`) for their activities |
 

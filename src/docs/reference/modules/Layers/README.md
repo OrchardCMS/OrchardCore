@@ -1,6 +1,6 @@
 # Layers (`OrchardCore.Layers`)
 
-The Layers can be managed from the `Design > Widgets` page in the admin.
+The Layers can be managed from the **Design → Widgets** page in the admin.
 
 A Layer has a name, a description and a rule in which you specify a condition to render the widgets that will be associated to this Layer.
 
@@ -50,7 +50,7 @@ Refer to [Scripting](../Scripting/README.md#layers-orchardcorelayers) for more i
 
 ## Zones
 
-The zones that are listed can be set in the `Design > Settings > Zones` admin page.
+The zones that are listed can be set in the **Design → Settings → Zones** admin page.
 
 You must have declared the corresponding zones as sections in your theme:
 
@@ -69,6 +69,11 @@ You must have declared the corresponding zones as sections in your theme:
 ## Video
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/NCvytsdED_o" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video shows widgets on the right pages with layers and zones.
+
+<!-- video:layers-zones -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/pTtKqJHzB8E" title="Layers: Show Widgets on the Right Pages" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ## Recipe Configuration
 

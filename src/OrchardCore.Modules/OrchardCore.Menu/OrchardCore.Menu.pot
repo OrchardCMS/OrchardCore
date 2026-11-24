@@ -59,7 +59,27 @@ msgctxt "OrchardCore.Menu.Services.MenuItemStereotypesProvider"
 msgid "Menu Item"
 msgstr ""
 
-#. Format arguments: {0}: menu?.DisplayText
+#: Services/MenuJSLocalizer.cs
+msgctxt "OrchardCore.Menu.Services.MenuJSLocalizer"
+msgid "No result found"
+msgstr ""
+
+#: Services/MenuJSLocalizer.cs
+msgctxt "OrchardCore.Menu.Services.MenuJSLocalizer"
+msgid "Remove"
+msgstr ""
+
+#: Services/MenuJSLocalizer.cs
+msgctxt "OrchardCore.Menu.Services.MenuJSLocalizer"
+msgid "Select"
+msgstr ""
+
+#: Services/MenuJSLocalizer.cs
+msgctxt "OrchardCore.Menu.Services.MenuJSLocalizer"
+msgid "Type to search"
+msgstr ""
+
+#. Format arguments: {0}: menuDisplayText
 #: Views/Admin/Create.cshtml
 #, csharp-format
 msgctxt "OrchardCore.Menu.Views.Admin.Create"
@@ -78,7 +98,14 @@ msgctxt "OrchardCore.Menu.Views.Admin.Create"
 msgid "New {0}"
 msgstr ""
 
-#. Format arguments: {0}: localizedTypeDisplayName, menu?.DisplayText
+#. Format arguments: {0}: menuDisplayText
+#: Views/Admin/Create.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Menu.Views.Admin.Create"
+msgid "You are editing a draft of the <strong>{0}</strong> menu. Visitors won't see your changes until the menu is published."
+msgstr ""
+
+#. Format arguments: {0}: localizedTypeDisplayName, menuDisplayText
 #: Views/Admin/Edit.cshtml
 #, csharp-format
 msgctxt "OrchardCore.Menu.Views.Admin.Edit"
@@ -88,6 +115,13 @@ msgstr ""
 #: Views/Admin/Edit.cshtml
 msgctxt "OrchardCore.Menu.Views.Admin.Edit"
 msgid "Manage Content"
+msgstr ""
+
+#. Format arguments: {0}: menuDisplayText
+#: Views/Admin/Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Menu.Views.Admin.Edit"
+msgid "You are editing a draft of the <strong>{0}</strong> menu. Visitors won't see your changes until the menu is published."
 msgstr ""
 
 #: Views/ContentMenuItemPart.Edit.cshtml
@@ -255,11 +289,14 @@ msgctxt "OrchardCore.Menu.Views.MenuItem.Thumbnail"
 msgid "Add"
 msgstr ""
 
-#. Format arguments: {0}: "{0}"
-#: Views/MenuItemPermissionPart.Edit.cshtml
-#, csharp-format
-msgctxt "OrchardCore.Menu.Views.MenuItemPermissionPart.Edit"
-msgid "No permissions match {0}"
+#: Views/MenuItemEditorActions.cshtml
+msgctxt "OrchardCore.Menu.Views.MenuItemEditorActions"
+msgid "Cancel"
+msgstr ""
+
+#: Views/MenuItemEditorActions.cshtml
+msgctxt "OrchardCore.Menu.Views.MenuItemEditorActions"
+msgid "Save Menu Item"
 msgstr ""
 
 #: Views/MenuItemPermissionPart.Edit.cshtml
@@ -269,22 +306,7 @@ msgstr ""
 
 #: Views/MenuItemPermissionPart.Edit.cshtml
 msgctxt "OrchardCore.Menu.Views.MenuItemPermissionPart.Edit"
-msgid "Remove"
-msgstr ""
-
-#: Views/MenuItemPermissionPart.Edit.cshtml
-msgctxt "OrchardCore.Menu.Views.MenuItemPermissionPart.Edit"
-msgid "Search"
-msgstr ""
-
-#: Views/MenuItemPermissionPart.Edit.cshtml
-msgctxt "OrchardCore.Menu.Views.MenuItemPermissionPart.Edit"
 msgid "The permissions required to display this menu item (optional)."
-msgstr ""
-
-#: Views/MenuItemPermissionPart.Edit.cshtml
-msgctxt "OrchardCore.Menu.Views.MenuItemPermissionPart.Edit"
-msgid "Type to search"
 msgstr ""
 
 #: Views/MenuPart.Edit.cshtml

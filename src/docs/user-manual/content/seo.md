@@ -17,13 +17,13 @@ Search engine optimization (SEO) is about helping search engines and social netw
 
 | | |
 | --- | --- |
-| **Menu** | The editor of a content item with the **SeoMeta** part; **Settings > Social Meta Settings**; **Settings > Search > Search Engine Optimization > Robots** |
+| **Menu** | The editor of a content item with the **SeoMeta** part; **Settings → Social Meta Settings**; **Settings → Search → Search Engine Optimization → Robots** |
 | **Permission** | The permission to edit the content item; *Manage Custom Settings - Social Meta Settings*; *Manage SEO related settings* |
 | **Feature** | **SEO** (`OrchardCore.Seo`); **Custom Settings** (`OrchardCore.CustomSettings`) for **Social Meta Settings** |
 
 ## Add SEO options to a content type
 
-1. Open **Design > Content Definition > Content Types** and click **Edit** on the type, for example **Article**.
+1. Open **Design → Content Definition → Content Types** and click **Edit** on the type, for example **Article**.
 2. Click **Add Parts**, then **Add & Configure** on the **SeoMeta** row.
 3. Tick the panels editors should see, then click **Save**.
 
@@ -74,7 +74,7 @@ These panels appear in the **SEO** tab when the part settings tick them. Every b
 
 ![The Social Meta Settings](images/social-meta-settings.webp)
 
-1. Open **Settings > Social Meta Settings**.
+1. Open **Settings → Social Meta Settings**.
 2. In the **Content** section, fill in the default texts.
 3. In the **Social** section, pick the default pictures.
 4. Click **Save**.
@@ -84,7 +84,7 @@ These panels appear in the **SEO** tab when the part settings tick them. Every b
 | **Default Meta Description** | Used by pages with no meta description. |
 | **Open Graph Type** | For example `website` or `article`. |
 | **Default Open Graph Description** | Used when a page has no Open Graph description and no meta description. |
-| **Open Graph Site Name** | The site name shown on shared links. When empty, the site name from **Settings > General** is used. |
+| **Open Graph Site Name** | The site name shown on shared links. When empty, the site name from **Settings → General** is used. |
 | **Open Graph App Id** | The Meta (Facebook) app id, if you have one. |
 | **Twitter Card** | The card style on X, for example `summary` or `summary_large_image`. |
 | **Default Twitter Description** | Used when a page has no Twitter description and no meta description. |
@@ -100,7 +100,7 @@ Search engine robots read `https://your-site/robots.txt` to learn what they may 
 
 ![The Robots settings](images/robots.webp)
 
-1. Open **Settings > Search > Search Engine Optimization > Robots**.
+1. Open **Settings → Search → Search Engine Optimization → Robots**.
 2. Set the options and click **Save**.
 
 | Setting | What it does |
@@ -116,3 +116,15 @@ Open `/robots.txt` on the site to check the result.
     If your developer has placed a real `robots.txt` file in the site's web folder, that file is served instead and these settings have no effect.
 
 Permission: *Manage SEO related settings*.
+
+## Videos
+
+This video sets the titles, descriptions and social sharing cards of your pages.
+
+<!-- video:seo-meta -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/n0WUFjJtl0w" title="SEO Meta: Titles, Descriptions and Social Sharing Cards" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video tells search engines what to crawl with the robots.txt file.
+
+<!-- video:seo-robots -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/BDJ5ziPIOL8" title="Robots: Tell Search Engines What to Crawl" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

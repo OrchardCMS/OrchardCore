@@ -19,7 +19,7 @@ You will add a Liquid Widget to the Content Type Definitions and create a templa
 
 - Navigate to the Orchard Core CMS admin area <https://localhost:5001/admin>
 
-- Through the admin menu select _Design -> Content Definition -> Content Types_
+- Through the admin menu select **Design → Content Definition → Content Types**
 
 - Select `Create new type` and enter the Display Name `Liquid Widget`. The technical name will auto populate, removing the spaces. Then select `Create`
 
@@ -31,7 +31,7 @@ You will add a Liquid Widget to the Content Type Definitions and create a templa
 
 - Add `Widget` to the `Stereotype`, and select `Save`.
 
-Your Widget can now be used from within the `Layers` module, by navigating to _Design -> Widgets_ or from a `Page` content type.
+Your Widget can now be used from within the `Layers` module, by navigating to **Design → Widgets** or from a `Page` content type.
 
 Read on to learn how to customize the template.
 
@@ -51,7 +51,7 @@ The standard template contains wrapper divs and you may wish to customize how th
 
 To customize this template
 
-- Navigate to _Design -> Templates_
+- Navigate to **Design → Templates**
 
 - Select `Add template` and name your template `Widget__LiquidWidget`
 
@@ -86,3 +86,10 @@ You can use this technique to build more complex Widgets, which could contain mu
 ## Summary
 
 You just learned how to add create a Liquid Widget and a template.
+
+## Video
+
+This video creates a Liquid widget without writing a module.
+
+<!-- video:create-liquid-widget -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/hHRf-EUHeKc" title="Create a Liquid Widget Without Writing a Module" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

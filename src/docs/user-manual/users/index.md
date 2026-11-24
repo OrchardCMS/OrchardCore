@@ -7,7 +7,7 @@ description: Manage who can use the site - user accounts, roles and permissions,
 
 This section is about people and what they may do: their accounts, the roles that give them permissions, and the way they sign in. It is mostly for **administrators**, and for anyone your administrator lets manage users. To look after your own account, see [Sign in and manage your profile](../getting-started/signing-in.md) instead.
 
-Accounts and roles are under **Access Control** in the admin menu (**Access Control > Users**, **Access Control > Roles**, and **Access Control > OpenID Connect** for applications and scopes). The sign-in options are under **Settings > Security** (**User Login**, **Registration**, **Reset Password**, **Change Email**, and **Authentication** for outside services) and **Settings > OpenID Connect**.
+Accounts and roles are under **Access Control** in the admin menu (**Access Control → Users**, **Access Control → Roles**, and **Access Control → OpenID Connect** for applications and scopes). The sign-in options are under **Settings → Security** (**User Login**, **Registration**, **Reset Password**, **Change Email**, and **Authentication** for outside services) and **Settings → OpenID Connect**.
 
 ## I want to…
 

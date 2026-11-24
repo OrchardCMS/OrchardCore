@@ -19,7 +19,7 @@ Fields are the boxes of a content item beyond its title and body: a subtitle, a 
 | | |
 | --- | --- |
 | **Menu** | The editor of a content item, see [Content items](content-items.md) |
-| **Where you set them up** | **Design > Content Definition > Content Types**, **Edit** on the type, then **Edit** next to the field |
+| **Where you set them up** | **Design → Content Definition → Content Types**, **Edit** on the type, then **Edit** next to the field |
 | **Permission** | To fill in: permission to edit the content item. To set up: *Edit content types.* |
 | **Feature** | **Content Fields** (`OrchardCore.ContentFields`), plus the features named for some fields below |
 
@@ -33,7 +33,7 @@ When a field is required, its label is marked as required and you can't save the
 
 ### Set up a field (site builders)
 
-1. Open **Design > Content Definition > Content Types** and click **Edit** on the content type.
+1. Open **Design → Content Definition → Content Types** and click **Edit** on the content type.
 2. Click **Edit** next to the field. To add a field, click **Add Field**, see [Content types](content-types.md).
 3. Choose the editor in **What type of editor should be used?** and, when offered, how it is shown on the site in **What type of display mode should be used?**.
 4. Fill in the settings of the field (described for each field below). The options change with the editor you choose.
@@ -244,4 +244,36 @@ Settings: **Required**, **Hint**.
 
 The **Content Fields Indexing (SQL)** feature (`OrchardCore.ContentFields.Indexing.SQL`) copies the values of text, Boolean, number, date, date and time, time, link, HTML, multi text and content picker fields into database tables. **Content Fields Indexing (SQL) - User Picker** (`OrchardCore.ContentFields.Indexing.SQL.UserPicker`) does the same for user picker fields.
 
-Nothing changes in the editor. These tables let developers and site builders write SQL queries that list or filter content by field values, for example all events after a date, in **Search > Queries**. See [Queries](../search/queries.md). Turn them on when a query needs them; your developer will tell you.
+Nothing changes in the editor. These tables let developers and site builders write SQL queries that list or filter content by field values, for example all events after a date, in **Search → Queries**. See [Queries](../search/queries.md). Turn them on when a query needs them; your developer will tell you.
+
+## Videos
+
+This video covers the text, number, date and yes-or-no fields.
+
+<!-- video:content-fields-overview -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/mC1uIlK9bQs" title="Content Fields: Text, Numbers, Dates and Yes or No" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video covers the link, rich text, Markdown and YouTube fields.
+
+<!-- video:content-fields-links-html-youtube -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/t495H9BAZVA" title="Content Fields: Links, Rich Text, Markdown and YouTube Videos" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video shows how field editors and display modes give one field many faces.
+
+<!-- video:content-fields-editors -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/zujP0UIdETM" title="Field Editors and Display Modes: One Field, Many Faces" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video relates content items to each other and to users with the Content Picker and User Picker fields.
+
+<!-- video:content-picker-fields -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/6a2SSz2Ky60" title="Content Picker and User Picker Fields: Relate Content Items" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video adds a location to content items with the Geo Point field.
+
+<!-- video:spatial-geo-point-field -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/NyJDG0sIVs8" title="Geo Point Field: Add Locations to Content Items" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video attaches images and files to content items with the Media field.
+
+<!-- video:media-field -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/5wbolSzAOpg" title="Media Field: Attach Images and Files to Content" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

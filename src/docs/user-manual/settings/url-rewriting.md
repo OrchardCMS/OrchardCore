@@ -16,7 +16,7 @@ There are two kinds of rules:
 
 | | |
 | --- | --- |
-| **Menu** | **Tools > URL Rewriting** |
+| **Menu** | **Tools → URL Rewriting** |
 | **Permission** | *Manage URLs rewriting rules* (the Administrator role has it by default) |
 | **Feature** | **URL Rewriting** (`OrchardCore.UrlRewriting`) |
 
@@ -39,7 +39,7 @@ For example, a rule with the **Match URL Pattern** `^/img/(.*)$` and the **Subst
 
 ## Add a redirect rule
 
-1. Open **Tools > URL Rewriting** and click **Add Rule**.
+1. Open **Tools → URL Rewriting** and click **Add Rule**.
 2. In **Available Rule Types**, click **Add** next to **Redirect**.
 3. Fill in the form (see the table below).
 4. Click **Save**.
@@ -60,7 +60,7 @@ You see *Rule created successfully.* and the site reloads so the rule applies.
 
 ## Add a rewrite rule
 
-1. Open **Tools > URL Rewriting** and click **Add Rule**.
+1. Open **Tools → URL Rewriting** and click **Add Rule**.
 2. In **Available Rule Types**, click **Add** next to **Rewrite**.
 3. Fill in the form.
 4. Click **Save**.
@@ -75,7 +75,7 @@ The fields are the same as for a redirect rule, without **Redirect Type**, and w
 
 The site checks the rules from the top of the list to the bottom, so the order matters when several rules could match the same address. Put the most specific rules first.
 
-1. Open **Tools > URL Rewriting**.
+1. Open **Tools → URL Rewriting**.
 2. Drag a rule by its handle (*Drag to reorder*) to its new place.
 
 The new order is saved as soon as you drop the rule. If it fails, you see *Unable to sort the list. Try refreshing your page and try again.*
@@ -93,3 +93,10 @@ Saving or deleting a rule reloads the site.
 ## Check that a rule works
 
 There is no test tool on the screen. After you save a rule, open a private browser window and type an address the rule should match. A redirect rule changes the address in the address bar; a rewrite rule shows the other page's content under the same address. If nothing happens, check the pattern and the order of the rules.
+
+## Video
+
+This video redirects and rewrites requests with URL rewriting rules.
+
+<!-- video:url-rewriting -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/qS6sm_CT4i0" title="URL Rewriting: Redirect and Rewrite Requests" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

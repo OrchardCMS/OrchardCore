@@ -97,7 +97,32 @@ msgctxt "OrchardCore.Taxonomies.Permissions"
 msgid "Manage taxonomies"
 msgstr ""
 
-#. Format arguments: {0}: taxonomy?.DisplayText
+#: Services/TaxonomiesJSLocalizer.cs
+msgctxt "OrchardCore.Taxonomies.Services.TaxonomiesJSLocalizer"
+msgid "No tags found"
+msgstr ""
+
+#: Services/TaxonomiesJSLocalizer.cs
+msgctxt "OrchardCore.Taxonomies.Services.TaxonomiesJSLocalizer"
+msgid "Press enter to create a tag"
+msgstr ""
+
+#: Services/TaxonomiesJSLocalizer.cs
+msgctxt "OrchardCore.Taxonomies.Services.TaxonomiesJSLocalizer"
+msgid "Remove"
+msgstr ""
+
+#: Services/TaxonomiesJSLocalizer.cs
+msgctxt "OrchardCore.Taxonomies.Services.TaxonomiesJSLocalizer"
+msgid "Select"
+msgstr ""
+
+#: Services/TaxonomiesJSLocalizer.cs
+msgctxt "OrchardCore.Taxonomies.Services.TaxonomiesJSLocalizer"
+msgid "Type to search"
+msgstr ""
+
+#. Format arguments: {0}: taxonomyDisplayText
 #: Views/Admin/Create.cshtml
 #, csharp-format
 msgctxt "OrchardCore.Taxonomies.Views.Admin.Create"
@@ -116,7 +141,14 @@ msgctxt "OrchardCore.Taxonomies.Views.Admin.Create"
 msgid "New {0}"
 msgstr ""
 
-#. Format arguments: {0}: localizedTypeDisplayName, taxonomy?.DisplayText
+#. Format arguments: {0}: taxonomyDisplayText
+#: Views/Admin/Create.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Taxonomies.Views.Admin.Create"
+msgid "You are editing a draft of the <strong>{0}</strong> taxonomy. Visitors won't see your changes until the taxonomy is published."
+msgstr ""
+
+#. Format arguments: {0}: localizedTypeDisplayName, taxonomyDisplayText
 #: Views/Admin/Edit.cshtml
 #, csharp-format
 msgctxt "OrchardCore.Taxonomies.Views.Admin.Edit"
@@ -126,6 +158,13 @@ msgstr ""
 #: Views/Admin/Edit.cshtml
 msgctxt "OrchardCore.Taxonomies.Views.Admin.Edit"
 msgid "Manage Content"
+msgstr ""
+
+#. Format arguments: {0}: taxonomyDisplayText
+#: Views/Admin/Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Taxonomies.Views.Admin.Edit"
+msgid "You are editing a draft of the <strong>{0}</strong> taxonomy. Visitors won't see your changes until the taxonomy is published."
 msgstr ""
 
 #: Views/Content.TermAdmin.cshtml
@@ -174,46 +213,12 @@ msgstr ""
 
 #: Views/TaxonomyField-Tags.Edit.cshtml
 msgctxt "OrchardCore.Taxonomies.Views.TaxonomyField-Tags.Edit"
-msgid "Clear"
-msgstr ""
-
-#. Format arguments: {0}: "{0}"
-#: Views/TaxonomyField-Tags.Edit.cshtml
-#, csharp-format
-msgctxt "OrchardCore.Taxonomies.Views.TaxonomyField-Tags.Edit"
-msgid "Create the tag: {0}"
-msgstr ""
-
-#: Views/TaxonomyField-Tags.Edit.cshtml
-msgctxt "OrchardCore.Taxonomies.Views.TaxonomyField-Tags.Edit"
 msgid "Error creating tag"
-msgstr ""
-
-#. Format arguments: {0}: "{0}"
-#: Views/TaxonomyField-Tags.Edit.cshtml
-#, csharp-format
-msgctxt "OrchardCore.Taxonomies.Views.TaxonomyField-Tags.Edit"
-msgid "No tags match {0}"
-msgstr ""
-
-#: Views/TaxonomyField-Tags.Edit.cshtml
-msgctxt "OrchardCore.Taxonomies.Views.TaxonomyField-Tags.Edit"
-msgid "Remove"
-msgstr ""
-
-#: Views/TaxonomyField-Tags.Edit.cshtml
-msgctxt "OrchardCore.Taxonomies.Views.TaxonomyField-Tags.Edit"
-msgid "Search"
 msgstr ""
 
 #: Views/TaxonomyField-Tags.Edit.cshtml
 msgctxt "OrchardCore.Taxonomies.Views.TaxonomyField-Tags.Edit"
 msgid "The taxonomy could not be found. Please check the settings for this field."
-msgstr ""
-
-#: Views/TaxonomyField-Tags.Edit.cshtml
-msgctxt "OrchardCore.Taxonomies.Views.TaxonomyField-Tags.Edit"
-msgid "Type to search"
 msgstr ""
 
 #: Views/TaxonomyField-Tags.Option.cshtml
@@ -332,6 +337,16 @@ msgstr ""
 #: Views/Term.cshtml
 msgctxt "OrchardCore.Taxonomies.Views.Term"
 msgid "The list is empty"
+msgstr ""
+
+#: Views/TermEditorActions.cshtml
+msgctxt "OrchardCore.Taxonomies.Views.TermEditorActions"
+msgid "Cancel"
+msgstr ""
+
+#: Views/TermEditorActions.cshtml
+msgctxt "OrchardCore.Taxonomies.Views.TermEditorActions"
+msgid "Save Term"
 msgstr ""
 
 #: Views/TermPart.cshtml

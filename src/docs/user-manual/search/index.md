@@ -7,7 +7,7 @@ description: Help people find your content - a search page and search box for vi
 
 This section is about being found: giving visitors a search page, saving queries that list content, and helping search engines, social networks and news readers show your pages well. Search indexes and queries are usually set up by **site builders** or **administrators**; editors and **content managers** fill in the SEO of their own pages.
 
-Indexes and queries are under **Search** in the admin menu (**Search > Indexes**, **Search > Queries**), and the search page settings under **Settings > Search**. Sitemaps are under **Tools > Search Engine Optimization**. The SEO of a page and the RSS feed of a list are set in the content editor.
+Indexes and queries are under **Search** in the admin menu (**Search → Indexes**, **Search → Queries**), and the search page settings under **Settings → Search**. Sitemaps are under **Tools → Search Engine Optimization**. The SEO of a page and the RSS feed of a list are set in the content editor.
 
 ## I want to…
 
