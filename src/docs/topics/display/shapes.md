@@ -723,6 +723,13 @@ The central naming rule is:
 - Use dots and hyphens in Razor and Liquid filenames.
 - Add alternates from least to most specific because the last alternate wins.
 
+## Video
+
+This video shows how Orchard Core builds a page from shapes.
+
+<!-- video:display-shapes -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/sslz8AD1bu8" title="Shapes: How Orchard Core Renders a Page" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
 ## Related topics
 
 - [Customize the Display](README.md)

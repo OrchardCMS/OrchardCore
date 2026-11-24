@@ -165,3 +165,15 @@ To reset all indices:
   ]
 }
 ```
+
+## Videos
+
+This video adds site search to your site.
+
+<!-- video:search-overview -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/73AR8SVjZYQ" title="Search: Add Site Search to Your Site" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video creates, rebuilds and resets search indexes.
+
+<!-- video:indexing-indexes -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/GAAOSocJXcE" title="Indexes: Create, Rebuild and Reset Search Indexes" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
