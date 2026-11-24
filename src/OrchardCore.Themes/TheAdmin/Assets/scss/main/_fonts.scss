@@ -23,10 +23,9 @@ $ta-latin-ext-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-
     }
 }
 
-// Lato has no semibold: its bold face serves the theme's strong weight (600) as well as bold, so the admin looks the same
-// whichever of the two a component asks for.
+// Lato has no semibold, and the theme ships no black: its bold face serves every weight from the theme's strong weight
+// (600) up, so the browser never fakes a heavier face, and the admin looks the same whichever weight a component asks for.
 @include ta-font-face("Lato", "lato", 400);
-@include ta-font-face("Lato", "lato", 700, $weights: 600 700);
-@include ta-font-face("Lato", "lato", 900);
+@include ta-font-face("Lato", "lato", 700, $weights: 600 900);
 
 @include ta-font-face("Lato", "lato", 400, italic);

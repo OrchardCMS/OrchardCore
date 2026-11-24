@@ -64,11 +64,9 @@
     "source": [
       "node_modules/@fontsource/lato/files/lato-latin-400-normal.woff2",
       "node_modules/@fontsource/lato/files/lato-latin-700-normal.woff2",
-      "node_modules/@fontsource/lato/files/lato-latin-900-normal.woff2",
       "node_modules/@fontsource/lato/files/lato-latin-400-italic.woff2",
       "node_modules/@fontsource/lato/files/lato-latin-ext-400-normal.woff2",
       "node_modules/@fontsource/lato/files/lato-latin-ext-700-normal.woff2",
-      "node_modules/@fontsource/lato/files/lato-latin-ext-900-normal.woff2",
       "node_modules/@fontsource/lato/files/lato-latin-ext-400-italic.woff2"
     ],
     "dest": "wwwroot/fonts/",
