@@ -21,3 +21,49 @@ html .media-field-app {
 html .oc-media-empty-state {
     border-color: var(--ta-control-border);
 }
+
+// The media library page is a card like the others: their corners, shadow and border. Only the page's own gallery,
+// not the one the media picker opens in a dialog.
+.ta-content > #media-gallery > .fileApp {
+    overflow: hidden;
+    border: var(--bs-border-width) solid var(--ta-border);
+    border-radius: var(--ta-radius);
+    background-color: var(--ta-surface);
+    box-shadow: var(--ta-shadow);
+
+    // The card draws the frame: the container inside it no longer draws its own.
+    #fileContainer {
+        border: 0;
+    }
+}
+
+// The media library, in the page and in the picker's dialog. Its header (the path of the folder, the storage and the
+// settings) takes the muted surface of the theme, and the folders are rows like the items of the admin menu: rounded,
+// tinted on hover, and the current one a pill in the primary's subtle tint rather than a colored bar.
+html .fileApp {
+    --media-breadcrumb-bg: var(--ta-surface-muted);
+    --media-selected-bg: var(--ta-row-hover-bg);
+
+    #folder-tree {
+        padding-block: 0.25rem;
+
+        .treeroot {
+            border-bottom: 0;
+        }
+
+        li > div:not(.treeroot),
+        li > .treeroot {
+            margin: 1px 0.5rem;
+            border-left: 0;
+            border-radius: var(--bs-border-radius);
+        }
+
+        li.selected > div:not(.treeroot),
+        li.selected > .treeroot {
+            border-left: 0;
+            background-color: var(--ta-primary-subtle);
+            color: var(--ta-primary-emphasis);
+            font-weight: var(--ta-font-weight-strong);
+        }
+    }
+}

@@ -75,6 +75,7 @@
   --ta-content-padding-x: 1rem;
   --ta-content-padding-top: calc(1.5rem * var(--ta-density));
   --ta-content-padding-bottom: 2rem;
+  --oc-admin-content-height: calc(100dvh - var(--oc-top-nav-height, 0px) - var(--ta-content-padding-top) - var(--ta-content-padding-bottom));
   --ta-radius-sm: calc(0.375rem * var(--ta-radius-scale));
   --ta-radius-md: calc(0.5rem * var(--ta-radius-scale));
   --ta-radius: calc(0.75rem * var(--ta-radius-scale));
@@ -10995,6 +10996,64 @@ html .media-field-app .mf-gallery-card .tw\:border-t {
 
 html .oc-media-empty-state {
   border-color: var(--ta-control-border);
+}
+
+.ta-content > #media-gallery > .fileApp {
+  overflow: hidden;
+  border: var(--bs-border-width) solid var(--ta-border);
+  border-radius: var(--ta-radius);
+  background-color: var(--ta-surface);
+  box-shadow: var(--ta-shadow);
+}
+
+.ta-content > #media-gallery > .fileApp #fileContainer {
+  border: 0;
+}
+
+html .fileApp {
+  --media-breadcrumb-bg: var(--ta-surface-muted);
+  --media-selected-bg: var(--ta-row-hover-bg);
+}
+
+html .fileApp #folder-tree {
+  padding-block: 0.25rem;
+}
+
+html .fileApp #folder-tree .treeroot {
+  border-bottom: 0;
+}
+
+html .fileApp #folder-tree li > div:not(.treeroot),
+html .fileApp #folder-tree li > .treeroot {
+  margin: 1px 0.5rem;
+  border-radius: var(--bs-border-radius);
+}
+
+html[dir="ltr"] .fileApp #folder-tree li > div:not(.treeroot),
+html[dir="ltr"] .fileApp #folder-tree li > .treeroot {
+  border-left: 0;
+}
+
+html[dir="rtl"] .fileApp #folder-tree li > div:not(.treeroot),
+html[dir="rtl"] .fileApp #folder-tree li > .treeroot {
+  border-right: 0;
+}
+
+html .fileApp #folder-tree li.selected > div:not(.treeroot),
+html .fileApp #folder-tree li.selected > .treeroot {
+  background-color: var(--ta-primary-subtle);
+  color: var(--ta-primary-emphasis);
+  font-weight: var(--ta-font-weight-strong);
+}
+
+html[dir="ltr"] .fileApp #folder-tree li.selected > div:not(.treeroot),
+html[dir="ltr"] .fileApp #folder-tree li.selected > .treeroot {
+  border-left: 0;
+}
+
+html[dir="rtl"] .fileApp #folder-tree li.selected > div:not(.treeroot),
+html[dir="rtl"] .fileApp #folder-tree li.selected > .treeroot {
+  border-right: 0;
 }
 
 #menu > li,
