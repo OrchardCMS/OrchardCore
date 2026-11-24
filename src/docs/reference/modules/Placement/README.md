@@ -623,3 +623,8 @@ Set location per display type:
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/YR8QzyAEgo4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/pGLggL_T9jc" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video decides where parts and fields appear with placement files.
+
+<!-- video:placement-files -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/Sl51Xv2lO-E" title="Placement: Decide Where Parts and Fields Appear" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

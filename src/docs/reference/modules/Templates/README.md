@@ -1152,3 +1152,13 @@ option under the **Settings → Security → User Login** page in the admin.
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/bwFH-C18rrA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/pfPkPH7PN5w" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video changes how a shape renders by writing a Liquid template in the admin.
+
+<!-- video:templates-override-shapes -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/uowzQ9XOtwA" title="Templates: Override Shapes From the Admin With Liquid" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video customizes the screens of the admin with Liquid admin templates.
+
+<!-- video:admin-templates -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/_HoBVym4lBo" title="Admin Templates: Customize Admin Screens With Liquid" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

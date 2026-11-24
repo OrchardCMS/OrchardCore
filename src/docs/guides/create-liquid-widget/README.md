@@ -86,3 +86,10 @@ You can use this technique to build more complex Widgets, which could contain mu
 ## Summary
 
 You just learned how to add create a Liquid Widget and a template.
+
+## Video
+
+This video creates a Liquid widget without writing a module.
+
+<!-- video:create-liquid-widget -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/hHRf-EUHeKc" title="Create a Liquid Widget Without Writing a Module" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

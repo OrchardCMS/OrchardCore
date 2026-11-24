@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using OrchardCore.Json.Extensions;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.LocationExpander;
 using OrchardCore.Mvc.ModelBinding;
@@ -96,7 +97,9 @@ public sealed class Startup : StartupBase
             options.ModelBinderProviders.Insert(0, new CheckMarkModelBinderProvider());
 
             options.ModelBinderProviders.Insert(0, new SafeBoolModelBinderProvider());
-        });
+        })
+        // A LocalizationSource is a static declaration owned by code, never serialized or deserialized.
+        .AddJsonOptions(options => options.JsonSerializerOptions.IgnoreLocalizationSources());
 
         // Add a route endpoint selector policy.
         services.AddSingleton<MatcherPolicy, FormValueRequiredMatcherPolicy>();

@@ -59,26 +59,6 @@ msgctxt "OrchardCore.Menu.Services.MenuItemStereotypesProvider"
 msgid "Menu Item"
 msgstr ""
 
-#: Services/MenuJSLocalizer.cs
-msgctxt "OrchardCore.Menu.Services.MenuJSLocalizer"
-msgid "No result found"
-msgstr ""
-
-#: Services/MenuJSLocalizer.cs
-msgctxt "OrchardCore.Menu.Services.MenuJSLocalizer"
-msgid "Remove"
-msgstr ""
-
-#: Services/MenuJSLocalizer.cs
-msgctxt "OrchardCore.Menu.Services.MenuJSLocalizer"
-msgid "Select"
-msgstr ""
-
-#: Services/MenuJSLocalizer.cs
-msgctxt "OrchardCore.Menu.Services.MenuJSLocalizer"
-msgid "Type to search"
-msgstr ""
-
 #: Settings/HtmlMenuItemPartSettingsDisplayDriver.cs
 msgctxt "OrchardCore.Menu.Settings.HtmlMenuItemPartSettingsDisplayDriver"
 msgid "Settings"
@@ -304,6 +284,13 @@ msgctxt "OrchardCore.Menu.Views.MenuItemEditorActions"
 msgid "Save Menu Item"
 msgstr ""
 
+#. Format arguments: {0}: "{0}"
+#: Views/MenuItemPermissionPart.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Menu.Views.MenuItemPermissionPart.Edit"
+msgid "No permissions match {0}"
+msgstr ""
+
 #: Views/MenuItemPermissionPart.Edit.cshtml
 msgctxt "OrchardCore.Menu.Views.MenuItemPermissionPart.Edit"
 msgid "Permissions"
@@ -311,7 +298,22 @@ msgstr ""
 
 #: Views/MenuItemPermissionPart.Edit.cshtml
 msgctxt "OrchardCore.Menu.Views.MenuItemPermissionPart.Edit"
+msgid "Remove"
+msgstr ""
+
+#: Views/MenuItemPermissionPart.Edit.cshtml
+msgctxt "OrchardCore.Menu.Views.MenuItemPermissionPart.Edit"
+msgid "Search"
+msgstr ""
+
+#: Views/MenuItemPermissionPart.Edit.cshtml
+msgctxt "OrchardCore.Menu.Views.MenuItemPermissionPart.Edit"
 msgid "The permissions required to display this menu item (optional)."
+msgstr ""
+
+#: Views/MenuItemPermissionPart.Edit.cshtml
+msgctxt "OrchardCore.Menu.Views.MenuItemPermissionPart.Edit"
+msgid "Type to search"
 msgstr ""
 
 #: Views/MenuPart.Edit.cshtml

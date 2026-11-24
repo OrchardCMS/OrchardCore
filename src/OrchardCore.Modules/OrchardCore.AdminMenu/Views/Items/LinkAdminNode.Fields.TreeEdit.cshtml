@@ -68,20 +68,22 @@
     </div>
 </div>
 
+<style asp-name="bootstrap-select" at="Head"></style>
+<script asp-name="bootstrap-select" at="Foot"></script>
+
 <div class="ocat-wrapper">
-    @{
-        var selectedItems = JConvert.SerializeObject(Model.SelectedItems, JOptions.CamelCase);
-        var allItems = JConvert.SerializeObject(Model.AllItems, JOptions.CamelCase);
-        var translations = Orchard.GetJSLocalizations("permission-picker");
-        var translationsJson = Json.Serialize(translations).ToString();
-    }
-
-    <style asp-name="admin-menu-permission-picker" asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu-permission-picker.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu-permission-picker.css" depends-on="vue-multiselect"></style>
-
-    <label asp-for="SelectedPermissionNames" class="ocat-label">@T["Permissions"]</label>
+    <label for="PermissionPicker" class="ocat-label">@T["Permissions"]</label>
     <div class="ocat-end">
-        <div id="PermissionPicker" class="vue-multiselect" data-selected-items="@selectedItems" data-all-items="@allItems" data-translations="@translationsJson" data-selected-names-input-id="@Html.IdFor(m => m.SelectedPermissionNames)" data-selected-names-input-name="@Html.NameFor(m => m.SelectedPermissionNames)" data-hint-text="@T["The permissions required to display this menu item (optional)."]" v-cloak>
+        <div class="w-xl-50">
+            <input type="hidden" asp-for="SelectedPermissionNames" />
+            <select id="PermissionPicker" multiple data-permission-picker data-values-input="@Html.IdFor(m => m.SelectedPermissionNames)" data-live-search="true" data-show-selected-tags="true" data-selected-items-style="list" data-width="100%" placeholder="@T["Type to search"]" data-live-search-placeholder="@T["Search"]" data-none-results-text="@T["No permissions match {0}", "{0}"]" data-selected-tag-remove-label="@T["Remove"]">
+                @foreach (var permission in Model.AllItems)
+                {
+                    <option value="@permission.Name" selected="@Model.SelectedItems.Any(item => item.Name == permission.Name)">@permission.DisplayText</option>
+                }
+            </select>
         </div>
+        <span class="hint">@T["The permissions required to display this menu item (optional)."]</span>
     </div>
 </div>
 
@@ -101,4 +103,4 @@
     </div>
 </div>
 
-<script asp-src="~/OrchardCore.AdminMenu/Scripts/admin-node-editors/link-admin-node.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/admin-node-editors/link-admin-node.js" depends-on="vuejs, vue-multiselect" at="Foot" type="module"></script>
+<script asp-src="~/OrchardCore.AdminMenu/Scripts/admin-node-editors/link-admin-node.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/admin-node-editors/link-admin-node.js" depends-on="bootstrap-select" at="Foot" type="module"></script>

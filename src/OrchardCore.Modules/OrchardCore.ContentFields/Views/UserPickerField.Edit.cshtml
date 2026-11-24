@@ -12,20 +12,21 @@
     var fieldName = Model.PartFieldDefinition.Name;
     var contentTypeName = Model.TypePartDefinition.Name;
     var searchUrl = Url.RouteUrl(new { area = "OrchardCore.ContentFields", controller = "UserPickerAdmin", action = "SearchUsers", part = partName, field = fieldName, contentType = contentTypeName });
-    var vueElementId = $"UserPicker_{partName}_{fieldName}_{Guid.NewGuid().ToString("n")}";
     var multiple = settings.Multiple.ToString().ToLowerInvariant();
     string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), DataLocalizationContext.ContentField(Model.PartFieldDefinition.PartDefinition.Name)];
-    var translations = Orchard.GetJSLocalizations("content-fields-multiselect-picker");
-    var translationsJson = Json.Serialize(translations).ToString();
+    var placeholder = string.IsNullOrEmpty(settings.Placeholder) ? T["Type to search"].Value : settings.Placeholder;
 }
 
-<script asp-name="vue-draggable" at="Foot"></script>
-<style asp-name="vue-multiselect" at="Foot"></style>
+<style asp-name="bootstrap-select" at="Head"></style>
+<script asp-name="bootstrap-select" at="Foot"></script>
+<script asp-name="Sortable" at="Foot"></script>
 
 <div class="@($"ocat-wrapper field-wrapper field-wrapper-{Model.PartFieldDefinition.PartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" + (Model.PartFieldDefinition.IsNamedPart() ? $" field-wrapper-{Model.PartFieldDefinition.ContentTypePartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" : string.Empty))" id="@Html.IdFor(x => x.UserIds)_FieldWrapper">
     <label asp-for="UserIds" class="ocat-label @(settings.Required ? "ocat-label-required" : "")">@localizedFieldName</label>
     <div class="ocat-end">
-        <div id="@vueElementId" class="vue-multiselect" data-part="@partName" data-field="@fieldName" data-content-type="@contentTypeName" data-editor-type="UserPicker" data-selected-users="@selectedUsers" data-search-url="@searchUrl" data-multiple="@multiple" data-translations="@translationsJson" data-placeholder="@settings.Placeholder" data-selected-ids-input-id="@Html.IdFor(x => x.UserIds)" data-selected-ids-input-name="@Html.NameFor(x => x.UserIds)">
+        <div class="remote-picker" data-remote-picker data-search-url="@searchUrl" data-multiple="@multiple" data-selected-items="@selectedUsers" data-values-input="@Html.IdFor(x => x.UserIds)" data-status-field="isEnabled" data-status-text="@T["Not enabled"]" data-remove-text="@T["Remove"]">
+            <input type="hidden" asp-for="UserIds" />
+            <select data-remote-picker-search placeholder="@placeholder" data-live-search-placeholder="@T["Search"]" data-none-results-text="@T["No results match {0}", "{0}"]" aria-label="@localizedFieldName"></select>
         </div>
         @if (!string.IsNullOrEmpty(settings.Hint))
         {
@@ -34,4 +35,4 @@
         <span asp-validation-for="UserIds"></span>
     </div>
 </div>
-<script asp-src="~/OrchardCore.ContentFields/Scripts/vue-multiselect-fields/vue-multiselect-fields.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/vue-multiselect-fields/vue-multiselect-fields.js" at="Foot" depends-on="vuejs, vue-multiselect, vue-draggable" type="module"></script>
+<script asp-src="~/OrchardCore.ContentFields/Scripts/picker-fields/picker-fields.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/picker-fields/picker-fields.js" at="Foot" depends-on="bootstrap-select, Sortable" type="module"></script>

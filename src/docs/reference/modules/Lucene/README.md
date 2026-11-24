@@ -370,3 +370,8 @@ This video relates content items to each other and to users with the Content Pic
 
 <!-- video:content-picker-fields -->
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/6a2SSz2Ky60" title="Content Picker and User Picker Fields: Relate Content Items" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video adds full-text search with Lucene, with no external service.
+
+<!-- video:lucene-search -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/RLkyujWEYRY" title="Lucene: Full-Text Search With No External Service" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

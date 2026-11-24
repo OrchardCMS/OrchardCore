@@ -465,26 +465,6 @@ msgstr ""
 
 #: Services/ContentFieldsJSLocalizer.cs
 msgctxt "OrchardCore.ContentFields.Services.ContentFieldsJSLocalizer"
-msgid "No result found"
-msgstr ""
-
-#: Services/ContentFieldsJSLocalizer.cs
-msgctxt "OrchardCore.ContentFields.Services.ContentFieldsJSLocalizer"
-msgid "No values found"
-msgstr ""
-
-#: Services/ContentFieldsJSLocalizer.cs
-msgctxt "OrchardCore.ContentFields.Services.ContentFieldsJSLocalizer"
-msgid "Not enabled"
-msgstr ""
-
-#: Services/ContentFieldsJSLocalizer.cs
-msgctxt "OrchardCore.ContentFields.Services.ContentFieldsJSLocalizer"
-msgid "Not published"
-msgstr ""
-
-#: Services/ContentFieldsJSLocalizer.cs
-msgctxt "OrchardCore.ContentFields.Services.ContentFieldsJSLocalizer"
 msgid "OK"
 msgstr ""
 
@@ -500,22 +480,7 @@ msgstr ""
 
 #: Services/ContentFieldsJSLocalizer.cs
 msgctxt "OrchardCore.ContentFields.Services.ContentFieldsJSLocalizer"
-msgid "Remove"
-msgstr ""
-
-#: Services/ContentFieldsJSLocalizer.cs
-msgctxt "OrchardCore.ContentFields.Services.ContentFieldsJSLocalizer"
 msgid "Remove element from list"
-msgstr ""
-
-#: Services/ContentFieldsJSLocalizer.cs
-msgctxt "OrchardCore.ContentFields.Services.ContentFieldsJSLocalizer"
-msgid "Select"
-msgstr ""
-
-#: Services/ContentFieldsJSLocalizer.cs
-msgctxt "OrchardCore.ContentFields.Services.ContentFieldsJSLocalizer"
-msgid "Type to search"
 msgstr ""
 
 #: Services/ContentFieldsJSLocalizer.cs
@@ -762,6 +727,33 @@ msgstr ""
 #: Views/ContentPickerField.DisplayOption.cshtml
 msgctxt "OrchardCore.ContentFields.Views.ContentPickerField.DisplayOption"
 msgid "Standard"
+msgstr ""
+
+#. Format arguments: {0}: "{0}"
+#: Views/ContentPickerField.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.ContentFields.Views.ContentPickerField.Edit"
+msgid "No results match {0}"
+msgstr ""
+
+#: Views/ContentPickerField.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.ContentPickerField.Edit"
+msgid "Not published"
+msgstr ""
+
+#: Views/ContentPickerField.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.ContentPickerField.Edit"
+msgid "Remove"
+msgstr ""
+
+#: Views/ContentPickerField.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.ContentPickerField.Edit"
+msgid "Search"
+msgstr ""
+
+#: Views/ContentPickerField.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.ContentPickerField.Edit"
+msgid "Type to search"
 msgstr ""
 
 #: Views/ContentPickerField.Option.cshtml
@@ -1189,6 +1181,33 @@ msgctxt "OrchardCore.ContentFields.Views.LocalizationSetContentPickerField.Displ
 msgid "Standard"
 msgstr ""
 
+#. Format arguments: {0}: "{0}"
+#: Views/LocalizationSetContentPickerField.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.ContentFields.Views.LocalizationSetContentPickerField.Edit"
+msgid "No results match {0}"
+msgstr ""
+
+#: Views/LocalizationSetContentPickerField.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.LocalizationSetContentPickerField.Edit"
+msgid "Not published"
+msgstr ""
+
+#: Views/LocalizationSetContentPickerField.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.LocalizationSetContentPickerField.Edit"
+msgid "Remove"
+msgstr ""
+
+#: Views/LocalizationSetContentPickerField.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.LocalizationSetContentPickerField.Edit"
+msgid "Search"
+msgstr ""
+
+#: Views/LocalizationSetContentPickerField.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.LocalizationSetContentPickerField.Edit"
+msgid "Type to search"
+msgstr ""
+
 #: Views/LocalizationSetContentPickerField.Option.cshtml
 msgctxt "OrchardCore.ContentFields.Views.LocalizationSetContentPickerField.Option"
 msgid "Standard"
@@ -1242,6 +1261,28 @@ msgstr ""
 #: Views/MultiTextField-CheckboxList.Option.cshtml
 msgctxt "OrchardCore.ContentFields.Views.MultiTextField-CheckboxList.Option"
 msgid "Checkbox List"
+msgstr ""
+
+#. Format arguments: {0}: "{0}"
+#: Views/MultiTextField-Picker.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.ContentFields.Views.MultiTextField-Picker.Edit"
+msgid "No values match {0}"
+msgstr ""
+
+#: Views/MultiTextField-Picker.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.MultiTextField-Picker.Edit"
+msgid "Remove"
+msgstr ""
+
+#: Views/MultiTextField-Picker.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.MultiTextField-Picker.Edit"
+msgid "Search"
+msgstr ""
+
+#: Views/MultiTextField-Picker.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.MultiTextField-Picker.Edit"
+msgid "Type to search"
 msgstr ""
 
 #: Views/MultiTextField-Picker.Option.cshtml
@@ -1657,6 +1698,33 @@ msgstr ""
 #: Views/UserPickerField.DisplayOption.cshtml
 msgctxt "OrchardCore.ContentFields.Views.UserPickerField.DisplayOption"
 msgid "Standard"
+msgstr ""
+
+#. Format arguments: {0}: "{0}"
+#: Views/UserPickerField.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.ContentFields.Views.UserPickerField.Edit"
+msgid "No results match {0}"
+msgstr ""
+
+#: Views/UserPickerField.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.UserPickerField.Edit"
+msgid "Not enabled"
+msgstr ""
+
+#: Views/UserPickerField.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.UserPickerField.Edit"
+msgid "Remove"
+msgstr ""
+
+#: Views/UserPickerField.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.UserPickerField.Edit"
+msgid "Search"
+msgstr ""
+
+#: Views/UserPickerField.Edit.cshtml
+msgctxt "OrchardCore.ContentFields.Views.UserPickerField.Edit"
+msgid "Type to search"
 msgstr ""
 
 #: Views/UserPickerField.Option.cshtml

@@ -1,12 +1,6 @@
 [
   {
     "action": "sass",
-    "name": "admin-menu-permission-picker",
-    "source": "Assets/scss/admin-menu-permission-picker.scss",
-    "tags": ["admin", "dashboard", "css"]
-  },
-  {
-    "action": "sass",
     "name": "admin-menu",
     "source": "Assets/scss/admin-menu.scss",
     "tags": ["admin", "dashboard", "css"]

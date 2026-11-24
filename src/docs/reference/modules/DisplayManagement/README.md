@@ -195,3 +195,15 @@ Tag helper example:
 
 ### Related Articles
 - [Placement](../Placement/README.md)
+
+## Videos
+
+This video shows how Orchard Core builds a page from shapes.
+
+<!-- video:display-shapes -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/sslz8AD1bu8" title="Shapes: How Orchard Core Renders a Page" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video customizes the display of one content type or one content item with shape alternates.
+
+<!-- video:display-alternates -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/NNNv1RErv2k" title="Shape Alternates: Customize the Display of One Type or One Item" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

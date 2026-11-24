@@ -123,26 +123,6 @@ msgctxt "OrchardCore.AdminMenu.Permissions"
 msgid "View Admin Menu - {0}"
 msgstr ""
 
-#: Services/AdminMenuJSLocalizer.cs
-msgctxt "OrchardCore.AdminMenu.Services.AdminMenuJSLocalizer"
-msgid "No result found"
-msgstr ""
-
-#: Services/AdminMenuJSLocalizer.cs
-msgctxt "OrchardCore.AdminMenu.Services.AdminMenuJSLocalizer"
-msgid "Remove"
-msgstr ""
-
-#: Services/AdminMenuJSLocalizer.cs
-msgctxt "OrchardCore.AdminMenu.Services.AdminMenuJSLocalizer"
-msgid "Select"
-msgstr ""
-
-#: Services/AdminMenuJSLocalizer.cs
-msgctxt "OrchardCore.AdminMenu.Services.AdminMenuJSLocalizer"
-msgid "Type to search"
-msgstr ""
-
 #: Views/AdminMenuCreateGeneral.Edit.cshtml
 msgctxt "OrchardCore.AdminMenu.Views.AdminMenuCreateGeneral.Edit"
 msgid "Name"
@@ -260,6 +240,13 @@ msgctxt "OrchardCore.AdminMenu.Views.Items.LinkAdminNode.Fields.TreeEdit"
 msgid "Link Url"
 msgstr ""
 
+#. Format arguments: {0}: "{0}"
+#: Views/Items/LinkAdminNode.Fields.TreeEdit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.AdminMenu.Views.Items.LinkAdminNode.Fields.TreeEdit"
+msgid "No permissions match {0}"
+msgstr ""
+
 #: Views/Items/LinkAdminNode.Fields.TreeEdit.cshtml
 msgctxt "OrchardCore.AdminMenu.Views.Items.LinkAdminNode.Fields.TreeEdit"
 msgid "Opens the linked document in a new window or tab."
@@ -297,6 +284,16 @@ msgstr ""
 
 #: Views/Items/LinkAdminNode.Fields.TreeEdit.cshtml
 msgctxt "OrchardCore.AdminMenu.Views.Items.LinkAdminNode.Fields.TreeEdit"
+msgid "Remove"
+msgstr ""
+
+#: Views/Items/LinkAdminNode.Fields.TreeEdit.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Items.LinkAdminNode.Fields.TreeEdit"
+msgid "Search"
+msgstr ""
+
+#: Views/Items/LinkAdminNode.Fields.TreeEdit.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Items.LinkAdminNode.Fields.TreeEdit"
 msgid "Select an icon to display when this link is a first level menu item."
 msgstr ""
 
@@ -325,6 +322,11 @@ msgctxt "OrchardCore.AdminMenu.Views.Items.LinkAdminNode.Fields.TreeEdit"
 msgid "The url of the link. A link will be shown only if it or one of their children have a url. The url will be relative to the root of the admin site"
 msgstr ""
 
+#: Views/Items/LinkAdminNode.Fields.TreeEdit.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Items.LinkAdminNode.Fields.TreeEdit"
+msgid "Type to search"
+msgstr ""
+
 #: Views/Items/LinkAdminNode.Fields.TreeSummary.cshtml
 msgctxt "OrchardCore.AdminMenu.Views.Items.LinkAdminNode.Fields.TreeSummary"
 msgid "Link"
@@ -350,6 +352,13 @@ msgctxt "OrchardCore.AdminMenu.Views.Items.PlaceholderAdminNode.Fields.TreeEdit"
 msgid "Link Text"
 msgstr ""
 
+#. Format arguments: {0}: "{0}"
+#: Views/Items/PlaceholderAdminNode.Fields.TreeEdit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.AdminMenu.Views.Items.PlaceholderAdminNode.Fields.TreeEdit"
+msgid "No permissions match {0}"
+msgstr ""
+
 #: Views/Items/PlaceholderAdminNode.Fields.TreeEdit.cshtml
 msgctxt "OrchardCore.AdminMenu.Views.Items.PlaceholderAdminNode.Fields.TreeEdit"
 msgid "Permissions"
@@ -367,6 +376,16 @@ msgstr ""
 
 #: Views/Items/PlaceholderAdminNode.Fields.TreeEdit.cshtml
 msgctxt "OrchardCore.AdminMenu.Views.Items.PlaceholderAdminNode.Fields.TreeEdit"
+msgid "Remove"
+msgstr ""
+
+#: Views/Items/PlaceholderAdminNode.Fields.TreeEdit.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Items.PlaceholderAdminNode.Fields.TreeEdit"
+msgid "Search"
+msgstr ""
+
+#: Views/Items/PlaceholderAdminNode.Fields.TreeEdit.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Items.PlaceholderAdminNode.Fields.TreeEdit"
 msgid "Select an icon to display when this menu item is at the first level."
 msgstr ""
 
@@ -378,6 +397,11 @@ msgstr ""
 #: Views/Items/PlaceholderAdminNode.Fields.TreeEdit.cshtml
 msgctxt "OrchardCore.AdminMenu.Views.Items.PlaceholderAdminNode.Fields.TreeEdit"
 msgid "The text of the menu item as it will be shown in the tree."
+msgstr ""
+
+#: Views/Items/PlaceholderAdminNode.Fields.TreeEdit.cshtml
+msgctxt "OrchardCore.AdminMenu.Views.Items.PlaceholderAdminNode.Fields.TreeEdit"
+msgid "Type to search"
 msgstr ""
 
 #: Views/Items/PlaceholderAdminNode.Fields.TreeSummary.cshtml

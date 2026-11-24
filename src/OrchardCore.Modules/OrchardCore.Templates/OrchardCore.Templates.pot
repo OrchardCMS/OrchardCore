@@ -933,6 +933,13 @@ msgctxt "OrchardCore.Templates.Views.TemplateInspector.Index"
 msgid "Local template {0}"
 msgstr ""
 
+#. Format arguments: {0}: "{0}"
+#: Views/TemplateInspector/Index.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Templates.Views.TemplateInspector.Index"
+msgid "No results match {0}"
+msgstr ""
+
 #: Views/TemplateInspector/Index.cshtml
 msgctxt "OrchardCore.Templates.Views.TemplateInspector.Index"
 msgid "Pick a content item to see the shapes the admin renders for it, the template rendering each of them with the admin theme and the admin templates, and their alternates: create an admin template with one of these names to customize the shape for this content item, its content type or display type."
@@ -941,6 +948,16 @@ msgstr ""
 #: Views/TemplateInspector/Index.cshtml
 msgctxt "OrchardCore.Templates.Views.TemplateInspector.Index"
 msgid "Pick a content item to see the shapes the front end renders for it, the template rendering each of them with the site theme and the templates, and their alternates: create a template with one of these names to customize the shape for this content item, its content type or display type."
+msgstr ""
+
+#: Views/TemplateInspector/Index.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateInspector.Index"
+msgid "Remove"
+msgstr ""
+
+#: Views/TemplateInspector/Index.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateInspector.Index"
+msgid "Search"
 msgstr ""
 
 #: Views/TemplateInspector/Index.cshtml
@@ -958,6 +975,11 @@ msgstr ""
 #: Views/TemplateInspector/Index.cshtml
 msgctxt "OrchardCore.Templates.Views.TemplateInspector.Index"
 msgid "The template rendering the shape is bound to this name"
+msgstr ""
+
+#: Views/TemplateInspector/Index.cshtml
+msgctxt "OrchardCore.Templates.Views.TemplateInspector.Index"
+msgid "Type to search"
 msgstr ""
 
 #: Views/TemplateInspector/Index.cshtml

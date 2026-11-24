@@ -107,31 +107,6 @@ msgctxt "OrchardCore.Taxonomies.Permissions"
 msgid "Manage taxonomies"
 msgstr ""
 
-#: Services/TaxonomiesJSLocalizer.cs
-msgctxt "OrchardCore.Taxonomies.Services.TaxonomiesJSLocalizer"
-msgid "No tags found"
-msgstr ""
-
-#: Services/TaxonomiesJSLocalizer.cs
-msgctxt "OrchardCore.Taxonomies.Services.TaxonomiesJSLocalizer"
-msgid "Press enter to create a tag"
-msgstr ""
-
-#: Services/TaxonomiesJSLocalizer.cs
-msgctxt "OrchardCore.Taxonomies.Services.TaxonomiesJSLocalizer"
-msgid "Remove"
-msgstr ""
-
-#: Services/TaxonomiesJSLocalizer.cs
-msgctxt "OrchardCore.Taxonomies.Services.TaxonomiesJSLocalizer"
-msgid "Select"
-msgstr ""
-
-#: Services/TaxonomiesJSLocalizer.cs
-msgctxt "OrchardCore.Taxonomies.Services.TaxonomiesJSLocalizer"
-msgid "Type to search"
-msgstr ""
-
 #: Settings/TaxonomyContentsAdminListSettingsDisplayDriver.cs
 msgctxt "OrchardCore.Taxonomies.Settings.TaxonomyContentsAdminListSettingsDisplayDriver"
 msgid "Taxonomies"
@@ -228,12 +203,46 @@ msgstr ""
 
 #: Views/TaxonomyField-Tags.Edit.cshtml
 msgctxt "OrchardCore.Taxonomies.Views.TaxonomyField-Tags.Edit"
+msgid "Clear"
+msgstr ""
+
+#. Format arguments: {0}: "{0}"
+#: Views/TaxonomyField-Tags.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Taxonomies.Views.TaxonomyField-Tags.Edit"
+msgid "Create the tag: {0}"
+msgstr ""
+
+#: Views/TaxonomyField-Tags.Edit.cshtml
+msgctxt "OrchardCore.Taxonomies.Views.TaxonomyField-Tags.Edit"
 msgid "Error creating tag"
+msgstr ""
+
+#. Format arguments: {0}: "{0}"
+#: Views/TaxonomyField-Tags.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Taxonomies.Views.TaxonomyField-Tags.Edit"
+msgid "No tags match {0}"
+msgstr ""
+
+#: Views/TaxonomyField-Tags.Edit.cshtml
+msgctxt "OrchardCore.Taxonomies.Views.TaxonomyField-Tags.Edit"
+msgid "Remove"
+msgstr ""
+
+#: Views/TaxonomyField-Tags.Edit.cshtml
+msgctxt "OrchardCore.Taxonomies.Views.TaxonomyField-Tags.Edit"
+msgid "Search"
 msgstr ""
 
 #: Views/TaxonomyField-Tags.Edit.cshtml
 msgctxt "OrchardCore.Taxonomies.Views.TaxonomyField-Tags.Edit"
 msgid "The taxonomy could not be found. Please check the settings for this field."
+msgstr ""
+
+#: Views/TaxonomyField-Tags.Edit.cshtml
+msgctxt "OrchardCore.Taxonomies.Views.TaxonomyField-Tags.Edit"
+msgid "Type to search"
 msgstr ""
 
 #: Views/TaxonomyField-Tags.Option.cshtml

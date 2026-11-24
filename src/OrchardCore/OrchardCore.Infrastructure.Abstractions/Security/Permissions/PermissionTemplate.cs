@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using OrchardCore.Localization;
 
 namespace OrchardCore.Security.Permissions;
@@ -5,6 +6,7 @@ namespace OrchardCore.Security.Permissions;
 public sealed record PermissionTemplate
 {
     public string Name { get; init; }
+    [JsonIgnore]
     public LocalizationSource Description { get; init; }
     public string Category { get; init; }
     public IEnumerable<Permission> ImpliedBy { get; init; } = [];

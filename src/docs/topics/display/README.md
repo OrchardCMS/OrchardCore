@@ -20,3 +20,10 @@ Rendering in Orchard Core is built around a few concepts:
 - [Define the Placement](../../reference/modules/Placement/README.md)
 - [Place Widgets with Layers](../../reference/modules/Layers/README.md)
 - [Manage your Stylesheets and Scripts](../../reference/modules/Resources/README.md)
+
+## Video
+
+This video shows how Orchard Core builds a page from shapes.
+
+<!-- video:display-shapes -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/sslz8AD1bu8" title="Shapes: How Orchard Core Renders a Page" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

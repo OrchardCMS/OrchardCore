@@ -235,3 +235,13 @@ Shortcodes can also be rendered via a liquid filter or html helper
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/ofPKGsW5Ftg" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/H0jBMH8tj3A" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video embeds images and links in your text with the built-in shortcodes.
+
+<!-- video:shortcodes-built-in -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/fCV1jBAnXmE" title="Shortcodes: Embed Images and Links in Your Text" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video writes your own shortcodes with Liquid shortcode templates.
+
+<!-- video:shortcode-templates -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/eTiX2f5VdqI" title="Shortcode Templates: Write Your Own Shortcodes With Liquid" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

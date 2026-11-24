@@ -1,9 +1,27 @@
 using System.Text.Json;
+using System.Text.Json.Serialization.Metadata;
+using OrchardCore.Json.Serialization;
 
 namespace OrchardCore.Json.Extensions;
 
 public static class JsonSerializerOptionsExtensions
 {
+    /// <summary>
+    /// Excludes the properties that hold a <see cref="OrchardCore.Localization.LocalizationSource"/> from the contract of the
+    /// given options, so a source is never serialized or deserialized. See <see cref="LocalizationSourceJsonModifier"/>.
+    /// </summary>
+    /// <remarks>
+    /// Wraps the current <see cref="JsonSerializerOptions.TypeInfoResolver"/>, or the default one when none is set, so it
+    /// must be called before the options are used.
+    /// </remarks>
+    public static JsonSerializerOptions IgnoreLocalizationSources(this JsonSerializerOptions options)
+    {
+        options.TypeInfoResolver = (options.TypeInfoResolver ?? new DefaultJsonTypeInfoResolver())
+            .WithAddedModifier(LocalizationSourceJsonModifier.Ignore);
+
+        return options;
+    }
+
     /// <summary>
     /// Merges the given <see cref="JsonSerializerOptions"/> into the current options.
     /// </summary>

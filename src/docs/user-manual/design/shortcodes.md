@@ -62,7 +62,7 @@ A shortcode template is your own shortcode, written in Liquid. For example, a `[
 | **Name** | Required. The name editors type in brackets, without the brackets, such as `site_name`. Must be unique and a valid shortcode name: no spaces or brackets. A template with the name of a built-in shortcode replaces it. |
 | **Hint** | A short explanation shown in **Available Shortcodes**. |
 | **Usage** | An example of how to use it, shown in **Available Shortcodes**. Simple HTML is allowed, for example a small table of arguments. |
-| **Categories** | The categories it is listed under in **Available Shortcodes**. Pick existing ones or type a new one. |
+| **Categories** | The categories it is listed under in **Available Shortcodes**. Pick existing ones, or type a new one in the search box and press Enter (or click **Add the category: ...**). Click a category under the list to remove it. |
 | **Default Shortcode Value** | The text inserted when an editor clicks **Add**. Leave it empty to insert `[name]`. |
 | **Content** | Required. The Liquid template that produces the output. It must be valid Liquid, or saving fails with the error. |
 
@@ -94,3 +94,15 @@ The `sanitize` filter removes anything dangerous, such as scripts, from what edi
 Open **Design → Shortcodes**. Each template shows its name and categories, with **Edit** and **Delete** buttons. Type in **Search** and press Enter to filter. To delete several, tick them and choose **Delete** from the **Actions** menu.
 
 When you delete a template, content that still uses its shortcode shows the shortcode as plain text, such as `[site_name]`.
+
+## Videos
+
+This video embeds images and links in your text with the built-in shortcodes.
+
+<!-- video:shortcodes-built-in -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/fCV1jBAnXmE" title="Shortcodes: Embed Images and Links in Your Text" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video writes your own shortcodes with Liquid shortcode templates.
+
+<!-- video:shortcode-templates -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/eTiX2f5VdqI" title="Shortcode Templates: Write Your Own Shortcodes With Liquid" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

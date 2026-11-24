@@ -149,3 +149,20 @@ These widgets show only on that content item's page, and only if the theme shows
 
 !!! example "See it in practice"
     [Build a landing page](../use-cases/landing-page-with-widgets.md) walks through this step by step.
+
+## Videos
+
+This video adds blocks of content to your pages with widgets.
+
+<!-- video:widgets-overview -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/rJ0HfwwpFCg" title="Widgets: Add Content Blocks to Your Pages" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video shows widgets on the right pages with layers and zones.
+
+<!-- video:layers-zones -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/pTtKqJHzB8E" title="Layers: Show Widgets on the Right Pages" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video writes the rule conditions that decide when a layer shows.
+
+<!-- video:rules-conditions -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/hBkhnyMqNW8" title="Rules: Conditions That Decide When a Layer Shows" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

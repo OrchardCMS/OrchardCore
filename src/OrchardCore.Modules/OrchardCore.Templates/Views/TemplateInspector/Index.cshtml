@@ -8,7 +8,6 @@
         : [OrchardCore.Templates.Controllers.TemplateInspectorController.ToPickerItem(Model.ContentItem)];
     var selectedItems = System.Text.Json.JsonSerializer.Serialize(selected);
     var searchUrl = Url.Action("SearchContentItems", "TemplateInspector", new { area = "OrchardCore.Templates", adminTemplates = Model.AdminTemplates });
-    var translations = System.Text.Json.JsonSerializer.Serialize(Orchard.GetJSLocalizations("content-fields-multiselect-picker"));
 
     // Views a template of a source, e.g. of the active theme, and clones it as a local template when it's a Liquid one.
     Func<InspectedSourceTemplate, object> sourceTemplateActions = @<text>
@@ -50,7 +49,9 @@
             <div class="row g-2 align-items-center">
                 @* The picker of the content items, the one of the content picker field, searching the content items the user can inspect. *@
                 <div class="col-md">
-                    <div id="TemplateInspector_ContentItem" class="vue-multiselect" data-editor-type="ContentPicker" data-selected-items="@selectedItems" data-search-url="@searchUrl" data-multiple="false" data-translations="@translations" data-selected-ids-input-id="contentItemId" data-selected-ids-input-name="contentItemId" aria-label="@T["Content item"]">
+                    <div id="TemplateInspector_ContentItem" class="remote-picker" data-remote-picker data-search-url="@searchUrl" data-multiple="false" data-selected-items="@selectedItems" data-values-input="contentItemId" data-remove-text="@T["Remove"]">
+                        <input type="hidden" id="contentItemId" name="contentItemId" value="@Model.ContentItem?.ContentItemId" />
+                        <select data-remote-picker-search placeholder="@T["Type to search"]" data-live-search-placeholder="@T["Search"]" data-none-results-text="@T["No results match {0}", "{0}"]" aria-label="@T["Content item"]"></select>
                     </div>
                 </div>
                 <div class="col-md-auto">
@@ -159,6 +160,6 @@
     </ul>
 }
 
-<script asp-name="vue-draggable" at="Foot"></script>
-<style asp-name="vue-multiselect" at="Foot"></style>
-<script asp-src="~/OrchardCore.ContentFields/Scripts/vue-multiselect-fields/vue-multiselect-fields.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/vue-multiselect-fields/vue-multiselect-fields.js" at="Foot" depends-on="vuejs, vue-multiselect, vue-draggable" type="module"></script>
+<style asp-name="bootstrap-select" at="Head"></style>
+<script asp-name="bootstrap-select" at="Foot"></script>
+<script asp-src="~/OrchardCore.ContentFields/Scripts/picker-fields/picker-fields.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/picker-fields/picker-fields.js" at="Foot" depends-on="bootstrap-select" type="module"></script>

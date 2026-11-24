@@ -5,13 +5,17 @@
     var categories = shortcodeDescriptors
         .SelectMany(shortcodeDescriptor => shortcodeDescriptor.Categories ?? Enumerable.Empty<string>())
         .Distinct(StringComparer.OrdinalIgnoreCase)
-        .OrderBy(category => category)
         .ToList();
 
-    var jCategories = JConvert.SerializeObject(categories);
-    var jSelectedCategories = JConvert.SerializeObject(Model.Categories);
-    var translations = Orchard.GetJSLocalizations("shortcodes-categories-editor");
-    var translationsJson = Json.Serialize(translations).ToString();
+    // The categories of the shortcode, the posted ones when the form is displayed again, and the other ones of the shortcodes.
+    var selectedCategories = Model.Categories?.Length > 0 || string.IsNullOrEmpty(Model.SelectedCategories)
+        ? Model.Categories ?? []
+        : JConvert.DeserializeObject<string[]>(Model.SelectedCategories) ?? [];
+    categories = selectedCategories
+        .Concat(categories)
+        .Distinct(StringComparer.OrdinalIgnoreCase)
+        .OrderBy(category => category)
+        .ToList();
 }
 
 <div class="ocat-wrapper" asp-validation-class-for="Name">
@@ -39,11 +43,16 @@
     </div>
 </div>
 
-@* Do not move app from here, it is specific to categories, and causes conflicts with codemirror due to dom rewrites. *@
-<div class="ocat-wrapper" asp-validation-class-for="SelectedCategories" id="shortcodeCategories" data-categories="@jCategories" data-selected-categories="@jSelectedCategories" data-translations="@translationsJson" data-hidden-input-id="@Html.IdFor(x => x.SelectedCategories)" data-hidden-input-name="@Html.NameFor(x => x.SelectedCategories)">
-    <label asp-for="SelectedCategories" class="ocat-label">@T["Categories"]</label>
+<div class="ocat-wrapper" asp-validation-class-for="SelectedCategories">
+    <label for="shortcodeCategories" class="ocat-label">@T["Categories"]</label>
     <div class="ocat-end">
-        <div class="shortcode-categories-mount"></div>
+        <input type="hidden" asp-for="SelectedCategories" />
+        <select id="shortcodeCategories" multiple data-shortcode-categories data-values-input="@Html.IdFor(x => x.SelectedCategories)" data-values-format="json" data-live-search="true" data-show-selected-tags="true" data-open-options="true" data-open-options-text="@T["Add the category: {0}", "{0}"]" data-width="100%" placeholder="@T["Type to search"]" data-live-search-placeholder="@T["Search"]" data-none-results-text="@T["No categories match {0}", "{0}"]" data-selected-tag-remove-label="@T["Remove"]">
+            @foreach (var category in categories)
+            {
+                <option value="@category" selected="@selectedCategories.Contains(category, StringComparer.OrdinalIgnoreCase)">@category</option>
+            }
+        </select>
         <span class="hint">@T["The categories for this shortcode."]</span>
     </div>
 </div>

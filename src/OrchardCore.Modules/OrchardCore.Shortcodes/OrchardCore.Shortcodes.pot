@@ -73,31 +73,6 @@ msgctxt "OrchardCore.Shortcodes.Drivers.ShortcodeTemplateDisplayDriver"
 msgid "Template"
 msgstr ""
 
-#: Services/ShortcodesJSLocalizer.cs
-msgctxt "OrchardCore.Shortcodes.Services.ShortcodesJSLocalizer"
-msgid "No categories found"
-msgstr ""
-
-#: Services/ShortcodesJSLocalizer.cs
-msgctxt "OrchardCore.Shortcodes.Services.ShortcodesJSLocalizer"
-msgid "Press enter to add a category"
-msgstr ""
-
-#: Services/ShortcodesJSLocalizer.cs
-msgctxt "OrchardCore.Shortcodes.Services.ShortcodesJSLocalizer"
-msgid "Remove"
-msgstr ""
-
-#: Services/ShortcodesJSLocalizer.cs
-msgctxt "OrchardCore.Shortcodes.Services.ShortcodesJSLocalizer"
-msgid "Select"
-msgstr ""
-
-#: Services/ShortcodesJSLocalizer.cs
-msgctxt "OrchardCore.Shortcodes.Services.ShortcodesJSLocalizer"
-msgid "Type to search"
-msgstr ""
-
 #: Views/Admin/Create.cshtml
 msgctxt "OrchardCore.Shortcodes.Views.Admin.Create"
 msgid "Cancel"
@@ -305,6 +280,13 @@ msgctxt "OrchardCore.Shortcodes.Views.ShortcodeTemplateEntry.DefaultTags.Summary
 msgid "Category"
 msgstr ""
 
+#. Format arguments: {0}: "{0}"
+#: Views/ShortcodeTemplateGeneral.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Shortcodes.Views.ShortcodeTemplateGeneral.Edit"
+msgid "Add the category: {0}"
+msgstr ""
+
 #: Views/ShortcodeTemplateGeneral.Edit.cshtml
 msgctxt "OrchardCore.Shortcodes.Views.ShortcodeTemplateGeneral.Edit"
 msgid "Categories"
@@ -330,6 +312,23 @@ msgctxt "OrchardCore.Shortcodes.Views.ShortcodeTemplateGeneral.Edit"
 msgid "Name"
 msgstr ""
 
+#. Format arguments: {0}: "{0}"
+#: Views/ShortcodeTemplateGeneral.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Shortcodes.Views.ShortcodeTemplateGeneral.Edit"
+msgid "No categories match {0}"
+msgstr ""
+
+#: Views/ShortcodeTemplateGeneral.Edit.cshtml
+msgctxt "OrchardCore.Shortcodes.Views.ShortcodeTemplateGeneral.Edit"
+msgid "Remove"
+msgstr ""
+
+#: Views/ShortcodeTemplateGeneral.Edit.cshtml
+msgctxt "OrchardCore.Shortcodes.Views.ShortcodeTemplateGeneral.Edit"
+msgid "Search"
+msgstr ""
+
 #: Views/ShortcodeTemplateGeneral.Edit.cshtml
 msgctxt "OrchardCore.Shortcodes.Views.ShortcodeTemplateGeneral.Edit"
 msgid "The categories for this shortcode."
@@ -348,6 +347,11 @@ msgstr ""
 #: Views/ShortcodeTemplateGeneral.Edit.cshtml
 msgctxt "OrchardCore.Shortcodes.Views.ShortcodeTemplateGeneral.Edit"
 msgid "The name of the shortcode."
+msgstr ""
+
+#: Views/ShortcodeTemplateGeneral.Edit.cshtml
+msgctxt "OrchardCore.Shortcodes.Views.ShortcodeTemplateGeneral.Edit"
+msgid "Type to search"
 msgstr ""
 
 #: Views/ShortcodeTemplateGeneral.Edit.cshtml

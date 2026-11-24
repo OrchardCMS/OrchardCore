@@ -57,7 +57,7 @@ public sealed class AssistedTemplatesTests : CmsTestBase, IClassFixture<CmsSetup
 
         // The content items are picked with the content picker, searching them by their display text.
         await page.GotoAndAssertOkAsync($"{prefix}/Admin/TemplateInspector");
-        await Assertions.Expect(page.Locator("#TemplateInspector_ContentItem .multiselect")).ToBeVisibleAsync();
+        await Assertions.Expect(page.Locator("#TemplateInspector_ContentItem .bootstrap-select")).ToBeVisibleAsync();
 
         var search = await page.APIRequest.GetAsync($"{prefix}/Admin/TemplateInspector/SearchContentItems?adminTemplates=false&query=About");
         Assert.True(search.Ok);
