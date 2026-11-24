@@ -27,3 +27,8 @@ Placement rules are a JSON array, similar to a `placement.json` file entry, as d
 ## Video
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/YR8QzyAEgo4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video edits placement rules from the admin with the Placements module.
+
+<!-- video:placements-admin -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/G1T_-wch6gE" title="Placements Module: Edit Placement From the Admin" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

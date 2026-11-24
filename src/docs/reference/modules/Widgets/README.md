@@ -149,3 +149,8 @@ This video changes the look of your site by choosing a theme.
 
 <!-- video:themes-choose -->
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/gi1KWyaQ7mI" title="Themes: Change the Look of Your Site" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video adds blocks of content to your pages with widgets.
+
+<!-- video:widgets-overview -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/rJ0HfwwpFCg" title="Widgets: Add Content Blocks to Your Pages" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

@@ -94,3 +94,15 @@ The `sanitize` filter removes anything dangerous, such as scripts, from what edi
 Open **Design → Shortcodes**. Each template shows its name and categories, with **Edit** and **Delete** buttons. Type in **Search** and press Enter to filter. To delete several, tick them and choose **Delete** from the **Actions** menu.
 
 When you delete a template, content that still uses its shortcode shows the shortcode as plain text, such as `[site_name]`.
+
+## Videos
+
+This video embeds images and links in your text with the built-in shortcodes.
+
+<!-- video:shortcodes-built-in -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/fCV1jBAnXmE" title="Shortcodes: Embed Images and Links in Your Text" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video writes your own shortcodes with Liquid shortcode templates.
+
+<!-- video:shortcode-templates -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/eTiX2f5VdqI" title="Shortcode Templates: Write Your Own Shortcodes With Liquid" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

@@ -70,6 +70,11 @@ You must have declared the corresponding zones as sections in your theme:
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/NCvytsdED_o" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
+This video shows widgets on the right pages with layers and zones.
+
+<!-- video:layers-zones -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/pTtKqJHzB8E" title="Layers: Show Widgets on the Right Pages" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
 ## Recipe Configuration
 
 Layer settings can be configured using the `Settings` recipe step:
