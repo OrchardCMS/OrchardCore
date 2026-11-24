@@ -20,8 +20,7 @@ public sealed partial class AdminSchemeStore
     private readonly IDocumentManager<AdminSchemesDocument> _documents;
     private readonly IMemoryCache _memoryCache;
 
-    // The document this scope seeded or changed, read in place of the cached one, which is only refreshed once the scope
-    // commits.
+    // The document this scope changed, read in place of the cached one, which is only refreshed once the scope commits.
     private AdminSchemesDocument _current;
 
     /// <summary>
@@ -34,15 +33,10 @@ public sealed partial class AdminSchemeStore
     }
 
     /// <summary>
-    /// The schemes, read from the cache, with the theme's own schemes seeded the first time; never change what it
-    /// returns.
+    /// The schemes, read from the cache; never change what it returns.
     /// </summary>
     public async Task<AdminSchemesDocument> GetAsync()
-    {
-        var document = _current ?? await _documents.GetOrCreateImmutableAsync();
-
-        return document.Seeded ? document : await SeedAsync();
-    }
+        => _current ?? await _documents.GetOrCreateImmutableAsync();
 
     /// <summary>
     /// The schemes, in the order of the pickers.
@@ -226,32 +220,8 @@ public sealed partial class AdminSchemeStore
             && AdminSchemeTypography.IsValidDensity(scheme.Density);
     }
 
-    private async Task<AdminSchemesDocument> SeedAsync()
-    {
-        var document = await _documents.GetOrCreateMutableAsync();
-
-        if (!document.Seeded)
-        {
-            document.Seeded = true;
-
-            foreach (var scheme in TheAdminSchemes.CreateDefaults())
-            {
-                document.Schemes.TryAdd(scheme.Id, scheme);
-            }
-
-            await _documents.UpdateAsync(document);
-        }
-
-        _current = document;
-
-        return document;
-    }
-
     private async Task<AdminSchemesDocument> GetMutableAsync()
     {
-        // Seed first, so the theme's schemes are never added over what was saved before they were read.
-        await GetAsync();
-
         var document = await _documents.GetOrCreateMutableAsync();
 
         // Later reads of this scope see the change before it is committed.

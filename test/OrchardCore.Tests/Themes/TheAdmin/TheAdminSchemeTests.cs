@@ -54,9 +54,9 @@ public sealed class TheAdminSchemeTests
 
     [Theory]
     [MemberData(nameof(DefaultSchemes))]
-    public void SeededDefaults_ReproduceTheSchemesTheyWereTunedAs(string id)
+    public void ImportedSchemes_ReproduceTheSchemesTheyWereTunedAs(string id)
     {
-        var seed = TheAdminSchemes.CreateDefaults().Single(scheme => scheme.Id == id);
+        var seed = AdminSchemesRecipe.ReadSchemes().Single(scheme => scheme.Id == id);
 
         Assert.NotNull(AdminSchemePalette.FromScheme(seed));
         Assert.Equal(Light(s_builtIn[id]), Light(seed));
@@ -64,9 +64,9 @@ public sealed class TheAdminSchemeTests
     }
 
     [Fact]
-    public void SeededDefaults_HaveValidUniqueIds_AndAnOrder_StartingWithTheDefault()
+    public void ImportedSchemes_HaveValidUniqueIds_AndAnOrder_StartingWithTheDefault()
     {
-        var defaults = TheAdminSchemes.CreateDefaults();
+        var defaults = AdminSchemesRecipe.ReadSchemes();
 
         Assert.All(defaults, scheme => Assert.True(AdminSchemeStore.IsValidId(scheme.Id), scheme.Id));
         Assert.All(defaults, scheme => Assert.True(AdminSchemeStore.HasValidTypography(scheme), scheme.Id));
@@ -74,12 +74,14 @@ public sealed class TheAdminSchemeTests
         Assert.Equal(defaults.OrderBy(scheme => scheme.Position).Select(scheme => scheme.Id), defaults.Select(scheme => scheme.Id));
         Assert.Equal("gray", TheAdminSchemes.DefaultId);
         Assert.Equal(["gray", "blue"], defaults.Take(2).Select(scheme => scheme.Id));
+        Assert.Equal(AdminSchemesRecipe.SchemeIds, defaults.Select(scheme => scheme.Id));
+        Assert.Equal(TheAdminSchemes.DefaultId, AdminSchemesRecipe.ReadStep()["DefaultSchemeId"]?.GetValue<string>());
     }
 
     [Fact]
-    public void SeededGray_KeepsTheSystemFontOfTheFormerTheAdmin()
+    public void ImportedGray_KeepsTheSystemFontOfTheFormerTheAdmin()
     {
-        var gray = TheAdminSchemes.CreateDefaults().Single(scheme => scheme.Id == "gray");
+        var gray = AdminSchemesRecipe.ReadSchemes().Single(scheme => scheme.Id == "gray");
 
         Assert.StartsWith("system-ui,", Light(gray)["--ta-font-family"], StringComparison.Ordinal);
     }
@@ -134,8 +136,10 @@ public sealed class TheAdminSchemeTests
         Assert.Equal("ta", TheAdminSchemes.TokenPrefix);
         Assert.Equal("gray", TheAdminSchemes.DefaultId);
         Assert.Equal("[data-bs-theme=\"dark\"]", TheAdminSchemes.DarkModeSelector);
-        Assert.Contains(TheAdminSchemes.CreateDefaults(), scheme => scheme.Id == TheAdminSchemes.DefaultId);
         Assert.Equal(TheAdminSchemes.DefaultId, TheAdminSchemes.CreateFallback().Id);
+
+        // The fallback is the Gray the migration imports.
+        Assert.Equivalent(AdminSchemesRecipe.ReadSchemes().Single(scheme => scheme.Id == TheAdminSchemes.DefaultId), TheAdminSchemes.CreateFallback(), strict: true);
     }
 
     [Fact]
@@ -143,10 +147,10 @@ public sealed class TheAdminSchemeTests
         => Assert.Empty(Build([new AdminScheme { Id = "custom-a", Name = "A", Primary = "blue", Deep = "#144c71", Ink = "#081b26", Accent = "#5aa4ef" }]));
 
     [Fact]
-    public async Task Store_SeedsTheDefaultsOfTheTheme_AndGrayIsTheSiteDefault()
+    public async Task Store_ServesTheImportedSchemes_AndGrayIsTheSiteDefault()
     {
         var services = new ServiceCollection();
-        services.AddSingleton<IDocumentManager<AdminSchemesDocument>>(new InMemoryAdminSchemesDocumentManager());
+        services.AddSingleton<IDocumentManager<AdminSchemesDocument>>(new InMemoryAdminSchemesDocumentManager(AdminSchemesRecipe.CreateDocument()));
         services.AddMemoryCache();
         services.AddScoped<AdminSchemeStore>();
 

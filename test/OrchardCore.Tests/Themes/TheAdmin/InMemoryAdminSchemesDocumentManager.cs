@@ -8,7 +8,12 @@ namespace OrchardCore.Tests.Themes.TheAdmin;
 /// </summary>
 public sealed class InMemoryAdminSchemesDocumentManager : IDocumentManager<AdminSchemesDocument>
 {
-    public AdminSchemesDocument Document { get; private set; } = new();
+    public InMemoryAdminSchemesDocumentManager(AdminSchemesDocument document = null)
+    {
+        Document = document ?? new AdminSchemesDocument();
+    }
+
+    public AdminSchemesDocument Document { get; private set; }
 
     public int Updates { get; private set; }
 

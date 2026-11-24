@@ -3,8 +3,9 @@ using OrchardCore.Themes.TheAdmin.Models;
 namespace OrchardCore.Themes.TheAdmin.Schemes;
 
 /// <summary>
-/// The schemes of TheAdmin: the ones it seeds the first time its schemes are read (Gray, Blue, Ocean...), which are
-/// ordinary records from then on, its default one, and how its stylesheet names things. Its tokens are the generated
+/// The schemes of TheAdmin: its default one (Gray, which the stylesheet falls back to), and how its stylesheet names
+/// things. The schemes it starts with (Gray, Blue, Ocean...) are imported once by a migration, from
+/// Migrations/admin-schemes.recipe.json, and are ordinary records from then on. Its tokens are the generated
 /// ones under the <c>ta</c> prefix, a few of them renamed (see <see cref="TokenNames"/>), and the ones of
 /// <see cref="TheAdminSchemeTokens"/>, set on <c>&lt;html data-ta-scheme="..."&gt;</c>.
 /// </summary>
@@ -70,32 +71,16 @@ public static class TheAdminSchemes
             ?? AdminSchemeTypography.System.Stack;
 
     /// <summary>
-    /// The scheme used when there is no stored scheme at all, for example when the schemes were removed outside the
-    /// admin: the default one of <see cref="CreateDefaults"/>. It is never stored.
+    /// Gray, the default scheme, as the migration's recipe imports it (Migrations/admin-schemes.recipe.json): the scheme
+    /// used when there is no stored scheme at all, for example when the schemes were removed outside the admin. It is
+    /// never stored. A test keeps it in step with the recipe.
     /// </summary>
     public static AdminScheme CreateFallback()
-        => CreateDefaults().First(scheme => scheme.Id == DefaultId);
-
-    /// <summary>
-    /// The schemes to seed, in the order of the pickers.
-    /// </summary>
-    public static IReadOnlyList<AdminScheme> CreateDefaults()
-        =>
-        [
-            // The default: the look of the former TheAdmin, Bootstrap's blue on a white page, a light gray menu and the
-            // system font.
-            new()
-            {
-                Id = DefaultId, Name = "Gray", Position = 0,
-                Primary = "#0d6efd", Deep = "#212529", Ink = "#212529", Accent = "#6ea8fe",
-                LightMenu = true, Hue = 210, Saturation = 0.12, Page = "#ffffff", Toolbar = "#495057", Tint = "#495057", TintDark = "#adb5bd",
-                FontFamily = AdminSchemeTypography.SystemFont,
-            },
-            new() { Id = "blue", Name = "Blue", Position = 1, Primary = "#2a81bb", Deep = "#144c71", Ink = "#081b26", Accent = "#5aa4ef", Hue = 209, Saturation = 1 },
-            new() { Id = "ocean", Name = "Ocean", Position = 2, Primary = "#12868b", Deep = "#0d4a52", Ink = "#062227", Accent = "#4fd1c5", Hue = 187, Saturation = 0.9 },
-            new() { Id = "forest", Name = "Forest", Position = 3, Primary = "#2f855a", Deep = "#1c4a36", Ink = "#0b2018", Accent = "#68d391", Hue = 150, Saturation = 0.7 },
-            new() { Id = "plum", Name = "Plum", Position = 4, Primary = "#7b4fc0", Deep = "#3d2a66", Ink = "#170f2b", Accent = "#b794f4", Hue = 262, Saturation = 0.7 },
-            new() { Id = "sunset", Name = "Sunset", Position = 5, Primary = "#c2551f", Deep = "#5c2a1c", Ink = "#24100b", Accent = "#f6ad55", Hue = 18, Saturation = 0.6 },
-            new() { Id = "graphite", Name = "Graphite", Position = 6, Primary = "#4b6584", Deep = "#2d3540", Ink = "#121519", Accent = "#94a8bf", Hue = 213, Saturation = 0.2 },
-        ];
+        => new()
+        {
+            Id = DefaultId, Name = "Gray", Position = 0,
+            Primary = "#0d6efd", Deep = "#212529", Ink = "#212529", Accent = "#6ea8fe",
+            LightMenu = true, Hue = 210, Saturation = 0.12, Page = "#ffffff", Toolbar = "#495057", Tint = "#495057", TintDark = "#adb5bd",
+            FontFamily = AdminSchemeTypography.SystemFont,
+        };
 }

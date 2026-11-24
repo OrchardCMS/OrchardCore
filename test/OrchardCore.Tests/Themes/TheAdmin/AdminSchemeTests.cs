@@ -203,42 +203,40 @@ public sealed class AdminSchemeTests
     }
 
     [Fact]
-    public async Task Store_SeedsTheThemesSchemes_OnlyOnce_AndNeverAgainOnceEmptied()
+    public async Task Store_SeedsNothingWhenRead_AndFallsBackToGray_WhenThereIsNoScheme()
     {
-        var (store, documents) = CreateStore();
+        // No migration ran: nothing is stored, and reading never writes.
+        var documents = new InMemoryAdminSchemesDocumentManager();
+        var (store, _) = CreateStore(documents);
 
-        Assert.Equal(s_defaultIds, (await store.ListAsync()).Select(scheme => scheme.Id));
-        Assert.Equal(s_defaultIds, (await store.ListAsync()).Select(scheme => scheme.Id));
-        Assert.Equal(1, documents.Updates);
-        Assert.True(documents.Document.Seeded);
+        Assert.Empty(await store.ListAsync());
+        Assert.Equal(0, documents.Updates);
 
-        // Every scheme deleted (the default can't be deleted through the store, so straight from the document).
-        documents.Document.Schemes.Clear();
-        await documents.UpdateAsync(documents.Document);
+        // The admin is not broken: it falls back to Gray, written in the stylesheet but never stored, and the page still
+        // names that scheme.
+        var (css, _) = await store.GetStylesheetAsync();
 
-        var (later, _) = CreateStore(documents);
-
-        Assert.Empty(await later.ListAsync());
-        Assert.Equal(2, documents.Updates);
-
-        // The admin is not broken: it falls back to the theme's default scheme, written in the stylesheet but never
-        // stored, and the page still names that scheme.
-        var (css, _) = await later.GetStylesheetAsync();
-
-        Assert.Equal(TheAdminSchemes.DefaultId, await later.GetDefaultIdAsync());
+        Assert.Equal(TheAdminSchemes.DefaultId, await store.GetDefaultIdAsync());
         Assert.Contains($"[data-ta-scheme=\"{TheAdminSchemes.DefaultId}\"]", css, StringComparison.Ordinal);
-        Assert.Equal(TheAdminSchemes.DefaultId, await CreateService(later, new DefaultHttpContext()).GetSchemeAttributeAsync());
+        Assert.Equal(TheAdminSchemes.DefaultId, await CreateService(store, new DefaultHttpContext()).GetSchemeAttributeAsync());
         Assert.Empty(documents.Document.Schemes);
+        Assert.Equal(0, documents.Updates);
     }
 
     [Fact]
-    public async Task Store_SeedsBeforeTheFirstSave_SoTheThemesSchemesAreNotLost()
+    public async Task MigrationRecipe_ImportsTheThemesSchemes_AndMakesGrayTheDefault()
     {
-        var (store, documents) = CreateStore();
+        var documents = new InMemoryAdminSchemesDocumentManager();
+        var (store, _) = CreateStore(documents);
+        var context = new RecipeExecutionContext { Name = "AdminSchemes", Step = AdminSchemesRecipe.ReadStep() };
 
-        await store.SaveAsync(Scheme("custom-first", "First"));
+        await new AdminSchemesStep(store, CreateLocalizer()).ExecuteAsync(context);
 
-        Assert.Equal([.. s_defaultIds.Append("custom-first").Order(StringComparer.Ordinal)], documents.Document.Schemes.Keys.Order(StringComparer.Ordinal));
+        Assert.Empty(context.Errors);
+        Assert.Equal(s_defaultIds, (await store.ListAsync()).Select(scheme => scheme.Id));
+        Assert.Equal("gray", documents.Document.DefaultSchemeId);
+        Assert.Equal("gray", await store.GetDefaultIdAsync());
+        Assert.Equivalent(TheAdminSchemes.CreateFallback(), await store.FindAsync("gray"), strict: true);
     }
 
     [Fact]
@@ -500,12 +498,12 @@ public sealed class AdminSchemeTests
         Assert.Equal(rendered, row.Zones.IsNotEmpty("FooterEnd"));
     }
 
-    private static readonly string[] s_defaultIds = ["gray", "blue", "ocean", "forest", "plum", "sunset", "graphite"];
+    private static readonly string[] s_defaultIds = AdminSchemesRecipe.SchemeIds;
 
-    // A store over the given document, or a new one, with a cache of its own.
+    // A store over the given document, or over one holding what the theme's migration imports, with a cache of its own.
     private static (AdminSchemeStore Store, InMemoryAdminSchemesDocumentManager Documents) CreateStore(InMemoryAdminSchemesDocumentManager documents = null)
     {
-        documents ??= new InMemoryAdminSchemesDocumentManager();
+        documents ??= new InMemoryAdminSchemesDocumentManager(AdminSchemesRecipe.CreateDocument());
 
         return (new AdminSchemeStore(documents, new MemoryCache(new MemoryCacheOptions())), documents);
     }
