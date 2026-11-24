@@ -71,5 +71,12 @@
     ],
     "dest": "wwwroot/fonts/",
     "tags": ["theme", "fonts"]
+  },
+  {
+    "action": "copy",
+    "name": "theme-theadmin-fonts-license",
+    "source": "node_modules/@fontsource/lato/LICENSE",
+    "dest": "wwwroot/fonts/lato/",
+    "tags": ["theme", "fonts"]
   }
 ]
