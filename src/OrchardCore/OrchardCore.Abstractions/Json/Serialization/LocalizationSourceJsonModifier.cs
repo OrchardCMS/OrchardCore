@@ -51,17 +51,6 @@ public static class LocalizationSourceJsonModifier
             return HoldsLocalizationSource(type.GetElementType());
         }
 
-        if (type.IsGenericType)
-        {
-            foreach (var argument in type.GetGenericArguments())
-            {
-                if (HoldsLocalizationSource(argument))
-                {
-                    return true;
-                }
-            }
-        }
-
-        return false;
+        return type.IsGenericType && type.GetGenericArguments().Any(HoldsLocalizationSource);
     }
 }
