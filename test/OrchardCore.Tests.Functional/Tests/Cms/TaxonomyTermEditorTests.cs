@@ -15,9 +15,9 @@ public sealed class TaxonomyTermEditorTests : CmsTestBase<BlogFixture>, IClassFi
         await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
     }
 
-    private static async Task PublishAsync(IPage page)
+    private static async Task SaveTermAsync(IPage page)
     {
-        await page.Locator(".btn.publish").ClickAsync();
+        await page.GetByRole(AriaRole.Button, new() { Name = "Save Term" }).ClickAsync();
         await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
         await page.Locator("#menu").WaitForAsync();
     }
@@ -36,14 +36,14 @@ public sealed class TaxonomyTermEditorTests : CmsTestBase<BlogFixture>, IClassFi
 
         await page.GotoAndAssertOkAsync($"/Admin/Taxonomies/Create/Tag?taxonomyContentItemId={taxonomyId}");
         await page.Locator("#TitlePart_Title").FillAsync("Mars");
-        await PublishAsync(page);
+        await SaveTermAsync(page);
 
         await OpenTermAsync(page, "Mars");
         var permalink = page.Locator("#AutoroutePart_Path");
         await Assertions.Expect(permalink).ToHaveValueAsync("mars");
 
         await permalink.FillAsync(string.Empty);
-        await PublishAsync(page);
+        await SaveTermAsync(page);
 
         await OpenTermAsync(page, "Mars");
         await Assertions.Expect(page.Locator("#AutoroutePart_Path")).ToHaveValueAsync("mars");

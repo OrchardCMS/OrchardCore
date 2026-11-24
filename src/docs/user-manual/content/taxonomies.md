@@ -48,19 +48,19 @@ The taxonomy also has an **Alias** and a **Permalink**, both generated from the 
 
 1. Open the taxonomy's editor (**Content → Content Items**, then **Edit** on the taxonomy).
 2. Click **Add ...** (for example **Add Region**) above the list of terms.
-3. Fill in the term's editor (**New ...**), at least its **Title**, and click **Publish**.
+3. Fill in the term's editor (**New ...**), at least its **Title**, and click **Save Term**.
 4. You are back in the taxonomy editor. Click **Publish** on the taxonomy to make the new terms live.
 
 To add a child term, click **Add** on the row of the parent term instead.
 
 !!! warning "Publish the taxonomy after changing terms"
-    The **Taxonomy** type is draftable: adding, editing or deleting a term changes a draft of the taxonomy. The Taxonomy fields in editors already offer the draft terms, but the site keeps showing the published taxonomy until you click **Publish** on it.
+    The **Taxonomy** type is draftable: adding, editing or deleting a term changes a draft of the taxonomy. The Taxonomy fields in editors already offer the draft terms, but the site keeps showing the published taxonomy until you click **Publish** on it. While the taxonomy has unpublished changes, the editor of a term shows a warning saying so.
 
 ## Edit, move and delete terms
 
 Each term row has three buttons:
 
-- **Edit** opens the term's editor.
+- **Edit** opens the term's editor, where **Save Term** saves your changes in the taxonomy.
 - **Add** adds a child term under it.
 - **Delete** removes the term and its child terms, after you confirm.
 

@@ -79,7 +79,7 @@ msgctxt "OrchardCore.Menu.Services.MenuJSLocalizer"
 msgid "Type to search"
 msgstr ""
 
-#. Format arguments: {0}: menu?.DisplayText
+#. Format arguments: {0}: menuDisplayText
 #: Views/Admin/Create.cshtml
 #, csharp-format
 msgctxt "OrchardCore.Menu.Views.Admin.Create"
@@ -98,7 +98,14 @@ msgctxt "OrchardCore.Menu.Views.Admin.Create"
 msgid "New {0}"
 msgstr ""
 
-#. Format arguments: {0}: localizedTypeDisplayName, menu?.DisplayText
+#. Format arguments: {0}: menuDisplayText
+#: Views/Admin/Create.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Menu.Views.Admin.Create"
+msgid "You are editing a draft of the <strong>{0}</strong> menu. Visitors won't see your changes until the menu is published."
+msgstr ""
+
+#. Format arguments: {0}: localizedTypeDisplayName, menuDisplayText
 #: Views/Admin/Edit.cshtml
 #, csharp-format
 msgctxt "OrchardCore.Menu.Views.Admin.Edit"
@@ -108,6 +115,13 @@ msgstr ""
 #: Views/Admin/Edit.cshtml
 msgctxt "OrchardCore.Menu.Views.Admin.Edit"
 msgid "Manage Content"
+msgstr ""
+
+#. Format arguments: {0}: menuDisplayText
+#: Views/Admin/Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Menu.Views.Admin.Edit"
+msgid "You are editing a draft of the <strong>{0}</strong> menu. Visitors won't see your changes until the menu is published."
 msgstr ""
 
 #: Views/ContentMenuItemPart.Edit.cshtml
@@ -273,6 +287,16 @@ msgstr ""
 #: Views/MenuItem.Thumbnail.cshtml
 msgctxt "OrchardCore.Menu.Views.MenuItem.Thumbnail"
 msgid "Add"
+msgstr ""
+
+#: Views/MenuItemEditorActions.cshtml
+msgctxt "OrchardCore.Menu.Views.MenuItemEditorActions"
+msgid "Cancel"
+msgstr ""
+
+#: Views/MenuItemEditorActions.cshtml
+msgctxt "OrchardCore.Menu.Views.MenuItemEditorActions"
+msgid "Save Menu Item"
 msgstr ""
 
 #: Views/MenuItemPermissionPart.Edit.cshtml

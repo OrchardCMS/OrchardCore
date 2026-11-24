@@ -10,8 +10,10 @@ using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.DisplayManagement.Zones;
 using OrchardCore.Menu.Models;
 using OrchardCore.Modules;
 
@@ -26,6 +28,7 @@ public sealed class AdminController : Controller
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly INotifier _notifier;
     private readonly IUpdateModelAccessor _updateModelAccessor;
+    private readonly IShapeFactory _shapeFactory;
     private readonly IEnumerable<IContentHandler> _contentHandlers;
     private readonly IEnumerable<IContentHandler> _reversedContentHandlers;
     private readonly ILogger _logger;
@@ -40,6 +43,7 @@ public sealed class AdminController : Controller
         INotifier notifier,
         IHtmlLocalizer<AdminController> localizer,
         IUpdateModelAccessor updateModelAccessor,
+        IShapeFactory shapeFactory,
         IEnumerable<IContentHandler> contentHandlers,
         ILogger<AdminController> logger)
     {
@@ -49,6 +53,7 @@ public sealed class AdminController : Controller
         _contentDefinitionManager = contentDefinitionManager;
         _notifier = notifier;
         _updateModelAccessor = updateModelAccessor;
+        _shapeFactory = shapeFactory;
         _contentHandlers = contentHandlers;
         _reversedContentHandlers = contentHandlers.Reverse();
         _logger = logger;
@@ -71,8 +76,9 @@ public sealed class AdminController : Controller
 
         var model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, true);
 
-        model.Properties["MenuContentItemId"] = menuContentItemId;
-        model.Properties["MenuItemId"] = menuItemId;
+        var menu = await _contentManager.GetAsync(menuContentItemId, VersionOptions.Latest);
+
+        await PrepareMenuItemEditorAsync(model, menu, menu?.HasDraft() == true, menuContentItemId, menuItemId);
 
         return View(model);
     }
@@ -86,22 +92,21 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        ContentItem menu;
-
-        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync("Menu");
-
-        if (!contentTypeDefinition.IsDraftable())
-        {
-            menu = await _contentManager.GetAsync(menuContentItemId, VersionOptions.Latest);
-        }
-        else
-        {
-            menu = await _contentManager.GetAsync(menuContentItemId, VersionOptions.DraftRequired);
-        }
+        var menu = await _contentManager.GetAsync(menuContentItemId, VersionOptions.Latest);
 
         if (menu == null)
         {
             return NotFound();
+        }
+
+        // Read before requiring a draft, which creates one for a published menu.
+        var isMenuDraft = menu.HasDraft();
+
+        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync("Menu");
+
+        if (contentTypeDefinition.IsDraftable())
+        {
+            menu = await _contentManager.GetAsync(menuContentItemId, VersionOptions.DraftRequired);
         }
 
         var contentItem = await _contentManager.NewAsync(id);
@@ -114,8 +119,7 @@ public sealed class AdminController : Controller
 
         if (!ModelState.IsValid)
         {
-            model.Properties["MenuContentItemId"] = menuContentItemId;
-            model.Properties["MenuItemId"] = menuItemId;
+            await PrepareMenuItemEditorAsync(model, menu, isMenuDraft, menuContentItemId, menuItemId);
 
             return View(model);
         }
@@ -183,8 +187,7 @@ public sealed class AdminController : Controller
 
         var model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, false);
 
-        model.Properties["MenuContentItemId"] = menuContentItemId;
-        model.Properties["MenuItemId"] = menuItemId;
+        await PrepareMenuItemEditorAsync(model, menu, menu.HasDraft(), menuContentItemId, menuItemId);
 
         return View(model);
     }
@@ -198,22 +201,21 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        ContentItem menu;
-
-        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync("Menu");
-
-        if (!contentTypeDefinition.IsDraftable())
-        {
-            menu = await _contentManager.GetAsync(menuContentItemId, VersionOptions.Latest);
-        }
-        else
-        {
-            menu = await _contentManager.GetAsync(menuContentItemId, VersionOptions.DraftRequired);
-        }
+        var menu = await _contentManager.GetAsync(menuContentItemId, VersionOptions.Latest);
 
         if (menu == null)
         {
             return NotFound();
+        }
+
+        // Read before requiring a draft, which creates one for a published menu.
+        var isMenuDraft = menu.HasDraft();
+
+        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync("Menu");
+
+        if (contentTypeDefinition.IsDraftable())
+        {
+            menu = await _contentManager.GetAsync(menuContentItemId, VersionOptions.DraftRequired);
         }
 
         // Look for the target menu item in the hierarchy.
@@ -241,8 +243,7 @@ public sealed class AdminController : Controller
 
         if (!ModelState.IsValid)
         {
-            model.Properties["MenuContentItemId"] = menuContentItemId;
-            model.Properties["MenuItemId"] = menuItemId;
+            await PrepareMenuItemEditorAsync(model, menu, isMenuDraft, menuContentItemId, menuItemId);
 
             return View(model);
         }
@@ -300,6 +301,26 @@ public sealed class AdminController : Controller
         await _notifier.SuccessAsync(H["Menu item deleted successfully."]);
 
         return RedirectToAction(nameof(Edit), "Admin", new { area = "OrchardCore.Contents", contentItemId = menuContentItemId });
+    }
+
+    private async Task PrepareMenuItemEditorAsync(IShape model, ContentItem menu, bool isMenuDraft, string menuContentItemId, string menuItemId)
+    {
+        model.Properties["MenuContentItemId"] = menuContentItemId;
+        model.Properties["MenuItemId"] = menuItemId;
+        model.Properties["MenuDisplayText"] = menu?.DisplayText;
+        model.Properties["IsMenuDraft"] = isMenuDraft;
+
+        // A menu item is not a content item of its own: it is saved in the content of its menu, which is published
+        // from the editor of the menu. So the actions of a content item, like Publish, Unpublish or Delete, are
+        // replaced by a single action saving the menu item.
+        model.Properties.Remove("Actions");
+
+        var actions = await _shapeFactory.CreateAsync("MenuItemEditorActions", Arguments.From(new
+        {
+            MenuContentItemId = menuContentItemId,
+        }));
+
+        await ((IZoneHolding)model).Zones["Actions"].AddAsync(actions, "10");
     }
 
     internal static JsonObject FindMenuItem(JsonObject contentItem, string menuItemId)
