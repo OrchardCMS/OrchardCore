@@ -62,19 +62,7 @@
       "node_modules/@fontsource/lato/files/lato-latin-ext-400-normal.woff2",
       "node_modules/@fontsource/lato/files/lato-latin-ext-700-normal.woff2",
       "node_modules/@fontsource/lato/files/lato-latin-ext-900-normal.woff2",
-      "node_modules/@fontsource/lato/files/lato-latin-ext-400-italic.woff2",
-      "node_modules/@fontsource/inter/files/inter-latin-400-normal.woff2",
-      "node_modules/@fontsource/inter/files/inter-latin-600-normal.woff2",
-      "node_modules/@fontsource/inter/files/inter-latin-700-normal.woff2",
-      "node_modules/@fontsource/inter/files/inter-latin-ext-400-normal.woff2",
-      "node_modules/@fontsource/inter/files/inter-latin-ext-600-normal.woff2",
-      "node_modules/@fontsource/inter/files/inter-latin-ext-700-normal.woff2",
-      "node_modules/@fontsource/source-sans-3/files/source-sans-3-latin-400-normal.woff2",
-      "node_modules/@fontsource/source-sans-3/files/source-sans-3-latin-600-normal.woff2",
-      "node_modules/@fontsource/source-sans-3/files/source-sans-3-latin-700-normal.woff2",
-      "node_modules/@fontsource/source-sans-3/files/source-sans-3-latin-ext-400-normal.woff2",
-      "node_modules/@fontsource/source-sans-3/files/source-sans-3-latin-ext-600-normal.woff2",
-      "node_modules/@fontsource/source-sans-3/files/source-sans-3-latin-ext-700-normal.woff2"
+      "node_modules/@fontsource/lato/files/lato-latin-ext-400-italic.woff2"
     ],
     "dest": "wwwroot/fonts/",
     "tags": ["theme", "fonts"]

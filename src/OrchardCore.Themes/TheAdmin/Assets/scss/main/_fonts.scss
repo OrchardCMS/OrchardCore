@@ -1,7 +1,7 @@
 // ---------------------------------------------------------------------------
-// The typefaces a scheme can pick (Design > Admin schemes), served from the theme so that the admin never calls a font
-// CDN (and a Content Security Policy does not have to allow one). Latin and Latin Extended, in the weights the theme
-// uses. A browser only downloads the faces a page actually uses, so declaring all of them costs nothing.
+// Lato, the theme's default font, served from the theme so that the admin never calls a font CDN (and a Content Security
+// Policy does not have to allow one). Latin and Latin Extended, in the weights the theme uses. A scheme may name any
+// other font (Design > Admin schemes), which the users' devices must have installed.
 // ---------------------------------------------------------------------------
 
 $ta-latin-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
@@ -30,8 +30,3 @@ $ta-latin-ext-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-
 @include ta-font-face("Lato", "lato", 900);
 
 @include ta-font-face("Lato", "lato", 400, italic);
-
-@each $weight in (400, 600, 700) {
-    @include ta-font-face("Inter", "inter", $weight);
-    @include ta-font-face("Source Sans 3", "source-sans-3", $weight);
-}

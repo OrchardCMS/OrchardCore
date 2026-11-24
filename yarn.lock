@@ -1885,24 +1885,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fontsource/inter@npm:5.3.0":
-  version: 5.3.0
-  resolution: "@fontsource/inter@npm:5.3.0"
-  checksum: 10/d023db472d33f1fec6bc639e18beeb0f5142e46adad4c274ad787475ff393698c75dbf4e2c24c01063325d24bd70e71de7061b3558b64331237d4db8d56781be
-  languageName: node
-  linkType: hard
-
 "@fontsource/lato@npm:5.3.0":
   version: 5.3.0
   resolution: "@fontsource/lato@npm:5.3.0"
   checksum: 10/c5be04b6868019d67218832ed92d8a8f087b21d1a4985867157bc61f420edb565252df9d99e0246fde5b0a4543edeabe27984c92d78b4ab5bc95e92a106417f3
-  languageName: node
-  linkType: hard
-
-"@fontsource/source-sans-3@npm:5.3.1":
-  version: 5.3.1
-  resolution: "@fontsource/source-sans-3@npm:5.3.1"
-  checksum: 10/7865efb7e30cab24a1681077ddaa61c61cb8f4e70b7984039457b9c7c8135e732063322c7be3e81e71124900fe0f96b9cde2a48b5e67da5a40f80cf3352d6778
   languageName: node
   linkType: hard
 
@@ -3184,9 +3170,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@orchardcore/theadmin@workspace:src/OrchardCore.Themes/TheAdmin/Assets"
   dependencies:
-    "@fontsource/inter": "npm:5.3.0"
     "@fontsource/lato": "npm:5.3.0"
-    "@fontsource/source-sans-3": "npm:5.3.1"
     "@popperjs/core": "npm:2.11.8"
     "@types/js-cookie": "npm:^3.0.6"
     bootstrap: "npm:5.3.8"

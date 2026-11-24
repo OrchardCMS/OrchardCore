@@ -43,7 +43,7 @@ The `ThemeSchemes` deployment step exports the schemes of every theme that suppo
           "Deep": "#123c4c",
           "Ink": "#081a21",
           "Accent": "#5bc0de",
-          "FontFamily": "inter",
+          "FontFamily": "Georgia, serif",
           "FontScale": 1,
           "Density": 1,
           "RadiusScale": 1
@@ -63,7 +63,7 @@ The `ThemeSchemes` deployment step exports the schemes of every theme that suppo
 | `OnPrimary`, `Page`, `Toolbar`, `Tint`, `TintDark` | Optional, `#rrggbb`. |
 | `Hue`, `Saturation` | Optional, `0` to `360` and `0` to `1`. |
 | `LightMenu` | Optional, `true` or `false`. |
-| `FontFamily`, `HeadingFontFamily` | Optional. The key or name of one of the theme's fonts (e.g. `inter` or `Inter`), `system` for the system font, or any font families separated by commas (e.g. `Georgia, serif`). A family name holds only letters, digits, spaces, dashes, underscores and dots, and may be quoted. An empty `FontFamily` uses the theme's default font, and an empty `HeadingFontFamily` the body font. |
+| `FontFamily`, `HeadingFontFamily` | Optional. The key or name of one of the theme's fonts (e.g. `lato` or `Lato` for TheAdmin), `system` for the system font, or any font families separated by commas (e.g. `Georgia, serif`). A family name holds only letters, digits, spaces, dashes, underscores and dots, and may be quoted. An empty `FontFamily` uses the theme's default font, and an empty `HeadingFontFamily` the body font. |
 | `FontScale` | Optional, `0.875` to `1.125` (14 px to 18 px base size). |
 | `Density` | Optional, `0.75` to `1.25`. |
 | `RadiusScale` | Optional, `0` to `1.5`. |

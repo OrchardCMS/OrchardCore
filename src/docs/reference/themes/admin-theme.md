@@ -205,13 +205,13 @@ Optional settings fine tune what is derived: the hue and saturation of the page,
 
 | Setting | Values | CSS custom property |
 |---------|--------|---------------------|
-| Font | Lato (the default), Inter, Source Sans 3, System font, or any font typed by name | `--ta-font-family` |
+| Font | Lato (the default), System font, or any font typed by name | `--ta-font-family` |
 | Heading font | The same, or the font of the text when empty | `--ta-heading-font-family` |
 | Base font size | 14 px to 18 px, as a share of the browser's own size | `--ta-font-scale` |
 | Density | Compact, Default, Comfortable | `--ta-density` |
 | Corners | Square, Subtle, Default, Round | `--ta-radius-scale` |
 
-The fonts are typed, with the theme's fonts suggested. Lato, Inter and Source Sans 3 are served by the theme, and the admin never calls a font CDN; any other font, e.g. `Segoe UI` or `Georgia, serif`, must be installed on the users' devices. TheAdmin supports every setting of a scheme (`options.Features = ThemeSchemeFeatures.All`) and registers its fonts in `options.Fonts`.
+The fonts are typed, with the theme's font suggested. Lato is served by the theme, and the admin never calls a font CDN; any other font, e.g. `Segoe UI` or `Georgia, serif`, must be installed on the users' devices. TheAdmin supports every setting of a scheme (`options.Features = ThemeSchemeFeatures.All`) and registers Lato in `options.Fonts`.
 
 TheAdmin seeds eight schemes (Gray, the default, which keeps the look of the previous TheAdmin, Blue, Ocean, Forest, Plum, Sunset, Graphite and Gold) the first time its schemes are read. They are ordinary records from then on, and a theme is seeded once: deleting all of its schemes doesn't bring them back.
 
@@ -231,7 +231,7 @@ Schemes are exported with the `ThemeSchemes` deployment step and imported with t
           "Deep": "#123c4c",
           "Ink": "#081a21",
           "Accent": "#5bc0de",
-          "FontFamily": "inter",
+          "FontFamily": "Georgia, serif",
           "FontScale": 1,
           "Density": 1,
           "RadiusScale": 1

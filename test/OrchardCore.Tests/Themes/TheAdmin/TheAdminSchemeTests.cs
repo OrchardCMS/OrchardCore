@@ -225,15 +225,15 @@ public sealed class TheAdminSchemeTests
             var tokens = Typography(new ThemeScheme
             {
                 Id = "custom-a", Name = "A", Primary = "#2a81bb", Deep = "#144c71", Ink = "#081b26", Accent = "#5aa4ef",
-                FontFamily = "inter",
-                HeadingFontFamily = "Source Sans 3",
+                FontFamily = "lato",
+                HeadingFontFamily = "Segoe UI",
                 FontScale = 0.9375,
                 RadiusScale = 0,
                 Density = 1.25,
             });
 
-            Assert.StartsWith("\"Inter\", system-ui,", tokens["--ta-font-family"], StringComparison.Ordinal);
-            Assert.StartsWith("\"Source Sans 3\", system-ui,", tokens["--ta-heading-font-family"], StringComparison.Ordinal);
+            Assert.StartsWith("\"Lato\", system-ui,", tokens["--ta-font-family"], StringComparison.Ordinal);
+            Assert.StartsWith("\"Segoe UI\", system-ui,", tokens["--ta-heading-font-family"], StringComparison.Ordinal);
             Assert.Equal("0.9375", tokens["--ta-font-scale"]);
             Assert.Equal("0", tokens["--ta-radius-scale"]);
             Assert.Equal("1.25", tokens["--ta-density"]);
@@ -279,10 +279,10 @@ public sealed class TheAdminSchemeTests
     }
 
     [Fact]
-    public void Options_SupportEverySetting_AndOfferTheFontsTheThemeShips()
+    public void Options_SupportEverySetting_AndOfferTheFontTheThemeShips()
     {
         Assert.Equal(ThemeSchemeFeatures.All, Options.Features);
-        Assert.Equal(["lato", "inter", "source-sans-3"], Options.Fonts.Select(font => font.Key));
+        Assert.Equal(["lato"], Options.Fonts.Select(font => font.Key));
         Assert.Equal("lato", Options.DefaultFontFamily);
     }
 
