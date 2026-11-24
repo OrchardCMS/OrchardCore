@@ -676,16 +676,6 @@ msgctxt "OrchardCore.ContentFields.Views.ContentPickerField.Option"
 msgid "Standard"
 msgstr ""
 
-#: Views/ContentPickerField.SummaryAdmin.cshtml
-msgctxt "OrchardCore.ContentFields.Views.ContentPickerField.SummaryAdmin"
-msgid "No content items."
-msgstr ""
-
-#: Views/ContentPickerField.SummaryAdminGrid.cshtml
-msgctxt "OrchardCore.ContentFields.Views.ContentPickerField.SummaryAdminGrid"
-msgid "No content items."
-msgstr ""
-
 #: Views/ContentPickerFieldSettings.Edit.cshtml
 msgctxt "OrchardCore.ContentFields.Views.ContentPickerFieldSettings.Edit"
 msgid "All content types of these Stereotypes"
@@ -1143,16 +1133,6 @@ msgctxt "OrchardCore.ContentFields.Views.LocalizationSetContentPickerField.Optio
 msgid "Standard"
 msgstr ""
 
-#: Views/LocalizationSetContentPickerField.SummaryAdmin.cshtml
-msgctxt "OrchardCore.ContentFields.Views.LocalizationSetContentPickerField.SummaryAdmin"
-msgid "No content items."
-msgstr ""
-
-#: Views/LocalizationSetContentPickerField.SummaryAdminGrid.cshtml
-msgctxt "OrchardCore.ContentFields.Views.LocalizationSetContentPickerField.SummaryAdminGrid"
-msgid "No content items."
-msgstr ""
-
 #: Views/LocalizationSetContentPickerFieldSettings.Edit.cshtml
 msgctxt "OrchardCore.ContentFields.Views.LocalizationSetContentPickerFieldSettings.Edit"
 msgid "Allow multiple"
@@ -1243,16 +1223,6 @@ msgstr ""
 #: Views/MultiTextField.Option.cshtml
 msgctxt "OrchardCore.ContentFields.Views.MultiTextField.Option"
 msgid "Standard"
-msgstr ""
-
-#: Views/MultiTextField.SummaryAdmin.cshtml
-msgctxt "OrchardCore.ContentFields.Views.MultiTextField.SummaryAdmin"
-msgid ", "
-msgstr ""
-
-#: Views/MultiTextField.SummaryAdminGrid.cshtml
-msgctxt "OrchardCore.ContentFields.Views.MultiTextField.SummaryAdminGrid"
-msgid ", "
 msgstr ""
 
 #: Views/MultiTextFieldSettings.Edit.cshtml
@@ -1645,6 +1615,11 @@ msgctxt "OrchardCore.ContentFields.Views.UserPickerField-UserNames.Display"
 msgid "No users."
 msgstr ""
 
+#: Views/UserPickerField-UserNames.Display.DetailAdmin.cshtml
+msgctxt "OrchardCore.ContentFields.Views.UserPickerField-UserNames.Display.DetailAdmin"
+msgid "No users."
+msgstr ""
+
 #: Views/UserPickerField-UserNames.DisplayOption.cshtml
 msgctxt "OrchardCore.ContentFields.Views.UserPickerField-UserNames.DisplayOption"
 msgid "User Names"
@@ -1690,16 +1665,6 @@ msgstr ""
 #: Views/UserPickerField.Option.cshtml
 msgctxt "OrchardCore.ContentFields.Views.UserPickerField.Option"
 msgid "Standard"
-msgstr ""
-
-#: Views/UserPickerField.SummaryAdmin.cshtml
-msgctxt "OrchardCore.ContentFields.Views.UserPickerField.SummaryAdmin"
-msgid "No users."
-msgstr ""
-
-#: Views/UserPickerField.SummaryAdminGrid.cshtml
-msgctxt "OrchardCore.ContentFields.Views.UserPickerField.SummaryAdminGrid"
-msgid "No users."
 msgstr ""
 
 #: Views/UserPickerFieldSettings.Edit.cshtml

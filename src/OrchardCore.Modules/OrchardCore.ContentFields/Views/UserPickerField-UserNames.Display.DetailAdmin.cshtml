@@ -1,25 +1,22 @@
-@model OrchardCore.ContentFields.ViewModels.DisplayContentPickerFieldViewModel
+@model OrchardCore.ContentFields.ViewModels.DisplayUserPickerFieldUserNamesViewModel
 @using OrchardCore.ContentFields
-@using OrchardCore.ContentManagement
 @using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.Localization.Data
 @using OrchardCore.Mvc.Utilities
-@inject OrchardCore.ContentManagement.IContentManager ContentManager
 @inject IDataLocalizer D
 @{
     var name = (Model.PartFieldDefinition.PartDefinition.Name + "-" + Model.PartFieldDefinition.Name).HtmlClassify();
     string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), DataLocalizationContext.ContentField(Model.PartFieldDefinition.PartDefinition.Name)];
-    var contentItems = await ContentManager.GetAsync(Model.ContentItemIds);
 }
-<div class="ocat-wrapper field field-type-contentpickerfield field-name-@name">
+<div class="ocat-wrapper field field-type-userpickerfield field-name-@name">
     <div class="ocat-label">@localizedFieldName</div>
     <div class="ocat-end">
-        @if (contentItems.Any())
+        @if (Model.UserNames.Any())
         {
-            foreach (var contentItem in contentItems)
+            foreach (var userName in Model.UserNames)
             {
-                <span class="value"><a display-for="@contentItem">@contentItem.DisplayText</a></span>
-                if (contentItem != contentItems.Last())
+                <span class="value">@userName</span>
+                if (userName != Model.UserNames.Last())
                 {
                     <span>,</span>
                 }
@@ -27,7 +24,7 @@
         }
         else
         {
-            <span class="value">@T["No content items."]</span>
+            <span class="value">@T["No users."]</span>
         }
     </div>
 </div>

@@ -78,10 +78,9 @@ The default template of each field renders the display name of the field next to
     </div>
     ```
 
-- In the admin, the `{FieldType}.SummaryAdmin.cshtml` and `{FieldType}.DetailAdmin.cshtml` templates render the field as a row of the admin theme, with the name in an `ocat-label` element and the value in an `ocat-end` element. A field is rendered in these display types when a placement places it there.
-- In a column of an admin list in the `Grid` layout, the `{FieldType}.SummaryAdminGrid.cshtml` template renders the value alone, since the column header already shows the name.
+- In the admin, the `{FieldType}.DetailAdmin.cshtml` template, e.g. `TextField.DetailAdmin.cshtml`, renders the field as a row of the admin theme, with the name in an `ocat-label` element and the value in an `ocat-end` element. A field is rendered in the `DetailAdmin` display type when a placement places it there. The display modes have their own `DetailAdmin` template, named after their alternate, e.g. `TextField-Header.Display.DetailAdmin.cshtml`, which renders the value in the same row.
 
-The `TaxonomyField-Tags` and `UserPickerField-UserNames` display modes render the name too. The `TextField-Header` display mode renders the value alone, as a heading.
+On the front end, the `TaxonomyField-Tags` and `UserPickerField-UserNames` display modes render the name too, and the `TextField-Header` display mode renders the value alone, as a heading.
 
 To render a value without its name, override the template of the field in your theme, for a single field with an alternate such as `{PartType}-{FieldName}.cshtml`, e.g. `RawHtml-Content.liquid` in **TheBlogTheme**.
 
