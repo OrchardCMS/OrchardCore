@@ -3772,6 +3772,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "ZainnQureshii",
+      "name": "Zain Qureshi",
+      "avatar_url": "https://avatars.githubusercontent.com/u/43629888?v=4",
+      "profile": "https://github.com/ZainnQureshii",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,
