@@ -59,8 +59,9 @@ else
         @foreach (var group in Model.RoleCategoryPermissions.OrderBy(x => x.Key.Title).ThenBy(x => x.Key.Source))
         {
             var permissionsContext = $"Permissions{Constants.ContextSeparator}{group.Key.Title}";
-            <fieldset class="permissions-list">
-                <legend>
+            @* A heading above a card of the permissions, like the categories of the features. *@
+            <fieldset class="permissions-list mb-3">
+                <legend class="h3 mb-2">
                     <span>@D[group.Key.Title, permissionsContext]</span>
                     @if (!string.IsNullOrEmpty(group.Key.Source))
                     {
@@ -68,7 +69,8 @@ else
                     }
                 </legend>
 
-                <table class="table">
+                <div class="card">
+                <table class="table mb-0">
                     <thead>
                         <tr>
                             <th class="col-10">@T["Permission"]</th>
@@ -148,6 +150,7 @@ else
                         }
                     </tbody>
                 </table>
+                </div>
             </fieldset>
         }
     </div>
