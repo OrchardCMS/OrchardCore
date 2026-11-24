@@ -79,6 +79,7 @@ The default template of each field renders the display name of the field next to
     ```
 
 - In the admin, the `{FieldType}.SummaryAdmin.cshtml` and `{FieldType}.DetailAdmin.cshtml` templates render the field as a row of the admin theme, with the name in an `ocat-label` element and the value in an `ocat-end` element. A field is rendered in these display types when a placement places it there.
+- In a column of an admin list in the `Grid` layout, the `{FieldType}.SummaryAdminGrid.cshtml` template renders the value alone, since the column header already shows the name.
 
 The `TaxonomyField-Tags` and `UserPickerField-UserNames` display modes render the name too. The `TextField-Header` display mode renders the value alone, as a heading.
 

@@ -1,0 +1,26 @@
+@model OrchardCore.ContentFields.ViewModels.DisplayLocalizationSetContentPickerFieldViewModel
+@using Microsoft.AspNetCore.Localization
+@using OrchardCore.Mvc.Utilities
+@inject OrchardCore.ContentLocalization.IContentLocalizationManager ContentLocalizationManager
+@{
+    var name = (Model.PartFieldDefinition.PartDefinition.Name + "-" + Model.PartFieldDefinition.Name).HtmlClassify();
+    var currentCulture = Context.Features.Get<IRequestCultureFeature>().RequestCulture.Culture.Name;
+    var contentItems = await ContentLocalizationManager.GetItemsForSetsAsync(Model.LocalizationSets, currentCulture);
+}
+<div class="field field-type-localizationsetpickerfield field-name-@name">
+    @if (contentItems.Any())
+    {
+        foreach (var contentItem in contentItems)
+        {
+            <span class="value"><a display-for="@contentItem">@contentItem.DisplayText</a></span>
+            if (contentItem != contentItems.Last())
+            {
+                <span>,</span>
+            }
+        }
+    }
+    else
+    {
+        <span class="value">@T["No content items."]</span>
+    }
+</div>
