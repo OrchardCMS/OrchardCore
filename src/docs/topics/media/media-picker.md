@@ -9,7 +9,7 @@ It requires the `OrchardCore.Media` feature to be enabled, and the current user 
 
 ## Using the Media Picker with a Media Field
 
-Add a *Media Field* to a content type (or content part) from `Content → Content Definition` in the admin. When editing a content item of that type, the field displays an empty area with a `+` button that opens the Media Picker. From the dialog you can navigate folders, search, upload new files, and select existing ones.
+Add a *Media Field* to a content type (or content part) from **Content → Content Definition** in the admin. When editing a content item of that type, the field displays an empty area with a `+` button that opens the Media Picker. From the dialog you can navigate folders, search, upload new files, and select existing ones.
 
 ### Field settings
 

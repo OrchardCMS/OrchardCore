@@ -109,10 +109,10 @@ Which tags and attributes are allowed is set by your IT team, see the Technical 
 
 | | |
 | --- | --- |
-| **Menu** | **Design > Content Definition > Content Types**, then **Edit** on the type |
+| **Menu** | **Design → Content Definition → Content Types**, then **Edit** on the type |
 | **Permission** | *Edit content types.* |
 
-1. Open **Design > Content Definition > Content Types** and click **Edit** on the content type.
+1. Open **Design → Content Definition → Content Types** and click **Edit** on the content type.
 2. Click **Edit** next to the **HtmlBody** or **MarkdownBody** part, or next to an **Html** or **Markdown** field.
 3. Choose an editor in **What type of editor should be used?**.
 4. Set the options that appear for that editor (see the table).

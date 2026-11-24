@@ -8,7 +8,7 @@
 - Meta Login
 - Meta Widgets
 
-Configuration can be set through the _Settings -> Integrations -> Meta App_ settings menu in the admin dashboard.
+Configuration can be set through the **Settings → Integrations → Meta App** settings menu in the admin dashboard.
 
 ## Core Components
 
@@ -65,13 +65,13 @@ The `FacebookPluginPart` body is an executable Liquid template. Editing it requi
 
 ## Meta Pixel
 
-This feature provides you a way to add Meta Pixel tracking to your site. Simply navigate to _Settings -> Integrations -> Meta Pixel_ settings and provide your `Pixel Identifier`.
+This feature provides you a way to add Meta Pixel tracking to your site. Simply navigate to **Settings → Integrations → Meta Pixel** settings and provide your `Pixel Identifier`.
 
 ### Meta Conversions API
 
 The Meta Pixel feature also lets you configure the [Meta Conversions API](https://developers.facebook.com/docs/marketing-api/conversions-api), which sends events to Meta directly from the server instead of (or in addition to) the browser-side pixel. This is useful for events that should not depend on client-side JavaScript, such as events triggered from a background process or ones affected by ad blockers/browser tracking prevention.
 
-From the _Settings -> Integrations -> Meta Pixel_ settings page, in addition to the `Pixel Identifier`, you can configure:
+From the **Settings → Integrations → Meta Pixel** settings page, in addition to the `Pixel Identifier`, you can configure:
 
 - **Conversions API Access Token**: The access token generated from the [Events Manager](https://business.facebook.com/events_manager2) for the pixel's dataset. This value is stored encrypted.
 - **Test Event Code**: Optional. The test event code from the Events Manager's "Test Events" tab. When set, events are sent tagged for testing and show up in the test console instead of counting as production data. Remove it before going live.

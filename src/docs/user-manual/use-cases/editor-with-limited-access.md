@@ -43,7 +43,7 @@ Each per-type permission comes in two forms: one for the person's own items (*Ed
 
 The Blog recipe already marks **Page** (and **Blog** and its widgets) as securable. For another type, such as **Article**:
 
-1. Open **Design > Content Definition > Content Types**.
+1. Open **Design → Content Definition → Content Types**.
 2. Click **Edit** on the type.
 3. Tick **Securable** (*Determines if this content type can have custom permissions.*).
 4. Click **Save**.
@@ -52,7 +52,7 @@ A group for the type appears in the role editor. See [Content types](../content/
 
 ## Create the role
 
-1. Open **Access Control > Roles**.
+1. Open **Access Control → Roles**.
 2. Click **Add Role**.
 3. Type **Page Editor** in **Name**.
 4. Type a **Description**, such as *Edits and publishes pages only*.
@@ -62,7 +62,7 @@ A group for the type appears in the role editor. See [Content types](../content/
     | Group | Permission | Why |
     | --- | --- | --- |
     | **Admin** | *Access admin panel* | To open the admin at all. |
-    | **Page Content Type - Page** | *List Page content items* | To see pages in **Content > Content Items**. Without a list permission, the **Content Items** menu is hidden. |
+    | **Page Content Type - Page** | *List Page content items* | To see pages in **Content → Content Items**. Without a list permission, the **Content Items** menu is hidden. |
     | **Page Content Type - Page** | *Edit Page for others* | To create pages and edit every page, not only their own. |
     | **Page Content Type - Page** | *Publish or unpublish Page for others* | To publish. Leave it out if someone else must approve; see [Set up content approval](content-approval.md). |
     | **Page Content Type - Page** | *Preview Page by others* | To use **Preview**. |
@@ -78,7 +78,7 @@ The **Effective** column shows what the role really gets, including permissions 
 
 ## Create the user
 
-1. Open **Access Control > Users**.
+1. Open **Access Control → Users**.
 2. Click **Add User**.
 3. Type the **User name** and **Email**.
 4. Type the **Password** and **Password Confirmation**.
@@ -98,7 +98,7 @@ Instead of typing a password, you can click **Generate password**, then **Copy p
 7. Sign out.
 8. Close the private window.
 
-The admin menu shows **Content > Content Items** (with **New** offering **Page**) and **Media**. **Design**, **Access Control**, **Settings** and **Tools** aren't there. On a Blog recipe site, the **Blog** and **Main Menu** links at the top still show: that custom admin menu sets no permission on them.
+The admin menu shows **Content → Content Items** (with **New** offering **Page**) and **Media**. **Design**, **Access Control**, **Settings** and **Tools** aren't there. On a Blog recipe site, the **Blog** and **Main Menu** links at the top still show: that custom admin menu sets no permission on them.
 
 Other content types may still be listed in the content items list, because every signed-in user also has the **Authenticated** role, which can view all content by default. They show no **Edit** button, and opening their editor by address gives *You do not have access to this resource.*
 

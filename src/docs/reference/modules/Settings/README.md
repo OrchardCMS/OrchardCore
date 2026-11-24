@@ -8,7 +8,7 @@ For user-defined settings managed from the admin without writing code, see [Cust
 
 ## General settings
 
-The built-in **General** group is available in the admin under **Settings** > **General** (requires the `Manage general settings` permission). It exposes options such as:
+The built-in **General** group is available in the admin under **Settings → General** (requires the `Manage general settings` permission). It exposes options such as:
 
 | Setting             | Description                                                                 |
 |---------------------|-----------------------------------------------------------------------------|

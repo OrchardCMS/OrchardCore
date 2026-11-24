@@ -12,19 +12,19 @@ A menu is the list of links visitors use to move around your site, usually shown
 
 | | |
 | --- | --- |
-| **Menu** | **Content > Menus** |
+| **Menu** | **Content → Menus** |
 | **Permission** | *Manage menus* to add, edit and delete menu items; the *List Menu content items* permission to see the menu entry |
 | **Feature** | **Menu** (`OrchardCore.Menu`), which uses **Navigation** (`OrchardCore.Navigation`, always on) |
 
 ## See your menus
 
-Open **Content > Menus**. It is the content items list, filtered to the **Menu** type, with each menu's title, status and actions. Click a menu's title or **Edit** to open it. The **Blog** recipe also adds a shortcut to the **Main Menu** at the top level of the admin menu.
+Open **Content → Menus**. It is the content items list, filtered to the **Menu** type, with each menu's title, status and actions. Click a menu's title or **Edit** to open it. The **Blog** recipe also adds a shortcut to the **Main Menu** at the top level of the admin menu.
 
 ![The editor of the Main Menu, with its menu items](images/menu.webp)
 
 ## Create a menu
 
-1. Open **Content > Menus** and click **New Menu**.
+1. Open **Content → Menus** and click **New Menu**.
 2. Type a **Title**, such as *Footer Menu*.
 3. Leave **Alias** empty to have it made from the title (for example `footer-menu`), or type your own. The theme finds a menu by its alias.
 4. Click **Publish** (or **Save Draft**).

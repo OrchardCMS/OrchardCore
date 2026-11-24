@@ -10,8 +10,10 @@ using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.DisplayManagement.Zones;
 using OrchardCore.Modules;
 using OrchardCore.Taxonomies.Models;
 using YesSql;
@@ -28,6 +30,7 @@ public sealed class AdminController : Controller
     private readonly ISession _session;
     private readonly INotifier _notifier;
     private readonly IUpdateModelAccessor _updateModelAccessor;
+    private readonly IShapeFactory _shapeFactory;
     private readonly IEnumerable<IContentHandler> _contentHandlers;
     private readonly IEnumerable<IContentHandler> _reversedContentHandlers;
     private readonly ILogger _logger;
@@ -43,6 +46,7 @@ public sealed class AdminController : Controller
         INotifier notifier,
         IHtmlLocalizer<AdminController> localizer,
         IUpdateModelAccessor updateModelAccessor,
+        IShapeFactory shapeFactory,
         IEnumerable<IContentHandler> contentHandlers,
         ILogger<AdminController> logger)
     {
@@ -53,6 +57,7 @@ public sealed class AdminController : Controller
         _session = session;
         _notifier = notifier;
         _updateModelAccessor = updateModelAccessor;
+        _shapeFactory = shapeFactory;
         _contentHandlers = contentHandlers;
         _reversedContentHandlers = contentHandlers.Reverse();
         _logger = logger;
@@ -83,8 +88,9 @@ public sealed class AdminController : Controller
 
         var model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, true);
 
-        model.Properties["TaxonomyContentItemId"] = taxonomyContentItemId;
-        model.Properties["TaxonomyItemId"] = taxonomyItemId;
+        var taxonomy = await _contentManager.GetAsync(taxonomyContentItemId, VersionOptions.Latest);
+
+        await PrepareTermEditorAsync(model, taxonomy, taxonomy?.HasDraft() == true, taxonomyContentItemId, taxonomyItemId);
 
         return View(model);
     }
@@ -108,22 +114,21 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        ContentItem taxonomy;
-
-        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync("Taxonomy");
-
-        if (!contentTypeDefinition.IsDraftable())
-        {
-            taxonomy = await _contentManager.GetAsync(taxonomyContentItemId, VersionOptions.Latest);
-        }
-        else
-        {
-            taxonomy = await _contentManager.GetAsync(taxonomyContentItemId, VersionOptions.DraftRequired);
-        }
+        var taxonomy = await _contentManager.GetAsync(taxonomyContentItemId, VersionOptions.Latest);
 
         if (taxonomy == null)
         {
             return NotFound();
+        }
+
+        // Read before requiring a draft, which creates one for a published taxonomy.
+        var isTaxonomyDraft = taxonomy.HasDraft();
+
+        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync("Taxonomy");
+
+        if (contentTypeDefinition.IsDraftable())
+        {
+            taxonomy = await _contentManager.GetAsync(taxonomyContentItemId, VersionOptions.DraftRequired);
         }
 
         var contentItem = await _contentManager.NewAsync(id);
@@ -138,8 +143,7 @@ public sealed class AdminController : Controller
 
         if (!ModelState.IsValid)
         {
-            model.Properties["TaxonomyContentItemId"] = taxonomyContentItemId;
-            model.Properties["TaxonomyItemId"] = taxonomyItemId;
+            await PrepareTermEditorAsync(model, taxonomy, isTaxonomyDraft, taxonomyContentItemId, taxonomyItemId);
 
             return View(model);
         }
@@ -222,8 +226,7 @@ public sealed class AdminController : Controller
 
         var model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, false);
 
-        model.Properties["TaxonomyContentItemId"] = taxonomyContentItemId;
-        model.Properties["TaxonomyItemId"] = taxonomyItemId;
+        await PrepareTermEditorAsync(model, taxonomy, taxonomy.HasDraft(), taxonomyContentItemId, taxonomyItemId);
 
         return View(model);
     }
@@ -242,22 +245,21 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        ContentItem taxonomy;
-
-        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync("Taxonomy");
-
-        if (!contentTypeDefinition.IsDraftable())
-        {
-            taxonomy = await _contentManager.GetAsync(taxonomyContentItemId, VersionOptions.Latest);
-        }
-        else
-        {
-            taxonomy = await _contentManager.GetAsync(taxonomyContentItemId, VersionOptions.DraftRequired);
-        }
+        var taxonomy = await _contentManager.GetAsync(taxonomyContentItemId, VersionOptions.Latest);
 
         if (taxonomy == null)
         {
             return NotFound();
+        }
+
+        // Read before requiring a draft, which creates one for a published taxonomy.
+        var isTaxonomyDraft = taxonomy.HasDraft();
+
+        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync("Taxonomy");
+
+        if (contentTypeDefinition.IsDraftable())
+        {
+            taxonomy = await _contentManager.GetAsync(taxonomyContentItemId, VersionOptions.DraftRequired);
         }
 
         // Look for the target taxonomy item in the hierarchy.
@@ -292,8 +294,7 @@ public sealed class AdminController : Controller
 
         if (!ModelState.IsValid)
         {
-            model.Properties["TaxonomyContentItemId"] = taxonomyContentItemId;
-            model.Properties["TaxonomyItemId"] = taxonomyItemId;
+            await PrepareTermEditorAsync(model, taxonomy, isTaxonomyDraft, taxonomyContentItemId, taxonomyItemId);
 
             return View(model);
         }
@@ -370,6 +371,26 @@ public sealed class AdminController : Controller
         await _notifier.SuccessAsync(H["Taxonomy item deleted successfully."]);
 
         return RedirectToAction(nameof(Edit), "Admin", new { area = "OrchardCore.Contents", contentItemId = taxonomyContentItemId });
+    }
+
+    private async Task PrepareTermEditorAsync(IShape model, ContentItem taxonomy, bool isTaxonomyDraft, string taxonomyContentItemId, string taxonomyItemId)
+    {
+        model.Properties["TaxonomyContentItemId"] = taxonomyContentItemId;
+        model.Properties["TaxonomyItemId"] = taxonomyItemId;
+        model.Properties["TaxonomyDisplayText"] = taxonomy?.DisplayText;
+        model.Properties["IsTaxonomyDraft"] = isTaxonomyDraft;
+
+        // A term is not a content item of its own: it is saved in the content of its taxonomy, which is published
+        // from the editor of the taxonomy. So the actions of a content item, like Publish, Unpublish or Delete, are
+        // replaced by a single action saving the term.
+        model.Properties.Remove("Actions");
+
+        var actions = await _shapeFactory.CreateAsync("TermEditorActions", Arguments.From(new
+        {
+            TaxonomyContentItemId = taxonomyContentItemId,
+        }));
+
+        await ((IZoneHolding)model).Zones["Actions"].AddAsync(actions, "10");
     }
 
     private static JsonObject FindTaxonomyItem(JsonObject contentItem, string taxonomyItemId)

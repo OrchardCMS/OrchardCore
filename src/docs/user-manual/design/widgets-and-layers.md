@@ -13,14 +13,14 @@ A **widget** is a small block of content, such as a paragraph, an image, a raw H
 
 | | |
 | --- | --- |
-| **Menu** | **Design > Widgets**; **Settings > Zones** |
+| **Menu** | **Design → Widgets**; **Settings → Zones** |
 | **Permission** | *Manage layers* |
 | **Feature** | **Layers** (`OrchardCore.Layers`), which turns on **Widgets** (`OrchardCore.Widgets`) and **Rules** (`OrchardCore.Rules`) |
 
 ## How it fits together
 
-1. **Settings > Zones** lists the zones you can put widgets in. The theme must show these zones, or their widgets never appear.
-2. On **Design > Widgets**, you create layers and give each one rules.
+1. **Settings → Zones** lists the zones you can put widgets in. The theme must show these zones, or their widgets never appear.
+2. On **Design → Widgets**, you create layers and give each one rules.
 3. You add a widget to a zone and choose its layer.
 4. When a visitor opens a page, each layer's rules are checked. A widget is shown when its layer's rules are all true and the widget is published.
 
@@ -28,7 +28,7 @@ A **widget** is a small block of content, such as a paragraph, an image, a raw H
 
 ![The Zones settings](images/zones.webp)
 
-1. Open **Settings > Zones**.
+1. Open **Settings → Zones**.
 2. In **Available zones for Layers**, type the zone names separated by commas, for example `Content, Footer`.
 3. Click **Save**.
 
@@ -42,20 +42,20 @@ The names must match the zones of your site theme, letter for letter. The built-
 | `HeadMeta` | Inside the page's hidden header, for code such as tracking scripts. Nothing is visible there. |
 | `Messages` | Above the content, where the site shows notifications. |
 
-The Coming Soon theme shows all of them except `Messages`, and the Safe Mode theme shows only `Header`, `Content` and `Footer`. If you use another theme, ask its author which zones it shows. Until at least one zone is set, **Design > Widgets** asks you to *define the available zones* first.
+The Coming Soon theme shows all of them except `Messages`, and the Safe Mode theme shows only `Header`, `Content` and `Footer`. If you use another theme, ask its author which zones it shows. Until at least one zone is set, **Design → Widgets** asks you to *define the available zones* first.
 
 ## See the widgets and layers
 
 ![The Widgets screen, with the zones of the theme and the layers](images/layers.webp)
 
-Open **Design > Widgets**. The page is titled **Widgets and Layers** and has two columns:
+Open **Design → Widgets**. The page is titled **Widgets and Layers** and has two columns:
 
 - **Zones**, on the left: one box per zone, listing its widgets in order. Each widget shows its title and type, a badge with its layer, its status (such as **Published**) and its actions. Under the widgets, **Add Widget** lists the widget types you can add.
 - **Layers**, on the right: each layer with its description and **Edit** and **Delete** buttons, and an **Add** button below. Tick a layer's box to highlight its widgets in green in the zones.
 
 ## Add a layer
 
-1. On **Design > Widgets**, click **Add** under the layers.
+1. On **Design → Widgets**, click **Add** under the layers.
 2. Type a **Name**. It is required and must be unique. It can't be changed later.
 3. Optionally type a **Description**, shown in the layer list.
 4. Click **Create**.
@@ -67,7 +67,7 @@ The layer is created without rules. **A layer without rules never shows its widg
 
 ## Add rules to a layer
 
-1. On **Design > Widgets**, click **Edit** on the layer. The page is titled **Edit Layer - *name***.
+1. On **Design → Widgets**, click **Edit** on the layer. The page is titled **Edit Layer - *name***.
 2. Next to **Rules**, click **Add**. The **Available Rules** window opens; type in **Filter** to find a rule.
 3. Click **Add** on the rule you want.
 4. Fill in the rule's fields (see below) and click **Create**.
@@ -101,7 +101,7 @@ url('/blog*') && isAnonymous()
 
 ## Add a widget to a zone
 
-1. On **Design > Widgets**, find the zone.
+1. On **Design → Widgets**, find the zone.
 2. Click **Add Widget** in that zone and choose a widget type.
 3. Fill in the widget editor:
 

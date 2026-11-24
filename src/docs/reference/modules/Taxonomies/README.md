@@ -386,6 +386,12 @@ You can access the `TagNames` property directly with the following accessor:
 !!! note
     If the display text property of the term is updated any content items will need to be republished to reflect this change.
 
+## Editing terms
+
+A term is not a content item of its own: it is stored in the content of its taxonomy. Its editor saves it in the taxonomy with a **Save Term** button, and the taxonomy is published from the taxonomy editor, with its **Publish** button. Saving a term of a draftable taxonomy saves a draft of the taxonomy, so the change isn't visible on the site until the taxonomy is published. When the taxonomy has unpublished changes, the editor of a term shows a warning saying so.
+
+The actions of the editor of a term are rendered by the `TermEditorActions` shape, which replaces the actions of a content item, such as **Publish** or **Delete**. Override `TermEditorActions.cshtml` to change them.
+
 ## Taxonomies Contents List Filters
 
 Provides taxonomy filters in the admin contents list.

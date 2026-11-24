@@ -16,7 +16,7 @@ There are two kinds of rules:
 
 | | |
 | --- | --- |
-| **Menu** | **Tools > URL Rewriting** |
+| **Menu** | **Tools → URL Rewriting** |
 | **Permission** | *Manage URLs rewriting rules* (the Administrator role has it by default) |
 | **Feature** | **URL Rewriting** (`OrchardCore.UrlRewriting`) |
 
@@ -39,7 +39,7 @@ For example, a rule with the **Match URL Pattern** `^/img/(.*)$` and the **Subst
 
 ## Add a redirect rule
 
-1. Open **Tools > URL Rewriting** and click **Add Rule**.
+1. Open **Tools → URL Rewriting** and click **Add Rule**.
 2. In **Available Rule Types**, click **Add** next to **Redirect**.
 3. Fill in the form (see the table below).
 4. Click **Save**.
@@ -60,7 +60,7 @@ You see *Rule created successfully.* and the site reloads so the rule applies.
 
 ## Add a rewrite rule
 
-1. Open **Tools > URL Rewriting** and click **Add Rule**.
+1. Open **Tools → URL Rewriting** and click **Add Rule**.
 2. In **Available Rule Types**, click **Add** next to **Rewrite**.
 3. Fill in the form.
 4. Click **Save**.
@@ -75,7 +75,7 @@ The fields are the same as for a redirect rule, without **Redirect Type**, and w
 
 The site checks the rules from the top of the list to the bottom, so the order matters when several rules could match the same address. Put the most specific rules first.
 
-1. Open **Tools > URL Rewriting**.
+1. Open **Tools → URL Rewriting**.
 2. Drag a rule by its handle (*Drag to reorder*) to its new place.
 
 The new order is saved as soon as you drop the rule. If it fails, you see *Unable to sort the list. Try refreshing your page and try again.*

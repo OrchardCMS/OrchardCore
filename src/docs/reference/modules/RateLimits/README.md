@@ -40,7 +40,7 @@ Enable the [Reverse Proxy](../ReverseProxy/README.md) feature with the `X-Forwar
 
 ## Tenant policies
 
-The module adds **Tools** -> **Rate Limits**, where administrators can manage tenant policies.
+The module adds **Tools → Rate Limits**, where administrators can manage tenant policies.
 
 Each policy has:
 

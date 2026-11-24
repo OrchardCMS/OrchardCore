@@ -30,7 +30,7 @@ When it's done:
 | You need | Where or who |
 | --- | --- |
 | The features **Contents** and **Roles** (always on with the built-in recipes) | |
-| For notifications: **Workflows** (`OrchardCore.Workflows`) and **Notifications** (`OrchardCore.Notifications`). **Email Notifications** (`OrchardCore.Notifications.Email`) also sends them by email, once email is set up. | An administrator, in **Tools > Features** |
+| For notifications: **Workflows** (`OrchardCore.Workflows`) and **Notifications** (`OrchardCore.Notifications`). **Email Notifications** (`OrchardCore.Notifications.Email`) also sends them by email, once email is set up. | An administrator, in **Tools → Features** |
 | The permissions *Manage Roles*, *Manage security settings and all users* and, for the workflow, *Manage workflows* | The **Administrator** role has them |
 | Content types that are **Draftable**. **Page**, **Article** and **Blog Post** in the Blog recipe are. | See [Content types](../content/content-types.md) |
 
@@ -47,9 +47,9 @@ Orchard Core comes with roles that fit this process:
 | **Author** | Edit, preview, clone, delete and **publish** their own content | Publishes their own content without review: don't use it for writers who need review. |
 | **Editor** | Edit, preview, clone, delete, list and **publish** everyone's content | Reviews and publishes. |
 
-The **Contributor** role lacks one permission writers need: it can't list content, so the **Content > Content Items** menu is hidden from them. Add it:
+The **Contributor** role lacks one permission writers need: it can't list content, so the **Content → Content Items** menu is hidden from them. Add it:
 
-1. Open **Access Control > Roles**.
+1. Open **Access Control → Roles**.
 2. Click **Edit** on **Contributor**.
 3. Under **Contents**, tick *List content items*.
 4. Click **Save**.
@@ -58,7 +58,7 @@ To let them see some content types only, tick the per-type permission instead, s
 
 Then give people their roles:
 
-1. Open **Access Control > Users**.
+1. Open **Access Control → Users**.
 2. Click **Edit** on a writer.
 3. Under **Roles**, tick **Contributor**.
 4. Clear any role that can publish (**Author**, **Editor**, **Administrator**).
@@ -68,7 +68,7 @@ Give reviewers the **Editor** role the same way. To limit reviewers or writers t
 
 ## How a contributor submits content
 
-1. Open **Content > Content Items**.
+1. Open **Content → Content Items**.
 2. Click **New**.
 3. Choose a content type, such as **Article**.
 4. Write the content.
@@ -77,7 +77,7 @@ Give reviewers the **Editor** role the same way. To limit reviewers or writers t
 
 There's no **Publish** button for them. To change the item later:
 
-1. In **Content > Content Items**, choose **Owned by me** in the filter to find their own items.
+1. In **Content → Content Items**, choose **Owned by me** in the filter to find their own items.
 2. Open the item from the list.
 3. Edit it.
 4. Click **Save Draft** again.
@@ -86,7 +86,7 @@ A contributor can also edit their own published items, but their changes stay in
 
 ## How an editor reviews and publishes
 
-1. Open **Content > Content Items**.
+1. Open **Content → Content Items**.
 2. In the search box's drop-down, choose **Only draft items**.
 3. Click **Edit** on an item.
 4. Click **Preview** to see it as visitors will.
@@ -101,7 +101,7 @@ See [Content items](../content/content-items.md) for the list's filters and bulk
 
 A workflow can send reviewers a notification each time someone saves a draft.
 
-1. Open **Design > Workflows**.
+1. Open **Design → Workflows**.
 2. Click **Create Workflow**.
 3. Type a **Name**, such as *Notify reviewers*.
 4. Click **Create and open the designer**.
@@ -130,7 +130,7 @@ A workflow can send reviewers a notification each time someone saves a draft.
 4. Click **Save Draft**.
 5. Sign in as a reviewer (in another browser, or after signing out). The bell icon shows the notification.
 6. Click the notification to open the draft.
-7. In **Content > Content Items**, choose **Only draft items**: the article is listed.
+7. In **Content → Content Items**, choose **Only draft items**: the article is listed.
 8. Click **Publish**.
 9. Check the article on the site.
 

@@ -15,7 +15,7 @@ Remote deployment sends a deployment plan from one site straight to another, wit
 
 | | |
 | --- | --- |
-| **Menu** | **Tools > Deployments > Remote Clients** (receiving site); **Tools > Deployments > Remote Instances** (sending site) |
+| **Menu** | **Tools → Deployments → Remote Clients** (receiving site); **Tools → Deployments → Remote Instances** (sending site) |
 | **Permission** | *Manage remote clients* for remote clients. *Manage remote instances* for remote instances. *Export Data* to send a plan. Administrators have them by default. |
 | **Feature** | **Remote Deployment** (`OrchardCore.Deployment.Remote`), on both sites. It turns on **Deployment** (`OrchardCore.Deployment`). |
 
@@ -28,7 +28,7 @@ Remote deployment sends a deployment plan from one site straight to another, wit
 
 On the receiving site:
 
-1. Open **Tools > Deployments > Remote Clients** and click **Add Remote Client**.
+1. Open **Tools → Deployments → Remote Clients** and click **Add Remote Client**.
 2. Type a **Client Name**, for example `staging`.
 3. Type an **Api Key**: a long, random secret. Keep a copy; you need it on the sending site.
 4. Click **Create**.
@@ -48,7 +48,7 @@ Also turn on, in the receiving site, every feature the packages need, see [Featu
 
 On the sending site:
 
-1. Open **Tools > Deployments > Remote Instances** and click **Add Remote Instance**.
+1. Open **Tools → Deployments → Remote Instances** and click **Add Remote Instance**.
 2. Type a **Name**, for example `Live site`.
 3. Type the receiving address in **Url** (see above).
 4. Type the **Client Name** and **Api Key** of the remote client you created on the receiving site.
@@ -63,7 +63,7 @@ On the sending site:
 
 ## Send a plan to another site
 
-1. On the sending site, open **Tools > Deployments > Plans**.
+1. On the sending site, open **Tools → Deployments → Plans**.
 2. Click **Manage Steps** in the plan's row.
 3. Click **Execute**.
 4. In **Available Targets**, click **Select** under the remote instance's name.

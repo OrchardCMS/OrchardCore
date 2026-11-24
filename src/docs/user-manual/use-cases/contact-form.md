@@ -26,8 +26,8 @@ When it's done:
 
 | You need | Where or who |
 | --- | --- |
-| The features **Forms** (`OrchardCore.Forms`), **Flows** (`OrchardCore.Flows`), **Workflows** (`OrchardCore.Workflows`) and **HTTP Workflows Activities** (`OrchardCore.Workflows.Http`) | An administrator, in **Tools > Features** |
-| The feature **Email** (`OrchardCore.Email`) and an email provider feature: **SMTP Email Provider** (`OrchardCore.Email.Smtp`) or **Azure Communication Services Email** (`OrchardCore.Email.Azure`) | An administrator, in **Tools > Features** |
+| The features **Forms** (`OrchardCore.Forms`), **Flows** (`OrchardCore.Flows`), **Workflows** (`OrchardCore.Workflows`) and **HTTP Workflows Activities** (`OrchardCore.Workflows.Http`) | An administrator, in **Tools → Features** |
+| The feature **Email** (`OrchardCore.Email`) and an email provider feature: **SMTP Email Provider** (`OrchardCore.Email.Smtp`) or **Azure Communication Services Email** (`OrchardCore.Email.Azure`) | An administrator, in **Tools → Features** |
 | The details of your mail server (host, port, user name, password) or Azure Communication Services account | Your IT team or email provider |
 | A content type with a **Flow** part, such as **Page** in the Blog recipe | Already there with the Blog recipe; otherwise see [Content types](../content/content-types.md) |
 | The permissions *Manage Email Settings*, *Manage workflows*, and permission to create and publish pages | Your administrator; see [Roles and permissions](../getting-started/roles-and-permissions.md) |
@@ -36,7 +36,7 @@ When it's done:
 
 The site can't send anything until an email provider is set up.
 
-1. Open **Settings > Communication > Email**.
+1. Open **Settings → Communication → Email**.
 2. Open the tab of your provider: **SMTP** or **Azure Communication Services**.
 3. Tick **Enable SMTP Provider** (or **Enable Azure Provider**).
 4. Type the **Sender email address** and the connection details your IT team gave you.
@@ -50,7 +50,7 @@ If you enabled more than one provider, choose the one the site uses:
 
 The **Providers** tab lists a provider only once it's enabled and saved. Then send a test email:
 
-1. Open **Tools > Testing > Email Test**.
+1. Open **Tools → Testing → Email Test**.
 2. Choose the **Provider**.
 3. Type your address in **To**.
 4. Type a **Subject** and a **Body**.
@@ -60,7 +60,7 @@ The **Providers** tab lists a provider only once it's enabled and saved. Then se
 
 ## Build the contact page
 
-1. Open **Content > Content Items**.
+1. Open **Content → Content Items**.
 2. Click **New**.
 3. Choose **Page**.
 4. Type **Contact** in **Title**.
@@ -92,7 +92,7 @@ With **Permalink** empty, the address becomes `/contact`. The form's **Title** n
 
 ### Start the workflow when the form is sent
 
-1. Open **Design > Workflows**.
+1. Open **Design → Workflows**.
 2. Click **Create Workflow**.
 3. Type a **Name**, such as *Contact form*.
 4. Click **Create and open the designer**.
@@ -138,7 +138,7 @@ A workflow runs only once it's published. See [Workflows](../forms-and-automatio
 
 ## Connect the form to the workflow
 
-1. Open the **Contact** page again (**Content > Content Items**, **Edit**).
+1. Open the **Contact** page again (**Content → Content Items**, **Edit**).
 2. In the form widget, paste the workflow URL you copied into **Action**.
 3. Click **Publish**.
 
@@ -172,14 +172,14 @@ To stop spam robots, the **ReCaptcha** features add a **Re Captcha** form widget
 3. Click **Send**. You land back on the page with the thank-you message.
 4. Check your inbox for the email.
 5. If you added the checks, send the form empty: you see the errors, and no email is sent.
-6. In the admin, open **Design > Workflows**.
+6. In the admin, open **Design → Workflows**.
 7. Click **Instances**.
 
 The instances list shows each run of the workflow, and where a failed one stopped.
 
 ## Tips
 
-- **No email?** First send a test from **Tools > Testing > Email Test**. If that works, open the workflow's instances to see whether **Email Task** took the **Failed** outcome. See [Troubleshooting](../troubleshooting.md).
+- **No email?** First send a test from **Tools → Testing → Email Test**. If that works, open the workflow's instances to see whether **Email Task** took the **Failed** outcome. See [Troubleshooting](../troubleshooting.md).
 - **The form does nothing, or shows an error page?** Check that the form's **Action** is the workflow's current URL (it changes if someone clicks **Regenerate**), that **HTTP Method** is **POST**, and that the workflow is published and enabled.
 - Keep the **HTML Name** of each box and the `Request.Form...` names in the workflow identical, including case.
 - To keep submissions, not only email them, a workflow can also create a content item with **Create Content Task**.

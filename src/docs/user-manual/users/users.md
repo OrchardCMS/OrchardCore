@@ -15,7 +15,7 @@ Everyone who signs in to the site has a user account. The user list is where adm
 
 | | |
 | --- | --- |
-| **Menu** | **Access Control > Users** |
+| **Menu** | **Access Control → Users** |
 | **Permission** | *List all users* to open the list. *Edit any user*, *Delete any user*, *Assign any role to users* for the actions. *Manage security settings and all users* includes all of them except *Assign any role to users*. |
 | **Feature** | **Users** (`OrchardCore.Users`) |
 
@@ -25,7 +25,7 @@ The dashboard also shows a **Manage users** card with a **Go to users** button.
 
 ![The Users list](images/users.webp)
 
-Open **Access Control > Users**. Each row shows the user name and email address, a badge for each of the person's roles, and these status badges when they apply:
+Open **Access Control → Users**. Each row shows the user name and email address, a badge for each of the person's roles, and these status badges when they apply:
 
 | Badge | Meaning |
 | --- | --- |
@@ -44,7 +44,7 @@ The list can also be shown as a grid with **User**, **Roles** and **Actions** co
 
 ![The screen to add a user](images/create-user.webp)
 
-1. Open **Access Control > Users** and click **Add User** at the top right.
+1. Open **Access Control → Users** and click **Add User** at the top right.
 2. Fill in the form on the **Create User** page (see the table).
 3. Click **Save**.
 
@@ -76,7 +76,7 @@ A new account is enabled. Its email address is not confirmed, so it shows **Unco
 
 The page has the same fields as **Create User**, without the password. Keep in mind:
 
-- **User name**, **Email** and **Phone Number** are greyed out unless the matching option is on in **Settings > Security > User Login** (**Allow user to change their username**, **Allow user to change their email address**, **Allow user to change their phone number**). This applies to administrators editing someone else too.
+- **User name**, **Email** and **Phone Number** are greyed out unless the matching option is on in **Settings → Security → User Login** (**Allow user to change their username**, **Allow user to change their email address**, **Allow user to change their phone number**). This applies to administrators editing someone else too.
 - When you take roles away, the person's sessions end and they sign in again.
 - You can't take the **Administrator** role away from the only enabled administrator. The site warns *Cannot remove Administrator role from the only enabled administrator.*
 
@@ -125,11 +125,11 @@ Replace *Editor* with any role. A user who has no role at all can be handled by 
 
 ## Record what happens to user accounts
 
-The **Users Audit Trail** feature (`OrchardCore.Users.AuditTrail`) writes user events to the audit trail: logged in, login failed, login account locked, created, updated, deleted, enabled, disabled and confirmed, plus registered, password reset and password recovered when those features are on. *Login failed* is off by default. You read the events in **Tools > Audit Trail** and choose which events are recorded in **Settings > Audit Trail**, see [Audit trail](../content/audit-trail.md).
+The **Users Audit Trail** feature (`OrchardCore.Users.AuditTrail`) writes user events to the audit trail: logged in, login failed, login account locked, created, updated, deleted, enabled, disabled and confirmed, plus registered, password reset and password recovered when those features are on. *Login failed* is off by default. You read the events in **Tools → Audit Trail** and choose which events are recorded in **Settings → Audit Trail**, see [Audit trail](../content/audit-trail.md).
 
 | | |
 | --- | --- |
-| **Menu** | **Settings > Security > User Audit Trail** |
+| **Menu** | **Settings → Security → User Audit Trail** |
 | **Permission** | *Manage Audit Trail settings for user events* (settings), *View Audit Trail events about users*, *View Audit Trail events about own user* (events) |
 | **Feature** | **Users Audit Trail** (`OrchardCore.Users.AuditTrail`), which needs **Audit Trail** |
 
@@ -142,12 +142,12 @@ Each event can keep a copy of the account as it was (the "User Snapshot"). The *
 | **PartialAsteriskRedactor** | The value with every character except the first and the last replaced by `*`, for example `j******m`. Good for emails and names. |
 | **ErasingRedactor** | An empty value: the property is listed but its content is erased. |
 
-Click **Save**. Passwords, reset tokens and other secret tokens are never stored. Every signed-in user has *View Audit Trail events about own user* by default, but only roles with *View audit trail* (Administrator by default) can open **Tools > Audit Trail**.
+Click **Save**. Passwords, reset tokens and other secret tokens are never stored. Every signed-in user has *View Audit Trail events about own user* by default, but only roles with *View audit trail* (Administrator by default) can open **Tools → Audit Trail**.
 
 ## Let people choose their time zone and language
 
 - **User Time Zone** (`OrchardCore.Users.TimeZone`) adds **Default Time Zone** to the user editor and profile. Dates in the admin are shown and edited in that zone. **Use site's time zone** follows the site setting in [General settings](../settings/general.md).
-- **User Localization** (`OrchardCore.Users.Localization`, needs **Localization**) adds **Default User Culture**. The list holds **Use site's culture** and the cultures added in **Settings > Localization > Cultures** (see [Localization](../content/localization.md)). The admin is shown in that culture for the person.
+- **User Localization** (`OrchardCore.Users.Localization`, needs **Localization**) adds **Default User Culture**. The list holds **Use site's culture** and the cultures added in **Settings → Localization → Cultures** (see [Localization](../content/localization.md)). The admin is shown in that culture for the person.
 
 Both are optional for each person.
 

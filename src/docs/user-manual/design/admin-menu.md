@@ -11,13 +11,13 @@ The admin menu on the left of every admin page is built by the features you turn
 
 | | |
 | --- | --- |
-| **Menu** | **Tools > Admin Menus** |
+| **Menu** | **Tools → Admin Menus** |
 | **Permission** | *Manage the admin menu* |
 | **Feature** | **Admin Menu** (`OrchardCore.AdminMenu`) |
 
 ## See the admin menus
 
-Open **Tools > Admin Menus**. Each row shows the admin menu's name and a status badge, **Enabled** or **Disabled**, with the buttons **Edit Nodes**, **Edit** and **Delete**, and an **Actions** menu with **Disable** or **Enable**. Type in **Search** and press Enter to filter by name. To delete several admin menus, tick them and choose **Delete** from the **Actions** menu at the top.
+Open **Tools → Admin Menus**. Each row shows the admin menu's name and a status badge, **Enabled** or **Disabled**, with the buttons **Edit Nodes**, **Edit** and **Delete**, and an **Actions** menu with **Disable** or **Enable**. Type in **Search** and press Enter to filter by name. To delete several admin menus, tick them and choose **Delete** from the **Actions** menu at the top.
 
 ![The Admin Menus list](images/admin-menus.webp)
 
@@ -25,7 +25,7 @@ The **Blog** recipe creates an admin menu that adds shortcuts such as **Blog** a
 
 ## Create an admin menu
 
-1. Open **Tools > Admin Menus** and click **Add Admin Menu**.
+1. Open **Tools → Admin Menus** and click **Add Admin Menu**.
 2. Type a **Name**. It is required. The name also names the permission that lets people see this admin menu.
 3. Click **Create**.
 
@@ -108,7 +108,7 @@ Click **Back** to return to the list of admin menus.
 
 ## Turn an admin menu off
 
-On **Tools > Admin Menus**, open the row's **Actions** menu and click **Disable**. Its entries disappear from the admin menu for everyone, and the badge shows **Disabled**. Click **Enable** to bring them back.
+On **Tools → Admin Menus**, open the row's **Actions** menu and click **Disable**. Its entries disappear from the admin menu for everyone, and the badge shows **Disabled**. Click **Enable** to bring them back.
 
 ## Choose who sees an admin menu
 

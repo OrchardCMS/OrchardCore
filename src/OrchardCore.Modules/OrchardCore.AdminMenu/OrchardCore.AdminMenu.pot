@@ -514,11 +514,6 @@ msgctxt "OrchardCore.AdminMenu.Views.MenuItem.TreeSummary"
 msgid "Toggle"
 msgstr ""
 
-#: Views/MenuItem.TreeSummary.cshtml
-msgctxt "OrchardCore.AdminMenu.Views.MenuItem.TreeSummary"
-msgid "Toggle Dropdown"
-msgstr ""
-
 #: Views/MenuItem.TreeThumbnail.cshtml
 msgctxt "OrchardCore.AdminMenu.Views.MenuItem.TreeThumbnail"
 msgid "Add"

@@ -12,7 +12,7 @@ An RSS feed lets people follow your site in a feed reader or another website: ea
 
 | | |
 | --- | --- |
-| **Menu** | The editor of a list content item, for example **Content > Content Items**, then **Edit** on your blog |
+| **Menu** | The editor of a list content item, for example **Content → Content Items**, then **Edit** on your blog |
 | **Permission** | Permission to edit that content item, see [Content items](../content/content-items.md) |
 | **Feature** | **Feeds** (`OrchardCore.Feeds`), with **Lists** (`OrchardCore.Lists`) |
 
@@ -48,7 +48,7 @@ The address has the form `https://www.example.com/Contents/Lists/<id>/rss`, wher
 
 ## Turn off all feeds
 
-Turn off the **Feeds** feature in **Tools > Features**, see [Features](../getting-started/features.md). The feed settings disappear from list editors and no feed is served.
+Turn off the **Feeds** feature in **Tools → Features**, see [Features](../getting-started/features.md). The feed settings disappear from list editors and no feed is served.
 
 !!! note
     Only lists have feeds. Other pages, such as taxonomy term pages or search results, don't offer one.

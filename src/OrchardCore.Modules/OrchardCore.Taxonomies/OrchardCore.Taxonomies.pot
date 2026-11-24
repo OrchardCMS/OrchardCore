@@ -137,7 +137,7 @@ msgctxt "OrchardCore.Taxonomies.Settings.TaxonomyContentsAdminListSettingsDispla
 msgid "Taxonomies"
 msgstr ""
 
-#. Format arguments: {0}: taxonomy?.DisplayText
+#. Format arguments: {0}: taxonomyDisplayText
 #: Views/Admin/Create.cshtml
 #, csharp-format
 msgctxt "OrchardCore.Taxonomies.Views.Admin.Create"
@@ -156,7 +156,14 @@ msgctxt "OrchardCore.Taxonomies.Views.Admin.Create"
 msgid "New {0}"
 msgstr ""
 
-#. Format arguments: {0}: localizedTypeDisplayName, taxonomy?.DisplayText
+#. Format arguments: {0}: taxonomyDisplayText
+#: Views/Admin/Create.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Taxonomies.Views.Admin.Create"
+msgid "You are editing a draft of the <strong>{0}</strong> taxonomy. Visitors won't see your changes until the taxonomy is published."
+msgstr ""
+
+#. Format arguments: {0}: localizedTypeDisplayName, taxonomyDisplayText
 #: Views/Admin/Edit.cshtml
 #, csharp-format
 msgctxt "OrchardCore.Taxonomies.Views.Admin.Edit"
@@ -166,6 +173,13 @@ msgstr ""
 #: Views/Admin/Edit.cshtml
 msgctxt "OrchardCore.Taxonomies.Views.Admin.Edit"
 msgid "Manage Content"
+msgstr ""
+
+#. Format arguments: {0}: taxonomyDisplayText
+#: Views/Admin/Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Taxonomies.Views.Admin.Edit"
+msgid "You are editing a draft of the <strong>{0}</strong> taxonomy. Visitors won't see your changes until the taxonomy is published."
 msgstr ""
 
 #: Views/Content.TermAdmin.cshtml
@@ -338,6 +352,16 @@ msgstr ""
 #: Views/Term.cshtml
 msgctxt "OrchardCore.Taxonomies.Views.Term"
 msgid "The list is empty"
+msgstr ""
+
+#: Views/TermEditorActions.cshtml
+msgctxt "OrchardCore.Taxonomies.Views.TermEditorActions"
+msgid "Cancel"
+msgstr ""
+
+#: Views/TermEditorActions.cshtml
+msgctxt "OrchardCore.Taxonomies.Views.TermEditorActions"
+msgid "Save Term"
 msgstr ""
 
 #: Views/TermPart.cshtml

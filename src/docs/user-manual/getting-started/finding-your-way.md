@@ -112,13 +112,15 @@ Quick navigation finds any admin page by name, so you don't have to look for it 
 
 You can also click a result instead of using the arrow keys.
 
-Each result shows where it sits in the menu, for example *Settings > Communication*. Press **Esc** to close the box. The **Ctrl+K** keys do nothing while you type in a rich text or code editor, because those editors use the keys themselves.
+Each result shows where it sits in the menu, for example **Settings → Communication**. Press **Esc** to close the box. The **Ctrl+K** keys do nothing while you type in a rich text or code editor, because those editors use the keys themselves.
 
 With the **Content Quick Navigation** feature (`OrchardCore.Contents.QuickNavigation`) on, the results also include the content items updated most recently, marked *Content*, so you can open a page or post to edit it straight away. You only see items you are allowed to edit and that have a title. Quick navigation searches page names and content titles, not the text inside your content.
 
 ## Breadcrumbs and page titles
 
 Most admin pages show a breadcrumb above the title, for example **Dashboard / Manage Content / Article**. Click any part of it to go back to that page. Administrators can hide the breadcrumb with **Show breadcrumb**.
+
+When you create or edit an item that belongs to a list, such as a blog post in a blog, the breadcrumb includes the list, for example **Dashboard / Manage Content / Blog / New Blog Post**. Click the list's name to see all of its items.
 
 ## Work with admin lists
 
@@ -161,7 +163,7 @@ Your choice is kept in your browser for that list only, so each list can stay th
 
 ### Move between pages
 
-Below the list, use the page numbers, or the buttons to go to the first, previous, next or last page. A list shows 10 items per page unless your administrator changes the **Page size** in **Settings > General**. When the administrator turns on **Allow users to change the page size on listing pages**, an **Items per page** menu appears next to the page numbers. See [General settings](../settings/general.md).
+Below the list, use the page numbers, or the buttons to go to the first, previous, next or last page. A list shows 10 items per page unless your administrator changes the **Page size** in **Settings → General**. When the administrator turns on **Allow users to change the page size on listing pages**, an **Items per page** menu appears next to the page numbers. See [General settings](../settings/general.md).
 
 When nothing matches, the list says *No results found.*
 
@@ -197,11 +199,11 @@ Administrators decide which of these tools everyone sees.
 
 | | |
 | --- | --- |
-| **Menu** | **Settings > Admin** |
+| **Menu** | **Settings → Admin** |
 | **Permission** | *Manage Admin Settings* (given to the **Administrator** role by default) |
 | **Feature** | **Admin** (`OrchardCore.Admin`) |
 
-1. Open **Settings > Admin**.
+1. Open **Settings → Admin**.
 2. Change the options in the table.
 3. Click **Save**.
 

@@ -13,25 +13,25 @@ technical_manual:
 
 # Site search and indexes
 
-Site search lets visitors type words and find matching pages, blog posts and other content items. It works in two parts. An **index** is a copy of your content that a search engine can search fast. The **search page** and the **Search Form** widget let visitors search that index. You create indexes in **Search > Indexes**, pick the one the search page uses in **Settings > Search > Site Search**, and give visitors permission to search it.
+Site search lets visitors type words and find matching pages, blog posts and other content items. It works in two parts. An **index** is a copy of your content that a search engine can search fast. The **search page** and the **Search Form** widget let visitors search that index. You create indexes in **Search → Indexes**, pick the one the search page uses in **Settings → Search → Site Search**, and give visitors permission to search it.
 
 This page is the full reference for site search and indexes. For a step-by-step walkthrough, see [Add site search](../use-cases/site-search.md).
 
 | | |
 | --- | --- |
-| **Menu** | **Search > Indexes**; **Settings > Search > Site Search**; **Settings > Search > Azure AI Search** |
+| **Menu** | **Search → Indexes**; **Settings → Search → Site Search**; **Settings → Search → Azure AI Search** |
 | **Permission** | *Manage Indexes* for the indexes and the **Azure AI Search** menu item. *Manage Search Settings* for the site search settings. The Azure AI Search connection form itself is shown only to administrators. Administrators have these permissions by default. |
 | **Feature** | **Indexing** (`OrchardCore.Indexing`), **Search** (`OrchardCore.Search`), and at least one search engine: **Lucene** (`OrchardCore.Lucene`), **Elasticsearch** (`OrchardCore.Elasticsearch`) or **Azure AI Search** (`OrchardCore.AzureAI`) |
 
 ## Choose a search engine
 
-Each search engine is a feature. Turn on the ones you need in **Tools > Features**, see [Features](../getting-started/features.md).
+Each search engine is a feature. Turn on the ones you need in **Tools → Features**, see [Features](../getting-started/features.md).
 
 | Search engine | Where the index lives | What IT must do first |
 | --- | --- | --- |
 | **Lucene** | In files on the web server. | Nothing for a single server. When the site runs on several servers, each server keeps its own copy of the index, which IT needs to plan for. |
 | **Elasticsearch** | On an Elasticsearch server. | Install or rent an Elasticsearch server and add its address and credentials to the site's configuration. Until then, the Elasticsearch screens show *Elasticsearch is not configured*. |
-| **Azure AI Search** | In an Azure AI Search service in Microsoft Azure. | Create the Azure AI Search service. IT either puts the connection in the site's configuration, or gives you the endpoint and key to type in **Settings > Search > Azure AI Search** (see below). |
+| **Azure AI Search** | In an Azure AI Search service in Microsoft Azure. | Create the Azure AI Search service. IT either puts the connection in the site's configuration, or gives you the endpoint and key to type in **Settings → Search → Azure AI Search** (see below). |
 
 !!! note "SQL"
     The site's own database can't be used as a search index. To list content with database queries, see [Queries](queries.md).
@@ -40,7 +40,7 @@ Each search engine is a feature. Turn on the ones you need in **Tools > Features
 
 ![The Indexes list](images/indexes.webp)
 
-1. Open **Search > Indexes** and click **Add index**.
+1. Open **Search → Indexes** and click **Add index**.
 2. In **Available Sources**, find the search engine and click **Add** under **Content in Lucene**, **Content in Elasticsearch** or **Content in Azure AI Search**. If the box says *You need to enable a feature which provides an index source.*, turn on a search engine feature first.
 3. Type an **Index Name**. The **Name** is filled in for you; change it if you want.
 4. Pick the **Culture** and tick the **Content types** to search.
@@ -74,7 +74,7 @@ These settings decide how the search page reads what a visitor types.
 
 ### Decide what is indexed in each content type
 
-What goes into the index is set on the content type, in **Design > Content Definition > Content Types**:
+What goes into the index is set on the content type, in **Design → Content Definition → Content Types**:
 
 - Each part and field of the type has index settings, for example **Index settings** for Lucene with **Include this element in the index**, **Stored** and **Keyword**, **Elasticsearch Index settings** and **Azure AI Search Index Settings** with **Include this element in the index**. A part or field is indexed only when **Include this element in the index** is ticked.
 - The **Full-text** settings of the type (**Include display text**, **Include body parts**, **Use custom full-text**) decide the text that free-text searches look in.
@@ -99,7 +99,7 @@ When someone creates, saves, publishes, unpublishes or deletes a content item, t
 
 **Indexing Worker** (`OrchardCore.Indexing.Worker`) adds a background task, **Indexes Content Updater**, that runs every minute and catches up with any change the indexes missed, for example when the site runs on several servers. **Lucene Worker** (`OrchardCore.Search.Lucene.Worker`) and **Elasticsearch Worker** (`OrchardCore.Search.Elasticsearch.Worker`) are kept for older sites; on a site that uses them, **Indexing Worker** is turned on and does this work. See [Background tasks](../settings/background-tasks.md).
 
-To fix an index by hand, open **Search > Indexes** and use the row's **Actions** menu:
+To fix an index by hand, open **Search → Indexes** and use the row's **Actions** menu:
 
 | Action | What it does |
 | --- | --- |
@@ -123,7 +123,7 @@ The list shows the **Name**, the **Source** (search engine and type) and when ea
 
 ![The Site Search settings](images/site-search-settings.webp)
 
-1. Open **Settings > Search > Site Search**.
+1. Open **Settings → Search → Site Search**.
 2. Pick the **Default search index**.
 3. Type a **Placeholder** if you want, the hint shown in the empty search box.
 4. Click **Save**.
@@ -137,7 +137,7 @@ If the page shows *No available indexes. Add at least one index to search.*, cre
 
 ### Let visitors search
 
-The search page checks the visitor's permission. In **Access Control > Roles**, give the **Anonymous** role (and **Authenticated**, for signed-in people) one of these permissions, see [Roles](../users/roles.md):
+The search page checks the visitor's permission. In **Access Control → Roles**, give the **Anonymous** role (and **Authenticated**, for signed-in people) one of these permissions, see [Roles](../users/roles.md):
 
 - *Query 'Name' Index*, where *Name* is the name of the index. There is one for each index.
 - *Query any index*, to allow every index.
@@ -146,7 +146,7 @@ Without one of them, visitors can't see search results.
 
 ## Use the search page
 
-Visitors search at `/search` on your site, for example `https://www.example.com/search`. The page has a search box and a **Search** button. Results show the matching content items, a page at a time, with links to the next and previous pages; the number per page is the page size in **Settings > General**. When nothing matches, the page says *There are no such results.*
+Visitors search at `/search` on your site, for example `https://www.example.com/search`. The page has a search box and a **Search** button. Results show the matching content items, a page at a time, with links to the next and previous pages; the number per page is the page size in **Settings → General**. When nothing matches, the page says *There are no such results.*
 
 To search an index other than the default one, add its name to the address: `/search/Name`, where *Name* is the index's **Name**. When no default index is set and the address names none, the page warns *No default search index has been configured.*
 
@@ -163,7 +163,7 @@ The **Search Form** widget puts a search box in any zone, for example in the hea
 
 When your IT team gives you the connection details instead of putting them in the configuration:
 
-1. Open **Settings > Search > Azure AI Search**.
+1. Open **Settings → Search → Azure AI Search**.
 2. Type the **Endpoint**, such as `https://my-service.search.windows.net`.
 3. Pick the **Authentication Type** and fill in the field it shows.
 4. Click **Save**.

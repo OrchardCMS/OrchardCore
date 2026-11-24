@@ -7,11 +7,11 @@ technical_manual:
 
 # Shared links
 
-The **Share a download link** step of a [data pipeline](data-pipeline-steps.md#destinations) doesn't attach the file to an email: it keeps the file on the site and emails each recipient a link to it. **Tools > Shared Links** lists these links, so you can see who received what and stop a link before it expires.
+The **Share a download link** step of a [data pipeline](data-pipeline-steps.md#destinations) doesn't attach the file to an email: it keeps the file on the site and emails each recipient a link to it. **Tools → Shared Links** lists these links, so you can see who received what and stop a link before it expires.
 
 | | |
 | --- | --- |
-| **Menu** | **Tools > Shared Links** |
+| **Menu** | **Tools → Shared Links** |
 | **Permission** | *Manage shared links* (Administrator by default) |
 | **Feature** | **Data Pipelines Core** (`OrchardCore.DataPipelines.Core`), turned on with **Data Pipelines** |
 
@@ -19,7 +19,7 @@ The **Share a download link** step of a [data pipeline](data-pipeline-steps.md#d
 
 ![The Shared Links list](images/shared-links.webp)
 
-1. Open **Tools > Shared Links**.
+1. Open **Tools → Shared Links**.
 2. Type part of the file's name, or of the pipeline that shared it, in **Search by name or source**, and press Enter.
 
 Each row shows the name of the shared file and these badges (hover a badge to see its name):

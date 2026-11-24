@@ -13,7 +13,7 @@ A tenant is a separate site that runs inside the same Orchard Core installation.
 
 | | |
 | --- | --- |
-| **Menu** | **Multi-Tenancy > Tenants**; **Multi-Tenancy > Feature Profiles** |
+| **Menu** | **Multi-Tenancy → Tenants**; **Multi-Tenancy → Feature Profiles** |
 | **Permission** | *Manage tenants* for tenants. *Manage tenant feature profiles* for feature profiles. Administrators have them by default. |
 | **Feature** | **Tenants** (`OrchardCore.Tenants`) and **Tenant Feature Profiles** (`OrchardCore.Tenants.FeatureProfiles`), on the **Default** tenant only |
 
@@ -31,7 +31,7 @@ No two tenants can have the same hostname and prefix.
 
 ![The screen to add a tenant](images/create-tenant.webp)
 
-1. Open **Multi-Tenancy > Tenants** and click **Add Tenant**.
+1. Open **Multi-Tenancy → Tenants** and click **Add Tenant**.
 2. Type the **Name**.
 3. Fill in the **Url Prefix**, the **Hostname**, or both.
 4. Optionally choose the **Recipe** and the database under **Database Presets**, so whoever sets up the tenant doesn't have to.
@@ -61,7 +61,7 @@ Common errors: *A tenant with the same host and prefix already exists.*, *A tena
 
 A new tenant must be set up before it works: someone fills in its setup screen and chooses the first user account.
 
-1. In **Multi-Tenancy > Tenants**, find the tenant with the **Uninitialized** badge.
+1. In **Multi-Tenancy → Tenants**, find the tenant with the **Uninitialized** badge.
 2. Click **Setup** in its row. The tenant's setup screen opens.
 3. Fill it in and click **Finish Setup**. See [Setting up a site](../getting-started/setting-up-a-site.md).
 
@@ -71,7 +71,7 @@ You can also send the setup link to the person who will run the tenant: right-cl
 
 ![The Tenants list](images/tenants.webp)
 
-Each row of **Multi-Tenancy > Tenants** shows the tenant's name (a link to its site), its hostname and prefix, and badges for its state, database, recipe and category. To narrow the list:
+Each row of **Multi-Tenancy → Tenants** shows the tenant's name (a link to its site), its hostname and prefix, and badges for its state, database, recipe and category. To narrow the list:
 
 - Type in **Search** to find a tenant by name, hostname or prefix.
 - Use **Category** to show one category.
@@ -129,13 +129,13 @@ A feature profile is a list of rules that hides features from the tenants that u
 
 ![The Feature Profiles list](images/feature-profiles.webp)
 
-1. Open **Multi-Tenancy > Feature Profiles** and click **Add Feature Profile**.
+1. Open **Multi-Tenancy → Feature Profiles** and click **Add Feature Profile**.
 2. Type a **Name**.
 3. Write the **Rules** (see below).
 4. Click **Save**, or **Save and continue** in the menu next to it to stay on the page.
 5. Edit each tenant that should use it and pick it in **Feature profile**.
 
-The tenant's **Tools > Features** screen then shows only the features the profile allows.
+The tenant's **Tools → Features** screen then shows only the features the profile allows.
 
 | Field | What it does |
 | --- | --- |
@@ -158,7 +158,7 @@ How the rules work:
 - When several rules match a feature, the last one wins, so you can exclude a group and then include one feature of it.
 - A feature is also hidden when a feature it needs is excluded.
 
-You find feature ids in **Tools > Features**, see [Features](../getting-started/features.md). To change or delete a profile, use **Edit** or **Delete** in its row; tick several and choose **Delete** in the **Actions** menu to delete them together.
+You find feature ids in **Tools → Features**, see [Features](../getting-started/features.md). To change or delete a profile, use **Edit** or **Delete** in its row; tick several and choose **Delete** in the **Actions** menu to delete them together.
 
 ## Copy feature profiles to another site
 

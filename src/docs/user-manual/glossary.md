@@ -15,8 +15,8 @@ The words you meet in the admin and in this manual, in plain language. Each term
 
 - **Activity**: one box in a workflow. An activity is either an **event**, which starts or resumes the workflow when something happens (a form is posted, content is published), or a **task**, which does something (send an email, publish an item). See [Workflows](forms-and-automation/workflows.md).
 - **Admin**: the back office of the site, under `/Admin`, where you manage content, design and settings. Visitors never see it. See [Finding your way](getting-started/finding-your-way.md).
-- **Admin menu**: the menu on the left of the admin. Its entries depend on the features that are on and on your permissions. Administrators can also add custom admin menus in **Tools > Admin Menus**. See [Admin menu](design/admin-menu.md).
-- **Admin template**: a template that changes how a piece of the admin looks, written in Liquid in **Design > Admin Templates**. See [Templates and placements](design/templates-and-placements.md).
+- **Admin menu**: the menu on the left of the admin. Its entries depend on the features that are on and on your permissions. Administrators can also add custom admin menus in **Tools → Admin Menus**. See [Admin menu](design/admin-menu.md).
+- **Admin template**: a template that changes how a piece of the admin looks, written in Liquid in **Design → Admin Templates**. See [Templates and placements](design/templates-and-placements.md).
 - **Alias**: a short, fixed name for a content item, such as `main-menu`, that templates and themes use to find it. It isn't an address. See [URLs and the home page](content/urls-and-homepage.md).
 - **Anonymous**: the built-in role that stands for visitors who aren't signed in. Its permissions decide what the public can see and do. See [Roles](users/roles.md).
 - **Audit trail**: a history of who changed what, and when, with the option to compare and restore versions. See [Audit trail](content/audit-trail.md).
@@ -49,7 +49,7 @@ The words you meet in the admin and in this manual, in plain language. Each term
 - **Display text**: the name the admin shows for a content item, usually its title.
 - **Draft**: a saved version of a content item that visitors don't see yet. A published item can have a draft with changes waiting to be published. See [Content items](content/content-items.md).
 - **Draftable**: a content type setting. Only draftable types have a **Save Draft** button. See [Content types](content/content-types.md).
-- **Dynamic translations**: translations of texts typed in the admin, such as content type names, made in **Settings > Localization > Dynamic Translations**. See [Localization](content/localization.md).
+- **Dynamic translations**: translations of texts typed in the admin, such as content type names, made in **Settings → Localization → Dynamic Translations**. See [Localization](content/localization.md).
 
 ## E
 
@@ -58,7 +58,7 @@ The words you meet in the admin and in this manual, in plain language. Each term
 
 ## F
 
-- **Feature**: a piece of Orchard Core that an administrator turns on or off in **Tools > Features**. Its menus and screens appear only while it's on. See [Features](getting-started/features.md).
+- **Feature**: a piece of Orchard Core that an administrator turns on or off in **Tools → Features**. Its menus and screens appear only while it's on. See [Features](getting-started/features.md).
 - **Feature profile**: a list of the features a tenant may use. See [Tenants](administration/tenants.md).
 - **Feed**: an RSS address that news readers follow to learn about new items, such as blog posts. See [RSS feeds](search/feeds.md).
 - **Field**: one piece of information on a content item, such as a date, an image, a link or a tag list. Fields are added to content types. See [Fields](content/fields.md).
@@ -114,7 +114,7 @@ The words you meet in the admin and in this manual, in plain language. Each term
 
 ## R
 
-- **Recipe**: a file that sets up a site or adds things to it: features, content types, content, settings. Setup recipes, such as **Blog**, are chosen when a site is created; others run from **Tools > Recipes**. See [Recipes](administration/recipes.md) and [Setting up a site](getting-started/setting-up-a-site.md).
+- **Recipe**: a file that sets up a site or adds things to it: features, content types, content, settings. Setup recipes, such as **Blog**, are chosen when a site is created; others run from **Tools → Recipes**. See [Recipes](administration/recipes.md) and [Setting up a site](getting-started/setting-up-a-site.md).
 - **Remote instance**, **remote client**: the two ends of a direct link between two sites for sending deployment plans. See [Remote deployment](administration/remote-deployment.md).
 - **Role**: a named set of permissions, such as **Editor** or **Contributor**, given to users. See [Roles](users/roles.md).
 - **Rule**: the conditions that decide when a layer's widgets show. See [Widgets and layers](design/widgets-and-layers.md).
@@ -134,7 +134,7 @@ The words you meet in the admin and in this manual, in plain language. Each term
 
 - **Task**: an activity that does something in a workflow, such as sending an email. See *Activity*.
 - **Taxonomy**: a list of terms used to classify content, such as *Categories* or *Tags*. See [Taxonomies](content/taxonomies.md).
-- **Template**: a piece of Liquid that changes how a shape looks on the site, written in **Design > Templates**. See [Templates and placements](design/templates-and-placements.md).
+- **Template**: a piece of Liquid that changes how a shape looks on the site, written in **Design → Templates**. See [Templates and placements](design/templates-and-placements.md).
 - **Tenant**: a separate site running in the same Orchard Core installation, with its own content, users, settings and address. See [Tenants](administration/tenants.md).
 - **Term**: one entry in a taxonomy, such as *Travel* in *Categories*. See [Taxonomies](content/taxonomies.md).
 - **Theme**: the design of the site (the **site theme**) or of the admin (the **admin theme**). See [Themes](design/themes.md).

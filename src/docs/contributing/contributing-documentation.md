@@ -26,8 +26,9 @@ The documentation has two manuals, for two kinds of readers. Before you write, d
 Both manuals describe the current code, not memory or older docs. Before you write or change a page:
 
 - Take menu paths from the module's `AdminMenu.cs` and button and field labels from its Razor views (the text in `T["..."]`), and copy them exactly, case included.
+- Write a menu path as one bold run with an arrow between the labels, like **Settings → Security → User Login**: never `>`, `->` or italics, and never one bold run per label.
 - Take permission names from the module's permission provider: the role editor shows each permission's description, so write the description.
-- Take feature names and ids from the module's `Manifest.cs`, as shown in **Tools > Features**.
+- Take feature names and ids from the module's `Manifest.cs`, as shown in **Tools → Features**.
 - Check defaults, required fields and behavior in the drivers, controllers and settings classes, and on a locally running site when in doubt.
 - Describe the current behavior, without "new", "now" or version wording. What changed between versions belongs in the [release notes](../releases/3.0.1.md).
 

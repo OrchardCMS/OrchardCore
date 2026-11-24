@@ -1,0 +1,19 @@
+@*
+    The actions of the editor of a menu item, which replace the actions of a content item: a menu item is saved in
+    the content of its menu, which is published from the editor of the menu.
+
+    Properties:
+        MenuContentItemId  The id of the menu the menu item belongs to.
+*@
+@{
+    string menuContentItemId = Model.MenuContentItemId;
+}
+
+@* The content editor renders its own Cancel button when the page has a return URL. *@
+@if (string.IsNullOrWhiteSpace(Context.Request.Query["returnUrl"]))
+{
+    <a class="btn btn-secondary cancel" role="button" asp-action="Edit" asp-controller="Admin" asp-route-area="OrchardCore.Contents" asp-route-contentItemId="@menuContentItemId">@T["Cancel"]</a>
+}
+<button type="submit" class="btn btn-primary save" name="submit.Save" value="submit.Save">@T["Save Menu Item"]</button>
+
+<script at="Foot" asp-src="~/OrchardCore.Contents/Scripts/expand-cards-with-invalid-inputs.js"></script>

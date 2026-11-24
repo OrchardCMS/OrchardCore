@@ -15,7 +15,7 @@ You should create an app in the [Application Registration Portal](https://apps.d
 
 Give a name for your App, create a secret that you will use it as AppSecret in Orchard, and allow the implicit flow. The default callback at Orchard is [tenant]/signin-microsoft or can be set as needed.
 
-Configuration can be set through the _Microsoft Authentication -> Microsoft Account_ settings menu in the admin dashboard.
+Configuration can be set through the **Microsoft Authentication → Microsoft Account** settings menu in the admin dashboard.
 
 Available settings are:
 

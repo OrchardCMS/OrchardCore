@@ -14,7 +14,7 @@ Secret values are encrypted, and once saved they are never shown again, not even
 
 | | |
 | --- | --- |
-| **Menu** | **Tools > Security > Secrets**, **Tools > Security > Migrate Secrets**, **Tools > Security > Secret Stores** |
+| **Menu** | **Tools → Security → Secrets**, **Tools → Security → Migrate Secrets**, **Tools → Security → Secret Stores** |
 | **Permission** | *View secrets* (to see the list) and *Manage secrets* (to add, change, move and delete). The Administrator role has both by default. **Migrate Secrets** and **Secret Stores** need *Manage secrets*. |
 | **Feature** | **Secrets** (`OrchardCore.Secrets`); optionally **Secrets - Azure Key Vault** (`OrchardCore.Secrets.AzureKeyVault`) |
 
@@ -27,7 +27,7 @@ Secrets live in a **store**:
 
 ## Add a secret
 
-1. Open **Tools > Security > Secrets** and click **Add Secret**.
+1. Open **Tools → Security → Secrets** and click **Add Secret**.
 2. In **Select Secret Type**, click **Create** next to the type you need (see the table below).
 3. Type a **Name**. Pick a clear name, such as `Smtp.Password` or `Payment.ApiKey`. It can't be changed later.
 4. If more than one store is available, pick the **Store**.
@@ -79,7 +79,7 @@ If a setting points to a secret while the **Secrets** feature is off, the settin
 
 If you set up email, SMS or sign-in providers before using secrets, their credentials are stored with their settings. **Migrate Secrets** moves them into secrets in one step.
 
-1. Open **Tools > Security > Migrate Secrets**. The screen lists every credential kept in settings, with the feature it belongs to.
+1. Open **Tools → Security → Migrate Secrets**. The screen lists every credential kept in settings, with the feature it belongs to.
 2. Check the credentials to move.
 3. Next to each one, check or change the **Secret name**.
 4. Pick the **Destination store**.
@@ -89,7 +89,7 @@ The settings then point to the new secrets and no longer keep the values. If a s
 
 ## Find, edit and delete secrets
 
-**Tools > Security > Secrets** lists the secrets with their type, store and expiration. Use **Search**, the expiration filter (**All**, **Expired**, **Expires within 30 days**, **Never expires**) and the type filter to narrow the list.
+**Tools → Security → Secrets** lists the secrets with their type, store and expiration. Use **Search**, the expiration filter (**All**, **Expired**, **Expires within 30 days**, **Never expires**) and the type filter to narrow the list.
 
 ![The Secrets list](images/secrets.webp)
 
@@ -106,11 +106,11 @@ When a secret has an **Expiration date**, the admin dashboard shows a warning to
 
 ## Move secrets to another store
 
-Use **Tools > Security > Secret Stores** to move secrets between stores, for example from the database to Azure Key Vault before you stop using the database store.
+Use **Tools → Security → Secret Stores** to move secrets between stores, for example from the database to Azure Key Vault before you stop using the database store.
 
 ![The Secret Stores screen](images/secret-stores.webp)
 
-1. Open **Tools > Security > Secret Stores**.
+1. Open **Tools → Security → Secret Stores**.
 2. Pick the **Source store**. The screen shows how many active secrets it holds.
 3. Under **Move all active secrets from this store to**, pick the **Destination store**.
 4. Check *I confirm this move, and the deletion from the source store once the destination is verified.*

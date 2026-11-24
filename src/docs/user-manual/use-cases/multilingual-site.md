@@ -27,12 +27,12 @@ When it's done:
 
 | You need | Where or who |
 | --- | --- |
-| The features **Localization** (`OrchardCore.Localization`), **Content Localization** (`OrchardCore.ContentLocalization`) and **Content Culture Picker** (`OrchardCore.ContentLocalization.ContentCulturePicker`) | An administrator, in **Tools > Features** |
+| The features **Localization** (`OrchardCore.Localization`), **Content Localization** (`OrchardCore.ContentLocalization`) and **Content Culture Picker** (`OrchardCore.ContentLocalization.ContentCulturePicker`) | An administrator, in **Tools → Features** |
 | The permissions *Manage supported culture*, *Edit content types.*, *Manage ContentCulturePicker settings*, and *Localize content for others* (or *Localize own content*) | Your administrator; see [Roles and permissions](../getting-started/roles-and-permissions.md) |
 
 ## Add the languages
 
-1. Open **Settings > Localization > Cultures**.
+1. Open **Settings → Localization → Cultures**.
 2. Choose a culture in the list, such as **fr-FR (French (France))**.
 3. Click **Add culture**.
 4. Repeat steps 2 and 3 for each language.
@@ -46,7 +46,7 @@ The **Default culture** button's tooltip says *Set as default*. With **Fall back
 
 Only content types with the **Localization** part can be translated. Add it to each type you translate, such as **Page**, **Article** and **Blog Post**.
 
-1. Open **Design > Content Definition > Content Types**.
+1. Open **Design → Content Definition → Content Types**.
 2. Click **Edit** on **Page**.
 3. Click **Add Parts**.
 4. Tick **Localization**.
@@ -56,7 +56,7 @@ The part is added right away; there is nothing else to save. See [Content types]
 
 ## Translate a page
 
-1. Open **Content > Content Items**.
+1. Open **Content → Content Items**.
 2. On the page's row, click **Localizations**.
 3. Click **+** next to **French (France) | fr-FR**.
 4. Translate the **Title** and the content.
@@ -85,9 +85,9 @@ With **Content Culture Picker** on and more than one culture, **The Default Them
 
 | Screen | Setting | What it does |
 | --- | --- | --- |
-| **Settings > Localization > Content Culture Picker** | **Set Cookie** | Remembers the visitor's choice in a cookie. |
+| **Settings → Localization → Content Culture Picker** | **Set Cookie** | Remembers the visitor's choice in a cookie. |
 | | **Homepage redirect** | When the page has no translation in the chosen culture, goes to the home page's translation instead of staying on the page. |
-| **Settings > Localization > Content Culture** | **Set Cookie** | Remembers the culture of the last page the visitor opened, so the rest of the site follows it. |
+| **Settings → Localization → Content Culture** | **Set Cookie** | Remembers the culture of the last page the visitor opened, so the rest of the site follows it. |
 
 Whatever the cookie says, a translated page always shows in its own culture: the site takes the culture from the page being viewed.
 
@@ -96,7 +96,7 @@ Whatever the cookie says, a translated page always shows in its own culture: the
 Orchard Core has no screen that translates the items of a menu. The built-in themes show one menu, the one with the alias **main-menu**, whatever the visitor's language. You have these options:
 
 - **Link to translated pages.** A **Content Menu Item** links to the page you choose. When a visitor on the French site uses the culture picker on that page, they're taken to the French translation, but the menu label itself stays the same in every language.
-- **One menu per language.** Create a second menu (for example *Menu principal*) under **Content > Menus**, and ask your developer to change the theme so it shows the menu of the visitor's culture.
+- **One menu per language.** Create a second menu (for example *Menu principal*) under **Content → Menus**, and ask your developer to change the theme so it shows the menu of the visitor's culture.
 
 See [Menus](../design/menus.md).
 
@@ -104,7 +104,7 @@ See [Menus](../design/menus.md).
 
 To show a widget, such as a banner, only to visitors of one language:
 
-1. In **Design > Widgets**, under **Layers**, click **Add**.
+1. In **Design → Widgets**, under **Layers**, click **Add**.
 2. Type the layer's **Name**, such as *French*.
 3. Click **Create**.
 4. Click **Add** next to **Rules**.
@@ -120,9 +120,9 @@ Make an *English* layer the same way for the English version. See [Widgets and l
 
 ## Translate the admin's own words (optional)
 
-**Settings > Localization > Dynamic Translations** (feature **Data Localization**, `OrchardCore.DataLocalization`) translates texts that people typed in the admin rather than texts built into Orchard Core, such as the names of content types and fields and of custom admin menus.
+**Settings → Localization → Dynamic Translations** (feature **Data Localization**, `OrchardCore.DataLocalization`) translates texts that people typed in the admin rather than texts built into Orchard Core, such as the names of content types and fields and of custom admin menus.
 
-1. Open **Settings > Localization > Dynamic Translations**.
+1. Open **Settings → Localization → Dynamic Translations**.
 2. Choose a **Culture**.
 3. Type each **Translation**.
 4. Click **Save**.

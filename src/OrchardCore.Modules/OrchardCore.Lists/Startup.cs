@@ -29,6 +29,7 @@ using OrchardCore.Lists.Services;
 using OrchardCore.Lists.Settings;
 using OrchardCore.Localization.Data;
 using OrchardCore.Modules;
+using OrchardCore.Navigation;
 
 namespace OrchardCore.Lists;
 
@@ -59,6 +60,7 @@ public sealed class Startup : StartupBase
         services.AddDataMigration<Migrations>();
         services.AddScoped<IDocumentIndexHandler, ContainedPartContentIndexHandler>();
         services.AddScoped<IContainerService, ContainerService>();
+        services.AddBreadcrumbProvider<ContainerBreadcrumbProvider>();
         services.AddScoped<IAdminListItemDisplayManager<ListPartAdminListEntry>, ListPartAdminListDisplayManager>();
 
     }

@@ -8,21 +8,21 @@ technical_manual:
 
 # Taxonomies
 
-A **taxonomy** is a list of words used to classify content: *Categories* (*News*, *Events*, *Tutorials*), *Tags* (*space*, *earth*, *exploration*), *Regions*, *Departments*. Each word is a **term**, and terms can have child terms to form a tree (*Europe > France > Paris*). Editors then pick terms on their content items with a **Taxonomy Field**, and each term gets a page on the site that lists the content items classified with it.
+A **taxonomy** is a list of words used to classify content: *Categories* (*News*, *Events*, *Tutorials*), *Tags* (*space*, *earth*, *exploration*), *Regions*, *Departments*. Each word is a **term**, and terms can have child terms to form a tree (**Europe → France → Paris**). Editors then pick terms on their content items with a **Taxonomy Field**, and each term gets a page on the site that lists the content items classified with it.
 
 | | |
 | --- | --- |
-| **Menu** | **Content > Content Items** (taxonomies are content items of the **Taxonomy** type), **Settings > Taxonomy Filters** |
+| **Menu** | **Content → Content Items** (taxonomies are content items of the **Taxonomy** type), **Settings → Taxonomy Filters** |
 | **Permission** | *Manage taxonomies* (add, edit, delete terms; settings) and the usual content permissions on the **Taxonomy** type |
 | **Feature** | **Taxonomies** (`OrchardCore.Taxonomies`), **Taxonomies Contents List Filters** (`OrchardCore.Taxonomies.ContentsAdminList`) |
 
-A site set up with the **Blog** recipe already has two taxonomies, **Tags** and **Categories**, used by the **Tags** and **Category** fields of blog posts. On that site, **Content > Taxonomy** lists them.
+A site set up with the **Blog** recipe already has two taxonomies, **Tags** and **Categories**, used by the **Tags** and **Category** fields of blog posts. On that site, **Content → Taxonomy** lists them.
 
 ## Prepare a term content type
 
 Each term is a small content item. Before you create a taxonomy, you need a content type for its terms (the Blog recipe has **Tag** and **Category**).
 
-1. Open **Design > Content Definition > Content Types** and click **Create new type**, for example *Region*.
+1. Open **Design → Content Definition → Content Types** and click **Create new type**, for example *Region*.
 2. Add the **Title** part, and the **Autoroute** part if each term should have its own page on the site.
 3. On the type, untick **Creatable** and **Listable**: terms are created only inside their taxonomy.
 4. Click **Save**.
@@ -31,7 +31,7 @@ To give each term a page, open the **Autoroute** part settings on the term type 
 
 ## Create a taxonomy
 
-1. Open **Content > Content Items**, click **New** (or the create button) and choose **Taxonomy**.
+1. Open **Content → Content Items**, click **New** (or the create button) and choose **Taxonomy**.
 2. Type the **Title**, for example *Regions*.
 3. Pick the **Term Content Type**, for example **Region**. This field is required. Only content types without a stereotype are offered.
 4. Tick **Route contained items** if the terms should have their own pages (the term type also needs **Autoroute**).
@@ -46,21 +46,21 @@ The taxonomy also has an **Alias** and a **Permalink**, both generated from the 
 
 ![The editor of a taxonomy, with its terms](images/taxonomy.webp)
 
-1. Open the taxonomy's editor (**Content > Content Items**, then **Edit** on the taxonomy).
+1. Open the taxonomy's editor (**Content → Content Items**, then **Edit** on the taxonomy).
 2. Click **Add ...** (for example **Add Region**) above the list of terms.
-3. Fill in the term's editor (**New ...**), at least its **Title**, and click **Publish**.
+3. Fill in the term's editor (**New ...**), at least its **Title**, and click **Save Term**.
 4. You are back in the taxonomy editor. Click **Publish** on the taxonomy to make the new terms live.
 
 To add a child term, click **Add** on the row of the parent term instead.
 
 !!! warning "Publish the taxonomy after changing terms"
-    The **Taxonomy** type is draftable: adding, editing or deleting a term changes a draft of the taxonomy. The Taxonomy fields in editors already offer the draft terms, but the site keeps showing the published taxonomy until you click **Publish** on it.
+    The **Taxonomy** type is draftable: adding, editing or deleting a term changes a draft of the taxonomy. The Taxonomy fields in editors already offer the draft terms, but the site keeps showing the published taxonomy until you click **Publish** on it. While the taxonomy has unpublished changes, the editor of a term shows a warning saying so.
 
 ## Edit, move and delete terms
 
 Each term row has three buttons:
 
-- **Edit** opens the term's editor.
+- **Edit** opens the term's editor, where **Save Term** saves your changes in the taxonomy.
 - **Add** adds a child term under it.
 - **Delete** removes the term and its child terms, after you confirm.
 
@@ -68,7 +68,7 @@ To reorder terms or change their parent, drag a term up, down, or to the right u
 
 ## Add a Taxonomy field to a content type
 
-1. Open **Design > Content Definition > Content Types** and click **Edit** on the type, for example **Article**.
+1. Open **Design → Content Definition → Content Types** and click **Edit** on the type, for example **Article**.
 2. Click **Add Field**, type a **Display Name** (for example *Region*), pick **Taxonomy Field** and click **Save & Configure**.
 3. Fill in the settings below and click **Save**.
 
@@ -101,9 +101,9 @@ When the taxonomy has **Route contained items** ticked and the term type has an 
 
 ## Filter the content list by term
 
-With the **Taxonomies Contents List Filters** feature on, you can filter **Content > Content Items** by term.
+With the **Taxonomies Contents List Filters** feature on, you can filter **Content → Content Items** by term.
 
-1. Open **Settings > Taxonomy Filters**.
+1. Open **Settings → Taxonomy Filters**.
 2. Under **Taxonomies**, tick the taxonomies to offer as filters, for example **Tags** and **Categories**.
 3. Click **Save**.
 

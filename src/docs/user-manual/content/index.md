@@ -7,7 +7,7 @@ description: Everything an editor does day to day - create and edit content item
 
 This section covers the everyday work of writing for the site: creating pages, articles and blog posts, filling them in, adding pictures, and deciding when visitors see them. It is mostly for **editors**, **authors** and **contributors**, and for anyone who keeps the site's content up to date.
 
-Most of these screens are under **Content** in the admin menu: **Content > Content Items**, or the entry of one content type, such as **Content > Article**. Pictures and documents are under **Media > Library**. Preview, scheduling and translation are buttons and boxes inside the content editor; the language settings are under **Settings > Localization**.
+Most of these screens are under **Content** in the admin menu: **Content → Content Items**, or the entry of one content type, such as **Content → Article**. Pictures and documents are under **Media → Library**. Preview, scheduling and translation are buttons and boxes inside the content editor; the language settings are under **Settings → Localization**.
 
 ## I want to…
 

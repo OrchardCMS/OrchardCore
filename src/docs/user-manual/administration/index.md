@@ -7,7 +7,7 @@ description: Run the site behind the scenes - turn features on, set up sites and
 
 This section is for the people who run the site behind the scenes: they decide which features are on, set up new sites, copy content and settings from one site to another, and keep an eye on what happens. It is mostly for **administrators**. Some pages, such as developer tools and secrets, are best handled together with your developer or IT team.
 
-Most of these screens are under **Tools** in the admin menu: **Tools > Features**, **Tools > Recipes**, **Tools > Deployments**, **Tools > Audit Trail**, **Tools > Background Tasks**, **Tools > URL Rewriting**, **Tools > Admin Menus** and **Tools > Security** (secrets). The dashboard is the first page of the admin. Tenants are under **Multi-Tenancy**. A new site or tenant shows its own setup screen.
+Most of these screens are under **Tools** in the admin menu: **Tools → Features**, **Tools → Recipes**, **Tools → Deployments**, **Tools → Audit Trail**, **Tools → Background Tasks**, **Tools → URL Rewriting**, **Tools → Admin Menus** and **Tools → Security** (secrets). The dashboard is the first page of the admin. Tenants are under **Multi-Tenancy**. A new site or tenant shows its own setup screen.
 
 ## I want to…
 

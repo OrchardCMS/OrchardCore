@@ -154,7 +154,7 @@ Register the named client in the host as shown in [Azure Key Vault Store](#azure
 
 ### Enabling the Feature
 
-1. Navigate to **Admin → Configuration → Features**
+1. Navigate to **Admin → Tools → Features**
 2. Search for "Secrets"
 3. Click **Enable** on the "Secrets" feature
 
@@ -607,7 +607,7 @@ In both cases, the source needs only the public key.
 
 #### Creating an Encrypted Export
 
-1. Go to **Configuration → Import/Export → Deployment Plans**
+1. Go to **Tools → Deployments → Plans**
 2. Create or edit a deployment plan
 3. Add a **Secrets** step
 4. In the **Encryption Key** dropdown, select your encryption key (e.g., `Deployment.EncryptionKey`)
