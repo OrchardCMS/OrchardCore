@@ -9,9 +9,12 @@ using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Builders;
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.DisplayManagement.Zones;
 using OrchardCore.Menu.Controllers;
 using OrchardCore.Menu.Models;
 
@@ -127,7 +130,7 @@ public class AdminControllerTests
                     controller.ModelState.AddModelError("Field", "Invalid");
                 }
             })
-            .ReturnsAsync(new Shape());
+            .ReturnsAsync(new ZoneHolding(() => ValueTask.FromResult<IShape>(new Shape())));
 
         controller = new AdminController(
             contentManager.Object,
@@ -137,6 +140,7 @@ public class AdminControllerTests
             Mock.Of<INotifier>(),
             Mock.Of<IHtmlLocalizer<AdminController>>(),
             Mock.Of<IUpdateModelAccessor>(),
+            new FakeShapeFactory(),
             [new RecordingContentHandler(events)],
             NullLogger<AdminController>.Instance)
         {
@@ -186,6 +190,21 @@ public class AdminControllerTests
             context.ContentItem.DisplayText = TextFromHandler;
 
             return Task.CompletedTask;
+        }
+    }
+
+    // Creates the shapes without running shape table events, which is enough for the actions of the editor.
+    private sealed class FakeShapeFactory : IShapeFactory
+    {
+        public dynamic New => throw new NotSupportedException();
+
+        public async ValueTask<IShape> CreateAsync(
+            string shapeType,
+            Func<ValueTask<IShape>> shapeFactory,
+            Action<ShapeCreatingContext> creating,
+            Action<ShapeCreatedContext> created)
+        {
+            return await shapeFactory();
         }
     }
 }

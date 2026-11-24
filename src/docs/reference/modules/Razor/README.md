@@ -62,3 +62,10 @@ public MyClass(IOrchardHelper orchard)
 
 !!! note
     If the extension method you want to use cannot be found (in a Theme for example), do not forget to reference the corresponding module.
+
+## Video
+
+This video uses the Orchard Core Razor helpers and tag helpers in a theme.
+
+<!-- video:razor-helpers -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/lN1GW9Wna_U" title="Razor Helpers and Tag Helpers for Orchard Core Themes" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

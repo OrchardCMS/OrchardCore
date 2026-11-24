@@ -191,3 +191,20 @@ Deployment plans have steps that export index definitions and rebuild or reset i
 
 !!! example "See it in practice"
     [Add site search](../use-cases/site-search.md) walks through this step by step.
+
+## Videos
+
+This video adds site search to your site.
+
+<!-- video:search-overview -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/73AR8SVjZYQ" title="Search: Add Site Search to Your Site" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video creates, rebuilds and resets search indexes.
+
+<!-- video:indexing-indexes -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/GAAOSocJXcE" title="Indexes: Create, Rebuild and Reset Search Indexes" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video adds full-text search with Lucene, with no external service.
+
+<!-- video:lucene-search -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/RLkyujWEYRY" title="Lucene: Full-Text Search With No External Service" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

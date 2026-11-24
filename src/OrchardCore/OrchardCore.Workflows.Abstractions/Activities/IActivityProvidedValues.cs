@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using OrchardCore.Localization;
 
 namespace OrchardCore.Workflows.Activities;
@@ -39,6 +40,7 @@ public sealed class ActivityProvidedValue
     /// <summary>
     /// What the value is, shown in the designer.
     /// </summary>
+    [JsonIgnore]
     public LocalizationSource Description { get; init; }
 
     /// <summary>
@@ -88,6 +90,7 @@ public sealed class ActivityProvidedValueMember
     /// <summary>
     /// What the field is, shown in the designer.
     /// </summary>
+    [JsonIgnore]
     public LocalizationSource Description { get; init; }
 }
 

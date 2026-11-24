@@ -122,3 +122,20 @@ You can't create a second placement for a shape type that already has one: the s
 ## Liquid in content
 
 The **Liquid** (`OrchardCore.Liquid`) feature also adds a **Liquid** part and field to content types, where you write Liquid that is shown on the content item's page. Only people with *Manage Liquid templates* can change Liquid content. Liquid is also used in [shortcode templates](shortcodes.md) and in many settings that accept a pattern, such as permalinks.
+
+## Videos
+
+This video changes how a shape renders by writing a Liquid template in the admin.
+
+<!-- video:templates-override-shapes -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/uowzQ9XOtwA" title="Templates: Override Shapes From the Admin With Liquid" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video customizes the screens of the admin with Liquid admin templates.
+
+<!-- video:admin-templates -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/_HoBVym4lBo" title="Admin Templates: Customize Admin Screens With Liquid" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video edits placement rules from the admin with the Placements module.
+
+<!-- video:placements-admin -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/G1T_-wch6gE" title="Placements Module: Edit Placement From the Admin" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

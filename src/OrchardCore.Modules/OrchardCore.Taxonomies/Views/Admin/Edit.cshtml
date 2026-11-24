@@ -4,7 +4,6 @@
 @using OrchardCore.Localization.Data
 
 @inject IContentDefinitionManager ContentDefinitionManager
-@inject IContentManager ContentManager
 @inject IDataLocalizer D
 
 @{
@@ -13,6 +12,7 @@
     var typeDisplayName = contentTypeDefinition?.DisplayName ?? contentItem.ContentType.CamelFriendly();
     string localizedTypeDisplayName = D[typeDisplayName, "Content Types"];
     string taxonomyContentItemId = Model.TaxonomyContentItemId;
+    string taxonomyDisplayText = Model.TaxonomyDisplayText;
 }
 
 <zone Name="Title">
@@ -20,14 +20,23 @@
         <breadcrumb-item id="Contents" action="List" controller="Admin" area="OrchardCore.Contents" route-contentTypeId="">@T["Manage Content"]</breadcrumb-item>
         @if (!string.IsNullOrEmpty(taxonomyContentItemId))
         {
-            var taxonomy = await ContentManager.GetAsync(taxonomyContentItemId);
-            <breadcrumb-item id="Taxonomy" action="Edit" controller="Admin" area="OrchardCore.Contents" route-contentItemId="@taxonomyContentItemId">@T["Edit {0}", taxonomy?.DisplayText]</breadcrumb-item>
+            <breadcrumb-item id="Taxonomy" action="Edit" controller="Admin" area="OrchardCore.Contents" route-contentItemId="@taxonomyContentItemId">@T["Edit {0}", taxonomyDisplayText]</breadcrumb-item>
         }
     </breadcrumb>
 </zone>
 
 <form asp-action="Edit" asp-route-returnUrl="@Context.Request.Query["ReturnUrl"]" method="post" enctype="multipart/form-data" class="no-multisubmit">
     @Html.ValidationSummary()
+    @if (Model.IsTaxonomyDraft == true)
+    {
+        <div class="ocat-wrapper">
+            <div class="ocat-end-offset">
+                <div class="alert alert-warning" role="alert">
+                    @T["You are editing a draft of the <strong>{0}</strong> taxonomy. Visitors won't see your changes until the taxonomy is published.", taxonomyDisplayText]
+                </div>
+            </div>
+        </div>
+    }
     @await DisplayAsync(Model)
 
     <input type="hidden" name="TaxonomyContentItemId" value="@Model.TaxonomyContentItemId" />

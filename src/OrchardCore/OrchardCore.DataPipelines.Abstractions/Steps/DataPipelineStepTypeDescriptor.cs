@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using OrchardCore.Localization;
 
 namespace OrchardCore.DataPipelines.Steps;
@@ -42,11 +43,13 @@ public sealed class DataPipelineStepTypeDescriptor
     /// <summary>
     /// Gets the label shown in the designer, to localize with <c>IStringLocalizerFactory.Localize</c>.
     /// </summary>
+    [JsonIgnore]
     public LocalizationSource DisplayName { get; }
 
     /// <summary>
     /// Gets the description shown in the designer's toolbox, to localize with <c>IStringLocalizerFactory.Localize</c>.
     /// </summary>
+    [JsonIgnore]
     public LocalizationSource Description { get; }
 
     /// <summary>

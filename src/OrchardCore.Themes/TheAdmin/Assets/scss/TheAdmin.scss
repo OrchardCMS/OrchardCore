@@ -42,6 +42,7 @@
 @use 'components/tabs';
 @use 'components/trumbowyg';
 @use 'components/validations';
+// Obsolete, will be removed with the 'vue-multiselect' resource in the next major version.
 @use 'components/vue-multiselect';
 
 /* Import themes */

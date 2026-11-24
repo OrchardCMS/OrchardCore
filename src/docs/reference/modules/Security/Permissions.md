@@ -165,3 +165,8 @@ This video tracks conversions from Meta ads with the Meta Pixel.
 
 <!-- video:meta-pixel -->
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/EWn1usAXo-U" title="Meta Pixel: Track Conversions From Meta Ads" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video writes your own shortcodes with Liquid shortcode templates.
+
+<!-- video:shortcode-templates -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/eTiX2f5VdqI" title="Shortcode Templates: Write Your Own Shortcodes With Liquid" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

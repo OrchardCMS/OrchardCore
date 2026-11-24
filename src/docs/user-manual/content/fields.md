@@ -149,7 +149,7 @@ Several choices from a fixed list, such as the days a shop is open.
 | --- | --- |
 | **Standard** | A list where you select several options (hold **Ctrl**, or **Cmd** on a Mac, to select more than one). |
 | **Checkbox List** | A checkbox for each option. |
-| **Picker** | A search box: type to find an option and click it. Chosen options appear as tags in the box; click a tag's **x** to remove it. |
+| **Picker** | A drop-down list with a search box: click it, type to find an option, and click the options to choose. The chosen options are listed under the list; click one to remove it. |
 
 Settings: **Required**, **Hint**, and **Options**: the list of choices, each with an **Option Label**, a **Value** and **Default?**. Click **Add an option** to add one, drag options to reorder them, and use **Edit Data** to edit the whole list as text.
 
@@ -157,9 +157,9 @@ Settings: **Required**, **Hint**, and **Options**: the list of choices, each wit
 
 Links to other content items, such as related articles or the author's page.
 
-1. Click in the box and type part of a title. The list shows up to 50 matching items.
+1. Click the list (*Type to search*, or the field's placeholder) and type part of a title in its search box. The list shows up to 50 matching items, without the ones already picked.
 2. Click an item to add it. Items not published yet are marked *Not published*.
-3. Picked items are listed under the box. Click an item's title to open it, or its delete (trash) button to remove it. When several items are allowed, drag them by the handle to change their order.
+3. Picked items are listed above the list. Click an item's title to open it, or its delete (trash) button to remove it. When several items are allowed, drag them by the handle to change their order. When only one is allowed, the list is hidden until you remove the picked item.
 
 | Editor | How it searches |
 | --- | --- |
@@ -182,7 +182,7 @@ Settings:
 
 Links to user accounts, such as the people responsible for a project. Needs the **Users** feature.
 
-Type part of a user name and click a user to add them. Picked users are listed under the box, with a delete (trash) button to remove one.
+Click the list, type part of a user name in its search box, and click a user to add them. Disabled users are marked *Not enabled*. Picked users are listed above the list, with a delete (trash) button to remove one; when several are allowed, drag them by the handle to change their order.
 
 Settings: **Required**, **Allow multiple**, **Placeholder**, **Hint**, and either **Display All Users** or a list of **Roles**: only users with one of the ticked roles can be picked. On the site the field can show the users (**Standard**) or only their names (**User Names**).
 
