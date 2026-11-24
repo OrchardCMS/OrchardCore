@@ -1,10 +1,14 @@
 @model OrchardCore.ContentFields.ViewModels.DisplayTextFieldViewModel
+@using OrchardCore.ContentFields
+@using OrchardCore.ContentManagement.Metadata.Models
+@using OrchardCore.Localization.Data
 @using OrchardCore.Mvc.Utilities
-
+@inject IDataLocalizer D
 @{
     var name = (Model.PartFieldDefinition.PartDefinition.Name + "-" + Model.PartFieldDefinition.Name).HtmlClassify();
+    string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), DataLocalizationContext.ContentField(Model.PartFieldDefinition.PartDefinition.Name)];
 }
-
 <div class="field field-type-textfield field-name-@name">
-    @Model.Text
+    <span class="name">@localizedFieldName</span>
+    <span class="value">@Model.Text</span>
 </div>

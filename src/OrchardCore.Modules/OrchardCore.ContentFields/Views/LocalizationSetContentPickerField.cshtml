@@ -1,20 +1,17 @@
 @model OrchardCore.ContentFields.ViewModels.DisplayLocalizationSetContentPickerFieldViewModel
-@using OrchardCore.ContentFields
-@using OrchardCore.Mvc.Utilities
-@using OrchardCore.ContentManagement.Metadata.Models
 @using Microsoft.AspNetCore.Localization
+@using OrchardCore.ContentFields
+@using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.Localization.Data
-
-@inject OrchardCore.ContentLocalization.IContentLocalizationManager ContentLocalizationManager;
+@using OrchardCore.Mvc.Utilities
+@inject OrchardCore.ContentLocalization.IContentLocalizationManager ContentLocalizationManager
 @inject IDataLocalizer D
-
 @{
     var name = (Model.PartFieldDefinition.PartDefinition.Name + "-" + Model.PartFieldDefinition.Name).HtmlClassify();
+    string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), DataLocalizationContext.ContentField(Model.PartFieldDefinition.PartDefinition.Name)];
     var currentCulture = Context.Features.Get<IRequestCultureFeature>().RequestCulture.Culture.Name;
     var contentItems = await ContentLocalizationManager.GetItemsForSetsAsync(Model.LocalizationSets, currentCulture);
-    string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), DataLocalizationContext.ContentField(Model.PartFieldDefinition.PartDefinition.Name)];
 }
-
 <div class="field field-type-localizationsetpickerfield field-name-@name">
     <span class="name">@localizedFieldName</span>
     @if (contentItems.Any())

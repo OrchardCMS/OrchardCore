@@ -1,0 +1,19 @@
+@model OrchardCore.ContentFields.ViewModels.DisplayDateFieldViewModel
+@using OrchardCore.ContentFields
+@using OrchardCore.ContentManagement.Metadata.Models
+@using OrchardCore.Localization.Data
+@using OrchardCore.Mvc.Utilities
+@inject IDataLocalizer D
+@{
+    var name = (Model.PartFieldDefinition.PartDefinition.Name + "-" + Model.PartFieldDefinition.Name).HtmlClassify();
+    string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), DataLocalizationContext.ContentField(Model.PartFieldDefinition.PartDefinition.Name)];
+}
+@if (Model.Value.HasValue)
+{
+    <div class="ocat-wrapper field field-type-datefield field-name-@name">
+        <div class="ocat-label">@localizedFieldName</div>
+        <div class="ocat-end">
+            <span class="value">@Model.Value.Value.ToShortDateString()</span>
+        </div>
+    </div>
+}
