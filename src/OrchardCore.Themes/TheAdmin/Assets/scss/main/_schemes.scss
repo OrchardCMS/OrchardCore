@@ -11,7 +11,7 @@
 //
 // Every '--ta-*' color token, and through them Bootstrap's own variables, is derived from those, for the light
 // and the dark mode. The scheme a user picks is rendered on <html> as 'data-ta-scheme'. This file derives the
-// stylesheet's fallback (':root'); the Theme Schemes feature (ThemeSchemePalette, ThemeSchemeStylesheet) and
+// stylesheet's fallback (':root'); AdminSchemePalette.cs, AdminSchemeStylesheet.cs and
 // TheAdminSchemeTokens.cs derive the same tokens for every scheme record, and a parity test keeps both in step.
 // ---------------------------------------------------------------------------
 
@@ -23,7 +23,7 @@
 $default-scheme: "gray";
 
 // The stylesheet's fallback: Gray, the default scheme. Every scheme a site uses, Gray included, is a record its admins
-// edit (Design > Themes > Schemes); the server writes their rules with the same derivation, in C# (Theme Schemes),
+// edit (Design > Themes > Schemes); the server writes their rules with the same derivation, in C#,
 // in a stylesheet of its own loaded after this one. These rules only apply when a site has no scheme at all, or
 // before its schemes are seeded.
 $schemes: (

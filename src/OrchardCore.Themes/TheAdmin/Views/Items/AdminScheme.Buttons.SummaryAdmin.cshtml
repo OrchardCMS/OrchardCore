@@ -1,0 +1,4 @@
+@using OrchardCore.DisplayManagement.Views
+@model ShapeViewModel<AdminSchemeEntry>
+
+<a asp-action="Edit" asp-controller="Schemes" asp-area="TheAdmin" asp-route-id="@Model.Value.Scheme.Id" class="btn btn-primary btn-sm">@T["Edit"]</a>

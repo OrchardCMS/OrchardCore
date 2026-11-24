@@ -1,19 +1,16 @@
 using System.Text.RegularExpressions;
 using OrchardCore.Documents;
-using OrchardCore.Tests.Modules.OrchardCore.Themes;
-using OrchardCore.Themes.Schemes;
-using OrchardCore.Themes.Schemes.Models;
-using OrchardCore.Themes.Schemes.Services;
-using OrchardCore.Themes.TheAdmin;
+using OrchardCore.Themes.TheAdmin.Models;
 using OrchardCore.Themes.TheAdmin.Schemes;
+using OrchardCore.Themes.TheAdmin.Services;
 using Match = System.Text.RegularExpressions.Match;
 
 namespace OrchardCore.Tests.Themes.TheAdmin;
 
 /// <summary>
 /// TheAdmin derives the color tokens of its fallback scheme (Gray) in Sass and those of every scheme record in C#
-/// (the generated tokens of <see cref="ThemeSchemeStylesheet"/>, a few renamed, and <see cref="TheAdminSchemeTokens"/>),
-/// registered by its startup. These tests keep both derivations in step, check that whatever colors an admin picks the
+/// (the generated tokens of <see cref="AdminSchemeStylesheet"/>, a few renamed, and <see cref="TheAdminSchemeTokens"/>).
+/// These tests keep both derivations in step, check that whatever colors an admin picks the
 /// derived tokens meet WCAG 2.2 AA contrast, and cover the typography and shape tokens.
 /// </summary>
 public sealed class TheAdminSchemeTests
@@ -21,14 +18,14 @@ public sealed class TheAdminSchemeTests
     // The definitions the theme's schemes were tuned with; the seeded records must reproduce them exactly.
     public static TheoryData<string> DefaultSchemes => ["gray", "blue", "ocean", "forest", "plum", "sunset", "graphite", "gold"];
 
-    private static readonly Dictionary<string, ThemeScheme> s_builtIn = new(StringComparer.Ordinal)
+    private static readonly Dictionary<string, AdminScheme> s_builtIn = new(StringComparer.Ordinal)
     {
         ["blue"] = new() { Id = "blue", Primary = "#2a81bb", Deep = "#144c71", Ink = "#081b26", Accent = "#5aa4ef", Hue = 209, Saturation = 1 },
         ["gray"] = new()
         {
             Id = "gray", Primary = "#0d6efd", Deep = "#212529", Ink = "#212529", Accent = "#6ea8fe",
             Hue = 210, Saturation = 0.12, LightMenu = true, Page = "#fff",
-            Tint = "#495057", TintDark = "#adb5bd", Toolbar = "#495057", FontFamily = ThemeSchemeTypography.SystemFont,
+            Tint = "#495057", TintDark = "#adb5bd", Toolbar = "#495057", FontFamily = AdminSchemeTypography.SystemFont,
         },
         ["ocean"] = new() { Id = "ocean", Primary = "#12868b", Deep = "#0d4a52", Ink = "#062227", Accent = "#4fd1c5", Hue = 187, Saturation = 0.9 },
         ["forest"] = new() { Id = "forest", Primary = "#2f855a", Deep = "#1c4a36", Ink = "#0b2018", Accent = "#68d391", Hue = 150, Saturation = 0.7 },
@@ -66,7 +63,7 @@ public sealed class TheAdminSchemeTests
     {
         var seed = TheAdminSchemes.CreateDefaults().Single(scheme => scheme.Id == id);
 
-        Assert.NotNull(ThemeSchemePalette.FromScheme(seed));
+        Assert.NotNull(AdminSchemePalette.FromScheme(seed));
         Assert.Equal(Light(s_builtIn[id]), Light(seed));
         Assert.Equal(Dark(s_builtIn[id]), Dark(seed));
     }
@@ -76,8 +73,8 @@ public sealed class TheAdminSchemeTests
     {
         var defaults = TheAdminSchemes.CreateDefaults();
 
-        Assert.All(defaults, scheme => Assert.True(ThemeSchemeStore.IsValidId(scheme.Id), scheme.Id));
-        Assert.All(defaults, scheme => Assert.True(ThemeSchemeStore.HasValidTypography(scheme), scheme.Id));
+        Assert.All(defaults, scheme => Assert.True(AdminSchemeStore.IsValidId(scheme.Id), scheme.Id));
+        Assert.All(defaults, scheme => Assert.True(AdminSchemeStore.HasValidTypography(scheme), scheme.Id));
         Assert.Equal(defaults.Count, defaults.Select(scheme => scheme.Id).Distinct(StringComparer.Ordinal).Count());
         Assert.Equal(defaults.OrderBy(scheme => scheme.Position).Select(scheme => scheme.Id), defaults.Select(scheme => scheme.Id));
         Assert.Equal("gray", TheAdminSchemes.DefaultId);
@@ -101,7 +98,7 @@ public sealed class TheAdminSchemeTests
     {
         foreach (var lightMenu in new[] { false, true })
         {
-            var scheme = new ThemeScheme { Id = "custom-a", Primary = primary, Deep = deep, Ink = ink, Accent = accent, LightMenu = lightMenu };
+            var scheme = new AdminScheme { Id = "custom-a", Primary = primary, Deep = deep, Ink = ink, Accent = accent, LightMenu = lightMenu };
             var light = Light(scheme);
             var dark = Dark(scheme);
 
@@ -126,55 +123,47 @@ public sealed class TheAdminSchemeTests
     [Fact]
     public void FromColors_PutsDarkTextOnALightPrimary()
     {
-        var gold = ThemeSchemePalette.FromColors(Color("#eaa52c"), Color("#1e1e1e"), Color("#09080b"), Color("#eaa52c"));
-        var blue = ThemeSchemePalette.FromColors(Color("#2a81bb"), Color("#144c71"), Color("#081b26"), Color("#5aa4ef"));
+        var gold = AdminSchemePalette.FromColors(Color("#eaa52c"), Color("#1e1e1e"), Color("#09080b"), Color("#eaa52c"));
+        var blue = AdminSchemePalette.FromColors(Color("#2a81bb"), Color("#144c71"), Color("#081b26"), Color("#5aa4ef"));
 
         Assert.True(gold.OnPrimary.Luminance < 0.1);
         Assert.False(gold.HasLightTextOnPrimary);
-        Assert.Equal(ThemeColor.White, blue.OnPrimary);
+        Assert.Equal(AdminColor.White, blue.OnPrimary);
         Assert.True(blue.HasLightTextOnPrimary);
     }
 
     [Fact]
-    public void Startup_RegistersTheTheme_WithItsOwnAttributePrefixAndDefaults()
+    public void Theme_NamesItsAttributePrefixAndDefault()
     {
-        var options = Options;
-
-        Assert.Equal(TheAdminConstants.ThemeId, options.ThemeId);
-        Assert.Equal("data-ta-scheme", options.AttributeName);
-        Assert.Equal(TheAdminSchemes.AttributeName, options.AttributeName);
-        Assert.Equal("ta", options.TokenPrefix);
-        Assert.Equal("gray", options.DefaultSchemeId);
-        Assert.Equal("[data-bs-theme=\"dark\"]", options.DarkModeSelector);
-        Assert.Equal(TheAdminSchemes.CreateDefaults().Select(scheme => scheme.Id), options.Defaults.Select(scheme => scheme.Id));
-        Assert.Contains(options.Defaults, scheme => scheme.Id == options.DefaultSchemeId);
-
-        // Its Sass maps the tokens onto Bootstrap's variables itself.
-        Assert.Equal([typeof(TheAdminSchemeTokens)], options.TokenContributors);
-        Assert.Null(options.CssWriter);
+        Assert.Equal("data-ta-scheme", TheAdminSchemes.AttributeName);
+        Assert.Equal("ta", TheAdminSchemes.TokenPrefix);
+        Assert.Equal("gray", TheAdminSchemes.DefaultId);
+        Assert.Equal("[data-bs-theme=\"dark\"]", TheAdminSchemes.DarkModeSelector);
+        Assert.Contains(TheAdminSchemes.CreateDefaults(), scheme => scheme.Id == TheAdminSchemes.DefaultId);
+        Assert.Equal(TheAdminSchemes.DefaultId, TheAdminSchemes.CreateFallback().Id);
     }
 
     [Fact]
     public void Stylesheet_WritesNothingForASchemeWithAnInvalidColor()
-        => Assert.Empty(Build([new ThemeScheme { Id = "custom-a", Name = "A", Primary = "blue", Deep = "#144c71", Ink = "#081b26", Accent = "#5aa4ef" }]));
+        => Assert.Empty(Build([new AdminScheme { Id = "custom-a", Name = "A", Primary = "blue", Deep = "#144c71", Ink = "#081b26", Accent = "#5aa4ef" }]));
 
     [Fact]
     public async Task Store_SeedsTheDefaultsOfTheTheme_AndGrayIsTheSiteDefault()
     {
-        var services = CreateServices();
-        services.AddSingleton<IDocumentManager<ThemeSchemesDocument>>(new InMemoryThemeSchemesDocumentManager());
+        var services = new ServiceCollection();
+        services.AddSingleton<IDocumentManager<AdminSchemesDocument>>(new InMemoryAdminSchemesDocumentManager());
         services.AddMemoryCache();
-        services.AddScoped<ThemeSchemeStore>();
+        services.AddScoped<AdminSchemeStore>();
 
         using var provider = services.BuildServiceProvider();
-        var store = provider.GetRequiredService<ThemeSchemeStore>();
+        var store = provider.GetRequiredService<AdminSchemeStore>();
 
-        var schemes = await store.ListAsync(TheAdminConstants.ThemeId);
+        var schemes = await store.ListAsync();
 
         Assert.Equal(["gray", "blue", "ocean", "forest", "plum", "sunset", "graphite", "gold"], schemes.Select(scheme => scheme.Id));
-        Assert.Equal("gray", await store.GetDefaultIdAsync(TheAdminConstants.ThemeId));
+        Assert.Equal("gray", await store.GetDefaultIdAsync());
 
-        var (css, _) = await store.GetStylesheetAsync(TheAdminConstants.ThemeId);
+        var (css, _) = await store.GetStylesheetAsync();
 
         Assert.Contains("[data-ta-scheme=\"gold\"]{", css, StringComparison.Ordinal);
         Assert.Contains("[data-bs-theme=\"dark\"][data-ta-scheme=\"blue\"]{", css, StringComparison.Ordinal);
@@ -187,9 +176,9 @@ public sealed class TheAdminSchemeTests
     {
         var css = Build(
         [
-            new ThemeScheme { Id = "custom-ok", Name = "Ok", Primary = "#2a81bb", Deep = "#144c71", Ink = "#081b26", Accent = "#5aa4ef" },
-            new ThemeScheme { Id = "custom-bad-color", Name = "Bad", Primary = "blue", Deep = "#144c71", Ink = "#081b26", Accent = "#5aa4ef" },
-            new ThemeScheme { Id = "Bad Id", Name = "Bad id", Primary = "#2a81bb", Deep = "#144c71", Ink = "#081b26", Accent = "#5aa4ef" },
+            new AdminScheme { Id = "custom-ok", Name = "Ok", Primary = "#2a81bb", Deep = "#144c71", Ink = "#081b26", Accent = "#5aa4ef" },
+            new AdminScheme { Id = "custom-bad-color", Name = "Bad", Primary = "blue", Deep = "#144c71", Ink = "#081b26", Accent = "#5aa4ef" },
+            new AdminScheme { Id = "Bad Id", Name = "Bad id", Primary = "#2a81bb", Deep = "#144c71", Ink = "#081b26", Accent = "#5aa4ef" },
         ]);
 
         Assert.Contains("[data-ta-scheme=\"custom-ok\"]{", css, StringComparison.Ordinal);
@@ -202,7 +191,7 @@ public sealed class TheAdminSchemeTests
     [Fact]
     public void Typography_DefaultsToLato_TheBodyFontForHeadings_AndUnitScales()
     {
-        var tokens = Typography(new ThemeScheme { Id = "custom-a", Name = "A", Primary = "#2a81bb", Deep = "#144c71", Ink = "#081b26", Accent = "#5aa4ef" });
+        var tokens = Typography(new AdminScheme { Id = "custom-a", Name = "A", Primary = "#2a81bb", Deep = "#144c71", Ink = "#081b26", Accent = "#5aa4ef" });
 
         Assert.Equal(s_typographyTokens.Order(StringComparer.Ordinal), tokens.Keys.Order(StringComparer.Ordinal));
         Assert.Equal("\"Lato\", system-ui, -apple-system, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif", tokens["--ta-font-family"]);
@@ -222,7 +211,7 @@ public sealed class TheAdminSchemeTests
             // A culture with a decimal comma: CSS needs a dot.
             CultureInfo.CurrentCulture = new CultureInfo("fr-FR");
 
-            var tokens = Typography(new ThemeScheme
+            var tokens = Typography(new AdminScheme
             {
                 Id = "custom-a", Name = "A", Primary = "#2a81bb", Deep = "#144c71", Ink = "#081b26", Accent = "#5aa4ef",
                 FontFamily = "lato",
@@ -247,7 +236,7 @@ public sealed class TheAdminSchemeTests
     [Fact]
     public void Typography_ClampsScalesOutOfRange_AndFallsBackOnFontsThatAreNotFontNames()
     {
-        var tokens = Typography(new ThemeScheme
+        var tokens = Typography(new AdminScheme
         {
             Id = "custom-a", Name = "A", Primary = "#2a81bb", Deep = "#144c71", Ink = "#081b26", Accent = "#5aa4ef",
             FontFamily = "Comic Sans; color: red",
@@ -267,7 +256,7 @@ public sealed class TheAdminSchemeTests
     [Fact]
     public void Typography_WritesAnyTypedFont_WithTheFallbackStack()
     {
-        var tokens = Typography(new ThemeScheme
+        var tokens = Typography(new AdminScheme
         {
             Id = "custom-a", Name = "A", Primary = "#2a81bb", Deep = "#144c71", Ink = "#081b26", Accent = "#5aa4ef",
             FontFamily = "Segoe UI",
@@ -279,11 +268,13 @@ public sealed class TheAdminSchemeTests
     }
 
     [Fact]
-    public void Options_SupportEverySetting_AndOfferTheFontTheThemeShips()
+    public void Theme_ShipsLato_ItsDefaultFont()
     {
-        Assert.Equal(ThemeSchemeFeatures.All, Options.Features);
-        Assert.Equal(["lato"], Options.Fonts.Select(font => font.Key));
-        Assert.Equal("lato", Options.DefaultFontFamily);
+        Assert.Equal(["lato"], TheAdminSchemes.Fonts.Select(font => font.Key));
+        Assert.Equal("lato", TheAdminSchemes.DefaultFontFamily);
+        Assert.StartsWith("\"Lato\", system-ui", TheAdminSchemes.GetFontStack(null), StringComparison.Ordinal);
+        Assert.StartsWith("\"Lato\", system-ui", TheAdminSchemes.GetFontStack("Comic Sans; color: red"), StringComparison.Ordinal);
+        Assert.StartsWith("system-ui", TheAdminSchemes.GetFontStack("system"), StringComparison.Ordinal);
     }
 
     [Fact]
@@ -291,7 +282,7 @@ public sealed class TheAdminSchemeTests
     {
         var css = Build(
         [
-            new ThemeScheme { Id = "custom-a", Name = "A", Primary = "#2a81bb", Deep = "#144c71", Ink = "#081b26", Accent = "#5aa4ef", FontScale = 1.0625 },
+            new AdminScheme { Id = "custom-a", Name = "A", Primary = "#2a81bb", Deep = "#144c71", Ink = "#081b26", Accent = "#5aa4ef", FontScale = 1.0625 },
         ]);
 
         var lines = css.Split('\n');
@@ -306,41 +297,26 @@ public sealed class TheAdminSchemeTests
         Assert.DoesNotContain("--ta-radius-scale", dark, StringComparison.Ordinal);
     }
 
-    private static ThemeSchemeOptions Options
-        => Provider.GetRequiredService<IOptionsMonitor<ThemeSchemeOptions>>().Get(TheAdminConstants.ThemeId);
-
-    // The services of TheAdmin's startup, which registers its schemes.
-    private static ServiceProvider Provider { get; } = CreateServices().BuildServiceProvider();
-
-    private static ServiceCollection CreateServices()
-    {
-        var services = new ServiceCollection();
-        new global::OrchardCore.Themes.TheAdmin.Startup().ConfigureServices(services);
-
-        return services;
-    }
-
-    private static string Build(IEnumerable<ThemeScheme> schemes)
-        => ThemeSchemeStylesheet.Build(Options, schemes, Provider);
+    private static string Build(IEnumerable<AdminScheme> schemes)
+        => AdminSchemeStylesheet.Build(schemes);
 
     // Every token of the light rule of a scheme, typography included.
-    private static Dictionary<string, string> Light(ThemeScheme scheme)
-        => Tokens(scheme, ThemeSchemeMode.Light);
+    private static Dictionary<string, string> Light(AdminScheme scheme)
+        => Tokens(scheme, AdminSchemeMode.Light);
 
-    private static Dictionary<string, string> Dark(ThemeScheme scheme)
-        => Tokens(scheme, ThemeSchemeMode.Dark);
+    private static Dictionary<string, string> Dark(AdminScheme scheme)
+        => Tokens(scheme, AdminSchemeMode.Dark);
 
-    private static Dictionary<string, string> Typography(ThemeScheme scheme)
+    private static Dictionary<string, string> Typography(AdminScheme scheme)
         => Light(scheme).Where(token => s_typographyTokens.Contains(token.Key)).ToDictionary(StringComparer.Ordinal);
 
-    private static Dictionary<string, string> Tokens(ThemeScheme scheme, ThemeSchemeMode mode)
+    private static Dictionary<string, string> Tokens(AdminScheme scheme, AdminSchemeMode mode)
     {
-        var options = Options;
-        var palette = ThemeSchemePalette.FromScheme(scheme);
+        var palette = AdminSchemePalette.FromScheme(scheme);
 
         Assert.NotNull(palette);
 
-        return ToDictionary(ThemeSchemeStylesheet.BuildTokens(scheme, palette, mode, options, ThemeSchemeStylesheet.CreateContributors(options, Provider)));
+        return ToDictionary(AdminSchemeStylesheet.BuildTokens(palette, mode));
     }
 
     private static void AssertSameTokens(string scheme, Dictionary<string, string> sass, Dictionary<string, string> csharp)
@@ -371,7 +347,7 @@ public sealed class TheAdminSchemeTests
         }
     }
 
-    private static void AssertContrast(string what, ThemeColor color, IEnumerable<ThemeColor> backgrounds, double minimum)
+    private static void AssertContrast(string what, AdminColor color, IEnumerable<AdminColor> backgrounds, double minimum)
     {
         var lowest = color.MinContrast(backgrounds);
 
@@ -419,7 +395,7 @@ public sealed class TheAdminSchemeTests
         }
     }
 
-    private static ThemeColor ParseCssColor(string value, out double? alpha)
+    private static AdminColor ParseCssColor(string value, out double? alpha)
     {
         alpha = null;
 
@@ -440,7 +416,7 @@ public sealed class TheAdminSchemeTests
             alpha = double.Parse(parts[3], CultureInfo.InvariantCulture);
         }
 
-        return new ThemeColor(channels[0], channels[1], channels[2]);
+        return new AdminColor(channels[0], channels[1], channels[2]);
     }
 
     private static Dictionary<string, string> ReadBlock(string selector, string mustContain)
@@ -484,7 +460,7 @@ public sealed class TheAdminSchemeTests
         return merged;
     }
 
-    private static ThemeColor Color(string value) => ThemeColor.Parse(value);
+    private static AdminColor Color(string value) => AdminColor.Parse(value);
 
     private static string FindRepositoryRoot()
     {

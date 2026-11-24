@@ -2,7 +2,7 @@
 
 @inject IOptions<AdminOptions> AdminOptions
 @inject ThemeTogglerService ThemeTogglerService
-@inject ThemeSchemeService ThemeSchemes
+@inject AdminSchemeService AdminSchemes
 
 @*
     The layout of the log in, registration and password pages: the branding above a card holding the page, on the
@@ -14,10 +14,10 @@
     var brandingHtml = await DisplayAsync(await New.AdminBranding());
 
     // The schemes of the site, after every other stylesheet so their rules apply over the stylesheet's fallback.
-    var schemesUrl = await ThemeSchemes.GetStylesheetUrlAsync(TheAdminConstants.ThemeId, Url);
+    var schemesUrl = await AdminSchemes.GetStylesheetUrlAsync(Url);
 }
 <!DOCTYPE html>
-<html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()" data-bs-theme="@await ThemeTogglerService.CurrentTheme()" data-tenant="@ThemeTogglerService.CurrentTenant" data-ta-scheme="@(await ThemeSchemes.GetSchemeAttributeAsync(TheAdminConstants.ThemeId))" data-admin-prefix="@Url.Content("~/" + AdminOptions.Value.AdminUrlPrefix)">
+<html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()" data-bs-theme="@await ThemeTogglerService.CurrentTheme()" data-tenant="@ThemeTogglerService.CurrentTenant" data-ta-scheme="@(await AdminSchemes.GetSchemeAttributeAsync())" data-admin-prefix="@Url.Content("~/" + AdminOptions.Value.AdminUrlPrefix)">
 <head>
     <title>@RenderTitleSegments(Site.SiteName, "before")</title>
     <meta charset="utf-8">

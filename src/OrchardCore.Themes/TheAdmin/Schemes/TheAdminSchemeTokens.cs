@@ -1,6 +1,5 @@
 using System.Text;
-using OrchardCore.Themes.Schemes;
-using OrchardCore.Themes.Schemes.Models;
+using OrchardCore.Themes.TheAdmin.Models;
 
 namespace OrchardCore.Themes.TheAdmin.Schemes;
 
@@ -11,19 +10,21 @@ namespace OrchardCore.Themes.TheAdmin.Schemes;
 /// each scheme in the pickers. With the generated tokens, they are the C# counterpart of the scheme mixins of the
 /// theme's Sass, which build the stylesheet's fallback scheme; a parity test keeps both in step.
 /// </summary>
-public sealed class TheAdminSchemeTokens : IThemeSchemeTokenContributor
+public static class TheAdminSchemeTokens
 {
-    private static readonly ThemeColor s_lightMenu = ThemeColor.Parse("#f1f3f5");
-    private static readonly ThemeColor s_lightMenuText = ThemeColor.Parse("#495057");
-    private static readonly ThemeColor s_lightMenuBorder = ThemeColor.Parse("#dee2e6");
+    private static readonly AdminColor s_lightMenu = AdminColor.Parse("#f1f3f5");
+    private static readonly AdminColor s_lightMenuText = AdminColor.Parse("#495057");
+    private static readonly AdminColor s_lightMenuBorder = AdminColor.Parse("#dee2e6");
 
-    /// <inheritdoc/>
-    public void WriteTokens(ThemeScheme scheme, ThemeSchemePalette palette, ThemeSchemeMode mode, ThemeSchemeTokenWriter tokens)
+    /// <summary>
+    /// Writes the layout's tokens of a scheme for one mode, after the generated ones.
+    /// </summary>
+    public static void WriteTokens(AdminSchemePalette palette, AdminSchemeMode mode, AdminSchemeTokenWriter tokens)
     {
         ArgumentNullException.ThrowIfNull(palette);
         ArgumentNullException.ThrowIfNull(tokens);
 
-        if (mode == ThemeSchemeMode.Dark)
+        if (mode == AdminSchemeMode.Dark)
         {
             WriteDark(palette, tokens);
         }
@@ -33,8 +34,10 @@ public sealed class TheAdminSchemeTokens : IThemeSchemeTokenContributor
         }
     }
 
-    /// <inheritdoc/>
-    public void AppendRules(StringBuilder css, ThemeScheme scheme, ThemeSchemePalette palette)
+    /// <summary>
+    /// Appends the rules of the swatch of a scheme in the pickers, drawn whatever the scheme of the page.
+    /// </summary>
+    public static void AppendRules(StringBuilder css, AdminScheme scheme, AdminSchemePalette palette)
     {
         ArgumentNullException.ThrowIfNull(css);
         ArgumentNullException.ThrowIfNull(scheme);
@@ -52,20 +55,20 @@ public sealed class TheAdminSchemeTokens : IThemeSchemeTokenContributor
         }
     }
 
-    private static void WriteLight(ThemeSchemePalette palette, ThemeSchemeTokenWriter tokens)
+    private static void WriteLight(AdminSchemePalette palette, AdminSchemeTokenWriter tokens)
     {
         var colors = palette.Light;
         var primary = colors.Primary;
         var on = palette.OnPrimary;
-        var toolbar = (palette.PickedToolbar ?? primary).EnsureContrast([on], ThemeSchemePalette.TextContrast, palette.Ink);
+        var toolbar = (palette.PickedToolbar ?? primary).EnsureContrast([on], AdminSchemePalette.TextContrast, palette.Ink);
         var k = palette.Saturation;
 
-        tokens.Add("tint", primary.Mix(ThemeColor.White, 0.09))
+        tokens.Add("tint", primary.Mix(AdminColor.White, 0.09))
             .Add("toolbar-bg", toolbar)
             .AddWithRgb("toolbar-fg", on)
-            .Add("toolbar-hover-bg", palette.HasLightTextOnPrimary ? ThemeColor.Black.ToRgba(0.16) : ThemeColor.White.ToRgba(0.3))
+            .Add("toolbar-hover-bg", palette.HasLightTextOnPrimary ? AdminColor.Black.ToRgba(0.16) : AdminColor.White.ToRgba(0.3))
             .Add("list-header-bg", colors.HeaderSurface)
-            .Add("topbar-color", ThemeColor.FromHsl(palette.Hue, 0.28 * k, 0.28))
+            .Add("topbar-color", AdminColor.FromHsl(palette.Hue, 0.28 * k, 0.28))
             .Add("page-gradient", Gradient(135, (colors.PageTintStart, 0), (colors.Page, 48), (colors.PageTintEnd, 100)));
 
         if (palette.LightMenu)
@@ -84,38 +87,38 @@ public sealed class TheAdminSchemeTokens : IThemeSchemeTokenContributor
         WriteControlIcons(tokens, on);
     }
 
-    private static void WriteDark(ThemeSchemePalette palette, ThemeSchemeTokenWriter tokens)
+    private static void WriteDark(AdminSchemePalette palette, AdminSchemeTokenWriter tokens)
     {
         var colors = palette.Dark;
         var hue = palette.Hue;
         var k = palette.Saturation;
 
         tokens.Add("list-header-bg", colors.HeaderSurface)
-            .Add("topbar-bg", ThemeColor.FromHsl(hue, 0.56 * k, 0.17))
-            .Add("topbar-color", ThemeColor.FromHsl(hue, 0.30 * k, 0.83))
-            .Add("menu-bg", ThemeColor.FromHsl(hue, 0.70 * k, 0.17))
+            .Add("topbar-bg", AdminColor.FromHsl(hue, 0.56 * k, 0.17))
+            .Add("topbar-color", AdminColor.FromHsl(hue, 0.30 * k, 0.83))
+            .Add("menu-bg", AdminColor.FromHsl(hue, 0.70 * k, 0.17))
             .Add("menu-gradient", Gradient(
                 180,
-                (ThemeColor.FromHsl(hue, 0.68 * k, 0.235), 0),
-                (ThemeColor.FromHsl(hue, 0.70 * k, 0.18), 55),
-                (ThemeColor.FromHsl(hue, 0.71 * k, 0.147), 100)))
+                (AdminColor.FromHsl(hue, 0.68 * k, 0.235), 0),
+                (AdminColor.FromHsl(hue, 0.70 * k, 0.18), 55),
+                (AdminColor.FromHsl(hue, 0.71 * k, 0.147), 100)))
             .Add("page-gradient", Gradient(135, (colors.PageTintStart, 0), (colors.Page, 48), (colors.PageTintEnd, 100)));
 
         WriteDarkMenu(tokens, palette, colors.Primary);
     }
 
-    private static void WriteDarkMenu(ThemeSchemeTokenWriter tokens, ThemeSchemePalette palette, ThemeColor primary)
+    private static void WriteDarkMenu(AdminSchemeTokenWriter tokens, AdminSchemePalette palette, AdminColor primary)
         => tokens.Add("menu-strong", "#fff")
             .Add("menu-strong-rgb", "255, 255, 255")
-            .Add("menu-color", ThemeColor.White.ToRgba(0.78))
-            .Add("menu-muted", ThemeColor.White.ToRgba(0.72))
-            .Add("menu-hover-bg", ThemeColor.White.ToRgba(0.08))
-            .Add("menu-border", ThemeColor.White.ToRgba(0.08))
+            .Add("menu-color", AdminColor.White.ToRgba(0.78))
+            .Add("menu-muted", AdminColor.White.ToRgba(0.72))
+            .Add("menu-hover-bg", AdminColor.White.ToRgba(0.08))
+            .Add("menu-border", AdminColor.White.ToRgba(0.08))
             .Add("menu-active-bg", primary)
             .Add("menu-active-color", palette.OnPrimary)
             .AddWithRgb("menu-accent", palette.Accent);
 
-    private static void WriteLightMenu(ThemeSchemeTokenWriter tokens, ThemeColor primary)
+    private static void WriteLightMenu(AdminSchemeTokenWriter tokens, AdminColor primary)
         => tokens.Add("menu-strong", "#212529")
             .Add("menu-strong-rgb", "33, 37, 41")
             .Add("menu-color", "#495057")
@@ -124,12 +127,12 @@ public sealed class TheAdminSchemeTokens : IThemeSchemeTokenContributor
             .Add("menu-border", "#dee2e6")
             .Add("menu-active-bg", s_lightMenuText.Mix(s_lightMenu, 0.14))
             .Add("menu-active-color", "#212529")
-            .AddWithRgb("menu-accent", primary.EnsureContrast([s_lightMenu], ThemeSchemePalette.UiContrast, ThemeColor.Black))
+            .AddWithRgb("menu-accent", primary.EnsureContrast([s_lightMenu], AdminSchemePalette.UiContrast, AdminColor.Black))
             .Add("menu-bg", s_lightMenu)
             .Add("menu-gradient", Gradient(180, (s_lightMenu, 0), (s_lightMenu, 100)));
 
     // The marks of checked controls, drawn in the color of text on the primary, which fills them.
-    private static void WriteControlIcons(ThemeSchemeTokenWriter tokens, ThemeColor on)
+    private static void WriteControlIcons(AdminSchemeTokenWriter tokens, AdminColor on)
     {
         var c = "%23" + on.ToHex()[1..];
 
@@ -139,6 +142,6 @@ public sealed class TheAdminSchemeTokens : IThemeSchemeTokenContributor
             .Add("switch-icon", $"url(\"data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='{c}'/%3e%3c/svg%3e\")");
     }
 
-    private static string Gradient(int angle, params (ThemeColor Color, int Stop)[] stops)
+    private static string Gradient(int angle, params (AdminColor Color, int Stop)[] stops)
         => $"linear-gradient({angle}deg, {string.Join(", ", stops.Select(stop => $"{stop.Color.ToHex()} {stop.Stop}%"))})";
 }

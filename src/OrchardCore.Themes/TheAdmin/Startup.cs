@@ -1,10 +1,17 @@
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Admin.Models;
+using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
-using OrchardCore.Themes.Schemes;
+using OrchardCore.Recipes;
+using OrchardCore.Themes.Models;
+using OrchardCore.Themes.TheAdmin.Deployment;
 using OrchardCore.Themes.TheAdmin.Drivers;
-using OrchardCore.Themes.TheAdmin.Schemes;
+using OrchardCore.Themes.TheAdmin.Models;
+using OrchardCore.Themes.TheAdmin.Recipes;
+using OrchardCore.Themes.TheAdmin.Services;
 
 namespace OrchardCore.Themes.TheAdmin;
 
@@ -14,23 +21,34 @@ public sealed class Startup : StartupBase
     {
         services.AddDisplayDriver<Navbar, ToggleThemeNavbarDisplayDriver>();
         services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
-        services.AddThemeSchemes(TheAdminConstants.ThemeId, options =>
-        {
-            options.AttributeName = TheAdminSchemes.AttributeName;
-            options.TokenPrefix = TheAdminSchemes.TokenPrefix;
-            options.DefaultSchemeId = TheAdminSchemes.DefaultId;
-            options.Defaults = [.. TheAdminSchemes.CreateDefaults()];
 
-            // TheAdmin's stylesheet reads the fonts, the font size, the corners and the density of a scheme.
-            options.Features = ThemeSchemeFeatures.All;
-            options.Fonts = [.. TheAdminSchemes.Fonts];
-            options.DefaultFontFamily = TheAdminSchemes.DefaultFontFamily;
-            options.AddTokens<TheAdminSchemeTokens>();
+        // The schemes: managed from the theme's card on Design > Themes, and picked by each user from the user menu.
+        services.AddScoped<AdminSchemeStore>();
+        services.AddScoped<AdminSchemeService>();
+        services.AddDisplayDriver<AdminSchemeEntry, AdminSchemeDisplayDriver>();
+        services.AddDisplayDriver<ThemeEntry, ThemeEntrySchemesDisplayDriver>();
+    }
 
-            foreach (var (token, name) in TheAdminSchemes.TokenNames)
-            {
-                options.TokenNames[token] = name;
-            }
-        });
+    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+    {
+        routes.MapAdminSchemeStylesheet();
+    }
+}
+
+[RequireFeatures("OrchardCore.Deployment")]
+public sealed class DeploymentStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddDeployment<AdminSchemesDeploymentSource, AdminSchemesDeploymentStep, AdminSchemesDeploymentStepDriver>();
+    }
+}
+
+[RequireFeatures("OrchardCore.Recipes.Core")]
+public sealed class RecipesStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddRecipeExecutionStep<AdminSchemesStep>();
     }
 }

@@ -6,16 +6,231 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-OrchardCore-Catalog-Schema: 1\n"
 
+#: Controllers/SchemesController.cs
+msgctxt "OrchardCore.Themes.TheAdmin.Controllers.SchemesController"
+msgid "Enter the name of a font, or several separated by commas, or leave it empty to use the font of the text. A name holds only letters, digits, spaces, dashes, underscores and dots."
+msgstr ""
+
+#: Controllers/SchemesController.cs
+msgctxt "OrchardCore.Themes.TheAdmin.Controllers.SchemesController"
+msgid "Enter the name of a font, or several separated by commas. A name holds only letters, digits, spaces, dashes, underscores and dots."
+msgstr ""
+
+#. Format arguments: {0}: scheme.Name
+#: Controllers/SchemesController.cs
+#, csharp-format
+msgctxt "OrchardCore.Themes.TheAdmin.Controllers.SchemesController"
+msgid "The scheme <strong>{0}</strong> is now the default scheme."
+msgstr ""
+
+#. Format arguments: {0}: scheme.Name
+#: Controllers/SchemesController.cs
+#, csharp-format
+msgctxt "OrchardCore.Themes.TheAdmin.Controllers.SchemesController"
+msgid "The scheme <strong>{0}</strong> is the default scheme and can't be deleted. Set another scheme as the default first."
+msgstr ""
+
+#. Format arguments: {0}: scheme.Name
+#: Controllers/SchemesController.cs
+#, csharp-format
+msgctxt "OrchardCore.Themes.TheAdmin.Controllers.SchemesController"
+msgid "The scheme <strong>{0}</strong> was added."
+msgstr ""
+
+#. Format arguments: {0}: scheme.Name
+#: Controllers/SchemesController.cs
+#, csharp-format
+msgctxt "OrchardCore.Themes.TheAdmin.Controllers.SchemesController"
+msgid "The scheme <strong>{0}</strong> was deleted."
+msgstr ""
+
+#. Format arguments: {0}: scheme.Name
+#: Controllers/SchemesController.cs
+#, csharp-format
+msgctxt "OrchardCore.Themes.TheAdmin.Controllers.SchemesController"
+msgid "The scheme <strong>{0}</strong> was saved."
+msgstr ""
+
+#. Format arguments: {0}: scheme.Id
+#: Recipes/AdminSchemesStep.cs
+#, csharp-format
+msgctxt "OrchardCore.Themes.TheAdmin.Recipes.AdminSchemesStep"
+msgid "The scheme '{0}' has a FontFamily or HeadingFontFamily that is not a font name or a list of them separated by commas (letters, digits, spaces, dashes, underscores and dots), or a FontScale (0.875 to 1.125), RadiusScale (0 to 1.5) or Density (0.75 to 1.25) out of range."
+msgstr ""
+
+#. Format arguments: {0}: scheme.Id
+#: Recipes/AdminSchemesStep.cs
+#, csharp-format
+msgctxt "OrchardCore.Themes.TheAdmin.Recipes.AdminSchemesStep"
+msgid "The scheme '{0}' needs a name, four '#rrggbb' colors (Primary, Deep, Ink, Accent), and '#rrggbb' optional colors."
+msgstr ""
+
+#. Format arguments: {0}: scheme.Id
+#: Recipes/AdminSchemesStep.cs
+#, csharp-format
+msgctxt "OrchardCore.Themes.TheAdmin.Recipes.AdminSchemesStep"
+msgid "The scheme id '{0}' is not valid: it must start with a lowercase letter and hold only lowercase letters, digits and dashes."
+msgstr ""
+
+#. Format arguments: {0}: defaultId
+#: Recipes/AdminSchemesStep.cs
+#, csharp-format
+msgctxt "OrchardCore.Themes.TheAdmin.Recipes.AdminSchemesStep"
+msgid "There is no scheme '{0}' to make the default scheme."
+msgstr ""
+
+#: TheAdminLocalizationSources.cs
+msgctxt "OrchardCore.Themes.TheAdmin.TheAdminLocalizationSources"
+msgid "Admin schemes"
+msgstr ""
+
+#: TheAdminLocalizationSources.cs
+msgctxt "OrchardCore.Themes.TheAdmin.TheAdminLocalizationSources"
+msgid "Theming"
+msgstr ""
+
+#: Views/AdminSchemePreview.cshtml
+msgctxt "TheAdmin.Views.AdminSchemePreview"
+msgid "3 items"
+msgstr ""
+
+#: Views/AdminSchemePreview.cshtml
+msgctxt "TheAdmin.Views.AdminSchemePreview"
+msgid "A field"
+msgstr ""
+
+#: Views/AdminSchemePreview.cshtml
+msgctxt "TheAdmin.Views.AdminSchemePreview"
+msgid "A record"
+msgstr ""
+
+#: Views/AdminSchemePreview.cshtml
+msgctxt "TheAdmin.Views.AdminSchemePreview"
+msgid "Another record"
+msgstr ""
+
+#: Views/AdminSchemePreview.cshtml
+msgctxt "TheAdmin.Views.AdminSchemePreview"
+msgid "Content"
+msgstr ""
+
+#: Views/AdminSchemePreview.cshtml
+msgctxt "TheAdmin.Views.AdminSchemePreview"
+msgid "Content items"
+msgstr ""
+
+#: Views/AdminSchemePreview.cshtml
+msgctxt "TheAdmin.Views.AdminSchemePreview"
+msgid "Draft"
+msgstr ""
+
+#: Views/AdminSchemePreview.cshtml
+msgctxt "TheAdmin.Views.AdminSchemePreview"
+msgid "Page title"
+msgstr ""
+
+#: Views/AdminSchemePreview.cshtml
+msgctxt "TheAdmin.Views.AdminSchemePreview"
+msgid "Preview in dark mode"
+msgstr ""
+
+#: Views/AdminSchemePreview.cshtml
+msgctxt "TheAdmin.Views.AdminSchemePreview"
+msgid "Preview in light mode"
+msgstr ""
+
+#: Views/AdminSchemePreview.cshtml
+msgctxt "TheAdmin.Views.AdminSchemePreview"
+msgid "Published"
+msgstr ""
+
+#: Views/AdminSchemePreview.cshtml
+msgctxt "TheAdmin.Views.AdminSchemePreview"
+msgid "Save"
+msgstr ""
+
+#: Views/AdminSchemePreview.cshtml
+msgctxt "TheAdmin.Views.AdminSchemePreview"
+msgid "Settings"
+msgstr ""
+
+#: Views/AdminSchemePreview.cshtml
+msgctxt "TheAdmin.Views.AdminSchemePreview"
+msgid "Site"
+msgstr ""
+
 #: Views/Breadcrumb.cshtml
 msgctxt "TheAdmin.Views.Breadcrumb"
 msgid "Breadcrumb"
 msgstr ""
 
+#: Views/Items/AdminScheme.ActionsMenu.SummaryAdmin.cshtml
+msgctxt "TheAdmin.Views.Items.AdminScheme.ActionsMenu.SummaryAdmin"
+msgid "Delete"
+msgstr ""
+
 #. Format arguments: {0}: Model.Value.Scheme.Name
-#: Views/Items/ThemeScheme.Swatch.SummaryAdmin-TheAdmin.cshtml
+#: Views/Items/AdminScheme.ActionsMenu.SummaryAdmin.cshtml
 #, csharp-format
-msgctxt "TheAdmin.Views.Items.ThemeScheme.Swatch.SummaryAdmin-TheAdmin"
+msgctxt "TheAdmin.Views.Items.AdminScheme.ActionsMenu.SummaryAdmin"
+msgid "Delete the scheme {0}? Users who picked it go back to the site's default scheme."
+msgstr ""
+
+#: Views/Items/AdminScheme.ActionsMenu.SummaryAdmin.cshtml
+msgctxt "TheAdmin.Views.Items.AdminScheme.ActionsMenu.SummaryAdmin"
+msgid "Set as default"
+msgstr ""
+
+#: Views/Items/AdminScheme.Buttons.SummaryAdmin.cshtml
+msgctxt "TheAdmin.Views.Items.AdminScheme.Buttons.SummaryAdmin"
+msgid "Edit"
+msgstr ""
+
+#: Views/Items/AdminScheme.Fields.SummaryAdmin.cshtml
+msgctxt "TheAdmin.Views.Items.AdminScheme.Fields.SummaryAdmin"
+msgid "Default"
+msgstr ""
+
+#. Format arguments: {0}: Model.Value.Scheme.Name
+#: Views/Items/AdminScheme.Swatch.SummaryAdmin.cshtml
+#, csharp-format
+msgctxt "TheAdmin.Views.Items.AdminScheme.Swatch.SummaryAdmin"
 msgid "Colors of {0}"
+msgstr ""
+
+#: Views/Items/AdminSchemesDeploymentStep.Fields.Edit.cshtml
+msgctxt "TheAdmin.Views.Items.AdminSchemesDeploymentStep.Fields.Edit"
+msgid "Adds the admin schemes, and the default scheme, to the plan."
+msgstr ""
+
+#: Views/Items/AdminSchemesDeploymentStep.Fields.Edit.cshtml
+msgctxt "TheAdmin.Views.Items.AdminSchemesDeploymentStep.Fields.Edit"
+msgid "Admin schemes"
+msgstr ""
+
+#: Views/Items/AdminSchemesDeploymentStep.Fields.Summary.cshtml
+msgctxt "TheAdmin.Views.Items.AdminSchemesDeploymentStep.Fields.Summary"
+msgid "Adds the admin schemes, and the default scheme, to the plan."
+msgstr ""
+
+#: Views/Items/AdminSchemesDeploymentStep.Fields.Summary.cshtml
+msgctxt "TheAdmin.Views.Items.AdminSchemesDeploymentStep.Fields.Summary"
+msgid "Admin schemes"
+msgstr ""
+
+#: Views/Items/AdminSchemesDeploymentStep.Fields.Thumbnail.cshtml
+msgctxt "TheAdmin.Views.Items.AdminSchemesDeploymentStep.Fields.Thumbnail"
+msgid "Admin schemes"
+msgstr ""
+
+#: Views/Items/AdminSchemesDeploymentStep.Fields.Thumbnail.cshtml
+msgctxt "TheAdmin.Views.Items.AdminSchemesDeploymentStep.Fields.Thumbnail"
+msgid "Exports the admin schemes (their colors, fonts, sizes, corners and spacing), and the default scheme."
+msgstr ""
+
+#: Views/Items/ThemeEntry-ButtonsSchemes.SummaryAdmin.cshtml
+msgctxt "TheAdmin.Views.Items.ThemeEntry-ButtonsSchemes.SummaryAdmin"
+msgid "Schemes"
 msgstr ""
 
 #: Views/Layout.cshtml
@@ -103,74 +318,360 @@ msgctxt "TheAdmin.Views.Pager_Previous"
 msgid "Go to previous page."
 msgstr ""
 
-#: Views/ThemeSchemePreview-TheAdmin.cshtml
-msgctxt "TheAdmin.Views.ThemeSchemePreview-TheAdmin"
-msgid "3 items"
+#: Views/Schemes/Edit.cshtml
+msgctxt "TheAdmin.Views.Schemes.Edit"
+msgid "A light gray menu with dark text in light mode. The menu is always dark in dark mode."
 msgstr ""
 
-#: Views/ThemeSchemePreview-TheAdmin.cshtml
-msgctxt "TheAdmin.Views.ThemeSchemePreview-TheAdmin"
-msgid "A field"
+#: Views/Schemes/Edit.cshtml
+msgctxt "TheAdmin.Views.Schemes.Edit"
+msgid "Accent"
 msgstr ""
 
-#: Views/ThemeSchemePreview-TheAdmin.cshtml
-msgctxt "TheAdmin.Views.ThemeSchemePreview-TheAdmin"
-msgid "A record"
+#: Views/Schemes/Edit.cshtml
+msgctxt "TheAdmin.Views.Schemes.Edit"
+msgid "Add scheme"
 msgstr ""
 
-#: Views/ThemeSchemePreview-TheAdmin.cshtml
-msgctxt "TheAdmin.Views.ThemeSchemePreview-TheAdmin"
-msgid "Another record"
+#: Views/Schemes/Edit.cshtml
+msgctxt "TheAdmin.Views.Schemes.Edit"
+msgid "Admin schemes"
 msgstr ""
 
-#: Views/ThemeSchemePreview-TheAdmin.cshtml
-msgctxt "TheAdmin.Views.ThemeSchemePreview-TheAdmin"
-msgid "Content"
+#: Views/Schemes/Edit.cshtml
+msgctxt "TheAdmin.Views.Schemes.Edit"
+msgid "Advanced"
 msgstr ""
 
-#: Views/ThemeSchemePreview-TheAdmin.cshtml
-msgctxt "TheAdmin.Views.ThemeSchemePreview-TheAdmin"
-msgid "Content items"
+#: Views/Schemes/Edit.cshtml
+msgctxt "TheAdmin.Views.Schemes.Edit"
+msgid "Automatic"
 msgstr ""
 
-#: Views/ThemeSchemePreview-TheAdmin.cshtml
-msgctxt "TheAdmin.Views.ThemeSchemePreview-TheAdmin"
-msgid "Draft"
+#: Views/Schemes/Edit.cshtml
+msgctxt "TheAdmin.Views.Schemes.Edit"
+msgid "Buttons, links and the current page of the menu."
 msgstr ""
 
-#: Views/ThemeSchemePreview-TheAdmin.cshtml
-msgctxt "TheAdmin.Views.ThemeSchemePreview-TheAdmin"
-msgid "Page title"
+#: Views/Schemes/Edit.cshtml
+msgctxt "TheAdmin.Views.Schemes.Edit"
+msgid "Cancel"
 msgstr ""
 
-#: Views/ThemeSchemePreview-TheAdmin.cshtml
-msgctxt "TheAdmin.Views.ThemeSchemePreview-TheAdmin"
-msgid "Preview in dark mode"
+#: Views/Schemes/Edit.cshtml
+msgctxt "TheAdmin.Views.Schemes.Edit"
+msgid "Comfortable"
 msgstr ""
 
-#: Views/ThemeSchemePreview-TheAdmin.cshtml
-msgctxt "TheAdmin.Views.ThemeSchemePreview-TheAdmin"
-msgid "Preview in light mode"
+#: Views/Schemes/Edit.cshtml
+msgctxt "TheAdmin.Views.Schemes.Edit"
+msgid "Compact"
 msgstr ""
 
-#: Views/ThemeSchemePreview-TheAdmin.cshtml
-msgctxt "TheAdmin.Views.ThemeSchemePreview-TheAdmin"
-msgid "Published"
+#: Views/Schemes/Edit.cshtml
+msgctxt "TheAdmin.Views.Schemes.Edit"
+msgid "Corners"
 msgstr ""
 
-#: Views/ThemeSchemePreview-TheAdmin.cshtml
-msgctxt "TheAdmin.Views.ThemeSchemePreview-TheAdmin"
+#. Format arguments: {0}: value.ToString("0.####", CultureInfo.CurrentCulture)
+#: Views/Schemes/Edit.cshtml
+#, csharp-format
+msgctxt "TheAdmin.Views.Schemes.Edit"
+msgid "Custom ({0})"
+msgstr ""
+
+#: Views/Schemes/Edit.cshtml
+msgctxt "TheAdmin.Views.Schemes.Edit"
+msgid "Dark page tint"
+msgstr ""
+
+#: Views/Schemes/Edit.cshtml
+msgctxt "TheAdmin.Views.Schemes.Edit"
+msgid "Deep"
+msgstr ""
+
+#: Views/Schemes/Edit.cshtml
+msgctxt "TheAdmin.Views.Schemes.Edit"
+msgid "Default"
+msgstr ""
+
+#: Views/Schemes/Edit.cshtml
+msgctxt "TheAdmin.Views.Schemes.Edit"
+msgid "Density"
+msgstr ""
+
+#: Views/Schemes/Edit.cshtml
+msgctxt "TheAdmin.Views.Schemes.Edit"
+msgid "Edit scheme"
+msgstr ""
+
+#: Views/Schemes/Edit.cshtml
+msgctxt "TheAdmin.Views.Schemes.Edit"
+msgid "Font"
+msgstr ""
+
+#: Views/Schemes/Edit.cshtml
+msgctxt "TheAdmin.Views.Schemes.Edit"
+msgid "Font size"
+msgstr ""
+
+#: Views/Schemes/Edit.cshtml
+msgctxt "TheAdmin.Views.Schemes.Edit"
+msgid "Heading font"
+msgstr ""
+
+#: Views/Schemes/Edit.cshtml
+msgctxt "TheAdmin.Views.Schemes.Edit"
+msgid "Headings and the top of the menu. The tint of the page, borders and dark mode surfaces is taken from it."
+msgstr ""
+
+#: Views/Schemes/Edit.cshtml
+msgctxt "TheAdmin.Views.Schemes.Edit"
+msgid "How colorful those surfaces are, from 0 (gray) to 1. Worked out from the deep color when empty."
+msgstr ""
+
+#: Views/Schemes/Edit.cshtml
+msgctxt "TheAdmin.Views.Schemes.Edit"
+msgid "How much space controls and the rows of lists take. Compact fits more on a page."
+msgstr ""
+
+#: Views/Schemes/Edit.cshtml
+msgctxt "TheAdmin.Views.Schemes.Edit"
+msgid "How round the corners of cards, buttons and fields are."
+msgstr ""
+
+#: Views/Schemes/Edit.cshtml
+msgctxt "TheAdmin.Views.Schemes.Edit"
+msgid "Ink"
+msgstr ""
+
+#: Views/Schemes/Edit.cshtml
+msgctxt "TheAdmin.Views.Schemes.Edit"
+msgid "Leave a setting empty to work it out from the four colors."
+msgstr ""
+
+#: Views/Schemes/Edit.cshtml
+msgctxt "TheAdmin.Views.Schemes.Edit"
+msgid "Light menu"
+msgstr ""
+
+#: Views/Schemes/Edit.cshtml
+msgctxt "TheAdmin.Views.Schemes.Edit"
+msgid "Links and highlights on dark surfaces, in the menu and in dark mode."
+msgstr ""
+
+#: Views/Schemes/Edit.cshtml
+msgctxt "TheAdmin.Views.Schemes.Edit"
+msgid "List toolbar"
+msgstr ""
+
+#: Views/Schemes/Edit.cshtml
+msgctxt "TheAdmin.Views.Schemes.Edit"
+msgid "Name"
+msgstr ""
+
+#: Views/Schemes/Edit.cshtml
+msgctxt "TheAdmin.Views.Schemes.Edit"
+msgid "Page"
+msgstr ""
+
+#: Views/Schemes/Edit.cshtml
+msgctxt "TheAdmin.Views.Schemes.Edit"
+msgid "Page tint"
+msgstr ""
+
+#. Format arguments: {0}: color.Label.Value
+#: Views/Schemes/Edit.cshtml
+#, csharp-format
+msgctxt "TheAdmin.Views.Schemes.Edit"
+msgid "Pick the {0} color"
+msgstr ""
+
+#: Views/Schemes/Edit.cshtml
+msgctxt "TheAdmin.Views.Schemes.Edit"
+msgid "Position"
+msgstr ""
+
+#: Views/Schemes/Edit.cshtml
+msgctxt "TheAdmin.Views.Schemes.Edit"
+msgid "Preview"
+msgstr ""
+
+#: Views/Schemes/Edit.cshtml
+msgctxt "TheAdmin.Views.Schemes.Edit"
+msgid "Primary"
+msgstr ""
+
+#: Views/Schemes/Edit.cshtml
+msgctxt "TheAdmin.Views.Schemes.Edit"
+msgid "Round"
+msgstr ""
+
+#: Views/Schemes/Edit.cshtml
+msgctxt "TheAdmin.Views.Schemes.Edit"
+msgid "Same as the text"
+msgstr ""
+
+#: Views/Schemes/Edit.cshtml
+msgctxt "TheAdmin.Views.Schemes.Edit"
 msgid "Save"
 msgstr ""
 
-#: Views/ThemeSchemePreview-TheAdmin.cshtml
-msgctxt "TheAdmin.Views.ThemeSchemePreview-TheAdmin"
-msgid "Settings"
+#: Views/Schemes/Edit.cshtml
+msgctxt "TheAdmin.Views.Schemes.Edit"
+msgid "Scheme"
 msgstr ""
 
-#: Views/ThemeSchemePreview-TheAdmin.cshtml
-msgctxt "TheAdmin.Views.ThemeSchemePreview-TheAdmin"
-msgid "Site"
+#: Views/Schemes/Edit.cshtml
+msgctxt "TheAdmin.Views.Schemes.Edit"
+msgid "Square"
+msgstr ""
+
+#: Views/Schemes/Edit.cshtml
+msgctxt "TheAdmin.Views.Schemes.Edit"
+msgid "Subtle"
+msgstr ""
+
+#: Views/Schemes/Edit.cshtml
+msgctxt "TheAdmin.Views.Schemes.Edit"
+msgid "Surface hue"
+msgstr ""
+
+#: Views/Schemes/Edit.cshtml
+msgctxt "TheAdmin.Views.Schemes.Edit"
+msgid "Surface saturation"
+msgstr ""
+
+#: Views/Schemes/Edit.cshtml
+msgctxt "TheAdmin.Views.Schemes.Edit"
+msgid "System font"
+msgstr ""
+
+#: Views/Schemes/Edit.cshtml
+msgctxt "TheAdmin.Views.Schemes.Edit"
+msgid "Text on primary"
+msgstr ""
+
+#: Views/Schemes/Edit.cshtml
+msgctxt "TheAdmin.Views.Schemes.Edit"
+msgid "The bar above the records of a list. The primary when empty."
+msgstr ""
+
+#: Views/Schemes/Edit.cshtml
+msgctxt "TheAdmin.Views.Schemes.Edit"
+msgid "The base size of the text. Headings, labels and controls follow it."
+msgstr ""
+
+#: Views/Schemes/Edit.cshtml
+msgctxt "TheAdmin.Views.Schemes.Edit"
+msgid "The bottom of the menu, the darkest surface."
+msgstr ""
+
+#: Views/Schemes/Edit.cshtml
+msgctxt "TheAdmin.Views.Schemes.Edit"
+msgid "The color of both ends of the page's gradient in dark mode. The accent and the primary when empty."
+msgstr ""
+
+#: Views/Schemes/Edit.cshtml
+msgctxt "TheAdmin.Views.Schemes.Edit"
+msgid "The color of both ends of the page's gradient in light mode. The primary and the accent when empty."
+msgstr ""
+
+#: Views/Schemes/Edit.cshtml
+msgctxt "TheAdmin.Views.Schemes.Edit"
+msgid "The font of page titles and headings. The font of the text when empty."
+msgstr ""
+
+#: Views/Schemes/Edit.cshtml
+msgctxt "TheAdmin.Views.Schemes.Edit"
+msgid "The font of the text. Pick one of the theme's fonts, or type the name of any font, e.g. a font installed on your users' devices, or several separated by commas."
+msgstr ""
+
+#: Views/Schemes/Edit.cshtml
+msgctxt "TheAdmin.Views.Schemes.Edit"
+msgid "The hue of the page, borders and dark mode surfaces, from 0 to 360. The deep color's when empty."
+msgstr ""
+
+#: Views/Schemes/Edit.cshtml
+msgctxt "TheAdmin.Views.Schemes.Edit"
+msgid "The name users see in the scheme picker."
+msgstr ""
+
+#: Views/Schemes/Edit.cshtml
+msgctxt "TheAdmin.Views.Schemes.Edit"
+msgid "The page in light mode. A pale tone of the hue when empty."
+msgstr ""
+
+#: Views/Schemes/Edit.cshtml
+msgctxt "TheAdmin.Views.Schemes.Edit"
+msgid "The text of buttons and of the current page. White, or a dark color on a light primary, when empty."
+msgstr ""
+
+#: Views/Schemes/Edit.cshtml
+msgctxt "TheAdmin.Views.Schemes.Edit"
+msgid "Themes"
+msgstr ""
+
+#: Views/Schemes/Edit.cshtml
+msgctxt "TheAdmin.Views.Schemes.Edit"
+msgid "Typography and shape"
+msgstr ""
+
+#: Views/Schemes/Edit.cshtml
+msgctxt "TheAdmin.Views.Schemes.Edit"
+msgid "Where a color would be too faint for its text, the theme deepens it; the preview shows the result."
+msgstr ""
+
+#: Views/Schemes/Edit.cshtml
+msgctxt "TheAdmin.Views.Schemes.Edit"
+msgid "Where the scheme sits in the pickers, lowest first."
+msgstr ""
+
+#. Format arguments: {0}: (16 * scale).ToString("0.##", CultureInfo.CurrentCulture)
+#: Views/Schemes/Edit.cshtml
+#, csharp-format
+msgctxt "TheAdmin.Views.Schemes.Edit"
+msgid "{0} px"
+msgstr ""
+
+#: Views/Schemes/Index.cshtml
+msgctxt "TheAdmin.Views.Schemes.Index"
+msgid "<strong>Nothing here!</strong> There are no schemes for the moment."
+msgstr ""
+
+#: Views/Schemes/Index.cshtml
+msgctxt "TheAdmin.Views.Schemes.Index"
+msgid "Actions"
+msgstr ""
+
+#: Views/Schemes/Index.cshtml
+msgctxt "TheAdmin.Views.Schemes.Index"
+msgid "Add scheme"
+msgstr ""
+
+#: Views/Schemes/Index.cshtml
+msgctxt "TheAdmin.Views.Schemes.Index"
+msgid "Admin schemes"
+msgstr ""
+
+#: Views/Schemes/Index.cshtml
+msgctxt "TheAdmin.Views.Schemes.Index"
+msgid "Colors"
+msgstr ""
+
+#: Views/Schemes/Index.cshtml
+msgctxt "TheAdmin.Views.Schemes.Index"
+msgid "Name"
+msgstr ""
+
+#: Views/Schemes/Index.cshtml
+msgctxt "TheAdmin.Views.Schemes.Index"
+msgid "The schemes users can pick for the admin. Each is made of four colors, from which the admin derives its other colors, light and dark, and of its fonts, sizes, corners and spacing. The theme adds its own schemes once; edit or delete them like any other. The default scheme is used by everyone who has not picked their own."
+msgstr ""
+
+#: Views/Schemes/Index.cshtml
+msgctxt "TheAdmin.Views.Schemes.Index"
+msgid "Themes"
 msgstr ""
 
 #: Views/ToggleTheme.cshtml

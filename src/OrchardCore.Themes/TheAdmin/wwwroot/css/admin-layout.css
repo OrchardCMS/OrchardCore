@@ -180,7 +180,7 @@ body.ta-admin {
 }
 
 #ta-left-sidebar .collapse.show {
-  display: block;
+  display: flow-root;
 }
 
 .ta-sidebar-brand {

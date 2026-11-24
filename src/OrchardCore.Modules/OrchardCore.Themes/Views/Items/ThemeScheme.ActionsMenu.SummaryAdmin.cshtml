@@ -1,9 +1,0 @@
-@using OrchardCore.DisplayManagement.Views
-@model ShapeViewModel<ThemeSchemeEntry>
-
-@* Only rendered for a scheme that is not the default (see ThemeSchemeDisplayDriver): the default can't be deleted. *@
-<a asp-action="SetDefault" asp-controller="Schemes" asp-area="OrchardCore.Themes" asp-route-themeId="@Model.Value.ThemeId" asp-route-id="@Model.Value.Scheme.Id" class="dropdown-item"
-   data-url-af="UnsafeUrl">@T["Set as default"]</a>
-<a asp-action="Delete" asp-controller="Schemes" asp-area="OrchardCore.Themes" asp-route-themeId="@Model.Value.ThemeId" asp-route-id="@Model.Value.Scheme.Id" class="dropdown-item text-danger"
-   data-title="@T["Delete"]" data-message="@T["Delete the scheme {0}? Users who picked it go back to the site's default scheme.", Model.Value.Scheme.Name]"
-   data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>

@@ -75,8 +75,11 @@ $menu-label-size: 0.90625rem;
         display: none;
     }
 
+    // 'flow-root', not 'block': while a group opens, Bootstrap's '.collapsing' hides its overflow, which keeps the
+    // margin of its first row inside it. Without a formatting context of its own, that margin would collapse through
+    // the open group once the animation ends, and every row would jump up by it.
     .collapse.show {
-        display: block;
+        display: flow-root;
     }
 }
 

@@ -190,7 +190,7 @@ These classes enable targeted styling of specific content type editors without r
 
 ## Admin Schemes
 
-The look of **TheAdmin** comes from a scheme: its colors, typefaces, base font size, density and corners. Schemes come from the **Theme Schemes** feature of the Themes module (`OrchardCore.Themes.Schemes`), which TheAdmin depends on and any other theme can opt into (see [Theme Schemes](../modules/Themes/Schemes.md)). Admins manage the schemes of a theme from the **Schemes** button of its card on **Design > Themes** (they need the `ApplyTheme` permission). Each theme has its own default scheme, set with the **Set as default** action of the list and shown with a **Default** badge; the default scheme can't be deleted. Each user can pick another scheme of TheAdmin from the theme menu of the top bar.
+The look of **TheAdmin** comes from a scheme: its colors, typefaces, base font size, density and corners. Admins manage the schemes from the **Schemes** button of TheAdmin's card on **Design > Themes** (they need the `ApplyTheme` permission). The default scheme is set with the **Set as default** action of the list and shown with a **Default** badge; it can't be deleted. Each user can pick another scheme from the theme menu of the top bar, under the light and dark modes; **Site default** follows the site's choice again. A user's pick is kept in a `{tenant}-TheAdmin-scheme` cookie.
 
 A scheme is made of four colors, from which every other color of the admin is derived for the light and the dark mode, each checked against the surfaces it is drawn on so that text reaches 4.5:1 and the boundaries of controls and focus indicators 3:1 (WCAG 2.2 AA):
 
@@ -211,20 +211,19 @@ Optional settings fine tune what is derived: the hue and saturation of the page,
 | Density | Compact, Default, Comfortable | `--ta-density` |
 | Corners | Square, Subtle, Default, Round | `--ta-radius-scale` |
 
-The fonts are typed, with the theme's font suggested. Lato is served by the theme, and the admin never calls a font CDN; any other font, e.g. `Segoe UI` or `Georgia, serif`, must be installed on the users' devices. TheAdmin supports every setting of a scheme (`options.Features = ThemeSchemeFeatures.All`) and registers Lato in `options.Fonts`.
+The fonts are typed, with the theme's font suggested. Lato is served by the theme, and the admin never calls a font CDN; any other font, e.g. `Segoe UI` or `Georgia, serif`, must be installed on the users' devices.
 
-TheAdmin seeds eight schemes (Gray, the default, which keeps the look of the previous TheAdmin, Blue, Ocean, Forest, Plum, Sunset, Graphite and Gold) the first time its schemes are read. They are ordinary records from then on, and a theme is seeded once: deleting all of its schemes doesn't bring them back.
+TheAdmin seeds eight schemes (Gray, the default, which keeps the look of the previous TheAdmin, Blue, Ocean, Forest, Plum, Sunset, Graphite and Gold) the first time its schemes are read. They are ordinary records from then on, and they are seeded once: deleting all of them doesn't bring them back.
 
-Schemes are exported with the `ThemeSchemes` deployment step and imported with the `ThemeSchemes` recipe step. Each entry names its theme (`ThemeId`) and its id (`ItemId`); an entry whose `ItemId` matches a scheme of that theme replaces it. The optional `Defaults` object maps a theme id to the id of its default scheme. Entries of a theme that doesn't support schemes, or isn't enabled, are skipped with an error.
+Schemes are exported with the **Admin schemes** deployment step and imported with the `AdminSchemes` recipe step. An entry whose `ItemId` matches a stored scheme replaces it; any other is added. The optional `DefaultSchemeId` makes a scheme the default one.
 
 ```json
 {
   "steps": [
     {
-      "name": "ThemeSchemes",
+      "name": "AdminSchemes",
       "Schemes": [
         {
-          "ThemeId": "TheAdmin",
           "ItemId": "harbor",
           "Name": "Harbor",
           "Primary": "#1f6f8b",
@@ -237,38 +236,25 @@ Schemes are exported with the `ThemeSchemes` deployment step and imported with t
           "RadiusScale": 1
         }
       ],
-      "Defaults": {
-        "TheAdmin": "harbor"
-      }
+      "DefaultSchemeId": "harbor"
     }
   ]
 }
 ```
 
-The schemes of a theme are served as one stylesheet, `~/Themes/schemes/{themeId}.css`, built once per change and versioned by a short hash of its text.
+| Property | Description |
+|----------|-------------|
+| `ItemId` | Optional. The id of the scheme: lowercase letters, digits and dashes, starting with a letter. A new id is given when it is empty. |
+| `Name` | Required. The name shown in the pickers. |
+| `Primary`, `Deep`, `Ink`, `Accent` | Required. `#rrggbb` colors. |
+| `Position` | Optional. The place of the scheme in the pickers; after the others when empty. |
+| `LightMenu` | Optional. `true` for a light gray menu with dark text. |
+| `Hue`, `Saturation` | Optional. The hue (0 to 360) and saturation (0 to 1) of the page, borders and dark mode surfaces. |
+| `OnPrimary`, `Page`, `Toolbar`, `Tint`, `TintDark` | Optional. `#rrggbb` colors of the text on the primary, the page, the toolbar of lists and the page gradient in light and dark mode. |
+| `FontFamily`, `HeadingFontFamily` | Optional. `lato`, `system`, or any font families separated by commas (e.g. `Georgia, serif`). An empty `HeadingFontFamily` uses the body font. |
+| `FontScale`, `RadiusScale`, `Density` | Optional. 0.875 to 1.125, 0 to 1.5, and 0.75 to 1.25. |
 
-### Supporting schemes in your theme
-
-Any theme can offer schemes the way TheAdmin does: it depends on the `OrchardCore.Themes.Schemes` feature, registers itself with `services.AddThemeSchemes("MyTheme")`, and applies the current scheme in its layout. TheAdmin registers its attribute, its `ta` prefix, its eight schemes and the tokens only its layout uses (the menu, the toolbar of lists, the top bar, the page gradient and the icons of checked controls):
-
-```csharp
-services.AddThemeSchemes(TheAdminConstants.ThemeId, options =>
-{
-    options.AttributeName = TheAdminSchemes.AttributeName; // data-ta-scheme
-    options.TokenPrefix = TheAdminSchemes.TokenPrefix; // ta
-    options.DefaultSchemeId = TheAdminSchemes.DefaultId; // gray
-    options.Defaults = [.. TheAdminSchemes.CreateDefaults()];
-    options.AddTokens<TheAdminSchemeTokens>();
-
-    // Its Sass names a few generated tokens otherwise, e.g. --ta-navy for --ta-deep.
-    foreach (var (token, name) in TheAdminSchemes.TokenNames)
-    {
-        options.TokenNames[token] = name;
-    }
-});
-```
-
-See [Theme Schemes](../modules/Themes/Schemes.md) for the full guide.
+The schemes are served as one stylesheet, `~/TheAdmin/schemes.css`, built once per change and versioned by a short hash of its text.
 
 ### Design Tokens
 

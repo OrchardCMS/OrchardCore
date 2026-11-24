@@ -1,5 +1,4 @@
-using OrchardCore.Themes.Schemes;
-using OrchardCore.Themes.Schemes.Models;
+using OrchardCore.Themes.TheAdmin.Models;
 
 namespace OrchardCore.Themes.TheAdmin.Schemes;
 
@@ -28,8 +27,13 @@ public static class TheAdminSchemes
     public const string TokenPrefix = "ta";
 
     /// <summary>
-    /// The generated tokens TheAdmin's Sass names otherwise, by generic name: copied to
-    /// <see cref="ThemeSchemeOptions.TokenNames"/>.
+    /// The selector of the dark mode, which the dark rule of a scheme puts before the scheme's own:
+    /// <c>[data-bs-theme="dark"][data-ta-scheme="{id}"]</c>, both on the page's <c>&lt;html&gt;</c> element.
+    /// </summary>
+    public const string DarkModeSelector = "[data-bs-theme=\"dark\"]";
+
+    /// <summary>
+    /// The generated tokens TheAdmin's Sass names otherwise, by generic name (e.g. <c>deep</c>, without the prefix).
     /// </summary>
     public static IReadOnlyDictionary<string, string> TokenNames { get; } = new Dictionary<string, string>(StringComparer.Ordinal)
     {
@@ -45,21 +49,37 @@ public static class TheAdminSchemes
     /// </summary>
     public const string DefaultFontFamily = "lato";
 
-    private const string FallbackStack = ThemeSchemeTypography.FallbackStack;
+    private const string FallbackStack = AdminSchemeTypography.FallbackStack;
 
     /// <summary>
-    /// The font the theme ships, which the editor of schemes suggests: copied to <see cref="ThemeSchemeOptions.Fonts"/>.
-    /// A scheme may name any other font family too.
+    /// The font the theme ships, which the editor of schemes suggests, with the system font. A scheme may name any other
+    /// font family too, which the users' devices must have installed.
     /// </summary>
-    public static IReadOnlyList<ThemeSchemeFont> Fonts { get; } =
+    public static IReadOnlyList<AdminSchemeFont> Fonts { get; } =
     [
         new(DefaultFontFamily, "Lato", "\"Lato\", " + FallbackStack),
     ];
 
     /// <summary>
+    /// The CSS font stack of a font a scheme names; the stack of <see cref="DefaultFontFamily"/> when the scheme names
+    /// none, or names one that is not valid.
+    /// </summary>
+    public static string GetFontStack(string fontFamily)
+        => AdminSchemeTypography.GetFontStack(fontFamily, Fonts)
+            ?? AdminSchemeTypography.GetFontStack(DefaultFontFamily, Fonts)
+            ?? AdminSchemeTypography.System.Stack;
+
+    /// <summary>
+    /// The scheme used when there is no stored scheme at all, for example when the schemes were removed outside the
+    /// admin: the default one of <see cref="CreateDefaults"/>. It is never stored.
+    /// </summary>
+    public static AdminScheme CreateFallback()
+        => CreateDefaults().First(scheme => scheme.Id == DefaultId);
+
+    /// <summary>
     /// The schemes to seed, in the order of the pickers.
     /// </summary>
-    public static IReadOnlyList<ThemeScheme> CreateDefaults()
+    public static IReadOnlyList<AdminScheme> CreateDefaults()
         =>
         [
             // The default: the look of the former TheAdmin, Bootstrap's blue on a white page, a light gray menu and the
@@ -69,7 +89,7 @@ public static class TheAdminSchemes
                 Id = DefaultId, Name = "Gray", Position = 0,
                 Primary = "#0d6efd", Deep = "#212529", Ink = "#212529", Accent = "#6ea8fe",
                 LightMenu = true, Hue = 210, Saturation = 0.12, Page = "#ffffff", Toolbar = "#495057", Tint = "#495057", TintDark = "#adb5bd",
-                FontFamily = ThemeSchemeTypography.SystemFont,
+                FontFamily = AdminSchemeTypography.SystemFont,
             },
             new() { Id = "blue", Name = "Blue", Position = 1, Primary = "#2a81bb", Deep = "#144c71", Ink = "#081b26", Accent = "#5aa4ef", Hue = 209, Saturation = 1 },
             new() { Id = "ocean", Name = "Ocean", Position = 2, Primary = "#12868b", Deep = "#0d4a52", Ink = "#062227", Accent = "#4fd1c5", Hue = 187, Saturation = 0.9 },
