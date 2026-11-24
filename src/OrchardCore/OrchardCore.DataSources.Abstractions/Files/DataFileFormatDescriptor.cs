@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using OrchardCore.Localization;
 
 namespace OrchardCore.DataSources.Files;
@@ -36,6 +37,7 @@ public sealed class DataFileFormatDescriptor
     /// <summary>
     /// Gets the label shown to users, to localize with <c>IStringLocalizerFactory.Localize</c>.
     /// </summary>
+    [JsonIgnore]
     public LocalizationSource DisplayName { get; }
 
     /// <summary>

@@ -1,6 +1,7 @@
 using System.Text.Encodings.Web;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
 using OrchardCore.Json.Serialization;
 
 namespace System.Text.Json;
@@ -29,6 +30,12 @@ public static class JOptions
         AllowTrailingCommas = true,
         WriteIndented = false,
         NumberHandling = JsonNumberHandling.AllowReadingFromString,
+
+        // A LocalizationSource is a static declaration owned by code, never serialized or deserialized.
+        TypeInfoResolver = new DefaultJsonTypeInfoResolver
+        {
+            Modifiers = { LocalizationSourceJsonModifier.Ignore },
+        },
     };
 
     public static readonly JsonSerializerOptions Default;

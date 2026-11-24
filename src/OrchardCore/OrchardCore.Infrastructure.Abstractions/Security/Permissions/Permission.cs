@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using System.Text.Json.Serialization;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Localization;
 using OrchardCore.Security;
@@ -107,6 +108,7 @@ public class Permission
     /// <see cref="StringLocalizerFactoryExtensions.Localize(IStringLocalizerFactory, LocalizationSource, object[])"/>.
     /// Descriptions without a source type can be translated with Data Localization.
     /// </remarks>
+    [JsonIgnore]
     public LocalizationSource Description { get; set; }
 
     /// <summary>

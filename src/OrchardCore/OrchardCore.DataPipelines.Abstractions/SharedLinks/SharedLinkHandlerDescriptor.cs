@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using OrchardCore.Localization;
 
 namespace OrchardCore.DataPipelines.SharedLinks;
@@ -33,6 +34,7 @@ public sealed class SharedLinkHandlerDescriptor
     /// <summary>
     /// Gets the name of the kind of resource, to localize with <c>IStringLocalizerFactory.Localize</c>.
     /// </summary>
+    [JsonIgnore]
     public LocalizationSource DisplayName { get; }
 
     /// <summary>
