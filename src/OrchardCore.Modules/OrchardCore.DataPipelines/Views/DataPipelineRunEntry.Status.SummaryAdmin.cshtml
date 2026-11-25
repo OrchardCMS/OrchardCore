@@ -1,0 +1,8 @@
+@model ShapeViewModel<DataPipelineRunEntry>
+
+@{
+    var run = Model.Value.Run;
+}
+
+
+<span class="badge ta-badge fw-normal" title="@T["Status"]"><i class="@run.Status.GetIcon()" aria-hidden="true"></i> @T[run.Status.ToString()]</span>

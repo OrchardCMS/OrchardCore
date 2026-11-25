@@ -11,6 +11,7 @@ using OrchardCore.DataPipelines.Models;
 using OrchardCore.DataPipelines.Services;
 using OrchardCore.DataPipelines.SharedLinks;
 using OrchardCore.DataPipelines.Steps;
+using OrchardCore.DataPipelines.ViewModels;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Shell.Configuration;
@@ -58,6 +59,8 @@ public sealed class Startup : StartupBase
 
         services.AddScoped<IDisplayManager<DataPipelineStep>, DisplayManager<DataPipelineStep>>();
         services.AddDisplayDriver<DataPipelineStep, DataPipelineStepTitleDisplayDriver>();
+        services.AddDisplayDriver<DataPipelineEntry, DataPipelineEntryDisplayDriver>();
+        services.AddDisplayDriver<DataPipelineRunEntry, DataPipelineRunEntryDisplayDriver>();
 
         services.AddPermissionProvider<PermissionsProvider>();
         services.AddNavigationProvider<AdminMenu>();

@@ -98,7 +98,7 @@ public sealed class DataPipelineListsTests
         response.EnsureSuccessStatusCode();
         using var document = new HtmlParser().ParseDocument(await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
 
-        var item = Assert.Single(document.QuerySelectorAll("li[data-pipeline-id]"));
+        var item = Assert.Single(document.QuerySelectorAll("[data-pipeline-id]"));
         Assert.Equal(ordersId, item.GetAttribute("data-pipeline-id"));
         Assert.Equal("orders", document.QuerySelector("input[name=q]")?.GetAttribute("value"));
 
@@ -106,6 +106,46 @@ public sealed class DataPipelineListsTests
         var actions = item.QuerySelectorAll(".dropdown-menu .dropdown-item").Select(action => action.TextContent.Trim()).ToList();
         Assert.Contains("Run history", actions);
         Assert.Contains("Delete", actions);
+    }
+
+    [Theory]
+    [InlineData("List")]
+    [InlineData("Grid")]
+    public async Task RunsPage_Status_ListsTheMatchingRunsInTheLayout(string layout)
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+        var now = DateTime.UtcNow;
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var session = scope.ServiceProvider.GetRequiredService<YesSql.ISession>();
+            var manager = scope.ServiceProvider.GetRequiredService<DataPipelineManager>();
+            var orders = await manager.CreateAsync("Orders export", null, user: null);
+
+            var failed = Run("orders-failed", orders, DataPipelineRunStatus.Failed, now.AddMinutes(-2));
+            failed.Error = "The source could not be read.";
+
+            await session.SaveAsync(failed);
+            await session.SaveAsync(Run("orders-succeeded", orders, DataPipelineRunStatus.Succeeded, now.AddMinutes(-1)));
+        });
+
+        // Act
+        using var response = await context.Client.GetAsync($"Admin/DataPipelines/Runs?status=Failed&layout={layout}", TestContext.Current.CancellationToken);
+
+        // Assert
+        response.EnsureSuccessStatusCode();
+        using var document = new HtmlParser().ParseDocument(await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+
+        // The AdminList shape renders the rows, with the status filter at the end of its toolbar.
+        var row = Assert.Single(document.QuerySelectorAll("[data-run-id]"));
+        Assert.Equal("orders-failed", row.GetAttribute("data-run-id"));
+        Assert.Contains("The source could not be read.", row.TextContent);
+        Assert.Equal("Failed", document.QuerySelector("select[name=status] option[selected]")?.GetAttribute("value"));
+
+        var actions = row.QuerySelectorAll(".dropdown-menu .dropdown-item").Select(action => action.TextContent.Trim()).ToList();
+        Assert.Contains("Open the pipeline", actions);
+        Assert.Contains("Run history of the pipeline", actions);
     }
 
     private static DataPipelineRun Run(string runId, DataPipeline pipeline, DataPipelineRunStatus status, DateTime queuedUtc)

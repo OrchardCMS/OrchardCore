@@ -17,12 +17,12 @@ if (searchBox) {
             document.querySelectorAll<HTMLElement>(".permissions-list").forEach((list) => {
                 setVisible(list, true);
             });
-            document.querySelectorAll<HTMLElement>(".permissions-list > table > tbody > tr").forEach((row) => {
+            document.querySelectorAll<HTMLElement>(".permissions-list table > tbody > tr").forEach((row) => {
                 setVisible(row, true);
             });
             noResults?.classList.add("d-none");
         } else {
-            document.querySelectorAll<HTMLElement>(".permissions-list > table > tbody > tr").forEach((row) => {
+            document.querySelectorAll<HTMLElement>(".permissions-list table > tbody > tr").forEach((row) => {
                 const text = (row.dataset.text ?? "").toLowerCase();
                 const found = text.indexOf(search) > -1;
 

@@ -1,4 +1,5 @@
 import { getTenantName } from '@orchardcore/bloom/helpers/globals';
+// js-cookie is bundled into the theme's scripts: THIRD-PARTY-NOTICES.txt carries its MIT notice.
 import Cookies from 'js-cookie';
 
 export interface AdminPreferences {

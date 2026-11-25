@@ -72,22 +72,34 @@ public sealed class AdminController : Controller
         var pager = new Pager(pagerParameters, (await _siteService.GetSiteSettingsAsync()).PageSize);
         var (pipelines, count) = await _pipelineManager.ListAsync(q, pager.GetStartIndex(), pager.PageSize);
 
-        var model = new DataPipelineIndexViewModel
-        {
-            Search = q,
-            TotalCount = count,
-            Pager = await _shapeFactory.PagerAsync(pager, count, new RouteData(new RouteValueDictionary { ["q"] = q })),
-            CanManage = await _authorizationService.AuthorizeAsync(User, DataPipelinePermissions.ManageDataPipelines),
-            CanRun = await _authorizationService.AuthorizeAsync(User, DataPipelinePermissions.RunDataPipelines),
-        };
+        var canManage = await _authorizationService.AuthorizeAsync(User, DataPipelinePermissions.ManageDataPipelines);
+        var canRun = await _authorizationService.AuthorizeAsync(User, DataPipelinePermissions.RunDataPipelines);
+        var entries = new List<DataPipelineEntry>();
 
         foreach (var pipeline in pipelines)
         {
             var (runs, _) = await _runManager.ListAsync(pipeline.PipelineId, 0, 1);
-            model.Pipelines.Add(new DataPipelineEntryViewModel { Pipeline = pipeline, LastRun = runs.Count > 0 ? runs[0] : null });
+            entries.Add(new DataPipelineEntry
+            {
+                Pipeline = pipeline,
+                LastRun = runs.Count > 0 ? runs[0] : null,
+                CanManage = canManage,
+                CanRun = canRun,
+            });
         }
 
-        return View(model);
+        return View(new DataPipelineIndexViewModel
+        {
+            Search = q,
+            CanManage = canManage,
+
+            // The AdminList shape renders the pipelines with the configured layout (List, Grid, ...).
+            List = new AdminListContext<DataPipelineEntry>
+            {
+                Source = entries,
+                Pager = await _shapeFactory.PagerAsync(pager, count, new RouteData(new RouteValueDictionary { ["q"] = q })),
+            },
+        });
     }
 
     [Admin("DataPipelines/Create", "DataPipelinesCreate")]
@@ -273,20 +285,30 @@ public sealed class AdminController : Controller
         var filter = new DataPipelineRunFilter { PipelineId = pipelineId, Search = pipeline is null ? q : null, Status = status };
         var (runs, count) = await _runManager.ListAsync(filter, pager.GetStartIndex(), pager.PageSize);
 
+        var canRun = await _authorizationService.AuthorizeAsync(User, DataPipelinePermissions.RunDataPipelines);
+
         return View(new DataPipelineRunsViewModel
         {
             Pipeline = pipeline,
             Search = filter.Search,
             Status = status,
-            TotalCount = count,
-            Runs = runs.ToList(),
-            Pager = await _shapeFactory.PagerAsync(pager, count, new RouteData(new RouteValueDictionary
+
+            // The AdminList shape renders the runs with the configured layout (List, Grid, ...); the status filter sits at
+            // the end of its toolbar.
+            List = new AdminListContext<DataPipelineRunEntry>
             {
-                ["pipelineId"] = pipelineId,
-                ["q"] = filter.Search,
-                ["status"] = status?.ToString(),
-            })),
-            CanRun = await _authorizationService.AuthorizeAsync(User, DataPipelinePermissions.RunDataPipelines),
+                Source = [.. runs.Select(run => new DataPipelineRunEntry { Run = run, CanRun = canRun, ShowPipelineHistory = pipeline is null })],
+                Pager = await _shapeFactory.PagerAsync(pager, count, new RouteData(new RouteValueDictionary
+                {
+                    ["pipelineId"] = pipelineId,
+                    ["q"] = filter.Search,
+                    ["status"] = status?.ToString(),
+                })),
+                ToolbarActions = await _shapeFactory.CreateAsync("DataPipelineRunsFilters", Arguments.From(new
+                {
+                    Status = status,
+                })),
+            },
         });
     }
 

@@ -1,1 +1,1 @@
-.theme-card{margin-bottom:15px}.theme-card .card-theme-thumbnail{background-color:#f8f9fa;background-size:cover;border-top:1px solid #f8f9fa;border-bottom:1px solid #f8f9fa;height:200px}
+.theme-card{margin-bottom:15px}.theme-card .card-theme-thumbnail{background-color:var(--bs-tertiary-bg);border-bottom:var(--bs-border-width)solid var(--bs-border-color-translucent);background-size:cover;border-start-start-radius:var(--bs-card-inner-border-radius);border-start-end-radius:var(--bs-card-inner-border-radius);height:200px}

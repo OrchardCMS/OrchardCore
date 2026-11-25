@@ -31,6 +31,18 @@ public sealed class ResourceManagementOptionsConfiguration
             .DefineStyle("the-admin")
             .SetUrl("~/TheAdmin/css/TheAdmin.min.css", "~/TheAdmin/css/TheAdmin.css")
             .SetVersion("1.0.0");
+
+        // The scheme picker of the user menu.
+        s_manifest
+            .DefineScript("admin-scheme-picker")
+            .SetUrl("~/TheAdmin/js/schemes/admin-scheme-picker.min.js", "~/TheAdmin/js/schemes/admin-scheme-picker.js")
+            .SetVersion("1.0.0");
+
+        // The editor of a scheme, with its live preview.
+        s_manifest
+            .DefineScript("admin-scheme-editor")
+            .SetUrl("~/TheAdmin/js/schemes/admin-scheme-editor.min.js", "~/TheAdmin/js/schemes/admin-scheme-editor.js")
+            .SetVersion("1.0.0");
     }
 
     public void Configure(ResourceManagementOptions options)

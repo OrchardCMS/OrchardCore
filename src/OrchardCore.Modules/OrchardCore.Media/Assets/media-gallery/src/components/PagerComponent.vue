@@ -2,33 +2,33 @@
   <div>
     <nav id="file-pager" class="tw:mb-3" aria-label="Pagination Navigation" role="navigation"
       :data-computed-trigger="itemsInCurrentPage?.length">
-      <ul class="ma-pagination">
-        <li class="ma-page-item file-first-button" :class="{ 'is-disabled': !canDoFirst }">
-          <button type="button" class="ma-page-link first" :tabindex="canDoFirst ? 0 : -1" :disabled="!canDoFirst" v-on:click="goFirst">
-            {{ t.PagerFirstButton }}
+      <ul class="pagination ma-pagination">
+        <li class="page-item file-first-button" :class="{ disabled: !canDoFirst }">
+          <button type="button" class="page-link first" :tabindex="canDoFirst ? 0 : -1" :disabled="!canDoFirst" v-on:click="goFirst" :aria-label="t.PagerFirstButton" :title="t.PagerFirstButton">
+            <fa-icon icon="fa-solid fa-angles-left" aria-hidden="true" />
           </button>
         </li>
-        <li class="ma-page-item" :class="{ 'is-disabled': !canDoPrev }">
-          <button type="button" class="ma-page-link previous" :tabindex="canDoPrev ? 0 : -1" :disabled="!canDoPrev" v-on:click="previous">
-            {{ t.PagerPreviousButton }}
+        <li class="page-item" :class="{ disabled: !canDoPrev }">
+          <button type="button" class="page-link previous" :tabindex="canDoPrev ? 0 : -1" :disabled="!canDoPrev" v-on:click="previous" :aria-label="t.PagerPreviousButton" :title="t.PagerPreviousButton">
+            <fa-icon icon="fa-solid fa-angle-left" aria-hidden="true" />
           </button>
         </li>
         <template v-for="(link, index) in pageLinks" v-bind:key="index">
-          <li v-if="link != -1" class="ma-page-item ma-page-number" :class="{ active: current == link - 1 }">
-            <button type="button" class="ma-page-link" v-on:click="goTo(link - 1)" :aria-label="'Goto Page ' + link" :aria-current="current == link - 1 ? 'page' : undefined">
+          <li v-if="link != -1" class="page-item ma-page-number" :class="{ active: current == link - 1 }">
+            <button type="button" class="page-link" v-on:click="goTo(link - 1)" :aria-label="'Goto Page ' + link" :aria-current="current == link - 1 ? 'page' : undefined">
               {{ link }}
               <span v-if="current == link - 1" style="display:none">(current)</span>
             </button>
           </li>
         </template>
-        <li class="ma-page-item" :class="{ 'is-disabled': !canDoNext }">
-          <button type="button" class="ma-page-link next" :tabindex="canDoNext ? 0 : -1" :disabled="!canDoNext" v-on:click="next">
-            {{ t.PagerNextButton }}
+        <li class="page-item" :class="{ disabled: !canDoNext }">
+          <button type="button" class="page-link next" :tabindex="canDoNext ? 0 : -1" :disabled="!canDoNext" v-on:click="next" :aria-label="t.PagerNextButton" :title="t.PagerNextButton">
+            <fa-icon icon="fa-solid fa-angle-right" aria-hidden="true" />
           </button>
         </li>
-        <li class="ma-page-item file-last-button" :class="{ 'is-disabled': !canDoLast }">
-          <button type="button" class="ma-page-link last" :tabindex="canDoLast ? 0 : -1" :disabled="!canDoLast" v-on:click="goLast">
-            {{ t.PagerLastButton }}
+        <li class="page-item file-last-button" :class="{ disabled: !canDoLast }">
+          <button type="button" class="page-link last" :tabindex="canDoLast ? 0 : -1" :disabled="!canDoLast" v-on:click="goLast" :aria-label="t.PagerLastButton" :title="t.PagerLastButton">
+            <fa-icon icon="fa-solid fa-angles-right" aria-hidden="true" />
           </button>
         </li>
       </ul>

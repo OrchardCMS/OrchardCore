@@ -15,6 +15,11 @@ public static class DragDropHelper
 {
     public static async Task DragAsync(this IPage page, ILocator handle, ILocator target, int steps = 8)
     {
+        // The admin's top bar and sticky bottom action bar are fixed: a target behind one of them receives no
+        // drag-over events. Scroll the target clear of them first, as a user would; 'nearest' honors the page's
+        // scroll padding, which the admin sets to the height of both bars.
+        await target.EvaluateAsync("element => element.scrollIntoView({ block: 'nearest' })");
+
         var fromBox = await handle.BoundingBoxAsync();
         Assert.NotNull(fromBox);
 

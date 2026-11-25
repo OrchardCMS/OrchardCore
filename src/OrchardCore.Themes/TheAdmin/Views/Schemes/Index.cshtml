@@ -1,0 +1,39 @@
+@model AdminSchemesIndexViewModel
+
+@*
+    The schemes of TheAdmin. There are a handful of them at most, so the list has no search, paging or bulk actions,
+    and needs no list script.
+*@
+
+@{
+    var title = T["Admin schemes"];
+}
+
+<zone Name="Title">
+    <breadcrumb name="AdminSchemes" title="@title">
+        <breadcrumb-item id="Themes" action="Index" controller="Admin" area="OrchardCore.Themes">@T["Themes"]</breadcrumb-item>
+    </breadcrumb>
+</zone>
+
+<p class="hint">@T["The schemes users can pick for the admin. Each is made of four colors, from which the admin derives its other colors, light and dark, and of its fonts, sizes, corners and spacing. The theme adds its own schemes once; edit or delete them like any other. The default scheme is used by everyone who has not picked their own."]</p>
+
+<div class="card text-bg-theme mb-3 position-sticky action-bar">
+    <div class="card-body">
+        <div class="row gx-2 justify-content-end">
+            <div class="col-auto">
+                <a asp-action="Create" class="btn btn-secondary create" role="button">@T["Add scheme"]</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* The rows are rendered by the AdminList shape using the configured layout (List, Grid, ...). *@
+<admin-list name="AdminSchemes" context="Model.List" show-select-all="false"
+            empty-message="@T["<strong>Nothing here!</strong> There are no schemes for the moment."]">
+    <admin-list-list item-css-class="list-group-item" />
+    <admin-list-grid>
+        <admin-list-column name="Name" position="20" title="@T["Name"]" />
+        <admin-list-column name="Colors" position="30" title="@T["Colors"]" width="auto" />
+        <admin-list-column type="Actions" title="@T["Actions"]" />
+    </admin-list-grid>
+</admin-list>

@@ -1,38 +1,62 @@
+/*!
+ * The Admin theme of Orchard Core (BSD-3-Clause). Its check box, radio button, switch and invalid field icons are the
+ * artwork of Bootstrap v5.3.8 (https://getbootstrap.com/), Copyright 2011-2025 The Bootstrap Authors, Licensed under
+ * MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE). See THIRD-PARTY-NOTICES.txt in the theme's package.
+ */
+
 /* Import variables first */
-@import 'variables';
+@use 'variables';
+
+/* The design tokens, the scheme derivation and the typefaces, then Bootstrap rebranded with them. */
+@use 'main/tokens';
+@use 'main/schemes';
+@use 'main/fonts';
+@use 'main/bootstrap';
 
 /* Import the files from main folder before importing any component */
-@import 'main/helpers';
-@import 'main/overrides';
+@use 'main/helpers';
+@use 'main/overrides';
+@use 'main/accessibility';
 
 /* Import the components files */
-@import 'components/ocat';
-@import 'components/action-bar';
-@import 'components/alert';
-@import 'components/admin-list';
-@import 'components/badge';
-@import 'components/bootstrap-select';
-@import 'components/breadcrumb';
-@import 'components/card';
-@import 'components/codemirror';
-@import 'components/dropdown';
-@import 'components/forms';
-@import 'components/grid';
-@import 'components/icon-picker';
-@import 'components/list-group';
-@import 'components/markdown';
-@import 'components/monaco';
-@import 'components/navbar';
-@import 'components/nouislider';
-@import 'components/pager';
-@import 'components/recaptcha';
-@import 'components/sortable';
-@import 'components/tabs';
-@import 'components/trumbowyg';
-@import 'components/validations';
+@use 'components/ocat';
+@use 'components/action-bar';
+@use 'components/alert';
+@use 'components/admin-list';
+@use 'components/badge';
+@use 'components/bootstrap-select';
+@use 'components/breadcrumb';
+@use 'components/card';
+@use 'components/codemirror';
+@use 'components/dropdown';
+@use 'components/forms';
+@use 'components/grid';
+@use 'components/icon-picker';
+@use 'components/list-group';
+@use 'components/markdown';
+@use 'components/media';
+@use 'components/menu-editor';
+@use 'components/monaco';
+@use 'components/navbar';
+@use 'components/nouislider';
+@use 'components/page';
+@use 'components/pager';
+@use 'components/recaptcha';
+@use 'components/scheme-editor';
+@use 'components/scheme-picker';
+@use 'components/sortable';
+@use 'components/tabs';
+@use 'components/trumbowyg';
+@use 'components/validations';
 // Obsolete, will be removed with the 'vue-multiselect' resource in the next major version.
-@import 'components/vue-multiselect';
+@use 'components/vue-multiselect';
 
 /* Import themes */
-@import 'themes/light/index';
-@import 'themes/dark/index';
+@use 'themes/light/index' as light-theme;
+@use 'themes/dark/index' as dark-theme;
+
+// A '.button' is a primary button. Declared here, where every module of the stylesheet is loaded, so that it extends
+// the button rules of all of them.
+.button {
+    @extend .btn, .btn-primary !optional;
+}

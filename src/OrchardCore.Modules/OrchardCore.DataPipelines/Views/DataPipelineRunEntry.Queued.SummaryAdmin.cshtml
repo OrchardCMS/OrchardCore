@@ -1,0 +1,8 @@
+@model ShapeViewModel<DataPipelineRunEntry>
+
+@{
+    var run = Model.Value.Run;
+}
+
+
+<span class="badge ta-badge fw-normal" title="@T["Queued"]"><i class="fa-solid fa-calendar text-secondary" aria-hidden="true"></i> <time datetime="@run.QueuedUtc.ToString("o")">@await DisplayAsync(await New.Timespan(Utc: run.QueuedUtc))</time></span>
