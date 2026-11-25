@@ -1484,6 +1484,10 @@ html:has(.action-bar-bottom) {
   color: var(--bs-btn-color);
 }
 
+.bootstrap-select > .btn.dropdown-toggle, .bootstrap-select > .dropdown-toggle.button {
+  font-weight: var(--ta-font-weight-normal);
+}
+
 .oc-breadcrumb .breadcrumb {
   --bs-breadcrumb-divider: '\203A';
   --bs-breadcrumb-divider-color: var(--ta-muted);
