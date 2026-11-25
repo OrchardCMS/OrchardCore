@@ -40,11 +40,11 @@ public sealed class AdminSchemeTests
     [InlineData("custom-x\"]{color:red}", false)]
     [InlineData("", false)]
     [InlineData(null, false)]
-    public void SchemeIds_AreSafeCssValues(string id, bool valid)
+    public void IsValidId_SchemeId_AcceptsOnlySafeCssValues(string id, bool valid)
         => Assert.Equal(valid, AdminSchemeStore.IsValidId(id));
 
     [Fact]
-    public void NewIds_AreValid()
+    public void NewId_Generated_IsValid()
         => Assert.True(AdminSchemeStore.IsValidId(AdminSchemeStore.NewId()));
 
     [Theory]
@@ -63,7 +63,7 @@ public sealed class AdminSchemeTests
     [InlineData(null, null, null, -0.5, null, false)]
     [InlineData(null, null, null, null, 0.5, false)]
     [InlineData(null, null, null, null, 1.5, false)]
-    public void Typography_IsValidatedAsFontNamesAndTheRanges(string font, string heading, double? fontScale, double? radiusScale, double? density, bool valid)
+    public void HasValidTypography_FontsAndScales_AcceptsFontNamesWithinTheRanges(string font, string heading, double? fontScale, double? radiusScale, double? density, bool valid)
         => Assert.Equal(valid, AdminSchemeStore.HasValidTypography(new AdminScheme
         {
             FontFamily = font,
@@ -78,7 +78,7 @@ public sealed class AdminSchemeTests
     [InlineData("#fff", "#123456", true)]
     [InlineData("blue", null, false)]
     [InlineData("#2a81bb", "red", false)]
-    public void Colors_AreValidatedAsHexColors(string primary, string page, bool valid)
+    public void HasValidColors_SchemeColors_AcceptsOnlyHexColors(string primary, string page, bool valid)
         => Assert.Equal(valid, AdminSchemeStore.HasValidColors(new AdminScheme { Primary = primary, Deep = "#144c71", Ink = "#081b26", Accent = "#5aa4ef", Page = page }));
 
     [Theory]
@@ -88,7 +88,7 @@ public sealed class AdminSchemeTests
     [InlineData(0.5, 1, 1, false)]
     [InlineData(1, 2, 1, false)]
     [InlineData(1, 1, 2, false)]
-    public void Editor_RejectsScalesOutOfRange(double fontScale, double radiusScale, double density, bool valid)
+    public void Validate_EditorScales_RejectsValuesOutOfRange(double fontScale, double radiusScale, double density, bool valid)
     {
         var model = new AdminSchemeViewModel { Name = "A", FontScale = fontScale, RadiusScale = radiusScale, Density = density };
 
@@ -96,7 +96,7 @@ public sealed class AdminSchemeTests
     }
 
     [Fact]
-    public void Editor_OffersOnlyValidSteps()
+    public void Steps_OfferedByTheEditor_AreAllValid()
     {
         Assert.All(AdminSchemeTypography.FontScales, value => Assert.True(AdminSchemeTypography.IsValidFontScale(value)));
         Assert.All(AdminSchemeTypography.RadiusScales, value => Assert.True(AdminSchemeTypography.IsValidRadiusScale(value)));
@@ -180,7 +180,7 @@ public sealed class AdminSchemeTests
     }
 
     [Fact]
-    public async Task StylesheetVersion_ChangesWhenASchemeIsSaved()
+    public async Task GetStylesheet_AfterASave_ChangesTheVersion()
     {
         var (store, _) = CreateStore();
         var (_, before) = await store.GetStylesheetAsync();
@@ -191,7 +191,7 @@ public sealed class AdminSchemeTests
     }
 
     [Fact]
-    public void Stylesheet_SkipsSchemesWithAnInvalidIdOrColor()
+    public void Build_InvalidIdOrColor_SkipsTheScheme()
     {
         var badColor = Scheme("custom-bad-color", "Bad color");
         badColor.Primary = "blue";
@@ -307,7 +307,7 @@ public sealed class AdminSchemeTests
     }
 
     [Fact]
-    public async Task Controller_FindsNoSchemeThatIsNotThere()
+    public async Task Actions_MissingScheme_ReturnNotFound()
     {
         var (store, _) = CreateStore();
         var controller = CreateController(store);
@@ -393,7 +393,7 @@ public sealed class AdminSchemeTests
     }
 
     [Fact]
-    public async Task Controller_PreviewsTheSchemeBeingEdited()
+    public async Task Preview_EditedScheme_ReturnsItsCss()
     {
         var (store, _) = CreateStore();
         var controller = CreateController(store);
@@ -473,6 +473,40 @@ public sealed class AdminSchemeTests
         var noId = Assert.Single(await store.ListAsync(), scheme => scheme.Name == "No id");
         Assert.StartsWith(AdminSchemeStore.IdPrefix, noId.Id, StringComparison.Ordinal);
         Assert.Equal("gray", await store.GetDefaultIdAsync());
+    }
+
+    [Theory]
+    [InlineData("\"Position\": \"2\"", "Position")]
+    [InlineData("\"Position\": 1.5", "Position")]
+    [InlineData("\"Hue\": \"210\"", "Hue")]
+    [InlineData("\"LightMenu\": \"true\"", "LightMenu")]
+    [InlineData("\"OnPrimary\": 42", "OnPrimary")]
+    [InlineData("\"FontFamily\": [\"Georgia\"]", "FontFamily")]
+    public async Task Recipe_ValueOfTheWrongType_ReportsTheSchemeAndImportsTheOthers(string property, string name)
+    {
+        var (store, _) = CreateStore();
+        var step = JsonNode.Parse($$"""
+            {
+              "name": "AdminSchemes",
+              "Schemes": [
+                { "ItemId": "custom-typed", "Name": "Typed", "Deep": "#144c71", "Ink": "#081b26", "Accent": "#5aa4ef", "Primary": "#2a81bb", {{property}} },
+                { "ItemId": "custom-ok", "Name": "Ok", "Primary": "#2a81bb", "Deep": "#144c71", "Ink": "#081b26", "Accent": "#5aa4ef", "Position": 20, "Hue": 210.5, "LightMenu": true }
+              ]
+            }
+            """).AsObject();
+        var context = new RecipeExecutionContext { Name = "AdminSchemes", Step = step };
+
+        await new AdminSchemesStep(store, CreateLocalizer()).ExecuteAsync(context);
+
+        var error = Assert.Single(context.Errors);
+        Assert.Contains(name, error, StringComparison.Ordinal);
+        Assert.Null(await store.FindAsync("custom-typed"));
+
+        var ok = await store.FindAsync("custom-ok");
+        Assert.NotNull(ok);
+        Assert.Equal(20, ok.Position);
+        Assert.Equal(210.5, ok.Hue);
+        Assert.True(ok.LightMenu);
     }
 
     [Theory]

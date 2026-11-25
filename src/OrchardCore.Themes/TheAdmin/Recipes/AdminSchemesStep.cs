@@ -48,7 +48,11 @@ public sealed class AdminSchemesStep : NamedRecipeStepHandler
     // Returns the position of the next entry that names none.
     private async Task<int> ImportAsync(RecipeExecutionContext context, JsonObject entry, int position)
     {
-        var id = entry[AdminSchemesDeploymentStep.ItemIdName]?.GetValue<string>();
+        // The properties whose JSON value is not of the expected type (a string, a number, a boolean): the entry is
+        // reported rather than the recipe stopped.
+        var invalid = new List<string>();
+
+        var id = ReadString(entry, AdminSchemesDeploymentStep.ItemIdName, invalid);
 
         if (string.IsNullOrEmpty(id))
         {
@@ -58,26 +62,33 @@ public sealed class AdminSchemesStep : NamedRecipeStepHandler
         var scheme = new AdminScheme
         {
             Id = id,
-            Name = entry[nameof(AdminScheme.Name)]?.GetValue<string>()?.Trim(),
-            Primary = entry[nameof(AdminScheme.Primary)]?.GetValue<string>(),
-            Deep = entry[nameof(AdminScheme.Deep)]?.GetValue<string>(),
-            Ink = entry[nameof(AdminScheme.Ink)]?.GetValue<string>(),
-            Accent = entry[nameof(AdminScheme.Accent)]?.GetValue<string>(),
-            LightMenu = entry[nameof(AdminScheme.LightMenu)]?.GetValue<bool>() ?? false,
-            Position = entry[nameof(AdminScheme.Position)]?.GetValue<int>() ?? position++,
-            Hue = entry[nameof(AdminScheme.Hue)]?.GetValue<double>(),
-            Saturation = entry[nameof(AdminScheme.Saturation)]?.GetValue<double>(),
-            OnPrimary = entry[nameof(AdminScheme.OnPrimary)]?.GetValue<string>(),
-            Page = entry[nameof(AdminScheme.Page)]?.GetValue<string>(),
-            Toolbar = entry[nameof(AdminScheme.Toolbar)]?.GetValue<string>(),
-            Tint = entry[nameof(AdminScheme.Tint)]?.GetValue<string>(),
-            TintDark = entry[nameof(AdminScheme.TintDark)]?.GetValue<string>(),
-            FontFamily = entry[nameof(AdminScheme.FontFamily)]?.GetValue<string>(),
-            HeadingFontFamily = entry[nameof(AdminScheme.HeadingFontFamily)]?.GetValue<string>(),
-            FontScale = entry[nameof(AdminScheme.FontScale)]?.GetValue<double>(),
-            RadiusScale = entry[nameof(AdminScheme.RadiusScale)]?.GetValue<double>(),
-            Density = entry[nameof(AdminScheme.Density)]?.GetValue<double>(),
+            Name = ReadString(entry, nameof(AdminScheme.Name), invalid)?.Trim(),
+            Primary = ReadString(entry, nameof(AdminScheme.Primary), invalid),
+            Deep = ReadString(entry, nameof(AdminScheme.Deep), invalid),
+            Ink = ReadString(entry, nameof(AdminScheme.Ink), invalid),
+            Accent = ReadString(entry, nameof(AdminScheme.Accent), invalid),
+            LightMenu = Read<bool>(entry, nameof(AdminScheme.LightMenu), invalid) ?? false,
+            Position = Read<int>(entry, nameof(AdminScheme.Position), invalid) ?? position++,
+            Hue = Read<double>(entry, nameof(AdminScheme.Hue), invalid),
+            Saturation = Read<double>(entry, nameof(AdminScheme.Saturation), invalid),
+            OnPrimary = ReadString(entry, nameof(AdminScheme.OnPrimary), invalid),
+            Page = ReadString(entry, nameof(AdminScheme.Page), invalid),
+            Toolbar = ReadString(entry, nameof(AdminScheme.Toolbar), invalid),
+            Tint = ReadString(entry, nameof(AdminScheme.Tint), invalid),
+            TintDark = ReadString(entry, nameof(AdminScheme.TintDark), invalid),
+            FontFamily = ReadString(entry, nameof(AdminScheme.FontFamily), invalid),
+            HeadingFontFamily = ReadString(entry, nameof(AdminScheme.HeadingFontFamily), invalid),
+            FontScale = Read<double>(entry, nameof(AdminScheme.FontScale), invalid),
+            RadiusScale = Read<double>(entry, nameof(AdminScheme.RadiusScale), invalid),
+            Density = Read<double>(entry, nameof(AdminScheme.Density), invalid),
         };
+
+        if (invalid.Count > 0)
+        {
+            context.Errors.Add(S["The scheme '{0}' has values of the wrong type: {1}. ItemId, Name, the colors and the fonts are strings, LightMenu is a boolean, Position is a whole number, and the other settings are numbers.", scheme.Id, string.Join(", ", invalid)]);
+
+            return position;
+        }
 
         if (!AdminSchemeStore.IsValidId(scheme.Id))
         {
@@ -103,5 +114,45 @@ public sealed class AdminSchemesStep : NamedRecipeStepHandler
         await _store.SaveAsync(scheme);
 
         return position;
+    }
+
+    // A missing or null property is no value; one of another type is added to 'invalid'.
+    private static T? Read<T>(JsonObject entry, string name, List<string> invalid)
+        where T : struct
+    {
+        var node = entry[name];
+
+        if (node is null)
+        {
+            return null;
+        }
+
+        if (node is JsonValue value && value.TryGetValue<T>(out var result))
+        {
+            return result;
+        }
+
+        invalid.Add(name);
+
+        return null;
+    }
+
+    private static string ReadString(JsonObject entry, string name, List<string> invalid)
+    {
+        var node = entry[name];
+
+        if (node is null)
+        {
+            return null;
+        }
+
+        if (node is JsonValue value && value.TryGetValue<string>(out var result))
+        {
+            return result;
+        }
+
+        invalid.Add(name);
+
+        return null;
     }
 }

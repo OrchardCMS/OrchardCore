@@ -30,8 +30,13 @@ internal sealed class AdminSchemeDisplayDriver : DisplayDriver<AdminSchemeEntry>
             View("AdminScheme_Swatch_SummaryAdmin", entry)
                 .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Tags:5")
                 .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "Colors:5"),
-            View("AdminScheme_Buttons_SummaryAdmin", entry).Location("Actions:5"),
+            View("AdminScheme_Buttons_SummaryAdmin", entry)
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Actions:5")
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "Actions:5"),
             // The default scheme can't be deleted, nor made the default again: its row has no menu of actions.
-            View("AdminScheme_ActionsMenu_SummaryAdmin", entry).Location("ActionsMenu:10").RenderWhen(() => Task.FromResult(!entry.IsDefault)));
+            View("AdminScheme_ActionsMenu_SummaryAdmin", entry)
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "ActionsMenu:10")
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdminGrid, "ActionsMenu:10")
+                .RenderWhen(() => Task.FromResult(!entry.IsDefault)));
     }
 }

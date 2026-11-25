@@ -66,6 +66,11 @@
 
     // A small admin page, light and dark, drawn with the rules of the scheme being edited.
     IShape preview = await New.AdminSchemePreview(SchemeId: SchemesController.PreviewSchemeId);
+
+    // The rows built in loops name their field at run time, so their errors are read from the model state by that name:
+    // asp-validation-for and asp-validation-class-for take an expression, which would name 'color.Name' instead.
+    string ErrorClass(string name)
+        => ViewData.ModelState.TryGetValue(name, out var entry) && entry.Errors.Count > 0 ? "has-validation-error is-invalid" : null;
 }
 
 <zone Name="Title">
@@ -83,7 +88,7 @@
         <div class="card-header">@T["Scheme"]</div>
         <div class="card-body">
             <div class="ocat-wrapper" asp-validation-class-for="Name">
-                <label asp-for="Name" class="ocat-label">@T["Name"]</label>
+                <label asp-for="Name" class="ocat-label ocat-label-required">@T["Name"]</label>
                 <div class="ocat-end">
                     <input asp-for="Name" class="form-control" autofocus />
                     <span asp-validation-for="Name"></span>
@@ -93,14 +98,14 @@
 
             @foreach (var color in colors)
             {
-                <div class="ocat-wrapper" asp-validation-class-for="@color.Name">
-                    <label for="@color.Name" class="ocat-label">@color.Label</label>
+                <div class="ocat-wrapper @ErrorClass(color.Name)">
+                    <label for="@color.Name" class="ocat-label ocat-label-required">@color.Label</label>
                     <div class="ocat-end">
                         <div class="ta-color-field">
                             <input type="color" class="form-control form-control-color" value="@color.Value" data-scheme-color-picker="@color.Name" aria-label="@T["Pick the {0} color", color.Label.Value]" />
                             <input type="text" id="@color.Name" name="@color.Name" class="form-control" value="@color.Value" maxlength="7" spellcheck="false" autocomplete="off" data-scheme-color-hex="@color.Name" pattern="^#[0-9a-fA-F]{6}$" required />
                         </div>
-                        <span asp-validation-for="@color.Name"></span>
+                        @Html.ValidationMessage(color.Name)
                         <span class="hint">@color.Hint</span>
                     </div>
                 </div>
@@ -150,7 +155,7 @@
 
             @foreach (var scale in scales)
             {
-                <div class="ocat-wrapper" asp-validation-class-for="@scale.Name">
+                <div class="ocat-wrapper @ErrorClass(scale.Name)">
                     <label for="@scale.Name" class="ocat-label">@scale.Label</label>
                     <div class="ocat-end">
                         <select id="@scale.Name" name="@scale.Name" class="form-select">
@@ -160,7 +165,7 @@
                                 <option value="@step.Value.ToString(CultureInfo.CurrentCulture)" selected="@(Math.Abs(step.Value - scale.Value) < 0.0001)">@step.Label</option>
                             }
                         </select>
-                        <span asp-validation-for="@scale.Name"></span>
+                        @Html.ValidationMessage(scale.Name)
                         <span class="hint">@scale.Hint</span>
                     </div>
                 </div>
@@ -176,7 +181,9 @@
             <div class="ocat-wrapper" asp-validation-class-for="Hue">
                 <label asp-for="Hue" class="ocat-label">@T["Surface hue"]</label>
                 <div class="ocat-end">
-                    <input asp-for="Hue" class="form-control" type="number" min="0" max="360" step="1" />
+                    @* Text, not a number input: a number input posts '0.5' whatever the culture, but the form is bound in
+                       the culture of the request (as the scales are), which writes '0,5' in some. *@
+                    <input asp-for="Hue" class="form-control" type="text" inputmode="decimal" autocomplete="off" />
                     <span asp-validation-for="Hue"></span>
                     <span class="hint">@T["The hue of the page, borders and dark mode surfaces, from 0 to 360. The deep color's when empty."]</span>
                 </div>
@@ -185,7 +192,7 @@
             <div class="ocat-wrapper" asp-validation-class-for="Saturation">
                 <label asp-for="Saturation" class="ocat-label">@T["Surface saturation"]</label>
                 <div class="ocat-end">
-                    <input asp-for="Saturation" class="form-control" type="number" min="0" max="1" step="0.01" />
+                    <input asp-for="Saturation" class="form-control" type="text" inputmode="decimal" autocomplete="off" />
                     <span asp-validation-for="Saturation"></span>
                     <span class="hint">@T["How colorful those surfaces are, from 0 (gray) to 1. Worked out from the deep color when empty."]</span>
                 </div>
@@ -193,14 +200,14 @@
 
             @foreach (var color in optionalColors)
             {
-                <div class="ocat-wrapper" asp-validation-class-for="@color.Name">
+                <div class="ocat-wrapper @ErrorClass(color.Name)">
                     <label for="@color.Name" class="ocat-label">@color.Label</label>
                     <div class="ocat-end">
                         <div class="ta-color-field">
                             <input type="color" class="form-control form-control-color" value="@(string.IsNullOrEmpty(color.Value) ? "#ffffff" : color.Value)" data-scheme-color-picker="@color.Name" aria-label="@T["Pick the {0} color", color.Label.Value]" />
                             <input type="text" id="@color.Name" name="@color.Name" class="form-control" value="@color.Value" maxlength="7" spellcheck="false" autocomplete="off" data-scheme-color-hex="@color.Name" pattern="^(#[0-9a-fA-F]{6})?$" placeholder="@T["Automatic"]" />
                         </div>
-                        <span asp-validation-for="@color.Name"></span>
+                        @Html.ValidationMessage(color.Name)
                         <span class="hint">@color.Hint</span>
                     </div>
                 </div>
@@ -226,8 +233,8 @@
     </div>
 
     <div class="action-bar-bottom">
-        <button type="submit" class="btn btn-primary">@T["Save"]</button>
-        <a asp-action="Index" class="btn btn-secondary">@T["Cancel"]</a>
+        <a asp-action="Index" class="btn btn-secondary cancel" role="button">@T["Cancel"]</a>
+        <button type="submit" class="btn btn-primary save">@T["Save"]</button>
     </div>
 </form>
 

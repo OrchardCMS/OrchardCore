@@ -9,7 +9,7 @@ namespace OrchardCore.DataPipelines.Drivers;
 /// Builds the row of the run history, in both layouts of the list: each shape is placed in a zone of the List row
 /// (<c>SummaryAdmin</c>) and in the column of the Grid (<c>SummaryAdminGrid</c>).
 /// </summary>
-public sealed class DataPipelineRunEntryDisplayDriver : DisplayDriver<DataPipelineRunEntry>
+internal sealed class DataPipelineRunEntryDisplayDriver : DisplayDriver<DataPipelineRunEntry>
 {
     public override Task<IDisplayResult> DisplayAsync(DataPipelineRunEntry entry, BuildDisplayContext context)
     {

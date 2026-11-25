@@ -79,7 +79,33 @@
 
     // A bar that changes height (its buttons wrap, say) moves the ones under it.
     const resizeObserver = new ResizeObserver(schedule);
-    document.querySelectorAll<HTMLElement>('.action-bar').forEach(bar => resizeObserver.observe(bar));
+    const observeBars = (root: ParentNode) => {
+        if (root instanceof HTMLElement && root.matches('.action-bar')) {
+            resizeObserver.observe(root);
+        }
+
+        root.querySelectorAll<HTMLElement>('.action-bar').forEach(bar => resizeObserver.observe(bar));
+    };
+
+    observeBars(document);
+
+    // A bar rendered after the page loads (by a Vue app, say) is stacked and watched too.
+    new MutationObserver(mutations => {
+        let added = false;
+
+        for (const mutation of mutations) {
+            mutation.addedNodes.forEach(node => {
+                if (node instanceof HTMLElement && (node.matches('.action-bar') || node.querySelector('.action-bar'))) {
+                    observeBars(node);
+                    added = true;
+                }
+            });
+        }
+
+        if (added) {
+            schedule();
+        }
+    }).observe(document.body, { childList: true, subtree: true });
 
     update();
 })();

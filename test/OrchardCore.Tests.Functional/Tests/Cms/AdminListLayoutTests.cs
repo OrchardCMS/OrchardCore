@@ -38,6 +38,7 @@ public sealed class AdminListLayoutTests : CmsTestBase<AdminListLayoutTestsFixtu
         "/Admin/TemplateSources/Feature?Options.AdminTemplates=true",
         "/Admin/TemplateSources/Theme/Alternates?name=Content",
         "/Admin/Features",
+        "/Admin/TheAdmin/Schemes",
     ];
 
     public AdminListLayoutTests(AdminListLayoutTestsFixture fixture) : base(fixture) { }
@@ -206,6 +207,7 @@ public sealed class AdminListLayoutTests : CmsTestBase<AdminListLayoutTestsFixtu
             "OrchardCore.Tenants",
             "OrchardCore.Sitemaps",
             "OrchardCore.Workflows",
+            "OrchardCore.DataPipelines",
         ];
         foreach (var feature in features)
         {
@@ -231,6 +233,8 @@ public sealed class AdminListLayoutTests : CmsTestBase<AdminListLayoutTestsFixtu
             "/Admin/SitemapsCache/List",
             "/Admin/Workflows/Types",
             $"/Admin/Workflows/Types/{workflowTypeId}/Instances/Index",
+            "/Admin/DataPipelines",
+            "/Admin/DataPipelines/Runs",
         ];
         string[] layouts = ["List", "Grid"];
         foreach (var layout in layouts)
@@ -322,7 +326,8 @@ public sealed class AdminListLayoutTests : CmsTestBase<AdminListLayoutTestsFixtu
                         const name = [...cell.classList].find(c => c.startsWith('admin-list-column-'));
                         const content = cell.cloneNode(true);
                         content.querySelectorAll('.admin-list-grid-label').forEach(label => label.remove());
-                        const filled = content.textContent.trim().length > 0 || content.querySelector('input, button, a, img, i, svg, select') !== null;
+                        // An element with role="img" is content too, e.g. a swatch drawn by its styles with no text.
+                        const filled = content.textContent.trim().length > 0 || content.querySelector('input, button, a, img, i, svg, select, [role="img"]') !== null;
                         columns.set(name, columns.get(name) === true || filled);
                     }
                 }

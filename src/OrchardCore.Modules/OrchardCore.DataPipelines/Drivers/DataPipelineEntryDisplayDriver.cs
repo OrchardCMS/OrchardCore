@@ -9,7 +9,7 @@ namespace OrchardCore.DataPipelines.Drivers;
 /// Builds the row of the list of the pipelines, in both layouts of the list: each shape is placed in a zone of the
 /// List row (<c>SummaryAdmin</c>) and in the column of the Grid (<c>SummaryAdminGrid</c>).
 /// </summary>
-public sealed class DataPipelineEntryDisplayDriver : DisplayDriver<DataPipelineEntry>
+internal sealed class DataPipelineEntryDisplayDriver : DisplayDriver<DataPipelineEntry>
 {
     public override Task<IDisplayResult> DisplayAsync(DataPipelineEntry entry, BuildDisplayContext context)
     {

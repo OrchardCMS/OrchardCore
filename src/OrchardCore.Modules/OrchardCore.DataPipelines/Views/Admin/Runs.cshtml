@@ -9,10 +9,6 @@
 @* One form for the search and the status filter of the toolbar: picking a status submits it (list-management). *@
 <form asp-action="Runs" asp-route-pipelineId="@Model.Pipeline?.PipelineId" method="get" data-list-management>
     <input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
-    @if (Model.Pipeline is not null && !string.IsNullOrEmpty(Model.Search))
-    {
-        <input type="hidden" name="q" value="@Model.Search" />
-    }
 
     <div class="card mb-3 text-bg-theme position-sticky action-bar">
         <div class="card-body">

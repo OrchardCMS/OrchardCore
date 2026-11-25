@@ -79,7 +79,7 @@ public sealed class TheAdminSchemeTests
     }
 
     [Fact]
-    public void ImportedSchemes_UseTheThemesFont()
+    public void ImportedSchemes_NamingNoFont_UseTheThemesFont()
     {
         // No scheme names a font: they all use Lato, the theme's own.
         Assert.All(AdminSchemesRecipe.ReadSchemes(), scheme =>
@@ -94,7 +94,7 @@ public sealed class TheAdminSchemeTests
     [InlineData("#f0f4ff", "#1f2a44", "#0b1020", "#9fb4ff")] // A primary almost as pale as the page.
     [InlineData("#5b0f2a", "#2b0614", "#12020a", "#ff8fb8")] // A very dark primary.
     [InlineData("#00ff66", "#00331a", "#001208", "#66ffaa")] // A neon one.
-    public void AnySchemeAnAdminPicks_MeetsWcagContrast(string primary, string deep, string ink, string accent)
+    public void FromColors_AnyPickedColors_MeetWcagContrast(string primary, string deep, string ink, string accent)
     {
         foreach (var lightMenu in new[] { false, true })
         {
@@ -121,7 +121,7 @@ public sealed class TheAdminSchemeTests
     }
 
     [Fact]
-    public void FromColors_PutsDarkTextOnALightPrimary()
+    public void FromColors_LightPrimary_PutsDarkTextOnIt()
     {
         var gold = AdminSchemePalette.FromColors(Color("#eaa52c"), Color("#1e1e1e"), Color("#09080b"), Color("#eaa52c"));
         var blue = AdminSchemePalette.FromColors(Color("#2a81bb"), Color("#144c71"), Color("#081b26"), Color("#5aa4ef"));
@@ -133,7 +133,7 @@ public sealed class TheAdminSchemeTests
     }
 
     [Fact]
-    public void Theme_NamesItsAttributePrefixAndDefault()
+    public void Constants_OfTheTheme_NameItsAttributePrefixAndDefault()
     {
         Assert.Equal("data-ta-scheme", TheAdminSchemes.AttributeName);
         Assert.Equal("ta", TheAdminSchemes.TokenPrefix);
@@ -146,7 +146,7 @@ public sealed class TheAdminSchemeTests
     }
 
     [Fact]
-    public void Stylesheet_WritesNothingForASchemeWithAnInvalidColor()
+    public void AppendScheme_InvalidColor_WritesNothing()
         => Assert.Empty(Build([new AdminScheme { Id = "custom-a", Name = "A", Primary = "blue", Deep = "#144c71", Ink = "#081b26", Accent = "#5aa4ef" }]));
 
     [Fact]

@@ -58,6 +58,13 @@ msgctxt "OrchardCore.Themes.TheAdmin.Recipes.AdminSchemesStep"
 msgid "The scheme '{0}' has a FontFamily or HeadingFontFamily that is not a font name or a list of them separated by commas (letters, digits, spaces, dashes, underscores and dots), or a FontScale (0.875 to 1.125), RadiusScale (0 to 1.5) or Density (0.75 to 1.25) out of range."
 msgstr ""
 
+#. Format arguments: {0}: scheme.Id; {1}: string.Join(", ", invalid)
+#: Recipes/AdminSchemesStep.cs
+#, csharp-format
+msgctxt "OrchardCore.Themes.TheAdmin.Recipes.AdminSchemesStep"
+msgid "The scheme '{0}' has values of the wrong type: {1}. ItemId, Name, the colors and the fonts are strings, LightMenu is a boolean, Position is a whole number, and the other settings are numbers."
+msgstr ""
+
 #. Format arguments: {0}: scheme.Id
 #: Recipes/AdminSchemesStep.cs
 #, csharp-format
