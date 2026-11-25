@@ -18,9 +18,22 @@
     let timer = 0;
     let request = 0;
 
+    // Whether every color field holds a '#rrggbb' color, or is empty for an optional one. A color being typed, e.g.
+    // '#0f7', is not sent: the server would refuse it, and the browser would log each refused request as an error.
+    const hasValidColors = () =>
+        Array.from(form.querySelectorAll("[data-scheme-color-hex]")).every((hex) => {
+            const value = hex.value.trim();
+
+            return hexPattern.test(value) || (value === "" && !hex.required);
+        });
+
     const refresh = async () => {
-        // Every field of the form, the anti-forgery token included; an invalid one makes the server refuse the
-        // preview, which then keeps showing the last valid scheme.
+        // The preview keeps showing the last valid scheme until every color is valid again.
+        if (!hasValidColors()) {
+            return;
+        }
+
+        // Every field of the form, the anti-forgery token included.
         const current = ++request;
 
         try {
