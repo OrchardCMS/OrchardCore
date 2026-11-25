@@ -19,6 +19,8 @@ public class LocalizedValidationMetadataProviderTests
     [InlineData(nameof(Model.Score))]
     [InlineData(nameof(Model.Code))]
     [InlineData(nameof(Model.Nickname))]
+    [InlineData(nameof(Model.MinimumLengthTitle))]
+    [InlineData(nameof(Model.MaximumLengthTitle))]
     [InlineData(nameof(Model.Color))]
     [InlineData(nameof(Model.Background))]
     [InlineData(nameof(Model.Email))]
@@ -202,6 +204,40 @@ public class LocalizedValidationMetadataProviderTests
     }
 
     [Fact]
+    public void Validate_MinLengthWithTranslatedTemplate_ReturnsLocalizedErrorMessage()
+    {
+        using var scope = CultureScope.Create(Culture);
+
+        var (attribute, argument) = CreateLocalizedAttribute(
+            nameof(Model.MinimumLengthTitle),
+            new CultureDictionaryRecord(
+                "The field {0} must be a string or array type with a minimum length of '{1}'.",
+                DefaultErrorMessagesContext,
+                ["{0} must be at least {1} characters."]));
+
+        var result = Validate(attribute, argument, "Test");
+
+        Assert.Equal("Title must be at least 5 characters.", result.ErrorMessage);
+    }
+
+    [Fact]
+    public void Validate_MaxLengthWithTranslatedTemplate_ReturnsLocalizedErrorMessage()
+    {
+        using var scope = CultureScope.Create(Culture);
+
+        var (attribute, argument) = CreateLocalizedAttribute(
+            nameof(Model.MaximumLengthTitle),
+            new CultureDictionaryRecord(
+                "The field {0} must be a string or array type with a maximum length of '{1}'.",
+                DefaultErrorMessagesContext,
+                ["{0} must be {1} characters or fewer."]));
+
+        var result = Validate(attribute, argument, new string('a', 51));
+
+        Assert.Equal("Title must be 50 characters or fewer.", result.ErrorMessage);
+    }
+
+    [Fact]
     public void FormatErrorMessage_CustomErrorMessageWithTranslation_ReturnsLocalizedErrorMessage()
     {
         using var scope = CultureScope.Create(Culture);
@@ -317,6 +353,14 @@ public class LocalizedValidationMetadataProviderTests
 
         [RegularExpression(ColorPattern)]
         public string Color { get; set; }
+
+        [MinLength(5)]
+        [Display(Name = "Title")]
+        public string MinimumLengthTitle { get; set; }
+
+        [MaxLength(50)]
+        [Display(Name = "Title")]
+        public string MaximumLengthTitle { get; set; }
 
         [Display(Name = "Background color")]
         [RegularExpression(ColorPattern)]
