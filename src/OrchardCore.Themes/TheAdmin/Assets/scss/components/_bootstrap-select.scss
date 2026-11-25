@@ -17,7 +17,9 @@
     }
 }
 
-// The toggle reads like a standard select: the regular weight, not the heavier weight of a button.
+// The toggle reads like a standard select: the regular weight, not the heavier weight of a button, and the border of
+// a control.
 .bootstrap-select > .btn.dropdown-toggle {
     font-weight: var(--ta-font-weight-normal);
+    border-color: var(--ta-control-border);
 }

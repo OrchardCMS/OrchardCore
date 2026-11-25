@@ -1486,6 +1486,7 @@ html:has(.action-bar-bottom) {
 
 .bootstrap-select > .btn.dropdown-toggle, .bootstrap-select > .dropdown-toggle.button {
   font-weight: var(--ta-font-weight-normal);
+  border-color: var(--ta-control-border);
 }
 
 .oc-breadcrumb .breadcrumb {
