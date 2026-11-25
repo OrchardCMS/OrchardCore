@@ -16,6 +16,7 @@ using OrchardCore.RateLimits.Migrations;
 using OrchardCore.RateLimits.Models;
 using OrchardCore.RateLimits.Recipes;
 using OrchardCore.RateLimits.Services;
+using OrchardCore.RateLimits.ViewModels;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 
@@ -31,6 +32,9 @@ public sealed class Startup : StartupBase
         services.AddSingleton<IRateLimitPolicyStore, RateLimitPolicyStore>();
         services.AddDisplayDriver<RateLimitLimiter, RateLimitLimiterDisplayDriver>();
         services.AddDisplayDriver<RateLimitPolicy, RateLimitPolicyDisplayDriver>();
+
+        // Builds the editor of a policy.
+        services.AddDisplayDriver<RateLimitPolicyEditViewModel, RateLimitPolicyEditDisplayDriver>();
 
         services.AddKeyedSingleton<IRateLimiterSource, FixedWindowRateLimiterSource>(FixedWindowRateLimiterSource.SourceName)
             .AddDisplayDriver<RateLimitLimiter, FixedWindowRateLimiterDisplayDriver>();

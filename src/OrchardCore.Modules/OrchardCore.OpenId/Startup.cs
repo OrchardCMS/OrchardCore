@@ -354,6 +354,11 @@ public sealed class ManagementStartup : StartupBase
         services.AddDisplayDriver<OpenIdApplicationEntry, OpenIdApplicationDisplayDriver>();
         services.AddDisplayDriver<OpenIdScopeEntry, OpenIdScopeDisplayDriver>();
 
+        // Build the editors of the applications and scopes.
+        services.AddDisplayDriver<CreateOpenIdApplicationViewModel, CreateOpenIdApplicationDisplayDriver>();
+        services.AddDisplayDriver<EditOpenIdApplicationViewModel, EditOpenIdApplicationDisplayDriver>();
+        services.AddDisplayDriver<CreateOpenIdScopeViewModel, CreateOpenIdScopeDisplayDriver>();
+        services.AddDisplayDriver<EditOpenIdScopeViewModel, EditOpenIdScopeDisplayDriver>();
     }
 }
 

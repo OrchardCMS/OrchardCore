@@ -60,7 +60,14 @@ public sealed class QueryDisplayDriver : DisplayDriver<Query>
                 model.Source = query.Source;
                 model.Schema = query.Schema;
                 model.Query = query;
-            }).Location("Content:1"),
+            }).Location(l => l.Zone("Content", "1").Card(S["General"], "10")),
+            Initialize<EditQueryViewModel>("QuerySchema_Edit", model =>
+            {
+                model.Name = query.Name;
+                model.Source = query.Source;
+                model.Schema = query.Schema;
+                model.Query = query;
+            }).Location(l => l.Zone("Content", "10").Card(S["GraphQL"], "30")),
             Initialize<EditQueryViewModel>("Query_Fields_Buttons", model =>
             {
                 model.Name = query.Name;

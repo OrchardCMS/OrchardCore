@@ -12,13 +12,11 @@
     var oldText = Model.PreviousContentItem?.DisplayText;
 }
 
-<h2 class="h3">@T["Content Item Info"]</h2>
-
-<table class="table table-sm table-hover">
+<table class="table table-sm table-hover mb-0">
     <tbody>
         <tr>
-            <th class="border-top-0 w-25">@T["Content Item Id"]</th>
-            <td class="border-top-0">@contentItem.ContentItemId</td>
+            <th class="w-25">@T["Content Item Id"]</th>
+            <td>@contentItem.ContentItemId</td>
         </tr>
         <tr>
             <th>@T["Content type"]</th>

@@ -21,6 +21,15 @@ By default, the `ocat-*` classes render a stacked (vertical) form layout equival
 | `ocat-limited-wrapper` | Wrapper for limited-width fields (dropdowns, numbers) | Stacked field wrapper with `margin-bottom: 1rem` |
 | `ocat-limited` | Constrains input width for limited-width fields | `100%`, then `50%` at `md`, `33.333%` at `lg`, `25%` at `xxl` |
 
+### Cards
+
+Every admin form groups its fields in cards, each a logical section of the form with a short title, e.g. "Server", "Authentication" and "Sender" in the SMTP settings. Every card comes from placement: the editor shapes of display drivers declare the card they belong to, and placement files can move them to other cards. Views never write card markup.
+
+- **Editors built by display drivers** (site settings, users, content type, part and field settings, workflow activities, deployment steps, ...): each editor shape declares its card in its placement location, with a name localized by the driver, e.g. `.Location(l => l.Zone("Content", "1").Card(S["Server"], "10"))`. Shapes placed in the same card share it, and a placement file can move a shape to another card, e.g. `"place": "Content:5%Server;10"`. See [Editor shape placement](../modules/Placement/README.md#editor-shape-placement).
+- **Admin pages with a form**, a controller editing a view model (e.g. a template or an OpenID application): the page renders an editor built by the display drivers of its view model, `@await DisplayAsync(Model.Editor)`, and the drivers place its shapes in cards. The controller builds the editor with `IDisplayManager<TViewModel>.BuildEditorAsync` and updates it with `UpdateEditorAsync` before validating the model. Other modules can add fields and cards to these pages with drivers of the same view model.
+
+The admin theme renders a card (the `Card` shape) as a `<fieldset>`, the HTML element grouping related form fields, styled as a Bootstrap card: `card` with its `card-header` legend and `card-body`, always expanded: cards group fields, they don't hide them. In a tab, which already frames them (e.g. the general, email and SMS settings), the cards render as plain fieldsets titled by their legends, except the ones holding a table, such as the events of the audit trail. The legend titles the card for assistive technologies, and the card carries the `ocat-card`, `ocat-card-title` and `ocat-card-body` classes as hooks. A card whose shapes render nothing is not shown. To render cards differently, override the `Card` and `CardContainer` shapes in a custom admin theme.
+
 ### Using OCAT Classes in Custom Views
 
 When building custom admin editor views, use the `ocat-*` classes so your views work with any admin theme.

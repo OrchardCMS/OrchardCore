@@ -8,6 +8,7 @@ using OrchardCore.ContentTypes.RecipeSteps;
 using OrchardCore.ContentTypes.Services;
 using OrchardCore.ContentTypes.Models;
 using OrchardCore.ContentTypes.Drivers;
+using OrchardCore.ContentTypes.ViewModels;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Deployment;
 using OrchardCore.Environment.Shell.Configuration;
@@ -61,6 +62,20 @@ public sealed class Startup : StartupBase
         services.AddScoped<IContentTypeDefinitionDisplayDriver, ContentTypeSettingsDisplayDriver>();
         services.AddScoped<IContentTypeDefinitionDisplayDriver, DefaultContentTypeDisplayDriver>();
         services.AddScoped<IContentTypePartDefinitionDisplayDriver, ContentTypePartSettingsDisplayDriver>();
+
+        // The common settings, fields and parts rendered by the content definition editors.
+        services.AddScoped<IContentTypeDefinitionDisplayDriver, ContentTypeFieldsDisplayDriver>();
+        services.AddScoped<IContentTypeDefinitionDisplayDriver, ContentTypePartsDisplayDriver>();
+        services.AddScoped<IContentPartDefinitionDisplayDriver, ContentPartFieldsDisplayDriver>();
+        services.AddScoped<IContentPartFieldDefinitionDisplayDriver, DefaultContentPartFieldDisplayDriver>();
+        services.AddScoped<IContentTypePartDefinitionDisplayDriver, DefaultContentTypePartDisplayDriver>();
+
+        // Build the editors of the pages creating content types and parts, and adding fields and parts to them.
+        services.AddDisplayDriver<CreateTypeViewModel, CreateTypeDisplayDriver>();
+        services.AddDisplayDriver<CreatePartViewModel, CreatePartDisplayDriver>();
+        services.AddDisplayDriver<AddFieldViewModel, AddFieldDisplayDriver>();
+        services.AddDisplayDriver<AddPartsViewModel, AddPartsDisplayDriver>();
+        services.AddDisplayDriver<AddReusablePartViewModel, AddReusablePartDisplayDriver>();
 
         // TODO: Put in its own feature to be able to execute this recipe without having to enable
         // Content Types management UI

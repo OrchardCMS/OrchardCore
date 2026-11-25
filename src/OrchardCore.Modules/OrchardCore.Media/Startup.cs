@@ -219,6 +219,9 @@ public sealed class Startup : StartupBase
 
         // Builds the rows of the media profiles admin list.
         services.AddDisplayDriver<MediaProfileEntry, MediaProfileEntryDisplayDriver>();
+
+        // Builds the editor of the pages creating and editing a media profile.
+        services.AddDisplayDriver<MediaProfileViewModel, MediaProfileDisplayDriver>();
         services.AddScoped<IMediaProfileService, MediaProfileService>();
         services.AddRecipeExecutionStep<MediaProfileStep>();
 

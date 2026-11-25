@@ -43,7 +43,7 @@ public sealed class ListPartSettingsDisplayDriver : ContentTypePartDefinitionDis
             {
                 model.ContentTypes.Add(contentTypeDefinition.Name, contentTypeDefinition.DisplayName);
             }
-        }).Location("Content");
+        }).Location(l => l.Zone("Content").Card(S["Settings"], "20"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)

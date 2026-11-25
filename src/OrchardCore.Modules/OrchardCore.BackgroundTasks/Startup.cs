@@ -23,5 +23,7 @@ public sealed class Startup : StartupBase
         // Builds the rows of the background tasks admin list.
         services.AddDisplayDriver<BackgroundTaskEntry, BackgroundTaskEntryDisplayDriver>();
 
+        // Builds the editor of the settings of a task.
+        services.AddDisplayDriver<BackgroundTaskViewModel, BackgroundTaskDisplayDriver>();
     }
 }

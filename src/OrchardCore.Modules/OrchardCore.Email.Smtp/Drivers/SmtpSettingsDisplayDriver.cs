@@ -85,7 +85,7 @@ public sealed class SmtpSettingsDisplayDriver : SiteDisplayDriver<SmtpSettings>
             model.UserName = settings.UserName;
             model.Password = SecretInputViewModel.Create(settings.Password, settings.PasswordSecretName);
             model.IgnoreInvalidSslCertificate = settings.IgnoreInvalidSslCertificate;
-        }).Location("Content:5#SMTP")
+        }).Location(l => l.Zone("Content", "5").Tab(S["SMTP"]).Card(S["SMTP provider"], "10"))
         .OnGroup(SettingsGroupId);
     }
 

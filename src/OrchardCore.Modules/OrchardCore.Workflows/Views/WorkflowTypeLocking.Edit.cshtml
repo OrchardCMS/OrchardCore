@@ -1,0 +1,23 @@
+@model WorkflowTypePropertiesViewModel
+@{
+    // The designer rejects negative values in the browser.
+    var min = Model.Page == WorkflowTypePropertiesPage.Designer ? "0" : null;
+}
+
+<div class="ocat-limited-wrapper" asp-validation-class-for="LockTimeout">
+    <label asp-for="LockTimeout" class="ocat-label">@T["Lock timeout (ms)"]</label>
+    <div class="ocat-limited">
+        <input asp-for="LockTimeout" type="number" min="@min" max="30000" class="form-control">
+        <span asp-validation-for="LockTimeout" class="text-danger"></span>
+        <span class="hint">@T["The timeout in milliseconds to acquire a lock before resuming a given workflow instance of this type atomically. Leave it to zero to not use any locking."]</span>
+    </div>
+</div>
+
+<div class="ocat-limited-wrapper" asp-validation-class-for="LockExpiration">
+    <label asp-for="LockExpiration" class="ocat-label">@T["Lock expiration (ms)"]</label>
+    <div class="ocat-limited">
+        <input asp-for="LockExpiration" type="number" min="@min" max="30000" class="form-control">
+        <span asp-validation-for="LockExpiration" class="text-danger"></span>
+        <span class="hint">@T["The expiration in milliseconds of the lock acquired before resuming a workflow instance of this type atomically. Leave it to zero to not use any locking."]</span>
+    </div>
+</div>

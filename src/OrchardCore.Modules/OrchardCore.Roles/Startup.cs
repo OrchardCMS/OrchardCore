@@ -49,6 +49,12 @@ public sealed class Startup : StartupBase
         services.AddScoped<IAuthorizationHandler, RolesPermissionsHandler>();
         services.AddPermissionProvider<Permissions>();
         services.AddNavigationProvider<AdminMenu>();
+
+        // Build the editors of the roles.
+        services.AddDisplayDriver<CreateRoleViewModel, CreateRoleDisplayDriver>();
+        services.AddDisplayDriver<EditRoleViewModel, EditRoleDisplayDriver>();
+        services.AddDisplayDriver<CloneRoleViewModel, CloneRoleDisplayDriver>();
+
         services.Configure<SystemRoleOptions>(options =>
         {
             // The 'OrchardCore_Roles' section is deprecated and will be removed in a future major version, use 'Roles' instead.

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -9,9 +10,14 @@ public sealed class MediaDeploymentStepDriver : DisplayDriver<DeploymentStep, Me
 {
     private readonly IMediaFileStore _mediaFileStore;
 
-    public MediaDeploymentStepDriver(IMediaFileStore mediaFileStore)
+    internal readonly IStringLocalizer S;
+
+    public MediaDeploymentStepDriver(
+        IMediaFileStore mediaFileStore,
+        IStringLocalizer<MediaDeploymentStepDriver> stringLocalizer)
     {
         _mediaFileStore = mediaFileStore;
+        S = stringLocalizer;
     }
 
     public override Task<IDisplayResult> DisplayAsync(MediaDeploymentStep step, BuildDisplayContext context)
@@ -31,7 +37,7 @@ public sealed class MediaDeploymentStepDriver : DisplayDriver<DeploymentStep, Me
             model.FilePaths = step.FilePaths;
             model.DirectoryPaths = step.DirectoryPaths;
             model.Entries = await GetMediaStoreEntries().ToListAsync();
-        }).Location("Content");
+        }).Location(l => l.Zone("Content").Card(S["Media"], "10"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(MediaDeploymentStep step, UpdateEditorContext context)

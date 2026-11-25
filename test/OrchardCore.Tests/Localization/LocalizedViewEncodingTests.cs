@@ -172,7 +172,7 @@ public class LocalizedViewEncodingTests
             NotBefore = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc),
             NotAfter = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),
         });
-        var html = await RenderAsync(context, "OrchardCore.OpenId", "OpenIdServerSettings.Edit", model, "No Friendly Name", translation);
+        var html = await RenderAsync(context, "OrchardCore.OpenId", "OpenIdServerSettings-Certificates.Edit", model, "No Friendly Name", translation);
         using var document = new HtmlParser().ParseDocument(html);
 
         var options = document.QuerySelectorAll("option[value='TestCertificate']");

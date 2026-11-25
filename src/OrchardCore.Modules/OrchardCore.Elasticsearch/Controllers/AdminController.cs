@@ -6,6 +6,7 @@ using System.Text.Json.Nodes;
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -13,6 +14,8 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Elasticsearch.Core.Models;
 using OrchardCore.Elasticsearch.Core.Services;
 using OrchardCore.Elasticsearch.ViewModels;
@@ -32,6 +35,8 @@ public sealed class AdminController : Controller
     private readonly IOptions<TemplateOptions> _templateOptions;
     private readonly ElasticsearchQueryService _elasticQueryService;
     private readonly ElasticsearchConnectionOptions _elasticConnectionOptions;
+    private readonly IDisplayManager<AdminQueryViewModel> _displayManager;
+    private readonly IUpdateModelAccessor _updateModelAccessor;
 
     internal readonly IStringLocalizer S;
     internal readonly IHtmlLocalizer H;
@@ -47,7 +52,9 @@ public sealed class AdminController : Controller
         IOptions<ElasticsearchConnectionOptions> elasticConnectionOptions,
         ElasticsearchQueryService elasticQueryService,
         IStringLocalizer<AdminController> stringLocalizer,
-        IHtmlLocalizer<AdminController> htmlLocalizer)
+        IHtmlLocalizer<AdminController> htmlLocalizer,
+        IDisplayManager<AdminQueryViewModel> displayManager,
+        IUpdateModelAccessor updateModelAccessor)
     {
         _indexProfileStore = indexProfileStore;
         _liquidTemplateManager = liquidTemplateManager;
@@ -58,6 +65,8 @@ public sealed class AdminController : Controller
         _templateOptions = templateOptions;
         _elasticQueryService = elasticQueryService;
         _elasticConnectionOptions = elasticConnectionOptions.Value;
+        _displayManager = displayManager;
+        _updateModelAccessor = updateModelAccessor;
         S = stringLocalizer;
         H = htmlLocalizer;
     }
@@ -135,6 +144,8 @@ public sealed class AdminController : Controller
                 .OrderBy(x => x.Text),
         };
 
+        model.Editor = await _displayManager.BuildEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: false);
+
         return View(model);
     }
 
@@ -157,8 +168,16 @@ public sealed class AdminController : Controller
             .Select(x => new SelectListItem(x.Name, x.Id))
             .OrderBy(x => x.Text);
 
+        // A posted query binds the editor. A query run from the url builds it once run, so that it shows the query it ran.
+        if (HttpMethods.IsPost(Request.Method))
+        {
+            model.Editor = await _displayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: false);
+        }
+
         if (!ModelState.IsValid)
         {
+            model.Editor ??= await _displayManager.BuildEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: false);
+
             return View("Query", model);
         }
 
@@ -218,6 +237,8 @@ public sealed class AdminController : Controller
 
         stopwatch.Stop();
         model.Elapsed = stopwatch.Elapsed;
+
+        model.Editor ??= await _displayManager.BuildEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: false);
 
         // Keep the view name here since QueryIndex calls this method directly.
         // Otherwise the view name would be "QueryIndex" instead of "Query" which will be incorrect.

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -6,6 +7,13 @@ namespace OrchardCore.Sitemaps.Deployment;
 
 public sealed class AllSitemapsDeploymentStepDriver : DisplayDriver<DeploymentStep, AllSitemapsDeploymentStep>
 {
+    internal readonly IStringLocalizer S;
+
+    public AllSitemapsDeploymentStepDriver(IStringLocalizer<AllSitemapsDeploymentStepDriver> stringLocalizer)
+    {
+        S = stringLocalizer;
+    }
+
     public override Task<IDisplayResult> DisplayAsync(AllSitemapsDeploymentStep step, BuildDisplayContext context)
     {
         return
@@ -17,6 +25,6 @@ public sealed class AllSitemapsDeploymentStepDriver : DisplayDriver<DeploymentSt
 
     public override IDisplayResult Edit(AllSitemapsDeploymentStep step, BuildEditorContext context)
     {
-        return View("AllSitemapsDeploymentStep_Edit", step).Location("Content");
+        return View("AllSitemapsDeploymentStep_Edit", step).Location(l => l.Zone("Content").Card(S["Sitemaps"], "10"));
     }
 }

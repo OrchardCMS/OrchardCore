@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Admin;
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Secrets.ViewModels;
 
 namespace OrchardCore.Secrets.Controllers;
@@ -14,6 +16,8 @@ public sealed class StoreController : Controller
     private readonly ISecretStoreOperations _operations;
     private readonly IAuthorizationService _authorization;
     private readonly ILogger _logger;
+    private readonly IDisplayManager<SecretStoreViewModel> _displayManager;
+    private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly IStringLocalizer S;
 
     public StoreController(
@@ -21,13 +25,17 @@ public sealed class StoreController : Controller
         ISecretStoreOperations operations,
         IAuthorizationService authorization,
         ILogger<StoreController> logger,
-        IStringLocalizer<StoreController> localizer)
+        IStringLocalizer<StoreController> localizer,
+        IDisplayManager<SecretStoreViewModel> displayManager,
+        IUpdateModelAccessor updateModelAccessor)
     {
         _manager = manager;
         _operations = operations;
         _authorization = authorization;
         _logger = logger;
         S = localizer;
+        _displayManager = displayManager;
+        _updateModelAccessor = updateModelAccessor;
     }
 
     public async Task<IActionResult> Index(string sourceStore, string name)
@@ -39,6 +47,7 @@ public sealed class StoreController : Controller
 
         var model = new SecretStoreViewModel { SourceStore = sourceStore, Name = name };
         await LoadAsync(model);
+        model.Editor = await _displayManager.BuildEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: false);
         return View(model);
     }
 
@@ -51,6 +60,8 @@ public sealed class StoreController : Controller
         {
             return Forbid();
         }
+
+        model.Editor = await _displayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: false);
 
         var source = _manager.GetStores().FirstOrDefault(s => !s.IsReadOnly &&
             s.Name.Equals(model.SourceStore, StringComparison.OrdinalIgnoreCase));
@@ -95,6 +106,10 @@ public sealed class StoreController : Controller
         }
 
         await LoadAsync(model);
+
+        // The editor is built again from the state of the model after the move: the stores, and the confirmation
+        // that is cleared, while the posted values are kept by the model state.
+        model.Editor = await _displayManager.BuildEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: false);
         return View(nameof(Index), model);
     }
 

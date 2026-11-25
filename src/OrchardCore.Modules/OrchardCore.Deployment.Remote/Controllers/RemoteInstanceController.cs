@@ -27,6 +27,8 @@ public sealed class RemoteInstanceController : Controller
     private readonly PagerOptions _pagerOptions;
     private readonly IShapeFactory _shapeFactory;
     private readonly INotifier _notifier;
+    private readonly IDisplayManager<EditRemoteInstanceViewModel> _editorDisplayManager;
+    private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly RemoteInstanceService _service;
 
     internal readonly IStringLocalizer S;
@@ -39,7 +41,9 @@ public sealed class RemoteInstanceController : Controller
         IShapeFactory shapeFactory,
         IStringLocalizer<RemoteInstanceController> stringLocalizer,
         IHtmlLocalizer<RemoteInstanceController> htmlLocalizer,
-        INotifier notifier
+        INotifier notifier,
+        IDisplayManager<EditRemoteInstanceViewModel> editorDisplayManager,
+        IUpdateModelAccessor updateModelAccessor
         )
     {
         _authorizationService = authorizationService;
@@ -48,6 +52,8 @@ public sealed class RemoteInstanceController : Controller
         S = stringLocalizer;
         H = htmlLocalizer;
         _notifier = notifier;
+        _editorDisplayManager = editorDisplayManager;
+        _updateModelAccessor = updateModelAccessor;
         _service = service;
     }
 
@@ -121,6 +127,8 @@ public sealed class RemoteInstanceController : Controller
 
         var model = new EditRemoteInstanceViewModel();
 
+        model.Editor = await _editorDisplayManager.BuildEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: true);
+
         return View(model);
     }
 
@@ -131,6 +139,8 @@ public sealed class RemoteInstanceController : Controller
         {
             return Forbid();
         }
+
+        model.Editor = await _editorDisplayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: true);
 
         if (ModelState.IsValid)
         {
@@ -172,6 +182,8 @@ public sealed class RemoteInstanceController : Controller
             Url = remoteInstance.Url,
         };
 
+        model.Editor = await _editorDisplayManager.BuildEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: false);
+
         return View(model);
     }
 
@@ -189,6 +201,8 @@ public sealed class RemoteInstanceController : Controller
         {
             return NotFound();
         }
+
+        model.Editor = await _editorDisplayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: false);
 
         if (ModelState.IsValid)
         {

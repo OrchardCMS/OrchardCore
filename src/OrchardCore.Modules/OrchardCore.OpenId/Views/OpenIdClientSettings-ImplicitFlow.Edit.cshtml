@@ -1,0 +1,28 @@
+@using OrchardCore.OpenId.ViewModels
+@model OpenIdClientSettingsViewModel
+
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <p>@T["Click <a href=\"{0}\" target=\"_blank\">here</a> for more information about the Implicit Flow.", "http://openid.net/specs/openid-connect-core-1_0.html#ImplicitFlowAuth"]</p>
+    </div>
+</div>
+
+<div class="ocat-wrapper" asp-validation-class-for="UseIdTokenFlow">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input openid-use-id-token-flow" asp-for="UseIdTokenFlow">
+            <label class="form-check-label" asp-for="UseIdTokenFlow">@T["Use <code>{0}</code> response type", "id_token"]</label>
+            <span class="hint dashed">@T["Click <a href=\"{0}\" target=\"_blank\">here</a> for an example.", "http://openid.net/specs/openid-connect-core-1_0.html#id_tokenExample"]</span>
+        </div>
+    </div>
+</div>
+
+<div class="ocat-wrapper" asp-validation-class-for="UseIdTokenTokenFlow">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input openid-use-id-token-token-flow" asp-for="UseIdTokenTokenFlow">
+            <label class="form-check-label" asp-for="UseIdTokenTokenFlow">@T["Use <code>{0}</code> response type", "id_token token"]</label>
+            <span class="hint dashed">@T["Click <a href=\"{0}\" target=\"_blank\">here</a> for an example.", "http://openid.net/specs/openid-connect-core-1_0.html#id_token-tokenExample"]</span>
+        </div>
+    </div>
+</div>

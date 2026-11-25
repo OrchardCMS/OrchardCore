@@ -1,0 +1,28 @@
+@model AddPartsViewModel
+@{
+    int i = 0;
+}
+
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <p class="hint">@T["Choose the Parts to add to this Content Type."]</p>
+        <ul class="list-group">
+            @foreach (var partSelection in Model.PartSelections)
+            {
+                <li class="list-group-item list-group-item-action">
+                    <div class="d-flex align-items-start justify-content-between gap-3">
+                        <div class="form-check flex-grow-1">
+                            <input type="checkbox" class="form-check-input" asp-for="PartSelections[i].IsSelected">
+                            <label class="form-check-label" asp-for="PartSelections[i].IsSelected">@partSelection.PartDisplayName</label>
+                            <span class="hint dashed">@partSelection.PartDescription</span>
+                        </div>
+                        <button class="btn btn-secondary btn-sm" type="submit" name="submit.AddAndConfigure" value="@partSelection.PartName">@T["Add &amp; Configure"]</button>
+                    </div>
+                    <input asp-for="PartSelections[i].IsSelected" type="hidden" />
+                    <input asp-for="PartSelections[i].PartName" type="hidden" />
+                </li>
+                i++;
+            }
+        </ul>
+    </div>
+</div>

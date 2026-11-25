@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Sitemaps.Models;
@@ -9,9 +10,14 @@ public sealed class ContentTypesSitemapSourceDriver : DisplayDriver<SitemapSourc
 {
     private readonly IRouteableContentTypeCoordinator _routeableContentTypeCoordinator;
 
-    public ContentTypesSitemapSourceDriver(IRouteableContentTypeCoordinator routeableContentTypeCoordinator)
+    internal readonly IStringLocalizer S;
+
+    public ContentTypesSitemapSourceDriver(
+        IRouteableContentTypeCoordinator routeableContentTypeCoordinator,
+        IStringLocalizer<ContentTypesSitemapSourceDriver> stringLocalizer)
     {
         _routeableContentTypeCoordinator = routeableContentTypeCoordinator;
+        S = stringLocalizer;
     }
 
     public override Task<IDisplayResult> DisplayAsync(ContentTypesSitemapSource sitemapSource, BuildDisplayContext context)
@@ -69,7 +75,7 @@ public sealed class ContentTypesSitemapSourceDriver : DisplayDriver<SitemapSourc
             model.LimitedContentTypes = limitedEntries;
             model.LimitedContentType = limitedCtd is null ? contentTypeDefinitions.FirstOrDefault()?.Name : limitedCtd.Name;
             model.SitemapSource = sitemapSource;
-        }).Location("Content");
+        }).Location(l => l.Zone("Content").Card(S["Content types"], "10"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentTypesSitemapSource sitemap, UpdateEditorContext context)

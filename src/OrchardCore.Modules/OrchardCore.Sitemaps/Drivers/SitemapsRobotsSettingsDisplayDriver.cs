@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -14,12 +15,16 @@ public sealed class SitemapsRobotsSettingsDisplayDriver : SiteDisplayDriver<Site
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
 
+    internal readonly IStringLocalizer S;
+
     public SitemapsRobotsSettingsDisplayDriver(
         IHttpContextAccessor httpContextAccessor,
-        IAuthorizationService authorizationService)
+        IAuthorizationService authorizationService,
+        IStringLocalizer<SitemapsRobotsSettingsDisplayDriver> stringLocalizer)
     {
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
+        S = stringLocalizer;
     }
 
     protected override string SettingsGroupId
@@ -37,7 +42,7 @@ public sealed class SitemapsRobotsSettingsDisplayDriver : SiteDisplayDriver<Site
         return Initialize<SitemapsRobotsSettings>("SitemapsRobotsSettings_Edit", model =>
         {
             model.IncludeSitemaps = settings.IncludeSitemaps;
-        }).Location("Content:4")
+        }).Location(l => l.Zone("Content", "4").Card(S["Sitemaps"], "20"))
         .OnGroup(SettingsGroupId);
     }
 

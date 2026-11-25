@@ -47,7 +47,7 @@ public sealed class JavascriptConditionDisplayDriver : DisplayDriver<Condition, 
         {
             m.Script = condition.Script;
             m.Condition = condition;
-        }).Location("Content");
+        }).Location(l => l.Zone("Content").Card(S["Javascript"], "10"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(JavascriptCondition condition, UpdateEditorContext context)
