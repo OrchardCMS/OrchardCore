@@ -1,0 +1,65 @@
+@using OrchardCore.OpenId.ViewModels
+@using OrchardCore.OpenId.Settings
+@model OpenIdServerSettingsViewModel
+
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <div class="alert alert-info" role="alert">
+            <p class="mb-0">@T["The following options are optional and intended for advanced use only."]</p>
+        </div>
+    </div>
+</div>
+
+<div class="ocat-wrapper" asp-validation-class-for="Authority">
+    <label asp-for="Authority" class="ocat-label">@T["Authority"]</label>
+    <div class="ocat-end">
+        <input asp-for="Authority" class="form-control" />
+        <span asp-validation-for="Authority"></span>
+        <span class="hint">@T["The base URL of the identity server (this site). If not provided, a default value will be automatically generated based on the site host."]</span>
+    </div>
+</div>
+
+<div class="ocat-wrapper" asp-validation-class-for="DisableRollingRefreshTokens">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="DisableRollingRefreshTokens">
+            <label class="form-check-label" asp-for="DisableRollingRefreshTokens">@T["Disable Rolling Refresh Tokens"]</label>
+            <span class="hint dashed">@T["When this option is enabled, refresh tokens are not marked as redeemed and can be reused until they expire."]</span>
+        </div>
+    </div>
+</div>
+
+<div class="ocat-wrapper" asp-validation-class-for="AccessTokenFormat">
+    <label asp-for="AccessTokenFormat" class="ocat-label">@T["Token Format"]</label>
+    <div class="ocat-end">
+        <select asp-for="AccessTokenFormat" class="form-select" data-openid-field="AccessTokenFormat">
+            <option value="@OpenIdServerSettings.TokenFormat.DataProtection" selected="@(Model.AccessTokenFormat == OpenIdServerSettings.TokenFormat.DataProtection)">
+                @T["ASP.NET Core Data Protection"]
+            </option>
+            <option value="@OpenIdServerSettings.TokenFormat.JsonWebToken" selected="@(Model.AccessTokenFormat == OpenIdServerSettings.TokenFormat.JsonWebToken)" data-is-json-web-token="true">
+                @T["JSON Web Token (JWT)"]
+            </option>
+        </select>
+        <span asp-validation-for="AccessTokenFormat"></span>
+    </div>
+</div>
+
+<div class="ocat-wrapper" asp-validation-class-for="DisableAccessTokenEncryption">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="DisableAccessTokenEncryption" data-openid-field="DisableAccessTokenEncryption">
+            <label class="form-check-label" asp-for="DisableAccessTokenEncryption">@T["Disable Access Token Encryption (only for JWT tokens)"]</label>
+            <span class="hint dashed">@T["When enabled, JWT access tokens are not encrypted."]</span>
+        </div>
+    </div>
+</div>
+
+<div class="ocat-wrapper" asp-validation-class-for="UseReferenceAccessTokens">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="UseReferenceAccessTokens">
+            <label class="form-check-label" asp-for="UseReferenceAccessTokens">@T["Use Reference Access Tokens"]</label>
+            <span class="hint dashed">@T["When enabled, access tokens are stored in the database, and fixed-size tokens are returned to the client. This can be useful for handling a large number of claims. Note: This option cannot be enabled if other tenants are configured to use this server."]</span>
+        </div>
+    </div>
+</div>

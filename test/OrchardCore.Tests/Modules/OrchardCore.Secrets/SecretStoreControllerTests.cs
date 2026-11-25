@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging.Abstractions;
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Secrets;
 using OrchardCore.Secrets.Controllers;
 using OrchardCore.Secrets.ViewModels;
@@ -30,7 +32,8 @@ public class SecretStoreControllerTests
         var localizer = new Mock<IStringLocalizer<StoreController>>();
         localizer.Setup(s => s[It.IsAny<string>()]).Returns((string key) => new LocalizedString(key, key));
         _controller = new StoreController(_manager.Object, _operations.Object, _authorization.Object,
-            NullLogger<StoreController>.Instance, localizer.Object)
+            NullLogger<StoreController>.Instance, localizer.Object,
+            Mock.Of<IDisplayManager<SecretStoreViewModel>>(), Mock.Of<IUpdateModelAccessor>())
         {
             ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() },
         };

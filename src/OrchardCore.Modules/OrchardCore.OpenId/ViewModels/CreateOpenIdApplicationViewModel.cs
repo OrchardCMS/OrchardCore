@@ -1,4 +1,6 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using OrchardCore.DisplayManagement;
 
 namespace OrchardCore.OpenId.ViewModels;
 
@@ -47,6 +49,12 @@ public class CreateOpenIdApplicationViewModel
     public bool RequireProofKeyForCodeExchange { get; set; }
 
     public bool RequirePushedAuthorizationRequests { get; set; }
+
+    /// <summary>
+    /// Gets or sets the editor of a new application, built by the display drivers of <see cref="CreateOpenIdApplicationViewModel"/>.
+    /// </summary>
+    [BindNever]
+    public IShape Editor { get; set; }
 
     public class RoleEntry
     {

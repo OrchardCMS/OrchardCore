@@ -1,0 +1,5 @@
+@* The editor of a shortcode template: the shapes of its display drivers, grouped in cards by their placement.
+   The pages creating and editing a template render the preview of the shortcode between the "Content" and "Footer" zones. *@
+
+@await DisplayAsync(Model.Content)
+@await DisplayAsync(Model.Footer)

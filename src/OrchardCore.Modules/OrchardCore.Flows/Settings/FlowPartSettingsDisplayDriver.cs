@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
@@ -12,9 +13,14 @@ public sealed class FlowPartSettingsDisplayDriver : ContentTypePartDefinitionDis
 {
     private readonly IContentDefinitionManager _contentDefinitionManager;
 
-    public FlowPartSettingsDisplayDriver(IContentDefinitionManager contentDefinitionManager)
+    internal readonly IStringLocalizer S;
+
+    public FlowPartSettingsDisplayDriver(
+        IContentDefinitionManager contentDefinitionManager,
+        IStringLocalizer<FlowPartSettingsDisplayDriver> stringLocalizer)
     {
         _contentDefinitionManager = contentDefinitionManager;
+        S = stringLocalizer;
     }
 
     public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
@@ -31,7 +37,7 @@ public sealed class FlowPartSettingsDisplayDriver : ContentTypePartDefinitionDis
             {
                 model.ContentTypes.Add(contentTypeDefinition.Name, contentTypeDefinition.DisplayName);
             }
-        }).Location("Content");
+        }).Location(l => l.Zone("Content").Card(S["Settings"], "20"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)

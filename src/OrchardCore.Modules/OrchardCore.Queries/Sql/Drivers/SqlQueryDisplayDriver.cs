@@ -75,7 +75,7 @@ public sealed class SqlQueryDisplayDriver : DisplayDriver<Query>
             model.ReturnDocuments = query.ReturnContentItems;
             model.Query = template;
             model.HasLiquidOutputExpressions = _outputExpressionDetector.ContainsOutputStatement(model.Query);
-        }).Location("Content:5");
+        }).Location(l => l.Zone("Content", "5").Card(S["Query"], "20"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(Query query, UpdateEditorContext context)

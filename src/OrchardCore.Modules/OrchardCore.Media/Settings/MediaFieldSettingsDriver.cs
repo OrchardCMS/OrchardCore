@@ -31,25 +31,31 @@ public sealed class MediaFieldSettingsDriver : ContentPartFieldDefinitionDisplay
 
     public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
     {
-        return Initialize<MediaFieldSettingsViewModel>("MediaFieldSettings_Edit", model =>
-        {
-            var settings = partFieldDefinition.GetSettings<MediaFieldSettings>();
+        return Combine(
+            Initialize<MediaFieldSettingsViewModel>("MediaFieldSettings_Edit", model => PopulateViewModel(partFieldDefinition, model))
+                .Location(l => l.Zone("Content").Card(S["Settings"], "20")),
+            Initialize<MediaFieldSettingsViewModel>("MediaFieldSettingsMediaTypes_Edit", model => PopulateViewModel(partFieldDefinition, model))
+                .Location(l => l.Zone("Content").Card(S["Media types"], "25")));
+    }
 
-            model.Hint = settings.Hint;
-            model.Required = settings.Required;
-            model.Multiple = settings.Multiple;
-            model.AllowMediaText = settings.AllowMediaText;
-            model.AllowAnchors = settings.AllowAnchors;
-            model.AllowAllDefaultMediaTypes = settings.AllowedExtensions == null || settings.AllowedExtensions.Length == 0;
+    private void PopulateViewModel(ContentPartFieldDefinition partFieldDefinition, MediaFieldSettingsViewModel model)
+    {
+        var settings = partFieldDefinition.GetSettings<MediaFieldSettings>();
 
-            var items = new List<MediaTypeViewModel>();
-            AddMediaTypes(_mediaOptions.AllowedFileExtensions, settings, items);
-            AddMediaTypes(_mediaOptions.RestrictedFileExtensions, settings, items);
+        model.Hint = settings.Hint;
+        model.Required = settings.Required;
+        model.Multiple = settings.Multiple;
+        model.AllowMediaText = settings.AllowMediaText;
+        model.AllowAnchors = settings.AllowAnchors;
+        model.AllowAllDefaultMediaTypes = settings.AllowedExtensions == null || settings.AllowedExtensions.Length == 0;
 
-            model.MediaTypes = items
-                .OrderBy(vm => vm.ContentType)
-                .ToArray();
-        }).Location("Content");
+        var items = new List<MediaTypeViewModel>();
+        AddMediaTypes(_mediaOptions.AllowedFileExtensions, settings, items);
+        AddMediaTypes(_mediaOptions.RestrictedFileExtensions, settings, items);
+
+        model.MediaTypes = items
+            .OrderBy(vm => vm.ContentType)
+            .ToArray();
     }
 
     private void AddMediaTypes(

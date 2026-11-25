@@ -26,6 +26,26 @@ msgctxt "OrchardCore.AuditTrail.DeploymentStartup"
 msgid "Exports the audit trail trimming settings."
 msgstr ""
 
+#: Drivers/AuditTrailEventDisplayDriver.cs
+msgctxt "OrchardCore.AuditTrail.Drivers.AuditTrailEventDisplayDriver"
+msgid "Event Info"
+msgstr ""
+
+#: Drivers/AuditTrailSettingsDisplayDriver.cs
+msgctxt "OrchardCore.AuditTrail.Drivers.AuditTrailSettingsDisplayDriver"
+msgid "Events"
+msgstr ""
+
+#: Drivers/AuditTrailSettingsDisplayDriver.cs
+msgctxt "OrchardCore.AuditTrail.Drivers.AuditTrailSettingsDisplayDriver"
+msgid "Privacy"
+msgstr ""
+
+#: Drivers/AuditTrailTrimmingSettingsDisplayDriver.cs
+msgctxt "OrchardCore.AuditTrail.Drivers.AuditTrailTrimmingSettingsDisplayDriver"
+msgid "Trimming task"
+msgstr ""
+
 #: Navigation/AuditTrailAdminMenu.cs
 msgctxt "OrchardCore.AuditTrail.Navigation.AuditTrailAdminMenu"
 msgid "Audit Trail"
@@ -413,11 +433,6 @@ msgstr ""
 
 #: Views/AuditTrailEventDetail.DetailAdmin.cshtml
 msgctxt "OrchardCore.AuditTrail.Views.AuditTrailEventDetail.DetailAdmin"
-msgid "Event Info"
-msgstr ""
-
-#: Views/AuditTrailEventDetail.DetailAdmin.cshtml
-msgctxt "OrchardCore.AuditTrail.Views.AuditTrailEventDetail.DetailAdmin"
 msgid "Event name"
 msgstr ""
 
@@ -449,11 +464,6 @@ msgstr ""
 #: Views/AuditTrailEventName.SummaryAdmin.cshtml
 msgctxt "OrchardCore.AuditTrail.Views.AuditTrailEventName.SummaryAdmin"
 msgid "Event Name"
-msgstr ""
-
-#: Views/AuditTrailSettings.Edit.cshtml
-msgctxt "OrchardCore.AuditTrail.Views.AuditTrailSettings.Edit"
-msgid "Allow client IP address"
 msgstr ""
 
 #: Views/AuditTrailSettings.Edit.cshtml
@@ -491,8 +501,13 @@ msgctxt "OrchardCore.AuditTrail.Views.AuditTrailSettings.Edit"
 msgid "Select all"
 msgstr ""
 
-#: Views/AuditTrailSettings.Edit.cshtml
-msgctxt "OrchardCore.AuditTrail.Views.AuditTrailSettings.Edit"
+#: Views/AuditTrailSettingsPrivacy.Edit.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailSettingsPrivacy.Edit"
+msgid "Allow client IP address"
+msgstr ""
+
+#: Views/AuditTrailSettingsPrivacy.Edit.cshtml
+msgctxt "OrchardCore.AuditTrail.Views.AuditTrailSettingsPrivacy.Edit"
 msgid "Whether the client IP address is recorded."
 msgstr ""
 

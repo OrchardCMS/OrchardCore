@@ -1,0 +1,85 @@
+@using OrchardCore.ContentManagement
+@using OrchardCore.ContentManagement.Metadata.Models
+@using OrchardCore.ContentManagement.Metadata.Settings
+@using OrchardCore.Mvc.Utilities
+@using OrchardCore.Localization.Data
+@using Microsoft.Extensions.Options
+
+@model EditTypeViewModel
+
+@inject IOptions<ContentOptions> ContentOptions
+@inject IDataLocalizer D
+
+@{
+    var typePart = Model.TypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.Name, Model.TypeDefinition.Name, StringComparison.OrdinalIgnoreCase));
+
+    var fieldDefinitions = new List<ContentPartFieldDefinition>();
+
+    if (typePart?.PartDefinition?.Fields != null)
+    {
+        fieldDefinitions = typePart.PartDefinition.Fields
+        .Select(field => new
+        {
+            Field = field,
+            Order = int.Parse(field.GetSettings<ContentPartFieldSettings>().Position ?? "0"),
+        }).OrderBy(x => x.Order)
+        .Select(x => x.Field)
+        .ToList();
+    }
+
+    var fields = ContentOptions.Value.ContentFieldOptions.Select(cfo => cfo.Type).ToList();
+}
+
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <ul class="list-group sortable" id="fields">
+            @foreach (var fieldDefinition in fieldDefinitions)
+            {
+                var settings = fieldDefinition.GetSettings<ContentSettings>();
+
+                <li class="list-group-item" style="cursor: move;">
+                    <div class="w-100">
+                        <div class="float-end">
+                            @if (fields.Any(field => string.Equals(field.Name, fieldDefinition.FieldDefinition.Name, StringComparison.OrdinalIgnoreCase)))
+                            {
+                                <a asp-route-action="EditField" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@fieldDefinition.Name" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary btn-sm" role="button">@T["Edit"]</a>
+                            }
+                            @if (settings.IsSystemDefined)
+                            {
+                                <div class="d-inline" data-bs-toggle="tooltip" data-bs-title="@T["System-defined fields are integral components of the system and cannot be removed."]">
+                                    <button type="button" class="btn btn-danger btn-sm" disabled>
+                                        @T["Remove"]
+                                    </button>
+                                </div>
+                            }
+                            else
+                            {
+                                <a asp-route-action="RemoveFieldFrom" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@fieldDefinition.Name" class="btn btn-danger btn-sm" role="button" data-url-af="UnsafeUrl RemoveUrl">@T["Remove"]</a>
+                            }
+                        </div>
+                        @D[fieldDefinition.DisplayName(), $"Content Fields{Constants.ContextSeparator}{typePart.PartDefinition.Name}"] <span class="hint dashed">@fieldDefinition.FieldDefinition.Name.CamelFriendly()</span>
+
+                        @if (!string.IsNullOrEmpty(fieldDefinition.DisplayMode()))
+                        {
+                            <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@T["Display mode"]"><i class="fa-solid fa-tv text-info" aria-hidden="true"></i> @fieldDefinition.DisplayMode()</span>
+                        }
+                        @if (!string.IsNullOrEmpty(fieldDefinition.Editor()))
+                        {
+                            <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@T["Editor"]"><i class="fa-solid fa-pen-to-square text-info" aria-hidden="true"></i> @fieldDefinition.Editor()</span>
+                        }
+                    </div>
+                    <input type="hidden" asp-for="OrderedFieldNames" value="@fieldDefinition.Name" />
+                </li>
+            }
+        </ul>
+    </div>
+</div>
+
+@if (fields.Count > 0)
+{
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
+            <a asp-route-action="AddFieldTo" asp-route-id="@Model.TypeDefinition.Name" asp-route-returnUrl="@FullRequestPath" class="btn btn-info btn-sm" role="button">@T["Add Field"]</a>
+        </div>
+    </div>
+}

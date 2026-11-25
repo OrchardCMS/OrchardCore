@@ -27,7 +27,7 @@ public sealed class HtmlBodyPartTrumbowygEditorSettingsDriver : ContentTypePartD
 
             model.Options = settings.Options;
             model.InsertMediaWithUrl = settings.InsertMediaWithUrl;
-        }).Location("Editor");
+        }).Location(l => l.Zone("Editor").Card(S["Editor"], "30"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)

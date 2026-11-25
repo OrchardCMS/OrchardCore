@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -20,15 +21,18 @@ public sealed class SearchSettingsDisplayDriver : SiteDisplayDriver<SearchSettin
     private readonly IAuthorizationService _authorizationService;
     private readonly IIndexProfileStore _indexProfileStore;
 
+    internal readonly IStringLocalizer S;
+
     public SearchSettingsDisplayDriver(
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
-        IIndexProfileStore indexProfileStore
-        )
+        IIndexProfileStore indexProfileStore,
+        IStringLocalizer<SearchSettingsDisplayDriver> stringLocalizer)
     {
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         _indexProfileStore = indexProfileStore;
+        S = stringLocalizer;
     }
 
     protected override string SettingsGroupId
@@ -51,7 +55,7 @@ public sealed class SearchSettingsDisplayDriver : SiteDisplayDriver<SearchSettin
             model.Indexes = (await _indexProfileStore.GetAllAsync())
                 .Select(index => new SelectListItem(index.Name, index.Name))
                 .ToArray();
-        }).Location("Content:2")
+        }).Location(l => l.Zone("Content", "2").Card(S["Search page"], "10"))
         .OnGroup(SettingsGroupId);
     }
 

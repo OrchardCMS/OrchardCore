@@ -7,6 +7,7 @@ using OrchardCore.BackgroundTasks.Services;
 using OrchardCore.BackgroundTasks.ViewModels;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Implementation;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Documents;
@@ -404,6 +405,8 @@ public class BackgroundTaskControllerTests
             new ShellSettings { Name = Tenant },
             Options.Create(new PagerOptions()),
             shapeFactory.Object,
+            Mock.Of<IDisplayManager<BackgroundTaskViewModel>>(),
+            Mock.Of<IUpdateModelAccessor>(),
             htmlLocalizer.Object,
             stringLocalizer.Object,
             notifier)

@@ -50,6 +50,11 @@ public sealed class Startup : StartupBase
         // Builds the rows of the deployment plans admin list.
         services.AddDisplayDriver<DeploymentPlanEntry, DeploymentPlanEntryDisplayDriver>();
 
+        // Build the editors of the pages creating and editing a deployment plan, and of the import pages.
+        services.AddDisplayDriver<CreateDeploymentPlanViewModel, DeploymentPlanDisplayDriver>();
+        services.AddDisplayDriver<ImportPackageViewModel, ImportPackageDisplayDriver>();
+        services.AddDisplayDriver<ImportJsonViewModel, ImportJsonDisplayDriver>();
+
         services.AddRecipeExecutionStep<DeploymentPlansRecipeStep>();
 
         services.AddDeployment<DeploymentPlanDeploymentSource, DeploymentPlanDeploymentStep, DeploymentPlanDeploymentStepDriver>();

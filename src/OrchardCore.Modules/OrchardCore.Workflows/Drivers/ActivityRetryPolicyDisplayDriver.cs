@@ -38,7 +38,7 @@ public sealed class ActivityRetryPolicyDisplayDriver : DisplayDriver<IActivity>
             viewModel.DelaySeconds = policy.DelaySeconds;
             viewModel.Backoff = policy.Backoff;
             viewModel.OnFailure = policy.OnFailure;
-        }).Location("Content:after");
+        }).Location(l => l.Zone("Content", "after").Card(S["Retry policy"], "90"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(IActivity activity, UpdateEditorContext context)

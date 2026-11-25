@@ -21,7 +21,7 @@ public sealed class DefaultContentTypeDisplayDriver : ContentTypeDefinitionDispl
         {
             model.DisplayName = contentTypeDefinition.DisplayName;
             model.Name = contentTypeDefinition.Name;
-        }).Location("Content");
+        }).Location(l => l.Zone("Content", "1").Card(S["General"], "10"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentTypeDefinition contentTypeDefinition, UpdateTypeEditorContext context)

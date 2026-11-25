@@ -8,6 +8,7 @@ using OrchardCore.Tenants.Workflows.Activities;
 using OrchardCore.Tenants.Workflows.Drivers;
 using OrchardCore.Tenants.Workflows.ViewModels;
 using OrchardCore.Workflows.Services;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Modules.Tenants.Workflows.Tests;
 
@@ -27,7 +28,7 @@ public class CreateTenantTaskDisplayDriverTests
             .ReturnsAsync(true);
 
         var activity = CreateActivity();
-        var driver = new CreateTenantTaskDisplayDriver();
+        var driver = new CreateTenantTaskDisplayDriver(new StringLocalizer<CreateTenantTaskDisplayDriver>(new NullStringLocalizerFactory()));
         var context = new UpdateEditorContext(new Shape(), string.Empty, false, string.Empty, null, null, updater.Object);
 
         // Act

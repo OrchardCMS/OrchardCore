@@ -50,7 +50,7 @@ public sealed class RoleLoginSettingsDisplayDriver : SiteDisplayDriver<RoleLogin
                     IsSelected = settings.Roles != null && settings.Roles.Contains(role.RoleName, StringComparer.OrdinalIgnoreCase),
                 }).OrderBy(entry => entry.Role)
                 .ToArray();
-        }).Location("Content:6#Two-Factor Authentication")
+        }).Location(l => l.Zone("Content", "6").Tab("Two-Factor Authentication").Card(S["Roles"], "20"))
         .RenderWhen(static (driver) => driver._authorizationService.AuthorizeAsync(driver._httpContextAccessor.HttpContext?.User, UsersPermissions.ManageUsers), this)
         .OnGroup(SettingsGroupId);
     }

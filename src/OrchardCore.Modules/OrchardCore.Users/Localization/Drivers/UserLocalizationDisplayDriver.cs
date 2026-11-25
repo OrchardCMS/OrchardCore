@@ -53,7 +53,7 @@ public sealed class UserLocalizationDisplayDriver : SectionDisplayDriver<User, U
 
             model.SelectedCulture = section.Culture;
             model.CultureList = cultureList;
-        }).Location("Content:2");
+        }).Location(l => l.Zone("Content", "2.1").Card(S["Regional settings"], "40"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(User user, UserLocalizationSettings section, UpdateEditorContext context)

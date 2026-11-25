@@ -47,6 +47,9 @@ public sealed class Startup : StartupBase
         // profiles one: without it the rows of the list render empty.
         services.AddDisplayDriver<ShellSettingsEntry, ShellSettingsEntryDisplayDriver>();
 
+        // Builds the editor of a tenant, shared by the create and edit pages.
+        services.AddDisplayDriver<EditTenantViewModel, EditTenantDisplayDriver>();
+
         // The 'OrchardCore_Tenants' section is deprecated and will be removed in a future major version, use 'Tenants' instead.
         services.Configure<TenantsOptions>(_shellConfiguration.GetSectionCompat("Tenants", "OrchardCore_Tenants"));
 
@@ -124,6 +127,9 @@ public sealed class FeatureProfilesStartup : StartupBase
 
         // Builds the rows of the feature profiles admin list.
         services.AddDisplayDriver<FeatureProfileEntry, FeatureProfileEntryDisplayDriver>();
+
+        // Builds the editor of a feature profile.
+        services.AddDisplayDriver<FeatureProfileViewModel, FeatureProfileDisplayDriver>();
         services.AddScoped<IFeatureProfilesService, FeatureProfilesService>();
         services.AddScoped<IFeatureProfilesSchemaService, FeatureProfilesSchemaService>();
         services.AddShapeTableProvider<TenantFeatureProfileShapeTableProvider>();

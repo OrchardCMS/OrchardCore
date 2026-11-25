@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -15,12 +16,16 @@ public sealed class ResetPasswordSettingsDisplayDriver : SiteDisplayDriver<Reset
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
 
+    internal readonly IStringLocalizer S;
+
     public ResetPasswordSettingsDisplayDriver(
         IHttpContextAccessor httpContextAccessor,
-        IAuthorizationService authorizationService)
+        IAuthorizationService authorizationService,
+        IStringLocalizer<ResetPasswordSettingsDisplayDriver> stringLocalizer)
     {
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
+        S = stringLocalizer;
     }
 
     protected override string SettingsGroupId
@@ -39,7 +44,7 @@ public sealed class ResetPasswordSettingsDisplayDriver : SiteDisplayDriver<Reset
         {
             model.AllowResetPassword = settings.AllowResetPassword;
             model.UseSiteTheme = settings.UseSiteTheme;
-        }).Location("Content:5")
+        }).Location(l => l.Zone("Content", "5").Card(S["Password reset"], "10"))
         .OnGroup(SettingsGroupId);
     }
 

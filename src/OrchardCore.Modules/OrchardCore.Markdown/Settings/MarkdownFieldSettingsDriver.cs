@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Handlers;
@@ -9,6 +10,13 @@ namespace OrchardCore.Markdown.Settings;
 
 public sealed class MarkdownFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<MarkdownField>
 {
+    internal readonly IStringLocalizer S;
+
+    public MarkdownFieldSettingsDriver(IStringLocalizer<MarkdownFieldSettingsDriver> stringLocalizer)
+    {
+        S = stringLocalizer;
+    }
+
     public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
     {
         return Initialize<MarkdownFieldSettingsViewModel>("MarkdownFieldSettings_Edit", model =>
@@ -17,7 +25,7 @@ public sealed class MarkdownFieldSettingsDriver : ContentPartFieldDefinitionDisp
 
             model.SanitizeHtml = settings.SanitizeHtml;
             model.Hint = settings.Hint;
-        }).Location("Content:20");
+        }).Location(l => l.Zone("Content", "20").Card(S["Settings"], "20"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
