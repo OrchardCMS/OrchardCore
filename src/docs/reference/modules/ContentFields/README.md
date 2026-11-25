@@ -65,6 +65,25 @@ From a `Content` template, you can reference a field's value like this
 
 From a field shape (see Shape Type in the table listing all the fields) you can also access properties specific to each view model.
 
+### Default field templates
+
+The default template of each field renders the display name of the field next to its value, localized with the `Content Fields:{PartName}` context of the data localizer:
+
+- On the front end, the `{FieldType}.cshtml` template, e.g. `TextField.cshtml`, renders the name in a `<span class="name">` element and the value in a `value` element:
+
+    ``` html
+    <div class="field field-type-textfield field-name-lead-rating">
+        <span class="name">Rating</span>
+        <span class="value">Hot</span>
+    </div>
+    ```
+
+- In the admin, the `{FieldType}.DetailAdmin.cshtml` template, e.g. `TextField.DetailAdmin.cshtml`, renders the field as a row of the admin theme, with the name in an `ocat-label` element and the value in an `ocat-end` element. A field is rendered in the `DetailAdmin` display type when a placement places it there. The display modes have their own `DetailAdmin` template, named after their alternate, e.g. `TextField-Header.Display.DetailAdmin.cshtml`, which renders the value in the same row.
+
+On the front end, the `TaxonomyField-Tags` and `UserPickerField-UserNames` display modes render the name too, and the `TextField-Header` display mode renders the value alone, as a heading.
+
+To render a value without its name, override the template of the field in your theme, for a single field with an alternate such as `{PartType}-{FieldName}.cshtml`, e.g. `RawHtml-Content.liquid` in **TheBlogTheme**.
+
 ### Common field properties
 
 The convention for a field view model is to also expose these properties:
