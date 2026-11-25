@@ -29,8 +29,8 @@
 </div>
 
 <div class="ocat-wrapper">
-    <label class="ocat-label">@T["Content types to prune"]</label>
-    <div class="ocat-end">
+    <span id="@Html.IdFor(m => m.ContentTypes)_Label" class="ocat-label">@T["Content types to prune"]</span>
+    <div class="ocat-end" role="group" aria-labelledby="@Html.IdFor(m => m.ContentTypes)_Label">
         @await Component.InvokeAsync("SelectContentTypes", new { selectedContentTypes = Model.ContentTypes, htmlName = Html.NameFor(m => m.ContentTypes) })
         <span class="hint">@T["Select the content types whose old archived versions should be pruned. When no content type is selected, nothing is pruned."]</span>
     </div>

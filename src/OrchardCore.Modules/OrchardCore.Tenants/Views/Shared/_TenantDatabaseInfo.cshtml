@@ -25,7 +25,7 @@
     <div class="ocat-wrapper">
         <label asp-for="DatabaseProvider" class="ocat-label">@T["What type of database to use?"]</label>
         <div class="ocat-end">
-            <input value="@selectedProviderName" class="form-control" readonly />
+            <input id="@Html.IdFor(m => m.DatabaseProvider)" value="@selectedProviderName" class="form-control" readonly />
         </div>
     </div>
 }

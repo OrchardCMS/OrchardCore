@@ -96,6 +96,7 @@ onBeforeUnmount(() => document.removeEventListener("pointerdown", onDocumentPoin
                 <span class="badge text-bg-light border ms-1">{{ kind === "Files" ? t("FilesPort", "Files") : t("RecordsPort", "Rows") }}</span>
             </div>
             <input
+                :id="`${ids}-search`"
                 ref="input"
                 v-model="query"
                 type="search"

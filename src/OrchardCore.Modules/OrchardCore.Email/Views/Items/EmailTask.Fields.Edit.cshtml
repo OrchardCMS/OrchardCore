@@ -67,7 +67,7 @@
     </div>
 
     <div class="ocat-wrapper">
-        <label class="ocat-label">@T["Format"]</label>
+        <label asp-for="BodyFormat" class="ocat-label">@T["Format"]</label>
         <div class="ocat-end">
         <select class="form-select" asp-for="BodyFormat" data-all-value="@MailMessageBodyFormat.All" data-text-value="@MailMessageBodyFormat.Text" data-html-value="@MailMessageBodyFormat.Html">
             <option selected="@(Model.BodyFormat == MailMessageBodyFormat.All)" value="@MailMessageBodyFormat.All">@T["All"]</option>

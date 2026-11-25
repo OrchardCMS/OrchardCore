@@ -15,8 +15,8 @@
 </div>
 
 <div class="mb-3" id="cultures-selection" style="display: none;">
-    <label class="form-label">@T["Cultures"]</label>
-    <div>
+    <span id="@Html.IdFor(m => m.Cultures)_Label" class="form-label d-block">@T["Cultures"]</span>
+    <div role="group" aria-labelledby="@Html.IdFor(m => m.Cultures)_Label">
         @foreach (var culture in Model.AllCultures)
         {
             <div class="form-check">
@@ -28,8 +28,8 @@
 </div>
 
 <div class="mb-3">
-    <label class="form-label">@T["Categories"] <span class="hint">— @T["Leave empty to export all categories"]</span></label>
-    <div>
+    <span id="@Html.IdFor(m => m.Categories)_Label" class="form-label d-block">@T["Categories"] <span class="hint">— @T["Leave empty to export all categories"]</span></span>
+    <div role="group" aria-labelledby="@Html.IdFor(m => m.Categories)_Label">
         @foreach (var category in Model.AllCategories)
         {
             <div class="form-check">

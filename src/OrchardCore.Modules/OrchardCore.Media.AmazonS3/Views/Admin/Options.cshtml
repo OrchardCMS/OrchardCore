@@ -9,14 +9,14 @@
 <div class="ocat-wrapper">
     <label asp-for="BucketName" class="ocat-label">@T["Bucket Name"]</label>
     <div class="ocat-end">
-        <code><input type="text" class="form-control-plaintext" value="@Model.BucketName" readonly /></code>
+        <code><input id="@Html.IdFor(m => m.BucketName)" type="text" class="form-control-plaintext" value="@Model.BucketName" readonly /></code>
     </div>
 </div>
 
 <div class="ocat-wrapper">
     <label asp-for="BasePath" class="ocat-label">@T["Base Path"]</label>
     <div class="ocat-end">
-        <code><input type="text" class="form-control-plaintext" value="@Model.BasePath" readonly /></code>
+        <code><input id="@Html.IdFor(m => m.BasePath)" type="text" class="form-control-plaintext" value="@Model.BasePath" readonly /></code>
     </div>
 </div>
 

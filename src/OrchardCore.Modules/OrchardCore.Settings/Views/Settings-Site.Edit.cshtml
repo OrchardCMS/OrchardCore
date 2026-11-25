@@ -60,8 +60,8 @@
 </div>
 
 <div class="ocat-wrapper" asp-validation-class-for="AllowPageSizeSelection">
-    <label class="ocat-label">@T["Page size selection"]</label>
-    <div class="ocat-end">
+    <span id="@Html.IdFor(m => m.AllowPageSizeSelection)_Label" class="ocat-label">@T["Page size selection"]</span>
+    <div class="ocat-end" role="group" aria-labelledby="@Html.IdFor(m => m.AllowPageSizeSelection)_Label">
         <div class="form-check">
             <input asp-for="AllowPageSizeSelection" type="checkbox" class="form-check-input" data-toggle-page-size-options />
             <label asp-for="AllowPageSizeSelection" class="form-check-label">@T["Allow users to change the page size on listing pages"]</label>
