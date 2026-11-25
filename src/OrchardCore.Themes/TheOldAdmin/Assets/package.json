@@ -1,0 +1,14 @@
+{
+  "name": "@orchardcore/theoldadmin",
+  "version": "1.0.0",
+  "scripts": {
+    "check": "vue-tsc --noEmit"
+  },
+  "dependencies": {
+    "@popperjs/core": "2.11.8",
+    "@types/js-cookie": "^3.0.6",
+    "bootstrap": "5.3.8",
+    "js-cookie": "^3.0.5",
+    "nouislider": "15.7.0"
+  }
+}

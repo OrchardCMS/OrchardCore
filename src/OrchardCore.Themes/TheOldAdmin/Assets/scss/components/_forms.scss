@@ -1,0 +1,131 @@
+@import '../mixins/_word-wrap';
+@import '../../../../../../node_modules/bootstrap/scss/mixins/_border-radius';
+
+.hint {
+    font-size: 0.875em;
+    color: var(--bs-secondary-color) !important;
+    @include word-wrap;
+}
+
+.hint,
+.text-muted {
+    &.dashed::before {
+        content: '\2014\00a0';
+    }
+}
+
+.code,
+.form-control.code {
+    font-family: $font-family-monospace;
+    font-size: $code-font-size;
+    padding: $kbd-padding-y $kbd-padding-x;
+    color: $pre-color;
+    @include border-radius($border-radius);
+}
+
+.form-label {
+    margin-bottom: 0.25rem;
+}
+
+.label-link {
+    float: right;
+    font-size: 12px;
+}
+
+.form-control:disabled, .form-control[readonly] {
+    background-color: var(--bs-secondary-bg);
+    opacity: 1;
+}
+
+// When the validation message in inside the label, add a separator
+label .field-validation-error::before {
+    content: "- ";
+}
+
+label.input-required:after {
+    color: var(--bs-danger-text-emphasis);
+    content: " *"
+}
+
+.button {
+    @extend .btn, .btn-primary !optional;
+}
+
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+    display: none;
+}
+
+.has-filter,
+.has-search {
+    position: relative;
+}
+
+.has-filter .form-control,
+.has-search .form-control {
+    color: var(--bs-body-color);
+}
+
+.has-filter .form-control {
+    padding-left: 2rem;
+}
+
+.has-search .form-control {
+    padding-left: 2.5rem;
+}
+
+.has-filter .form-control-feedback,
+.has-search .form-control-feedback {
+    position: absolute;
+    top: 50%;
+    left: 1rem;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1rem;
+    height: 1rem;
+    line-height: 1;
+    transform: translateY(-50%);
+    text-align: center;
+    pointer-events: none;
+    color: var(--bs-secondary);
+}
+
+.has-filter .form-control-feedback {
+    left: 4.5rem;
+}
+
+[dir="rtl"] .has-filter .form-control-feedback {
+    left: 1rem;
+}
+
+.has-search .form-control-feedback {
+    left: 1rem;
+}
+
+.has-search:not(.input-group) .form-control-feedback,
+.has-filter:not(.input-group) .form-control-feedback {
+    left: 1rem;
+}
+
+.has-filter .btn:not(.show) {
+    border-color: var(--bs-border-color) !important;
+}
+
+// The magnifier is positioned over the input, so the input is never the input group's first child and
+// Bootstrap squares its leading corners, leaving a square edge facing the rounded search button. Round them
+// again, unless a button really does come first, as it does when the group opens with a filter dropdown.
+// Logical properties keep this correct in RTL, and !important is needed because the Bootstrap rule is a
+// chain of :not() selectors that outweighs anything reasonable here.
+.input-group.has-search > .form-control:first-of-type,
+.input-group.has-filter > .form-control:first-of-type {
+    border-start-start-radius: var(--bs-border-radius) !important;
+    border-end-start-radius: var(--bs-border-radius) !important;
+}
+
+.input-group.has-search > .btn ~ .form-control:first-of-type,
+.input-group.has-filter > .btn ~ .form-control:first-of-type {
+    border-start-start-radius: 0 !important;
+    border-end-start-radius: 0 !important;
+}

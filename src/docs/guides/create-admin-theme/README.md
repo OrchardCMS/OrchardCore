@@ -45,6 +45,8 @@ will search both `TheAdmin` theme and `MyAdminTheme` for template alternates whe
 
 Views in `MyAdminTheme` will override views in `TheAdmin`.
 
+To build on the look the admin had before admin schemes, use `BaseTheme = "TheOldAdmin"` instead: see [TheOldAdmin](../../reference/themes/admin-theme.md#theoldadmin).
+
 ## Enabling your custom admin theme
 
 From the root of the folder containing both projects, run this command:

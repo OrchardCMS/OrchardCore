@@ -270,6 +270,37 @@ Every component of the theme reads the same tokens, so a theme that depends on *
 | `--ta-radius-sm`, `--ta-radius-md`, `--ta-radius`, `--ta-radius-lg` | The corners, from fields and buttons to cards and dialogs. |
 | `--ta-primary`, `--ta-link`, `--ta-heading`, `--ta-label`, `--ta-muted`, `--ta-border`, `--ta-control-border`, `--ta-page-bg`, `--ta-surface`, `--ta-toolbar-bg`, `--ta-row-hover-bg`, `--ta-menu-*` | The colors of the scheme. Bootstrap's own variables (`--bs-primary`, `--bs-link-color`, `--bs-border-color`, `--bs-secondary-color`...) read them. |
 
+## TheOldAdmin
+
+**The Old Admin Theme** (`TheOldAdmin`) is a separate admin theme with the look TheAdmin had before admin schemes: its menu, top bar, lists, forms and log in pages, with Bootstrap's colors and a light and dark mode. It is for sites that need to keep that look, for example a site whose custom admin views or admin theme were styled against it. It is part of the `OrchardCore.Application.Cms.Core.Targets` package, like TheAdmin, and works like any other admin theme.
+
+To use it, make it the current admin theme on **Design > Themes**, or set it in the `themes` step of a recipe, and enable it in the `feature` step:
+
+```json
+{
+  "steps": [
+    {
+      "name": "feature",
+      "enable": [
+        "TheOldAdmin"
+      ]
+    },
+    {
+      "name": "themes",
+      "admin": "TheOldAdmin"
+    }
+  ]
+}
+```
+
+An admin theme can build on it with `BaseTheme = "TheOldAdmin"` in its manifest, the same way as on TheAdmin (see [Creating an Admin Theme](../../guides/create-admin-theme/README.md)). Its templates have the same shape names as TheAdmin's, so a template that overrides one of TheAdmin's overrides it in TheOldAdmin too.
+
+TheOldAdmin keeps the views and stylesheets TheAdmin had before admin schemes, and changes to TheAdmin don't apply to it:
+
+- It has no admin schemes: no **Schemes** button on its card, no scheme picker in its theme menu, and no `--ta-*` design tokens. The theme menu offers the **Auto**, **Light** and **Dark** modes.
+- Its resources have names of their own, so both themes can be enabled together: the scripts `the-old-admin` and `the-old-admin-main` and the style `the-old-admin`, served from `~/TheOldAdmin/`. A view that asks for TheAdmin's resources (`the-admin`, `admin-main`) or links to `~/TheAdmin/` files gets TheAdmin's.
+- The admin pages of the modules are shared by both themes. Where a page uses markup styled by TheAdmin only, such as the icon tile of the dashboard cards, TheOldAdmin shows it with Bootstrap's own styles.
+
 ## The `[Admin]` Attribute
 
 To ensure a controller or a specific action uses the Admin Theme, decorate it with the `[Admin]` attribute. This is essential when creating custom administration pages.

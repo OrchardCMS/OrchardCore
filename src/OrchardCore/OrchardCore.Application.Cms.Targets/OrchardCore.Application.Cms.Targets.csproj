@@ -8,6 +8,7 @@
     Converts the application into a modular OrchardCore CMS application with following themes.
 
     - TheAdmin Theme
+    - TheOldAdmin Theme (the previous look of TheAdmin)
     - SafeMode Theme
     - TheAgency Theme
     - TheBlog Theme

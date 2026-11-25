@@ -1,0 +1,31 @@
+
+.bg-theme {
+    background-color: rgba(var(--bs-light-rgb), var(--bs-bg-opacity, 1));
+}
+
+.text-theme {
+    color: var(--bs-body-color);
+}
+
+.text-bg-theme {
+    color: var(--bs-body-color);
+    background-color: rgba(var(--bs-light-rgb), var(--bs-bg-opacity, 1));
+}
+
+.btn-theme {
+    // The theme sets Bootstrap's button variables rather than the colors themselves, so a component that styles
+    // its own .btn-theme, such as the toggle of bootstrap-select, keeps its own look.
+    --bs-btn-color: var(--bs-black);
+    --bs-btn-bg: #f8f9fa;
+    --bs-btn-border-color: #f8f9fa;
+    --bs-btn-hover-color: var(--bs-black);
+    --bs-btn-hover-bg: #f9fafb;
+    --bs-btn-hover-border-color: #f9fafb;
+    --bs-btn-focus-shadow-rgb: 211, 212, 213;
+    --bs-btn-active-color: var(--bs-black);
+    --bs-btn-active-bg: #f9fafb;
+    --bs-btn-active-border-color: #f9fafb;
+    --bs-btn-disabled-color: var(--bs-black);
+    --bs-btn-disabled-bg: #f8f9fa;
+    --bs-btn-disabled-border-color: #f8f9fa;
+}

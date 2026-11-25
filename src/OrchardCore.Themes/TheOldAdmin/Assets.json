@@ -1,0 +1,54 @@
+[
+  {
+    "action": "sass",
+    "generateRTL": true,
+    "name": "theme-theoldadmin",
+    "source": "Assets/scss/TheOldAdmin.scss",
+    "dest": "wwwroot/css/",
+    "tags": ["theme", "css"]
+  },
+  {
+    "action": "sass",
+    "generateRTL": true,
+    "name": "theme-theoldadmin-layout",
+    "source": "Assets/scss/admin-layout.scss",
+    "dest": "wwwroot/css/",
+    "tags": ["theme", "css"]
+  },
+  {
+    "action": "sass",
+    "generateRTL": true,
+    "name": "theme-theoldadmin-login",
+    "source": "Assets/scss/login.scss",
+    "dest": "wwwroot/css/",
+    "tags": ["theme", "css"]
+  },
+  {
+    "action": "parcel",
+    "name": "TheOldAdmin-main",
+    "source": "Assets/js/TheOldAdmin-main/TheOldAdmin-main.ts",
+    "dest": "wwwroot/js/theoldadmin-main/",
+    "tags": ["theme", "css"]
+  },
+  {
+    "action": "parcel",
+    "name": "TheOldAdmin",
+    "source": "Assets/js/TheOldAdmin/TheOldAdmin.ts",
+    "dest": "wwwroot/js/theoldadmin/",
+    "tags": ["theme", "css"]
+  },
+  {
+    "action": "parcel",
+    "name": "TheOldAdmin-NotifyMessages",
+    "source": "Assets/js/NotifyMessages/NotifyMessages.ts",
+    "dest": "wwwroot/js/notify-messages/",
+    "tags": ["theme", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "TheOldAdmin-NavigationAdmin",
+    "source": "Assets/js/NavigationAdmin/NavigationAdmin.ts",
+    "dest": "wwwroot/js/navigation-admin/",
+    "tags": ["theme", "js"]
+  }
+]

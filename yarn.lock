@@ -3215,6 +3215,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@orchardcore/theoldadmin@workspace:src/OrchardCore.Themes/TheOldAdmin/Assets":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/theoldadmin@workspace:src/OrchardCore.Themes/TheOldAdmin/Assets"
+  dependencies:
+    "@popperjs/core": "npm:2.11.8"
+    "@types/js-cookie": "npm:^3.0.6"
+    bootstrap: "npm:5.3.8"
+    js-cookie: "npm:^3.0.5"
+    nouislider: "npm:15.7.0"
+  languageName: unknown
+  linkType: soft
+
 "@orchardcore/thetheme@workspace:src/OrchardCore.Themes/TheTheme/Assets":
   version: 0.0.0-use.local
   resolution: "@orchardcore/thetheme@workspace:src/OrchardCore.Themes/TheTheme/Assets"

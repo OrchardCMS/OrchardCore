@@ -46,6 +46,8 @@ The site confirms *... was set as the default Site theme*. If the theme was off,
 
 The site confirms *... was set as the default Admin theme*, and the admin uses it from the next page.
 
+To keep the look the admin had before its color schemes, make **The Old Admin Theme** current. It shows the same screens with that look, and it has no schemes: its card has no **Schemes** button, and its **Toggle theme** menu only offers **Auto**, **Light** and **Dark**.
+
 ## Turn a theme on or off
 
 **Enable** and **Disable** turn a theme on or off as a feature without making it current. A theme that is on can still add things to the site, such as templates or resources, even when it isn't current; most of the time you don't need to turn on a theme you don't use. You can't disable the current themes from this screen: their cards have no buttons.
@@ -64,6 +66,7 @@ Each asks you to confirm. Use them only for sites that don't use theming, or to 
 | Theme | Kind | What it is for |
 | --- | --- | --- |
 | **The Admin Theme** (`TheAdmin`) | Admin | The default admin theme, the one this manual describes. |
+| **The Old Admin Theme** (`TheOldAdmin`) | Admin | The look the admin had before its color schemes, for sites that need to keep it. It has no schemes. |
 | **The Blog Theme** (`TheBlogTheme`) | Site | A blog: a header image, posts, categories and tags. Used by the **Blog** recipe. |
 | **The Agency Theme** (`TheAgencyTheme`) | Site | A one-page agency or landing site with sections. Used by the **Agency** recipe. |
 | **The Coming Soon Theme** (`TheComingSoonTheme`) | Site | A single "coming soon" landing page for a project under construction. Used by the **Coming Soon** recipe. |
@@ -76,7 +79,7 @@ The Blog, Agency and Default themes show the menu whose alias is `main-menu` (th
 
 The admin theme has a theme switcher in the top bar (a half-filled circle icon, **Toggle theme**). Under **Mode** it offers **Auto**, **Light** and **Dark**; **Auto** follows your device's setting. The choice is kept in your browser. The Default Theme has the same switcher on the public site.
 
-Under **Scheme**, the same menu lists the color schemes of the admin (see [Change the colors of the admin](#change-the-colors-of-the-admin)). The scheme in use is highlighted, and the site's default scheme is marked *(default)*. Pick one to see the admin in it at once; your choice is kept in your browser for this site. Pick the default scheme to follow the site's choice again, even when an administrator changes it later.
+With The Admin Theme, under **Scheme**, the same menu lists the color schemes of the admin (see [Change the colors of the admin](#change-the-colors-of-the-admin)). The scheme in use is highlighted, and the site's default scheme is marked *(default)*. Pick one to see the admin in it at once; your choice is kept in your browser for this site. Pick the default scheme to follow the site's choice again, even when an administrator changes it later.
 
 Whether the switcher appears in the admin, and other admin options such as the menu filter, quick navigation, breadcrumb and the List or Grid layout of admin lists, are set in **Settings → Admin**. See [General settings](../settings/general.md).
 
@@ -84,7 +87,7 @@ Whether the switcher appears in the admin, and other admin options such as the m
 
 The look of **The Admin Theme** comes from a **scheme**: four colors from which the admin works out every other color, for light and dark mode, and its fonts, text size, corners and spacing. The theme starts with seven schemes: Gray (the default), Blue, Ocean, Forest, Plum, Sunset and Graphite. Everyone sees the default scheme until they pick another one in **Toggle theme**.
 
-The **Schemes** button is on the card of The Admin Theme in **Design → Themes**, while it is the current admin theme, for users who can apply a theme.
+The **Schemes** button is on the card of The Admin Theme in **Design → Themes**, while it is the current admin theme, for users who can apply a theme. The Old Admin Theme has no schemes.
 
 ### Add or edit a scheme
 
