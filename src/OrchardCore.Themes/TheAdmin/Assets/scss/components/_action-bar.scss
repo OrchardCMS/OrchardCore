@@ -16,8 +16,12 @@
     // same amount, and its side borders only turn transparent, so the search box and the buttons keep their size.
     &.action-bar-stuck.card,
     &.action-bar-stuck > .card {
-        margin-inline: calc(-1 * var(--ta-content-padding-x));
-        padding-inline: var(--ta-content-padding-x);
+        // The bleed is measured by stickyActionBar.ts, as a bar nested in a card or a tab is inset by more than the
+        // content padding.
+        margin-inline-start: calc(-1 * var(--ta-action-bar-bleed-start, var(--ta-content-padding-x)));
+        margin-inline-end: calc(-1 * var(--ta-action-bar-bleed-end, var(--ta-content-padding-x)));
+        padding-inline-start: var(--ta-action-bar-bleed-start, var(--ta-content-padding-x));
+        padding-inline-end: var(--ta-action-bar-bleed-end, var(--ta-content-padding-x));
         border-top-color: transparent;
         border-inline-color: transparent;
         border-radius: 0;

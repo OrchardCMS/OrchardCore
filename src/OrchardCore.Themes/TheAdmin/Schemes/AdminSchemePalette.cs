@@ -243,7 +243,8 @@ public sealed class AdminSchemePalette
         var surfaceMuted = AdminColor.FromHsl(Hue, 0.6 * k, 0.982);
         var tintStart = (PickedTint ?? primary).Mix(page, 0.07);
         var tintEnd = (PickedTint ?? Accent).Mix(page, 0.09);
-        var header = AdminColor.FromHsl(Hue, 0.14 * k, 0.975);
+        // A faint wash of the primary color, like the stripes of the tables, rather than a near gray.
+        var header = primary.Mix(AdminColor.White, 0.06);
         var rowHover = primary.Mix(AdminColor.White, 0.08);
         AdminColor[] surfaces = [page, AdminColor.White, surfaceMuted, tintStart, tintEnd, header, rowHover];
         var border = AdminColor.FromHsl(Hue, 0.38 * k, 0.92);

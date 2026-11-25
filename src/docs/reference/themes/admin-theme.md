@@ -114,7 +114,9 @@ Bootstrap tooltips for elements with the `data-bs-toggle="tooltip"` attribute.
 
 ### Creating a Horizontal Form Layout
 
-To achieve a horizontal form layout, override the `ocat-*` classes in your custom admin theme CSS or SCSS. Here's a pure CSS example:
+**TheAdmin** has this layout built in, and it is off by default: the forms are stacked. It is an option of a [scheme](#admin-schemes), so it follows the scheme of the site, or the one a user picks. Check **Horizontal form layout** when you edit a scheme, or set `HorizontalFormLayout` to `true` on the scheme in the `AdminSchemes` recipe step. Its rules are written in `~/TheAdmin/schemes.css`, under the selector of the scheme, from screens as wide as a tablet (768 pixels) up; no other stylesheet is added to the pages. It is also the way to check that a new view builds its forms from the `ocat-*` classes: a view that doesn't keeps its stacked layout when the option is on.
+
+A custom admin theme that doesn't build on **TheAdmin** can override the `ocat-*` classes in your custom admin theme CSS or SCSS. Here's a pure CSS example:
 
 ```css
 /* Horizontal form layout for admin editors */
@@ -260,6 +262,7 @@ Schemes are exported with the **Admin schemes** deployment step and imported wit
 | `Primary`, `Deep`, `Ink`, `Accent` | Required. `#rrggbb` colors. |
 | `Position` | Optional. The place of the scheme in the pickers; after the others when empty. |
 | `LightMenu` | Optional. `true` for a light gray menu with dark text. |
+| `HorizontalFormLayout` | Optional. `true` to lay out the admin forms horizontally, with the label of a field beside its editor, from the width of a tablet. `false` (stacked forms) when empty. |
 | `Hue`, `Saturation` | Optional. The hue (0 to 360) and saturation (0 to 1) of the page, borders and dark mode surfaces. |
 | `OnPrimary`, `Page`, `Toolbar`, `Tint`, `TintDark` | Optional. `#rrggbb` colors of the text on the primary, the page, the toolbar of lists and the page gradient in light and dark mode. |
 | `FontFamily`, `HeadingFontFamily` | Optional. `lato`, `system`, or any font families separated by commas (e.g. `Georgia, serif`). An empty `HeadingFontFamily` uses the body font. |

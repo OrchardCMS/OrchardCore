@@ -170,13 +170,27 @@
                     </div>
                 </div>
             }
+
+            <div class="ocat-wrapper">
+                <div class="ocat-end-offset">
+                    <div class="form-check">
+                        <input asp-for="HorizontalFormLayout" class="form-check-input" type="checkbox" />
+                        <label asp-for="HorizontalFormLayout" class="form-check-label">@T["Horizontal form layout"]</label>
+                        <span class="hint dashed">@T["Shows the label of each field of the admin forms beside its editor instead of above it, on screens at least as wide as a tablet."]</span>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <div class="card mb-3">
         <div class="card-header">@T["Advanced"]</div>
         <div class="card-body">
-            <p class="hint">@T["Leave a setting empty to work it out from the four colors."]</p>
+            <div class="ocat-wrapper">
+                <div class="ocat-end-offset">
+                    <span class="hint">@T["Leave a setting empty to work it out from the four colors."]</span>
+                </div>
+            </div>
 
             <div class="ocat-wrapper" asp-validation-class-for="Hue">
                 <label asp-for="Hue" class="ocat-label">@T["Surface hue"]</label>

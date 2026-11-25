@@ -49,6 +49,11 @@ public sealed class AdminSchemesDeploymentSource : DeploymentSourceBase<AdminSch
         };
 
         // The optional settings only when they are set, so an export shows what was tuned.
+        if (scheme.HorizontalFormLayout)
+        {
+            entry[nameof(AdminScheme.HorizontalFormLayout)] = true;
+        }
+
         AddIfSet(entry, nameof(AdminScheme.Hue), scheme.Hue);
         AddIfSet(entry, nameof(AdminScheme.Saturation), scheme.Saturation);
         AddIfSet(entry, nameof(AdminScheme.OnPrimary), scheme.OnPrimary);

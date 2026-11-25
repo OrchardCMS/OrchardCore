@@ -572,6 +572,11 @@ legend.ocat-label {
   border-end-end-radius: var(--bs-border-radius) !important;
 }
 
+.input-group.has-validation:not(:has(> .invalid-feedback, > .valid-feedback, > [data-valmsg-for])) > :not(:last-child):not(.dropdown-menu):not(.dropdown-toggle):not(.form-floating) {
+  border-start-end-radius: 0;
+  border-end-end-radius: 0;
+}
+
 .label-link {
   font-size: var(--ta-font-size-xs);
 }

@@ -62,7 +62,7 @@ msgstr ""
 #: Recipes/AdminSchemesStep.cs
 #, csharp-format
 msgctxt "OrchardCore.Themes.TheAdmin.Recipes.AdminSchemesStep"
-msgid "The scheme '{0}' has values of the wrong type: {1}. ItemId, Name, the colors and the fonts are strings, LightMenu is a boolean, Position is a whole number, and the other settings are numbers."
+msgid "The scheme '{0}' has values of the wrong type: {1}. ItemId, Name, the colors and the fonts are strings, LightMenu and HorizontalFormLayout are booleans, Position is a whole number, and the other settings are numbers."
 msgstr ""
 
 #. Format arguments: {0}: scheme.Id
@@ -429,6 +429,11 @@ msgstr ""
 
 #: Views/Schemes/Edit.cshtml
 msgctxt "TheAdmin.Views.Schemes.Edit"
+msgid "Horizontal form layout"
+msgstr ""
+
+#: Views/Schemes/Edit.cshtml
+msgctxt "TheAdmin.Views.Schemes.Edit"
 msgid "How colorful those surfaces are, from 0 (gray) to 1. Worked out from the deep color when empty."
 msgstr ""
 
@@ -522,6 +527,11 @@ msgstr ""
 #: Views/Schemes/Edit.cshtml
 msgctxt "TheAdmin.Views.Schemes.Edit"
 msgid "Scheme"
+msgstr ""
+
+#: Views/Schemes/Edit.cshtml
+msgctxt "TheAdmin.Views.Schemes.Edit"
+msgid "Shows the label of each field of the admin forms beside its editor instead of above it, on screens at least as wide as a tablet."
 msgstr ""
 
 #: Views/Schemes/Edit.cshtml

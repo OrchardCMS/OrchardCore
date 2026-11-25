@@ -63,6 +63,32 @@ public static class AdminSchemeStylesheet
         AppendRule(css, GetSelector(scheme.Id), BuildTokens(palette, AdminSchemeMode.Light));
         AppendRule(css, TheAdminSchemes.DarkModeSelector + GetSelector(scheme.Id), BuildTokens(palette, AdminSchemeMode.Dark));
         TheAdminSchemeTokens.AppendRules(css, scheme, palette);
+
+        if (scheme.HorizontalFormLayout)
+        {
+            AppendHorizontalFormLayout(css, GetSelector(scheme.Id));
+        }
+    }
+
+    /// <summary>
+    /// Appends the rules of the horizontal form layout under the selector of a scheme: the label of a field beside its
+    /// editor, from the width of a tablet. Views build their forms from the <c>ocat-*</c> classes only, so these rules
+    /// lay out every form of the admin without touching a view.
+    /// </summary>
+    public static void AppendHorizontalFormLayout(StringBuilder css, string selector)
+    {
+        ArgumentNullException.ThrowIfNull(css);
+        ArgumentException.ThrowIfNullOrEmpty(selector);
+
+        css.Append("@media (min-width:768px){\n")
+            .Append(selector).Append(" .ocat-wrapper,").Append(selector).Append(" .ocat-limited-wrapper{--ocat-gutter-x:1.5rem;display:flex;flex-wrap:wrap;margin-inline:calc(-0.5 * var(--ocat-gutter-x));margin-bottom:1rem}\n")
+            .Append(selector).Append(" .ocat-wrapper>*,").Append(selector).Append(" .ocat-limited-wrapper>*{box-sizing:border-box;flex-shrink:0;width:100%;max-width:100%;padding-inline:calc(0.5 * var(--ocat-gutter-x))}\n")
+            .Append(selector).Append(" .ocat-label{display:block;flex:0 0 auto;width:25%;margin-bottom:0;padding-top:calc(0.375rem + var(--bs-border-width));padding-bottom:calc(0.375rem + var(--bs-border-width));text-align:end}\n")
+            .Append(selector).Append(" .ocat-end{flex:0 0 auto;width:75%}\n")
+            .Append(selector).Append(" .ocat-end-offset{flex:0 0 auto;width:75%;margin-inline-start:25%}\n")
+            .Append(selector).Append(" .ocat-start{flex:0 0 auto;width:25%}\n")
+            .Append(selector).Append(" .ocat-limited{flex:0 0 auto;width:33.333%;max-width:33.333%}\n")
+            .Append("}\n");
     }
 
     /// <summary>
