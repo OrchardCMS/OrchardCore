@@ -47,7 +47,7 @@ public sealed class ListsAdminNodeDriver : DisplayDriver<MenuItem, ListsAdminNod
             model.IconForContentItems = treeNode.IconForContentItems;
             model.AddContentTypeAsParent = treeNode.AddContentTypeAsParent;
             model.IconForParentLink = treeNode.IconForParentLink;
-        }).Location("Content");
+        }).Location(l => l.Zone("Content").Card(S["Lists"], "10"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ListsAdminNode treeNode, UpdateEditorContext context)

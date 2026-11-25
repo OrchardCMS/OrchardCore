@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -19,16 +20,20 @@ public sealed class OpenApiSettingsDisplayDriver : SiteDisplayDriver<OpenApiSett
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
 
+    internal readonly IStringLocalizer S;
+
     public OpenApiSettingsDisplayDriver(
         IEnumerable<IOpenApiUIFeature> uiFeatures,
         IShellReleaseManager shellReleaseManager,
         IHttpContextAccessor httpContextAccessor,
-        IAuthorizationService authorizationService)
+        IAuthorizationService authorizationService,
+        IStringLocalizer<OpenApiSettingsDisplayDriver> stringLocalizer)
     {
         _uiFeatures = uiFeatures;
         _shellReleaseManager = shellReleaseManager;
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
+        S = stringLocalizer;
     }
 
     protected override string SettingsGroupId
@@ -45,14 +50,13 @@ public sealed class OpenApiSettingsDisplayDriver : SiteDisplayDriver<OpenApiSett
 
         context.AddTenantReloadWarningWrapper();
 
-        return Initialize<OpenApiSettingsViewModel>("OpenApiSettings_Edit", model =>
-        {
-            model.IsSwaggerUIEnabled = _uiFeatures.Any(f => f is SwaggerUIFeature);
-            model.IsReDocUIEnabled = _uiFeatures.Any(f => f is ReDocUIFeature);
-            model.IsScalarUIEnabled = _uiFeatures.Any(f => f is ScalarUIFeature);
-            model.AllowAnonymousSchemaAccess = settings.AllowAnonymousSchemaAccess;
-        }).Location("Content")
-        .OnGroup(SettingsGroupId);
+        return Combine(
+            Initialize<OpenApiSettingsViewModel>("OpenApiSettings_Edit", model => PopulateViewModel(model, settings))
+                .Location(l => l.Zone("Content", "1").Card(S["Documentation UIs"], "10"))
+                .OnGroup(SettingsGroupId),
+            Initialize<OpenApiSettingsViewModel>("OpenApiSettings_Edit__Schema", model => PopulateViewModel(model, settings))
+                .Location(l => l.Zone("Content", "2").Card(S["Schema access"], "20"))
+                .OnGroup(SettingsGroupId));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, OpenApiSettings settings, UpdateEditorContext context)
@@ -73,5 +77,13 @@ public sealed class OpenApiSettingsDisplayDriver : SiteDisplayDriver<OpenApiSett
         _shellReleaseManager.RequestRelease();
 
         return await EditAsync(site, settings, context);
+    }
+
+    private void PopulateViewModel(OpenApiSettingsViewModel model, OpenApiSettings settings)
+    {
+        model.IsSwaggerUIEnabled = _uiFeatures.Any(f => f is SwaggerUIFeature);
+        model.IsReDocUIEnabled = _uiFeatures.Any(f => f is ReDocUIFeature);
+        model.IsScalarUIEnabled = _uiFeatures.Any(f => f is ScalarUIFeature);
+        model.AllowAnonymousSchemaAccess = settings.AllowAnonymousSchemaAccess;
     }
 }

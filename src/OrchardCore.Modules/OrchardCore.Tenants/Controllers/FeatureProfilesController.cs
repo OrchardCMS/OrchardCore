@@ -32,6 +32,8 @@ public sealed class FeatureProfilesController : Controller
     private readonly INotifier _notifier;
     private readonly PagerOptions _pagerOptions;
     private readonly IShapeFactory _shapeFactory;
+    private readonly IDisplayManager<FeatureProfileViewModel> _featureProfileDisplayManager;
+    private readonly IUpdateModelAccessor _updateModelAccessor;
 
     internal readonly IStringLocalizer S;
     internal readonly IHtmlLocalizer H;
@@ -42,6 +44,8 @@ public sealed class FeatureProfilesController : Controller
         INotifier notifier,
         IOptions<PagerOptions> pagerOptions,
         IShapeFactory shapeFactory,
+        IDisplayManager<FeatureProfileViewModel> featureProfileDisplayManager,
+        IUpdateModelAccessor updateModelAccessor,
         IStringLocalizer<FeatureProfilesController> stringLocalizer,
         IHtmlLocalizer<FeatureProfilesController> htmlLocalizer
         )
@@ -51,6 +55,8 @@ public sealed class FeatureProfilesController : Controller
         _notifier = notifier;
         _pagerOptions = pagerOptions.Value;
         _shapeFactory = shapeFactory;
+        _featureProfileDisplayManager = featureProfileDisplayManager;
+        _updateModelAccessor = updateModelAccessor;
         S = stringLocalizer;
         H = htmlLocalizer;
     }
@@ -142,6 +148,8 @@ public sealed class FeatureProfilesController : Controller
             Id = IdGenerator.GenerateId(),
         };
 
+        viewModel.Editor = await _featureProfileDisplayManager.BuildEditorAsync(viewModel, _updateModelAccessor.ModelUpdater, isNew: true);
+
         return View(viewModel);
     }
 
@@ -176,6 +184,8 @@ public sealed class FeatureProfilesController : Controller
             Name = featureProfile.Name ?? id,
             FeatureRules = JConvert.SerializeObject(featureProfile.FeatureRules, JOptions.Indented),
         };
+
+        model.Editor = await _featureProfileDisplayManager.BuildEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: false);
 
         return View(model);
     }
@@ -249,6 +259,8 @@ public sealed class FeatureProfilesController : Controller
         {
             return Forbid();
         }
+
+        model.Editor = await _featureProfileDisplayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew);
 
         var profile = new FeatureProfile();
 

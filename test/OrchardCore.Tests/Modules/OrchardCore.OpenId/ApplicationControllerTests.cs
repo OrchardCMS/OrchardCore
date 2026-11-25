@@ -1,4 +1,5 @@
 using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Navigation;
@@ -22,7 +23,10 @@ public class ApplicationControllerTests
             Mock.Of<IOpenIdScopeManager>(),
             Mock.Of<IHtmlLocalizer<ApplicationController>>(),
             Mock.Of<INotifier>(),
-            Mock.Of<ShellDescriptor>());
+            Mock.Of<ShellDescriptor>(),
+            Mock.Of<IDisplayManager<CreateOpenIdApplicationViewModel>>(),
+            Mock.Of<IDisplayManager<EditOpenIdApplicationViewModel>>(),
+            Mock.Of<IUpdateModelAccessor>());
 
         var result = await controller.Create();
         Assert.IsType<ForbidResult>(result);
@@ -45,7 +49,10 @@ public class ApplicationControllerTests
             mockOpenIdScopeManager.Object,
             Mock.Of<IHtmlLocalizer<ApplicationController>>(),
             Mock.Of<INotifier>(),
-            Mock.Of<ShellDescriptor>())
+            Mock.Of<ShellDescriptor>(),
+            Mock.Of<IDisplayManager<CreateOpenIdApplicationViewModel>>(),
+            Mock.Of<IDisplayManager<EditOpenIdApplicationViewModel>>(),
+            Mock.Of<IUpdateModelAccessor>())
         {
             ControllerContext = CreateControllerContext(),
         };
@@ -70,7 +77,10 @@ public class ApplicationControllerTests
             Mock.Of<IOpenIdScopeManager>(),
             Mock.Of<IHtmlLocalizer<ApplicationController>>(),
             Mock.Of<INotifier>(),
-            Mock.Of<ShellDescriptor>())
+            Mock.Of<ShellDescriptor>(),
+            Mock.Of<IDisplayManager<CreateOpenIdApplicationViewModel>>(),
+            Mock.Of<IDisplayManager<EditOpenIdApplicationViewModel>>(),
+            Mock.Of<IUpdateModelAccessor>())
         {
             ControllerContext = CreateControllerContext(),
         };
@@ -111,7 +121,10 @@ public class ApplicationControllerTests
             Mock.Of<IOpenIdScopeManager>(),
             Mock.Of<IHtmlLocalizer<ApplicationController>>(),
             Mock.Of<INotifier>(),
-            Mock.Of<ShellDescriptor>())
+            Mock.Of<ShellDescriptor>(),
+            Mock.Of<IDisplayManager<CreateOpenIdApplicationViewModel>>(),
+            Mock.Of<IDisplayManager<EditOpenIdApplicationViewModel>>(),
+            Mock.Of<IUpdateModelAccessor>())
         {
             ControllerContext = CreateControllerContext(),
         };

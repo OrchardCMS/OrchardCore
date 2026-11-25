@@ -63,7 +63,7 @@ public sealed class AzureEmailSettingsDisplayDriver : SiteDisplayDriver<AzureEma
             model.IsEnabled = settings.IsEnabled;
             model.DefaultSender = settings.DefaultSender;
             model.ConnectionString = SecretInputViewModel.Create(settings.ConnectionString, settings.ConnectionStringSecretName);
-        }).Location("Content:5#Azure Communication Services")
+        }).Location(l => l.Zone("Content", "5").Tab(S["Azure Communication Services"]).Card(S["Azure provider"], "10"))
         .OnGroup(SettingsGroupId);
     }
 

@@ -7,7 +7,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Http;
 using OrchardCore.Admin;
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Queries.Sql.ViewModels;
@@ -22,6 +25,8 @@ public sealed class AdminController : Controller
     private readonly IStore _store;
     private readonly ILiquidTemplateManager _liquidTemplateManager;
     private readonly TemplateOptions _templateOptions;
+    private readonly IDisplayManager<AdminQueryViewModel> _displayManager;
+    private readonly IUpdateModelAccessor _updateModelAccessor;
 
     internal readonly IStringLocalizer S;
 
@@ -30,7 +35,9 @@ public sealed class AdminController : Controller
         IStore store,
         ILiquidTemplateManager liquidTemplateManager,
         IStringLocalizer<AdminController> stringLocalizer,
-        IOptions<TemplateOptions> templateOptions)
+        IOptions<TemplateOptions> templateOptions,
+        IDisplayManager<AdminQueryViewModel> displayManager,
+        IUpdateModelAccessor updateModelAccessor)
 
     {
         _authorizationService = authorizationService;
@@ -38,6 +45,8 @@ public sealed class AdminController : Controller
         _liquidTemplateManager = liquidTemplateManager;
         S = stringLocalizer;
         _templateOptions = templateOptions.Value;
+        _displayManager = displayManager;
+        _updateModelAccessor = updateModelAccessor;
     }
 
     [Admin("Queries/Sql/Query", "QueriesRunSql")]
@@ -64,8 +73,16 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
+        // A posted query binds the editor. A query run from the url builds it once run, so that it shows the parameters the query used.
+        if (HttpMethods.IsPost(Request.Method))
+        {
+            model.Editor = await _displayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: false);
+        }
+
         if (string.IsNullOrWhiteSpace(model.DecodedQuery))
         {
+            model.Editor ??= await _displayManager.BuildEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: false);
+
             return View(model);
         }
 
@@ -110,6 +127,8 @@ public sealed class AdminController : Controller
         }
 
         model.Elapsed = stopwatch.Elapsed;
+
+        model.Editor ??= await _displayManager.BuildEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: false);
 
         return View(model);
     }

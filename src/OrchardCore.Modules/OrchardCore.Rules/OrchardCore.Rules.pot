@@ -6,11 +6,56 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-OrchardCore-Catalog-Schema: 1\n"
 
+#: Drivers/AllConditionDisplayDriver.cs
+msgctxt "OrchardCore.Rules.Drivers.AllConditionDisplayDriver"
+msgid "All"
+msgstr ""
+
+#: Drivers/AnyConditionDisplayDriver.cs
+msgctxt "OrchardCore.Rules.Drivers.AnyConditionDisplayDriver"
+msgid "Any"
+msgstr ""
+
+#: Drivers/BooleanConditionDisplayDriver.cs
+msgctxt "OrchardCore.Rules.Drivers.BooleanConditionDisplayDriver"
+msgid "Boolean"
+msgstr ""
+
+#: Drivers/ContentTypeConditionDisplayDriver.cs
+msgctxt "OrchardCore.Rules.Drivers.ContentTypeConditionDisplayDriver"
+msgid "Content type"
+msgstr ""
+
+#: Drivers/CultureConditionDisplayDriver.cs
+msgctxt "OrchardCore.Rules.Drivers.CultureConditionDisplayDriver"
+msgid "Culture"
+msgstr ""
+
+#: Drivers/HomepageConditionDisplayDriver.cs
+msgctxt "OrchardCore.Rules.Drivers.HomepageConditionDisplayDriver"
+msgid "Homepage"
+msgstr ""
+
+#: Drivers/IsAnonymousConditionDisplayDriver.cs
+msgctxt "OrchardCore.Rules.Drivers.IsAnonymousConditionDisplayDriver"
+msgid "Is anonymous"
+msgstr ""
+
+#: Drivers/IsAuthenticatedConditionDisplayDriver.cs
+msgctxt "OrchardCore.Rules.Drivers.IsAuthenticatedConditionDisplayDriver"
+msgid "Is authenticated"
+msgstr ""
+
 #. Format arguments: {0}: ex.Message
 #: Drivers/JavascriptConditionDisplayDriver.cs
 #, csharp-format
 msgctxt "OrchardCore.Rules.Drivers.JavascriptConditionDisplayDriver"
 msgid "JavaScript evaluation resulted in an exception. Details: {0}"
+msgstr ""
+
+#: Drivers/JavascriptConditionDisplayDriver.cs
+msgctxt "OrchardCore.Rules.Drivers.JavascriptConditionDisplayDriver"
+msgid "Javascript"
 msgstr ""
 
 #: Drivers/JavascriptConditionDisplayDriver.cs
@@ -30,6 +75,16 @@ msgstr ""
 #, csharp-format
 msgctxt "OrchardCore.Rules.Drivers.JavascriptConditionDisplayDriver"
 msgid "The script evaluation failed. Details: {0}"
+msgstr ""
+
+#: Drivers/RoleConditionDisplayDriver.cs
+msgctxt "OrchardCore.Rules.Drivers.RoleConditionDisplayDriver"
+msgid "Role"
+msgstr ""
+
+#: Drivers/UrlConditionDisplayDriver.cs
+msgctxt "OrchardCore.Rules.Drivers.UrlConditionDisplayDriver"
+msgid "Url"
 msgstr ""
 
 #: Services/ConditionOperatorConfigureOptions.cs
@@ -72,6 +127,11 @@ msgctxt "OrchardCore.Rules.Services.ConditionOperatorConfigureOptions"
 msgid "Starts with"
 msgstr ""
 
+#: Views/Condition.Edit.cshtml
+msgctxt "OrchardCore.Rules.Views.Condition.Edit"
+msgid "General"
+msgstr ""
+
 #: Views/Condition.Summary.cshtml
 msgctxt "OrchardCore.Rules.Views.Condition.Summary"
 msgid "Add"
@@ -109,11 +169,6 @@ msgstr ""
 
 #: Views/Items/AllCondition.Fields.Edit.cshtml
 msgctxt "OrchardCore.Rules.Views.Items.AllCondition.Fields.Edit"
-msgid "All"
-msgstr ""
-
-#: Views/Items/AllCondition.Fields.Edit.cshtml
-msgctxt "OrchardCore.Rules.Views.Items.AllCondition.Fields.Edit"
 msgid "Name"
 msgstr ""
 
@@ -134,11 +189,6 @@ msgstr ""
 
 #: Views/Items/AnyCondition.Fields.Edit.cshtml
 msgctxt "OrchardCore.Rules.Views.Items.AnyCondition.Fields.Edit"
-msgid "Any"
-msgstr ""
-
-#: Views/Items/AnyCondition.Fields.Edit.cshtml
-msgctxt "OrchardCore.Rules.Views.Items.AnyCondition.Fields.Edit"
 msgid "Name"
 msgstr ""
 
@@ -155,11 +205,6 @@ msgstr ""
 #: Views/Items/AnyCondition.Fields.Thumbnail.cshtml
 msgctxt "OrchardCore.Rules.Views.Items.AnyCondition.Fields.Thumbnail"
 msgid "Any condition"
-msgstr ""
-
-#: Views/Items/BooleanCondition.Fields.Edit.cshtml
-msgctxt "OrchardCore.Rules.Views.Items.BooleanCondition.Fields.Edit"
-msgid "Boolean"
 msgstr ""
 
 #: Views/Items/BooleanCondition.Fields.Edit.cshtml
@@ -190,11 +235,6 @@ msgstr ""
 #: Views/Items/ConditionGroup.Fields.Summary.cshtml
 msgctxt "OrchardCore.Rules.Views.Items.ConditionGroup.Fields.Summary"
 msgid "No conditions found. Please add at least one condition."
-msgstr ""
-
-#: Views/Items/ContentTypeCondition.Fields.Edit.cshtml
-msgctxt "OrchardCore.Rules.Views.Items.ContentTypeCondition.Fields.Edit"
-msgid "Content type"
 msgstr ""
 
 #: Views/Items/ContentTypeCondition.Fields.Edit.cshtml
@@ -234,11 +274,6 @@ msgstr ""
 
 #: Views/Items/CultureCondition.Fields.Edit.cshtml
 msgctxt "OrchardCore.Rules.Views.Items.CultureCondition.Fields.Edit"
-msgid "Culture"
-msgstr ""
-
-#: Views/Items/CultureCondition.Fields.Edit.cshtml
-msgctxt "OrchardCore.Rules.Views.Items.CultureCondition.Fields.Edit"
 msgid "Operation"
 msgstr ""
 
@@ -270,11 +305,6 @@ msgstr ""
 #: Views/Items/CultureCondition.Fields.Thumbnail.cshtml
 msgctxt "OrchardCore.Rules.Views.Items.CultureCondition.Fields.Thumbnail"
 msgid "Culture condition"
-msgstr ""
-
-#: Views/Items/HomepageCondition.Fields.Edit.cshtml
-msgctxt "OrchardCore.Rules.Views.Items.HomepageCondition.Fields.Edit"
-msgid "Homepage"
 msgstr ""
 
 #: Views/Items/HomepageCondition.Fields.Edit.cshtml
@@ -349,11 +379,6 @@ msgstr ""
 
 #: Views/Items/JavascriptCondition.Fields.Edit.cshtml
 msgctxt "OrchardCore.Rules.Views.Items.JavascriptCondition.Fields.Edit"
-msgid "Javascript"
-msgstr ""
-
-#: Views/Items/JavascriptCondition.Fields.Edit.cshtml
-msgctxt "OrchardCore.Rules.Views.Items.JavascriptCondition.Fields.Edit"
 msgid "Script"
 msgstr ""
 
@@ -380,11 +405,6 @@ msgstr ""
 #: Views/Items/RoleCondition.Fields.Edit.cshtml
 msgctxt "OrchardCore.Rules.Views.Items.RoleCondition.Fields.Edit"
 msgid "Operation"
-msgstr ""
-
-#: Views/Items/RoleCondition.Fields.Edit.cshtml
-msgctxt "OrchardCore.Rules.Views.Items.RoleCondition.Fields.Edit"
-msgid "Role"
 msgstr ""
 
 #: Views/Items/RoleCondition.Fields.Edit.cshtml
@@ -417,11 +437,6 @@ msgctxt "OrchardCore.Rules.Views.Items.RoleCondition.Fields.Thumbnail"
 msgid "Role condition"
 msgstr ""
 
-#: Views/Items/Rule.Fields.Summary.cshtml
-msgctxt "OrchardCore.Rules.Views.Items.Rule.Fields.Summary"
-msgid "Rules"
-msgstr ""
-
 #: Views/Items/UrlCondition.Fields.Edit.cshtml
 msgctxt "OrchardCore.Rules.Views.Items.UrlCondition.Fields.Edit"
 msgid "Operation"
@@ -435,11 +450,6 @@ msgstr ""
 #: Views/Items/UrlCondition.Fields.Edit.cshtml
 msgctxt "OrchardCore.Rules.Views.Items.UrlCondition.Fields.Edit"
 msgid "The value for the operation."
-msgstr ""
-
-#: Views/Items/UrlCondition.Fields.Edit.cshtml
-msgctxt "OrchardCore.Rules.Views.Items.UrlCondition.Fields.Edit"
-msgid "Url"
 msgstr ""
 
 #: Views/Items/UrlCondition.Fields.Edit.cshtml

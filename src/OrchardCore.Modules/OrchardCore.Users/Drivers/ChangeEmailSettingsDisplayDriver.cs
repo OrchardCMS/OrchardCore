@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -15,12 +16,16 @@ public sealed class ChangeEmailSettingsDisplayDriver : SiteDisplayDriver<ChangeE
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
 
+    internal readonly IStringLocalizer S;
+
     public ChangeEmailSettingsDisplayDriver(
         IHttpContextAccessor httpContextAccessor,
-        IAuthorizationService authorizationService)
+        IAuthorizationService authorizationService,
+        IStringLocalizer<ChangeEmailSettingsDisplayDriver> stringLocalizer)
     {
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
+        S = stringLocalizer;
     }
 
     protected override string SettingsGroupId
@@ -38,7 +43,7 @@ public sealed class ChangeEmailSettingsDisplayDriver : SiteDisplayDriver<ChangeE
         return Initialize<ChangeEmailSettings>("ChangeEmailSettings_Edit", model =>
         {
             model.AllowChangeEmail = settings.AllowChangeEmail;
-        }).Location("Content:5")
+        }).Location(l => l.Zone("Content", "5").Card(S["Email change"], "10"))
         .OnGroup(SettingsGroupId);
     }
 

@@ -17,14 +17,18 @@ public sealed class UserNotificationPreferencesPartDisplayDriver : SectionDispla
     private readonly NotificationTypeOptions _notificationTypeOptions;
     private readonly IStringLocalizerFactory _localizerFactory;
 
+    internal readonly IStringLocalizer S;
+
     public UserNotificationPreferencesPartDisplayDriver(
         IEnumerable<INotificationMethodProvider> notificationMethodProviders,
         IOptions<NotificationTypeOptions> notificationTypeOptions,
-        IStringLocalizerFactory localizerFactory)
+        IStringLocalizerFactory localizerFactory,
+        IStringLocalizer<UserNotificationPreferencesPartDisplayDriver> stringLocalizer)
     {
         _notificationMethodProviders = notificationMethodProviders;
         _notificationTypeOptions = notificationTypeOptions.Value;
         _localizerFactory = localizerFactory;
+        S = stringLocalizer;
     }
 
     public override Task<IDisplayResult> EditAsync(User user, UserNotificationPreferencesPart part, BuildEditorContext context)
@@ -68,7 +72,7 @@ public sealed class UserNotificationPreferencesPartDisplayDriver : SectionDispla
                 .OrderBy(type => type.DisplayName)
                 .ToList();
 
-        }).Location("Content:11")
+        }).Location(l => l.Zone("Content", "11").Card(S["Notifications"], "60"))
         .RenderWhen(static (notificationMethodProviders) => Task.FromResult(notificationMethodProviders.Any()), _notificationMethodProviders);
 
         return Task.FromResult<IDisplayResult>(result);

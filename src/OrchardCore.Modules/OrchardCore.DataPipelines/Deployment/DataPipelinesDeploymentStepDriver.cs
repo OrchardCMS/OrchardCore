@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.DataPipelines.Services;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
@@ -9,9 +10,12 @@ public sealed class DataPipelinesDeploymentStepDriver : DisplayDriver<Deployment
 {
     private readonly DataPipelineManager _pipelineManager;
 
-    public DataPipelinesDeploymentStepDriver(DataPipelineManager pipelineManager)
+    internal readonly IStringLocalizer S;
+
+    public DataPipelinesDeploymentStepDriver(DataPipelineManager pipelineManager, IStringLocalizer<DataPipelinesDeploymentStepDriver> stringLocalizer)
     {
         _pipelineManager = pipelineManager;
+        S = stringLocalizer;
     }
 
     public override Task<IDisplayResult> DisplayAsync(DataPipelinesDeploymentStep step, BuildDisplayContext context)
@@ -30,7 +34,7 @@ public sealed class DataPipelinesDeploymentStepDriver : DisplayDriver<Deployment
             model.Pipelines = (await _pipelineManager.ListAsync())
                 .Select(pipeline => new DataPipelineOption(pipeline.PipelineId, pipeline.Name))
                 .ToList();
-        }).Location("Content");
+        }).Location(l => l.Zone("Content").Card(S["Data pipelines"], "10"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(DataPipelinesDeploymentStep step, UpdateEditorContext context)

@@ -610,12 +610,15 @@ This applies to admin-facing Razor edit views such as:
 | Standard admin field row (default for all inputs) | `ocat-wrapper` + `ocat-label` + `ocat-end` |
 | Required field label | `ocat-label ocat-label-required` |
 | Checkbox or toggle with no left-column label | `ocat-wrapper` + `ocat-end-offset` |
-| Standalone alert, notice, or section headline inside an edit form | `ocat-wrapper` + `ocat-end-offset` |
+| Standalone alert or notice inside an edit form | `ocat-wrapper` + `ocat-end-offset` |
+| A group of fields (a section of the form) | A card declared by the placement of the shapes of display drivers, see [Cards](#cards) |
 | Caption of several controls (checkbox or radio list) or of a script-rendered widget | `<span id="..._Label" class="ocat-label">` + `ocat-end` with `role="group"` (`radiogroup`) and `aria-labelledby` |
 | Read-only value without a control | `<span class="ocat-label">` + `ocat-end` |
 | Limited-width row **only** for `type="number"` inputs or when the user explicitly requests compact width | `ocat-limited-wrapper` + `ocat-label` + `ocat-limited` |
 
 > **Default rule:** Always use the standard `ocat-wrapper` + `ocat-label` + `ocat-end` pattern unless the input is a `type="number"` field or the user explicitly asks for limited/compact width.
+
+> **Cards:** Every admin screen with a form, except a content item editor, groups its fields in cards declared by placement, see [Cards](#cards).
 
 ### Standard field example
 
@@ -680,20 +683,28 @@ If the row also needs Orchard-specific wrapper classes such as `field-wrapper-*`
 </div>
 ```
 
-### Standalone alert or headline row
+### Standalone alert row
 
-Use `ocat-end-offset` for alerts, notices, legends, and headings that belong to the form but do not have a left-column label:
+Use `ocat-end-offset` for alerts and notices that belong to the form but do not have a left-column label. A heading starting a new section of the form is a card instead, see [Cards](#cards):
 
 ```cshtml
 <div class="ocat-wrapper">
     <div class="ocat-end-offset">
-        <h5>@T["Section heading"]</h5>
         <div class="alert alert-warning" role="alert">
             @T["Important guidance for this form section."]
         </div>
     </div>
 </div>
 ```
+
+### Cards
+
+**Always group the fields of a new or changed admin screen in cards: site settings, settings of a feature, create and edit pages, content type, part and field settings, workflow activities, deployment steps, and any other admin page with a form.** The only exception is the editor of a content item, whose parts and fields are never grouped in cards. Cards give the whole admin panel one consistent, continuous look: each card is a logical section of the form with a short title (e.g. "Server", "Authentication", "Sender"), so that a long form is easy to follow. Read the `orchardcore-admin-edit-views` skill in `.agents/skills/` before adding or changing an admin form.
+
+- **Screens built by display drivers** (site settings, users, content definition settings, workflow activities, deployment steps, ...): declare the card in the placement location of each editor shape, with a name localized by the driver, e.g. `.Location(l => l.Zone("Content", "1").Card(S["Server"], "10"))`. Shapes placed in the same card share it. Split a view holding several sections into one shape per card. Their views hold no card markup.
+- **Content item editors** are not grouped in cards: the editor shapes of content parts and content fields don't declare cards.
+- **Admin pages with a form** (a controller editing a view model, e.g. a template or an OpenID application): the page renders an editor built by the display drivers of its view model, `@await DisplayAsync(Model.Editor)`, and the drivers place its shapes in cards. Follow `OrchardCore.Templates` (`TemplateController`, `TemplateDisplayDriver`) and the skill.
+- The admin theme renders cards as fieldsets styled as Bootstrap cards (`card`, a `card-header` legend, `card-body`), and as plain fieldsets titled by their legends in a tab (e.g. the general, email and SMS settings), unless they hold a table, always expanded: never group fields in accordions, collapses or `<details>`.
 
 ### Action bar
 
@@ -709,6 +720,8 @@ Render the submit buttons in a `<div class="action-bar-bottom">` at the end of t
 
 ### Avoid
 
+- A form, or a section of a form, outside of a card, card markup written in a view instead of a placement card, a heading row (`<h5>`, `<legend>`) starting a section, or fields grouped in an accordion or a collapse
+- A hand-written list of content type checkboxes: render `@await Component.InvokeAsync("SelectContentTypes", new { selectedContentTypes, htmlName })`, a searchable picker showing the selection as tags, with select all
 - The main action before **Cancel** or the secondary actions in the action bar or a modal dialog footer
 - `mb-3`, `form-group`, or `form-label` as the row layout pattern
 - Legacy helper methods such as `@Orchard.GetWrapperClasses()` or `@Orchard.GetLimitedWidthWrapperClasses()`

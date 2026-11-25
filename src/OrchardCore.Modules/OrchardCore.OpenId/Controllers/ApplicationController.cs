@@ -34,6 +34,9 @@ public sealed class ApplicationController : Controller
     private readonly IOpenIdScopeManager _scopeManager;
     private readonly INotifier _notifier;
     private readonly ShellDescriptor _shellDescriptor;
+    private readonly IDisplayManager<CreateOpenIdApplicationViewModel> _createDisplayManager;
+    private readonly IDisplayManager<EditOpenIdApplicationViewModel> _editDisplayManager;
+    private readonly IUpdateModelAccessor _updateModelAccessor;
 
     internal readonly IStringLocalizer S;
     internal readonly IHtmlLocalizer H;
@@ -47,7 +50,10 @@ public sealed class ApplicationController : Controller
         IOpenIdScopeManager scopeManager,
         IHtmlLocalizer<ApplicationController> htmlLocalizer,
         INotifier notifier,
-        ShellDescriptor shellDescriptor)
+        ShellDescriptor shellDescriptor,
+        IDisplayManager<CreateOpenIdApplicationViewModel> createDisplayManager,
+        IDisplayManager<EditOpenIdApplicationViewModel> editDisplayManager,
+        IUpdateModelAccessor updateModelAccessor)
     {
         _shapeFactory = shapeFactory;
         _pagerOptions = pagerOptions.Value;
@@ -58,6 +64,9 @@ public sealed class ApplicationController : Controller
         _scopeManager = scopeManager;
         _notifier = notifier;
         _shellDescriptor = shellDescriptor;
+        _createDisplayManager = createDisplayManager;
+        _editDisplayManager = editDisplayManager;
+        _updateModelAccessor = updateModelAccessor;
     }
 
     [Admin("OpenId/Application", "OpenIdApplication")]
@@ -158,6 +167,8 @@ public sealed class ApplicationController : Controller
             });
         }
 
+        model.Editor = await _createDisplayManager.BuildEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: true);
+
         ViewData[nameof(OpenIdServerSettings)] = await GetServerSettingsAsync();
         ViewData["ReturnUrl"] = returnUrl;
         return View(model);
@@ -170,6 +181,8 @@ public sealed class ApplicationController : Controller
         {
             return Forbid();
         }
+
+        model.Editor = await _createDisplayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: true);
 
         if (!string.IsNullOrEmpty(model.ClientSecret) &&
              string.Equals(model.Type, OpenIddictConstants.ClientTypes.Public, StringComparison.OrdinalIgnoreCase))
@@ -312,6 +325,8 @@ public sealed class ApplicationController : Controller
             });
         }
 
+        model.Editor = await _editDisplayManager.BuildEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: false);
+
         ViewData[nameof(OpenIdServerSettings)] = await GetServerSettingsAsync();
         ViewData["ReturnUrl"] = returnUrl;
         return View(model);
@@ -330,6 +345,8 @@ public sealed class ApplicationController : Controller
         {
             return NotFound();
         }
+
+        model.Editor = await _editDisplayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: false);
 
         // If the application was a public client and is now a confidential client, ensure a client secret was provided.
         if (string.IsNullOrEmpty(model.ClientSecret) &&

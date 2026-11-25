@@ -1,13 +1,8 @@
 @model AzureAISearchContentIndexSettings
 
 <div class="ocat-wrapper">
-    <div class="ocat-end-offset">
-        <h4>@T["Azure AI Search Index Settings"]</h4>
-    </div>
-</div>
-
-<div class="ocat-wrapper">
-    <div class="ocat-end-offset">
+    <label class="ocat-label">@T["Azure AI Search"]</label>
+    <div class="ocat-end">
         <div class="form-check">
             <input type="checkbox" class="form-check-input" asp-for="Included" checked="@Model.Included" />
             <label class="form-check-label" asp-for="Included">@T["Include this element in the index"]</label>

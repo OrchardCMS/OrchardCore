@@ -47,6 +47,8 @@ public sealed class AdminController : Controller
     private readonly Dictionary<string, DatabaseProvider> _databaseProviderLookup;
     private readonly ILogger _logger;
     private readonly IShapeFactory _shapeFactory;
+    private readonly IDisplayManager<EditTenantViewModel> _tenantDisplayManager;
+    private readonly IUpdateModelAccessor _updateModelAccessor;
 
     internal readonly IStringLocalizer S;
     internal readonly IHtmlLocalizer H;
@@ -69,6 +71,8 @@ public sealed class AdminController : Controller
         TenantDatabasePatternResolver tenantDatabasePatternResolver,
         ILogger<AdminController> logger,
         IShapeFactory shapeFactory,
+        IDisplayManager<EditTenantViewModel> tenantDisplayManager,
+        IUpdateModelAccessor updateModelAccessor,
         IStringLocalizer<AdminController> stringLocalizer,
         IHtmlLocalizer<AdminController> htmlLocalizer)
     {
@@ -89,6 +93,8 @@ public sealed class AdminController : Controller
         _databaseProviderLookup = databaseProviders.ToDictionary(provider => provider.Value, StringComparer.OrdinalIgnoreCase);
         _logger = logger;
         _shapeFactory = shapeFactory;
+        _tenantDisplayManager = tenantDisplayManager;
+        _updateModelAccessor = updateModelAccessor;
         S = stringLocalizer;
         H = htmlLocalizer;
     }
@@ -362,6 +368,8 @@ public sealed class AdminController : Controller
 
         model.Recipes = recipes;
 
+        model.Editor = await _tenantDisplayManager.BuildEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: true);
+
         return View(model);
     }
 
@@ -377,6 +385,9 @@ public sealed class AdminController : Controller
         {
             return Forbid();
         }
+
+        // Binds the fields of the editor before the database presets are applied to the model.
+        await _tenantDisplayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: true);
 
         model.RequireTablePrefix = _tenantsOptions.RequireTablePrefix;
         model.HasTablePrefixPattern = !string.IsNullOrWhiteSpace(_tenantsOptions.TablePrefixPattern);
@@ -451,6 +462,9 @@ public sealed class AdminController : Controller
         model.Recipes = recipes;
         model.FeatureProfilesItems = await GetFeatureProfilesAsync(model.FeatureProfiles);
 
+        // The editor is built from the model reinitialized to be displayed again.
+        model.Editor = await _tenantDisplayManager.BuildEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: true);
+
         // If we got this far, something failed, redisplay form
         return View(model);
     }
@@ -508,6 +522,8 @@ public sealed class AdminController : Controller
             model.CanEditDatabasePresets = !model.DatabaseConfigurationPreset;
         }
 
+        model.Editor = await _tenantDisplayManager.BuildEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: false);
+
         return View(model);
     }
 
@@ -528,6 +544,9 @@ public sealed class AdminController : Controller
         {
             return NotFound();
         }
+
+        // Binds the fields of the editor before the stored connection string and the database presets are applied to the model.
+        await _tenantDisplayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: false);
 
         if (shellSettings.IsUninitialized())
         {
@@ -606,6 +625,9 @@ public sealed class AdminController : Controller
         var recipes = recipeCollections.SelectMany(x => x).Where(x => x.IsSetupRecipe).OrderBy(r => r.DisplayName).ToArray();
         model.Recipes = recipes;
         model.FeatureProfilesItems = await GetFeatureProfilesAsync(model.FeatureProfiles);
+
+        // The editor is built from the model reinitialized to be displayed again.
+        model.Editor = await _tenantDisplayManager.BuildEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: false);
 
         return View(model);
     }

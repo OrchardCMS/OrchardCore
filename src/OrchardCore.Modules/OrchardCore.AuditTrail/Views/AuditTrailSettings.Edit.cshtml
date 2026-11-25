@@ -64,16 +64,6 @@
             </table>
         </div>
     </div>
-
-    <div class="ocat-wrapper" asp-validation-class-for="ClientIpAddressAllowed">
-        <div class="ocat-end-offset">
-            <div class="form-check">
-                <input asp-for="ClientIpAddressAllowed" class="form-check-input" type="checkbox" />
-                <label asp-for="ClientIpAddressAllowed" class="form-check-label">@T["Allow client IP address"]</label>
-                <span class="hint dashed">@T["Whether the client IP address is recorded."]</span>
-            </div>
-        </div>
-    </div>
 </section>
 
 <script asp-src="~/OrchardCore.AuditTrail/Scripts/audit-trail-settings/audit-trail-settings.min.js" debug-src="~/OrchardCore.AuditTrail/Scripts/audit-trail-settings/audit-trail-settings.js" at="Foot" type="module"></script>

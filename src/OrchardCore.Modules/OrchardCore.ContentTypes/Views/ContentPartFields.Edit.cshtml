@@ -1,0 +1,67 @@
+@model ContentPartFieldsViewModel
+@using OrchardCore.ContentManagement
+@using OrchardCore.ContentManagement.Metadata.Models
+@using OrchardCore.ContentManagement.Metadata.Settings
+@using OrchardCore.Mvc.Utilities
+@using OrchardCore.Localization.Data
+@using Microsoft.Extensions.Options
+
+@inject IOptions<ContentOptions> ContentOptions
+@inject IDataLocalizer D
+
+@{
+    var orderedFields = Model.PartDefinition.Fields
+        .Select(field => new { Field = field, Order = int.Parse(field.GetSettings<ContentPartFieldSettings>().Position ?? "0") })
+        .OrderBy(x => x.Order)
+        .Select(x => x.Field)
+        .ToList();
+
+    var fields = ContentOptions.Value.ContentFieldOptions.Select(cfo => cfo.Type).ToList();
+}
+
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        @if (Model.PartDefinition != null)
+        {
+            <ul class="list-group sortable" id="fields" style="cursor: move;">
+                @foreach (var field in orderedFields)
+                {
+                    var settings = field.GetSettings<ContentSettings>();
+
+                    <li class="list-group-item">
+                        <div class="w-100">
+                            <div class="float-end">
+                                @if (fields.Any(x => x.Name.Equals(field.FieldDefinition.Name, StringComparison.OrdinalIgnoreCase)))
+                                {
+                                    <a asp-route-action="EditField" asp-route-id="@Model.PartDefinition.Name" asp-route-name="@field.Name" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary btn-sm" role="button">@T["Edit"]</a>
+                                }
+                                @if (settings.IsSystemDefined)
+                                {
+                                    <div class="d-inline" data-bs-toggle="tooltip" data-bs-title="@T["System-defined fields are integral components of the system and cannot be removed."]">
+                                        <button type="button" class="btn btn-danger btn-sm" disabled>
+                                            @T["Remove"]
+                                        </button>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <a asp-route-action="RemoveFieldFrom" asp-route-id="@Model.PartDefinition.Name" asp-route-name="@field.Name" class="btn btn-danger btn-sm" role="button" data-url-af="UnsafeUrl RemoveUrl">@T["Remove"]</a>
+                                }
+                            </div>
+                            @D[field.DisplayName(), $"Content Fields{Constants.ContextSeparator}{Model.PartDefinition.Name}"] <span class="hint dashed">@field.FieldDefinition.Name.CamelFriendly()</span>
+                        </div>
+                        <input type="hidden" name="OrderedFieldNames" value="@field.Name" />
+                    </li>
+                }
+            </ul>
+        }
+    </div>
+</div>
+@if (fields.Count > 0)
+{
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
+            <a asp-route-action="AddFieldTo" asp-route-id="@Model.PartDefinition.Name" asp-route-returnUrl="@FullRequestPath" class="btn btn-info btn-sm" role="button">@T["Add Field"]</a>
+        </div>
+    </div>
+}

@@ -1,4 +1,6 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using OrchardCore.DisplayManagement;
 
 namespace OrchardCore.Sitemaps.ViewModels;
 
@@ -14,6 +16,11 @@ public class CreateSitemapIndexViewModel
 
     public ContainableSitemapEntryViewModel[] ContainableSitemaps { get; set; } = [];
 
+    /// <summary>
+    /// Gets or sets the editor of the sitemap index, built by the display drivers of <see cref="CreateSitemapIndexViewModel"/>.
+    /// </summary>
+    [BindNever]
+    public IShape Editor { get; set; }
 }
 
 public class ContainableSitemapEntryViewModel

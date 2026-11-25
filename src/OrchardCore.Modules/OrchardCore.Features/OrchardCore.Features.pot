@@ -49,6 +49,11 @@ msgctxt "OrchardCore.Features.Controllers.AdminController"
 msgid "Uncategorized"
 msgstr ""
 
+#: Deployment/AllFeaturesDeploymentStepDriver.cs
+msgctxt "OrchardCore.Features.Deployment.AllFeaturesDeploymentStepDriver"
+msgid "Features"
+msgstr ""
+
 #: FeaturesLocalizationSources.cs
 msgctxt "OrchardCore.Features.FeaturesLocalizationSources"
 msgid "All Features"

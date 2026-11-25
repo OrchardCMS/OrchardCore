@@ -1,0 +1,40 @@
+@model BackgroundTaskViewModel
+
+<div class="ocat-wrapper" asp-validation-class-for="Title">
+    <label asp-for="Title" class="ocat-label">@T["Title"]</label>
+    <div class="ocat-end">
+        <input asp-for="Title" class="form-control-plaintext" readonly />
+    </div>
+</div>
+
+<div class="ocat-wrapper" asp-validation-class-for="Description">
+    <label asp-for="Description" class="ocat-label">@T["Description"]</label>
+    <div class="ocat-end">
+        <input asp-for="Description" class="form-control-plaintext" />
+    </div>
+</div>
+
+<div class="ocat-wrapper" asp-validation-class-for="Schedule">
+    <label asp-for="Schedule" class="ocat-label ocat-label-required">@T["Schedule"]</label>
+    <div class="ocat-end">
+        <div class="input-group mb-3">
+            <input asp-for="Schedule" class="form-control background-task-schedule" />
+            <button type="button" id="use-default-schedule" class="btn btn-outline-danger">@T["Reset Schedule"]</button>
+        </div>
+        <span asp-validation-for="Schedule"></span>
+        <span class="hint">@T["The task schedule as a cron expression."]</span>
+    </div>
+</div>
+
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="UsePipeline" checked="@Model.UsePipeline" />
+            <label class="form-check-label" asp-for="UsePipeline">@T["Use Tenant Pipeline"]</label>
+        </div>
+        <span class="hint">@T["Whether or not the tenant pipeline should be built to configure endpoints and then executed to allow route urls generation in the background."]</span>
+    </div>
+</div>
+
+<div><span asp-validation-for="LockTimeout" class="text-danger">@T["Invalid lock timeout value in the advanced tab"]</span></div>
+<div><span asp-validation-for="LockExpiration" class="text-danger">@T["Invalid lock expiration value in the advanced tab"]</span></div>

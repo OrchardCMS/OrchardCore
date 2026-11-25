@@ -1,1 +1,25 @@
+@using OrchardCore.DisplayManagement
+@using OrchardCore.DisplayManagement.Descriptors
+
+@*
+    The editor of a condition. The shapes placed in no card, such as the editor of a condition whose driver doesn't declare a card,
+    are grouped in the "General" card, so that every condition editor is made of cards. A driver places a shape in a card
+    from its placement, e.g. .Location(l => l.Zone("Content").Card(S["Url"], "10")).
+*@
+
+@{
+    if (Model.Content is IEnumerable<object> shapes)
+    {
+        var generalCard = new GroupingMetadata(T["General"].Value, "10");
+
+        foreach (var shape in shapes.OfType<IShape>())
+        {
+            if (!shape.Metadata.CardGrouping.HasValue)
+            {
+                shape.Metadata.CardGrouping = generalCard;
+            }
+        }
+    }
+}
+
 @await DisplayAsync(Model.Content)

@@ -37,45 +37,49 @@
     @Html.AntiForgeryToken()
 
     <!-- Filters -->
-    <div class="row g-3">
-        <div class="ocat-wrapper col-xl-3 col-sm-6">
-            <label class="ocat-label" for="culture-select">@T["Culture"]</label>
-            <div class="ocat-end">
-                <select id="culture-select" class="form-select" v-model="currentCulture" @@change="onCultureChange">
-                    <option v-for="culture in cultures" :key="culture.name" :value="culture.name">
-                        {{ culture.displayName }} ({{ culture.name }})
-                    </option>
-                </select>
-            </div>
-        </div>
-        <div class="ocat-wrapper col-xl-3 col-sm-6">
-            <label class="ocat-label" for="filter-select">@T["Category"]</label>
-            <div class="ocat-end">
-                <select id="filter-select" class="form-select" v-model="categoryFilter">
-                    <option value="">@T["All Categories"]</option>
-                    <option v-for="provider in providers" :key="provider.name" :value="provider.name">
-                        {{ provider.name }}
-                    </option>
-                </select>
-            </div>
-        </div>
-        <div class="ocat-wrapper col-xl-4 col-sm-8">
-            <label class="ocat-label" for="search-box">@T["Search"]</label>
-            <div class="ocat-end">
-                <div class="input-group filter-options">
-                    <input id="search-box" type="search" class="form-control" v-model="searchQuery" placeholder="@T["Search translations"]" autocomplete="off" />
+    <div class="card text-bg-theme mb-3">
+        <div class="card-body pb-0">
+            <div class="row g-3">
+                <div class="ocat-wrapper col-xl-3 col-sm-6">
+                    <label class="ocat-label" for="culture-select">@T["Culture"]</label>
+                    <div class="ocat-end">
+                        <select id="culture-select" class="form-select" v-model="currentCulture" @@change="onCultureChange">
+                            <option v-for="culture in cultures" :key="culture.name" :value="culture.name">
+                                {{ culture.displayName }} ({{ culture.name }})
+                            </option>
+                        </select>
+                    </div>
                 </div>
-            </div>
-        </div>
-        <div class="col-xl-2 col-sm-4">
-            <div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="missing-only-toggle" v-model="showMissingOnly">
-                    <label class="form-check-label" for="missing-only-toggle">@T["Missing only"]</label>
+                <div class="ocat-wrapper col-xl-3 col-sm-6">
+                    <label class="ocat-label" for="filter-select">@T["Category"]</label>
+                    <div class="ocat-end">
+                        <select id="filter-select" class="form-select" v-model="categoryFilter">
+                            <option value="">@T["All Categories"]</option>
+                            <option v-for="provider in providers" :key="provider.name" :value="provider.name">
+                                {{ provider.name }}
+                            </option>
+                        </select>
+                    </div>
                 </div>
-                <div class="form-check" v-if="!isReadOnly">
-                    <input class="form-check-input" type="checkbox" id="auto-save-toggle" v-model="autoSave">
-                    <label class="form-check-label" for="auto-save-toggle">@T["Auto-save"]</label>
+                <div class="ocat-wrapper col-xl-4 col-sm-8">
+                    <label class="ocat-label" for="search-box">@T["Search"]</label>
+                    <div class="ocat-end">
+                        <div class="input-group filter-options">
+                            <input id="search-box" type="search" class="form-control" v-model="searchQuery" placeholder="@T["Search translations"]" autocomplete="off" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-2 col-sm-4">
+                    <div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="missing-only-toggle" v-model="showMissingOnly">
+                            <label class="form-check-label" for="missing-only-toggle">@T["Missing only"]</label>
+                        </div>
+                        <div class="form-check" v-if="!isReadOnly">
+                            <input class="form-check-input" type="checkbox" id="auto-save-toggle" v-model="autoSave">
+                            <label class="form-check-label" for="auto-save-toggle">@T["Auto-save"]</label>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -97,43 +101,15 @@
 
     <!-- Translation groups -->
     <div v-if="!isLoading">
-        <fieldset class="translations-list mb-3" v-for="(provider, index) in filteredProviders" :key="provider.name">
-            <legend>
+        <div class="card mb-3 translations-list" v-for="(provider, index) in filteredProviders" :key="provider.name" role="group" :aria-labelledby="'translations-' + index">
+            <div class="card-header" :id="'translations-' + index">
                 <span class="me-1">{{ provider.name }}</span>
                 <span class="hint">({{ getTotalStringsCount(provider) }} @T["strings"]<span v-if="getTotalTranslatedCount(provider) > 0">, {{ getTotalTranslatedCount(provider) }} @T["translated"]</span>)</span>
-            </legend>
+            </div>
+            <div class="card-body">
 
-            <!-- Ungrouped strings (no sub-groups) -->
-            <table v-if="getFilteredStrings(provider.strings).length > 0" class="table">
-                <thead>
-                    <tr>
-                        <th class="col-5">@T["Original"]</th>
-                        <th class="col-7">@T["Translation"]</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="(str, strIndex) in getFilteredStrings(provider.strings)" :key="str.context + '|' + str.key" :data-text="str.key.toLowerCase()">
-                        <td class="col-5">
-                            <code>{{ str.key }}</code>
-                        </td>
-                        <td class="col-7">
-                            <input type="text" class="form-control" :id="'translation-' + index + '-' + strIndex"
-                                   v-model="str.value"
-                                   :disabled="isReadOnly"
-                                   :placeholder="str.key"
-                                   @@input="onTranslationChange(str)" />
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <!-- Sub-groups -->
-            <div v-for="(subGroup, subGroupIndex) in getFilteredSubGroups(provider)" :key="subGroup.name" class="ms-3 mb-3">
-                <h6 class="text-muted border-bottom pb-1">
-                    {{ subGroup.name }}
-                    <span class="hint">({{ getFilteredStrings(subGroup.strings).length }} @T["strings"])</span>
-                </h6>
-                <table class="table table-sm">
+                <!-- Ungrouped strings (no sub-groups) -->
+                <table v-if="getFilteredStrings(provider.strings).length > 0" class="table">
                     <thead>
                         <tr>
                             <th class="col-5">@T["Original"]</th>
@@ -141,12 +117,12 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="(str, strIndex) in getFilteredStrings(subGroup.strings)" :key="str.context + '|' + str.key" :data-text="str.key.toLowerCase()">
+                        <tr v-for="(str, strIndex) in getFilteredStrings(provider.strings)" :key="str.context + '|' + str.key" :data-text="str.key.toLowerCase()">
                             <td class="col-5">
                                 <code>{{ str.key }}</code>
                             </td>
                             <td class="col-7">
-                                <input type="text" class="form-control form-control-sm" :id="'translation-' + index + '-' + subGroupIndex + '-' + strIndex"
+                                <input type="text" class="form-control" :id="'translation-' + index + '-' + strIndex"
                                        v-model="str.value"
                                        :disabled="isReadOnly"
                                        :placeholder="str.key"
@@ -155,8 +131,38 @@
                         </tr>
                     </tbody>
                 </table>
+
+                <!-- Sub-groups -->
+                <div v-for="(subGroup, subGroupIndex) in getFilteredSubGroups(provider)" :key="subGroup.name" class="ms-3 mb-3">
+                    <h6 class="text-muted border-bottom pb-1">
+                        {{ subGroup.name }}
+                        <span class="hint">({{ getFilteredStrings(subGroup.strings).length }} @T["strings"])</span>
+                    </h6>
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th class="col-5">@T["Original"]</th>
+                                <th class="col-7">@T["Translation"]</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(str, strIndex) in getFilteredStrings(subGroup.strings)" :key="str.context + '|' + str.key" :data-text="str.key.toLowerCase()">
+                                <td class="col-5">
+                                    <code>{{ str.key }}</code>
+                                </td>
+                                <td class="col-7">
+                                    <input type="text" class="form-control form-control-sm" :id="'translation-' + index + '-' + subGroupIndex + '-' + strIndex"
+                                           v-model="str.value"
+                                           :disabled="isReadOnly"
+                                           :placeholder="str.key"
+                                           @@input="onTranslationChange(str)" />
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
-        </fieldset>
+        </div>
     </div>
 
     <!-- Empty state -->

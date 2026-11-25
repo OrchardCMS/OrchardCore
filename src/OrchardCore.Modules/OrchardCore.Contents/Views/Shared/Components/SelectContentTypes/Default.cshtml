@@ -1,31 +1,28 @@
 @model SelectContentTypesViewModel
 @using OrchardCore.Localization.Data
 @inject IDataLocalizer D
-@{
-    var idPrefix = Html.GenerateIdFromName(Model.HtmlName);
-}
 
-<script asp-src="~/OrchardCore.Contents/Scripts/content-type-check-all/content-type-check-all.min.js" debug-src="~/OrchardCore.Contents/Scripts/content-type-check-all/content-type-check-all.js" at="Foot" type="module"></script>
-<div class="check-all content-types row">
-    <div class="col">
-        <div class="form-check">
-            <input type="checkbox" class="form-check-input master" id="@(idPrefix)_SelectAll" />
-            <label class="form-check-label" for="@(idPrefix)_SelectAll">@T["Select all"]</label>
-        </div>
-    </div>
-    <div class="slaves row">
-    @for (var i = 0; i < Model.ContentTypeSelections.Length; i++)
+@* The content types to select: a searchable list showing the selected content types as tags, with select all. *@
+
+<style asp-name="bootstrap-select" at="Head"></style>
+<script asp-name="bootstrap-select" at="Foot"></script>
+<script asp-src="~/OrchardCore.Contents/Scripts/content-type-picker/content-type-picker.min.js" debug-src="~/OrchardCore.Contents/Scripts/content-type-picker/content-type-picker.js" at="Foot" type="module"></script>
+<select id="@Html.GenerateIdFromName(Model.HtmlName)" name="@Model.HtmlName" class="selectpicker" multiple
+        data-content-type-picker
+        data-live-search="true"
+        data-actions-box="true"
+        data-show-selected-tags="true"
+        data-selection-indicator="checkbox"
+        data-width="100%"
+        data-container="body"
+        placeholder="@T["Select content types"]"
+        data-select-all-text="@T["Select all"]"
+        data-deselect-all-text="@T["Deselect all"]"
+        data-none-results-text="@T["No content type matches {0}", "{0}"]"
+        data-live-search-placeholder="@T["Search content types"]"
+        data-selected-tag-remove-label="@T["Remove"]">
+    @foreach (var selection in Model.ContentTypeSelections)
     {
-        var contentType = Model.ContentTypeSelections[i];
-        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 col-xl-2">
-            <div class="form-check">
-                <input type="checkbox" class="form-check-input" id="@($"{idPrefix}_{i}")"
-                    name="@Model.HtmlName" checked="@contentType.IsSelected"
-                    value="@contentType.ContentTypeDefinition.Name">
-                <label class="form-check-label"
-                    for="@($"{idPrefix}_{i}")">@D[contentType.ContentTypeDefinition.DisplayName, "Content Types"]</label>
-            </div>
-        </div>
+        <option value="@selection.ContentTypeDefinition.Name" selected="@selection.IsSelected">@D[selection.ContentTypeDefinition.DisplayName, "Content Types"]</option>
     }
-    </div>
-</div>
+</select>

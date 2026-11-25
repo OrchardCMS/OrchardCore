@@ -51,19 +51,29 @@ msgctxt "OrchardCore.Email.Controllers.AdminController"
 msgid "Unable to send the message using the selected provider."
 msgstr ""
 
-#: Views/Admin/Test.cshtml
-msgctxt "OrchardCore.Email.Views.Admin.Test"
-msgid "Bcc"
+#: Drivers/EmailSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Email.Drivers.EmailSettingsDisplayDriver"
+msgid "Default provider"
 msgstr ""
 
-#: Views/Admin/Test.cshtml
-msgctxt "OrchardCore.Email.Views.Admin.Test"
-msgid "Body"
+#: Drivers/EmailSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Email.Drivers.EmailSettingsDisplayDriver"
+msgid "Providers"
 msgstr ""
 
-#: Views/Admin/Test.cshtml
-msgctxt "OrchardCore.Email.Views.Admin.Test"
-msgid "Cc"
+#: Drivers/EmailTestDisplayDriver.cs
+msgctxt "OrchardCore.Email.Drivers.EmailTestDisplayDriver"
+msgid "Addresses"
+msgstr ""
+
+#: Drivers/EmailTestDisplayDriver.cs
+msgctxt "OrchardCore.Email.Drivers.EmailTestDisplayDriver"
+msgid "Message"
+msgstr ""
+
+#: Drivers/EmailTestDisplayDriver.cs
+msgctxt "OrchardCore.Email.Drivers.EmailTestDisplayDriver"
+msgid "Provider"
 msgstr ""
 
 #: Views/Admin/Test.cshtml
@@ -78,42 +88,7 @@ msgstr ""
 
 #: Views/Admin/Test.cshtml
 msgctxt "OrchardCore.Email.Views.Admin.Test"
-msgid "Provider"
-msgstr ""
-
-#: Views/Admin/Test.cshtml
-msgctxt "OrchardCore.Email.Views.Admin.Test"
-msgid "Reply To"
-msgstr ""
-
-#: Views/Admin/Test.cshtml
-msgctxt "OrchardCore.Email.Views.Admin.Test"
-msgid "Select a provider"
-msgstr ""
-
-#: Views/Admin/Test.cshtml
-msgctxt "OrchardCore.Email.Views.Admin.Test"
 msgid "Send"
-msgstr ""
-
-#: Views/Admin/Test.cshtml
-msgctxt "OrchardCore.Email.Views.Admin.Test"
-msgid "Sender"
-msgstr ""
-
-#: Views/Admin/Test.cshtml
-msgctxt "OrchardCore.Email.Views.Admin.Test"
-msgid "Subject"
-msgstr ""
-
-#: Views/Admin/Test.cshtml
-msgctxt "OrchardCore.Email.Views.Admin.Test"
-msgid "The sender is optional, it is useful when the email author is different than the email submitter."
-msgstr ""
-
-#: Views/Admin/Test.cshtml
-msgctxt "OrchardCore.Email.Views.Admin.Test"
-msgid "To"
 msgstr ""
 
 #: Views/EmailSettings.Edit.cshtml
@@ -126,14 +101,59 @@ msgctxt "OrchardCore.Email.Views.EmailSettings.Edit"
 msgid "No email providers are currently enabled."
 msgstr ""
 
+#: Views/EmailTestAddresses.Edit.cshtml
+msgctxt "OrchardCore.Email.Views.EmailTestAddresses.Edit"
+msgid "Bcc"
+msgstr ""
+
+#: Views/EmailTestAddresses.Edit.cshtml
+msgctxt "OrchardCore.Email.Views.EmailTestAddresses.Edit"
+msgid "Cc"
+msgstr ""
+
+#: Views/EmailTestAddresses.Edit.cshtml
+msgctxt "OrchardCore.Email.Views.EmailTestAddresses.Edit"
+msgid "Reply To"
+msgstr ""
+
+#: Views/EmailTestAddresses.Edit.cshtml
+msgctxt "OrchardCore.Email.Views.EmailTestAddresses.Edit"
+msgid "Sender"
+msgstr ""
+
+#: Views/EmailTestAddresses.Edit.cshtml
+msgctxt "OrchardCore.Email.Views.EmailTestAddresses.Edit"
+msgid "The sender is optional, it is useful when the email author is different than the email submitter."
+msgstr ""
+
+#: Views/EmailTestAddresses.Edit.cshtml
+msgctxt "OrchardCore.Email.Views.EmailTestAddresses.Edit"
+msgid "To"
+msgstr ""
+
+#: Views/EmailTestMessage.Edit.cshtml
+msgctxt "OrchardCore.Email.Views.EmailTestMessage.Edit"
+msgid "Body"
+msgstr ""
+
+#: Views/EmailTestMessage.Edit.cshtml
+msgctxt "OrchardCore.Email.Views.EmailTestMessage.Edit"
+msgid "Subject"
+msgstr ""
+
+#: Views/EmailTestProvider.Edit.cshtml
+msgctxt "OrchardCore.Email.Views.EmailTestProvider.Edit"
+msgid "Provider"
+msgstr ""
+
+#: Views/EmailTestProvider.Edit.cshtml
+msgctxt "OrchardCore.Email.Views.EmailTestProvider.Edit"
+msgid "Select a provider"
+msgstr ""
+
 #: Views/Items/EmailTask.Fields.Design.cshtml
 msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Design"
 msgid "Send Email"
-msgstr ""
-
-#: Views/Items/EmailTask.Fields.Edit.cshtml
-msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Edit"
-msgid "All"
 msgstr ""
 
 #: Views/Items/EmailTask.Fields.Edit.cshtml
@@ -148,22 +168,7 @@ msgstr ""
 
 #: Views/Items/EmailTask.Fields.Edit.cshtml
 msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Edit"
-msgid "Format"
-msgstr ""
-
-#: Views/Items/EmailTask.Fields.Edit.cshtml
-msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Edit"
 msgid "From"
-msgstr ""
-
-#: Views/Items/EmailTask.Fields.Edit.cshtml
-msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Edit"
-msgid "HTML Body"
-msgstr ""
-
-#: Views/Items/EmailTask.Fields.Edit.cshtml
-msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Edit"
-msgid "Html"
 msgstr ""
 
 #: Views/Items/EmailTask.Fields.Edit.cshtml
@@ -183,27 +188,7 @@ msgstr ""
 
 #: Views/Items/EmailTask.Fields.Edit.cshtml
 msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Edit"
-msgid "Subject"
-msgstr ""
-
-#: Views/Items/EmailTask.Fields.Edit.cshtml
-msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Edit"
-msgid "Text"
-msgstr ""
-
-#: Views/Items/EmailTask.Fields.Edit.cshtml
-msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Edit"
-msgid "Text Body"
-msgstr ""
-
-#: Views/Items/EmailTask.Fields.Edit.cshtml
-msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Edit"
 msgid "The \"reply to\" email address. Required if you want email replies be sent to a different address than the \"From\" address. With Liquid support."
-msgstr ""
-
-#: Views/Items/EmailTask.Fields.Edit.cshtml
-msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Edit"
-msgid "The HTML body of the email message. With Liquid support."
 msgstr ""
 
 #: Views/Items/EmailTask.Fields.Edit.cshtml
@@ -228,22 +213,7 @@ msgstr ""
 
 #: Views/Items/EmailTask.Fields.Edit.cshtml
 msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Edit"
-msgid "The format of the email message."
-msgstr ""
-
-#: Views/Items/EmailTask.Fields.Edit.cshtml
-msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Edit"
-msgid "The plain text body of the email message. With Liquid support."
-msgstr ""
-
-#: Views/Items/EmailTask.Fields.Edit.cshtml
-msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Edit"
 msgid "The sender's email address. Required if not the same than the \"From\" email address. With Liquid support."
-msgstr ""
-
-#: Views/Items/EmailTask.Fields.Edit.cshtml
-msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Edit"
-msgid "The subject of the email message. With Liquid support."
 msgstr ""
 
 #: Views/Items/EmailTask.Fields.Thumbnail.cshtml
@@ -254,6 +224,61 @@ msgstr ""
 #: Views/Items/EmailTask.Fields.Thumbnail.cshtml
 msgctxt "OrchardCore.Email.Views.Items.EmailTask.Fields.Thumbnail"
 msgid "Send an email."
+msgstr ""
+
+#: Views/Items/EmailTaskMessage.Fields.Edit.cshtml
+msgctxt "OrchardCore.Email.Views.Items.EmailTaskMessage.Fields.Edit"
+msgid "All"
+msgstr ""
+
+#: Views/Items/EmailTaskMessage.Fields.Edit.cshtml
+msgctxt "OrchardCore.Email.Views.Items.EmailTaskMessage.Fields.Edit"
+msgid "Format"
+msgstr ""
+
+#: Views/Items/EmailTaskMessage.Fields.Edit.cshtml
+msgctxt "OrchardCore.Email.Views.Items.EmailTaskMessage.Fields.Edit"
+msgid "HTML Body"
+msgstr ""
+
+#: Views/Items/EmailTaskMessage.Fields.Edit.cshtml
+msgctxt "OrchardCore.Email.Views.Items.EmailTaskMessage.Fields.Edit"
+msgid "Html"
+msgstr ""
+
+#: Views/Items/EmailTaskMessage.Fields.Edit.cshtml
+msgctxt "OrchardCore.Email.Views.Items.EmailTaskMessage.Fields.Edit"
+msgid "Subject"
+msgstr ""
+
+#: Views/Items/EmailTaskMessage.Fields.Edit.cshtml
+msgctxt "OrchardCore.Email.Views.Items.EmailTaskMessage.Fields.Edit"
+msgid "Text"
+msgstr ""
+
+#: Views/Items/EmailTaskMessage.Fields.Edit.cshtml
+msgctxt "OrchardCore.Email.Views.Items.EmailTaskMessage.Fields.Edit"
+msgid "Text Body"
+msgstr ""
+
+#: Views/Items/EmailTaskMessage.Fields.Edit.cshtml
+msgctxt "OrchardCore.Email.Views.Items.EmailTaskMessage.Fields.Edit"
+msgid "The HTML body of the email message. With Liquid support."
+msgstr ""
+
+#: Views/Items/EmailTaskMessage.Fields.Edit.cshtml
+msgctxt "OrchardCore.Email.Views.Items.EmailTaskMessage.Fields.Edit"
+msgid "The format of the email message."
+msgstr ""
+
+#: Views/Items/EmailTaskMessage.Fields.Edit.cshtml
+msgctxt "OrchardCore.Email.Views.Items.EmailTaskMessage.Fields.Edit"
+msgid "The plain text body of the email message. With Liquid support."
+msgstr ""
+
+#: Views/Items/EmailTaskMessage.Fields.Edit.cshtml
+msgctxt "OrchardCore.Email.Views.Items.EmailTaskMessage.Fields.Edit"
+msgid "The subject of the email message. With Liquid support."
 msgstr ""
 
 #: Workflows/Activities/EmailTask.cs
@@ -274,6 +299,16 @@ msgstr ""
 #: Workflows/Activities/EmailTask.cs
 msgctxt "OrchardCore.Email.Workflows.Activities.EmailTask"
 msgid "The result of sending the email."
+msgstr ""
+
+#: Workflows/Drivers/EmailTaskDisplayDriver.cs
+msgctxt "OrchardCore.Email.Workflows.Drivers.EmailTaskDisplayDriver"
+msgid "Addresses"
+msgstr ""
+
+#: Workflows/Drivers/EmailTaskDisplayDriver.cs
+msgctxt "OrchardCore.Email.Workflows.Drivers.EmailTaskDisplayDriver"
+msgid "Message"
 msgstr ""
 
 #: ViewModels/EmailTestViewModel.cs
