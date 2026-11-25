@@ -299,6 +299,7 @@ public class AdminListShapeTableProviderTests
             .AddSingleton(Mock.Of<IOptionsMonitor<AdminListOptions>>(monitor => monitor.CurrentValue ==
                 new AdminListOptions { AllowUserSelection = true }))
             .AddSingleton<IHttpContextAccessor>(new HttpContextAccessor { HttpContext = httpContext })
+            .AddSingleton(Options.Create(new CookieNameOptions()))
             .AddSingleton<AdminListLayoutPreference>()
             .AddSingleton<AdminListLayoutResolver>()
             .AddSingleton<IShapeFactory, TestShapeFactory>()
