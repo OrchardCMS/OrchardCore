@@ -25,7 +25,7 @@
 <zone Name="Title">
     @if (Model.IsUILocalization)
     {
-        <h1>@T["UI Translations"]</h1>
+        <breadcrumb name="UITranslations" title="@T["UI Translations"]" />
     }
     else
     {
@@ -60,8 +60,8 @@
 
     <div class="card text-bg-theme mb-3 position-sticky action-bar">
         <div class="card-body">
-            <div class="row gx-2 gy-2 align-items-center">
-                <div class="col-12 col-md">
+            <div class="row gx-2 align-items-center">
+                <div class="col">
                     <div class="input-group" role="search">
                         <input id="search-box" type="search" class="form-control" v-model="searchQuery" ref="searchBox"
                                placeholder="@T["Search translations"]" aria-label="@T["Search translations"]" autocomplete="off" />
@@ -71,7 +71,7 @@
                         </button>
                     </div>
                 </div>
-                <div class="col-12 col-md-auto ms-md-auto d-flex flex-wrap align-items-center justify-content-end gap-2">
+                <div class="col-auto">
                     <div class="dropdown">
                         <button id="translation-actions" type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                             @T["Actions"]
