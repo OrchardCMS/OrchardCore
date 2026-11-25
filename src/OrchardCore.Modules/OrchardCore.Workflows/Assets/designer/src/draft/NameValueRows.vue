@@ -50,6 +50,7 @@ const remove = (index: number) => {
                 :data-cy="`${cy}-name-${index}`"
             />
             <input
+                :id="`${ids}-value-${index}`"
                 v-model="row.value"
                 type="text"
                 class="form-control form-control-sm"

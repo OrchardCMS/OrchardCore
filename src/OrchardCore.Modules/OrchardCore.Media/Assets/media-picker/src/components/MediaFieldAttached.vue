@@ -109,8 +109,9 @@
         <h5 class="mf-modal-title">{{ t.editMediaText }}</h5>
       </div>
       <div class="mf-modal-body" v-if="selectedMedia">
-        <label class="tw:block tw:text-sm tw:font-medium tw:mb-1">{{ t.mediaText }}</label>
+        <label :for="mediaTextInputId" class="tw:block tw:text-sm tw:font-medium tw:mb-1">{{ t.mediaText }}</label>
         <textarea
+          :id="mediaTextInputId"
           v-model="editingMediaText"
           class="mf-form-textarea"
           rows="3"
@@ -222,6 +223,7 @@ const uploadInputId = `upload-${Math.random().toString(36).substring(2, 9)}`;
 // Modals
 const mediaTextModalVisible = ref(false);
 const editingMediaText = ref("");
+const mediaTextInputId = `${props.inputName.replace(/[^\w-]/g, "_")}_MediaText`;
 const anchorModalVisible = ref(false);
 const editingAnchor = ref({ x: 0.5, y: 0.5 });
 const anchorImageRef = ref<HTMLImageElement | null>(null);

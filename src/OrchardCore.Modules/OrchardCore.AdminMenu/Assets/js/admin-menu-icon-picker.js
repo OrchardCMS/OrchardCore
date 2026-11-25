@@ -14,7 +14,7 @@ window.iconPickerVue = Vue.createApp({
         $('.icp-auto').iconpicker({
             title: false,
             templates: {
-                search: '<input type="search" class="form-control iconpicker-search" placeholder="" />' // just to leave empty the placeholder because it is not localized
+                search: '<input type="search" id="iconpicker-search" class="form-control iconpicker-search" placeholder="" />' // just to leave empty the placeholder because it is not localized
             }
         });
 

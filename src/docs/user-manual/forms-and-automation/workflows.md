@@ -193,3 +193,40 @@ Instances pile up over time. A background task deletes old ones once a day.
 
 !!! example "See it in practice"
     [Add a contact form](../use-cases/contact-form.md) walks through this step by step.
+
+## Videos
+
+This video automates tasks with workflows, without writing code.
+
+<!-- video:workflows-overview -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/_nlyO00Cusc" title="Workflows: Automate Tasks Without Writing Code" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video explains the events, tasks and outcomes of a workflow.
+
+<!-- video:workflows-events-tasks-outcomes -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/0Nu728nj938" title="Workflows: Events, Tasks and Outcomes" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video sends an email when content is published.
+
+<!-- video:workflows-send-email-on-publish -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/1VGSI2vwPqg" title="Workflows: Send an Email When Content Is Published" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video creates, updates and publishes content automatically with a workflow.
+
+<!-- video:workflows-content-tasks -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/d8eJUVHGMHI" title="Workflows: Create, Update and Publish Content Automatically" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video follows and troubleshoots each run of a workflow.
+
+<!-- video:workflows-instances -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/SoduJoUp6Rs" title="Workflow Instances: Follow and Troubleshoot Each Run" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video runs tasks on a schedule with timer workflows.
+
+<!-- video:workflows-timers -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/afsRRLc6MW0" title="Timer Workflows: Run Tasks on a Schedule" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video reacts to registrations, sign-ins and role changes with a workflow.
+
+<!-- video:workflows-user-events -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/5OSh78XTbI4" title="Workflows: React to Registrations, Sign-Ins and Role Changes" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

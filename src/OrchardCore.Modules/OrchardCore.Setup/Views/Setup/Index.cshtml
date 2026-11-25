@@ -127,11 +127,11 @@
                 <input type="hidden" asp-for="RecipeName" required />
                 <nav>
                     <div asp-validation-class-for="RecipeName">
-                        <label asp-for="RecipeName" class="form-label">@T["Recipe"]</label>
+                        <span id="RecipeName_Label" class="form-label d-inline-block">@T["Recipe"]</span>
                         @if (defaultRecipe == null)
                         {
                             <div id="noRecipes" class="dropdown disabled">
-                                <button id="noRecipeButton" title="@T["No Recipes Available"]" class="btn btn-secondary dropdown-toggle disabled" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <button id="noRecipeButton" aria-labelledby="RecipeName_Label noRecipeButton" title="@T["No Recipes Available"]" class="btn btn-secondary dropdown-toggle disabled" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     @T["No Recipes Available"]
                                 </button>
                             </div>
@@ -139,7 +139,7 @@
                         else
                         {
                             <div id="recipes" class="dropdown">
-                                <button id="recipeButton" title="@defaultRecipe.Description" class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <button id="recipeButton" aria-labelledby="RecipeName_Label recipeButton" title="@defaultRecipe.Description" class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     @defaultRecipe.DisplayName
                                 </button>
                                 <div class="dropdown-menu">

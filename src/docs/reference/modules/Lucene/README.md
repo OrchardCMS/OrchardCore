@@ -375,3 +375,8 @@ This video adds full-text search with Lucene, with no external service.
 
 <!-- video:lucene-search -->
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/RLkyujWEYRY" title="Lucene: Full-Text Search With No External Service" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video searches from a saved Lucene or Elasticsearch query.
+
+<!-- video:queries-lucene-elasticsearch -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/oXM2A97Hvio" title="Lucene and Elasticsearch Queries: Search From a Saved Query" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

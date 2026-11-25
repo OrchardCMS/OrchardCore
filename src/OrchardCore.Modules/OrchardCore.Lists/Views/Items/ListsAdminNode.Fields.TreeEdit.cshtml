@@ -20,8 +20,8 @@
 </div>
 
 <div class="ocat-wrapper">
-    <label asp-for="IconForContentItems" class="ocat-label">@T["Icon for the content items"]</label>
-    <div class="ocat-end">
+    <span id="@Html.IdFor(m => m.IconForContentItems)_Label" class="ocat-label">@T["Icon for the content items"]</span>
+    <div class="ocat-end" role="group" aria-labelledby="@Html.IdFor(m => m.IconForContentItems)_Label">
         <div class="btn-toolbar icon-toolbar" role="toolbar" aria-label="Icon Selector Toolbar">
             <div class="btn-group input-group me-2" role="group" aria-label="Icon Selector">
                 <button type="button" class="btn btn-primary sample-icon">
@@ -61,8 +61,8 @@
 </div>
 
 <div class="@parentIconWrapperClasses">
-    <label asp-for="IconForParentLink" class="ocat-label">@T["Icon for the parent menu item"]</label>
-    <div class="ocat-end">
+    <span id="@Html.IdFor(m => m.IconForParentLink)_Label" class="ocat-label">@T["Icon for the parent menu item"]</span>
+    <div class="ocat-end" role="group" aria-labelledby="@Html.IdFor(m => m.IconForParentLink)_Label">
         <div class="btn-toolbar icon-toolbar" role="toolbar" aria-label="Icon Selector Toolbar">
             <div class="btn-group input-group me-2" role="group" aria-label="Icon Selector">
                 <button type="button" class="btn btn-primary sample-icon">

@@ -117,12 +117,12 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="str in getFilteredStrings(provider.strings)" :key="str.context + '|' + str.key" :data-text="str.key.toLowerCase()">
+                        <tr v-for="(str, strIndex) in getFilteredStrings(provider.strings)" :key="str.context + '|' + str.key" :data-text="str.key.toLowerCase()">
                             <td class="col-5">
                                 <code>{{ str.key }}</code>
                             </td>
                             <td class="col-7">
-                                <input type="text" class="form-control"
+                                <input type="text" class="form-control" :id="'translation-' + index + '-' + strIndex"
                                        v-model="str.value"
                                        :disabled="isReadOnly"
                                        :placeholder="str.key"
@@ -133,7 +133,7 @@
                 </table>
 
                 <!-- Sub-groups -->
-                <div v-for="subGroup in getFilteredSubGroups(provider)" :key="subGroup.name" class="ms-3 mb-3">
+                <div v-for="(subGroup, subGroupIndex) in getFilteredSubGroups(provider)" :key="subGroup.name" class="ms-3 mb-3">
                     <h6 class="text-muted border-bottom pb-1">
                         {{ subGroup.name }}
                         <span class="hint">({{ getFilteredStrings(subGroup.strings).length }} @T["strings"])</span>
@@ -146,12 +146,12 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="str in getFilteredStrings(subGroup.strings)" :key="str.context + '|' + str.key" :data-text="str.key.toLowerCase()">
+                            <tr v-for="(str, strIndex) in getFilteredStrings(subGroup.strings)" :key="str.context + '|' + str.key" :data-text="str.key.toLowerCase()">
                                 <td class="col-5">
                                     <code>{{ str.key }}</code>
                                 </td>
                                 <td class="col-7">
-                                    <input type="text" class="form-control form-control-sm"
+                                    <input type="text" class="form-control form-control-sm" :id="'translation-' + index + '-' + subGroupIndex + '-' + strIndex"
                                            v-model="str.value"
                                            :disabled="isReadOnly"
                                            :placeholder="str.key"

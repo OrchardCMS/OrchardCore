@@ -208,3 +208,18 @@ This video adds full-text search with Lucene, with no external service.
 
 <!-- video:lucene-search -->
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/RLkyujWEYRY" title="Lucene: Full-Text Search With No External Service" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video sets the index, the fields and the results page of site search.
+
+<!-- video:search-settings -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/d3WzdaAHEw0" title="Site Search Settings: Index, Fields and Results Page" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video searches indexes on an Elasticsearch server.
+
+<!-- video:elasticsearch-search -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/Nmv3RxGGVgk" title="Elasticsearch: Search Indexes on an Elasticsearch Server" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video makes PDF, Office and text documents of the media library searchable.
+
+<!-- video:media-indexing -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/3XJtNZbw-xw" title="Search Media Files: Index PDF, Office and Text Documents" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

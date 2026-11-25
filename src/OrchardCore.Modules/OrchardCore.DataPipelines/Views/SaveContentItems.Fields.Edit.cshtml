@@ -47,8 +47,8 @@
     </div>
 
     <div class="ocat-wrapper">
-        <label class="ocat-label ocat-label-required">@T["Values"]</label>
-        <div class="ocat-end" data-dp-list data-dp-prefix="@Html.Name("Mappings")">
+        <span id="@Html.Id("Mappings")_Label" class="ocat-label ocat-label-required">@T["Values"]</span>
+        <div class="ocat-end" role="group" aria-labelledby="@Html.Id("Mappings")_Label" data-dp-list data-dp-prefix="@Html.Name("Mappings")">
             <template data-dp-template>
                 <partial name="DataPipelineContentMappingRow" model="@((Model.Targets, Model.AvailableFields, new ContentFieldMapping(), "__index__"))" />
             </template>

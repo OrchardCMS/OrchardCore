@@ -16,8 +16,8 @@
 }
 
 <div class="ocat-wrapper">
-    <label asp-for="Statuses" class="ocat-label">@T["Statuses"]</label>
-    <div class="ocat-end">
+    <span id="@Html.IdFor(m => m.Statuses)_Label" class="ocat-label">@T["Statuses"]</span>
+    <div class="ocat-end" role="group" aria-labelledby="@Html.IdFor(m => m.Statuses)_Label">
         @foreach (var status in Enum.GetValues<WorkflowStatus>())
         {
             <div class="col-xs-12">

@@ -68,7 +68,7 @@
                             <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@T["Editor"]"><i class="fa-solid fa-pen-to-square text-info" aria-hidden="true"></i> @fieldDefinition.Editor()</span>
                         }
                     </div>
-                    <input type="hidden" asp-for="OrderedFieldNames" value="@fieldDefinition.Name" />
+                    <input type="hidden" asp-for="OrderedFieldNames" id="@($"{Html.IdFor(m => m.OrderedFieldNames)}_{fieldDefinition.Name}")" value="@fieldDefinition.Name" />
                 </li>
             }
         </ul>
