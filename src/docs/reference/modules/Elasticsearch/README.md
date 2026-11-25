@@ -470,7 +470,11 @@ There may be differences between Lucene and Elasticsearch indexed fields. Lucene
 
 ### Indexed vs Stored
 
-When we say that a field is indexed it means that it is parsed by the configured Analyzer that is set on the index (Elasticsearch also allows to pass custom Analyzers on Queries too).
+For indexing, Elasticsearch uses the `analyzer` specified in a `text` field's mapping first. Text fields without a field-level analyzer, such as `Content.ContentItem.FullText`, use the index default.
+
+When Orchard Core creates or rebuilds an index with a configured analyzer other than `standard`, it sets that analyzer as the index default. If the profile uses `standard` or leaves the analyzer unset, a matching Elasticsearch index template can still supply the default. Elasticsearch falls back to `standard` when there is no index default.
+
+Full-text search queries can also specify their own analyzer.
 
 Though, when a field is stored it can have different contexts.
 

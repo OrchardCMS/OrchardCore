@@ -440,6 +440,11 @@ public sealed class ElasticsearchIndexManager : IIndexManager
             var analyzer = GetAnalyzer(analyzerProperties.DeepClone().AsObject());
 
             indexSettings.Analysis.Analyzers.Add(analyzerName, analyzer);
+
+            if (analyzerName != ElasticsearchConstants.DefaultAnalyzer)
+            {
+                indexSettings.Analysis.Analyzers["default"] = analyzer;
+            }
         }
 
         if (_elasticSearchOptions.TokenFilters is not null && _elasticSearchOptions.TokenFilters.Count > 0)
