@@ -80,14 +80,22 @@ public static class AdminSchemeStylesheet
         ArgumentNullException.ThrowIfNull(css);
         ArgumentException.ThrowIfNullOrEmpty(selector);
 
+        // A grid with a gap, not negative margins and padding on the children: the wrappers of a part or a field often
+        // hold another wrapper (a content part, then its editor), and those would add up at each level. A wrapper that
+        // holds no label or column of its own only groups other wrappers, so it stays a block.
+        const string Columns = ".ocat-label,.ocat-end,.ocat-end-offset,.ocat-start";
+
         css.Append("@media (min-width:768px){\n")
-            .Append(selector).Append(" .ocat-wrapper,").Append(selector).Append(" .ocat-limited-wrapper{--ocat-gutter-x:1.5rem;display:flex;flex-wrap:wrap;margin-inline:calc(-0.5 * var(--ocat-gutter-x));margin-bottom:1rem}\n")
-            .Append(selector).Append(" .ocat-wrapper>*,").Append(selector).Append(" .ocat-limited-wrapper>*{box-sizing:border-box;flex-shrink:0;width:100%;max-width:100%;padding-inline:calc(0.5 * var(--ocat-gutter-x))}\n")
-            .Append(selector).Append(" .ocat-label{display:block;flex:0 0 auto;width:25%;margin-bottom:0;padding-top:calc(0.375rem + var(--bs-border-width));padding-bottom:calc(0.375rem + var(--bs-border-width));text-align:end}\n")
-            .Append(selector).Append(" .ocat-end{flex:0 0 auto;width:75%}\n")
-            .Append(selector).Append(" .ocat-end-offset{flex:0 0 auto;width:75%;margin-inline-start:25%}\n")
-            .Append(selector).Append(" .ocat-start{flex:0 0 auto;width:25%}\n")
-            .Append(selector).Append(" .ocat-limited{flex:0 0 auto;width:33.333%;max-width:33.333%}\n")
+            .Append(selector).Append(" .ocat-wrapper{display:grid;grid-template-columns:25% minmax(0,1fr);column-gap:1.5rem;margin-bottom:1rem}\n")
+            .Append(selector).Append(" .ocat-wrapper:not(:has(>:is(").Append(Columns).Append("))){display:block}\n")
+            .Append(selector).Append(" .ocat-limited-wrapper{display:grid;grid-template-columns:25% minmax(0,33.333%);column-gap:1.5rem;margin-bottom:1rem}\n")
+            .Append(selector).Append(" .ocat-limited-wrapper:not(:has(>.ocat-label)){display:block}\n")
+            .Append(selector).Append(" .ocat-label{display:block;grid-column:1;margin-bottom:0;padding-block:calc(0.375rem + var(--bs-border-width));text-align:end}\n")
+            .Append(selector).Append(" .ocat-start{grid-column:1;min-width:0}\n")
+            .Append(selector).Append(" .ocat-end,").Append(selector).Append(" .ocat-end-offset,").Append(selector).Append(" .ocat-limited-wrapper>.ocat-limited{grid-column:2;min-width:0}\n")
+            .Append(selector).Append(" .ocat-limited-wrapper:has(>.ocat-label)>.ocat-limited{width:auto;max-width:none}\n")
+            // A check box or a radio button list beside a label, on the line of the label.
+            .Append(selector).Append(" .ocat-end>.form-check:first-child,").Append(selector).Append(" .ocat-end>.term-entries-area:first-child{padding-top:calc(0.375rem + var(--bs-border-width))}\n")
             .Append("}\n");
     }
 

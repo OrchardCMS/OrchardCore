@@ -16,11 +16,6 @@
     <label class="ocat-label @(settings.Required ? "ocat-label-required" : "")">@localizedFieldName</label>
     <div class="ocat-end">
 
-        @if (!string.IsNullOrEmpty(settings.Hint))
-        {
-            @await DisplayAsync(await New.Hint_Admin(Hint: settings.Hint))
-        }
-
         @if (Model.Taxonomy == null)
         {
             <div class="alert alert-danger" role="alert">
@@ -102,6 +97,11 @@
         </div>
 
         <span asp-validation-for="TermEntries"></span>
+
+        @if (!string.IsNullOrEmpty(settings.Hint))
+        {
+            @await DisplayAsync(await New.Hint_Admin(Hint: settings.Hint))
+        }
 
     </div>
 </div>
