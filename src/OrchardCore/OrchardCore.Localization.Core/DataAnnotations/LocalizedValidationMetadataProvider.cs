@@ -71,6 +71,11 @@ public class LocalizedValidationMetadataProvider : IValidationMetadataProvider
             return localizedErrorMessage;
         }
 
+        if (string.IsNullOrEmpty(argument))
+        {
+            return null;
+        }
+
         var unparameterizedErrorMessage = errorMessage.Replace(argument, NamePlaceholder);
 
         return TryLocalize(unparameterizedErrorMessage, out localizedErrorMessage)
@@ -97,6 +102,11 @@ public class LocalizedValidationMetadataProvider : IValidationMetadataProvider
         if (TryLocalize(errorMessageTemplate, out localizedErrorMessage))
         {
             return localizedErrorMessage;
+        }
+
+        if (string.IsNullOrEmpty(argument))
+        {
+            return null;
         }
 
         // Localize the formatted error message with the name of the property replaced by its placeholder.

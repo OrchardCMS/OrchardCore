@@ -16,6 +16,7 @@ public class LocalizedValidationMetadataProviderTests
     [Theory]
     [InlineData(nameof(Model.UserName))]
     [InlineData(nameof(Model.Age))]
+    [InlineData(nameof(Model.Score))]
     [InlineData(nameof(Model.Code))]
     [InlineData(nameof(Model.Nickname))]
     [InlineData(nameof(Model.Color))]
@@ -148,6 +149,22 @@ public class LocalizedValidationMetadataProviderTests
                 ["Le champ {0} doit être compris entre {1} et {2}."]));
 
         Assert.Equal("Le champ Age doit être compris entre 1 et 10.", attribute.FormatErrorMessage(argument));
+    }
+
+    [Fact]
+    public void FormatErrorMessage_ExclusiveRangeWithInclusiveTranslation_KeepsExclusiveErrorMessage()
+    {
+        using var scope = CultureScope.Create(Culture);
+
+        var (expected, _) = CreateAttribute(nameof(Model.Score));
+        var (attribute, argument) = CreateLocalizedAttribute(
+            nameof(Model.Score),
+            new CultureDictionaryRecord(
+                "The field {0} must be between {1} and {2}.",
+                DefaultErrorMessagesContext,
+                ["Le champ {0} doit être compris entre {1} et {2}."]));
+
+        Assert.Equal(expected.FormatErrorMessage(argument), attribute.FormatErrorMessage(argument));
     }
 
     [Fact]
@@ -288,6 +305,9 @@ public class LocalizedValidationMetadataProviderTests
 
         [Range(1, 10)]
         public int Age { get; set; }
+
+        [Range(1, 10, MinimumIsExclusive = true)]
+        public int Score { get; set; }
 
         [StringLength(10)]
         public string Code { get; set; }
