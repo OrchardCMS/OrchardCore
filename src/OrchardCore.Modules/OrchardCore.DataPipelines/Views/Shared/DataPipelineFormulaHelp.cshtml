@@ -23,7 +23,7 @@
             <li>@T["Text goes in quotes: {0}. Join text with {1}.", "'CA'", "&"]</li>
             <li>@T["Operators: {0}.", "+ - * / % = <> < <= > >= AND OR NOT"]</li>
         </ul>
-        <input type="search" class="form-control form-control-sm mb-2" placeholder="@T["Search the functions"]" aria-label="@T["Search the functions"]" data-dp-function-search />
+        <input type="search" id="@Html.Id("FunctionSearch")" class="form-control form-control-sm mb-2" placeholder="@T["Search the functions"]" aria-label="@T["Search the functions"]" data-dp-function-search />
         <div class="overflow-auto" style="max-height: 16rem">
             @foreach (var category in categories)
             {

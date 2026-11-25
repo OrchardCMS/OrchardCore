@@ -52,9 +52,13 @@
                         {
                             <input type="checkbox" class="form-check-input" id="select-all">
                             <label class="form-check-label" for="select-all" id="select-all-label" title="@T["Select All"]"></label>
+                            <label id="items" for="select-all">@T.Plural(Model.Secrets.Count, "{0} item", "{0} items")<span title="@T["Items {0} to {1}", startIndex, endIndex]">@T.Plural((int)Model.Pager.TotalItemCount, " / {0} item in total", " / {0} items in total")</span></label>
+                            <label id="selected-items" class="text-muted" for="select-all"></label>
                         }
-                        <label id="items" for="select-all">@T.Plural(Model.Secrets.Count, "{0} item", "{0} items")<span title="@T["Items {0} to {1}", startIndex, endIndex]">@T.Plural((int)Model.Pager.TotalItemCount, " / {0} item in total", " / {0} items in total")</span></label>
-                        <label id="selected-items" class="text-muted" for="select-all"></label>
+                        else
+                        {
+                            <span id="items">@T.Plural(Model.Secrets.Count, "{0} item", "{0} items")<span title="@T["Items {0} to {1}", startIndex, endIndex]">@T.Plural((int)Model.Pager.TotalItemCount, " / {0} item in total", " / {0} items in total")</span></span>
+                        }
                     </div>
                 </div>
                 <div class="col-auto d-flex align-items-center">

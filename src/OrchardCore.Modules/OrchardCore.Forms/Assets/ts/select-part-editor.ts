@@ -79,10 +79,10 @@ const selectOptionsRow = {
     template: `
         <tr>
             <td>
-                <input type="text" class="form-control" v-model="option.text" v-on:change="$emit('reorder-option')" :placeholder="t.EnterTheText" />
+                <input type="text" class="form-control" :id="'option_' + option.key + '_text'" :aria-label="t.OptionText" v-model="option.text" v-on:change="$emit('reorder-option')" :placeholder="t.EnterTheText" />
             </td>
             <td>
-                <input type="text" class="form-control courier" v-model="option.value" v-on:change="$emit('reorder-option')" :placeholder="t.EnterAValue" />
+                <input type="text" class="form-control courier" :id="'option_' + option.key + '_value'" :aria-label="t.Value" v-model="option.value" v-on:change="$emit('reorder-option')" :placeholder="t.EnterAValue" />
             </td>
             <td class="text-center align-middle">
                 <div class="form-check ms-2">

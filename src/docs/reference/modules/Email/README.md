@@ -109,6 +109,11 @@ You can easily monitor various events triggered during the message-sending proce
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/FmgZHpFHCcg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
+This video sends an email when content is published.
+
+<!-- video:workflows-send-email-on-publish -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/1VGSI2vwPqg" title="Workflows: Send an Email When Content Is Published" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
 ## Recipe Configuration
 
 Email settings can be configured using the `Settings` recipe step:

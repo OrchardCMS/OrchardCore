@@ -11,7 +11,7 @@
         <div class="ocat-end">
             @if (isTargetLocked)
             {
-                <input asp-for="Scope" type="hidden" />
+                <input asp-for="Scope" type="hidden" id="@Html.IdFor(m => m.Scope)_Hidden" />
             }
             <select asp-for="Scope" asp-items="Model.PolicyScopes" class="form-select" disabled="@isTargetLocked"></select>
             <span asp-validation-for="Scope"></span>
@@ -33,7 +33,7 @@
         <div class="ocat-end">
             @if (isTargetLocked)
             {
-                <input asp-for="Path" type="hidden" />
+                <input asp-for="Path" type="hidden" id="@Html.IdFor(m => m.Path)_Hidden" />
             }
             <input asp-for="Path" class="form-control" readonly="@isTargetLocked" />
             <span asp-validation-for="Path"></span>
@@ -55,7 +55,7 @@
         <div class="ocat-end">
             @if (isTargetLocked)
             {
-                <input asp-for="GroupName" type="hidden" />
+                <input asp-for="GroupName" type="hidden" id="@Html.IdFor(m => m.GroupName)_Hidden" />
             }
             <select asp-for="GroupName" asp-items="Model.AvailableGroups" class="form-select" disabled="@isTargetLocked"></select>
             <span asp-validation-for="GroupName"></span>

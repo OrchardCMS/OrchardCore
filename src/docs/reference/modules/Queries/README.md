@@ -335,6 +335,21 @@ The following JavaScript functions are available with this module.
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/IYKEeYxeNck" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
+This video saves search and database queries to reuse them.
+
+<!-- video:queries-overview -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/wmHNPx2ksnM" title="Queries: Save and Reuse Search and Database Queries" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video searches from a saved Lucene or Elasticsearch query.
+
+<!-- video:queries-lucene-elasticsearch -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/oXM2A97Hvio" title="Lucene and Elasticsearch Queries: Search From a Saved Query" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video runs saved queries in Liquid, in Razor and from the API.
+
+<!-- video:queries-in-templates-and-api -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/yVYgTTSOdbA" title="Queries in Liquid, Razor and the API" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
 ## Breaking changes
 
 1.0 -> 1.1

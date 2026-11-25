@@ -205,14 +205,14 @@
                             <th scope="col" class="translation-status"><span class="visually-hidden">@T["Status"]</span></th>
                         </tr>
                     </thead>
-                    <tbody class="translation-group" v-for="group in getFilteredGroups(provider)" :key="group.name">
+                    <tbody class="translation-group" v-for="(group, groupIndex) in getFilteredGroups(provider)" :key="group.name">
                         <tr v-if="group.name" class="translation-group-header">
                             <th scope="rowgroup" colspan="3">
                                 <span class="text-break">{{ group.name }}</span>
                                 <span class="badge rounded-pill text-bg-secondary ms-1">{{ group.strings.length }}</span>
                             </th>
                         </tr>
-                        <tr v-for="str in group.strings" :key="str.context + '|' + str.key" class="translation-row"
+                        <tr v-for="(str, strIndex) in group.strings" :key="str.context + '|' + str.key" class="translation-row"
                             :class="{ 'translation-row-changed': str.changed }" :data-text="str.key.toLowerCase()">
                             <td class="translation-source">
                                 <code class="text-break">{{ str.key }}</code>
@@ -237,9 +237,9 @@
                                     <div v-for="(value, form) in str.values" :key="form" class="translation-form"
                                          :class="{ 'input-group input-group-sm': str.plural }">
                                         <label v-if="str.plural" class="input-group-text plural-form-label"
-                                               :for="'translation-' + index + '-' + group.name + '-' + str.key + '-' + form"
+                                               :for="'translation-' + index + '-' + groupIndex + '-' + strIndex + '-' + form"
                                                :title="messages.translationForCount + ' ' + pluralFormExamples[form]"><span class="visually-hidden">@T["Translation for count"] </span>{{ pluralFormExamples[form] }}</label>
-                                        <textarea :id="'translation-' + index + '-' + group.name + '-' + str.key + '-' + form"
+                                        <textarea :id="'translation-' + index + '-' + groupIndex + '-' + strIndex + '-' + form"
                                                   class="form-control form-control-sm" rows="1" v-model="str.values[form]"
                                                   :aria-label="str.plural ? null : messages.translation"
                                                   :disabled="isReadOnly || isImporting || isLoading"
@@ -249,7 +249,7 @@
                                 }
                                 else
                                 {
-                                    <input type="text" class="form-control form-control-sm"
+                                    <input type="text" class="form-control form-control-sm" :id="'translation-' + index + '-' + groupIndex + '-' + strIndex"
                                            v-model="str.value"
                                            aria-label="@T["Translation"]"
                                            :disabled="isReadOnly || isLoading"

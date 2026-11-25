@@ -1,8 +1,8 @@
 @model LuceneContentIndexSettingsViewModel
 
 <div class="ocat-wrapper">
-    <label class="ocat-label">@T["Lucene"]</label>
-    <div class="ocat-end">
+    <span id="@Html.IdFor(m => m.LuceneContentIndexSettings)_Label" class="ocat-label">@T["Lucene"]</span>
+    <div class="ocat-end" role="group" aria-labelledby="@Html.IdFor(m => m.LuceneContentIndexSettings)_Label">
         <div class="form-check">
             <input type="checkbox" class="form-check-input" asp-for="LuceneContentIndexSettings.Included" data-bs-toggle="collapse" data-bs-target="#lucene-index-settings" checked="@Model.LuceneContentIndexSettings.Included" />
             <label class="form-check-label" asp-for="LuceneContentIndexSettings.Included">@T["Include this element in the index"]</label>

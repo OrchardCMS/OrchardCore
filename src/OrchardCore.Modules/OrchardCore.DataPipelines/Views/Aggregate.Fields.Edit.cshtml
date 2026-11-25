@@ -17,8 +17,8 @@
 </div>
 
 <div class="ocat-wrapper">
-    <label class="ocat-label ocat-label-required">@T["Values"]</label>
-    <div class="ocat-end" data-dp-list data-dp-prefix="@Html.Name("Measures")">
+    <span id="@Html.Id("Measures")_Label" class="ocat-label ocat-label-required">@T["Values"]</span>
+    <div class="ocat-end" role="group" aria-labelledby="@Html.Id("Measures")_Label" data-dp-list data-dp-prefix="@Html.Name("Measures")">
         <template data-dp-template>
             <partial name="DataPipelineMeasureRow" model="@((Model.AvailableFields, new AggregateMeasure(), "__index__"))" />
         </template>

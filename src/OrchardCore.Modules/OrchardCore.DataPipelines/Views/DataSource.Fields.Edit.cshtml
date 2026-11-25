@@ -56,8 +56,8 @@
     </div>
 
     <div class="ocat-wrapper">
-        <label class="ocat-label">@T["Filters"]</label>
-        <div class="ocat-end" data-dp-list data-dp-prefix="@Html.Name("Filters")">
+        <span id="@Html.Id("Filters")_Label" class="ocat-label">@T["Filters"]</span>
+        <div class="ocat-end" role="group" aria-labelledby="@Html.Id("Filters")_Label" data-dp-list data-dp-prefix="@Html.Name("Filters")">
             <template data-dp-template>
                 <partial name="DataPipelineDataSourceFilterRow" model="@((Model.AvailableFields, new DataSourceFilterRow(), "__index__"))" />
             </template>

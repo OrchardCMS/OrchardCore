@@ -72,6 +72,7 @@ const visible = computed(() => (category.value ? matching.value.filter((dataSet)
         <div class="row g-3">
             <div class="col-lg-3">
                 <input
+                    id="dpd-data-set-filter"
                     v-model="filter"
                     type="search"
                     class="form-control mb-3"

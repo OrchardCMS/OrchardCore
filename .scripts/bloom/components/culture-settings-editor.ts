@@ -98,12 +98,11 @@ const initCultureSettingsEditor = (config: CultureSettingsEditorConfig): void =>
                         <td>
                             <span v-if="culture !== ''">{{ culture }}</span>
                             <span v-if="culture === ''">${config.invariantCultureDisplayName}</span>
-                            <input type="hidden" class="form-control" :value="culture" />
                         </td>
                         <td>
                             <div class="form-check ms-5">
-                                <input type="radio" class="form-check-input" :id="'customRadio_' + index" :value="culture" v-model="defaultCulture">
-                                <label class="form-check-label" :title="t.SetAsDefault" v-bind:for="'customRadio_' + index"></label>
+                                <input type="radio" class="form-check-input" :id="'${config.hiddenDefaultCultureInputId}_' + index" :value="culture" v-model="defaultCulture">
+                                <label class="form-check-label" :title="t.SetAsDefault" v-bind:for="'${config.hiddenDefaultCultureInputId}_' + index"></label>
                             </div>
                         </td>
                         <td class="text-end">
@@ -117,7 +116,7 @@ const initCultureSettingsEditor = (config: CultureSettingsEditorConfig): void =>
 
             <div class="row">
                 <div class="col">
-                    <select v-model="selectedCulture" class="form-select col">
+                    <select id="${config.hiddenSupportedCulturesInputId}_Add" v-model="selectedCulture" class="form-select col" :aria-label="t.Culture">
                         <template v-for="(culture, index) in allCultures" :key="index">
                             <option v-if="!culture.Supported" :value="culture.Name">
                                 {{ culture.Name }} ({{ culture.DisplayName }})

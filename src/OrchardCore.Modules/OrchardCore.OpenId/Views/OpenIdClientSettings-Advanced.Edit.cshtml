@@ -31,10 +31,10 @@
         <draggable v-model="data.parameters" :tag="'tbody'">
             <tr v-for="(parameter, index) in data.parameters" :key="index">
                 <td>
-                    <input type="text" class="form-control" v-model="parameter.name" placeholder="Enter a parameter" />
+                    <input type="text" :id="'parameter-name-' + index" class="form-control" v-model="parameter.name" placeholder="Enter a parameter" />
                 </td>
                 <td>
-                    <input type="text" class="form-control courrier" v-model="parameter.value" placeholder="Enter a value" />
+                    <input type="text" :id="'parameter-value-' + index" class="form-control courrier" v-model="parameter.value" placeholder="Enter a value" />
                 </td>
                 <td class="text-center">
                     <a v-on:click="remove(index)" href="javascript:void(0)" title="@T["Remove parameter from list"]" class="btn">
@@ -83,8 +83,8 @@
 
 <div class="field-editor field-editor-parameters openid-parameters-editor" data-parameters="@Model.Parameters" data-parameters-input-id="@Html.IdFor(m => m.Parameters)" data-parameters-input-name="@Html.NameFor(m => m.Parameters)" data-translations="@parametersTranslationsJson">
     <div class="ocat-wrapper">
-        <label asp-for="Parameters" class="ocat-label">@T["Advanced Parameters"]</label>
-        <div class="ocat-end">
+        <span id="@Html.IdFor(m => m.Parameters)_Label" class="ocat-label">@T["Advanced Parameters"]</span>
+        <div class="ocat-end" role="group" aria-labelledby="@Html.IdFor(m => m.Parameters)_Label">
             <div class="options-table-editor-mount"></div>
             <div class="hint">@T["Advanced parameters that can be sent with the authorization request."]</div>
         </div>

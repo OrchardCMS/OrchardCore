@@ -122,3 +122,20 @@ Roles with *Query Lucene Api* or *Query Elasticsearch Api* can also send searche
 ## Copy queries to another site
 
 Add the **All Queries** step to a deployment plan to export every query, see [Import and export](../administration/import-and-export.md).
+
+## Videos
+
+This video saves search and database queries to reuse them.
+
+<!-- video:queries-overview -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/wmHNPx2ksnM" title="Queries: Save and Reuse Search and Database Queries" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video searches from a saved Lucene or Elasticsearch query.
+
+<!-- video:queries-lucene-elasticsearch -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/oXM2A97Hvio" title="Lucene and Elasticsearch Queries: Search From a Saved Query" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video runs saved queries in Liquid, in Razor and from the API.
+
+<!-- video:queries-in-templates-and-api -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/yVYgTTSOdbA" title="Queries in Liquid, Razor and the API" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

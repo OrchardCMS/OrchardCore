@@ -83,7 +83,7 @@
                             <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@T["Editor"]"><i class="fa-solid fa-pen-to-square text-info" aria-hidden="true"></i> @partDefinition.Editor()</span>
                         }
                     </div>
-                    <input type="hidden" asp-for="OrderedPartNames" value="@partDefinition.Name" />
+                    <input type="hidden" asp-for="OrderedPartNames" id="@($"{Html.IdFor(m => m.OrderedPartNames)}_{partDefinition.Name}")" value="@partDefinition.Name" />
                 </li>
             }
         </ul>

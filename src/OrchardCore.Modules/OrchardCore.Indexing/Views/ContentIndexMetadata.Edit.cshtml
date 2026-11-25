@@ -14,8 +14,8 @@
 </div>
 
 <div class="ocat-wrapper" asp-validation-class-for="IndexedContentTypes">
-    <label asp-for="IndexedContentTypes" class="ocat-label ocat-label-required">@T["Content types"]</label>
-    <div class="ocat-end">
+    <span id="@Html.IdFor(m => m.IndexedContentTypes)_Label" class="ocat-label ocat-label-required">@T["Content types"]</span>
+    <div class="ocat-end" role="group" aria-labelledby="@Html.IdFor(m => m.IndexedContentTypes)_Label">
     <span class="hint dashed">@T["The content types to index. Choose at least one."]</span>
     
     @await Component.InvokeAsync("SelectContentTypes", new { selectedContentTypes = Model.IndexedContentTypes, htmlName = Html.NameFor(m => m.IndexedContentTypes) })

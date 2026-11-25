@@ -496,3 +496,13 @@ This video relates content items to each other and to users with the Content Pic
 
 <!-- video:content-picker-fields -->
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/6a2SSz2Ky60" title="Content Picker and User Picker Fields: Relate Content Items" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video searches indexes on an Elasticsearch server.
+
+<!-- video:elasticsearch-search -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/Nmv3RxGGVgk" title="Elasticsearch: Search Indexes on an Elasticsearch Server" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video searches from a saved Lucene or Elasticsearch query.
+
+<!-- video:queries-lucene-elasticsearch -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/oXM2A97Hvio" title="Lucene and Elasticsearch Queries: Search From a Saved Query" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
