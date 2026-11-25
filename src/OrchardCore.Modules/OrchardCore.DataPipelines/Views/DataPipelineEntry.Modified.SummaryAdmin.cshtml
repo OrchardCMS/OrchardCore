@@ -1,0 +1,10 @@
+@model ShapeViewModel<DataPipelineEntry>
+
+@{
+    var pipeline = Model.Value.Pipeline;
+}
+
+
+<span class="badge ta-badge fw-normal" title="@T["Modified"]">
+    <i class="fa-solid fa-calendar text-secondary" aria-hidden="true"></i> @await DisplayAsync(await New.Timespan(Utc: pipeline.ModifiedUtc))
+</span>

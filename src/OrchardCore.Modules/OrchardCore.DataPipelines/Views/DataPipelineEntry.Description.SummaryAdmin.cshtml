@@ -1,0 +1,8 @@
+@model ShapeViewModel<DataPipelineEntry>
+
+@{
+    var pipeline = Model.Value.Pipeline;
+}
+
+
+<div class="admin-list-secondary">@pipeline.Description</div>

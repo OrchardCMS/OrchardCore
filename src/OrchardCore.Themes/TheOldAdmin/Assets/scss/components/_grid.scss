@@ -1,0 +1,20 @@
+// Responsive sizes
+// Creates mixins to target all breakpoints
+// ------------------------------
+@use 'sass:math';
+@import '../mixins/_grid';
+
+.ta-col-grouping {
+    // Column fixes
+    @each $breakpoint in map-keys($grid-breakpoints) {
+        @if $grid-row-columns > 0 {
+            // Column fixes
+            @include make-col-grouping(#{$breakpoint}); // Include a fix for unspecified cols, i.e. col-md
+            // Only apply to the lower half of the grid.
+            @for $i from 1 through math.div($grid-columns, 2) {
+                // Include a fix for specified cols, i.e. col-md-3
+                @include make-col-grouping(#{$breakpoint}-#{$i});
+            }
+        }
+    }
+}

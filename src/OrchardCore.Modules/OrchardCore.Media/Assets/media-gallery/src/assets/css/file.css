@@ -263,74 +263,12 @@
 
 
 /* ============================================================
-   Custom Pagination
+   Pagination
+   The pager uses Bootstrap's pagination classes, styled by Bootstrap and the admin theme when the
+   gallery is embedded, and by standalone.css when it is not.
    ============================================================ */
 .ma-pagination {
-  display: flex;
-  padding-left: 0;
-  list-style: none;
   margin: 0;
-}
-
-.ma-page-link {
-  position: relative;
-  display: block;
-  padding: 0.25rem 0.5rem;
-  font: inherit;
-  font-size: 0.875rem;
-  line-height: 1.5;
-  color: var(--bs-pagination-color, var(--media-primary, #0d6efd));
-  text-align: center;
-  text-decoration: none;
-  background-color: var(--bs-pagination-bg, var(--surface-0, #fff));
-  border: 1px solid var(--bs-pagination-border-color, var(--gray-300, #dee2e6));
-  appearance: none;
-  cursor: pointer;
-  transition: color 0.15s, background-color 0.15s, border-color 0.15s, box-shadow 0.15s;
-}
-
-.ma-page-link:hover {
-  z-index: 2;
-  color: var(--bs-pagination-hover-color, #0a58ca);
-  background-color: var(--bs-pagination-hover-bg, var(--gray-200, #e9ecef));
-  border-color: var(--bs-pagination-hover-border-color, var(--gray-300, #dee2e6));
-}
-
-.ma-page-link:focus-visible {
-  z-index: 3;
-  color: var(--bs-pagination-focus-color, var(--bs-pagination-hover-color, #0a58ca));
-  background-color: var(--bs-pagination-focus-bg, var(--bs-pagination-hover-bg, var(--gray-200, #e9ecef)));
-  border-color: var(--bs-pagination-focus-border-color, var(--bs-pagination-hover-border-color, var(--gray-300, #dee2e6)));
-  outline: 0;
-  box-shadow: var(--bs-pagination-focus-box-shadow, var(--oc-media-focus-ring));
-}
-
-.ma-page-item:first-child .ma-page-link {
-  border-top-left-radius: 0.25rem;
-  border-bottom-left-radius: 0.25rem;
-}
-
-.ma-page-item:last-child .ma-page-link {
-  border-top-right-radius: 0.25rem;
-  border-bottom-right-radius: 0.25rem;
-}
-
-.ma-page-item + .ma-page-item .ma-page-link {
-  margin-left: -1px;
-}
-
-.ma-page-item.active .ma-page-link {
-  z-index: 3;
-  color: var(--bs-pagination-active-color, #fff);
-  background-color: var(--bs-pagination-active-bg, var(--media-primary, #0d6efd));
-  border-color: var(--bs-pagination-active-border-color, var(--media-primary, #0d6efd));
-}
-
-.ma-page-item.is-disabled .ma-page-link {
-  color: var(--bs-pagination-disabled-color, var(--gray-400, #ced4da));
-  pointer-events: none;
-  background-color: var(--bs-pagination-disabled-bg, #fff);
-  border-color: var(--bs-pagination-disabled-border-color, var(--gray-300, #dee2e6));
 }
 
 
@@ -384,8 +322,10 @@
 /* ============================================================
    Main Layout
    ============================================================ */
+/* The height the admin theme leaves to its content (--oc-admin-content-height, its top bar and the padding around the
+   content taken off), so the gallery fills the page without scrolling it; an estimate of it otherwise. */
 #media-gallery {
-  height: calc(100vh - var(--oc-top-nav-height, 52px) - 2rem);
+  height: var(--oc-admin-content-height, calc(100vh - var(--oc-top-nav-height, 52px) - 2rem));
 }
 
 .fileApp {
@@ -425,6 +365,13 @@
   align-items: stretch;
 }
 
+.fileApp #fileContainer .file-container-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
 .fileApp #fileContainer #navigationApp {
   flex-shrink: 0;
   height: 240px;
@@ -460,7 +407,7 @@
 }
 
 @media only screen and (min-width: 923px) {
-  .fileApp #fileContainer {
+  .fileApp #fileContainer .file-container-body {
     flex-direction: row;
   }
 
@@ -1794,15 +1741,6 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
   background-color: inherit;
 }
 
-#file-pager .ma-page-link {
-  outline: none !important;
-}
-
-#file-pager .ma-page-link:focus {
-  outline: none !important;
-  box-shadow: none !important;
-}
-
 @media only screen and (max-width: 576px) {
   #file-pager .file-last-button,
   #file-pager .file-first-button,
@@ -2194,13 +2132,13 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
   color: var(--mg-text-muted);
 }
 
-[data-bs-theme="dark"] .fileApp #file-pager .ma-page-item:not(.active) .ma-page-link {
+[data-bs-theme="dark"] .fileApp #file-pager .page-item:not(.active) .page-link {
   background-color: var(--bs-pagination-bg, transparent);
   color: var(--bs-pagination-color, var(--mg-text));
   border-color: var(--bs-pagination-border-color, var(--mg-border));
 }
 
-[data-bs-theme="dark"] .fileApp #file-pager .ma-page-item.active .ma-page-link {
+[data-bs-theme="dark"] .fileApp #file-pager .page-item.active .page-link {
   color: var(--bs-pagination-active-color, #fff);
   background-color: var(--bs-pagination-active-bg, var(--media-primary, #0d6efd));
   border-color: var(--bs-pagination-active-border-color, var(--media-primary, #0d6efd));

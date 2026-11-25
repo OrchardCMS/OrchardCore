@@ -59,6 +59,8 @@ public sealed class Startup : StartupBase
 
         services.AddScoped<IDisplayManager<DataPipelineStep>, DisplayManager<DataPipelineStep>>();
         services.AddDisplayDriver<DataPipelineStep, DataPipelineStepTitleDisplayDriver>();
+        services.AddDisplayDriver<DataPipelineEntry, DataPipelineEntryDisplayDriver>();
+        services.AddDisplayDriver<DataPipelineRunEntry, DataPipelineRunEntryDisplayDriver>();
 
         // Builds the editor of the page adding a data pipeline.
         services.AddDisplayDriver<DataPipelineCreateViewModel, DataPipelineCreateDisplayDriver>();

@@ -1,5 +1,5 @@
-@import 'variables';
+@use 'variables';
 
 // These files will be compiled with [dir] directive.
-@import 'admin/_layout';
-@import 'admin/_sidebar-menu';
+@use 'admin/layout';
+@use 'admin/sidebar-menu';

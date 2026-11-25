@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using OrchardCore.Admin;
 using OrchardCore.DataPipelines.Models;
 using OrchardCore.DataPipelines.SharedLinks;
 using OrchardCore.DisplayManagement;
@@ -8,24 +9,43 @@ namespace OrchardCore.DataPipelines.ViewModels;
 
 public sealed class DataPipelineIndexViewModel
 {
-    public List<DataPipelineEntryViewModel> Pipelines { get; set; } = [];
-
     public string Search { get; set; }
 
-    public int TotalCount { get; set; }
+    public bool CanManage { get; set; }
 
-    public dynamic Pager { get; set; }
+    /// <summary>
+    /// Gets or sets the pipelines, rendered by the AdminList shape.
+    /// </summary>
+    public AdminListContext List { get; set; }
+}
+
+/// <summary>
+/// A row of the list of the pipelines: the shape of the row is named after it (<c>DataPipelineEntry_SummaryAdmin</c>).
+/// </summary>
+public sealed class DataPipelineEntry
+{
+    public DataPipeline Pipeline { get; set; }
+
+    public DataPipelineRun LastRun { get; set; }
 
     public bool CanManage { get; set; }
 
     public bool CanRun { get; set; }
 }
 
-public sealed class DataPipelineEntryViewModel
+/// <summary>
+/// A row of the run history: the shape of the row is named after it (<c>DataPipelineRunEntry_SummaryAdmin</c>).
+/// </summary>
+public sealed class DataPipelineRunEntry
 {
-    public DataPipeline Pipeline { get; set; }
+    public DataPipelineRun Run { get; set; }
 
-    public DataPipelineRun LastRun { get; set; }
+    public bool CanRun { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether the row links to the run history of its pipeline, on the history of every pipeline.
+    /// </summary>
+    public bool ShowPipelineHistory { get; set; }
 }
 
 public class DataPipelineCreateViewModel
@@ -69,13 +89,10 @@ public sealed class DataPipelineRunsViewModel
 
     public DataPipelineRunStatus? Status { get; set; }
 
-    public int TotalCount { get; set; }
-
-    public List<DataPipelineRun> Runs { get; set; } = [];
-
-    public dynamic Pager { get; set; }
-
-    public bool CanRun { get; set; }
+    /// <summary>
+    /// Gets or sets the runs, rendered by the AdminList shape.
+    /// </summary>
+    public AdminListContext List { get; set; }
 }
 
 public sealed class DataPipelineRunViewModel

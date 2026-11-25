@@ -105,7 +105,7 @@ onMounted(async () => {
 </script>
 
 <template>
-    <div class="wfd wfd-readonly wfd-compare" data-cy="workflow-compare">
+    <div class="wfd card wfd-readonly wfd-compare" data-cy="workflow-compare">
         <header class="wfd-toolbar">
             <h2 class="wfd-title text-truncate">{{ comparison?.to.settings.name }}</h2>
             <span class="wfd-legend small text-body-secondary" data-cy="compare-legend">

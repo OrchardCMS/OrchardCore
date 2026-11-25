@@ -1,0 +1,8 @@
+@using OrchardCore.DisplayManagement.Views
+@model ShapeViewModel<AdminSchemeEntry>
+
+<a asp-action="Edit" asp-controller="Schemes" asp-area="TheAdmin" asp-route-id="@Model.Value.Scheme.Id">@Model.Value.Scheme.Name</a>
+@if (Model.Value.IsDefault)
+{
+    <span class="badge text-bg-primary ms-1">@T["Default"]</span>
+}

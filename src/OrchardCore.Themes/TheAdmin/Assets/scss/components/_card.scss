@@ -1,5 +1,64 @@
+// Cards share the inner padding of every surface ('--ta-surface-padding-*'), so a card, a list and a tab pane line up
+// on the same inset.
 .card {
-    &.collapsed .card-header{
+    --bs-card-bg: var(--ta-surface);
+    --bs-card-border-color: var(--ta-border);
+    --bs-card-border-radius: var(--ta-radius);
+    --bs-card-inner-border-radius: calc(var(--ta-radius) - var(--bs-border-width));
+    --bs-card-cap-bg: transparent;
+    --bs-card-cap-padding-y: var(--ta-row-padding-y);
+    --bs-card-cap-padding-x: var(--ta-surface-padding-x);
+    --bs-card-spacer-x: var(--ta-surface-padding-x);
+    --bs-card-spacer-y: var(--ta-surface-padding-y);
+    --bs-card-title-color: var(--ta-heading);
+    box-shadow: var(--ta-shadow);
+
+    &.collapsed .card-header {
         border-bottom: 0;
+    }
+}
+
+.card-header {
+    font-size: var(--ta-font-size-md);
+    font-weight: var(--ta-font-weight-strong);
+    color: var(--ta-heading);
+}
+
+// A card inside a card is a section of it, not a second layer: no shadow.
+.card .card {
+    box-shadow: none;
+}
+
+// TheAdmin's theme surfaces (the search bar above a list, its toolbars...) take the surface of the scheme.
+.bg-theme {
+    background-color: var(--ta-surface) !important;
+}
+
+.text-theme {
+    color: var(--bs-body-color) !important;
+}
+
+.text-bg-theme {
+    color: var(--bs-body-color) !important;
+    background-color: var(--ta-surface) !important;
+}
+
+// The icon of a dashboard card leads its title on a rounded tile, like the icons of the admin menu: a wash of the
+// primary color with a border of the same color.
+.dashboard-card-icon {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border: var(--bs-border-width) solid color-mix(in srgb, var(--bs-primary) 30%, transparent);
+    border-radius: var(--ta-radius);
+    background-color: color-mix(in srgb, var(--bs-primary) 12%, transparent);
+    color: var(--bs-primary-text-emphasis);
+    font-size: 1.125rem;
+
+    svg {
+        width: 1.125rem;
     }
 }

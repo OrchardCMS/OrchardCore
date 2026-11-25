@@ -1,0 +1,40 @@
+@using System.Linq
+@using OrchardCore
+@using OrchardCore.AdminMenu
+@using OrchardCore.Localization.Data
+
+@inject IDataLocalizer D
+
+@{
+    var prefix = "icon-class-";
+
+    // The shape is used through its static type, as it is rendered for each menu item, falling back to
+    // dynamic accesses for shapes that are not navigation items.
+    var shape = (OrchardCore.DisplayManagement.IShape)Model;
+    var navigationItem = shape as OrchardCore.Navigation.NavigationItemViewModel;
+
+    //extract icon classes from Model.Classes
+    string iconClasses = null;
+
+    foreach (var className in shape.Classes)
+    {
+        if (className.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+        {
+            iconClasses = iconClasses is null ? className.Substring(prefix.Length) : iconClasses + " " + className.Substring(prefix.Length);
+        }
+    }
+
+    var context = OrchardCore.AdminMenu.DataLocalizationContext.AdminMenu(navigationItem is not null ? navigationItem.Item.MenuName : (string)Model.Item.MenuName);
+    var text = navigationItem is not null ? navigationItem.Text : (Microsoft.Extensions.Localization.LocalizedString)Model.Text;
+}
+
+@if (iconClasses is not null)
+{
+    <span class="icon" aria-hidden="true"><i class="@iconClasses"></i></span>
+}
+else
+{
+    <span class="icon icon-none" aria-hidden="true"></span>
+}
+
+<span class="title">@D[text, context]</span>

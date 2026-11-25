@@ -1,4 +1,6 @@
 
+@use 'sass:string';
+
 // If MDE is loaded with 'bootstrap' plugin, the 'blockquote' class is added to all 'blockquote' elements.
 // So if we are using the 'bootstrap' plugin, don't apply our custom style.
 .EasyMDEContainer blockquote:not(.blockquote) {
@@ -6,9 +8,114 @@
     border-left: 0.4rem solid var(--bs-secondary-border-subtle) !important;
     margin: 1.5em 10px;
     padding: 1em 10px .1em;
-    quotes: "\201C""\201D""\2018""\2019";
+    // Written as escapes and unquoted, so that Sass keeps them as escapes: the stylesheet stays ASCII, Sass emits no
+    // @charset, and its /*! credit comment comes first, where the minifier keeps it.
+    quotes: string.unquote('"\\201C""\\201D""\\2018""\\2019"');
 }
 
 .EasyMDEContainer blockquote:not(.blockquote) > p {
     color: var(--bs-secondary-text-emphasis);
+}
+
+// The Markdown editor's toolbar, text area and counters read as one field: the toolbar takes the field's border and top
+// corners, the counters the bottom ones, a hairline divides the toolbar from the text, and focus outlines them all.
+html .EasyMDEContainer {
+    .editor-toolbar:not(.fullscreen) {
+        border-color: var(--ta-control-border);
+        border-bottom: 0;
+        border-radius: var(--bs-border-radius) var(--bs-border-radius) 0 0;
+        background-color: var(--ta-surface);
+        opacity: 1;
+        transition: border-color 0.15s ease-in-out;
+
+        &:hover {
+            opacity: 1;
+        }
+    }
+
+    .editor-toolbar {
+        button {
+            border-color: transparent;
+            border-radius: var(--bs-border-radius-sm);
+            color: var(--bs-body-color);
+
+            &:hover,
+            &.active {
+                border-color: transparent;
+                background-color: var(--ta-row-hover-bg);
+            }
+        }
+
+        i.separator {
+            border-left-color: var(--ta-border);
+            border-right-color: transparent;
+        }
+    }
+
+    // The text area takes the border of a field. The Markdown module's stylesheet gives it Bootstrap's faint border color
+    // with a selector that outranks the theme's CodeMirror rule, so it is set again here.
+    .CodeMirror:not(.CodeMirror-fullscreen) {
+        border-color: var(--ta-control-border);
+        border-bottom-left-radius: var(--bs-border-radius);
+        border-bottom-right-radius: var(--bs-border-radius);
+    }
+
+    .CodeMirror-focused:not(.CodeMirror-fullscreen) {
+        border-color: var(--ta-focus-color);
+    }
+
+    &:not(:has(.CodeMirror-fullscreen)) {
+        border-radius: var(--bs-border-radius);
+        transition: box-shadow 0.15s ease-in-out;
+
+        // The focus halo is drawn once, around the whole field, rather than on each of its parts: CodeMirror clips its
+        // own box (an inline 'clip-path: inset(0)' in Chrome), so a halo on the text area never showed.
+        &:has(.CodeMirror-focused) {
+            box-shadow: var(--ta-focus-halo);
+        }
+
+        > .CodeMirror {
+            box-shadow: none;
+        }
+
+        // The counters (lines, words, cursor) sit inside the field, at the bottom of the text area: the status bar takes
+        // the field's sides, bottom and bottom corners, and the text area gives them up.
+        > .CodeMirror:has(~ .editor-statusbar) {
+            border-bottom: 0;
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+
+        > .editor-statusbar {
+            border: var(--bs-border-width) solid var(--ta-control-border);
+            border-top: 0;
+            border-radius: 0 0 var(--bs-border-radius) var(--bs-border-radius);
+            background-color: var(--ta-surface);
+            transition: border-color 0.15s ease-in-out;
+        }
+
+        &:has(.CodeMirror-focused) > .editor-statusbar {
+            border-color: var(--ta-focus-color);
+        }
+    }
+
+    // The Shortcodes feature wraps the toolbar in a div of its own, so the text area is found from the container.
+    &:has(.editor-toolbar:not(.fullscreen)) > .CodeMirror:not(.CodeMirror-fullscreen) {
+        border-top-color: var(--ta-border);
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+    }
+
+    &:has(.CodeMirror-focused) .editor-toolbar:not(.fullscreen) {
+        border-color: var(--ta-focus-color);
+    }
+
+    &:has(.editor-toolbar:not(.fullscreen)) > .CodeMirror-focused:not(.CodeMirror-fullscreen) {
+        border-top-color: var(--ta-border);
+    }
+
+    .editor-statusbar {
+        color: var(--ta-muted);
+        font-size: var(--ta-font-size-xs);
+    }
 }
