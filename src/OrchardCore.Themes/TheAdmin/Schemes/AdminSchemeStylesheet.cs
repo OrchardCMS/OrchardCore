@@ -27,8 +27,19 @@ public static class AdminSchemeStylesheet
             AppendScheme(css, scheme);
         }
 
-        return css.ToString();
+        // The rules of a scheme carry Bootstrap's icons (see TheAdminSchemeTokens), so a stylesheet that holds any credits
+        // them, as the theme's own stylesheets do.
+        return css.Length > 0 ? Banner + css.ToString() : string.Empty;
     }
+
+    /// <summary>
+    /// The comment the stylesheet starts with: the icons of checked controls are Bootstrap's artwork, under the MIT
+    /// license (see THIRD-PARTY-NOTICES.txt of the theme).
+    /// </summary>
+    public const string Banner =
+        "/*! The check box, radio button and switch icons are the artwork of Bootstrap v5.3.8 (https://getbootstrap.com/), "
+        + "Copyright 2011-2025 The Bootstrap Authors, Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE). "
+        + "See THIRD-PARTY-NOTICES.txt in the package of the Admin theme. */\n";
 
     /// <summary>
     /// Appends the rules of one scheme; appends nothing for a scheme with an invalid id or an invalid color.

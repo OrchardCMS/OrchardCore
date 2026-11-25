@@ -154,6 +154,7 @@ b {
 }
 
 .form-switch .form-check-input:focus:not(:checked) {
+    // Bootstrap's switch icon (MIT, see THIRD-PARTY-NOTICES.txt).
     --bs-form-switch-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%2395c0dd'/%3e%3c/svg%3e");
 }
 

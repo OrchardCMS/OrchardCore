@@ -213,6 +213,8 @@ Optional settings fine tune what is derived: the hue and saturation of the page,
 
 The fonts are typed, with the theme's font suggested. Lato is served by the theme, and the admin never calls a font CDN; any other font, e.g. `Segoe UI` or `Georgia, serif`, must be installed on the users' devices.
 
+Lato is licensed under the SIL Open Font License 1.1, whose text the theme serves at `~/TheAdmin/fonts/lato-LICENSE.txt`, while the rest of the theme is under the BSD 3-Clause License. The theme's package declares both (`BSD-3-Clause AND OFL-1.1`), and its `THIRD-PARTY-NOTICES.txt` credits Lato, Bootstrap, whose check box, radio button, switch and invalid field icons the theme's stylesheets and the schemes stylesheet draw in the scheme's colors, and js-cookie (MIT), which the theme's scripts bundle.
+
 TheAdmin starts with seven schemes (Gray, the default, which keeps the colors of the previous TheAdmin, Blue, Ocean, Forest, Plum, Sunset and Graphite). A migration of the theme imports them, and makes Gray the default scheme, from its `Migrations/admin-schemes.recipe.json` recipe: when the theme is enabled during the setup of a site, or on the first start of an existing site after the upgrade. They are ordinary records from then on, and they are imported once: deleting them doesn't bring them back. If no scheme is left at all, the admin falls back to Gray.
 
 Schemes are exported with the **Admin schemes** deployment step and imported with the `AdminSchemes` recipe step. An entry whose `ItemId` matches a stored scheme replaces it; any other is added. The optional `DefaultSchemeId` makes a scheme the default one.

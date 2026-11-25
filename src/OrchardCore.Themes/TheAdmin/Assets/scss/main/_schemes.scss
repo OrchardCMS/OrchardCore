@@ -134,6 +134,8 @@ $ui-contrast: 3.1;
     @return "%23" + string.slice("#{color.to-space($color, rgb)}", 2);
 }
 
+// The icons of checked controls are Bootstrap's artwork (MIT, see THIRD-PARTY-NOTICES.txt), drawn in the color of
+// text on the primary.
 @mixin on-primary-tokens($scheme) {
     $on: on-primary($scheme);
     $c: svg-color($on);

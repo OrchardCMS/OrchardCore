@@ -204,6 +204,22 @@ public sealed class AdminSchemeTests
     }
 
     [Fact]
+    public void Build_AnyValidScheme_StartsWithTheCreditOfBootstrapsIcons()
+    {
+        var css = AdminSchemeStylesheet.Build([Scheme("custom-ok", "Ok")]);
+
+        // The rules draw Bootstrap's check box, radio button and switch icons: the stylesheet keeps its MIT notice, in a
+        // comment minifiers keep.
+        Assert.StartsWith(AdminSchemeStylesheet.Banner, css, StringComparison.Ordinal);
+        Assert.StartsWith("/*!", AdminSchemeStylesheet.Banner, StringComparison.Ordinal);
+        Assert.Contains("The Bootstrap Authors, Licensed under MIT", css, StringComparison.Ordinal);
+        Assert.Equal(1, css.Split("The Bootstrap Authors").Length - 1);
+
+        // No scheme, no icon, and no credit.
+        Assert.Empty(AdminSchemeStylesheet.Build([]));
+    }
+
+    [Fact]
     public async Task Store_SeedsNothingWhenRead_AndFallsBackToGray_WhenThereIsNoScheme()
     {
         // No migration ran: nothing is stored, and reading never writes.

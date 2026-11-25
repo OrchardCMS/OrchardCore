@@ -9,7 +9,15 @@
 
     The default Admin theme of OrchardCore CMS</Description>
     <PackageTags>$(PackageTags) OrchardCoreCMS Theme</PackageTags>
+
+    <!-- The theme ships the Lato font, under the SIL Open Font License 1.1 (wwwroot/fonts/lato-LICENSE.txt), on top of
+         the code under BSD-3-Clause. THIRD-PARTY-NOTICES.txt credits it and the other works the theme includes. -->
+    <PackageLicenseExpression>BSD-3-Clause AND OFL-1.1</PackageLicenseExpression>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="THIRD-PARTY-NOTICES.txt" Pack="true" PackagePath="\" />
+  </ItemGroup>
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />

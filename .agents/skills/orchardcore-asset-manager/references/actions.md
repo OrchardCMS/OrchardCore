@@ -80,6 +80,7 @@ Copies files (often from `node_modules`) to `wwwroot/`. Does not watch for chang
 
 - `source` — string or array of strings/globs
 - `dest` — output folder; if omitted, inferred from tags and first source extension
+- `fileName` — optional name of the copy, for a single source file, e.g. `"LICENSE"` copied as `"lato-LICENSE.txt"` so a web server serves it
 - `node_modules/` paths resolve from the **workspace root**
 
 ## concat

@@ -131,7 +131,8 @@ public static class TheAdminSchemeTokens
             .Add("menu-bg", s_lightMenu)
             .Add("menu-gradient", Gradient(180, (s_lightMenu, 0), (s_lightMenu, 100)));
 
-    // The marks of checked controls, drawn in the color of text on the primary, which fills them.
+    // The marks of checked controls, drawn in the color of text on the primary, which fills them. They are Bootstrap's
+    // artwork, under the MIT license: AdminSchemeStylesheet.Banner credits it (see THIRD-PARTY-NOTICES.txt).
     private static void WriteControlIcons(AdminSchemeTokenWriter tokens, AdminColor on)
     {
         var c = "%23" + on.ToHex()[1..];

@@ -76,7 +76,8 @@
     "action": "copy",
     "name": "theme-theadmin-fonts-license",
     "source": "node_modules/@fontsource/lato/LICENSE",
-    "dest": "wwwroot/fonts/lato/",
+    "dest": "wwwroot/fonts/",
+    "fileName": "lato-LICENSE.txt",
     "tags": ["theme", "fonts"]
   }
 ]
