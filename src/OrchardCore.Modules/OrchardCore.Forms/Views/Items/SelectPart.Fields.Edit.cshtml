@@ -28,9 +28,9 @@
     </div>
 
     <div class="ocat-wrapper field-options-wrapper" id="@(widgetId)-selectOptions" data-options="@Model.Options" data-default-value="@Model.DefaultValue" data-translations="@translationsJson" data-default-value-input-id="@Html.IdFor(m => m.DefaultValue)" data-default-value-input-name="@Html.NameFor(m => m.DefaultValue)" data-options-input-id="@Html.IdFor(m => m.Options)" data-options-input-name="@Html.NameFor(m => m.Options)">
-        <label asp-for="Options" class="ocat-label">@T["Options"]</label>
+        <span id="@Html.IdFor(m => m.Options)_Label" class="ocat-label">@T["Options"]</span>
 
-        <div class="ocat-end">
+        <div class="ocat-end" role="group" aria-labelledby="@Html.IdFor(m => m.Options)_Label">
             <div class="select-part-editor-mount"></div>
         </div>
     </div>

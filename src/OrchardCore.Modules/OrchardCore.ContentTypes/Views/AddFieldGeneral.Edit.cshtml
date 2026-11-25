@@ -19,8 +19,8 @@
 </div>
 
 <div class="ocat-limited-wrapper">
-    <label asp-for="FieldTypeName" class="ocat-label ocat-label-required">@T["Field Type"]</label>
-    <div class="ocat-limited">
+    <span id="@Html.IdFor(m => m.FieldTypeName)_Label" class="ocat-label ocat-label-required">@T["Field Type"]</span>
+    <div class="ocat-limited" role="radiogroup" aria-labelledby="@Html.IdFor(m => m.FieldTypeName)_Label">
         <ul class="list-group">
             @for (var i = 0; i < Model.Fields.Count; i++)
             {

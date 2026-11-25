@@ -27,8 +27,8 @@
     </div>
     <div class="tw:w-full">
       <template v-if="action == FileAction.Rename">
-        <label class="tw:block tw:font-bold tw:text-lg tw:mb-2">{{ t.Filename }}</label>
-        <input @keyup.enter="onPressEnter" class="p-inputtext tw:w-full" type="text" name="rename"
+        <label for="file-action-rename" class="tw:block tw:font-bold tw:text-lg tw:mb-2">{{ t.Filename }}</label>
+        <input id="file-action-rename" @keyup.enter="onPressEnter" class="p-inputtext tw:w-full" type="text" name="rename"
           v-model="fileActionEntry.inputValue" />
       </template>
       <template v-if="action == FileAction.Copy">

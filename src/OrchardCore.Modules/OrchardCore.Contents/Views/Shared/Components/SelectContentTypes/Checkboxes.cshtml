@@ -1,13 +1,16 @@
 @model SelectContentTypesViewModel
 @using OrchardCore.Localization.Data
 @inject IDataLocalizer D
+@{
+    var idPrefix = Html.GenerateIdFromName(Model.HtmlName);
+}
 
 <script asp-src="~/OrchardCore.Contents/Scripts/content-type-check-all/content-type-check-all.min.js" debug-src="~/OrchardCore.Contents/Scripts/content-type-check-all/content-type-check-all.js" at="Foot" type="module"></script>
 <div class="check-all content-types row">
     <div class="col">
         <div class="form-check">
-            <input type="checkbox" class="form-check-input master" id="@(Model.HtmlName)-select-all" />
-            <label class="form-check-label" for="@(Model.HtmlName)-select-all">@T["Select all"]</label>
+            <input type="checkbox" class="form-check-input master"             id="@(idPrefix)_SelectAll" />
+                        <label class="form-check-label" for="@(idPrefix)_SelectAll">@T["Select all"]</label>
         </div>
     </div>
     <div class="slaves row">
@@ -16,11 +19,11 @@
         var contentType = Model.ContentTypeSelections[i];
         <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 col-xl-2">
             <div class="form-check">
-                <input type="checkbox" class="form-check-input" id="@Html.IdFor(m => m.ContentTypeSelections[i])"
+                <input type="checkbox" class="form-check-input" id="@($"{idPrefix}_{i}")"
                     name="@Model.HtmlName" checked="@contentType.IsSelected"
                     value="@contentType.ContentTypeDefinition.Name">
                 <label class="form-check-label"
-                    for="@Html.IdFor(m => m.ContentTypeSelections[i])">@D[contentType.ContentTypeDefinition.DisplayName, "Content Types"]</label>
+                    for="@($"{idPrefix}_{i}")">@D[contentType.ContentTypeDefinition.DisplayName, "Content Types"]</label>
             </div>
         </div>
     }

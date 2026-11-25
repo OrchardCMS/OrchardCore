@@ -1,8 +1,8 @@
 @model AzureAISearchContentIndexSettings
 
 <div class="ocat-wrapper">
-    <label class="ocat-label">@T["Azure AI Search"]</label>
-    <div class="ocat-end">
+    <span id="@Html.IdFor(m => m.Included)_Label" class="ocat-label">@T["Azure AI Search"]</span>
+    <div class="ocat-end" role="group" aria-labelledby="@Html.IdFor(m => m.Included)_Label">
         <div class="form-check">
             <input type="checkbox" class="form-check-input" asp-for="Included" checked="@Model.Included" />
             <label class="form-check-label" asp-for="Included">@T["Include this element in the index"]</label>

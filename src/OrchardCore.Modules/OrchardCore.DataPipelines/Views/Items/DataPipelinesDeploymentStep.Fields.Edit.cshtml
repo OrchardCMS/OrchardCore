@@ -21,8 +21,8 @@
 </div>
 
 <div class="ocat-wrapper @(Model.IncludeAll ? "d-none" : null)" id="@pipelinesId">
-    <label class="ocat-label">@T["Pipelines"]</label>
-    <div class="ocat-end">
+    <span id="@(pipelinesId)_Label" class="ocat-label">@T["Pipelines"]</span>
+    <div class="ocat-end" role="group" aria-labelledby="@(pipelinesId)_Label">
         @if (Model.Pipelines.Count == 0)
         {
             <span class="hint">@T["There is no data pipeline yet."]</span>

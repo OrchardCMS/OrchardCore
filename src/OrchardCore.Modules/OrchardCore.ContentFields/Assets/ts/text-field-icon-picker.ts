@@ -10,7 +10,7 @@ interface IconPickerSelectedEvent {
 }
 
 interface IconPickerToggle {
-    iconpicker(): IconPickerToggle;
+    iconpicker(options?: { templates?: Record<string, string> }): IconPickerToggle;
     data(key: "iconpicker"): { update(value: string): void };
     on(event: "iconpickerSelected", handler: (event: IconPickerSelectedEvent) => void): IconPickerToggle;
 }
@@ -25,7 +25,13 @@ const initIconPickerField = (wrapper: HTMLElement) => {
 
     const $toggle = $(toggle) as IconPickerToggle;
 
-    $toggle.iconpicker();
+    const searchInput = document.createElement("input");
+    searchInput.type = "search";
+    searchInput.id = `${valueInput.id}_Search`;
+    searchInput.className = "form-control iconpicker-search";
+    searchInput.placeholder = "Type to filter";
+
+    $toggle.iconpicker({ templates: { search: searchInput.outerHTML } });
 
     const storedIcon = valueInput.value;
 

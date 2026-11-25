@@ -3,8 +3,8 @@
 
 <section>
     <div class="ocat-wrapper" asp-validation-class-for="AllowedContentTypes">
-        <label asp-for="AllowedContentTypes" class="ocat-label">@T["Allowed content types"]</label>
-        <div class="ocat-end">
+        <span id="@Html.IdFor(m => m.AllowedContentTypes)_Label" class="ocat-label">@T["Allowed content types"]</span>
+        <div class="ocat-end" role="group" aria-labelledby="@Html.IdFor(m => m.AllowedContentTypes)_Label">
             @await Component.InvokeAsync("SelectContentTypes", new { selectedContentTypes = Model.AllowedContentTypes, htmlName = Html.NameFor(m => m.AllowedContentTypes) })
             <span asp-validation-for="AllowedContentTypes"></span>
             <span class="hint">@T["The types of content whose events are recorded."]</span>
