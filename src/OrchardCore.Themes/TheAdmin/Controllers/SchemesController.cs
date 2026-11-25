@@ -81,7 +81,6 @@ public sealed class SchemesController : Controller
         return View("Edit", new AdminSchemeViewModel
         {
             Position = await _store.NextPositionAsync(),
-            FontFamily = AdminSchemeTypography.GetDisplayName(TheAdminSchemes.DefaultFontFamily, TheAdminSchemes.Fonts),
         });
     }
 
@@ -142,7 +141,8 @@ public sealed class SchemesController : Controller
             Tint = scheme.Tint,
             TintDark = scheme.TintDark,
             // The fonts the theme ships show by their names.
-            FontFamily = AdminSchemeTypography.GetDisplayName(string.IsNullOrWhiteSpace(scheme.FontFamily) ? TheAdminSchemes.DefaultFontFamily : scheme.FontFamily, TheAdminSchemes.Fonts),
+            // Empty for the theme's font, which the field shows as its placeholder.
+            FontFamily = AdminSchemeTypography.GetDisplayName(scheme.FontFamily, TheAdminSchemes.Fonts),
             HeadingFontFamily = AdminSchemeTypography.GetDisplayName(scheme.HeadingFontFamily, TheAdminSchemes.Fonts),
             FontScale = scheme.FontScale ?? AdminSchemeTypography.DefaultFontScale,
             RadiusScale = scheme.RadiusScale ?? AdminSchemeTypography.DefaultRadiusScale,
@@ -277,7 +277,7 @@ public sealed class SchemesController : Controller
             Toolbar = Optional(model.Toolbar),
             Tint = Optional(model.Tint),
             TintDark = Optional(model.TintDark),
-            FontFamily = OptionalText(model.FontFamily),
+            FontFamily = OptionalFont(model.FontFamily),
             HeadingFontFamily = OptionalText(model.HeadingFontFamily),
             FontScale = model.FontScale,
             RadiusScale = model.RadiusScale,
@@ -296,6 +296,10 @@ public sealed class SchemesController : Controller
             ModelState.AddModelError(nameof(model.HeadingFontFamily), S["Enter the name of a font, or several separated by commas, or leave it empty to use the font of the text. A name holds only letters, digits, spaces, dashes, underscores and dots."]);
         }
     }
+
+    // The theme's font is the default: it is stored as no font, so the scheme (and an export of it) names none.
+    private static string OptionalFont(string value)
+        => AdminSchemeTypography.FindFont(value, TheAdminSchemes.Fonts)?.Key == TheAdminSchemes.DefaultFontFamily ? null : OptionalText(value);
 
     private static string OptionalText(string value)
         => string.IsNullOrWhiteSpace(value) ? null : value.Trim();

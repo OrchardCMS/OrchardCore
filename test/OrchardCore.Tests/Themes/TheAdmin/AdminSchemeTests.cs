@@ -348,7 +348,7 @@ public sealed class AdminSchemeTests
     }
 
     [Fact]
-    public async Task Controller_SavesEverySetting_AndShowsTheThemesFontByItsName()
+    public async Task Controller_SavesEverySetting_AndStoresTheThemesFontAsNone()
     {
         var (store, _) = CreateStore();
         var controller = CreateController(store);
@@ -366,7 +366,8 @@ public sealed class AdminSchemeTests
         Assert.Equal("#1f6f8b", saved.Primary);
         Assert.True(saved.LightMenu);
         Assert.Null(saved.Toolbar);
-        Assert.Equal("lato", saved.FontFamily);
+        // Lato is the theme's font, the default: the scheme names none, and its field is left empty.
+        Assert.Null(saved.FontFamily);
         Assert.Equal("Georgia, serif", saved.HeadingFontFamily);
         Assert.Equal(1.0625, saved.FontScale);
         Assert.Equal(0.5, saved.RadiusScale);
@@ -374,14 +375,21 @@ public sealed class AdminSchemeTests
 
         var edit = Assert.IsType<ViewResult>(await controller.Edit(saved.Id));
 
-        Assert.Equal("Lato", Assert.IsType<AdminSchemeViewModel>(edit.Model).FontFamily);
+        Assert.Null(Assert.IsType<AdminSchemeViewModel>(edit.Model).FontFamily);
+
+        // Another font is kept.
+        Assert.IsType<RedirectToActionResult>(await controller.EditPost(saved.Id, new AdminSchemeViewModel
+        {
+            Name = "Harbor", Primary = "#1f6f8b", Deep = "#123c4c", Ink = "#081a21", Accent = "#5bc0de", FontFamily = " Georgia ",
+        }));
+        Assert.Equal("Georgia", (await store.FindAsync(saved.Id)).FontFamily);
 
         // A font that is not a font name is refused.
         var invalid = new AdminSchemeViewModel { Name = "X", Primary = "#2a81bb", Deep = "#144c71", Ink = "#081b26", Accent = "#5aa4ef", FontFamily = "Arial; color: red" };
 
         Assert.IsType<ViewResult>(await controller.EditPost(saved.Id, invalid));
         Assert.False(controller.ModelState.IsValid);
-        Assert.Equal("lato", (await store.FindAsync(saved.Id)).FontFamily);
+        Assert.Equal("Georgia", (await store.FindAsync(saved.Id)).FontFamily);
     }
 
     [Fact]

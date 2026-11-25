@@ -577,9 +577,11 @@ msgctxt "TheAdmin.Views.Schemes.Edit"
 msgid "The font of page titles and headings. The font of the text when empty."
 msgstr ""
 
+#. Format arguments: {0}: defaultFont
 #: Views/Schemes/Edit.cshtml
+#, csharp-format
 msgctxt "TheAdmin.Views.Schemes.Edit"
-msgid "The font of the text. Pick one of the theme's fonts, or type the name of any font, e.g. a font installed on your users' devices, or several separated by commas."
+msgid "The font of the text. {0}, the font of the theme, when empty. Type the name of another font, e.g. a font installed on your users' devices, or several separated by commas."
 msgstr ""
 
 #: Views/Schemes/Edit.cshtml

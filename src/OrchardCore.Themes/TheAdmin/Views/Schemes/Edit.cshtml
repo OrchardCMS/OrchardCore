@@ -24,6 +24,7 @@
 
     // The fonts the theme ships, which the font fields suggest with the system font. The value is the font's name, which
     // the stylesheet recognizes; only the label of the system font is translated.
+    var defaultFont = AdminSchemeTypography.GetDisplayName(TheAdminSchemes.DefaultFontFamily, TheAdminSchemes.Fonts);
     var fonts = TheAdminSchemes.Fonts.Append(AdminSchemeTypography.System)
         .DistinctBy(font => font.Name, StringComparer.OrdinalIgnoreCase)
         .Select(font => (Value: font.Name, Label: font.Key == AdminSchemeTypography.SystemFont ? T["System font"].Value : font.Name))
@@ -131,9 +132,10 @@
             <div class="ocat-wrapper" asp-validation-class-for="FontFamily">
                 <label asp-for="FontFamily" class="ocat-label">@T["Font"]</label>
                 <div class="ocat-end">
-                    <input asp-for="FontFamily" class="form-control" list="AdminSchemeFonts" autocomplete="off" spellcheck="false" placeholder="@AdminSchemeTypography.GetDisplayName(TheAdminSchemes.DefaultFontFamily, TheAdminSchemes.Fonts)" />
+                    @* Empty for the theme's font, which the placeholder names. *@
+                    <input asp-for="FontFamily" class="form-control" list="AdminSchemeFonts" autocomplete="off" spellcheck="false" placeholder="@defaultFont" />
                     <span asp-validation-for="FontFamily"></span>
-                    <span class="hint">@T["The font of the text. Pick one of the theme's fonts, or type the name of any font, e.g. a font installed on your users' devices, or several separated by commas."]</span>
+                    <span class="hint">@T["The font of the text. {0}, the font of the theme, when empty. Type the name of another font, e.g. a font installed on your users' devices, or several separated by commas.", defaultFont]</span>
                 </div>
             </div>
 
