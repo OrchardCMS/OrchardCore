@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using OrchardCore.Localization;
 
 namespace OrchardCore.Workflows.Activities;
@@ -34,10 +35,12 @@ public sealed class ActivityOutputDescriptor
     /// <summary>
     /// The name shown in the designer.
     /// </summary>
+    [JsonIgnore]
     public LocalizationSource DisplayName { get; init; }
 
     /// <summary>
     /// What the output is, shown under its name in the designer, or <see langword="null"/>.
     /// </summary>
+    [JsonIgnore]
     public LocalizationSource Description { get; init; }
 }

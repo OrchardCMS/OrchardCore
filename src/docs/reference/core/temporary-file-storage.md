@@ -69,7 +69,7 @@ Because `DefaultTempDirectoryProvider` uses plain `System.IO` operations, **any 
 
 === "Azure App Service / Container Apps"
 
-    Use the platform's Azure Files mount (App Service: *Configuration → Path mappings → Azure Storage Mounts*; Container Apps: an `AzureFile` volume). Then set `Path` to the platform mount path (e.g. `/mounts/octemp`). The platform manages the credentials and reconnection.
+    Use the platform's Azure Files mount (App Service: **Configuration → Path mappings → Azure Storage Mounts**; Container Apps: an `AzureFile` volume). Then set `Path` to the platform mount path (e.g. `/mounts/octemp`). The platform manages the credentials and reconnection.
 
 !!! warning
     Point `Path` at a mounted **file share**, not object storage. The temporary file consumers require real, seekable local files — for example the chunked-upload path does `Seek`/`SetLength` and reopens the same file across requests, and deployment import uses `ZipFile.ExtractToDirectory` and `PhysicalFileProvider`. Azure Files (SMB) and AWS EFS/FSx support this; Azure Blob and AWS S3 object storage do not. Resumable (TUS) uploads are the exception: they can target object storage through the `ITusTempStore` implementations in the `OrchardCore.Media.Azure` and `OrchardCore.Media.AmazonS3` features.
@@ -138,3 +138,10 @@ services.Replace(ServiceDescriptor.Singleton<ITempDirectoryProvider, MyTempDirec
 ```
 
 Any replacement must honor the same contract: return **real local filesystem paths** that support random access and directory enumeration. This is why there is no Azure Blob or AWS S3 implementation of `ITempDirectoryProvider` — those object stores cannot satisfy the path-based, seekable contract the consumers depend on. To move temporary storage to the cloud, mount a file share (Azure Files, AWS EFS/FSx) and configure `Path`, as described above.
+
+## Video
+
+This video scans uploaded files for viruses and explains where temporary files go.
+
+<!-- video:file-upload-security -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/o8fWqsPk0Ds" title="File Upload Security: Antivirus Scanning and Temporary Files" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

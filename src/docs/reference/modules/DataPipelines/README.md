@@ -50,7 +50,7 @@ Each step describes the fields it produces from the fields it receives, so the d
 
 ## Designing pipelines
 
-The **Tools** > **Data Pipelines** menu has two pages:
+The **Tools → Data Pipelines** menu has two pages:
 
 - **Pipelines** lists the pipelines, which can be searched by name. Each one shows its published version, whether it has unpublished changes or is disabled, and the status of its last run. **Edit** opens the designer, and the **Actions** menu runs the pipeline now, opens its run history, or deletes it. **Add Pipeline** creates a pipeline from its name and description, then opens the designer.
 - **Run History** lists the runs, see [Run history](#run-history).
@@ -244,7 +244,7 @@ When the timer fires more often than a run lasts, enable **Skip when a run is al
 
 ### Run history
 
-**Tools** > **Data Pipelines** > **Run History** lists the runs of every pipeline, the most recent first, with their status (queued, running, succeeded, failed or cancelled), their version, when they were queued, how long they took, and what started them and who. The runs can be searched by the name of their pipeline and filtered by status; **Run history**, in the **Actions** menu of a pipeline, lists the runs of that pipeline. The page of a run shows:
+**Tools → Data Pipelines → Run History** lists the runs of every pipeline, the most recent first, with their status (queued, running, succeeded, failed or cancelled), their version, when they were queued, how long they took, and what started them and who. The runs can be searched by the name of their pipeline and filtered by status; **Run history**, in the **Actions** menu of a pipeline, lists the runs of that pipeline. The page of a run shows:
 
 - when it was queued, started and ended, and the error that made it fail;
 - each step, with its status, the rows and files it read and wrote, and its warnings;
@@ -310,7 +310,7 @@ The Data Pipelines Core feature shares resources with users of the site through 
 - a link works until it expires, until it was used as many times as allowed, when a maximum is set, or until it is revoked. The uses are counted by the database, with one atomic update per use, so simultaneous requests never use a link more times than allowed;
 - a wrong token is answered as if the link didn't exist, so the links can't be discovered.
 
-**Tools** > **Shared Links** lists the links of every module, which can be searched by name or by what shared them, such as a pipeline, with their kind, their recipients, when they expire and how many times they were used. A link can be revoked, and deleted with its resource. A link is deleted with its resource a day after it stops working.
+**Tools → Shared Links** lists the links of every module, which can be searched by name or by what shared them, such as a pipeline, with their kind, their recipients, when they expire and how many times they were used. A link can be revoked, and deleted with its resource. A link is deleted with its resource a day after it stops working.
 
 For the **Share a download link** step, a copy of each file is kept in the `App_Data` folder of the tenant, out of the media library, and the run reports a warning naming the recipients the email couldn't be sent to, such as those without an email address. The step is available when the Email feature is enabled.
 

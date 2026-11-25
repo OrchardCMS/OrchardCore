@@ -45,6 +45,8 @@ will search both `TheAdmin` theme and `MyAdminTheme` for template alternates whe
 
 Views in `MyAdminTheme` will override views in `TheAdmin`.
 
+To build on the look the admin had before admin schemes, use `BaseTheme = "TheOldAdmin"` instead: see [TheOldAdmin](../../reference/themes/admin-theme.md#theoldadmin).
+
 ## Enabling your custom admin theme
 
 From the root of the folder containing both projects, run this command:
@@ -66,7 +68,7 @@ Open a browser on <https://localhost:5001>
 
 Enter the Admin section by opening <https://localhost:5001/admin> and logging in.
 
-Using the left menu, go to _Design -> Themes_, search for your theme, **MyAdminTheme**, and select **Make Current**.
+Using the left menu, go to **Design → Themes**, search for your theme, **MyAdminTheme**, and select **Make Current**.
 
 Now your admin theme is enabled.
 
@@ -75,3 +77,10 @@ From here you can create templates, or use `placement.json` to alter shapes rend
 ## Summary
 
 You just learned how to create a custom admin theme.
+
+## Video
+
+This video creates an admin theme to restyle the admin.
+
+<!-- video:admin-theme-create -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/ht6M2TWKLaU" title="Create an Admin Theme: Restyle the Admin" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

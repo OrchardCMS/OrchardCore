@@ -1,11 +1,21 @@
-.with-checkbox .list-group-item {
-    padding: 0.75rem 0.5rem;
+// List groups take the surface, the borders and the inner padding of every surface.
+.list-group {
+    --bs-list-group-bg: var(--ta-surface);
+    --bs-list-group-border-color: var(--ta-border);
+    --bs-list-group-border-radius: var(--ta-radius);
+    --bs-list-group-action-hover-bg: var(--ta-row-hover-bg);
+    --bs-list-group-item-padding-y: var(--ta-row-padding-y);
+    --bs-list-group-item-padding-x: var(--ta-surface-padding-x);
+}
+
+.list-group-item {
+    transition: background-color 0.15s ease-in-out;
 }
 
 .list-group .first-child-visible {
     border-top: var(--bs-border-width) solid var(--bs-border-color) !important;
-    border-top-left-radius: var(--bs-border-radius) !important;
-    border-top-right-radius: var(--bs-border-radius) !important;
+    border-top-left-radius: var(--ta-radius) !important;
+    border-top-right-radius: var(--ta-radius) !important;
 }
 
 /*
@@ -21,8 +31,8 @@
 
 .list-group .last-child-visible {
     border-bottom: var(--bs-border-width) solid var(--bs-border-color) !important;
-    border-bottom-left-radius: var(--bs-border-radius) !important;
-    border-bottom-right-radius: var(--bs-border-radius) !important;
+    border-bottom-left-radius: var(--ta-radius) !important;
+    border-bottom-right-radius: var(--ta-radius) !important;
 }
 
 /*

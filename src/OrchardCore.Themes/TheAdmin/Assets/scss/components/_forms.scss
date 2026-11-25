@@ -1,16 +1,22 @@
-@import '../mixins/_word-wrap';
-@import '../../../../../../node_modules/bootstrap/scss/mixins/_border-radius';
 
-.hint {
-    font-size: 0.875em;
-    color: var(--bs-secondary-color) !important;
+// Help text under a field: the secondary size and color, everywhere.
+@use 'sass:string';
+@use '../mixins/word-wrap' as *;
+@use '../config' as *;
+
+.hint,
+.form-text {
+    font-size: var(--ta-font-size-sm);
+    color: var(--ta-muted) !important;
     @include word-wrap;
 }
 
 .hint,
 .text-muted {
     &.dashed::before {
-        content: '\2014\00a0';
+        // Written as escapes and unquoted, so that Sass keeps them as escapes: the stylesheet stays ASCII, Sass emits no
+        // @charset, and its /*! credit comment comes first, where the minifier keeps it.
+        content: string.unquote("'\\2014\\00a0'");
     }
 }
 
@@ -20,16 +26,48 @@
     font-size: $code-font-size;
     padding: $kbd-padding-y $kbd-padding-x;
     color: $pre-color;
-    @include border-radius($border-radius);
+    border-radius: $border-radius;
+}
+
+// Labels (Orchard Core's '.ocat-label' and Bootstrap's) are set apart from the values by their color alone, at the
+// regular weight and the body size; the text of a check box keeps the body color, as it reads as a sentence.
+.ocat-label,
+.form-label,
+.col-form-label {
+    font-size: var(--ta-font-size-md);
+    font-weight: var(--ta-font-weight-normal);
+    color: var(--ta-label);
 }
 
 .form-label {
     margin-bottom: 0.25rem;
 }
 
+// A group of radio buttons or check boxes is a fieldset, labelled by its legend, which reads as a label.
+legend.ocat-label {
+    float: none;
+    width: auto;
+    margin-bottom: 0;
+    padding: 0;
+    line-height: inherit;
+}
+
+.input-group-text {
+    border-color: var(--ta-control-border);
+    background-color: var(--ta-surface-muted);
+    color: var(--ta-muted);
+}
+
+// An input group whose validation message follows its last control, without Bootstrap's 'has-validation' class:
+// Bootstrap squares the end of that control because it is not the last child. Round it back.
+.input-group:not(.has-validation) > :not(:last-child):not(.dropdown-menu):has(+ [data-valmsg-for]:last-child) {
+    border-start-end-radius: var(--bs-border-radius) !important;
+    border-end-end-radius: var(--bs-border-radius) !important;
+}
+
 .label-link {
     float: right;
-    font-size: 12px;
+    font-size: var(--ta-font-size-xs);
 }
 
 .form-control:disabled, .form-control[readonly] {
@@ -45,10 +83,6 @@ label .field-validation-error::before {
 label.input-required:after {
     color: var(--bs-danger-text-emphasis);
     content: " *"
-}
-
-.button {
-    @extend .btn, .btn-primary !optional;
 }
 
 input[type="password"]::-ms-reveal,
@@ -89,7 +123,7 @@ input[type="password"]::-ms-clear {
     transform: translateY(-50%);
     text-align: center;
     pointer-events: none;
-    color: var(--bs-secondary);
+    color: var(--ta-muted);
 }
 
 .has-filter .form-control-feedback {
@@ -110,7 +144,7 @@ input[type="password"]::-ms-clear {
 }
 
 .has-filter .btn:not(.show) {
-    border-color: var(--bs-border-color) !important;
+    border-color: var(--ta-control-border) !important;
 }
 
 // The magnifier is positioned over the input, so the input is never the input group's first child and

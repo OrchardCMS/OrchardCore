@@ -1,0 +1,9 @@
+@model ShapeViewModel<DataPipelineEntry>
+
+@{
+    var pipeline = Model.Value.Pipeline;
+}
+
+
+@* Plain link, like the title of a content item in the Manage Content list. *@
+<a asp-controller="Admin" asp-action="Edit" asp-route-pipelineId="@pipeline.PipelineId">@pipeline.Name</a>

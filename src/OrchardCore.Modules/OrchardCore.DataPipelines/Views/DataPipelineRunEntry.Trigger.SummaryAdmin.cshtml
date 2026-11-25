@@ -1,0 +1,8 @@
+@model ShapeViewModel<DataPipelineRunEntry>
+
+@{
+    var run = Model.Value.Run;
+}
+
+
+<span class="badge ta-badge fw-normal" title="@T["Started by"]"><i class="fa-solid fa-play text-secondary" aria-hidden="true"></i> @run.Trigger@(string.IsNullOrEmpty(run.TriggeredBy) ? string.Empty : " · " + run.TriggeredBy)</span>

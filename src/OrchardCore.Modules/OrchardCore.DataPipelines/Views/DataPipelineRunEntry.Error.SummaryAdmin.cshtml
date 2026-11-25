@@ -1,0 +1,10 @@
+@model ShapeViewModel<DataPipelineRunEntry>
+
+@{
+    var run = Model.Value.Run;
+}
+
+
+<div class="admin-list-secondary text-danger text-truncate" title="@run.Error">
+    <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> @run.Error
+</div>

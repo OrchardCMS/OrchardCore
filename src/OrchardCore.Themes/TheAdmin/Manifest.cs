@@ -10,6 +10,7 @@ using OrchardCore.Modules.Manifest;
     Dependencies =
     [
         "OrchardCore.Themes",
+        "OrchardCore.Recipes.Core",
     ],
     Tags =
     [

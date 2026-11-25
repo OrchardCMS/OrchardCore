@@ -6,7 +6,7 @@ Rules are infrastructure. The module does not provide a standalone admin screen 
 
 ## Enable the module
 
-Enable **Rules** from **Tool** > **Features** in the admin. Enabling a feature that depends on `OrchardCore.Rules`, such as Layers, enables it automatically.
+Enable **Rules** from **Tools → Features** in the admin. Enabling a feature that depends on `OrchardCore.Rules`, such as Layers, enables it automatically.
 
 The Rules feature depends on `OrchardCore.Scripting` so that JavaScript conditions can use the scripting infrastructure.
 
@@ -410,3 +410,8 @@ Grant a role the `ManageLayers` permission. The Rules feature itself has no mana
 ## Video
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/Iq6VbXZg0B0" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video writes the rule conditions that decide when a layer shows.
+
+<!-- video:rules-conditions -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/hBkhnyMqNW8" title="Rules: Conditions That Decide When a Layer Shows" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

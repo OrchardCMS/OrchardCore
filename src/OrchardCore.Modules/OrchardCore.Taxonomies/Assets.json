@@ -6,12 +6,6 @@
     "tags": ["admin", "dashboard", "css"]
   },
   {
-    "action": "sass",
-    "name": "taxonomies-tags-editor",
-    "source": "Assets/scss/tags-editor.scss",
-    "tags": ["admin", "dashboard", "css"]
-  },
-  {
     "action": "parcel",
     "name": "taxonomies-menu",
     "source": "Assets/ts/menu.ts",

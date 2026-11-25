@@ -1,0 +1,241 @@
+@using System.Globalization
+@using Microsoft.AspNetCore.Mvc.Localization
+@using OrchardCore.DisplayManagement
+@using OrchardCore.Themes.TheAdmin.Controllers
+@model AdminSchemeViewModel
+
+@{
+    var title = Model.IsNew ? T["Add scheme"] : T["Edit scheme"];
+    var colors = new[]
+    {
+        (Name: nameof(Model.Primary), Label: T["Primary"], Value: Model.Primary, Hint: T["Buttons, links and the current page of the menu."]),
+        (Name: nameof(Model.Deep), Label: T["Deep"], Value: Model.Deep, Hint: T["Headings and the top of the menu. The tint of the page, borders and dark mode surfaces is taken from it."]),
+        (Name: nameof(Model.Ink), Label: T["Ink"], Value: Model.Ink, Hint: T["The bottom of the menu, the darkest surface."]),
+        (Name: nameof(Model.Accent), Label: T["Accent"], Value: Model.Accent, Hint: T["Links and highlights on dark surfaces, in the menu and in dark mode."]),
+    };
+    var optionalColors = new[]
+    {
+        (Name: nameof(Model.OnPrimary), Label: T["Text on primary"], Value: Model.OnPrimary, Hint: T["The text of buttons and of the current page. White, or a dark color on a light primary, when empty."]),
+        (Name: nameof(Model.Page), Label: T["Page"], Value: Model.Page, Hint: T["The page in light mode. A pale tone of the hue when empty."]),
+        (Name: nameof(Model.Toolbar), Label: T["List toolbar"], Value: Model.Toolbar, Hint: T["The bar above the records of a list. The primary when empty."]),
+        (Name: nameof(Model.Tint), Label: T["Page tint"], Value: Model.Tint, Hint: T["The color of both ends of the page's gradient in light mode. The primary and the accent when empty."]),
+        (Name: nameof(Model.TintDark), Label: T["Dark page tint"], Value: Model.TintDark, Hint: T["The color of both ends of the page's gradient in dark mode. The accent and the primary when empty."]),
+    };
+
+    // The fonts the theme ships, which the font fields suggest with the system font. The value is the font's name, which
+    // the stylesheet recognizes; only the label of the system font is translated.
+    var defaultFont = AdminSchemeTypography.GetDisplayName(TheAdminSchemes.DefaultFontFamily, TheAdminSchemes.Fonts);
+    var fonts = TheAdminSchemes.Fonts.Append(AdminSchemeTypography.System)
+        .DistinctBy(font => font.Name, StringComparer.OrdinalIgnoreCase)
+        .Select(font => (Value: font.Name, Label: font.Key == AdminSchemeTypography.SystemFont ? T["System font"].Value : font.Name))
+        .ToArray();
+
+    // The steps of each scale. A value set elsewhere (a recipe, say) that is not one of them is offered too, so saving
+    // the form keeps it.
+    var fontScales = AdminSchemeTypography.FontScales
+        .Select(scale => (Value: scale, Label: T["{0} px", (16 * scale).ToString("0.##", CultureInfo.CurrentCulture)]))
+        .ToList();
+    var radiusScales = new List<(double Value, LocalizedHtmlString Label)>
+    {
+        (0, T["Square"]),
+        (0.5, T["Subtle"]),
+        (1, T["Default"]),
+        (1.5, T["Round"]),
+    };
+    var densities = new List<(double Value, LocalizedHtmlString Label)>
+    {
+        (0.75, T["Compact"]),
+        (1, T["Default"]),
+        (1.25, T["Comfortable"]),
+    };
+
+    foreach (var (steps, value) in new[] { (fontScales, Model.FontScale), (radiusScales, Model.RadiusScale), (densities, Model.Density) })
+    {
+        if (!steps.Any(step => Math.Abs(step.Value - value) < 0.0001))
+        {
+            steps.Add((value, T["Custom ({0})", value.ToString("0.####", CultureInfo.CurrentCulture)]));
+        }
+    }
+
+    var scales = new[]
+    {
+        (Name: nameof(Model.FontScale), Label: T["Font size"], Value: Model.FontScale, Steps: fontScales, Hint: T["The base size of the text. Headings, labels and controls follow it."]),
+        (Name: nameof(Model.RadiusScale), Label: T["Corners"], Value: Model.RadiusScale, Steps: radiusScales, Hint: T["How round the corners of cards, buttons and fields are."]),
+        (Name: nameof(Model.Density), Label: T["Density"], Value: Model.Density, Steps: densities, Hint: T["How much space controls and the rows of lists take. Compact fits more on a page."]),
+    };
+
+    // A small admin page, light and dark, drawn with the rules of the scheme being edited.
+    IShape preview = await New.AdminSchemePreview(SchemeId: SchemesController.PreviewSchemeId);
+
+    // The rows built in loops name their field at run time, so their errors are read from the model state by that name:
+    // asp-validation-for and asp-validation-class-for take an expression, which would name 'color.Name' instead.
+    string ErrorClass(string name)
+        => ViewData.ModelState.TryGetValue(name, out var entry) && entry.Errors.Count > 0 ? "has-validation-error is-invalid" : null;
+}
+
+<zone Name="Title">
+    <breadcrumb name="AdminSchemesEdit" title="@title">
+        <breadcrumb-item id="Themes" action="Index" controller="Admin" area="OrchardCore.Themes">@T["Themes"]</breadcrumb-item>
+        <breadcrumb-item id="AdminSchemes" action="Index" controller="Schemes" area="TheAdmin">@T["Admin schemes"]</breadcrumb-item>
+    </breadcrumb>
+</zone>
+
+<form asp-action="@(Model.IsNew ? "Create" : "Edit")" asp-route-id="@Model.Id" method="post" class="no-multisubmit"
+      data-admin-scheme-editor data-preview-url="@Url.Action("Preview")">
+    <div asp-validation-summary="ModelOnly"></div>
+
+    <div class="card mb-3">
+        <div class="card-header">@T["Scheme"]</div>
+        <div class="card-body">
+            <div class="ocat-wrapper" asp-validation-class-for="Name">
+                <label asp-for="Name" class="ocat-label ocat-label-required">@T["Name"]</label>
+                <div class="ocat-end">
+                    <input asp-for="Name" class="form-control" autofocus />
+                    <span asp-validation-for="Name"></span>
+                    <span class="hint">@T["The name users see in the scheme picker."]</span>
+                </div>
+            </div>
+
+            @foreach (var color in colors)
+            {
+                <div class="ocat-wrapper @ErrorClass(color.Name)">
+                    <label for="@color.Name" class="ocat-label ocat-label-required">@color.Label</label>
+                    <div class="ocat-end">
+                        <div class="ta-color-field">
+                            <input type="color" class="form-control form-control-color" value="@color.Value" data-scheme-color-picker="@color.Name" aria-label="@T["Pick the {0} color", color.Label.Value]" />
+                            <input type="text" id="@color.Name" name="@color.Name" class="form-control" value="@color.Value" maxlength="7" spellcheck="false" autocomplete="off" data-scheme-color-hex="@color.Name" pattern="^#[0-9a-fA-F]{6}$" required />
+                        </div>
+                        @Html.ValidationMessage(color.Name)
+                        <span class="hint">@color.Hint</span>
+                    </div>
+                </div>
+            }
+
+            <div class="ocat-wrapper">
+                <div class="ocat-end-offset">
+                    <div class="form-check">
+                        <input asp-for="LightMenu" class="form-check-input" type="checkbox" />
+                        <label asp-for="LightMenu" class="form-check-label">@T["Light menu"]</label>
+                        <span class="hint dashed">@T["A light gray menu with dark text in light mode. The menu is always dark in dark mode."]</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header">@T["Typography and shape"]</div>
+        <div class="card-body">
+            @* The fonts are typed, so a scheme can name any font: the theme's suggested ones, or a system font. *@
+            <datalist id="AdminSchemeFonts">
+                @foreach (var font in fonts)
+                {
+                    <option value="@font.Value" label="@font.Label"></option>
+                }
+            </datalist>
+
+            <div class="ocat-wrapper" asp-validation-class-for="FontFamily">
+                <label asp-for="FontFamily" class="ocat-label">@T["Font"]</label>
+                <div class="ocat-end">
+                    @* Empty for the theme's font, which the placeholder names. *@
+                    <input asp-for="FontFamily" class="form-control" list="AdminSchemeFonts" autocomplete="off" spellcheck="false" placeholder="@defaultFont" />
+                    <span asp-validation-for="FontFamily"></span>
+                    <span class="hint">@T["The font of the text. {0}, the font of the theme, when empty. Type the name of another font, e.g. a font installed on your users' devices, or several separated by commas.", defaultFont]</span>
+                </div>
+            </div>
+
+            <div class="ocat-wrapper" asp-validation-class-for="HeadingFontFamily">
+                <label asp-for="HeadingFontFamily" class="ocat-label">@T["Heading font"]</label>
+                <div class="ocat-end">
+                    <input asp-for="HeadingFontFamily" class="form-control" list="AdminSchemeFonts" autocomplete="off" spellcheck="false" placeholder="@T["Same as the text"]" />
+                    <span asp-validation-for="HeadingFontFamily"></span>
+                    <span class="hint">@T["The font of page titles and headings. The font of the text when empty."]</span>
+                </div>
+            </div>
+
+            @foreach (var scale in scales)
+            {
+                <div class="ocat-wrapper @ErrorClass(scale.Name)">
+                    <label for="@scale.Name" class="ocat-label">@scale.Label</label>
+                    <div class="ocat-end">
+                        <select id="@scale.Name" name="@scale.Name" class="form-select">
+                            @foreach (var step in scale.Steps)
+                            {
+                                @* The value in the culture of the request, as the form posts are bound. *@
+                                <option value="@step.Value.ToString(CultureInfo.CurrentCulture)" selected="@(Math.Abs(step.Value - scale.Value) < 0.0001)">@step.Label</option>
+                            }
+                        </select>
+                        @Html.ValidationMessage(scale.Name)
+                        <span class="hint">@scale.Hint</span>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header">@T["Advanced"]</div>
+        <div class="card-body">
+            <p class="hint">@T["Leave a setting empty to work it out from the four colors."]</p>
+
+            <div class="ocat-wrapper" asp-validation-class-for="Hue">
+                <label asp-for="Hue" class="ocat-label">@T["Surface hue"]</label>
+                <div class="ocat-end">
+                    @* Text, not a number input: a number input posts '0.5' whatever the culture, but the form is bound in
+                       the culture of the request (as the scales are), which writes '0,5' in some. *@
+                    <input asp-for="Hue" class="form-control" type="text" inputmode="decimal" autocomplete="off" />
+                    <span asp-validation-for="Hue"></span>
+                    <span class="hint">@T["The hue of the page, borders and dark mode surfaces, from 0 to 360. The deep color's when empty."]</span>
+                </div>
+            </div>
+
+            <div class="ocat-wrapper" asp-validation-class-for="Saturation">
+                <label asp-for="Saturation" class="ocat-label">@T["Surface saturation"]</label>
+                <div class="ocat-end">
+                    <input asp-for="Saturation" class="form-control" type="text" inputmode="decimal" autocomplete="off" />
+                    <span asp-validation-for="Saturation"></span>
+                    <span class="hint">@T["How colorful those surfaces are, from 0 (gray) to 1. Worked out from the deep color when empty."]</span>
+                </div>
+            </div>
+
+            @foreach (var color in optionalColors)
+            {
+                <div class="ocat-wrapper @ErrorClass(color.Name)">
+                    <label for="@color.Name" class="ocat-label">@color.Label</label>
+                    <div class="ocat-end">
+                        <div class="ta-color-field">
+                            <input type="color" class="form-control form-control-color" value="@(string.IsNullOrEmpty(color.Value) ? "#ffffff" : color.Value)" data-scheme-color-picker="@color.Name" aria-label="@T["Pick the {0} color", color.Label.Value]" />
+                            <input type="text" id="@color.Name" name="@color.Name" class="form-control" value="@color.Value" maxlength="7" spellcheck="false" autocomplete="off" data-scheme-color-hex="@color.Name" pattern="^(#[0-9a-fA-F]{6})?$" placeholder="@T["Automatic"]" />
+                        </div>
+                        @Html.ValidationMessage(color.Name)
+                        <span class="hint">@color.Hint</span>
+                    </div>
+                </div>
+            }
+
+            <div class="ocat-wrapper" asp-validation-class-for="Position">
+                <label asp-for="Position" class="ocat-label">@T["Position"]</label>
+                <div class="ocat-end">
+                    <input asp-for="Position" class="form-control" type="number" min="0" step="1" />
+                    <span asp-validation-for="Position"></span>
+                    <span class="hint">@T["Where the scheme sits in the pickers, lowest first."]</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header">@T["Preview"]</div>
+        <div class="card-body">
+            <p class="hint">@T["Where a color would be too faint for its text, the theme deepens it; the preview shows the result."]</p>
+            @await DisplayAsync(preview)
+        </div>
+    </div>
+
+    <div class="action-bar-bottom">
+        <a asp-action="Index" class="btn btn-secondary cancel" role="button">@T["Cancel"]</a>
+        <button type="submit" class="btn btn-primary save">@T["Save"]</button>
+    </div>
+</form>
+
+<script asp-name="admin-scheme-editor" at="Foot"></script>

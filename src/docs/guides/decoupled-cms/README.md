@@ -314,7 +314,7 @@ Even though we can load blog posts from their Content Item Id, this is not user 
 
 In Orchard Core CMS the __Alias Part__ allows to provide a custom user friendly text to identify a content item.
 
-- In the admin section of the site, open __Design__ > __Content Definition__ > __Content Types__ > __Blog Post__
+- In the admin section of the site, open **Design → Content Definition → Content Types → Blog Post**
 - At the bottom of the page, select __Add Parts__
 - Select __Alias__ and click __Save__
 - Move __Alias__ under __Title__ and save

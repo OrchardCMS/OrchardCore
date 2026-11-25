@@ -284,7 +284,7 @@ With string localization, no formatting is applied when no arguments are supplie
 !!! warning
     Use HTML localization only for trusted translation markup. It does not encode the translation itself. For plain labels, permission descriptions, attributes, and other text, use string localization and retain the rendering layer's encoding.
 
-`System.Text.Json` serializes a `LocalizationSource` as its `Value` only, for example `"Manage widgets"`, with the `LocalizationSourceJsonConverter` of `OrchardCore.Json.Serialization`. The source type is not written, and a source read back from JSON has no source type, because creating a type from a name read from a document isn't safe. Don't persist a source that must keep its PO context: read it from code, for example from a property override marked with `[JsonIgnore]`.
+A `LocalizationSource` is a static declaration owned by code, not data, so it is never serialized or deserialized: its source type can't be serialized, and creating a type from a name read from a document isn't safe. The serializers of Orchard Core enforce this in the JSON contract: the documents saved by YesSql, `JOptions`, MVC and SignalR remove every property that holds a `LocalizationSource`, or an array, a collection or a dictionary of sources, with `LocalizationSourceJsonModifier` of `OrchardCore.Json.Serialization`, so it is neither written nor read, even from a document that still has the value. Add the same exclusion to your own `JsonSerializerOptions` with `options.IgnoreLocalizationSources()` from `OrchardCore.Json.Extensions`. Also mark every instance property of this type with `[JsonIgnore]`, for example on a descriptor, a deployment step or a model, so it stays out of any other serializer. `System.Text.Json` doesn't apply the attribute of a base property to an override, so repeat `[JsonIgnore]` on each override. Static properties are not serialized and don't need it. Read the source from code instead of persisting it.
 
 ### Sharing `LocalizationSource` instances
 
@@ -674,6 +674,16 @@ For more information on using locaization filters in Liquid templates, see the [
 ## Video
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/cwKa1OA48-4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video takes a tour of the admin: its menu, its search and its main screens.
+
+<!-- video:admin-tour -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/hQPLynQAPeY" title="The Admin: Find Your Way Around Orchard Core" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video creates an admin theme to restyle the admin.
+
+<!-- video:admin-theme-create -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/ht6M2TWKLaU" title="Create an Admin Theme: Restyle the Admin" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ## Recipe Configuration
 

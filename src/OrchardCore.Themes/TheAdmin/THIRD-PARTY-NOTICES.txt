@@ -1,0 +1,84 @@
+The Admin theme (TheAdmin) of Orchard Core
+Third-party notices
+
+The Admin theme is licensed under the BSD 3-Clause License, as the rest of Orchard Core
+(https://github.com/OrchardCMS/OrchardCore/blob/main/LICENSE). It includes the works below, which keep their own
+copyright and license terms.
+
+===============================================================================
+Lato
+===============================================================================
+
+Files:   wwwroot/fonts/lato-*.woff2, served at ~/TheAdmin/fonts/
+         (the Latin and Latin Extended subsets of Lato 1.104, as distributed by the @fontsource/lato npm package)
+License: SIL Open Font License, Version 1.1 (OFL-1.1)
+
+Copyright (c) 2010-2011 by tyPoland Lukasz Dziedzic (team@latofonts.com) with Reserved Font Name "Lato".
+Licensed under the SIL Open Font License, Version 1.1.
+
+The full copyright notices and the text of the license are in wwwroot/fonts/lato-LICENSE.txt, served at
+~/TheAdmin/fonts/lato-LICENSE.txt, and are embedded in the metadata of each font file. The fonts are licensed under
+the SIL Open Font License only: the BSD 3-Clause License of the theme does not apply to them.
+
+===============================================================================
+Bootstrap
+===============================================================================
+
+Files:   wwwroot/css/TheAdmin.css, wwwroot/css/login.css (and their .min.css), and the stylesheet of the admin schemes
+         that the theme writes at run time (~/TheAdmin/schemes.css)
+License: MIT
+
+The theme's stylesheets reuse the artwork of Bootstrap v5.3.8 (https://getbootstrap.com/): the SVG icons of checked
+and indeterminate check boxes, radio buttons, switches and invalid fields, drawn in the theme's colors.
+
+The MIT License (MIT)
+
+Copyright (c) 2011-2025 The Bootstrap Authors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+===============================================================================
+js-cookie
+===============================================================================
+
+Files:   wwwroot/js/theadmin/TheAdmin.js and wwwroot/js/theadmin-main/TheAdmin-main.js (and their .min.js), which
+         bundle js-cookie v3.0.5 (https://github.com/js-cookie/js-cookie) to keep the admin preferences of each user
+License: MIT
+
+MIT License
+
+Copyright (c) 2018 Copyright 2018 Klaus Hartl, Fagner Brack, GitHub Contributors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

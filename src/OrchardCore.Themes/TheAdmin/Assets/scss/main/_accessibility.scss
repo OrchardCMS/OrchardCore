@@ -1,0 +1,38 @@
+// ---------------------------------------------------------------------------
+// Accessibility (WCAG 2.2 AA) beyond color, which _schemes.scss checks.
+// ---------------------------------------------------------------------------
+
+// 2.4.1 Bypass blocks: the first stop of the keyboard skips the menu and the top bar.
+.ta-skip-link {
+    position: fixed;
+    top: 0.5rem;
+    inset-inline-start: 0.5rem;
+    z-index: calc(var(--ta-sidebar-zindex) + 10);
+    padding: 0.625rem 1rem;
+    border-radius: var(--bs-border-radius);
+    background-color: var(--ta-surface);
+    color: var(--ta-link);
+    font-weight: var(--ta-font-weight-strong);
+    box-shadow: var(--ta-shadow-lg);
+
+    &:focus-visible {
+        outline: 2px solid var(--ta-focus-color);
+        outline-offset: 2px;
+    }
+}
+
+// 2.4.11 Focus not obscured: a field reached with the keyboard is scrolled clear of the fixed top bar.
+html:has(body.ta-admin) {
+    scroll-padding-top: calc(var(--oc-top-nav-height) + 1rem);
+}
+
+// 2.3.3 / user preference: no transitions for people who ask for less motion.
+@media (prefers-reduced-motion: reduce) {
+    .ta-admin *,
+    .ta-admin *::before,
+    .ta-admin *::after {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}

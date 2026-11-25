@@ -1,0 +1,8 @@
+@model ShapeViewModel<DataPipelineRunEntry>
+
+@{
+    var run = Model.Value.Run;
+}
+
+
+<span class="badge ta-badge fw-normal" title="@T["The version that ran"]"><i class="fa-solid fa-code-branch text-secondary" aria-hidden="true"></i> @T["Version {0}", run.VersionNumber]</span>

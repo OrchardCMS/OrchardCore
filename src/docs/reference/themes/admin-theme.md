@@ -188,6 +188,119 @@ If the part or field is a named part, also append the named-part-specific class:
 
 These classes enable targeted styling of specific content type editors without relying on C# helper extensions.
 
+## Admin Schemes
+
+The look of **TheAdmin** comes from a scheme: its colors, typefaces, base font size, density and corners. Admins manage the schemes from the **Schemes** button of TheAdmin's card on **Design > Themes** (they need the `ApplyTheme` permission). The default scheme is set with the **Set as default** action of the list and shown with a **Default** badge; it can't be deleted. Each user can pick another scheme from the theme menu of the top bar, under the light and dark modes, where the default scheme is marked "(default)": picking it follows the site's choice again. A user's pick is kept in a `{tenant}-TheAdmin-scheme` cookie.
+
+A scheme is made of four colors, from which every other color of the admin is derived for the light and the dark mode, each checked against the surfaces it is drawn on so that text reaches 4.5:1 and the boundaries of controls and focus indicators 3:1 (WCAG 2.2 AA):
+
+| Color | Used for |
+|-------|----------|
+| Primary | Buttons, links, the current page of the menu, checked boxes, the toolbar of lists |
+| Deep | Headings, and the top of the menu |
+| Ink | The bottom of the menu, the darkest surface |
+| Accent | Links and highlights on dark surfaces |
+
+Optional settings fine tune what is derived: the hue and saturation of the page, borders and dark mode surfaces, a light menu (light gray with dark text), the color of text on the primary, the page color, the toolbar color and the page gradient. A second group sets the typography and shape:
+
+| Setting | Values | CSS custom property |
+|---------|--------|---------------------|
+| Font | Lato (the default), System font, or any font typed by name | `--ta-font-family` |
+| Heading font | The same, or the font of the text when empty | `--ta-heading-font-family` |
+| Base font size | 14 px to 18 px, as a share of the browser's own size | `--ta-font-scale` |
+| Density | Compact, Default, Comfortable | `--ta-density` |
+| Corners | Square, Subtle, Default, Round | `--ta-radius-scale` |
+
+The fonts are typed, with the theme's font suggested. Lato is served by the theme, and the admin never calls a font CDN; any other font, e.g. `Segoe UI` or `Georgia, serif`, must be installed on the users' devices.
+
+Lato is licensed under the SIL Open Font License 1.1, whose text the theme serves at `~/TheAdmin/fonts/lato-LICENSE.txt`, while the rest of the theme is under the BSD 3-Clause License. The theme's package declares both (`BSD-3-Clause AND OFL-1.1`), and its `THIRD-PARTY-NOTICES.txt` credits Lato, Bootstrap, whose check box, radio button, switch and invalid field icons the theme's stylesheets and the schemes stylesheet draw in the scheme's colors, and js-cookie (MIT), which the theme's scripts bundle.
+
+TheAdmin starts with seven schemes (Gray, the default, which keeps the colors of the previous TheAdmin, Blue, Ocean, Forest, Plum, Sunset and Graphite). A migration of the theme imports them, and makes Gray the default scheme, from its `Migrations/admin-schemes.recipe.json` recipe: when the theme is enabled during the setup of a site, or on the first start of an existing site after the upgrade. They are ordinary records from then on, and they are imported once: deleting them doesn't bring them back. If no scheme is left at all, the admin falls back to Gray.
+
+Schemes are exported with the **Admin schemes** deployment step and imported with the `AdminSchemes` recipe step. An entry whose `ItemId` matches a stored scheme replaces it; any other is added. The optional `DefaultSchemeId` makes a scheme the default one.
+
+```json
+{
+  "steps": [
+    {
+      "name": "AdminSchemes",
+      "Schemes": [
+        {
+          "ItemId": "harbor",
+          "Name": "Harbor",
+          "Primary": "#1f6f8b",
+          "Deep": "#123c4c",
+          "Ink": "#081a21",
+          "Accent": "#5bc0de",
+          "FontFamily": "Georgia, serif",
+          "FontScale": 1,
+          "Density": 1,
+          "RadiusScale": 1
+        }
+      ],
+      "DefaultSchemeId": "harbor"
+    }
+  ]
+}
+```
+
+| Property | Description |
+|----------|-------------|
+| `ItemId` | Optional. The id of the scheme: lowercase letters, digits and dashes, starting with a letter. A new id is given when it is empty. |
+| `Name` | Required. The name shown in the pickers. |
+| `Primary`, `Deep`, `Ink`, `Accent` | Required. `#rrggbb` colors. |
+| `Position` | Optional. The place of the scheme in the pickers; after the others when empty. |
+| `LightMenu` | Optional. `true` for a light gray menu with dark text. |
+| `Hue`, `Saturation` | Optional. The hue (0 to 360) and saturation (0 to 1) of the page, borders and dark mode surfaces. |
+| `OnPrimary`, `Page`, `Toolbar`, `Tint`, `TintDark` | Optional. `#rrggbb` colors of the text on the primary, the page, the toolbar of lists and the page gradient in light and dark mode. |
+| `FontFamily`, `HeadingFontFamily` | Optional. `lato`, `system`, or any font families separated by commas (e.g. `Georgia, serif`). An empty `HeadingFontFamily` uses the body font. |
+| `FontScale`, `RadiusScale`, `Density` | Optional. 0.875 to 1.125, 0 to 1.5, and 0.75 to 1.25. |
+
+The schemes are served as one stylesheet, `~/TheAdmin/schemes.css`, built once per change and versioned by a short hash of its text.
+
+### Design Tokens
+
+Every component of the theme reads the same tokens, so a theme that depends on **TheAdmin** can restyle the admin by overriding them, without rebuilding its stylesheets:
+
+| Tokens | Purpose |
+|--------|---------|
+| `--ta-font-size-xs`, `-sm`, `-md`, `-lg`, `-xl`, `-page-title` | The type scale. Body text, fields and buttons are `md`; hints, column headers, breadcrumbs, metadata and the items of the menu are `sm`; badges are `xs`. |
+| `--ta-surface-padding-x`, `--ta-surface-padding-y`, `--ta-row-padding-y` | The padding inside every surface: card bodies and headers, list rows and toolbars, table cells, tab panes, alerts. |
+| `--ta-stack-gap`, `--ta-content-padding-x` | The space between the surfaces of a page, and around the page. |
+| `--ta-radius-sm`, `--ta-radius-md`, `--ta-radius`, `--ta-radius-lg` | The corners, from fields and buttons to cards and dialogs. |
+| `--ta-primary`, `--ta-link`, `--ta-heading`, `--ta-label`, `--ta-muted`, `--ta-border`, `--ta-control-border`, `--ta-page-bg`, `--ta-surface`, `--ta-toolbar-bg`, `--ta-row-hover-bg`, `--ta-menu-*` | The colors of the scheme. Bootstrap's own variables (`--bs-primary`, `--bs-link-color`, `--bs-border-color`, `--bs-secondary-color`...) read them. |
+
+## TheOldAdmin
+
+**The Old Admin Theme** (`TheOldAdmin`) is a separate admin theme with the look TheAdmin had before admin schemes: its menu, top bar, lists, forms and log in pages, with Bootstrap's colors and a light and dark mode. It is for sites that need to keep that look, for example a site whose custom admin views or admin theme were styled against it. It is part of the `OrchardCore.Application.Cms.Core.Targets` package, like TheAdmin, and works like any other admin theme.
+
+To use it, make it the current admin theme on **Design > Themes**, or set it in the `themes` step of a recipe, and enable it in the `feature` step:
+
+```json
+{
+  "steps": [
+    {
+      "name": "feature",
+      "enable": [
+        "TheOldAdmin"
+      ]
+    },
+    {
+      "name": "themes",
+      "admin": "TheOldAdmin"
+    }
+  ]
+}
+```
+
+An admin theme can build on it with `BaseTheme = "TheOldAdmin"` in its manifest, the same way as on TheAdmin (see [Creating an Admin Theme](../../guides/create-admin-theme/README.md)). Its templates have the same shape names as TheAdmin's, so a template that overrides one of TheAdmin's overrides it in TheOldAdmin too.
+
+TheOldAdmin keeps the views and stylesheets TheAdmin had before admin schemes, and changes to TheAdmin don't apply to it:
+
+- It has no admin schemes: no **Schemes** button on its card, no scheme picker in its theme menu, and no `--ta-*` design tokens. The theme menu offers the **Auto**, **Light** and **Dark** modes.
+- Its resources have names of their own, so both themes can be enabled together: the scripts `the-old-admin` and `the-old-admin-main` and the style `the-old-admin`, served from `~/TheOldAdmin/`. A view that asks for TheAdmin's resources (`the-admin`, `admin-main`) or links to `~/TheAdmin/` files gets TheAdmin's.
+- The admin pages of the modules are shared by both themes. Where a page uses markup styled by TheAdmin only, such as the icon tile of the dashboard cards, TheOldAdmin shows it with Bootstrap's own styles.
+
 ## The `[Admin]` Attribute
 
 To ensure a controller or a specific action uses the Admin Theme, decorate it with the `[Admin]` attribute. This is essential when creating custom administration pages.
@@ -256,3 +369,10 @@ public sealed class MyService
     }
 }
 ```
+
+## Video
+
+This video creates an admin theme to restyle the admin.
+
+<!-- video:admin-theme-create -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/ht6M2TWKLaU" title="Create an Admin Theme: Restyle the Admin" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

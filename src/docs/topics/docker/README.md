@@ -202,3 +202,10 @@ See :
 
 <https://github.com/docker/setup-buildx-action#limitation>  
 <https://github.com/OrchardCMS/OrchardCore/issues/7651>  
+
+## Video
+
+This video runs Orchard Core in a Docker container.
+
+<!-- video:docker-orchard-core -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/pP7y62hDsN4" title="Docker: Run Orchard Core in a Container" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

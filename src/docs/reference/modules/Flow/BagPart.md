@@ -27,7 +27,7 @@ To enable the blocks editor for a BagPart, set the **Editor** option to `Blocks`
 
 This can be done in the admin UI:
 
-1. Navigate to **Design** → **Content Definition** → **Content Types**
+1. Navigate to **Design → Content Definition → Content Types**
 2. Edit the content type containing the BagPart
 3. Click **Edit** on the BagPart
 4. Set the **Editor** field to `Blocks`
@@ -189,3 +189,28 @@ For a non-named BagPart, use the part type as the part name:
 ## Video
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/JYES1i6BdWs" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video compares the starter recipes you can choose from when you set up a site.
+
+<!-- video:starter-recipes -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/VtnARneJ6GY" title="Starter Recipes: Choose How Your Site Starts" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video builds a page from widgets with the Flow part.
+
+<!-- video:flows-flow-part -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/kuIT3d1zubg" title="Flow Part: Build Pages From Widgets" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video embeds content items inside another content item with the Bag part.
+
+<!-- video:flows-bag-part -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/EBz1f1Bgcgw" title="Bag Part: Embed Content Items Inside a Content Item" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video writes templates and alternates for the widgets of a Flow part and a Bag part.
+
+<!-- video:flows-templates -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/bWLqMEdn8ec" title="Flow and Bag Parts: Templates and Alternates for Their Widgets" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video changes the look of your site by choosing a theme.
+
+<!-- video:themes-choose -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/gi1KWyaQ7mI" title="Themes: Change the Look of Your Site" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

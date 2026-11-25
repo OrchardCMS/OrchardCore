@@ -1,9 +1,12 @@
-<div class="col-md-3 mb-3">
+<div class="col-md-6 col-xxl-3 mb-3">
     <div class="card h-100">
-        <div class="card-body">
-            <h5 class="card-title"><i class="fa-solid fa-file-lines" aria-hidden="true"></i> @T["Create content"]</h5>
-            <p class="card-text">@T["Add pages, blog posts, and other content items."]</p>
-            <a asp-action="List" asp-controller="Admin" asp-route-area="OrchardCore.Contents" class="btn btn-sm btn-primary">@T["Go to content"]</a>
+        <div class="card-body d-flex flex-column">
+            <div class="d-flex align-items-center gap-3 mb-3">
+                <div class="dashboard-card-icon"><i class="fa-solid fa-file-lines" aria-hidden="true"></i></div>
+                <h5 class="card-title fs-6 mb-0">@T["Create content"]</h5>
+            </div>
+            <p class="card-text text-body-secondary">@T["Add pages, blog posts, and other content items."]</p>
+            <a asp-action="List" asp-controller="Admin" asp-route-area="OrchardCore.Contents" class="btn btn-sm btn-primary mt-auto align-self-start">@T["Go to content"]</a>
         </div>
     </div>
 </div>

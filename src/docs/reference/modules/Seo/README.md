@@ -17,7 +17,7 @@ Starting at version 1.7, the feature of creating a robots.txt file via site sett
     Disallow: /Admin/
         This directive specifies that web robots should not access the /admin directory, which is commonly used for administrative purposes.
 
-These default settings aim to provide a basic configuration that ensures search engines can access the necessary files and directories while restricting access to sensitive areas of the site. However, website owners can modify these settings according to their specific requirements by navigating to the admin dashboard then **Settings** → **Search** → **Search Engine Optimization** → **Robots**.
+These default settings aim to provide a basic configuration that ensures search engines can access the necessary files and directories while restricting access to sensitive areas of the site. However, website owners can modify these settings according to their specific requirements by navigating to the admin dashboard then **Settings → Search → Search Engine Optimization → Robots**.
 
 !!! note
     If the [Sitemaps](../Sitemaps/README.md) feature is enabled, all sitemap indexes and sitemaps are added to the `robots.txt` by default.
@@ -55,3 +55,13 @@ SEO settings can be configured using the `Settings` recipe step:
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/bDf96bg-mBU" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/IchtAdYQF7g" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
+This video sets the titles, descriptions and social sharing cards of your pages.
+
+<!-- video:seo-meta -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/n0WUFjJtl0w" title="SEO Meta: Titles, Descriptions and Social Sharing Cards" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video tells search engines what to crawl with the robots.txt file.
+
+<!-- video:seo-robots -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/BDJ5ziPIOL8" title="Robots: Tell Search Engines What to Crawl" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

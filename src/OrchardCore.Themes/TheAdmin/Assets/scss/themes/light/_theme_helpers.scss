@@ -1,17 +1,3 @@
-
-.bg-theme {
-    background-color: rgba(var(--bs-light-rgb), var(--bs-bg-opacity, 1));
-}
-
-.text-theme {
-    color: var(--bs-body-color);
-}
-
-.text-bg-theme {
-    color: var(--bs-body-color);
-    background-color: rgba(var(--bs-light-rgb), var(--bs-bg-opacity, 1));
-}
-
 .btn-theme {
     // The theme sets Bootstrap's button variables rather than the colors themselves, so a component that styles
     // its own .btn-theme, such as the toggle of bootstrap-select, keeps its own look.

@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization.Metadata;
 using OrchardCore.Json;
+using OrchardCore.Json.Serialization;
 
 namespace System.Text.Json.Serialization;
 
@@ -10,6 +11,10 @@ public class PolymorphicJsonTypeInfoResolver : DefaultJsonTypeInfoResolver
     public PolymorphicJsonTypeInfoResolver(JsonDerivedTypesOptions derivedTypesOptions)
     {
         _derivedTypesOptions = derivedTypesOptions;
+
+        // A LocalizationSource is a static declaration owned by code, never a document value, so it is removed from the
+        // contract of every document type, including the overrides that don't repeat the [JsonIgnore] of their base.
+        Modifiers.Add(LocalizationSourceJsonModifier.Ignore);
     }
 
     public override JsonTypeInfo GetTypeInfo(Type type, JsonSerializerOptions options)

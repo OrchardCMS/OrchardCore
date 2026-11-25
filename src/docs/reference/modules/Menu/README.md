@@ -248,6 +248,12 @@ available on the `MenuItem` shape are still available.
     }
     ```
 
+## Editing menu items
+
+A menu item is not a content item of its own: it is stored in the content of its menu. Its editor saves it in the menu with a **Save Menu Item** button, and the menu is published from the menu editor, with its **Publish** button. Saving a menu item of a draftable menu saves a draft of the menu, so the change isn't visible on the site until the menu is published. When the menu has unpublished changes, the editor of a menu item shows a warning saying so.
+
+The actions of the editor of a menu item are rendered by the `MenuItemEditorActions` shape, which replaces the actions of a content item, such as **Publish** or **Delete**. Override `MenuItemEditorActions.cshtml` to change them.
+
 ## Menu item identifiers
 
 The menu editor finds a menu item by its `ContentItemId`, so every menu item needs one that is unique in its menu. A menu item without one cannot be edited or deleted: **Edit** and **Delete** return _Not Found_. Menu items in a recipe must set `ContentItemId`, for example to `"[js: uuid()]"`.
@@ -318,3 +324,18 @@ License: MIT
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/mOhbqHKd_CI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/R_Z6gPoAfHE" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video builds the navigation of a site with menus.
+
+<!-- video:menus-overview -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/cXMmkEd_-SA" title="Menus: Build the Navigation of Your Site" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video goes through the menu item types: links, content items, HTML and items shown only to some people.
+
+<!-- video:menus-item-types -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/1JPj2SdNV0c" title="Menu Items: Links, Content Items, HTML and Permissions" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video renders menus, breadcrumbs and pagers in a theme.
+
+<!-- video:navigation-in-themes -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/AVmhUepSEgQ" title="Navigation in Themes: Render Menus, Breadcrumbs and Pagers" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

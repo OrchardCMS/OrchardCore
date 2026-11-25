@@ -1,0 +1,58 @@
+// The page title, and the headings of the content.
+.ta-content h1 {
+    margin-bottom: var(--ta-stack-gap);
+    font-size: var(--ta-font-size-page-title);
+    line-height: var(--ta-line-height-tight);
+    letter-spacing: -0.01em;
+}
+
+// The headings of the content step down from the page title: a section heading (h2, h3) stays under it, and the small
+// headings of cards and widgets (h4 to h6) are close to the body size.
+.ta-content {
+    h2, .h2 {
+        font-size: var(--ta-font-size-xl);
+    }
+
+    h3, .h3 {
+        font-size: 1.25rem;
+    }
+
+    h4, .h4 {
+        font-size: var(--ta-font-size-lg);
+    }
+
+    h5, .h5 {
+        font-size: var(--ta-font-size-md);
+    }
+
+    h6, .h6 {
+        font-size: var(--ta-font-size-sm);
+    }
+}
+
+// The scrollbars of the content take a shade of the scheme.
+.ta-admin {
+    scrollbar-color: rgba(var(--ta-navy-rgb), 0.3) transparent;
+}
+
+// Tables take the surface, the borders and the row hover of the lists, and the same column headers.
+.ta-content .table {
+    --bs-table-bg: var(--ta-surface);
+    --bs-table-border-color: var(--ta-border);
+    --bs-table-hover-bg: var(--ta-row-hover-bg);
+
+    > thead th {
+        font-size: var(--ta-font-size-sm);
+        font-weight: var(--ta-font-weight-strong);
+        color: var(--ta-muted);
+        background-color: var(--ta-list-header-bg);
+    }
+
+    > :not(caption) > * > :first-child {
+        padding-inline-start: var(--ta-surface-padding-x);
+    }
+
+    > :not(caption) > * > :last-child {
+        padding-inline-end: var(--ta-surface-padding-x);
+    }
+}

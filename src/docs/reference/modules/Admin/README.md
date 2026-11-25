@@ -92,7 +92,7 @@ The `OrchardCore.Admin` module provides a quick navigation palette to jump to an
 
 The built-in `AdminMenuItemNavigationSource` supplies admin menu destinations using `INavigationManager`, independently of the sidebar markup. It preserves menu ordering, breadcrumbs, link targets, authorization, localization, and tenant/admin URL prefixes. It builds its entries on demand because menu providers can depend on the current request. Only admin menu items are included by default. Enable the optional [Content Quick Navigation feature](../Contents/README.md#content-quick-navigation) to include the 50 most recently updated content items that you can edit; its count is configurable in Admin settings. The shortcut is not intercepted while the focus is inside a rich text or code editor that uses <kbd>Ctrl</kbd>+<kbd>K</kbd> for its own commands.
 
-The palette is enabled by default and can be turned off from **Configuration → Settings → Admin** (**Enable quick navigation**) or with the `DisplayQuickNavigation` admin setting (see [Recipe Configuration](#recipe-configuration)).
+The palette is enabled by default and can be turned off from **Settings → Admin** (**Enable quick navigation**) or with the `DisplayQuickNavigation` admin setting (see [Recipe Configuration](#recipe-configuration)).
 
 ### Admin theme integration
 
@@ -233,7 +233,7 @@ Admin lists such as the content items list are rendered by the `AdminList` shape
 
 The `Grid` layout uses a CSS container query on the list itself: when the list is narrower than 48rem (whatever the viewport, the admin sidebar takes part of it), the headers disappear and a row takes the shape of a `List` row — the selection and the title share the first line with the actions at its end, and every other cell takes a line under them — so the page never scrolls horizontally. The cells keep a `data-title` attribute with the column title for themes that want to show it.
 
-The layout is selected in **Configuration → Settings → Admin** under **List layout**, and stored in the nullable `AdminSettings.ListLayout` enum property. Select **Use configuration default** to clear the override and inherit `AdminListOptions.DefaultLayout`, which a site can set per tenant in `appsettings.json`:
+The layout is selected in **Settings → Admin** under **List layout**, and stored in the nullable `AdminSettings.ListLayout` enum property. Select **Use configuration default** to clear the override and inherit `AdminListOptions.DefaultLayout`, which a site can set per tenant in `appsettings.json`:
 
 ```json
   "OrchardCore": {
@@ -541,7 +541,7 @@ Most lists share their first and last columns, so `AdminListColumns` declares th
 
 ### Row actions
 
-The `Actions` and `ActionsMenu` zones of a row are rendered by the `AdminListActions` shape in the layout selected under **Configuration → Settings → Admin → Actions layout**. `AdminSettings.ActionsLayout` is a nullable `AdminListActionsLayout` enum. Select **Use configuration default** to clear the override and inherit `AdminListOptions.DefaultActionsLayout`. Exactly two layouts are supported:
+The `Actions` and `ActionsMenu` zones of a row are rendered by the `AdminListActions` shape in the layout selected under **Settings → Admin → Actions layout**. `AdminSettings.ActionsLayout` is a nullable `AdminListActionsLayout` enum. Select **Use configuration default** to clear the override and inherit `AdminListOptions.DefaultActionsLayout`. Exactly two layouts are supported:
 
 | Layout    | Description                                                                                                   |
 | --------- | ------------------------------------------------------------------------------------------------------------- |
@@ -788,7 +788,7 @@ In this example, (if the admin prefix remains the default "Admin") you can reach
 
 ## Navigation menu behavior
 
-The **Navigation menu behavior** option of the admin settings (**Configuration** > **Settings** > **Admin**) decides how the sections of the admin menu open and close:
+The **Navigation menu behavior** option of the admin settings (**Settings → Admin**) decides how the sections of the admin menu open and close:
 
 | Behavior | What it does |
 |----------|--------------|
@@ -827,3 +827,30 @@ The admin settings can be configured using the `Settings` recipe step:
 | `DisplayNewMenu`        | Boolean | Whether to display the 'New' menu in the admin navigation.        |
 | `DisplayTitlesInTopbar` | Boolean | Whether to display page titles in the top bar.                    |
 | `MenuBehavior`          | String  | How the sections of the admin menu open and close: `Focused` (default) or `Persistent`. See [Navigation menu behavior](#navigation-menu-behavior). |
+
+## Videos
+
+This video compares the starter recipes you can choose from when you set up a site.
+
+<!-- video:starter-recipes -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/VtnARneJ6GY" title="Starter Recipes: Choose How Your Site Starts" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video takes a tour of the admin: its menu, its search and its main screens.
+
+<!-- video:admin-tour -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/hQPLynQAPeY" title="The Admin: Find Your Way Around Orchard Core" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video shows the admin settings that tailor the admin for your editors.
+
+<!-- video:admin-settings -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/_87tZ98HO58" title="Admin Settings: Tailor the Admin for Your Editors" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video changes the look of your site by choosing a theme.
+
+<!-- video:themes-choose -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/gi1KWyaQ7mI" title="Themes: Change the Look of Your Site" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video creates an admin theme to restyle the admin.
+
+<!-- video:admin-theme-create -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/ht6M2TWKLaU" title="Create an Admin Theme: Restyle the Admin" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

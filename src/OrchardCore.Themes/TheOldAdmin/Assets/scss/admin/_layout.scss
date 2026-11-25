@@ -1,0 +1,47 @@
+@import '../mixins/_cursors';
+
+body, html {
+    height: 100%;
+}
+
+@include cursor-class(move);
+@include cursor-class(pointer);
+
+.ta-wrapper {
+    height: 100%;
+}
+
+.ta-content {
+    padding: 1rem;
+    min-height: 100%;
+    margin-left: var(--oc-start-navigation-width);
+    padding-top: calc(var(--oc-top-nav-height, 0) + 1rem);
+    transition: margin-left 0.2s ease-in-out;
+
+    h1 {
+        line-height: 40px;
+        font-size: 28px;
+        letter-spacing: -0.04em;
+        font-weight: bold;
+    }
+}
+
+// Below the medium breakpoint the menu is an off canvas drawer, so the
+// content uses the whole width of the screen.
+@include media-breakpoint-down(md) {
+    .ta-content {
+        margin-left: 0;
+    }
+}
+
+@include media-breakpoint-up(md) {
+    .left-sidebar-compact .ta-content {
+        margin-left: var(--oc-start-navigation-width-when-compact);
+    }
+}
+
+.preload * {
+    -webkit-transition: none !important;
+    -moz-transition: none !important;
+    -o-transition: none !important;
+}

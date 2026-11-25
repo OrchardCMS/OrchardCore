@@ -69,3 +69,10 @@ Tags and category Taxonomy Terms under a Blog Post content item:
 Editor of the Categories Taxonomy with Terms:
 
 ![Editor of the Categories Taxonomy with Terms.](images/taxonomy-editor.jpg)
+
+## Video
+
+This video relates content items to each other and to users with the Content Picker and User Picker fields.
+
+<!-- video:content-picker-fields -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/6a2SSz2Ky60" title="Content Picker and User Picker Fields: Relate Content Items" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

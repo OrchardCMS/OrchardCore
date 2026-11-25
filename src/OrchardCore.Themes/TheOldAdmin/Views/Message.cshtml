@@ -1,0 +1,27 @@
+@{
+    string type = Model.Type.ToString().ToLowerInvariant();
+    var bsClassName = type switch
+    {
+        "information" => "info",
+        "error" => "danger",
+        _ => type,
+    };
+
+    var closeButtonClass = bsClassName is "danger" or "success" ? "btn-close btn-close-white" : "btn-close";
+    int? milliseconds = Model.Milliseconds;
+    var autoHide = milliseconds is > 0;
+}
+
+<div class="toast border-0 shadow message-@type text-bg-@bsClassName"
+     role="alert"
+     aria-live="assertive"
+     aria-atomic="true"
+     data-bs-autohide="@autoHide.ToString().ToLowerInvariant()"
+     data-bs-delay="@(autoHide ? milliseconds : 5000)">
+    <div class="d-flex">
+        <div class="toast-body">
+            @Model.Message
+        </div>
+        <button type="button" class="@closeButtonClass me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+</div>

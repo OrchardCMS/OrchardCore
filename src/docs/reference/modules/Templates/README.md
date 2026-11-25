@@ -4,13 +4,13 @@ The templates module allows editors to create custom Liquid templates.
 
 ## Assisted Templates
 
-The **Assisted Templates** feature (`OrchardCore.Templates.Assisted`) adds the tools below to the **Templates** page, and to the **Admin Templates** page when the **Admin Templates** feature is enabled: the **Theme Templates** and **Feature Templates** lists. It is not enabled by default: enable it in **Configuration > Features**.
+The **Assisted Templates** feature (`OrchardCore.Templates.Assisted`) adds the tools below to the **Templates** page, and to the **Admin Templates** page when the **Admin Templates** feature is enabled: the **Theme Templates** and **Feature Templates** lists. It is not enabled by default: enable it in **Tools → Features**.
 
 The **Shape Tracing** feature (`OrchardCore.Templates.ShapeTracing`) adds the tools that need the content items, and depends on the **Contents** and **Content Fields** features: the [alternates](#alternates) suggested for the content types, parts and fields of the site, and [Inspect Content](#inspect-content). It is not enabled by default either.
 
 ## Theme Templates
 
-The **Theme Templates** button of the **Design > Templates** page lists the templates of the site themes, and the same button of the **Design > Admin Templates** page those of the admin themes. A dropdown selects the theme whose templates are listed, the active theme by default; the templates of a theme include those of the themes it is based on. Each template is shown with the file it comes from, e.g. `TheBlogTheme` `Views/Content-BlogPost.liquid`, and the name of the template that overrides it, e.g. `Content__BlogPost`.
+The **Theme Templates** button of the **Design → Templates** page lists the templates of the site themes, and the same button of the **Design → Admin Templates** page those of the admin themes. A dropdown selects the theme whose templates are listed, the active theme by default; the templates of a theme include those of the themes it is based on. Each template is shown with the file it comes from, e.g. `TheBlogTheme` `Views/Content-BlogPost.liquid`, and the name of the template that overrides it, e.g. `Content__BlogPost`.
 
 From the list of the active theme, without changing the theme, you can:
 
@@ -1143,7 +1143,7 @@ Views/Shared/{0}.cshtml
 
 For example, if you want to override the `OrchardCore.Users\Views\Account\Login.cshtml` view you would need to create a file in your theme and place it under `YourTheme\Views\OrchardCore.Users\Account\Login.cshtml`.  
 For this particular file, you would also need to select the `Use site theme for login page`
-option under the `Settings -> Security -> User Login` page in the admin.
+option under the **Settings → Security → User Login** page in the admin.
 
 ## Videos
 
@@ -1152,3 +1152,13 @@ option under the `Settings -> Security -> User Login` page in the admin.
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/bwFH-C18rrA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/pfPkPH7PN5w" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video changes how a shape renders by writing a Liquid template in the admin.
+
+<!-- video:templates-override-shapes -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/uowzQ9XOtwA" title="Templates: Override Shapes From the Admin With Liquid" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video customizes the screens of the admin with Liquid admin templates.
+
+<!-- video:admin-templates -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/_HoBVym4lBo" title="Admin Templates: Customize Admin Screens With Liquid" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

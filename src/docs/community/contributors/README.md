@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-409-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-410-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key))!
@@ -565,6 +565,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     </tr>
     <tr>
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/menes97"><img src="https://avatars.githubusercontent.com/u/38889017?v=4&size=100" width="100px" height="100px" alt="menes97"/><br /><sub><b>menes97</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=menes97" title="Code">💻</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/ZainnQureshii"><img src="https://avatars.githubusercontent.com/u/43629888?v=4&size=100" width="100px" height="100px" alt="Zain Qureshi"/><br /><sub><b>Zain Qureshi</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=ZainnQureshii" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
