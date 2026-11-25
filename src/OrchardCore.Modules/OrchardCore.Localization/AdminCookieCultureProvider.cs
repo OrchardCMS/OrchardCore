@@ -8,13 +8,21 @@ namespace OrchardCore.Localization;
 
 public class AdminCookieCultureProvider : CookieRequestCultureProvider
 {
-    public const string CookieNamePrefix = "admin_culture_";
+    [Obsolete("Use the configured 'CookieNameOptions.AdminCulture' name instead. This constant will be removed in a future version.")]
+    public const string CookieNamePrefix = CookieNames.AdminCulturePrefix;
 
     private readonly PathString _adminPath;
 
+    [Obsolete("Use the constructor accepting the 'CookieNameOptions' instead, which uses the configured cookie name.")]
     public AdminCookieCultureProvider(ShellSettings shellSettings, AdminOptions adminOptions)
     {
-        CookieName = MakeCookieName(shellSettings);
+        CookieName = CookieNames.AdminCulturePrefix + shellSettings.VersionId;
+        _adminPath = new PathString("/" + adminOptions.AdminUrlPrefix.Trim('/'));
+    }
+
+    public AdminCookieCultureProvider(CookieNameOptions cookieNameOptions, AdminOptions adminOptions)
+    {
+        CookieName = cookieNameOptions.AdminCulture;
         _adminPath = new PathString("/" + adminOptions.AdminUrlPrefix.Trim('/'));
     }
 
@@ -28,7 +36,8 @@ public class AdminCookieCultureProvider : CookieRequestCultureProvider
         return NullProviderCultureResult;
     }
 
-    public static string MakeCookieName(ShellSettings shellSettings) => CookieNamePrefix + shellSettings.VersionId;
+    [Obsolete("Use the configured 'CookieNameOptions.AdminCulture' name instead. This method will be removed in a future version.")]
+    public static string MakeCookieName(ShellSettings shellSettings) => CookieNames.AdminCulturePrefix + shellSettings.VersionId;
 
     public static string MakeCookiePath(HttpContext httpContext) => httpContext.Request.PathBase.HasValue
         ? httpContext.Request.PathBase.ToString()

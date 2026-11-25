@@ -14,7 +14,8 @@ namespace OrchardCore.DisplayManagement.Notify;
 
 public sealed class NotifyFilter : IActionFilter, IAsyncResultFilter, IPageFilter
 {
-    public const string CookiePrefix = "orch_notify";
+    [Obsolete("Use the configured 'CookieNameOptions.Notify' name instead. This constant will be removed in a future version.")]
+    public const string CookiePrefix = CookieNames.Notify;
 
     private readonly INotifier _notifier;
     private readonly IShapeFactory _shapeFactory;
@@ -23,6 +24,7 @@ public sealed class NotifyFilter : IActionFilter, IAsyncResultFilter, IPageFilte
     private readonly HtmlEncoder _htmlEncoder;
     private readonly IOptions<NotifyJsonSerializerOptions> _notifyJsonSerializerOptions;
     private readonly ILogger _logger;
+    private readonly string _cookieName;
 
     private NotifyEntry[] _existingEntries = [];
     private bool _shouldDeleteCookie;
@@ -34,6 +36,7 @@ public sealed class NotifyFilter : IActionFilter, IAsyncResultFilter, IPageFilte
         IDataProtectionProvider dataProtectionProvider,
         HtmlEncoder htmlEncoder,
         IOptions<NotifyJsonSerializerOptions> notifyJsonSerializerOptions,
+        IOptions<CookieNameOptions> cookieNameOptions,
         ILogger<NotifyFilter> logger)
     {
         _notifier = notifier;
@@ -43,11 +46,12 @@ public sealed class NotifyFilter : IActionFilter, IAsyncResultFilter, IPageFilte
         _htmlEncoder = htmlEncoder;
         _notifyJsonSerializerOptions = notifyJsonSerializerOptions;
         _logger = logger;
+        _cookieName = cookieNameOptions.Value.Notify;
     }
 
     private void OnHandlerExecuting(FilterContext filterContext)
     {
-        if (!filterContext.HttpContext.Request.Cookies.TryGetValue(CookiePrefix, out var messages))
+        if (!filterContext.HttpContext.Request.Cookies.TryGetValue(_cookieName, out var messages))
         {
             return;
         }
@@ -94,7 +98,7 @@ public sealed class NotifyFilter : IActionFilter, IAsyncResultFilter, IPageFilte
         // String data type used instead of complex array to be session-friendly.
         if (result is not ViewResult && result is not PageResult && _existingEntries.Length > 0)
         {
-            filterContext.HttpContext.Response.Cookies.Append(CookiePrefix, SerializeNotifyEntry(_existingEntries), GetCookieOptions(filterContext.HttpContext));
+            filterContext.HttpContext.Response.Cookies.Append(_cookieName, SerializeNotifyEntry(_existingEntries), GetCookieOptions(filterContext.HttpContext));
         }
     }
 
@@ -165,9 +169,9 @@ public sealed class NotifyFilter : IActionFilter, IAsyncResultFilter, IPageFilte
         await next();
     }
 
-    private static void DeleteCookies(ResultExecutingContext filterContext)
+    private void DeleteCookies(ResultExecutingContext filterContext)
     {
-        filterContext.HttpContext.Response.Cookies.Delete(CookiePrefix, GetCookieOptions(filterContext.HttpContext));
+        filterContext.HttpContext.Response.Cookies.Delete(_cookieName, GetCookieOptions(filterContext.HttpContext));
     }
 
     private string SerializeNotifyEntry(NotifyEntry[] notifyEntries)

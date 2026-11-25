@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using OrchardCore.Environment.Shell;
+using Microsoft.Extensions.Options;
 using OrchardCore.Themes.TheAdmin.Models;
 
 namespace OrchardCore.Themes.TheAdmin.Services;
@@ -20,18 +20,19 @@ public sealed class AdminSchemeService
     /// </summary>
     public AdminSchemeService(
         IHttpContextAccessor httpContextAccessor,
-        ShellSettings shellSettings,
+        IOptions<CookieNameOptions> cookieNameOptions,
         AdminSchemeStore store)
     {
         _httpContextAccessor = httpContextAccessor;
         _store = store;
 
-        // Named per tenant, like the color mode cookie of the theme toggler.
-        CookieName = $"{shellSettings.Name}-{TheAdminConstants.ThemeId}-scheme";
+        // Named per tenant by default, like the color mode cookie of the theme toggler.
+        CookieName = cookieNameOptions.Value.AdminScheme;
     }
 
     /// <summary>
-    /// The name of the cookie holding the scheme the user picked: '{tenant}-TheAdmin-scheme'.
+    /// The name of the cookie holding the scheme the user picked, '{tenant}-TheAdmin-scheme' by default, see
+    /// <see cref="CookieNameOptions.AdminScheme"/>.
     /// </summary>
     public string CookieName { get; }
 

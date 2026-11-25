@@ -1,11 +1,11 @@
 @using OrchardCore.Localization
-@using OrchardCore.Environment.Shell
+@using Microsoft.Extensions.Options
 
-@inject ShellSettings ShellSettings
+@inject IOptions<OrchardCore.CookieNameOptions> CookieNameOptions
 
 <li class="nav-item">
     <div class="dropdown">
-        <button type="button" class="nav-link dropdown-toggle" id="oc-culture-picker" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-language-current-value="@Model.CurrentCulture.Name" data-cookie-name="@AdminCookieCultureProvider.MakeCookieName(ShellSettings)" data-cookie-path="@AdminCookieCultureProvider.MakeCookiePath(Context)">
+        <button type="button" class="nav-link dropdown-toggle" id="oc-culture-picker" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-language-current-value="@Model.CurrentCulture.Name" data-cookie-name="@CookieNameOptions.Value.AdminCulture" data-cookie-path="@AdminCookieCultureProvider.MakeCookiePath(Context)">
             @if (Model.CurrentCulture.Parent == System.Globalization.CultureInfo.InvariantCulture)
             {
                 <span>@Model.CurrentCulture.NativeName</span>

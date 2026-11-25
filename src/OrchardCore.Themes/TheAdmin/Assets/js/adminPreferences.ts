@@ -17,6 +17,9 @@ const setCompactExplicit = (value: boolean) => {
 
 const getAdminPreferenceKey = () => getTenantName() + '-adminPreferences';
 
+// The layouts give the name of the cookie, which can be configured per tenant.
+const getAdminPreferencesCookieName = () => document.documentElement.dataset.adminPreferencesCookie || getAdminPreferenceKey();
+
 const getAdminPreferences = (): AdminPreferences => {
     const storedValue = localStorage.getItem(getAdminPreferenceKey());
 
@@ -42,7 +45,7 @@ const setAdminPreferences = (adminPreferences: object | null) => {
 
     try {
         localStorage.setItem(key, JSON.stringify(adminPreferences));
-        Cookies.set(key, JSON.stringify(adminPreferences), { expires: 360 });
+        Cookies.set(getAdminPreferencesCookieName(), JSON.stringify(adminPreferences), { expires: 360 });
     } catch (ex) {
         console.error('Error setting admin preferences', ex);
     }

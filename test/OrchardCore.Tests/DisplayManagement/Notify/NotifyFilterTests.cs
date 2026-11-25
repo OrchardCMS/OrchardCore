@@ -38,7 +38,7 @@ public class NotifyFilterTests
     {
         var filter = CreateFilter(new Notifier(NullLogger<Notifier>.Instance));
         var httpContext = CreateHttpContext(scheme);
-        httpContext.Request.Headers.Cookie = $"{NotifyFilter.CookiePrefix}=invalid";
+        httpContext.Request.Headers.Cookie = $"{CookieNames.Notify}=invalid";
         var actionContext = new ActionContext(httpContext, new RouteData(), new ActionDescriptor());
 
         filter.OnActionExecuting(new ActionExecutingContext(actionContext, [], new Dictionary<string, object>(), controller: null));
@@ -65,6 +65,7 @@ public class NotifyFilterTests
             new EphemeralDataProtectionProvider(),
             HtmlEncoder.Default,
             Options.Create(options),
+            Options.Create(new CookieNameOptions()),
             NullLogger<NotifyFilter>.Instance);
     }
 
@@ -78,5 +79,5 @@ public class NotifyFilterTests
     }
 
     private static SetCookieHeaderValue GetNotifySetCookie(DefaultHttpContext httpContext)
-        => SetCookieHeaderValue.Parse(Assert.Single(httpContext.Response.Headers.SetCookie, cookie => cookie.StartsWith($"{NotifyFilter.CookiePrefix}=", StringComparison.Ordinal)));
+        => SetCookieHeaderValue.Parse(Assert.Single(httpContext.Response.Headers.SetCookie, cookie => cookie.StartsWith($"{CookieNames.Notify}=", StringComparison.Ordinal)));
 }

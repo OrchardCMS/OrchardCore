@@ -12,7 +12,7 @@ public class AdminListLayoutResolverTests
     {
         var context = new DefaultHttpContext();
         context.Request.QueryString = new QueryString("?layout=Grid");
-        context.Request.Headers.Cookie = $"{AdminListLayoutPreference.CookieName}=Contents:Grid";
+        context.Request.Headers.Cookie = $"{CookieNames.AdminListLayout}=Contents:Grid";
         var resolver = CreateResolver(new AdminListOptions { DefaultLayout = defaultLayout }, context);
 
         Assert.Equal(defaultLayout, resolver.GetLayout("Contents"));
@@ -28,7 +28,7 @@ public class AdminListLayoutResolverTests
     {
         var context = new DefaultHttpContext();
         context.Request.QueryString = QueryString.Create("layout", query);
-        context.Request.Headers.Cookie = $"{AdminListLayoutPreference.CookieName}=Contents:List";
+        context.Request.Headers.Cookie = $"{CookieNames.AdminListLayout}=Contents:List";
         var resolver = CreateResolver(new AdminListOptions { AllowUserSelection = true }, context);
 
         Assert.Equal(expected, resolver.GetLayout("Contents"));
@@ -49,7 +49,7 @@ public class AdminListLayoutResolverTests
     {
         var context = new DefaultHttpContext();
         context.Request.QueryString = QueryString.Create("layout", query);
-        context.Request.Headers.Cookie = $"{AdminListLayoutPreference.CookieName}=Contents:Grid|Users:List";
+        context.Request.Headers.Cookie = $"{CookieNames.AdminListLayout}=Contents:Grid|Users:List";
         var resolver = CreateResolver(new AdminListOptions { AllowUserSelection = true }, context);
 
         Assert.Equal(AdminListLayout.Grid, resolver.GetLayout("Contents"));
@@ -64,7 +64,7 @@ public class AdminListLayoutResolverTests
     public void GetLayout_InvalidCookie_UsesSiteDefault(string preference)
     {
         var context = new DefaultHttpContext();
-        context.Request.Headers.Cookie = $"{AdminListLayoutPreference.CookieName}=Contents:{preference}";
+        context.Request.Headers.Cookie = $"{CookieNames.AdminListLayout}=Contents:{preference}";
         var resolver = CreateResolver(new AdminListOptions
         {
             DefaultLayout = AdminListLayout.Grid,
@@ -127,6 +127,6 @@ public class AdminListLayoutResolverTests
         return new AdminListLayoutResolver(
             Mock.Of<IOptionsMonitor<AdminListOptions>>(monitor => monitor.CurrentValue == options),
             accessor,
-            new AdminListLayoutPreference(accessor));
+            new AdminListLayoutPreference(accessor, Options.Create(new CookieNameOptions())));
     }
 }

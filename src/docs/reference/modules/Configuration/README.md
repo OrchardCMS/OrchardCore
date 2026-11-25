@@ -207,6 +207,53 @@ This way, the app can be easily moved between environments (like a staging and p
 
 A related topic is [Shells Configuration Providers](../Shells/README.md). See especially the section about Database Shells Configuration Provider, on how to keep all shell configuration in the database.
 
+### Cookie names
+
+The names of the cookies used by a tenant are configured in the `Cookies` section. A cookie that isn't configured, or has an empty name, keeps its default name. In code, the names are available through `IOptions<CookieNameOptions>`, and their default values and prefixes are defined in the `CookieNames` class.
+
+| Setting | Default name | Usage |
+| --- | --- | --- |
+| `Antiforgery` | `__orchantiforgery_{TenantVersionId}` | The antiforgery token. |
+| `Authentication` | `orchauth_{TenantName}` | The authentication of the users. |
+| `EmailConfirmation` | `orchemail_{TenantName}` | The user whose email must be confirmed. |
+| `Passkey` | `orchpasskey_{TenantName}` | The sign-in with a passkey. |
+| `ExternalAuthentication` | `Identity.External` | The sign-in with an external provider. |
+| `TwoFactorUserId` | `Identity.TwoFactorUserId` | The user during a two-factor sign-in. |
+| `TwoFactorRememberMe` | `Identity.TwoFactorRememberMe` | The browser remembered by a two-factor sign-in. |
+| `Notify` | `orch_notify` | The notifications shown after a redirect. |
+| `TempData` | `.AspNetCore.Mvc.CookieTempDataProvider` | The MVC temp data. |
+| `Culture` | `.AspNetCore.Culture` | The culture picked on the site. |
+| `Consent` | `.AspNet.Consent` | The tracking consent of the user. |
+| `AdminCulture` | `admin_culture_{TenantVersionId}` | The culture picked in the admin. |
+| `AdminListLayout` | `orchardcore_admin_list_layout` | The layout picked for the admin lists. |
+| `AdminTheme` | `{TenantName}-admintheme` | The light or dark mode picked in the admin. |
+| `AdminScheme` | `{TenantName}-TheAdmin-scheme` | The color scheme picked in the admin. |
+| `AdminPreferences` | `{TenantName}-adminPreferences` | The admin preferences, e.g. the state of the admin menu. |
+
+`{TenantName}` is the name of the tenant, URL encoded for the authentication cookies, and `{TenantVersionId}` is an identifier that changes when the tenant is set up again. These placeholders are only used by the default names: a configured name is used as is.
+
+Set the names in a section named after the tenant to configure a single tenant:
+
+```json
+{
+  "OrchardCore": {
+    "Default": {
+      "Cookies": {
+        "Authentication": "myapp_auth",
+        "Antiforgery": "myapp_antiforgery"
+      }
+    }
+  }
+}
+```
+
+!!! warning
+    Names set directly in the `OrchardCore:Cookies` section apply to all tenants. Tenants sharing the same host must not use the same name for a cookie that depends on the tenant, such as `Authentication` or `Antiforgery`, otherwise they overwrite each other's cookie.
+
+Renaming a cookie on a running site discards the cookie the browsers already have, e.g. renaming `Authentication` signs out every user.
+
+The cookies of the external authentication providers, such as the correlation and nonce cookies of OpenID Connect, are configured by these providers and are not part of this section.
+
 ### `IOptions` Configuration
 
 You can also configure `IOptions` from code in the web project's `Startup` class as explained in the [ASP.NET documentation](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options).

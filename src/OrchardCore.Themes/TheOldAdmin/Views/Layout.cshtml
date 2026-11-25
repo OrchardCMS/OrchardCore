@@ -4,6 +4,7 @@
 
 @inject ThemeTogglerService ThemeTogglerService
 @inject IOptions<AdminOptions> AdminOptions
+@inject IOptions<OrchardCore.CookieNameOptions> CookieNameOptions
 @inject IOptionsMonitor<AdminListOptions> AdminListOptions
 @inject IDisplayManager<Navbar> DisplayManager
 @inject IUpdateModelAccessor UpdateModelAccessor
@@ -16,7 +17,7 @@
     var navbar = await DisplayAsync(await DisplayManager.BuildDisplayAsync(UpdateModelAccessor.ModelUpdater, "DetailAdmin"));
 }
 <!DOCTYPE html>
-<html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()" data-bs-theme="@await ThemeTogglerService.CurrentTheme()" data-tenant="@ThemeTogglerService.CurrentTenant" data-admin-prefix="@Url.Content("~/" + AdminOptions.Value.AdminUrlPrefix)">
+<html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()" data-bs-theme="@await ThemeTogglerService.CurrentTheme()" data-tenant="@ThemeTogglerService.CurrentTenant" data-admin-preferences-cookie="@CookieNameOptions.Value.AdminPreferences" data-admin-prefix="@Url.Content("~/" + AdminOptions.Value.AdminUrlPrefix)">
 <head>
     <title>@RenderTitleSegments(Site.SiteName, "before")</title>
     <meta charset="utf-8">

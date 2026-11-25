@@ -575,7 +575,7 @@ public sealed class AdminSchemeTests
     }
 
     private static AdminSchemeService CreateService(AdminSchemeStore store, HttpContext httpContext)
-        => new(new HttpContextAccessor { HttpContext = httpContext }, new ShellSettings { Name = "Default" }, store);
+        => new(new HttpContextAccessor { HttpContext = httpContext }, Options.Create(new CookieNameOptions { AdminScheme = "Default" + CookieNames.AdminSchemeSuffix }), store);
 
     private static IUrlHelper CreateUrlHelper()
     {

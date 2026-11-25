@@ -1,5 +1,6 @@
 using System.Text;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 
 namespace OrchardCore.Admin.Services;
 
@@ -16,9 +17,10 @@ namespace OrchardCore.Admin.Services;
 public sealed class AdminListLayoutPreference
 {
     /// <summary>
-    /// The name of the cookie holding the layouts a user picked.
+    /// The default name of the cookie holding the layouts a user picked.
     /// </summary>
-    public const string CookieName = "orchardcore_admin_list_layout";
+    [Obsolete("Use the configured 'CookieNameOptions.AdminListLayout' name instead. This constant will be removed in a future version.")]
+    public const string CookieName = CookieNames.AdminListLayout;
 
     /// <summary>
     /// The query string key a list uses to ask for a layout, e.g. <c>?layout=Grid</c>.
@@ -29,12 +31,14 @@ public sealed class AdminListLayoutPreference
     private const int MaxEntries = 50;
 
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly string _cookieName;
 
     private Dictionary<string, string> _entries;
 
-    public AdminListLayoutPreference(IHttpContextAccessor httpContextAccessor)
+    public AdminListLayoutPreference(IHttpContextAccessor httpContextAccessor, IOptions<CookieNameOptions> cookieNameOptions)
     {
         _httpContextAccessor = httpContextAccessor;
+        _cookieName = cookieNameOptions.Value.AdminListLayout;
     }
 
     /// <summary>
@@ -80,7 +84,7 @@ public sealed class AdminListLayoutPreference
 
         entries[listName] = layout;
 
-        context.Response.Cookies.Append(CookieName, Serialize(entries), new CookieOptions
+        context.Response.Cookies.Append(_cookieName, Serialize(entries), new CookieOptions
         {
             HttpOnly = true,
             IsEssential = true,
@@ -92,7 +96,7 @@ public sealed class AdminListLayoutPreference
     }
 
     private Dictionary<string, string> Entries
-        => _entries ??= Parse(_httpContextAccessor.HttpContext?.Request.Cookies[CookieName]);
+        => _entries ??= Parse(_httpContextAccessor.HttpContext?.Request.Cookies[_cookieName]);
 
     private static Dictionary<string, string> Parse(string value)
     {

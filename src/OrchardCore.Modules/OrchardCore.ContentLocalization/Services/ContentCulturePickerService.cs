@@ -14,19 +14,22 @@ public class ContentCulturePickerService : IContentCulturePickerService
     private readonly ISiteService _siteService;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly CulturePickerOptions _culturePickerOptions;
+    private readonly string _cookieName;
 
     public ContentCulturePickerService(
         IAutorouteEntries autorouteEntries,
         ILocalizationEntries localizationEntries,
         ISiteService siteService,
         IHttpContextAccessor httpContextAccessor,
-        IOptions<CulturePickerOptions> culturePickerOptions)
+        IOptions<CulturePickerOptions> culturePickerOptions,
+        IOptions<CookieNameOptions> cookieNameOptions)
     {
         _autorouteEntries = autorouteEntries;
         _localizationEntries = localizationEntries;
         _siteService = siteService;
         _httpContextAccessor = httpContextAccessor;
         _culturePickerOptions = culturePickerOptions.Value;
+        _cookieName = cookieNameOptions.Value.Culture;
     }
 
     public async Task<string> GetContentItemIdFromRouteAsync(PathString url)
@@ -103,9 +106,9 @@ public class ContentCulturePickerService : IContentCulturePickerService
         var httpContext = _httpContextAccessor.HttpContext;
         var response = httpContext.Response;
         // Set the cookie to handle redirecting to a custom controller
-        response.Cookies.Delete(CookieRequestCultureProvider.DefaultCookieName);
+        response.Cookies.Delete(_cookieName);
         response.Cookies.Append(
-            CookieRequestCultureProvider.DefaultCookieName,
+            _cookieName,
             CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(targetCulture)),
             new CookieOptions
             {

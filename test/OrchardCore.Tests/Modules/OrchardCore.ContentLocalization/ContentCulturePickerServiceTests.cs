@@ -20,7 +20,8 @@ public class ContentCulturePickerServiceTests
             localizationEntries: null,
             siteService: null,
             new HttpContextAccessor { HttpContext = httpContext },
-            Options.Create(new CulturePickerOptions()));
+            Options.Create(new CulturePickerOptions()),
+            Options.Create(new CookieNameOptions()));
 
         service.SetContentCulturePickerCookie("fr");
 
