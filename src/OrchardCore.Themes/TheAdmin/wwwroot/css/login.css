@@ -1,4 +1,8 @@
-@charset "UTF-8";
+/*!
+ * The Admin theme of Orchard Core (BSD-3-Clause). Its check box, radio button, switch and invalid field icons are the
+ * artwork of Bootstrap v5.3.8 (https://getbootstrap.com/), Copyright 2011-2025 The Bootstrap Authors, Licensed under
+ * MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE). See THIRD-PARTY-NOTICES.txt in the theme's package.
+ */
 /*
     IMPORTANT: Never import Bootstrap directly into the theme. 
     TheAdmin.css will depend on Bootstrap, but we never want to compile it. The few Bootstrap settings the theme needs are in _config.scss.
@@ -526,7 +530,7 @@ summary:focus-visible,
 
 .hint.dashed::before,
 .text-muted.dashed::before {
-  content: "— ";
+  content: '\2014\00a0';
 }
 
 .code,

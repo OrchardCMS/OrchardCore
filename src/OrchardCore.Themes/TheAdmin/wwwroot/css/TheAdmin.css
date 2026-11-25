@@ -1,4 +1,8 @@
-@charset "UTF-8";
+/*!
+ * The Admin theme of Orchard Core (BSD-3-Clause). Its check box, radio button, switch and invalid field icons are the
+ * artwork of Bootstrap v5.3.8 (https://getbootstrap.com/), Copyright 2011-2025 The Bootstrap Authors, Licensed under
+ * MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE). See THIRD-PARTY-NOTICES.txt in the theme's package.
+ */
 /* Import variables first */
 /*
     IMPORTANT: Never import Bootstrap directly into the theme. 
@@ -1789,7 +1793,7 @@ html[dir="rtl"] .CodeMirror-cursor {
 
 .hint.dashed::before,
 .text-muted.dashed::before {
-  content: "— ";
+  content: '\2014\00a0';
 }
 
 .code,
@@ -10871,7 +10875,7 @@ input[type=password]::-ms-clear {
   background: var(--bs-secondary-bg-subtle);
   margin: 1.5em 10px;
   padding: 1em 10px 0.1em;
-  quotes: "“" "”" "‘" "’";
+  quotes: "\201C""\201D""\2018""\2019";
 }
 
 [dir="ltr"] .EasyMDEContainer blockquote:not(.blockquote) {

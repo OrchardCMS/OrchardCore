@@ -1,5 +1,6 @@
 
 // Help text under a field: the secondary size and color, everywhere.
+@use 'sass:string';
 @use '../mixins/word-wrap' as *;
 @use '../config' as *;
 
@@ -13,7 +14,9 @@
 .hint,
 .text-muted {
     &.dashed::before {
-        content: '\2014\00a0';
+        // Written as escapes and unquoted, so that Sass keeps them as escapes: the stylesheet stays ASCII, Sass emits no
+        // @charset, and its /*! credit comment comes first, where the minifier keeps it.
+        content: string.unquote("'\\2014\\00a0'");
     }
 }
 
