@@ -33,8 +33,14 @@ public class ZoneHolding : Shape, IZoneHolding
 
     public Zones Zones => _zones ??= new Zones(this);
 
-    /// <inheritdoc />
-    public void ResetZones()
+    /// <summary>
+    /// Removes shape-valued properties and cached rendered content without replacing this shape or its metadata.
+    /// </summary>
+    /// <remarks>
+    /// Shape-valued properties are treated as zones, as in layout rendering.
+    /// Zone placeholders retrieved before the reset add to the zones created after it.
+    /// </remarks>
+    internal void ResetZones()
     {
         foreach (var property in Properties.ToArray())
         {

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Html;
+using OrchardCore.DisplayManagement.Zones;
 
 namespace OrchardCore.DisplayManagement.Theming;
 
@@ -29,7 +30,11 @@ public class ThemeLayout : Razor.RazorPage<dynamic>
             catch
             {
                 // Let an error handler render with the same layout, without the failed body and zones.
-                ThemeLayout.ResetZones();
+                if (ThemeLayout is ZoneHolding zoneHolding)
+                {
+                    zoneHolding.ResetZones();
+                }
+
                 throw;
             }
 
