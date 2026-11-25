@@ -191,4 +191,28 @@
     .badge {
         font-size: 0.625rem;
     }
+
+    // On a phone many items (quick navigation, culture picker, notifications, theme...) would overflow the top bar:
+    // the items get narrower and the dropdown carets are hidden, the menus still open on a tap.
+    @include media-breakpoint-down(sm) {
+        gap: 0;
+
+        > .nav-item > .nav-link,
+        > .nav-item > .dropdown > .nav-link,
+        > .nav-item > .dropdown > .btn-link {
+            gap: 0.25rem;
+            min-width: 2.25rem;
+            padding: 0 0.375rem;
+
+            &.dropdown-toggle::after {
+                display: none;
+            }
+        }
+    }
+}
+
+@include media-breakpoint-down(sm) {
+    .ta-navbar-top > .container-fluid {
+        gap: 0.5rem;
+    }
 }
