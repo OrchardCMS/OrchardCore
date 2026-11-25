@@ -1,7 +1,7 @@
-"""Takes the screenshots of the User Manual from a running Orchard Core site.
+"""Takes the screenshots of the documentation from a running Orchard Core site.
 
-Each entry of SHOTS names an image under src/docs/user-manual/ and the admin page it shows. Run the script again
-whenever a screen changes, and commit the images that change.
+Each entry of SHOTS names an image of the docs, most under src/docs/user-manual/, and the admin page it shows. Run the
+script again whenever a screen changes, and commit the images that change.
 
 The site must be set up with the Blog recipe, with an `admin` account and the features the pages describe turned on
 (see "Screenshots" in src/docs/contributing/contributing-documentation.md).
@@ -25,12 +25,15 @@ from playwright.sync_api import sync_playwright
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "src", "docs", "user-manual")
 VIEWPORT = {"width": 1280, "height": 800}
 QUALITY = 82
+# The admin theme's default scheme, picked for every page whatever the site's default scheme is.
+SCHEME = "gray"
 
 # Each shot:
-#   file:      the image, relative to src/docs/user-manual/.
+#   file:      the image, relative to src/docs/user-manual/ (an image of the Technical Manual starts with ../).
 #   path:      the address to open, relative to the site.
 #   steps:     optional actions after opening the page: ("follow", selector) opens the address of the first matching
-#              link, even a hidden one; ("click", selector); ("fill", selector, value); ("wait", milliseconds).
+#              link, even a hidden one; ("click", selector); ("fill", selector, value); ("scroll", selector) scrolls
+#              the first matching element to the middle of its container; ("wait", milliseconds).
 #   anonymous: true to take the shot signed out.
 #   full_page: true to capture the whole page instead of the window (cut at 1600 pixels).
 SHOTS = [
@@ -145,6 +148,15 @@ SHOTS = [
     {"file": "administration/images/tenants.webp", "path": "/Admin/Tenants"},
     {"file": "administration/images/create-tenant.webp", "path": "/Admin/Tenants/Create"},
     {"file": "administration/images/feature-profiles.webp", "path": "/Admin/TenantFeatureProfiles"},
+    # Technical Manual: Secrets. Needs a secret to list and edit.
+    {"file": "../reference/modules/Secrets/images/features-secrets.webp", "path": "/Admin/Features",
+     "steps": [("fill", "#search-box", "Secrets"), ("wait", 500)]},
+    {"file": "../reference/modules/Secrets/images/admin-menu.webp", "path": "/Admin/Secrets/Index",
+     "steps": [("scroll", "#left-nav li.current")]},
+    {"file": "../reference/modules/Secrets/images/secrets-list.webp", "path": "/Admin/Secrets/Index"},
+    {"file": "../reference/modules/Secrets/images/secret-create.webp", "path": "/Admin/Secrets/Create?type=TextSecret"},
+    {"file": "../reference/modules/Secrets/images/secret-edit.webp", "path": "/Admin/Secrets/Index",
+     "steps": [("follow", "a[href*='/Secrets/Edit/']")]},
 ]
 
 
@@ -171,6 +183,8 @@ def capture(page, url, shot):
             page.wait_for_load_state("networkidle")
         elif step[0] == "fill":
             page.fill(step[1], step[2])
+        elif step[0] == "scroll":
+            page.locator(step[1]).first.evaluate("element => element.scrollIntoView({ block: 'center' })")
         elif step[0] == "wait":
             page.wait_for_timeout(step[1])
 
@@ -180,8 +194,13 @@ def capture(page, url, shot):
     page.wait_for_timeout(300)
 
     if shot.get("full_page"):
+        # The admin menu and the action bar are fixed to the window: make the window as tall as the page (cut at 1600
+        # pixels) so they are laid out as on screen, instead of stitching the page together.
         height = min(page.evaluate("document.documentElement.scrollHeight"), 1600)
-        png = page.screenshot(clip={"x": 0, "y": 0, "width": VIEWPORT["width"], "height": height}, full_page=True)
+        page.set_viewport_size({"width": VIEWPORT["width"], "height": height})
+        page.wait_for_timeout(300)
+        png = page.screenshot()
+        page.set_viewport_size(VIEWPORT)
     else:
         png = page.screenshot()
 
@@ -216,6 +235,8 @@ def main():
         for context in (signed_in, anonymous):
             # The admin theme remembers the menu sections opened on earlier pages: start every page afresh.
             context.add_init_script("try { localStorage.clear(); sessionStorage.clear(); } catch (e) {}")
+            # The admin theme reads the scheme a user picked from the '{tenant}-TheAdmin-scheme' cookie.
+            context.add_cookies([{"name": "Default-TheAdmin-scheme", "value": SCHEME, "url": url}])
         sign_in(signed_in.new_page(), url, args.user, args.password)
         pages = {False: signed_in.new_page(), True: anonymous.new_page()}
 

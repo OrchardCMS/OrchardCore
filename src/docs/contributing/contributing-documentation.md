@@ -103,7 +103,7 @@ User Manual pages show the screens they describe. Every screenshot follows the s
 | | |
 | --- | --- |
 | **Window** | 1280x800 at a device scale of 1: the whole browser window, with the admin menu. A long editor may capture the whole page, cut at 1600 pixels. |
-| **Look** | Light mode, `en-US`, the admin menu as on a fresh visit, nothing focused or hovered. |
+| **Look** | Light mode with the Gray admin scheme, `en-US`, the admin menu as on a fresh visit, nothing focused or hovered. |
 | **Site** | Set up with the Blog recipe, signed in as `admin`, with the features of the page turned on and sample data so lists aren't empty. No personal data or secrets. |
 | **File** | WebP at quality 82, under 150 KB, named after the screen in lowercase kebab case, in the `images` folder next to the page. |
 | **Page** | Right after the paragraph that introduces the screen, with alt text that says which screen it is. No arrows, highlights or crops. |

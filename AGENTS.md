@@ -185,7 +185,7 @@ Every video of Orchard Core (documentation, pull requests, walkthroughs) follows
 Every screenshot in the docs follows one specification, so they look the same on every page:
 
 - **Taken by the script.** Add the screen to `SHOTS` in `.scripts/docs/screenshots.py` and run it against a local site; never take or edit a screenshot by hand.
-- **Window:** 1280x800 at a device scale of 1, the whole browser window with the admin menu, light mode, `en-US`. A long editor or form may capture the whole page, cut at 1600 pixels.
+- **Window:** 1280x800 at a device scale of 1, the whole browser window with the admin menu, light mode with the Gray admin scheme, `en-US`. A long editor or form may capture the whole page, cut at 1600 pixels.
 - **Site:** set up with the Blog recipe, signed in as `admin`, with the features the page describes turned on and sample data so lists aren't empty. No personal data, real credentials or secrets on screen.
 - **State:** the admin menu as on a fresh visit (the script clears the menu the admin theme remembers), nothing focused or hovered, no open dropdown unless the page is about it.
 - **File:** WebP at quality 82, under 150 KB, named in lowercase kebab case after the screen (`create-tenant.webp`), in the `images` folder next to the page that shows it.

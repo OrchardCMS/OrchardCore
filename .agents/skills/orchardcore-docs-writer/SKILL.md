@@ -158,7 +158,7 @@ Host videos on YouTube, and never commit a video or its assets to the repository
 
 ## Screenshots
 
-Screenshots follow the specification in `AGENTS.md` (Screenshots) and `src/docs/contributing/contributing-documentation.md`: 1280x800 window at scale 1, light mode, Blog recipe site with sample data, WebP quality 82 under 150 KB, in the `images` folder next to the page, right after the paragraph that introduces the screen. Add each screen to `SHOTS` in `.scripts/docs/screenshots.py` and run the script; never take or edit a screenshot by hand.
+Screenshots follow the specification in `AGENTS.md` (Screenshots) and `src/docs/contributing/contributing-documentation.md`: 1280x800 window at scale 1, light mode with the Gray admin scheme, Blog recipe site with sample data, WebP quality 82 under 150 KB, in the `images` folder next to the page, right after the paragraph that introduces the screen. Add each screen to `SHOTS` in `.scripts/docs/screenshots.py` and run the script; never take or edit a screenshot by hand.
 
 ## Docs theme
 
