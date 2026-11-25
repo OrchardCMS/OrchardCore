@@ -115,3 +115,9 @@ The search will find terms that begin with "type" and end with "ing" or "service
 
 ![regular expressions](images/regular-expressions.PNG)
 
+## Video
+
+This video writes precise search queries with the Lucene query syntax.
+
+<!-- video:lucene-query-syntax -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/Q7wsGKFBbMw" title="Lucene Query Syntax: Write Precise Search Queries" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

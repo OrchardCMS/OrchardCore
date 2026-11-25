@@ -750,3 +750,13 @@ This video sets up Content Version Pruning to remove old versions automatically.
 
 <!-- video:content-version-pruning -->
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/0c7PkSaO4Q4" title="Content Version Pruning: Remove Old Versions Automatically" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video sends an email when content is published.
+
+<!-- video:workflows-send-email-on-publish -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/1VGSI2vwPqg" title="Workflows: Send an Email When Content Is Published" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video creates, updates and publishes content automatically with a workflow.
+
+<!-- video:workflows-content-tasks -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/d8eJUVHGMHI" title="Workflows: Create, Update and Publish Content Automatically" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

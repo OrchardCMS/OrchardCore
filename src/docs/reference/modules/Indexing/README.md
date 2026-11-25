@@ -177,3 +177,8 @@ This video creates, rebuilds and resets search indexes.
 
 <!-- video:indexing-indexes -->
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/GAAOSocJXcE" title="Indexes: Create, Rebuild and Reset Search Indexes" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video indexes your own data and fields in code.
+
+<!-- video:indexing-developer -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/48Q3ElxZqAA" title="Indexing in Code: Index Your Own Data and Fields" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
