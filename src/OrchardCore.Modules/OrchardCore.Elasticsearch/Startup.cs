@@ -26,6 +26,7 @@ using OrchardCore.Elasticsearch.Core.Recipes;
 using OrchardCore.Elasticsearch.Core.Services;
 using OrchardCore.Elasticsearch.Drivers;
 using OrchardCore.Elasticsearch.Services;
+using OrchardCore.Elasticsearch.ViewModels;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Search.Elasticsearch.Migrations;
@@ -69,6 +70,9 @@ public sealed class Startup : StartupBase
         services.AddPermissionProvider<PermissionProvider>();
         services.AddNavigationProvider<AdminMenu>();
         services.AddDisplayDriver<Query, ElasticsearchQueryDisplayDriver>();
+
+        // Builds the editor of the Elasticsearch query runner.
+        services.AddDisplayDriver<AdminQueryViewModel, ElasticsearchQueryRunnerDisplayDriver>();
         services.AddDataMigration<ElasticsearchQueryMigrations>();
         services.AddScoped<IQueryHandler, ElasticsearchQueryHandler>();
 

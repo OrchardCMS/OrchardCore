@@ -1,11 +1,6 @@
 @using OrchardCore.Elasticsearch
 @model ElasticsearchDefaultQueryViewModel
 
-<div class="ocat-wrapper">
-    <div class="ocat-end-offset">
-        <h4 class="mt-4 mb-0">@T["Default Query Settings"]</h4>
-    </div>
-</div>
 <div class="ocat-wrapper" asp-validation-class-for="QueryAnalyzerName">
     <label asp-for="QueryAnalyzerName" class="ocat-label">@T["Query analyzer"]</label>
     <div class="ocat-end">
@@ -32,8 +27,8 @@
 </div>
 
 <div class="ocat-wrapper" asp-validation-class-for="DefaultSearchFields" id="DefaultQueryFields">
-    <label asp-for="DefaultSearchFields" class="ocat-label">@T["Query field names"]</label>
-    <div class="ocat-end">
+    <span id="@Html.IdFor(m => m.DefaultSearchFields)_Label" class="ocat-label">@T["Query field names"]</span>
+    <div class="ocat-end" role="group" aria-labelledby="@Html.IdFor(m => m.DefaultSearchFields)_Label">
     <div>
         <ul class="list-group">
             @for (int i = 0; i < Model.DefaultSearchFields.Length; i++)

@@ -62,6 +62,9 @@ public sealed class Startup : StartupBase
         services.AddDisplayDriver<DataPipelineEntry, DataPipelineEntryDisplayDriver>();
         services.AddDisplayDriver<DataPipelineRunEntry, DataPipelineRunEntryDisplayDriver>();
 
+        // Builds the editor of the page adding a data pipeline.
+        services.AddDisplayDriver<DataPipelineCreateViewModel, DataPipelineCreateDisplayDriver>();
+
         services.AddPermissionProvider<PermissionsProvider>();
         services.AddNavigationProvider<AdminMenu>();
         services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();

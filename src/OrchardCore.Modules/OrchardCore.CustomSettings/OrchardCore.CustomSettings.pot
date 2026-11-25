@@ -16,6 +16,11 @@ msgctxt "OrchardCore.CustomSettings.CustomSettingsLocalizationSources"
 msgid "Custom Settings"
 msgstr ""
 
+#: Deployment/CustomSettingsDeploymentStepDriver.cs
+msgctxt "OrchardCore.CustomSettings.Deployment.CustomSettingsDeploymentStepDriver"
+msgid "Custom settings"
+msgstr ""
+
 #. Format arguments: {0}
 #: Permissions.cs
 #, csharp-format

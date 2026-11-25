@@ -13,13 +13,22 @@ By default, the `ocat-*` classes render a stacked (vertical) form layout equival
 | CSS Class | Purpose | Default Style |
 |-----------|---------|---------------|
 | `ocat-wrapper` | Outer wrapper for each form field group | `margin-bottom: 1rem` |
-| `ocat-label` | Label element styling | Same as Bootstrap `.form-label` |
+| `ocat-label` | Label element styling: a `<label>` for one control, or a `<span>` captioning a group of controls or a value | Same as Bootstrap `.form-label` |
 | `ocat-label-required` | Additional class for required field labels | Appends a `*` indicator in the `--bs-danger` color, separated from the text by a `0.25rem` inline-start padding so it reads well in LTR and RTL |
 | `ocat-end` | Container for the input and hint content | _(no additional styles)_ |
 | `ocat-end-offset` | Container for input content when no label exists (e.g., standalone checkboxes) | _(no additional styles)_ |
 | `ocat-start` | Leading element container (for push/alignment) | _(no additional styles)_ |
 | `ocat-limited-wrapper` | Wrapper for limited-width fields (dropdowns, numbers) | Stacked field wrapper with `margin-bottom: 1rem` |
 | `ocat-limited` | Constrains input width for limited-width fields | `100%`, then `50%` at `md`, `33.333%` at `lg`, `25%` at `xxl` |
+
+### Cards
+
+Every admin form groups its fields in cards, each a logical section of the form with a short title, e.g. "Server", "Authentication" and "Sender" in the SMTP settings. Every card comes from placement: the editor shapes of display drivers declare the card they belong to, and placement files can move them to other cards. Views never write card markup.
+
+- **Editors built by display drivers** (site settings, users, content type, part and field settings, workflow activities, deployment steps, ...): each editor shape declares its card in its placement location, with a name localized by the driver, e.g. `.Location(l => l.Zone("Content", "1").Card(S["Server"], "10"))`. Shapes placed in the same card share it, and a placement file can move a shape to another card, e.g. `"place": "Content:5%Server;10"`. See [Editor shape placement](../modules/Placement/README.md#editor-shape-placement).
+- **Admin pages with a form**, a controller editing a view model (e.g. a template or an OpenID application): the page renders an editor built by the display drivers of its view model, `@await DisplayAsync(Model.Editor)`, and the drivers place its shapes in cards. The controller builds the editor with `IDisplayManager<TViewModel>.BuildEditorAsync` and updates it with `UpdateEditorAsync` before validating the model. Other modules can add fields and cards to these pages with drivers of the same view model.
+
+The admin theme renders a card (the `Card` shape) as a `<fieldset>`, the HTML element grouping related form fields, styled as a Bootstrap card: `card` with its `card-header` legend and `card-body`, always expanded: cards group fields, they don't hide them. In a tab, which already frames them (e.g. the general, email and SMS settings), the cards render as plain fieldsets titled by their legends, except the ones holding a table, such as the events of the audit trail. The legend titles the card for assistive technologies, and the card carries the `ocat-card`, `ocat-card-title` and `ocat-card-body` classes as hooks. A card whose shapes render nothing is not shown. To render cards differently, override the `Card` and `CardContainer` shapes in a custom admin theme.
 
 ### Using OCAT Classes in Custom Views
 
@@ -72,6 +81,25 @@ When building custom admin editor views, use the `ocat-*` classes so your views 
     <div class="ocat-limited">
         <input asp-for="PageSize" type="number" class="form-control" />
         <span class="hint">@T["The default page size."]</span>
+    </div>
+</div>
+```
+
+**Group of controls pattern:**
+
+A `<label>` labels a single control, whose id matches its `for`. When the caption applies to several controls, such as a list of checkboxes or radio buttons, or to a widget rendered by a script, render it as a `<span>` with an id and label the container of the controls with it. Use `role="radiogroup"` for radio buttons. A row that shows a value without a control also uses a `<span class="ocat-label">`.
+
+```html
+<div class="ocat-wrapper">
+    <span id="@Html.IdFor(m => m.ContentTypes)_Label" class="ocat-label">@T["Content types"]</span>
+    <div class="ocat-end" role="group" aria-labelledby="@Html.IdFor(m => m.ContentTypes)_Label">
+        @for (var i = 0; i < Model.ContentTypes.Length; i++)
+        {
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" asp-for="ContentTypes[i].IsSelected" />
+                <label class="form-check-label" asp-for="ContentTypes[i].IsSelected">@Model.ContentTypes[i].DisplayName</label>
+            </div>
+        }
     </div>
 </div>
 ```

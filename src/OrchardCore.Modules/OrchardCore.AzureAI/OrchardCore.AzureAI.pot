@@ -43,6 +43,11 @@ msgstr ""
 
 #: Drivers/AzureAISearchDefaultSettingsDisplayDriver.cs
 msgctxt "OrchardCore.AzureAI.Drivers.AzureAISearchDefaultSettingsDisplayDriver"
+msgid "Connection"
+msgstr ""
+
+#: Drivers/AzureAISearchDefaultSettingsDisplayDriver.cs
+msgctxt "OrchardCore.AzureAI.Drivers.AzureAISearchDefaultSettingsDisplayDriver"
 msgid "Default"
 msgstr ""
 
@@ -61,6 +66,31 @@ msgctxt "OrchardCore.AzureAI.Drivers.AzureAISearchDefaultSettingsDisplayDriver"
 msgid "Managed Identity"
 msgstr ""
 
+#: Drivers/AzureAISearchIndexDeploymentStepDriver.cs
+msgctxt "OrchardCore.AzureAI.Drivers.AzureAISearchIndexDeploymentStepDriver"
+msgid "Indexes"
+msgstr ""
+
+#: Drivers/AzureAISearchIndexProfileDisplayDriver.cs
+msgctxt "OrchardCore.AzureAI.Drivers.AzureAISearchIndexProfileDisplayDriver"
+msgid "Default query"
+msgstr ""
+
+#: Drivers/AzureAISearchIndexProfileDisplayDriver.cs
+msgctxt "OrchardCore.AzureAI.Drivers.AzureAISearchIndexProfileDisplayDriver"
+msgid "Index settings"
+msgstr ""
+
+#: Drivers/AzureAISearchIndexRebuildDeploymentStepDriver.cs
+msgctxt "OrchardCore.AzureAI.Drivers.AzureAISearchIndexRebuildDeploymentStepDriver"
+msgid "Indexes"
+msgstr ""
+
+#: Drivers/AzureAISearchIndexResetDeploymentStepDriver.cs
+msgctxt "OrchardCore.AzureAI.Drivers.AzureAISearchIndexResetDeploymentStepDriver"
+msgid "Indexes"
+msgstr ""
+
 #: Drivers/AzureAISearchSecretMigrationDisplayDriver.cs
 msgctxt "OrchardCore.AzureAI.Drivers.AzureAISearchSecretMigrationDisplayDriver"
 msgid "API key"
@@ -76,9 +106,19 @@ msgctxt "OrchardCore.AzureAI.Drivers.AzureAISearchSecretMigrationDisplayDriver"
 msgid "Azure AI Search: API key"
 msgstr ""
 
+#: Drivers/ContentPartFieldIndexSettingsDisplayDriver.cs
+msgctxt "OrchardCore.AzureAI.Drivers.ContentPartFieldIndexSettingsDisplayDriver"
+msgid "Indexing"
+msgstr ""
+
+#: Drivers/ContentTypePartIndexSettingsDisplayDriver.cs
+msgctxt "OrchardCore.AzureAI.Drivers.ContentTypePartIndexSettingsDisplayDriver"
+msgid "Indexing"
+msgstr ""
+
 #: Views/AzureAISearchContentIndexSettings.Edit.cshtml
 msgctxt "OrchardCore.AzureAI.Views.AzureAISearchContentIndexSettings.Edit"
-msgid "Azure AI Search Index Settings"
+msgid "Azure AI Search"
 msgstr ""
 
 #: Views/AzureAISearchContentIndexSettings.Edit.cshtml
@@ -139,11 +179,6 @@ msgstr ""
 #: Views/AzureAISearchIndexProfile.Edit.cshtml
 msgctxt "OrchardCore.AzureAI.Views.AzureAISearchIndexProfile.Edit"
 msgid "Analyzer"
-msgstr ""
-
-#: Views/AzureAISearchQuerySettings.Edit.cshtml
-msgctxt "OrchardCore.AzureAI.Views.AzureAISearchQuerySettings.Edit"
-msgid "Default Query Settings"
 msgstr ""
 
 #: Views/AzureAISearchQuerySettings.Edit.cshtml

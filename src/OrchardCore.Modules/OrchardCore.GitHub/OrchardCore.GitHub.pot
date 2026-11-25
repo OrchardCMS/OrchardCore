@@ -26,6 +26,11 @@ msgctxt "OrchardCore.GitHub.AdminMenuGitHubLogin"
 msgid "Settings"
 msgstr ""
 
+#: Drivers/GithubAuthenticationSettingsDisplayDriver.cs
+msgctxt "OrchardCore.GitHub.Drivers.GitHubAuthenticationSettingsDisplayDriver"
+msgid "Application"
+msgstr ""
+
 #: Drivers/GitHubSecretMigrationDisplayDriver.cs
 msgctxt "OrchardCore.GitHub.Drivers.GitHubSecretMigrationDisplayDriver"
 msgid "Client secret"
@@ -59,11 +64,6 @@ msgstr ""
 #: Views/GithubAuthenticationSettings.Edit.cshtml
 msgctxt "OrchardCore.GitHub.Views.GithubAuthenticationSettings.Edit"
 msgid "Client secret"
-msgstr ""
-
-#: Views/GithubAuthenticationSettings.Edit.cshtml
-msgctxt "OrchardCore.GitHub.Views.GithubAuthenticationSettings.Edit"
-msgid "GitHub Authentication Settings"
 msgstr ""
 
 #: Views/GithubAuthenticationSettings.Edit.cshtml

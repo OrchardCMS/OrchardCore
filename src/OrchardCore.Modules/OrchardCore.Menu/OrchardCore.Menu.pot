@@ -59,6 +59,11 @@ msgctxt "OrchardCore.Menu.Services.MenuItemStereotypesProvider"
 msgid "Menu Item"
 msgstr ""
 
+#: Settings/HtmlMenuItemPartSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Menu.Settings.HtmlMenuItemPartSettingsDisplayDriver"
+msgid "Settings"
+msgstr ""
+
 #. Format arguments: {0}: menuDisplayText
 #: Views/Admin/Create.cshtml
 #, csharp-format

@@ -1,0 +1,30 @@
+@model LayerEditViewModel
+
+@if (Model.IsNew)
+{
+    <div class="ocat-wrapper" asp-validation-class-for="Name">
+        <label asp-for="Name" class="ocat-label ocat-label-required">@T["Name"]</label>
+        <div class="ocat-end">
+            <input asp-for="Name" class="form-control" type="text" />
+            <span asp-validation-for="Name"></span>
+        </div>
+    </div>
+}
+else
+{
+    <div class="ocat-wrapper" asp-validation-class-for="Name">
+        <label asp-for="Name" class="ocat-label">@T["Name"]</label>
+        <div class="ocat-end">
+            <input readonly="readonly" asp-for="Name" class="form-control" type="text" />
+            <span asp-validation-for="Name"></span>
+        </div>
+    </div>
+}
+
+<div class="ocat-wrapper" asp-validation-class-for="Description">
+    <label asp-for="Description" class="ocat-label">@T["Description"]</label>
+    <div class="ocat-end">
+        <textarea asp-for="Description" class="form-control" rows="3" type="text"></textarea>
+        <span asp-validation-for="Description"></span>
+    </div>
+</div>

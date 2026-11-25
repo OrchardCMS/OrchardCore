@@ -3,8 +3,8 @@
 @model OrchardCore.Flows.ViewModels.FlowPartSettingsViewModel
 
 <div class="ocat-wrapper">
-    <label asp-for="ContainedContentTypes" class="ocat-label">@T["Restrict Content Types"]</label>
-    <div class="ocat-end">
+    <span id="@Html.IdFor(m => m.ContainedContentTypes)_Label" class="ocat-label">@T["Restrict Content Types"]</span>
+    <div class="ocat-end" role="group" aria-labelledby="@Html.IdFor(m => m.ContainedContentTypes)_Label">
         <span class="hint">@T["The content types that this flow can contain."]</span>
         @await Component.InvokeAsync("SelectContentTypes", new { selectedContentTypes = Model.ContainedContentTypes, htmlName = Html.NameFor(m => m.ContainedContentTypes), stereotype = "Widget" })
     </div>

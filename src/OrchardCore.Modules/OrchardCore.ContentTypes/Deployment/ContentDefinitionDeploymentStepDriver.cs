@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.ContentTypes.ViewModels;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
@@ -7,6 +8,13 @@ namespace OrchardCore.ContentTypes.Deployment;
 
 public sealed class ContentDefinitionDeploymentStepDriver : DisplayDriver<DeploymentStep, ContentDefinitionDeploymentStep>
 {
+    internal readonly IStringLocalizer S;
+
+    public ContentDefinitionDeploymentStepDriver(IStringLocalizer<ContentDefinitionDeploymentStepDriver> stringLocalizer)
+    {
+        S = stringLocalizer;
+    }
+
     public override Task<IDisplayResult> DisplayAsync(ContentDefinitionDeploymentStep step, BuildDisplayContext context)
     {
         return
@@ -23,7 +31,7 @@ public sealed class ContentDefinitionDeploymentStepDriver : DisplayDriver<Deploy
             model.ContentParts = step.ContentParts;
             model.ContentTypes = step.ContentTypes;
             model.IncludeAll = step.IncludeAll;
-        }).Location("Content");
+        }).Location(l => l.Zone("Content").Card(S["Content definitions"], "10"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentDefinitionDeploymentStep step, UpdateEditorContext context)

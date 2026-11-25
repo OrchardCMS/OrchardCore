@@ -9,12 +9,6 @@
 <script asp-name="vuejs" at="Foot"></script>
 <script asp-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-icon-picker.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-icon-picker.js" at="Foot" depends-on="vuejs, bootstrap, jQuery, fontawesome-iconpicker"></script>
 
-<div class="ocat-wrapper">
-    <div class="ocat-end-offset">
-        <h5 class="mb-0">@T["Link"]</h5>
-    </div>
-</div>
-
 <div class="ocat-wrapper" asp-validation-class-for="LinkText">
     <label asp-for="LinkText" class="ocat-label ocat-label-required">@T["Link Text"]</label>
     <div class="ocat-end">
@@ -47,8 +41,8 @@
 </div>
 
 <div class="ocat-wrapper">
-    <label asp-for="IconClass" class="ocat-label">@T["Icon"]</label>
-    <div class="ocat-end">
+    <span id="@Html.IdFor(m => m.IconClass)_Label" class="ocat-label">@T["Icon"]</span>
+    <div class="ocat-end" role="group" aria-labelledby="@Html.IdFor(m => m.IconClass)_Label">
         <div class="btn-toolbar" role="toolbar" aria-label="Icon Selector Toolbar">
             <div class="btn-group input-group me-2" role="group" aria-label="Icon Selector">
                 <button type="button" class="btn btn-primary sample-icon">

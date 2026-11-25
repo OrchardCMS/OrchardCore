@@ -850,6 +850,11 @@ This video resizes images, builds asset URLs and uses the media tag helpers in t
 <!-- video:media-in-templates -->
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/aGWXBEQEa-0" title="Media in Templates: Image Resizing, Asset URLs and Tag Helpers" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
+This video makes PDF, Office and text documents of the media library searchable.
+
+<!-- video:media-indexing -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/3XJtNZbw-xw" title="Search Media Files: Index PDF, Office and Text Documents" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
 ## Media Indexing
 
 The base `Media Indexing` feature indexes media text stored by media fields. Additional file extraction is enabled by feature:

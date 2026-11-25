@@ -27,7 +27,7 @@ public sealed class MultiTextFieldSettingsDriver : ContentPartFieldDefinitionDis
             model.Required = settings.Required;
             model.Hint = settings.Hint;
             model.Options = JConvert.SerializeObject(settings.Options, JOptions.Indented);
-        }).Location("Content");
+        }).Location(l => l.Zone("Content").Card(S["Settings"], "20"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)

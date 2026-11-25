@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -7,6 +8,13 @@ namespace OrchardCore.Templates.Deployment;
 
 public sealed class AllTemplatesDeploymentStepDriver : DisplayDriver<DeploymentStep, AllTemplatesDeploymentStep>
 {
+    internal readonly IStringLocalizer S;
+
+    public AllTemplatesDeploymentStepDriver(IStringLocalizer<AllTemplatesDeploymentStepDriver> stringLocalizer)
+    {
+        S = stringLocalizer;
+    }
+
     public override Task<IDisplayResult> DisplayAsync(AllTemplatesDeploymentStep step, BuildDisplayContext context)
     {
         return
@@ -21,7 +29,7 @@ public sealed class AllTemplatesDeploymentStepDriver : DisplayDriver<DeploymentS
         return Initialize<AllTemplatesDeploymentStepViewModel>("AllTemplatesDeploymentStep_Fields_Edit", model =>
         {
             model.ExportAsFiles = step.ExportAsFiles;
-        }).Location("Content");
+        }).Location(l => l.Zone("Content").Card(S["Templates"], "10"));
     }
     public override async Task<IDisplayResult> UpdateAsync(AllTemplatesDeploymentStep step, UpdateEditorContext context)
     {

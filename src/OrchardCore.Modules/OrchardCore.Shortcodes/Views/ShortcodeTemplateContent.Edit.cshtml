@@ -1,0 +1,10 @@
+@model ShortcodeTemplateViewModel
+
+<div class="ocat-wrapper" asp-validation-class-for="Content">
+    <label asp-for="Content" class="ocat-label ocat-label-required">@T["Content"]</label>
+    <div class="ocat-end">
+        <textarea asp-for="Content" rows="10" class="form-control"></textarea>
+        <span asp-validation-for="Content"></span>
+        <span class="hint">@T["The Liquid template."]</span>
+    </div>
+</div>

@@ -13,7 +13,7 @@
 <script asp-name="bootstrap-select" at="Foot"></script>
 
 <div class="@($"ocat-wrapper field-wrapper field-wrapper-{Model.PartFieldDefinition.PartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" + (Model.PartFieldDefinition.IsNamedPart() ? $" field-wrapper-{Model.PartFieldDefinition.ContentTypePartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" : string.Empty))" id="@Html.IdFor(x => x.Values)_FieldWrapper">
-    <label class="ocat-label @(settings.Required ? "ocat-label-required" : "")">@localizedFieldName</label>
+    <label asp-for="Values" class="ocat-label @(settings.Required ? "ocat-label-required" : "")">@localizedFieldName</label>
     <div class="ocat-end">
         <select asp-for="Values" multiple data-multi-text-field-picker data-live-search="true" data-show-selected-tags="true" data-selected-items-style="list" data-width="100%" placeholder="@T["Type to search"]" data-live-search-placeholder="@T["Search"]" data-none-results-text="@T["No values match {0}", "{0}"]" data-selected-tag-remove-label="@T["Remove"]" aria-label="@localizedFieldName">
             @foreach (var option in settings.Options)

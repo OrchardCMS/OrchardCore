@@ -50,7 +50,7 @@ public sealed class UserInformationDisplayDriver : DisplayDriver<User>
 
                 model.AllowEditing = context.IsNew || (settings.AllowChangingUsername && canEditUserInfo);
 
-            }).Location("Content:1"),
+            }).Location(l => l.Zone("Content", "1").Card(S["Account"], "10")),
 
             Initialize<EditUserEmailViewModel>("UserEmail_Edit", model =>
             {
@@ -58,7 +58,7 @@ public sealed class UserInformationDisplayDriver : DisplayDriver<User>
 
                 model.AllowEditing = context.IsNew || (settings.AllowChangingEmail && canEditUserInfo);
 
-            }).Location("Content:1.3"),
+            }).Location(l => l.Zone("Content", "1.3").Card(S["Account"], "10")),
 
             Initialize<EditUserPhoneNumberViewModel>("UserPhoneNumber_Edit", model =>
             {
@@ -67,7 +67,7 @@ public sealed class UserInformationDisplayDriver : DisplayDriver<User>
 
                 model.AllowEditing = context.IsNew || (settings.AllowChangingPhoneNumber && canEditUserInfo);
 
-            }).Location("Content:1.3")
+            }).Location(l => l.Zone("Content", "1.3").Card(S["Account"], "10"))
         );
     }
 

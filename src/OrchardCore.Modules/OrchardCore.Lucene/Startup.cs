@@ -19,6 +19,7 @@ using OrchardCore.Lucene.Drivers;
 using OrchardCore.Lucene.Recipes;
 using OrchardCore.Lucene.Services;
 using OrchardCore.Lucene.Settings;
+using OrchardCore.Lucene.ViewModels;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Queries;
@@ -48,6 +49,9 @@ public sealed class Startup : StartupBase
                 new StandardAnalyzer(LuceneConstants.DefaultVersion))));
 
         services.AddDisplayDriver<Query, LuceneQueryDisplayDriver>();
+
+        // Builds the editor of the Lucene query runner.
+        services.AddDisplayDriver<AdminQueryViewModel, LuceneQueryRunnerDisplayDriver>();
 
         services
             .AddLuceneQueries()

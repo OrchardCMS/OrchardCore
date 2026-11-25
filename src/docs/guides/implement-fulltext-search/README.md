@@ -134,3 +134,10 @@ SearchResults.liquid:
     <p class="alert alert-warning">{{"There are no such results." | t }}</p>
 {% endif %}
 ```
+
+## Video
+
+This video implements full-text search, from the index to the results page.
+
+<!-- video:full-text-search-guide -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/2TT3osinTII" title="Implement Full-Text Search: From Index to Results Page" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

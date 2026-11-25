@@ -7,9 +7,7 @@
     // editors register them with asp-name / asp-src rather than as raw blocks.
     Layout = null;
 
-    IHtmlContent body = Model.Shape is not null
-        ? await DisplayAsync(Model.Shape)
-        : await Html.PartialAsync(Model.PartialName, Model.PartialModel);
+    IHtmlContent body = await DisplayAsync(Model.Shape);
 
     using var contentWriter = new System.IO.StringWriter();
     contentWriter.Write("<div class=\"workflow-designer-form\" data-workflow-type-id=\"");

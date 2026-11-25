@@ -1,0 +1,12 @@
+@using OrchardCore.Tenants.Workflows.ViewModels
+@model CreateTenantTaskViewModel
+
+<div data-task-editor="create-tenant">
+    <div class="ocat-wrapper" asp-validation-class-for="FeatureProfileExpression">
+        <label asp-for="FeatureProfileExpression" class="ocat-label">@T["Feature Profile"]</label>
+        <div class="ocat-end">
+            <textarea asp-for="FeatureProfileExpression" rows="1" class="form-control code"></textarea>
+            <span asp-validation-for="FeatureProfileExpression"></span>
+        </div>
+    </div>
+</div>

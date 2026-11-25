@@ -23,8 +23,8 @@
 </div>
 
 <div id="userRolesVue" class="ocat-wrapper" data-display-all-users="@Model.DisplayAllUsers.ToString().ToLowerInvariant()">
-    <label asp-for="Roles" class="ocat-label">@T["Roles"]</label>
-    <div class="ocat-end">
+    <span id="@Html.IdFor(m => m.Roles)_Label" class="ocat-label">@T["Roles"]</span>
+    <div class="ocat-end" role="group" aria-labelledby="@Html.IdFor(m => m.Roles)_Label">
         <span class="hint">@T["The roles that a user must belong to. Choose at least one."]</span>
 
         <div class="form-check">

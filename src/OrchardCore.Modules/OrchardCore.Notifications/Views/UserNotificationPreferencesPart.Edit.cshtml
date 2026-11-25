@@ -4,9 +4,9 @@
 }
 
 <div class="ocat-wrapper">
-    <label asp-for="Methods" class="ocat-label">@T["Notification Methods"]</label>
+    <span id="@Html.IdFor(m => m.Methods)_Label" class="ocat-label">@T["Notification Methods"]</span>
 
-    <div class="ocat-end">
+    <div class="ocat-end" role="group" aria-labelledby="@Html.IdFor(m => m.Methods)_Label">
         <span class="hint">
             @T["Select all notification methods to receive."]
         </span>
@@ -39,8 +39,8 @@
     var typeMethodsId = Html.IdFor(x => x.TypeMethods);
 
     <div class="ocat-wrapper">
-        <label class="ocat-label">@T["Notification Types"]</label>
-        <div class="ocat-end">
+        <span id="@Html.IdFor(m => m)_NotificationTypes_Label" class="ocat-label">@T["Notification Types"]</span>
+        <div class="ocat-end" role="group" aria-labelledby="@Html.IdFor(m => m)_NotificationTypes_Label">
             <span class="hint">@T["Choose how you receive each type of notification. A method turned off above stays off for every type."]</span>
             <div class="table-responsive">
                 <table class="table table-sm align-middle mb-0" id="@typeMethodsId">

@@ -1,4 +1,6 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using OrchardCore.DisplayManagement;
 using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Workflows.ViewModels;
@@ -40,6 +42,39 @@ public class WorkflowTypePropertiesViewModel : IWorkflowTypeExecutionSettings
 
     public bool RecordActivityData { get; set; }
     public string ReturnUrl { get; set; }
+
+    /// <summary>
+    /// Gets or sets the page editing the properties, which adapts their editor to it.
+    /// </summary>
+    [BindNever]
+    public WorkflowTypePropertiesPage Page { get; set; }
+
+    /// <summary>
+    /// Gets or sets the editor of the properties, built by the display drivers of <see cref="WorkflowTypePropertiesViewModel"/>.
+    /// </summary>
+    [BindNever]
+    public IShape Editor { get; set; }
+}
+
+/// <summary>
+/// The page editing the properties of a workflow type.
+/// </summary>
+public enum WorkflowTypePropertiesPage
+{
+    /// <summary>
+    /// The page creating a workflow type.
+    /// </summary>
+    Create,
+
+    /// <summary>
+    /// The page cloning a workflow type.
+    /// </summary>
+    Clone,
+
+    /// <summary>
+    /// The Workflow tab of the designer.
+    /// </summary>
+    Designer,
 }
 
 /// <summary>

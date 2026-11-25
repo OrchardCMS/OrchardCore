@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
@@ -8,6 +9,13 @@ namespace OrchardCore.ContentFields.Settings;
 
 public sealed class DateFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<DateField>
 {
+    internal readonly IStringLocalizer S;
+
+    public DateFieldSettingsDriver(IStringLocalizer<DateFieldSettingsDriver> stringLocalizer)
+    {
+        S = stringLocalizer;
+    }
+
     public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
     {
         return Initialize<DateFieldSettings>("DateFieldSettings_Edit", model =>
@@ -16,7 +24,7 @@ public sealed class DateFieldSettingsDriver : ContentPartFieldDefinitionDisplayD
 
             model.Hint = settings.Hint;
             model.Required = settings.Required;
-        }).Location("Content");
+        }).Location(l => l.Zone("Content").Card(S["Settings"], "20"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
