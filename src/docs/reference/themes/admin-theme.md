@@ -13,7 +13,7 @@ By default, the `ocat-*` classes render a stacked (vertical) form layout equival
 | CSS Class | Purpose | Default Style |
 |-----------|---------|---------------|
 | `ocat-wrapper` | Outer wrapper for each form field group | `margin-bottom: 1rem` |
-| `ocat-label` | Label element styling | Same as Bootstrap `.form-label` |
+| `ocat-label` | Label element styling: a `<label>` for one control, or a `<span>` captioning a group of controls or a value | Same as Bootstrap `.form-label` |
 | `ocat-label-required` | Additional class for required field labels | Appends a `*` indicator in the `--bs-danger` color, separated from the text by a `0.25rem` inline-start padding so it reads well in LTR and RTL |
 | `ocat-end` | Container for the input and hint content | _(no additional styles)_ |
 | `ocat-end-offset` | Container for input content when no label exists (e.g., standalone checkboxes) | _(no additional styles)_ |
@@ -72,6 +72,25 @@ When building custom admin editor views, use the `ocat-*` classes so your views 
     <div class="ocat-limited">
         <input asp-for="PageSize" type="number" class="form-control" />
         <span class="hint">@T["The default page size."]</span>
+    </div>
+</div>
+```
+
+**Group of controls pattern:**
+
+A `<label>` labels a single control, whose id matches its `for`. When the caption applies to several controls, such as a list of checkboxes or radio buttons, or to a widget rendered by a script, render it as a `<span>` with an id and label the container of the controls with it. Use `role="radiogroup"` for radio buttons. A row that shows a value without a control also uses a `<span class="ocat-label">`.
+
+```html
+<div class="ocat-wrapper">
+    <span id="@Html.IdFor(m => m.ContentTypes)_Label" class="ocat-label">@T["Content types"]</span>
+    <div class="ocat-end" role="group" aria-labelledby="@Html.IdFor(m => m.ContentTypes)_Label">
+        @for (var i = 0; i < Model.ContentTypes.Length; i++)
+        {
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" asp-for="ContentTypes[i].IsSelected" />
+                <label class="form-check-label" asp-for="ContentTypes[i].IsSelected">@Model.ContentTypes[i].DisplayName</label>
+            </div>
+        }
     </div>
 </div>
 ```
