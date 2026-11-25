@@ -322,6 +322,10 @@ To apply a position modifier, or column width modifier, apply the appropriate va
 
 Fields or Parts which do not have a grouping will fall into the default `Content` group when other fields apply a grouping.
 
+A single card is rendered as a card too. In the admin theme, cards render as fieldsets styled as Bootstrap cards, titled by a legend with the name of the card, and the shapes of the default `Content` group render as they are. See [Admin Theme Conventions](../../themes/admin-theme.md#cards).
+
+Display drivers declare the card of their editor shapes with the fluent API, localizing its name, which is its title: `.Location(l => l.Zone("Content", "1").Card(S["Server"], "10"))`. Card names written in placement files aren't localized.
+
 !!! warning "Shape position vs. group position"
     The **position** (the number after `:`) controls the order of shapes **within a zone**. The **group position** (the number after `;`) controls the order of the **groups themselves** (e.g., which tab appears first). These are two different things.
 
@@ -619,3 +623,8 @@ Set location per display type:
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/YR8QzyAEgo4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/pGLggL_T9jc" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video decides where parts and fields appear with placement files.
+
+<!-- video:placement-files -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/Sl51Xv2lO-E" title="Placement: Decide Where Parts and Fields Appear" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

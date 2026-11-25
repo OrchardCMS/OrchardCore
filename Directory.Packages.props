@@ -6,9 +6,9 @@
   <ItemGroup>
     <PackageVersion Include="Acornima" Version="1.9.1" />
     <PackageVersion Include="AnyAscii" Version="0.3.3" />
-    <PackageVersion Include="AngleSharp" Version="1.9.0" />
-    <PackageVersion Include="AWSSDK.S3" Version="4.0.104.8" />
-    <PackageVersion Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.102.7" />
+    <PackageVersion Include="AngleSharp" Version="1.10.0" />
+    <PackageVersion Include="AWSSDK.S3" Version="4.0.104.11" />
+    <PackageVersion Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.102.10" />
     <PackageVersion Include="Azure.Communication.Email" Version="1.1.0" />
     <PackageVersion Include="Azure.Communication.Sms" Version="1.0.2" />
     <PackageVersion Include="Azure.Core" Version="1.64.0" />
@@ -32,20 +32,20 @@
     <PackageVersion Include="GraphQL.SystemTextJson" Version="8.8.5" />
     <PackageVersion Include="Jint" Version="4.17.0" />
     <PackageVersion Include="JsonPath.Net" Version="2.2.0" />
-    <PackageVersion Include="HtmlSanitizer" Version="9.2.1039" />
+    <PackageVersion Include="HtmlSanitizer" Version="10.0.1120" />
     <PackageVersion Include="Microsoft.Extensions.Compliance.Redaction" Version="10.11.0" />
     <PackageVersion Include="Parlot" Version="2.2.1" />
-    <PackageVersion Include="libphonenumber-csharp" Version="9.0.42" />
+    <PackageVersion Include="libphonenumber-csharp" Version="9.0.43" />
     <PackageVersion Include="Lorem.Universal.NET" Version="5.0.0" />
     <PackageVersion Include="Lucene.Net" Version="4.8.0-beta00018" />
     <PackageVersion Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00018" />
     <PackageVersion Include="Lucene.Net.QueryParser" Version="4.8.0-beta00018" />
     <PackageVersion Include="Lucene.Net.Spatial" Version="4.8.0-beta00018" />
     <PackageVersion Include="MailKit" Version="4.18.2" />
-    <PackageVersion Include="Markdig" Version="1.5.1" />
+    <PackageVersion Include="Markdig" Version="1.6.0" />
     <PackageVersion Include="Microsoft.Azure.SignalR" Version="1.33.0" />
     <PackageVersion Include="Microsoft.Extensions.Azure" Version="1.14.1" />
-    <PackageVersion Include="Microsoft.Identity.Web" Version="4.16.1" />
+    <PackageVersion Include="Microsoft.Identity.Web" Version="4.18.0" />
     <PackageVersion Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="8.23.0" />
     <PackageVersion Include="Microsoft.IO.RecyclableMemoryStream" Version="4.0.1" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.11.0" />
@@ -58,24 +58,24 @@
     <PackageVersion Include="NJsonSchema" Version="11.6.1" />
     <PackageVersion Include="NLog.Web.AspNetCore" Version="6.2.2" />
     <PackageVersion Include="NodaTime" Version="3.3.7" />
-    <PackageVersion Include="OpenIddict.Core" Version="7.7.2" />
-    <PackageVersion Include="OpenIddict.Server.AspNetCore" Version="7.7.2" />
-    <PackageVersion Include="OpenIddict.Server.DataProtection" Version="7.7.2" />
-    <PackageVersion Include="OpenIddict.Validation.AspNetCore" Version="7.7.2" />
-    <PackageVersion Include="OpenIddict.Validation.DataProtection" Version="7.7.2" />
-    <PackageVersion Include="OpenIddict.Validation.SystemNetHttp" Version="7.7.2" />
+    <PackageVersion Include="OpenIddict.Core" Version="7.8.0" />
+    <PackageVersion Include="OpenIddict.Server.AspNetCore" Version="7.8.0" />
+    <PackageVersion Include="OpenIddict.Server.DataProtection" Version="7.8.0" />
+    <PackageVersion Include="OpenIddict.Validation.AspNetCore" Version="7.8.0" />
+    <PackageVersion Include="OpenIddict.Validation.DataProtection" Version="7.8.0" />
+    <PackageVersion Include="OpenIddict.Validation.SystemNetHttp" Version="7.8.0" />
     <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.20.1" />
     <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.20.1" />
-    <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.20.1" />
-    <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.20.1" />
-    <PackageVersion Include="OrchardCore.Translations.All" Version="3.0.0" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.20.2" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.20.2" />
+    <PackageVersion Include="OrchardCore.Translations.All" Version="[4.0.0-preview-20103]" />
     <PackageVersion Include="PdfPig" Version="0.1.16" />
-    <PackageVersion Include="Scalar.AspNetCore" Version="2.18.7" />
+    <PackageVersion Include="Scalar.AspNetCore" Version="2.19.0" />
     <PackageVersion Include="Shortcodes" Version="1.4.0" />
     <PackageVersion Include="SSH.NET" Version="2026.0.0" />
     <PackageVersion Include="NetVips" Version="3.2.0" />
     <PackageVersion Include="NetVips.Native" Version="8.18.7" />
-    <PackageVersion Include="StackExchange.Redis" Version="3.4.29" />
+    <PackageVersion Include="StackExchange.Redis" Version="3.4.31" />
     <PackageVersion Include="StyleCop.Analyzers" Version="1.1.118" />
     <PackageVersion Include="Swashbuckle.AspNetCore.ReDoc" Version="10.3.1" />
     <PackageVersion Include="Swashbuckle.AspNetCore.SwaggerGen" Version="10.3.1" />

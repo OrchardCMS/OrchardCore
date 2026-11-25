@@ -42,6 +42,7 @@ input[type="url"]:invalid {
 }
 
 input:not([type='checkbox']):not([type='radio']).input-validation-error {
+    // Bootstrap's invalid field icon (MIT, see THIRD-PARTY-NOTICES.txt).
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
     background-repeat: no-repeat;
     background-position: right calc(0.375em + 0.1875rem) center;
@@ -68,6 +69,7 @@ textarea.form-control.input-validation-error {
 }
 
 .form-select.input-validation-error:not([multiple])[size="1"] {
+    // Bootstrap's invalid field icon (MIT, see THIRD-PARTY-NOTICES.txt).
     --bs-form-select-bg-icon: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
     padding-right: 4.125rem;
     background-position: right 0.75rem center, center right 2.25rem;
@@ -105,6 +107,7 @@ textarea.form-control.input-validation-error {
     z-index: 4;
 }
 
+// Obsolete, for the 'vue-multiselect' resource: will be removed with it in the next major version.
 .has-validation-error.is-invalid.multiselect {
     border: var(--bs-border-width) solid var(--bs-border-color);
     border-radius: var(--bs-border-radius);

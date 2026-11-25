@@ -65,14 +65,75 @@ public sealed class ShortcodeModalTests : CmsTestBase<EsModuleTestsFixture>, ICl
         // enough on its own to prove the bug is fixed (Playwright's visibility check doesn't
         // care that a z-index'd backdrop sits on top) - clicking through to an element inside
         // the modal only succeeds if the modal is genuinely interactive, i.e. not obscured by
-        // its own backdrop. No shortcode descriptors are registered in this test recipe, so
-        // click the modal's own Cancel button instead of a shortcode card - same principle,
-        // no seeded shortcode data required.
+        // its own backdrop. Click the modal's own Cancel button rather than a shortcode card -
+        // same principle, without depending on the seeded shortcode template.
         var cancelButton = modal.Locator(".modal-footer button", new LocatorLocatorOptions { HasText = "Cancel" });
         await Assertions.Expect(cancelButton).ToBeVisibleAsync();
         await cancelButton.ClickAsync();
 
         await Assertions.Expect(modal).Not.ToBeVisibleAsync();
+
+        await page.CloseAsync();
+    }
+
+    // REAL BUG (#20312): on a full page load of an editor using the default CodeMirror
+    // HtmlField/HtmlBodyPart editor, the insert-shortcode button got two click handlers.
+    // html-field.ts/html-body-part.ts are ES modules, so they run (and call
+    // initializeCodeMirrorShortcodeWrapper, which creates the button and binds its handler)
+    // before DOMContentLoaded. shortcodes.js's DOMContentLoaded handler then queried every
+    // .shortcode-modal-btn on the page and bound a second handler that looked for a
+    // .shortcode-modal-input in the CodeMirror wrapper, found none, and passed null to
+    // insertAtCaret ("Cannot read properties of null (reading 'selectionStart')"). Both
+    // handlers also created their own bootstrap.Modal on the same element, so every open left
+    // an extra backdrop behind that blocked the whole page after Cancel.
+    [Fact]
+    public async Task CodeMirrorShortcodeButton_FullPageLoad_InsertsShortcodeAndLeavesNoBackdrop()
+    {
+        var page = await Fixture.CreatePageAsync();
+        await page.LoginAsync();
+
+        var consoleErrors = page.CollectConsoleErrors();
+
+        // The seeded page already has the fields widget (with a default CodeMirror HtmlField)
+        // in its FlowPart, so this is a genuine full page load, not an AJAX-added widget.
+        await page.GotoAndAssertOkAsync("/Admin/Contents/ContentItems/EsModuleTestPage");
+        await page.Locator("li.list-group-item").Filter(new LocatorFilterOptions { HasText = "ES Module Test Page" })
+            .Locator("a.edit").ClickAsync();
+        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+
+        var widget = page.Locator(".widget.widget-editor.card[data-content-type='EsModuleTestFieldsWidget']");
+        var codeMirrorWrapper = widget.Locator(".shortcode-modal-wrapper:has(.CodeMirror)");
+        await Assertions.Expect(codeMirrorWrapper).ToHaveCountAsync(1);
+
+        var shortcodeButton = codeMirrorWrapper.Locator(".shortcode-modal-btn");
+        var modal = page.Locator("#shortcodeModal");
+        var backdrops = page.Locator(".modal-backdrop");
+
+        // Open and cancel twice: each open must show exactly one backdrop, and closing must
+        // remove it, also on the second open (a new bootstrap.Modal per open used to stack).
+        for (var i = 0; i < 2; i++)
+        {
+            await shortcodeButton.ClickAsync();
+            await Assertions.Expect(modal).ToBeVisibleAsync();
+            await Assertions.Expect(backdrops).ToHaveCountAsync(1);
+
+            await modal.Locator(".modal-footer button", new LocatorLocatorOptions { HasText = "Cancel" }).ClickAsync();
+            await Assertions.Expect(modal).Not.ToBeVisibleAsync();
+            await Assertions.Expect(backdrops).ToHaveCountAsync(0);
+        }
+
+        // Insert the shortcode seeded by the recipe's ShortcodeTemplates step.
+        await shortcodeButton.ClickAsync();
+        await Assertions.Expect(modal).ToBeVisibleAsync();
+        await modal.Locator("button[data-default-value='[es_test]']").ClickAsync();
+        await Assertions.Expect(modal).Not.ToBeVisibleAsync();
+        await Assertions.Expect(backdrops).ToHaveCountAsync(0);
+
+        var editorValue = await codeMirrorWrapper.Locator(".CodeMirror")
+            .EvaluateAsync<string>("element => element.CodeMirror.getValue()");
+        Assert.Contains("[es_test]", editorValue);
+
+        Assert.Empty(consoleErrors);
 
         await page.CloseAsync();
     }

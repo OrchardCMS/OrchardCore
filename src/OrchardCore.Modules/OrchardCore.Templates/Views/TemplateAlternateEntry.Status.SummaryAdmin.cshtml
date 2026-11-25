@@ -1,0 +1,26 @@
+@using OrchardCore.DisplayManagement.Views
+
+@model ShapeViewModel<TemplateAlternateEntry>
+
+@if (Model.Value.IsOverridden)
+{
+    <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@T["A local template with this name renders the shape in these cases."]">
+        <i class="fa-solid fa-pen-to-square text-primary" aria-hidden="true"></i>
+        @T["Overridden"]
+    </span>
+}
+else
+{
+    <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@T["No local template has this name yet."]">
+        <i class="fa-regular fa-file text-secondary" aria-hidden="true"></i>
+        @T["Not overridden"]
+    </span>
+}
+
+@if (Model.Value.RenderedBy != null)
+{
+    <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@T["{0} has a template with this name, which renders the shape in these cases, unless a local template overrides it.", Model.Value.RenderedBy]">
+        <i class="fa-solid fa-layer-group text-secondary" aria-hidden="true"></i>
+        @T["Rendered by {0}", Model.Value.RenderedBy]
+    </span>
+}

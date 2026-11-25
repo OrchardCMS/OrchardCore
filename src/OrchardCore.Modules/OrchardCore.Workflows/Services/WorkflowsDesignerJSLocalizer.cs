@@ -31,6 +31,7 @@ public sealed class WorkflowsDesignerJSLocalizer : IJSLocalizer
         {
             // Shell.
             { "WorkflowsList", S["Workflows"].Value },
+            { "Breadcrumb", S["Breadcrumb"].Value },
             { "Loading", S["Loading the workflow…"].Value },
             { "LoadFailed", S["The workflow couldn't be loaded. Reload the page to try again."].Value },
             { "History", S["History"].Value },

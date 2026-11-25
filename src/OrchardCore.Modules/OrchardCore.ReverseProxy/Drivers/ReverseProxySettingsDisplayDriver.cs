@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
@@ -25,6 +26,8 @@ public sealed class ReverseProxySettingsDisplayDriver : SiteDisplayDriver<Revers
     private readonly ReverseProxySettings _reverseProxySettings;
     private readonly INotifier _notifier;
 
+    internal readonly IStringLocalizer S;
+
     internal readonly IHtmlLocalizer H;
 
     public ReverseProxySettingsDisplayDriver(
@@ -33,7 +36,8 @@ public sealed class ReverseProxySettingsDisplayDriver : SiteDisplayDriver<Revers
         IAuthorizationService authorizationService,
         IOptionsSnapshot<ReverseProxySettings> reverseProxySettings,
         INotifier notifier,
-        IHtmlLocalizer<ReverseProxySettingsDisplayDriver> htmlLocalizer)
+        IHtmlLocalizer<ReverseProxySettingsDisplayDriver> htmlLocalizer,
+        IStringLocalizer<ReverseProxySettingsDisplayDriver> stringLocalizer)
     {
         _shellReleaseManager = shellReleaseManager;
         _httpContextAccessor = httpContextAccessor;
@@ -41,6 +45,7 @@ public sealed class ReverseProxySettingsDisplayDriver : SiteDisplayDriver<Revers
         _reverseProxySettings = reverseProxySettings.Value;
         _notifier = notifier;
         H = htmlLocalizer;
+        S = stringLocalizer;
     }
 
     protected override string SettingsGroupId
@@ -71,7 +76,7 @@ public sealed class ReverseProxySettingsDisplayDriver : SiteDisplayDriver<Revers
             model.EnableXForwardedFor = currentSettings.ForwardedHeaders.HasFlag(ForwardedHeaders.XForwardedFor);
             model.EnableXForwardedHost = currentSettings.ForwardedHeaders.HasFlag(ForwardedHeaders.XForwardedHost);
             model.EnableXForwardedProto = currentSettings.ForwardedHeaders.HasFlag(ForwardedHeaders.XForwardedProto);
-        }).Location("Content:2")
+        }).Location(l => l.Zone("Content", "2").Card(S["Forwarded headers"], "10"))
         .OnGroup(SettingsGroupId);
     }
 

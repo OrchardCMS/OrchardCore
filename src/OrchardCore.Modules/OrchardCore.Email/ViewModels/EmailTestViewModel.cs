@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using OrchardCore.DisplayManagement;
 
 namespace OrchardCore.Email.ViewModels;
 
@@ -29,4 +30,10 @@ public class EmailTestViewModel
 
     [BindNever]
     public IList<SelectListItem> Providers { get; set; }
+
+    /// <summary>
+    /// Gets or sets the editor of the test email page, built by the display drivers of <see cref="EmailTestViewModel"/>.
+    /// </summary>
+    [BindNever]
+    public IShape Editor { get; set; }
 }

@@ -1,4 +1,16 @@
-@import '../mixins/_cursors';
+
+// ---------------------------------------------------------------------------
+// Page layout.
+//
+// The menu runs the whole height of the window, with the branding at its top, and the top bar starts where the menu
+// ends. The menu has three layouts, driven by TheAdmin's script:
+//  1. Expanded  : the full width menu.
+//  2. Compact   : the icon rail, each group opening as a flyout.
+//  3. Off canvas: a drawer toggled from the top bar, below the medium breakpoint.
+// ---------------------------------------------------------------------------
+
+@use '../mixins/cursors' as *;
+@use '../config' as *;
 
 body, html {
     height: 100%;
@@ -11,26 +23,23 @@ body, html {
     height: 100%;
 }
 
-.ta-content {
-    padding: 1rem;
-    min-height: 100%;
-    margin-left: var(--oc-start-navigation-width);
-    padding-top: calc(var(--oc-top-nav-height, 0) + 1rem);
-    transition: margin-left 0.2s ease-in-out;
-
-    h1 {
-        line-height: 40px;
-        font-size: 28px;
-        letter-spacing: -0.04em;
-        font-weight: bold;
-    }
+// The page: a soft diagonal gradient from a hint of the scheme's primary to a hint of its accent. Cards, lists and
+// fields keep their solid surface on top of it.
+body.ta-admin {
+    background-color: var(--ta-page-bg);
+    background-image: var(--ta-page-gradient);
+    background-attachment: fixed;
 }
 
-// Below the medium breakpoint the menu is an off canvas drawer, so the
-// content uses the whole width of the screen.
-@include media-breakpoint-down(md) {
-    .ta-content {
-        margin-left: 0;
+.ta-content {
+    min-height: 100%;
+    margin-left: var(--oc-start-navigation-width);
+    padding: calc(var(--oc-top-nav-height, 0) + var(--ta-content-padding-top)) var(--ta-content-padding-x) var(--ta-content-padding-bottom);
+    transition: margin-left 0.2s ease-in-out;
+
+    // The main region receives the focus of the skip link without drawing a ring around the whole page.
+    &:focus {
+        outline: none;
     }
 }
 
@@ -40,8 +49,22 @@ body, html {
     }
 }
 
+// Below the medium breakpoint the menu is an off canvas drawer, so the content uses the whole width of the screen.
+@include media-breakpoint-down(md) {
+    .ta-content {
+        margin-left: 0;
+    }
+}
+
 .preload * {
     -webkit-transition: none !important;
     -moz-transition: none !important;
     -o-transition: none !important;
+}
+
+// Contrast themes and print get plain backgrounds.
+@media (forced-colors: active), print {
+    body.ta-admin {
+        background-image: none;
+    }
 }

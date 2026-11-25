@@ -1,0 +1,49 @@
+.with-checkbox .list-group-item {
+    padding: 0.75rem 0.5rem;
+}
+
+.list-group .first-child-visible {
+    border-top: var(--bs-border-width) solid var(--bs-border-color) !important;
+    border-top-left-radius: var(--bs-border-radius) !important;
+    border-top-right-radius: var(--bs-border-radius) !important;
+}
+
+/*
+ The first row a search leaves visible gets the top border and corners of the list, unless a visible item comes
+ before it, such as the toolbar strip of an admin list: it is then a middle row, which keeps square corners and
+ the single border it shares with the item above.
+*/
+.list-group > li:not(.d-none) ~ .first-child-visible {
+    border-top-width: 0 !important;
+    border-top-left-radius: 0 !important;
+    border-top-right-radius: 0 !important;
+}
+
+.list-group .last-child-visible {
+    border-bottom: var(--bs-border-width) solid var(--bs-border-color) !important;
+    border-bottom-left-radius: var(--bs-border-radius) !important;
+    border-bottom-right-radius: var(--bs-border-radius) !important;
+}
+
+/*
+ Fix stacking issues with Bootstrap dropdown menus inside content item rows.
+
+ Context:
+ The sticky action bar above the list creates a separate stacking context.
+ Combined with Bootstrap's card layout (`position: sticky`, `position: relative`)
+ and Popper.js positioning, an open dropdown menu may render behind the action
+ bar while the user moves the mouse over menu items.
+
+ Solution:
+ Raise the list item that contains the currently open dropdown menu.
+ This keeps the dropdown visible above the action bar, although the active row 
+ may temporarily overlap the action bar while its dropdown is open.
+
+ Note:
+ Uses the Bootstrap/Orchard dropdown z-index variable to stay aligned with the
+ application's existing layering scheme.
+*/
+.list-group-item:has(.dropdown-menu.show:not(.inner)) {
+    position: relative;
+    z-index: var(--oc-zindex-dropdown);
+}

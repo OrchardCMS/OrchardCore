@@ -1,0 +1,17 @@
+@*
+    The status filter of the run history, passed to the AdminListToolbar as its 'Actions' so it renders at the end of
+    the toolbar. Picking a status submits the filter (list-management, '.filter-options select').
+*@
+@{
+    var current = (DataPipelineRunStatus?)Model.Status;
+}
+
+<div class="btn-group filter filter-options">
+    <select name="status" class="selectpicker show-tick" data-header="@T["Filter by status"]" data-width="fit" data-selected-text-format="static" data-dropdown-align-right="true" title="@T["Status"]" data-style="btn-sm" aria-label="@T["Filter by status"]">
+        <option value="" selected="@(current is null)">@T["Every status"]</option>
+        @foreach (var status in Enum.GetValues<DataPipelineRunStatus>())
+        {
+            <option value="@status" selected="@(current == status)">@T[status.ToString()]</option>
+        }
+    </select>
+</div>

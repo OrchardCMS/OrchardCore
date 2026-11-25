@@ -37,9 +37,11 @@ public sealed class AdminController : Controller
     private readonly IVolatileDocumentManager<LayerState> _layerStateManager;
     private readonly IDisplayManager<Condition> _conditionDisplayManager;
     private readonly IDisplayManager<Rule> _ruleDisplayManager;
+    private readonly IDisplayManager<LayerEditViewModel> _layerDisplayManager;
     private readonly IConditionIdGenerator _conditionIdGenerator;
     private readonly IEnumerable<IConditionFactory> _conditionFactories;
     private readonly INotifier _notifier;
+    private readonly IShapeFactory _shapeFactory;
     private readonly ILogger _logger;
 
     internal readonly IStringLocalizer S;
@@ -57,11 +59,13 @@ public sealed class AdminController : Controller
         IVolatileDocumentManager<LayerState> layerStateManager,
         IDisplayManager<Condition> conditionDisplayManager,
         IDisplayManager<Rule> ruleDisplayManager,
+        IDisplayManager<LayerEditViewModel> layerDisplayManager,
         IConditionIdGenerator conditionIdGenerator,
         IEnumerable<IConditionFactory> conditionFactories,
         IStringLocalizer<AdminController> stringLocalizer,
         IHtmlLocalizer<AdminController> htmlLocalizer,
         INotifier notifier,
+        IShapeFactory shapeFactory,
         ILogger<AdminController> logger)
     {
         _contentDefinitionManager = contentDefinitionManager;
@@ -75,9 +79,11 @@ public sealed class AdminController : Controller
         _layerStateManager = layerStateManager;
         _conditionDisplayManager = conditionDisplayManager;
         _ruleDisplayManager = ruleDisplayManager;
+        _layerDisplayManager = layerDisplayManager;
         _conditionIdGenerator = conditionIdGenerator;
         _conditionFactories = conditionFactories;
         _notifier = notifier;
+        _shapeFactory = shapeFactory;
         S = stringLocalizer;
         H = htmlLocalizer;
         _logger = logger;
@@ -121,10 +127,12 @@ public sealed class AdminController : Controller
             }
         }
 
-        // The AdminList shape renders the layers with the configured layout (List, Grid, ...).
+        // The AdminList shape renders the layers with the configured layout (List, Grid, ...), and places the button adding
+        // a layer at the top of the list, like the buttons of the other admin lists.
         model.List = new AdminListContext<Layer>
         {
             Source = model.Layers,
+            Actions = await _shapeFactory.CreateAsync("LayersCreateButton"),
         };
 
         return View(model);
@@ -137,7 +145,11 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        return View();
+        var model = new LayerEditViewModel();
+
+        model.Editor = await _layerDisplayManager.BuildEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: true);
+
+        return View(model);
     }
 
     [HttpPost, ActionName("Create")]
@@ -149,6 +161,8 @@ public sealed class AdminController : Controller
         }
 
         var layers = await _layerService.LoadLayersAsync();
+
+        model.Editor = await _layerDisplayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: true);
 
         ValidateViewModel(model, layers, isNew: true);
 
@@ -210,6 +224,8 @@ public sealed class AdminController : Controller
             Thumbnails = thumbnails,
         };
 
+        model.Editor = await _layerDisplayManager.BuildEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: false);
+
         return View(model);
     }
 
@@ -222,6 +238,8 @@ public sealed class AdminController : Controller
         }
 
         var layers = await _layerService.LoadLayersAsync();
+
+        model.Editor = await _layerDisplayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: false);
 
         ValidateViewModel(model, layers, isNew: false);
 

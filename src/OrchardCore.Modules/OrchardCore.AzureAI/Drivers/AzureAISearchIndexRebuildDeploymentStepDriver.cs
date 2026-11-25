@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -12,9 +13,12 @@ public sealed class AzureAISearchIndexRebuildDeploymentStepDriver
 {
     private readonly IIndexProfileStore _indexProfileStore;
 
-    public AzureAISearchIndexRebuildDeploymentStepDriver(IIndexProfileStore indexProfileStore)
+    internal readonly IStringLocalizer S;
+
+    public AzureAISearchIndexRebuildDeploymentStepDriver(IIndexProfileStore indexProfileStore, IStringLocalizer<AzureAISearchIndexRebuildDeploymentStepDriver> stringLocalizer)
     {
         _indexProfileStore = indexProfileStore;
+        S = stringLocalizer;
     }
 
     public override Task<IDisplayResult> DisplayAsync(AzureAISearchIndexRebuildDeploymentStep step, BuildDisplayContext context)
@@ -29,7 +33,7 @@ public sealed class AzureAISearchIndexRebuildDeploymentStepDriver
             model.IncludeAll = step.IncludeAll;
             model.IndexNames = step.Indices;
             model.AllIndexNames = (await _indexProfileStore.GetByProviderAsync(AzureAISearchConstants.ProviderName)).Select(x => x.IndexName).ToArray();
-        }).Location("Content");
+        }).Location(l => l.Zone("Content").Card(S["Indexes"], "10"));
 
     public override async Task<IDisplayResult> UpdateAsync(AzureAISearchIndexRebuildDeploymentStep step, UpdateEditorContext context)
     {

@@ -1,0 +1,24 @@
+.dropdown-menu.scrollable {
+    overflow-y: auto;
+    max-height: var(--oc-height-dropdown);
+    scrollbar-width: thin;
+}
+
+.btn-dropdown {
+    ::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    .dropdown-menu {
+        max-height: var(--oc-height-dropdown);
+        overflow: hidden auto;
+        scrollbar-width: thin;
+    }
+}
+
+.dropdown-item {
+    &:hover,
+    &:focus {
+        text-decoration: none;
+    }
+}

@@ -35,7 +35,7 @@
 
             @if (Model.FooterStart != null || Model.FooterEnd != null)
             {
-                <div class="d-flex justify-content-between">
+                <div class="d-flex justify-content-between align-items-center gap-2">
 
                     <div class="d-inline-flex">
                         @if (Model.FooterStart != null)
@@ -43,7 +43,7 @@
                             @await DisplayAsync(Model.FooterStart)
                         }
                     </div>
-                    <div class="d-inline-flex">
+                    <div class="d-inline-flex align-items-center gap-1">
                         @if (Model.FooterEnd != null)
                         {
                             @await DisplayAsync(Model.FooterEnd)

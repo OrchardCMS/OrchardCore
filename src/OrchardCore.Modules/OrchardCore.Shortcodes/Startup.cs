@@ -5,7 +5,6 @@ using OrchardCore.Admin;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Liquid;
-using OrchardCore.Localization;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
@@ -69,9 +68,11 @@ public sealed class ShortcodeTemplatesStartup : StartupBase
 
         // Builds the rows of the shortcode templates admin list.
         services.AddDisplayDriver<ShortcodeTemplateEntry, ShortcodeTemplateEntryDisplayDriver>();
+
+        // Builds the editor of the pages creating and editing a shortcode template.
+        services.AddDisplayDriver<ShortcodeTemplateViewModel, ShortcodeTemplateDisplayDriver>();
         services.AddPermissionProvider<Permissions>();
         services.AddNavigationProvider<AdminMenu>();
-        services.AddScoped<IJSLocalizer, ShortcodesJSLocalizer>();
 
         services.AddRecipeExecutionStep<ShortcodeTemplateStep>();
 

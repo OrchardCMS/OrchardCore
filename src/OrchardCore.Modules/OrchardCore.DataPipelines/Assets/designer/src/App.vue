@@ -663,14 +663,19 @@ defineExpose({ canvas, panel, stepPanel, addStep, autosave, publish, discard, st
 </script>
 
 <template>
-    <div class="dpd" :class="{ 'dpd-readonly': readOnly }" data-cy="data-pipeline-designer">
+    <div class="dpd card" :class="{ 'dpd-readonly': readOnly }" data-cy="data-pipeline-designer">
         <header class="dpd-toolbar" data-cy="designer-toolbar">
-            <!-- The designer's page has no breadcrumb, to leave the height to the canvas: the toolbar links back to the list. -->
-            <template v-if="config.listUrl">
-                <a :href="config.listUrl" class="dpd-back link-secondary" data-cy="toolbar-list">{{ t("PipelinesList", "Data Pipelines") }}</a>
-                <span class="dpd-back-separator" aria-hidden="true">/</span>
-            </template>
-            <h2 class="dpd-title text-truncate" :title="state.settings?.description ?? undefined">{{ state.settings?.name }}</h2>
+            <!-- The designer's page has no breadcrumb of its own, to leave the height to the canvas: the toolbar holds it, with
+                 the admin's breadcrumb markup so it takes the admin theme's style. -->
+            <nav v-if="config.listUrl" class="oc-breadcrumb dpd-breadcrumb" :aria-label="t('Breadcrumb', 'Breadcrumb')">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a :href="config.listUrl" data-cy="toolbar-list">{{ t("PipelinesList", "Data Pipelines") }}</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        <h2 class="dpd-title text-truncate" :title="state.settings?.description ?? undefined">{{ state.settings?.name }}</h2>
+                    </li>
+                </ol>
+            </nav>
+            <h2 v-else class="dpd-title text-truncate" :title="state.settings?.description ?? undefined">{{ state.settings?.name }}</h2>
 
             <span
                 v-if="!isVersionPage && state.publishedVersion"

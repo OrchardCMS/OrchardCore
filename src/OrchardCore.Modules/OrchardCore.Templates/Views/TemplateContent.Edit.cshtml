@@ -1,0 +1,14 @@
+@model TemplateViewModel
+@{
+    var culture = CultureInfo.CurrentUICulture;
+}
+
+<div class="ocat-wrapper" asp-validation-class-for="Content">
+    <label asp-for="Content" class="ocat-label ocat-label-required">@T["Content"]</label>
+    <div class="ocat-end">
+        <div id="@Html.IdFor(x => x.Content)_editor" asp-for="Text" style="min-height: 600px;" class="form-control template-editor" dir="@culture.GetLanguageDirection()"></div>
+        <textarea asp-for="Content" class="content-preview-text template-editor-value" hidden></textarea>
+        <span asp-validation-for="Content"></span>
+        <span class="hint">@T["The Liquid template."]</span>
+    </div>
+</div>

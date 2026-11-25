@@ -47,6 +47,12 @@ async function processSources() {
             continue;
         }
 
+        // 'fileName' renames the copy, e.g. a package's extensionless LICENSE to a .txt file a web server serves, so
+        // it only applies to a source that names one file.
+        if (config.fileName && (sources.length != 1 || files.length != 1)) {
+            throw new Error(`'fileName' (${config.fileName}) needs a single source file, but ${sources.length} source(s) match ${files.length} file(s): ${sourcePattern}`);
+        }
+
         const destExists = fs.existsSync(config.dest);
 
         if (destExists) {
@@ -74,7 +80,9 @@ async function processSources() {
             const normalizedFile = file.replace(/\\/g, "/");
 
             let relativePath;
-            if (baseFolder) {
+            if (config.fileName) {
+                relativePath = config.fileName;
+            } else if (baseFolder) {
                 relativePath = normalizedFile.replace(baseFolder, "");
             } else {
                 relativePath = path.basename(normalizedFile);

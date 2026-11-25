@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -13,15 +14,19 @@ internal sealed class UserSecuritySettingsDisplayDriver : SiteDisplayDriver<User
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
 
+    internal readonly IStringLocalizer S;
+
     protected override string SettingsGroupId
         => LoginSettingsDisplayDriver.GroupId;
 
     public UserSecuritySettingsDisplayDriver(
         IHttpContextAccessor httpContextAccessor,
-        IAuthorizationService authorizationService)
+        IAuthorizationService authorizationService,
+        IStringLocalizer<UserSecuritySettingsDisplayDriver> stringLocalizer)
     {
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
+        S = stringLocalizer;
     }
 
     public override IDisplayResult Edit(ISite site, UserSecuritySettings settings, BuildEditorContext context)
@@ -29,7 +34,7 @@ internal sealed class UserSecuritySettingsDisplayDriver : SiteDisplayDriver<User
         return Initialize<UserSecuritySettings>("UserSecuritySettings_Edit", model =>
         {
             model.UseSiteTheme = settings.UseSiteTheme;
-        }).Location("Content:10#Security Page")
+        }).Location(l => l.Zone("Content", "10").Tab("Security Page").Card(S["Theme"], "10"))
         .RenderWhen(static (driver) => driver._authorizationService.AuthorizeAsync(driver._httpContextAccessor.HttpContext?.User, UsersPermissions.ManageUsers), this)
         .OnGroup(SettingsGroupId);
     }

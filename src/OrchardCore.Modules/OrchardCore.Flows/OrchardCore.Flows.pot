@@ -67,6 +67,11 @@ msgctxt "OrchardCore.Flows.GraphQL.FlowPartQueryObjectType"
 msgid "The widgets."
 msgstr ""
 
+#: Settings/BagPartBlocksEditorSettingsDriver.cs
+msgctxt "OrchardCore.Flows.Settings.BagPartBlocksEditorSettingsDriver"
+msgid "Editor"
+msgstr ""
+
 #: Settings/BagPartSettingsDisplayDriver.cs
 msgctxt "OrchardCore.Flows.Settings.BagPartSettingsDisplayDriver"
 msgid "At least one content type must be selected."
@@ -80,6 +85,16 @@ msgstr ""
 #: Settings/BagPartSettingsDisplayDriver.cs
 msgctxt "OrchardCore.Flows.Settings.BagPartSettingsDisplayDriver"
 msgid "Please provide a Stereotype."
+msgstr ""
+
+#: Settings/BagPartSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Flows.Settings.BagPartSettingsDisplayDriver"
+msgid "Settings"
+msgstr ""
+
+#: Settings/FlowPartSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Flows.Settings.FlowPartSettingsDisplayDriver"
+msgid "Settings"
 msgstr ""
 
 #: Views/BagPart-Blocks.Edit.cshtml

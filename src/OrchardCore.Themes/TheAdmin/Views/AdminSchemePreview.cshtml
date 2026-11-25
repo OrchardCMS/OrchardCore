@@ -1,0 +1,32 @@
+@*
+    The preview of a scheme of TheAdmin in its editor: a small admin page, in the light and the dark mode. It carries the
+    scheme attribute set to the preview's id, whose rules the editor (admin-scheme-editor.js) fetches as the fields change.
+*@
+@{
+    string schemeId = Model.SchemeId;
+}
+
+<div class="ta-scheme-previews">
+    @foreach (var mode in new[] { "light", "dark" })
+    {
+        <div class="ta-scheme-preview" data-ta-scheme="@schemeId" data-bs-theme="@mode" role="img" aria-label="@(mode == "light" ? T["Preview in light mode"] : T["Preview in dark mode"])">
+            <div class="ta-scheme-preview-menu">
+                <div class="ta-scheme-preview-brand">@T["Site"]</div>
+                <div>@T["Content"]</div>
+                <div class="ta-scheme-preview-current">@T["Content items"]</div>
+                <div>@T["Settings"]</div>
+            </div>
+            <div class="ta-scheme-preview-page">
+                <div class="ta-scheme-preview-heading">@T["Page title"]</div>
+                <div class="ta-scheme-preview-card">
+                    <div class="ta-scheme-preview-toolbar">@T["3 items"]</div>
+                    <div class="ta-scheme-preview-row"><span class="ta-scheme-preview-link">@T["A record"]</span><span class="ta-scheme-preview-muted">@T["Published"]</span></div>
+                    <div class="ta-scheme-preview-row"><span class="ta-scheme-preview-link">@T["Another record"]</span><span class="ta-scheme-preview-muted">@T["Draft"]</span></div>
+                </div>
+                <div class="ta-scheme-preview-label">@T["A field"]</div>
+                <div class="ta-scheme-preview-field"></div>
+                <div class="ta-scheme-preview-button">@T["Save"]</div>
+            </div>
+        </div>
+    }
+</div>

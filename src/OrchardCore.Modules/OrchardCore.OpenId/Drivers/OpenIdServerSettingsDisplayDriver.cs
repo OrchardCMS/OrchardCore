@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.OpenId.Services;
@@ -15,14 +16,18 @@ public sealed class OpenIdServerSettingsDisplayDriver : DisplayDriver<OpenIdServ
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
 
+    internal readonly IStringLocalizer S;
+
     public OpenIdServerSettingsDisplayDriver(
         IOpenIdServerService serverService,
         IHttpContextAccessor httpContextAccessor,
-        IAuthorizationService authorizationService)
+        IAuthorizationService authorizationService,
+        IStringLocalizer<OpenIdServerSettingsDisplayDriver> stringLocalizer)
     {
         _serverService = serverService;
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
+        S = stringLocalizer;
     }
 
     public override async Task<IDisplayResult> EditAsync(OpenIdServerSettings settings, BuildEditorContext context)
@@ -36,58 +41,37 @@ public sealed class OpenIdServerSettingsDisplayDriver : DisplayDriver<OpenIdServ
 
         context.AddTenantReloadWarningWrapper();
 
-        return Initialize<OpenIdServerSettingsViewModel>("OpenIdServerSettings_Edit", async model =>
-        {
-            model.AccessTokenFormat = settings.AccessTokenFormat;
-            model.Authority = settings.Authority?.AbsoluteUri;
-
-            model.EncryptionCertificateStoreLocation = settings.EncryptionCertificateStoreLocation;
-            model.EncryptionCertificateStoreName = settings.EncryptionCertificateStoreName;
-            model.EncryptionCertificateThumbprint = settings.EncryptionCertificateThumbprint;
-
-            model.SigningCertificateStoreLocation = settings.SigningCertificateStoreLocation;
-            model.SigningCertificateStoreName = settings.SigningCertificateStoreName;
-            model.SigningCertificateThumbprint = settings.SigningCertificateThumbprint;
-
-            model.EnableAuthorizationEndpoint = settings.AuthorizationEndpointPath.HasValue;
-            model.EnableLogoutEndpoint = settings.LogoutEndpointPath.HasValue;
-            model.EnableTokenEndpoint = settings.TokenEndpointPath.HasValue;
-            model.EnableUserInfoEndpoint = settings.UserinfoEndpointPath.HasValue;
-            model.EnableIntrospectionEndpoint = settings.IntrospectionEndpointPath.HasValue;
-            model.EnablePushedAuthorizationEndpoint = settings.PushedAuthorizationEndpointPath.HasValue;
-            model.EnableRevocationEndpoint = settings.RevocationEndpointPath.HasValue;
-
-            model.AllowAuthorizationCodeFlow = settings.AllowAuthorizationCodeFlow;
-            model.AllowClientCredentialsFlow = settings.AllowClientCredentialsFlow;
-            model.AllowHybridFlow = settings.AllowHybridFlow;
-            model.AllowImplicitFlow = settings.AllowImplicitFlow;
-            model.AllowPasswordFlow = settings.AllowPasswordFlow;
-            model.AllowRefreshTokenFlow = settings.AllowRefreshTokenFlow;
-
-            model.DisableAccessTokenEncryption = settings.DisableAccessTokenEncryption;
-            model.DisableRollingRefreshTokens = settings.DisableRollingRefreshTokens;
-            model.UseReferenceAccessTokens = settings.UseReferenceAccessTokens;
-            model.RequireProofKeyForCodeExchange = settings.RequireProofKeyForCodeExchange;
-            model.RequirePushedAuthorizationRequests = settings.RequirePushedAuthorizationRequests;
-            model.RequireEndSessionConfirmation = settings.RequireEndSessionConfirmation;
-
-            foreach (var (certificate, location, name) in await _serverService.GetAvailableCertificatesAsync())
+        return Combine(
+            Initialize<OpenIdServerSettingsViewModel>("OpenIdServerSettings_Edit", model => PopulateViewModel(settings, model))
+                .Location(l => l.Zone("Content", "2").Card(S["Endpoints"], "10")),
+            Initialize<OpenIdServerSettingsViewModel>("OpenIdServerSettings_Edit__Flows", model => PopulateViewModel(settings, model))
+                .Location(l => l.Zone("Content", "2.1").Card(S["Flows"], "20")),
+            Initialize<OpenIdServerSettingsViewModel>("OpenIdServerSettings_Edit__Requirements", model => PopulateViewModel(settings, model))
+                .Location(l => l.Zone("Content", "2.2").Card(S["Client requirements"], "30")),
+            Initialize<OpenIdServerSettingsViewModel>("OpenIdServerSettings_Edit__Certificates", async model =>
             {
-                model.AvailableCertificates.Add(new CertificateInfo
+                PopulateViewModel(settings, model);
+
+                foreach (var (certificate, location, name) in await _serverService.GetAvailableCertificatesAsync())
                 {
-                    StoreLocation = location,
-                    StoreName = name,
-                    FriendlyName = certificate.FriendlyName,
-                    Issuer = certificate.Issuer,
-                    Subject = certificate.Subject,
-                    NotBefore = certificate.NotBefore,
-                    NotAfter = certificate.NotAfter,
-                    ThumbPrint = certificate.Thumbprint,
-                    HasPrivateKey = certificate.HasPrivateKey,
-                    Archived = certificate.Archived,
-                });
-            }
-        }).Location("Content:2");
+                    model.AvailableCertificates.Add(new CertificateInfo
+                    {
+                        StoreLocation = location,
+                        StoreName = name,
+                        FriendlyName = certificate.FriendlyName,
+                        Issuer = certificate.Issuer,
+                        Subject = certificate.Subject,
+                        NotBefore = certificate.NotBefore,
+                        NotAfter = certificate.NotAfter,
+                        ThumbPrint = certificate.Thumbprint,
+                        HasPrivateKey = certificate.HasPrivateKey,
+                        Archived = certificate.Archived,
+                    });
+                }
+            }).Location(l => l.Zone("Content", "2.3").Card(S["Certificates"], "40")),
+            Initialize<OpenIdServerSettingsViewModel>("OpenIdServerSettings_Edit__Advanced", model => PopulateViewModel(settings, model))
+                .Location(l => l.Zone("Content", "2.4").Card(S["Advanced"], "50"))
+        );
     }
 
     public override async Task<IDisplayResult> UpdateAsync(OpenIdServerSettings settings, UpdateEditorContext context)
@@ -143,5 +127,41 @@ public sealed class OpenIdServerSettingsDisplayDriver : DisplayDriver<OpenIdServ
         settings.RequireEndSessionConfirmation = model.RequireEndSessionConfirmation;
 
         return await EditAsync(settings, context);
+    }
+
+    private static void PopulateViewModel(OpenIdServerSettings settings, OpenIdServerSettingsViewModel model)
+    {
+        model.AccessTokenFormat = settings.AccessTokenFormat;
+        model.Authority = settings.Authority?.AbsoluteUri;
+
+        model.EncryptionCertificateStoreLocation = settings.EncryptionCertificateStoreLocation;
+        model.EncryptionCertificateStoreName = settings.EncryptionCertificateStoreName;
+        model.EncryptionCertificateThumbprint = settings.EncryptionCertificateThumbprint;
+
+        model.SigningCertificateStoreLocation = settings.SigningCertificateStoreLocation;
+        model.SigningCertificateStoreName = settings.SigningCertificateStoreName;
+        model.SigningCertificateThumbprint = settings.SigningCertificateThumbprint;
+
+        model.EnableAuthorizationEndpoint = settings.AuthorizationEndpointPath.HasValue;
+        model.EnableLogoutEndpoint = settings.LogoutEndpointPath.HasValue;
+        model.EnableTokenEndpoint = settings.TokenEndpointPath.HasValue;
+        model.EnableUserInfoEndpoint = settings.UserinfoEndpointPath.HasValue;
+        model.EnableIntrospectionEndpoint = settings.IntrospectionEndpointPath.HasValue;
+        model.EnablePushedAuthorizationEndpoint = settings.PushedAuthorizationEndpointPath.HasValue;
+        model.EnableRevocationEndpoint = settings.RevocationEndpointPath.HasValue;
+
+        model.AllowAuthorizationCodeFlow = settings.AllowAuthorizationCodeFlow;
+        model.AllowClientCredentialsFlow = settings.AllowClientCredentialsFlow;
+        model.AllowHybridFlow = settings.AllowHybridFlow;
+        model.AllowImplicitFlow = settings.AllowImplicitFlow;
+        model.AllowPasswordFlow = settings.AllowPasswordFlow;
+        model.AllowRefreshTokenFlow = settings.AllowRefreshTokenFlow;
+
+        model.DisableAccessTokenEncryption = settings.DisableAccessTokenEncryption;
+        model.DisableRollingRefreshTokens = settings.DisableRollingRefreshTokens;
+        model.UseReferenceAccessTokens = settings.UseReferenceAccessTokens;
+        model.RequireProofKeyForCodeExchange = settings.RequireProofKeyForCodeExchange;
+        model.RequirePushedAuthorizationRequests = settings.RequirePushedAuthorizationRequests;
+        model.RequireEndSessionConfirmation = settings.RequireEndSessionConfirmation;
     }
 }

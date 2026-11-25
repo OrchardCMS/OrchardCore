@@ -1,83 +1,147 @@
+// ---------------------------------------------------------------------------
+// The top bar. It starts where the menu ends, on the page's own color, lifted by a soft shadow. It holds the menu
+// toggle (below the medium breakpoint), the branding (only when the menu is a drawer), the page title (when the admin
+// settings show it there) and the items of the Navbar shape: the theme menu, the notifications, the user menu...
+// ---------------------------------------------------------------------------
+
+@use '../config' as *;
+
 .ta-navbar-top {
-    border-bottom: var(--oc-border-content);
-    z-index: var(--oc-top-nav-zindex);
+    left: var(--oc-start-navigation-width);
     height: var(--oc-top-nav-height);
-    box-shadow: 0 0.46875rem 2.1875rem rgba(4, 9, 20, 0.03), 0 0.9375rem 1.40625rem rgba(4, 9, 20, 0.03), 0 0.25rem 0.53125rem rgba(4, 9, 20, 0.05), 0 0.125rem 0.1875rem rgba(4, 9, 20, 0.03);
-    padding-top: 0;
-    padding-bottom: 0;
+    z-index: var(--ta-topbar-zindex);
+    padding: 0;
+    border-bottom: var(--bs-border-width) solid var(--ta-topbar-border);
+    background-color: var(--ta-topbar-bg);
+    color: var(--ta-topbar-color);
+    box-shadow: var(--ta-topbar-shadow);
+    transition: left 0.2s ease-in-out, right 0.2s ease-in-out;
 
-    h1 {
-        font-size: 24px;
-        font-weight: bold;
-        margin-bottom: 0;
+    > .container-fluid {
+        height: 100%;
+        padding-inline: var(--ta-content-padding-x);
+        flex-wrap: nowrap;
+        gap: 0.75rem;
     }
 
-    .brand-wrapper-title {
-        display: none;
-    }
-
-    .breadcrumb {
-        background-color: transparent;
-        margin-top: 1rem;
-    }
-
-    @include media-breakpoint-up(md) {
-        .brand-wrapper-title {
-            display: block;
-            position: absolute;
-            left: calc(var(--oc-start-navigation-width) + 10px);
-        }
-
-        [dir="rtl"] & .brand-wrapper-title {
-            right: calc(var(--oc-start-navigation-width) + 10px);
-        }
-    }
-
-    @include media-breakpoint-down(sm) {
-        .navbar-collapse {
-            li:first-child .nav-link {
-                padding-top: 15px;
-            }
-
-            li:last-child .nav-link {
-                padding-bottom: 0px;
-            }
-        }
+    .navbar-nav .nav-link,
+    .navbar-nav .btn-link {
+        color: var(--ta-topbar-color);
     }
 }
 
 @include media-breakpoint-up(md) {
     .left-sidebar-compact .ta-navbar-top {
-        .brand-wrapper-title {
-            left: calc(var(--oc-start-navigation-width-when-compact) + 15px);
+        left: var(--oc-start-navigation-width-when-compact);
+    }
+}
+
+@include media-breakpoint-down(md) {
+    .ta-navbar-top {
+        left: 0;
+    }
+}
+
+.ta-topbar-start {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+}
+
+.ta-navbar-brand {
+    white-space: nowrap;
+    color: var(--bs-navbar-brand-color);
+}
+
+// The branding is repeated in the top bar for the drawer layout, where the menu is hidden.
+.ta-topbar-brand {
+    display: none;
+    min-width: 0;
+
+    .ta-navbar-brand {
+        display: flex;
+        align-items: center;
+        margin: 0;
+        padding: 0;
+        color: var(--ta-heading);
+
+        > div {
+            min-width: 0;
+            flex-wrap: nowrap;
         }
 
-        [dir="rtl"] & .brand-wrapper-title {
-            right: calc(var(--oc-start-navigation-width-when-compact) + 15px);
-            left: auto;
+        img {
+            height: 2rem;
+            border-radius: var(--ta-radius-md);
+        }
+
+        span {
+            overflow: hidden;
+            font-size: var(--ta-font-size-md);
+            font-weight: var(--ta-font-weight-strong);
+            text-overflow: ellipsis;
+        }
+    }
+
+    @include media-breakpoint-down(md) {
+        display: flex;
+        align-items: center;
+    }
+
+    // On a phone the logo alone leaves room for the items of the top bar; its alt text names the link.
+    @include media-breakpoint-down(sm) {
+        .ta-navbar-brand span {
+            display: none;
+        }
+
+        .ta-navbar-brand img {
+            padding-inline-end: 0 !important;
         }
     }
 }
 
-// Shows or hides the off canvas menu, only rendered on small screens where
-// the menu would otherwise eat most of the available width.
+// The page title, when the admin settings show it in the top bar.
+.ta-navbar-top .brand-wrapper-title {
+    display: block;
+    min-width: 0;
+    overflow: hidden;
+
+    h1 {
+        margin: 0;
+        overflow: hidden;
+        font-size: var(--ta-font-size-xl);
+        line-height: var(--ta-line-height-tight);
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+    @include media-breakpoint-down(md) {
+        display: none;
+    }
+}
+
+// Shows or hides the off canvas menu, only rendered on small screens where the menu would otherwise eat most of the
+// available width.
 .ta-sidebar-toggler {
     display: none;
-    width: 40px;
-    height: 40px;
-    margin-right: 0.25rem;
+    flex: 0 0 auto;
+    width: 2.5rem;
+    height: 2.5rem;
+    margin: 0;
     padding: 0;
     border: none;
     border-radius: var(--bs-border-radius);
     background-color: transparent;
-    color: inherit;
+    color: var(--ta-topbar-color);
     font-size: 1.125rem;
     cursor: pointer;
 
     &:hover,
     &:focus-visible {
-        background-color: var(--oc-admin-menu-item-hover-bg-color);
-        color: var(--oc-admin-menu-font-color-hover);
+        background-color: var(--ta-topbar-hover-bg);
+        color: var(--ta-link);
     }
 }
 
@@ -89,41 +153,62 @@
     }
 }
 
-.brand-wrapper-title > h1 {
-    margin-bottom: 0;
-}
+// The items of the Navbar shape. Each is a square or rounded button of the same height.
+.user-top-navbar {
+    align-items: center;
+    gap: 0.25rem;
+    padding-top: 0;
+    padding-bottom: 0;
 
-.ta-navbar-brand {
-    white-space: nowrap;
-    transition: width 0.2s ease-in-out;
-    color: var(--bs-navbar-brand-color);
+    > .nav-item > .nav-link,
+    > .nav-item > .dropdown > .nav-link,
+    > .nav-item > .dropdown > .btn-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        min-width: 2.5rem;
+        height: 2.5rem;
+        padding: 0 0.625rem;
+        border: none;
+        border-radius: var(--bs-border-radius);
+        font-size: var(--ta-font-size-md);
+        text-decoration: none;
+        transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
 
-    span {
-        font-size: 14px;
-        font-weight: bold;
+        &:hover,
+        &:focus-visible,
+        &.show {
+            background-color: var(--ta-topbar-hover-bg);
+            color: var(--ta-link);
+        }
     }
-}
 
-.ta-navbar-brand img {
-    height: 32px;
-}
+    .dropdown-menu {
+        margin-top: 0.5rem;
+    }
 
-// When left-sidebar is compact nav brand is compacted too.
-// It displays logo only, not text.
-@include media-breakpoint-up(md) {
-    .left-sidebar-compact .ta-navbar-brand {
-        span {
-            display: none;
+    .badge {
+        font-size: 0.625rem;
+    }
+
+    // On a phone many items (quick navigation, culture picker, notifications, theme...) would overflow the top bar:
+    // the items get narrower.
+    @include media-breakpoint-down(sm) {
+        gap: 0;
+
+        > .nav-item > .nav-link,
+        > .nav-item > .dropdown > .nav-link,
+        > .nav-item > .dropdown > .btn-link {
+            gap: 0;
+            min-width: 2.25rem;
+            padding: 0 0.375rem;
         }
     }
 }
 
-.user-top-navbar {
-    padding-top: 0;
-    padding-bottom: 0;
-}
-
-.user-top-navbar .nav-item .nav-link {
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
+@include media-breakpoint-down(sm) {
+    .ta-navbar-top > .container-fluid {
+        gap: 0.5rem;
+    }
 }

@@ -1,0 +1,18 @@
+@model ShapeViewModel<DataPipelineRunEntry>
+
+@{
+    var run = Model.Value.Run;
+}
+
+
+@* Bare items, never wrapped in <li>: AdminListActions renders the menu in a <div class="dropdown-menu">. *@
+<a asp-controller="Admin" asp-action="Edit" asp-route-pipelineId="@run.PipelineId" class="dropdown-item">@T["Open the pipeline"]</a>
+@if (Model.Value.ShowPipelineHistory)
+{
+    <a asp-controller="Admin" asp-action="Runs" asp-route-pipelineId="@run.PipelineId" class="dropdown-item">@T["Run history of the pipeline"]</a>
+}
+@if (Model.Value.CanRun && !run.IsCompleted)
+{
+    <div class="dropdown-divider"></div>
+    <a asp-controller="Admin" asp-action="CancelRun" asp-route-runId="@run.RunId" class="dropdown-item text-danger" data-url-af="UnsafeUrl" data-title="@T["Cancel the run"]" data-message="@T["Cancel this run?"]" data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]">@T["Cancel the run"]</a>
+}

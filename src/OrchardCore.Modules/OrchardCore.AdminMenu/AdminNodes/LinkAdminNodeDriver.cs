@@ -11,12 +11,16 @@ public sealed class LinkAdminNodeDriver : DisplayDriver<MenuItem, LinkAdminNode>
     private readonly IPermissionService _permissionService;
     private readonly IStringLocalizerFactory _stringLocalizerFactory;
 
+    internal readonly IStringLocalizer S;
+
     public LinkAdminNodeDriver(
         IPermissionService permissionService,
-        IStringLocalizerFactory stringLocalizerFactory)
+        IStringLocalizerFactory stringLocalizerFactory,
+        IStringLocalizer<LinkAdminNodeDriver> stringLocalizer)
     {
         _permissionService = permissionService;
         _stringLocalizerFactory = stringLocalizerFactory;
+        S = stringLocalizer;
     }
 
     public override Task<IDisplayResult> DisplayAsync(LinkAdminNode treeNode, BuildDisplayContext context)
@@ -53,7 +57,7 @@ public sealed class LinkAdminNodeDriver : DisplayDriver<MenuItem, LinkAdminNode>
                     Name = p.Name,
                     DisplayText = stringLocalizerFactory.Localize(p.Description)?.Value,
                 }).ToArray();
-        }, treeNode, _permissionService, _stringLocalizerFactory).Location("Content");
+        }, treeNode, _permissionService, _stringLocalizerFactory).Location(l => l.Zone("Content").Card(S["Link"], "10"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(LinkAdminNode treeNode, UpdateEditorContext context)

@@ -1,0 +1,28 @@
+@model OrchardCore.Elasticsearch.ViewModels.AdminQueryViewModel
+
+<div class="ocat-wrapper">
+    <label asp-for="Id" class="ocat-label ocat-label-required">@T["Index"]</label>
+    <div class="ocat-end">
+        <select asp-for="Id" class="form-control" asp-items="Model.Indexes">
+            <option value="">@T["Select an index"]</option>
+        </select>
+        <span class="hint">@T["The Elasticsearch index to search on"]</span>
+    </div>
+</div>
+
+<div class="ocat-wrapper">
+    <label asp-for="DecodedQuery" class="ocat-label ocat-label-required">@T["Query"]</label>
+    <div class="ocat-end">
+        <textarea asp-for="DecodedQuery" rows="12" class="form-control codemirror-query-editor" data-options='{"json":true}'></textarea>
+        <span class="hint">@T["You can use the <a href=\"{0}\">Match all query</a> to search all documents.", Html.Raw(Url.Action("Query", "Admin", new { area = "OrchardCore.Elasticsearch", query = Model.MatchAllQuery, id = Model.Id }))]</span>
+        <span class="hint">@T["The search query uses the Elasticsearch format. Some documentation can be found here <a target=\"_blank\" href=\"https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html\">https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html</a>"]</span>
+    </div>
+</div>
+
+<div class="ocat-wrapper">
+    <label asp-for="Parameters" class="ocat-label">@T["Parameters"]</label>
+    <div class="ocat-end">
+        <textarea asp-for="Parameters" rows="6" class="form-control codemirror-query-editor" data-options='{"json":true}'></textarea>
+        <span class="hint">@T["An optional Json object containing the parameter values for this query."]</span>
+    </div>
+</div>

@@ -1,21 +1,16 @@
 @model EditTypePartViewModel
-@using OrchardCore.ContentManagement.Metadata.Settings
-@using OrchardCore.DisplayManagement
-@using OrchardCore.DisplayManagement.Theming
 @using OrchardCore.Localization.Data
 
-@inject IThemeManager ThemeManager
-@inject OrchardCore.DisplayManagement.Descriptors.IShapeTableManager ShapeTableManager
 @inject IDataLocalizer D
 
 @{
     var typePart = Model.TypePartDefinition;
-    var shapeTable = await ThemeManager.GetShapeTableAsync(ShapeTableManager);
-    var displayShapes = shapeTable.Bindings.Keys.Where(x => x.StartsWith(Model.TypePartDefinition.PartDefinition.Name + "_DisplayOption__", StringComparison.OrdinalIgnoreCase) || x.Equals(Model.TypePartDefinition.PartDefinition.Name + "_DisplayOption", StringComparison.OrdinalIgnoreCase));
-    var editorShapes = shapeTable.Bindings.Keys.Where(x => x.StartsWith(Model.TypePartDefinition.PartDefinition.Name + "_Option__", StringComparison.OrdinalIgnoreCase) || x.Equals(Model.TypePartDefinition.PartDefinition.Name + "_Option", StringComparison.OrdinalIgnoreCase));
     string localizedDisplayName = D[Model.DisplayName, "Content Types"];
     var contentTypeDefinition = typePart.ContentTypeDefinition;
     string localizedTypeName = D[contentTypeDefinition.DisplayName, "Content Types"];
+
+    // The settings of the part are only rendered when the part has settings.
+    bool hasContent = Model.Shape.Content != null;
 }
 
 <zone Name="Title">
@@ -32,75 +27,26 @@
 <form asp-action="EditTypePart">
     @Html.ValidationSummary()
 
-    @if (typePart.PartDefinition.IsReusable())
+    @if (hasContent && Model.Shape.Shortcuts != null)
     {
-        <div class="ocat-limited-wrapper">
-            <label asp-for="DisplayName" class="ocat-label ocat-label-required">@T["Display Name"]</label>
-            <div class="ocat-limited">
-                <input asp-for="DisplayName" class="form-control" />
-                <span class="hint">@T["Name of the part as it will be displayed in screens."]</span>
-            </div>
-        </div>
-
-        <div class="ocat-limited-wrapper">
-            <label asp-for="Description" class="ocat-label">@T["Description"]</label>
-            <div class="ocat-limited">
-                <input asp-for="Description" class="form-control" />
-                <span class="hint">@T["The description of the part as it will be displayed in screens."]</span>
+        <div class="ocat-wrapper">
+            <div class="ocat-end-offset">
+                @await DisplayAsync(Model.Shape.Shortcuts)
             </div>
         </div>
     }
 
-    @if (Model.Shape.Content != null)
+    @* The common settings of the part, in the "General" card of the header zone. The settings of the other modules are cards of the zones rendered below. *@
+    @await DisplayAsync(Model.Shape.Header)
+
+    @if (hasContent)
     {
-        @if (Model.Shape.Shortcuts != null)
-        {
-            <div class="ocat-wrapper">
-                <div class="ocat-end-offset">
-                    @await DisplayAsync(Model.Shape.Shortcuts)
-                </div>
-            </div>
-        }
-
-        @await DisplayAsync(Model.Shape.Content)
-
-        @if (editorShapes.Any())
-        {
-            <div class="ocat-wrapper">
-                <label asp-for="Editor" class="ocat-label">@T["What type of editor should be used?"]</label>
-                <div class="ocat-end">
-                    <select asp-for="Editor" class="form-select" data-type-part-editor-select>
-                        @foreach (var editorShape in editorShapes)
-                        {
-                            var shape = await Factory.CreateAsync(editorShape);
-                            shape.Properties["Editor"] = Model.Editor;
-                            @await DisplayAsync(shape)
-                        }
-                    </select>
-                </div>
-            </div>
-        }
-
+        @* The settings of the selected editor follow its selection, before the settings of the part. *@
         <div id="type-part-editor-container" style="display: none">
             @await DisplayAsync(Model.Shape.Editor)
         </div>
 
-        @if (displayShapes.Any())
-        {
-            <div class="ocat-wrapper">
-                <label asp-for="DisplayMode" class="ocat-label">@T["What type of display mode should be used?"]</label>
-                <div class="ocat-end">
-                    <select asp-for="DisplayMode" class="form-select" data-type-part-display-select>
-                        @foreach (var displayShape in displayShapes)
-                        {
-                            var shape = await Factory.CreateAsync(displayShape);
-                            shape.Properties["DisplayMode"] = Model.DisplayMode;
-                            @await DisplayAsync(shape)
-                        }
-                    </select>
-                </div>
-            </div>
-        }
+        @await DisplayAsync(Model.Shape.Content)
 
         <div id="type-part-display-container" style="display: none">
             @await DisplayAsync(Model.Shape.DisplayMode)

@@ -8,6 +8,16 @@ msgstr ""
 
 #: Drivers/AzureSettingsDisplayDriver.cs
 msgctxt "OrchardCore.Sms.Azure.Drivers.AzureSettingsDisplayDriver"
+msgid "Azure Communication Services"
+msgstr ""
+
+#: Drivers/AzureSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Sms.Azure.Drivers.AzureSettingsDisplayDriver"
+msgid "Azure provider"
+msgstr ""
+
+#: Drivers/AzureSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Sms.Azure.Drivers.AzureSettingsDisplayDriver"
 msgid "Connection string is required."
 msgstr ""
 

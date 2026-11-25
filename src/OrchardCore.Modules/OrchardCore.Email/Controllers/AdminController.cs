@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Email.Services;
 using OrchardCore.Email.ViewModels;
@@ -19,6 +21,8 @@ public sealed class AdminController : Controller
     private readonly IOptionsMonitor<EmailProviderOptions> _providerOptions;
     private readonly IEmailService _emailService;
     private readonly IEmailProviderResolver _emailProviderResolver;
+    private readonly IDisplayManager<EmailTestViewModel> _emailTestDisplayManager;
+    private readonly IUpdateModelAccessor _updateModelAccessor;
 
     internal readonly IHtmlLocalizer H;
     internal readonly IStringLocalizer S;
@@ -30,6 +34,8 @@ public sealed class AdminController : Controller
         IOptionsMonitor<EmailOptions> emailOptions,
         IEmailService emailService,
         IEmailProviderResolver emailProviderResolver,
+        IDisplayManager<EmailTestViewModel> emailTestDisplayManager,
+        IUpdateModelAccessor updateModelAccessor,
         IHtmlLocalizer<AdminController> htmlLocalizer,
         IStringLocalizer<AdminController> stringLocalizer)
     {
@@ -39,6 +45,8 @@ public sealed class AdminController : Controller
         _providerOptions = providerOptions;
         _emailService = emailService;
         _emailProviderResolver = emailProviderResolver;
+        _emailTestDisplayManager = emailTestDisplayManager;
+        _updateModelAccessor = updateModelAccessor;
         H = htmlLocalizer;
         S = stringLocalizer;
     }
@@ -58,6 +66,8 @@ public sealed class AdminController : Controller
 
         await PopulateModelAsync(model);
 
+        model.Editor = await _emailTestDisplayManager.BuildEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: true);
+
         return View(model);
     }
 
@@ -68,6 +78,11 @@ public sealed class AdminController : Controller
         {
             return Forbid();
         }
+
+        // The providers are listed by the editor, which is also rendered when the message can't be sent.
+        await PopulateModelAsync(model);
+
+        model.Editor = await _emailTestDisplayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: true);
 
         if (ModelState.IsValid)
         {
@@ -98,8 +113,6 @@ public sealed class AdminController : Controller
                 ModelState.AddModelError(string.Empty, S["Unable to send the message using the selected provider."]);
             }
         }
-
-        await PopulateModelAsync(model);
 
         return View(model);
     }

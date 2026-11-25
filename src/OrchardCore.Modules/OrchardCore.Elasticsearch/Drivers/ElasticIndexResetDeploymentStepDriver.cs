@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -10,9 +11,12 @@ public sealed class ElasticIndexResetDeploymentStepDriver : DisplayDriver<Deploy
 {
     private readonly IIndexProfileStore _store;
 
-    public ElasticIndexResetDeploymentStepDriver(IIndexProfileStore store)
+    internal readonly IStringLocalizer S;
+
+    public ElasticIndexResetDeploymentStepDriver(IIndexProfileStore store, IStringLocalizer<ElasticIndexResetDeploymentStepDriver> stringLocalizer)
     {
         _store = store;
+        S = stringLocalizer;
     }
 
     public override Task<IDisplayResult> DisplayAsync(ElasticsearchIndexResetDeploymentStep step, BuildDisplayContext context)
@@ -31,7 +35,7 @@ public sealed class ElasticIndexResetDeploymentStepDriver : DisplayDriver<Deploy
             model.IncludeAll = step.IncludeAll;
             model.IndexNames = step.Indices;
             model.AllIndexNames = (await _store.GetByProviderAsync(ElasticsearchConstants.ProviderName)).Select(x => x.IndexName).ToArray();
-        }).Location("Content");
+        }).Location(l => l.Zone("Content").Card(S["Indexes"], "10"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ElasticsearchIndexResetDeploymentStep resetIndexStep, UpdateEditorContext context)

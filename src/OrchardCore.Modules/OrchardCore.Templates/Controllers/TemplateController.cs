@@ -25,7 +25,10 @@ public sealed class TemplateController : Controller
     private readonly IAuthorizationService _authorizationService;
     private readonly TemplatesManager _templatesManager;
     private readonly AdminTemplatesManager _adminTemplatesManager;
+    private readonly TemplateOverridesManager _templateOverridesManager;
     private readonly IShapeFactory _shapeFactory;
+    private readonly IDisplayManager<TemplateViewModel> _templateDisplayManager;
+    private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly PagerOptions _pagerOptions;
     private readonly INotifier _notifier;
 
@@ -36,7 +39,10 @@ public sealed class TemplateController : Controller
         IAuthorizationService authorizationService,
         TemplatesManager templatesManager,
         AdminTemplatesManager adminTemplatesManager,
+        TemplateOverridesManager templateOverridesManager,
         IShapeFactory shapeFactory,
+        IDisplayManager<TemplateViewModel> templateDisplayManager,
+        IUpdateModelAccessor updateModelAccessor,
         IOptions<PagerOptions> pagerOptions,
         IStringLocalizer<TemplateController> stringLocalizer,
         IHtmlLocalizer<TemplateController> htmlLocalizer,
@@ -45,7 +51,10 @@ public sealed class TemplateController : Controller
         _authorizationService = authorizationService;
         _templatesManager = templatesManager;
         _adminTemplatesManager = adminTemplatesManager;
+        _templateOverridesManager = templateOverridesManager;
         _shapeFactory = shapeFactory;
+        _templateDisplayManager = templateDisplayManager;
+        _updateModelAccessor = updateModelAccessor;
         _pagerOptions = pagerOptions.Value;
         _notifier = notifier;
         S = stringLocalizer;
@@ -173,6 +182,8 @@ public sealed class TemplateController : Controller
             Name = name,
         };
 
+        model.Editor = await _templateDisplayManager.BuildEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: true);
+
         ViewData["ReturnUrl"] = returnUrl;
         return View(model);
     }
@@ -186,6 +197,8 @@ public sealed class TemplateController : Controller
         }
 
         ViewData["ReturnUrl"] = returnUrl;
+
+        model.Editor = await _templateDisplayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: true);
 
         if (ModelState.IsValid)
         {
@@ -242,6 +255,8 @@ public sealed class TemplateController : Controller
             Description = template.Description,
         };
 
+        model.Editor = await _templateDisplayManager.BuildEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: false);
+
         ViewData["ReturnUrl"] = returnUrl;
         return View(model);
     }
@@ -258,6 +273,8 @@ public sealed class TemplateController : Controller
             ? await _adminTemplatesManager.LoadTemplatesDocumentAsync()
             : await _templatesManager.LoadTemplatesDocumentAsync()
             ;
+
+        model.Editor = await _templateDisplayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: false);
 
         if (ModelState.IsValid)
         {
@@ -282,6 +299,11 @@ public sealed class TemplateController : Controller
                 ? _adminTemplatesManager.UpdateTemplateAsync(model.Name, template)
                 : _templatesManager.UpdateTemplateAsync(model.Name, template)
                 );
+
+            if (!string.Equals(sourceName, model.Name, StringComparison.OrdinalIgnoreCase))
+            {
+                await _templateOverridesManager.ForgetClonesAsync([sourceName], model.AdminTemplates);
+            }
 
             if (submit != "SaveAndContinue")
             {
@@ -319,6 +341,8 @@ public sealed class TemplateController : Controller
                 ? _adminTemplatesManager.RemoveTemplateAsync(name)
                 : _templatesManager.RemoveTemplateAsync(name));
 
+        await _templateOverridesManager.ForgetClonesAsync([name], adminTemplates);
+
         await _notifier.SuccessAsync(H["Template deleted successfully."]);
 
         return RedirectToReturnUrlOrIndex(returnUrl);
@@ -344,7 +368,8 @@ public sealed class TemplateController : Controller
                         ? await _adminTemplatesManager.LoadTemplatesDocumentAsync()
                         : await _templatesManager.LoadTemplatesDocumentAsync();
                     var checkedContentItemIds = templatesDocument.Templates.Keys
-                        .Intersect(itemIds, StringComparer.OrdinalIgnoreCase);
+                        .Intersect(itemIds, StringComparer.OrdinalIgnoreCase)
+                        .ToList();
 
                     foreach (var id in checkedContentItemIds)
                     {
@@ -352,6 +377,8 @@ public sealed class TemplateController : Controller
                             ? _adminTemplatesManager.RemoveTemplateAsync(id)
                             : _templatesManager.RemoveTemplateAsync(id));
                     }
+
+                    await _templateOverridesManager.ForgetClonesAsync(checkedContentItemIds, options.AdminTemplates);
 
                     await _notifier.SuccessAsync(H["Templates successfully removed."]);
                 }
@@ -377,19 +404,8 @@ public sealed class TemplateController : Controller
         }
     }
 
-    private async Task<bool> IsAuthorizedAsync(bool adminTemplates)
-    {
-        if (!await _authorizationService.AuthorizeAsync(User, OrchardCore.Liquid.Permissions.ManageLiquidTemplates))
-        {
-            return false;
-        }
-
-        var permission = adminTemplates
-            ? AdminTemplatesPermissions.ManageAdminTemplates
-            : Permissions.ManageTemplates;
-
-        return await _authorizationService.AuthorizeAsync(User, permission);
-    }
+    private Task<bool> IsAuthorizedAsync(bool adminTemplates)
+        => _authorizationService.AuthorizeTemplatesAsync(User, adminTemplates);
 
     private async Task ValidateModelAsync(TemplateViewModel model, TemplatesDocument templatesDocument = null, string sourceName = null)
     {

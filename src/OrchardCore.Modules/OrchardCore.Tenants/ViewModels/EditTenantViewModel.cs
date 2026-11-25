@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using OrchardCore.DisplayManagement;
 using OrchardCore.Recipes.Models;
 
 namespace OrchardCore.Tenants.ViewModels;
@@ -31,4 +32,10 @@ public class EditTenantViewModel : TenantViewModel
 
     [BindNever]
     public string ResolvedSchema { get; set; }
+
+    /// <summary>
+    /// Gets or sets the editor of the tenant, built by the display drivers of <see cref="EditTenantViewModel"/>.
+    /// </summary>
+    [BindNever]
+    public IShape Editor { get; set; }
 }

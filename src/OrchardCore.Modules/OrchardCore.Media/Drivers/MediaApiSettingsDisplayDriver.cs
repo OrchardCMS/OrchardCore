@@ -43,7 +43,7 @@ public sealed class MediaApiSettingsDisplayDriver : SiteDisplayDriver<MediaApiSe
                 new SelectListItem(S["Cookie (default)"], nameof(MediaApiAuthenticationScheme.Cookie)),
                 new SelectListItem(S["Bearer — OAuth2 + PKCE (requires OpenID Connect)"], nameof(MediaApiAuthenticationScheme.Bearer)),
             ];
-        }).Location("Content:1")
+        }).Location(l => l.Zone("Content", "1").Card(S["Authentication"], "10"))
         .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, MediaPermissions.ManageMediaApiSettings))
         .OnGroup(SettingsGroupId);
 

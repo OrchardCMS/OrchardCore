@@ -142,6 +142,11 @@ msgctxt "OrchardCore.DataPipelines.DataPipelinesLocalizationSources"
 msgid "Data Pipelines"
 msgstr ""
 
+#: Deployment/DataPipelinesDeploymentStepDriver.cs
+msgctxt "OrchardCore.DataPipelines.Deployment.DataPipelinesDeploymentStepDriver"
+msgid "Data pipelines"
+msgstr ""
+
 #: Drivers/TransformStepDisplayDrivers.cs
 msgctxt "OrchardCore.DataPipelines.Drivers.ConvertTimeZoneStepDisplayDriver"
 msgid "Choose a time zone."
@@ -150,6 +155,11 @@ msgstr ""
 #: Drivers/SourceAndFileStepDisplayDrivers.cs
 msgctxt "OrchardCore.DataPipelines.Drivers.CreateFileStepDisplayDriver"
 msgid "Choose the format of the file."
+msgstr ""
+
+#: Drivers/DataPipelineCreateDisplayDriver.cs
+msgctxt "OrchardCore.DataPipelines.Drivers.DataPipelineCreateDisplayDriver"
+msgid "General"
 msgstr ""
 
 #: Drivers/SourceAndFileStepDisplayDrivers.cs
@@ -748,25 +758,6 @@ msgctxt "OrchardCore.DataPipelines.Views.Admin.Create"
 msgid "Data Pipelines"
 msgstr ""
 
-#: Views/Admin/Create.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.Admin.Create"
-msgid "Name"
-msgstr ""
-
-#: Views/Admin/Create.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.Admin.Create"
-msgid "You design the pipeline next: add a source to read data from, then the steps that transform and deliver it."
-msgstr ""
-
-#. Format arguments: {0}: count
-#: Views/Admin/Index.cshtml
-#, csharp-format
-msgctxt "OrchardCore.DataPipelines.Views.Admin.Index"
-msgid " / {0} item in total"
-msgid_plural " / {0} items in total"
-msgstr[0] ""
-msgstr[1] ""
-
 #: Views/Admin/Index.cshtml
 msgctxt "OrchardCore.DataPipelines.Views.Admin.Index"
 msgid "<strong>Nothing here!</strong> No data pipeline matches your search."
@@ -787,48 +778,9 @@ msgctxt "OrchardCore.DataPipelines.Views.Admin.Index"
 msgid "Add Pipeline"
 msgstr ""
 
-#. Format arguments: {0}: pipeline.Name
-#: Views/Admin/Index.cshtml
-#, csharp-format
-msgctxt "OrchardCore.DataPipelines.Views.Admin.Index"
-msgid "Are you sure you want to delete the pipeline '{0}', its versions and its run history?"
-msgstr ""
-
-#: Views/Admin/Index.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.Admin.Index"
-msgid "Cancel"
-msgstr ""
-
 #: Views/Admin/Index.cshtml
 msgctxt "OrchardCore.DataPipelines.Views.Admin.Index"
 msgid "Data Pipelines"
-msgstr ""
-
-#: Views/Admin/Index.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.Admin.Index"
-msgid "Delete"
-msgstr ""
-
-#: Views/Admin/Index.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.Admin.Index"
-msgid "Disabled"
-msgstr ""
-
-#: Views/Admin/Index.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.Admin.Index"
-msgid "Draft"
-msgstr ""
-
-#: Views/Admin/Index.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.Admin.Index"
-msgid "Edit"
-msgstr ""
-
-#. Format arguments: {0}: pipeline.Name
-#: Views/Admin/Index.cshtml
-#, csharp-format
-msgctxt "OrchardCore.DataPipelines.Views.Admin.Index"
-msgid "Forget what the runs of the pipeline '{0}' kept, such as how far its sources read new rows? Its next run starts over, and may deliver data again."
 msgstr ""
 
 #: Views/Admin/Index.cshtml
@@ -843,34 +795,7 @@ msgstr ""
 
 #: Views/Admin/Index.cshtml
 msgctxt "OrchardCore.DataPipelines.Views.Admin.Index"
-msgid "Ok"
-msgstr ""
-
-#: Views/Admin/Index.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.Admin.Index"
-msgid "Publish the pipeline to run it."
-msgstr ""
-
-#: Views/Admin/Index.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.Admin.Index"
-msgid "Run"
-msgstr ""
-
-#: Views/Admin/Index.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.Admin.Index"
-msgid "Run history"
-msgstr ""
-
-#: Views/Admin/Index.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.Admin.Index"
-msgid "Run now"
-msgstr ""
-
-#. Format arguments: {0}: pipeline.Name
-#: Views/Admin/Index.cshtml
-#, csharp-format
-msgctxt "OrchardCore.DataPipelines.Views.Admin.Index"
-msgid "Run the pipeline '{0}' now?"
+msgid "Name"
 msgstr ""
 
 #: Views/Admin/Index.cshtml
@@ -885,44 +810,8 @@ msgstr ""
 
 #: Views/Admin/Index.cshtml
 msgctxt "OrchardCore.DataPipelines.Views.Admin.Index"
-msgid "See documentation"
+msgid "Status"
 msgstr ""
-
-#: Views/Admin/Index.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.Admin.Index"
-msgid "Start over"
-msgstr ""
-
-#: Views/Admin/Index.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.Admin.Index"
-msgid "The published version runs."
-msgstr ""
-
-#: Views/Admin/Index.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.Admin.Index"
-msgid "Unpublished changes"
-msgstr ""
-
-#. Format arguments: {0}: pipeline.PublishedVersionNumber
-#: Views/Admin/Index.cshtml
-#, csharp-format
-msgctxt "OrchardCore.DataPipelines.Views.Admin.Index"
-msgid "Version {0}"
-msgstr ""
-
-#: Views/Admin/Index.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.Admin.Index"
-msgid "View"
-msgstr ""
-
-#. Format arguments: {0}: count
-#: Views/Admin/Index.cshtml
-#, csharp-format
-msgctxt "OrchardCore.DataPipelines.Views.Admin.Index"
-msgid "{0} item"
-msgid_plural "{0} items"
-msgstr[0] ""
-msgstr[1] ""
 
 #: Views/Admin/Run.cshtml
 msgctxt "OrchardCore.DataPipelines.Views.Admin.Run"
@@ -1028,15 +917,6 @@ msgctxt "OrchardCore.DataPipelines.Views.Admin.Run"
 msgid "Warnings"
 msgstr ""
 
-#. Format arguments: {0}: count
-#: Views/Admin/Runs.cshtml
-#, csharp-format
-msgctxt "OrchardCore.DataPipelines.Views.Admin.Runs"
-msgid " / {0} item in total"
-msgid_plural " / {0} items in total"
-msgstr[0] ""
-msgstr[1] ""
-
 #: Views/Admin/Runs.cshtml
 msgctxt "OrchardCore.DataPipelines.Views.Admin.Runs"
 msgid "<strong>Nothing here!</strong> No pipeline ran yet."
@@ -1054,22 +934,7 @@ msgstr ""
 
 #: Views/Admin/Runs.cshtml
 msgctxt "OrchardCore.DataPipelines.Views.Admin.Runs"
-msgid "Cancel the run"
-msgstr ""
-
-#: Views/Admin/Runs.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.Admin.Runs"
-msgid "Cancel this run?"
-msgstr ""
-
-#: Views/Admin/Runs.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.Admin.Runs"
 msgid "Data Pipelines"
-msgstr ""
-
-#: Views/Admin/Runs.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.Admin.Runs"
-msgid "Details"
 msgstr ""
 
 #: Views/Admin/Runs.cshtml
@@ -1079,17 +944,12 @@ msgstr ""
 
 #: Views/Admin/Runs.cshtml
 msgctxt "OrchardCore.DataPipelines.Views.Admin.Runs"
-msgid "Every status"
-msgstr ""
-
-#: Views/Admin/Runs.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.Admin.Runs"
-msgid "No"
-msgstr ""
-
-#: Views/Admin/Runs.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.Admin.Runs"
 msgid "Open the pipeline"
+msgstr ""
+
+#: Views/Admin/Runs.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.Admin.Runs"
+msgid "Pipeline"
 msgstr ""
 
 #: Views/Admin/Runs.cshtml
@@ -1111,7 +971,7 @@ msgstr ""
 
 #: Views/Admin/Runs.cshtml
 msgctxt "OrchardCore.DataPipelines.Views.Admin.Runs"
-msgid "Run history of the pipeline"
+msgid "Search"
 msgstr ""
 
 #: Views/Admin/Runs.cshtml
@@ -1143,36 +1003,8 @@ msgstr ""
 
 #: Views/Admin/Runs.cshtml
 msgctxt "OrchardCore.DataPipelines.Views.Admin.Runs"
-msgid "The version that ran"
+msgid "Version"
 msgstr ""
-
-#. Format arguments: {0}: run.VersionNumber
-#: Views/Admin/Runs.cshtml
-#, csharp-format
-msgctxt "OrchardCore.DataPipelines.Views.Admin.Runs"
-msgid "Version {0}"
-msgstr ""
-
-#: Views/Admin/Runs.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.Admin.Runs"
-msgid "Yes"
-msgstr ""
-
-#. Format arguments: {0}: (completed - started).TotalSeconds
-#: Views/Admin/Runs.cshtml
-#, csharp-format
-msgctxt "OrchardCore.DataPipelines.Views.Admin.Runs"
-msgid "{0:N1} s"
-msgstr ""
-
-#. Format arguments: {0}: count
-#: Views/Admin/Runs.cshtml
-#, csharp-format
-msgctxt "OrchardCore.DataPipelines.Views.Admin.Runs"
-msgid "{0} item"
-msgid_plural "{0} items"
-msgstr[0] ""
-msgstr[1] ""
 
 #: Views/Aggregate.Fields.Design.cshtml
 msgctxt "OrchardCore.DataPipelines.Views.Aggregate.Fields.Design"
@@ -1417,6 +1249,16 @@ msgctxt "OrchardCore.DataPipelines.Views.CreateFile.Fields.Edit"
 msgid "Worksheet names"
 msgstr ""
 
+#: Views/DataPipelineCreateGeneral.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataPipelineCreateGeneral.Edit"
+msgid "Name"
+msgstr ""
+
+#: Views/DataPipelineCreateGeneral.Edit.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataPipelineCreateGeneral.Edit"
+msgid "You design the pipeline next: add a source to read data from, then the steps that transform and deliver it."
+msgstr ""
+
 #: Views/DataPipelineDesigner/DataPipelineDesignerSettings.cshtml
 msgctxt "OrchardCore.DataPipelines.Views.DataPipelineDesigner.DataPipelineDesignerSettings"
 msgid "A disabled pipeline doesn't run, whether it is started by a user or a workflow."
@@ -1440,6 +1282,203 @@ msgstr ""
 #: Views/DataPipelineDesigner/DataPipelineDesignerSettings.cshtml
 msgctxt "OrchardCore.DataPipelines.Views.DataPipelineDesigner.DataPipelineDesignerSettings"
 msgid "What the pipeline does, shown in the list of pipelines."
+msgstr ""
+
+#. Format arguments: {0}: pipeline.Name
+#: Views/DataPipelineEntry.ActionsMenuItems.SummaryAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Views.DataPipelineEntry.ActionsMenuItems.SummaryAdmin"
+msgid "Are you sure you want to delete the pipeline '{0}', its versions and its run history?"
+msgstr ""
+
+#: Views/DataPipelineEntry.ActionsMenuItems.SummaryAdmin.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataPipelineEntry.ActionsMenuItems.SummaryAdmin"
+msgid "Cancel"
+msgstr ""
+
+#: Views/DataPipelineEntry.ActionsMenuItems.SummaryAdmin.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataPipelineEntry.ActionsMenuItems.SummaryAdmin"
+msgid "Delete"
+msgstr ""
+
+#. Format arguments: {0}: pipeline.Name
+#: Views/DataPipelineEntry.ActionsMenuItems.SummaryAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Views.DataPipelineEntry.ActionsMenuItems.SummaryAdmin"
+msgid "Forget what the runs of the pipeline '{0}' kept, such as how far its sources read new rows? Its next run starts over, and may deliver data again."
+msgstr ""
+
+#: Views/DataPipelineEntry.ActionsMenuItems.SummaryAdmin.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataPipelineEntry.ActionsMenuItems.SummaryAdmin"
+msgid "Ok"
+msgstr ""
+
+#: Views/DataPipelineEntry.ActionsMenuItems.SummaryAdmin.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataPipelineEntry.ActionsMenuItems.SummaryAdmin"
+msgid "Run"
+msgstr ""
+
+#: Views/DataPipelineEntry.ActionsMenuItems.SummaryAdmin.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataPipelineEntry.ActionsMenuItems.SummaryAdmin"
+msgid "Run history"
+msgstr ""
+
+#: Views/DataPipelineEntry.ActionsMenuItems.SummaryAdmin.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataPipelineEntry.ActionsMenuItems.SummaryAdmin"
+msgid "Run now"
+msgstr ""
+
+#. Format arguments: {0}: pipeline.Name
+#: Views/DataPipelineEntry.ActionsMenuItems.SummaryAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Views.DataPipelineEntry.ActionsMenuItems.SummaryAdmin"
+msgid "Run the pipeline '{0}' now?"
+msgstr ""
+
+#: Views/DataPipelineEntry.ActionsMenuItems.SummaryAdmin.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataPipelineEntry.ActionsMenuItems.SummaryAdmin"
+msgid "Start over"
+msgstr ""
+
+#: Views/DataPipelineEntry.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataPipelineEntry.Buttons.SummaryAdmin"
+msgid "Edit"
+msgstr ""
+
+#: Views/DataPipelineEntry.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataPipelineEntry.Buttons.SummaryAdmin"
+msgid "View"
+msgstr ""
+
+#: Views/DataPipelineEntry.LastRun.SummaryAdmin.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataPipelineEntry.LastRun.SummaryAdmin"
+msgid "Last run"
+msgstr ""
+
+#: Views/DataPipelineEntry.Modified.SummaryAdmin.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataPipelineEntry.Modified.SummaryAdmin"
+msgid "Modified"
+msgstr ""
+
+#: Views/DataPipelineEntry.Status.SummaryAdmin.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataPipelineEntry.Status.SummaryAdmin"
+msgid "Disabled"
+msgstr ""
+
+#: Views/DataPipelineEntry.Status.SummaryAdmin.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataPipelineEntry.Status.SummaryAdmin"
+msgid "Draft"
+msgstr ""
+
+#: Views/DataPipelineEntry.Status.SummaryAdmin.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataPipelineEntry.Status.SummaryAdmin"
+msgid "Publish the pipeline to run it."
+msgstr ""
+
+#: Views/DataPipelineEntry.Status.SummaryAdmin.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataPipelineEntry.Status.SummaryAdmin"
+msgid "The published version runs."
+msgstr ""
+
+#: Views/DataPipelineEntry.Status.SummaryAdmin.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataPipelineEntry.Status.SummaryAdmin"
+msgid "Unpublished changes"
+msgstr ""
+
+#. Format arguments: {0}: pipeline.PublishedVersionNumber
+#: Views/DataPipelineEntry.Status.SummaryAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Views.DataPipelineEntry.Status.SummaryAdmin"
+msgid "Version {0}"
+msgstr ""
+
+#: Views/DataPipelineRunEntry.ActionsMenuItems.SummaryAdmin.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataPipelineRunEntry.ActionsMenuItems.SummaryAdmin"
+msgid "Cancel the run"
+msgstr ""
+
+#: Views/DataPipelineRunEntry.ActionsMenuItems.SummaryAdmin.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataPipelineRunEntry.ActionsMenuItems.SummaryAdmin"
+msgid "Cancel this run?"
+msgstr ""
+
+#: Views/DataPipelineRunEntry.ActionsMenuItems.SummaryAdmin.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataPipelineRunEntry.ActionsMenuItems.SummaryAdmin"
+msgid "No"
+msgstr ""
+
+#: Views/DataPipelineRunEntry.ActionsMenuItems.SummaryAdmin.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataPipelineRunEntry.ActionsMenuItems.SummaryAdmin"
+msgid "Open the pipeline"
+msgstr ""
+
+#: Views/DataPipelineRunEntry.ActionsMenuItems.SummaryAdmin.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataPipelineRunEntry.ActionsMenuItems.SummaryAdmin"
+msgid "Run history of the pipeline"
+msgstr ""
+
+#: Views/DataPipelineRunEntry.ActionsMenuItems.SummaryAdmin.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataPipelineRunEntry.ActionsMenuItems.SummaryAdmin"
+msgid "Yes"
+msgstr ""
+
+#: Views/DataPipelineRunEntry.Buttons.SummaryAdmin.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataPipelineRunEntry.Buttons.SummaryAdmin"
+msgid "Details"
+msgstr ""
+
+#: Views/DataPipelineRunEntry.Duration.SummaryAdmin.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataPipelineRunEntry.Duration.SummaryAdmin"
+msgid "Duration"
+msgstr ""
+
+#. Format arguments: {0}: (completed - started).TotalSeconds
+#: Views/DataPipelineRunEntry.Duration.SummaryAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Views.DataPipelineRunEntry.Duration.SummaryAdmin"
+msgid "{0:N1} s"
+msgstr ""
+
+#: Views/DataPipelineRunEntry.Queued.SummaryAdmin.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataPipelineRunEntry.Queued.SummaryAdmin"
+msgid "Queued"
+msgstr ""
+
+#: Views/DataPipelineRunEntry.Status.SummaryAdmin.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataPipelineRunEntry.Status.SummaryAdmin"
+msgid "Status"
+msgstr ""
+
+#: Views/DataPipelineRunEntry.Trigger.SummaryAdmin.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataPipelineRunEntry.Trigger.SummaryAdmin"
+msgid "Started by"
+msgstr ""
+
+#: Views/DataPipelineRunEntry.Version.SummaryAdmin.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataPipelineRunEntry.Version.SummaryAdmin"
+msgid "The version that ran"
+msgstr ""
+
+#. Format arguments: {0}: run.VersionNumber
+#: Views/DataPipelineRunEntry.Version.SummaryAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.DataPipelines.Views.DataPipelineRunEntry.Version.SummaryAdmin"
+msgid "Version {0}"
+msgstr ""
+
+#: Views/DataPipelineRunsFilters.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataPipelineRunsFilters"
+msgid "Every status"
+msgstr ""
+
+#: Views/DataPipelineRunsFilters.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataPipelineRunsFilters"
+msgid "Filter by status"
+msgstr ""
+
+#: Views/DataPipelineRunsFilters.cshtml
+msgctxt "OrchardCore.DataPipelines.Views.DataPipelineRunsFilters"
+msgid "Status"
 msgstr ""
 
 #: Views/DataPipelineStepTitle.Edit.cshtml

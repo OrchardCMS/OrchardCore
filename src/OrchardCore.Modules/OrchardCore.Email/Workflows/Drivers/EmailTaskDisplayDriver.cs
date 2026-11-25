@@ -1,3 +1,6 @@
+using Microsoft.Extensions.Localization;
+using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Email.Workflows.Activities;
 using OrchardCore.Email.Workflows.ViewModels;
 using OrchardCore.Workflows.Display;
@@ -7,6 +10,22 @@ namespace OrchardCore.Email.Workflows.Drivers;
 
 public sealed class EmailTaskDisplayDriver : ActivityDisplayDriver<EmailTask, EmailTaskViewModel>
 {
+    internal readonly IStringLocalizer S;
+
+    public EmailTaskDisplayDriver(IStringLocalizer<EmailTaskDisplayDriver> stringLocalizer)
+    {
+        S = stringLocalizer;
+    }
+
+    public override IDisplayResult Edit(EmailTask activity, BuildEditorContext context)
+    {
+        return Combine(
+            Initialize<EmailTaskViewModel>("EmailTask_Fields_Edit", model => EditActivityAsync(activity, model))
+                .Location(l => l.Zone("Content", "1").Card(S["Addresses"], "10")),
+            Initialize<EmailTaskViewModel>("EmailTaskMessage_Fields_Edit", model => EditActivityAsync(activity, model))
+                .Location(l => l.Zone("Content", "1").Card(S["Message"], "20")));
+    }
+
     protected override void EditActivity(EmailTask activity, EmailTaskViewModel model)
     {
         model.SenderExpression = activity.Sender.Expression;

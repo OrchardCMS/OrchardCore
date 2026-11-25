@@ -1,0 +1,25 @@
+@model ShapeViewModel<DataPipelineEntry>
+
+@{
+    var pipeline = Model.Value.Pipeline;
+}
+
+
+@if (pipeline.Published is null)
+{
+    <span class="badge ta-badge fw-normal" title="@T["Publish the pipeline to run it."]"><i class="fa-solid fa-pen-ruler text-secondary" aria-hidden="true"></i> @T["Draft"]</span>
+}
+else
+{
+    <span class="badge ta-badge fw-normal" title="@T["The published version runs."]"><i class="fa-solid fa-check text-success" aria-hidden="true"></i> @T["Version {0}", pipeline.PublishedVersionNumber]</span>
+
+    if (pipeline.Draft is not null)
+    {
+        <span class="badge ta-badge fw-normal"><i class="fa-solid fa-pen text-info" aria-hidden="true"></i> @T["Unpublished changes"]</span>
+    }
+}
+
+@if (!pipeline.IsEnabled)
+{
+    <span class="badge ta-badge fw-normal"><i class="fa-solid fa-power-off text-danger" aria-hidden="true"></i> @T["Disabled"]</span>
+}

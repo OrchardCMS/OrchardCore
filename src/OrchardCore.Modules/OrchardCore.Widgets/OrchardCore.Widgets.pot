@@ -11,6 +11,11 @@ msgctxt "OrchardCore.Widgets.Services.WidgetStereotypesProvider"
 msgid "Widget"
 msgstr ""
 
+#: Settings/WidgetsListPartSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Widgets.Settings.WidgetsListPartSettingsDisplayDriver"
+msgid "Settings"
+msgstr ""
+
 #: Views/ContentCard-WidgetsListPart.Edit.cshtml
 msgctxt "OrchardCore.Widgets.Views.ContentCard-WidgetsListPart.Edit"
 msgid "Are you sure you want to remove this item?"
@@ -36,11 +41,6 @@ msgstr ""
 #: Views/Widget.DetailAdmin.cshtml
 msgctxt "OrchardCore.Widgets.Views.Widget.DetailAdmin"
 msgid "Manage Content"
-msgstr ""
-
-#: Views/Widget.SummaryAdmin.cshtml
-msgctxt "OrchardCore.Widgets.Views.Widget.SummaryAdmin"
-msgid "Actions"
 msgstr ""
 
 #: Views/WidgetsListPart.Edit.cshtml

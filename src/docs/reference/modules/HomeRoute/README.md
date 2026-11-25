@@ -30,3 +30,10 @@ The home route is part of the site settings, so it can be set with the `settings
 ```
 
 See [Settings](../Settings/README.md) for the site settings infrastructure.
+
+## Video
+
+This video chooses what your site shows first: the home page.
+
+<!-- video:home-route -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/8Qm1voUuZW8" title="Home Page: Choose What Your Site Shows First" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

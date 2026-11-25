@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
@@ -24,6 +25,8 @@ public sealed class SecuritySettingsDisplayDriver : SiteDisplayDriver<SecuritySe
     private readonly SecuritySettings _securitySettings;
     private readonly INotifier _notifier;
 
+    internal readonly IStringLocalizer S;
+
     internal readonly IHtmlLocalizer H;
 
     protected override string SettingsGroupId
@@ -35,7 +38,8 @@ public sealed class SecuritySettingsDisplayDriver : SiteDisplayDriver<SecuritySe
         IAuthorizationService authorizationService,
         IOptionsSnapshot<SecuritySettings> securitySettings,
         INotifier notifier,
-        IHtmlLocalizer<SecuritySettingsDisplayDriver> htmlLocalizer)
+        IHtmlLocalizer<SecuritySettingsDisplayDriver> htmlLocalizer,
+        IStringLocalizer<SecuritySettingsDisplayDriver> stringLocalizer)
     {
         _shellReleaseManager = shellReleaseManager;
         _httpContextAccessor = httpContextAccessor;
@@ -43,6 +47,7 @@ public sealed class SecuritySettingsDisplayDriver : SiteDisplayDriver<SecuritySe
         _securitySettings = securitySettings.Value;
         _notifier = notifier;
         H = htmlLocalizer;
+        S = stringLocalizer;
     }
 
     public override async Task<IDisplayResult> EditAsync(ISite site, SecuritySettings settings, BuildEditorContext context)
@@ -65,7 +70,7 @@ public sealed class SecuritySettingsDisplayDriver : SiteDisplayDriver<SecuritySe
             await _notifier.InformationAsync(H["The current settings are coming from configuration sources, saving the settings will affect the AdminSettings not the configuration."]);
         }
 
-        var contentSecurityPolicyShapeResult = Initialize<SecuritySettingsViewModel>("ContentSecurityPolicySettings_Edit", model =>
+        void PopulateContentSecurityPolicy(SecuritySettingsViewModel model)
         {
             model.FromConfiguration = currentSettings.FromConfiguration;
 
@@ -76,20 +81,27 @@ public sealed class SecuritySettingsDisplayDriver : SiteDisplayDriver<SecuritySe
 
             model.UpgradeInsecureRequests = currentSettings.ContentSecurityPolicy != null &&
                 currentSettings.ContentSecurityPolicy.ContainsKey(ContentSecurityPolicyValue.UpgradeInsecureRequests);
-        }).Location("Content:2#Content Security Policy;5")
-        .OnGroup(SettingsGroupId);
+        }
+
+        var contentSecurityPolicyShapeResult = Initialize<SecuritySettingsViewModel>("ContentSecurityPolicySettings_Edit", PopulateContentSecurityPolicy)
+            .Location(l => l.Zone("Content", "2").Tab("Content Security Policy", "5").Card(S["General"], "10"))
+            .OnGroup(SettingsGroupId);
+
+        var contentSecurityPolicyDirectivesShapeResult = Initialize<SecuritySettingsViewModel>("ContentSecurityPolicySettings_Edit__Directives", PopulateContentSecurityPolicy)
+            .Location(l => l.Zone("Content", "2.1").Tab("Content Security Policy", "5").Card(S["Directives"], "20"))
+            .OnGroup(SettingsGroupId);
 
         var permissionsPolicyShapeResult = Initialize<SecuritySettingsViewModel>("PermissionsPolicySettings_Edit", model
             => model.PermissionsPolicy = currentSettings.PermissionsPolicy)
-            .Location("Content:2#Permissions Policy;10")
+            .Location(l => l.Zone("Content", "2").Tab("Permissions Policy", "10").Card(S["Features"], "10"))
             .OnGroup(SettingsGroupId);
 
         var referrerPolicyShapeResult = Initialize<SecuritySettingsViewModel>("ReferrerPolicySettings_Edit", model
             => model.ReferrerPolicy = currentSettings.ReferrerPolicy)
-            .Location("Content:2#Referrer Policy;15")
+            .Location(l => l.Zone("Content", "2").Tab("Referrer Policy", "15").Card(S["Policy"], "10"))
             .OnGroup(SettingsGroupId);
 
-        return Combine(contentSecurityPolicyShapeResult, permissionsPolicyShapeResult, referrerPolicyShapeResult);
+        return Combine(contentSecurityPolicyShapeResult, contentSecurityPolicyDirectivesShapeResult, permissionsPolicyShapeResult, referrerPolicyShapeResult);
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, SecuritySettings settings, UpdateEditorContext context)

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Handlers;
@@ -10,6 +11,13 @@ public sealed class WidgetsListPartSettingsDisplayDriver : ContentTypePartDefini
 {
     private static readonly char[] s_separator = [',', ' '];
 
+    internal readonly IStringLocalizer S;
+
+    public WidgetsListPartSettingsDisplayDriver(IStringLocalizer<WidgetsListPartSettingsDisplayDriver> stringLocalizer)
+    {
+        S = stringLocalizer;
+    }
+
     public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
     {
         return Initialize<WidgetsListPartSettingsViewModel>("WidgetsPartSettings_Edit", model =>
@@ -18,7 +26,7 @@ public sealed class WidgetsListPartSettingsDisplayDriver : ContentTypePartDefini
 
             model.Zones = string.Join(", ", settings.Zones);
             model.WidgetsListPartSettings = settings;
-        }).Location("Content");
+        }).Location(l => l.Zone("Content").Card(S["Settings"], "20"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)

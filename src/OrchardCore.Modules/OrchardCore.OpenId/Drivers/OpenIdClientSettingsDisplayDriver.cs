@@ -62,47 +62,23 @@ public sealed class OpenIdClientSettingsDisplayDriver : SiteDisplayDriver<OpenId
 
         context.AddTenantReloadWarningWrapper();
 
-        return Initialize<OpenIdClientSettingsViewModel>("OpenIdClientSettings_Edit", model =>
-        {
-            model.DisplayName = settings.DisplayName;
-            model.Scopes = settings.Scopes != null ? string.Join(" ", settings.Scopes) : null;
-            model.Authority = settings.Authority?.AbsoluteUri;
-            model.CallbackPath = settings.CallbackPath;
-            model.ClientId = settings.ClientId;
-            model.ClientSecret = SecretInputViewModel.Create(settings.ClientSecret, settings.ClientSecretSecretName);
-            model.SignedOutCallbackPath = settings.SignedOutCallbackPath;
-            model.SignedOutRedirectUri = settings.SignedOutRedirectUri;
-            model.ResponseMode = settings.ResponseMode;
-            model.StoreExternalTokens = settings.StoreExternalTokens;
-
-            if (settings.ResponseType == OpenIdConnectResponseType.Code)
-            {
-                model.UseCodeFlow = true;
-            }
-            else if (settings.ResponseType == OpenIdConnectResponseType.CodeIdToken)
-            {
-                model.UseCodeIdTokenFlow = true;
-            }
-            else if (settings.ResponseType == OpenIdConnectResponseType.CodeIdTokenToken)
-            {
-                model.UseCodeIdTokenTokenFlow = true;
-            }
-            else if (settings.ResponseType == OpenIdConnectResponseType.CodeToken)
-            {
-                model.UseCodeTokenFlow = true;
-            }
-            else if (settings.ResponseType == OpenIdConnectResponseType.IdToken)
-            {
-                model.UseIdTokenFlow = true;
-            }
-            else if (settings.ResponseType == OpenIdConnectResponseType.IdTokenToken)
-            {
-                model.UseIdTokenTokenFlow = true;
-            }
-
-            model.Parameters = JConvert.SerializeObject(settings.Parameters, JOptions.CamelCase);
-        }).Location("Content:2")
-        .OnGroup(SettingsGroupId);
+        return Combine(
+            Initialize<OpenIdClientSettingsViewModel>("OpenIdClientSettings_Edit", model => PopulateViewModel(settings, model))
+                .Location(l => l.Zone("Content", "2").Card(S["General"], "10"))
+                .OnGroup(SettingsGroupId),
+            Initialize<OpenIdClientSettingsViewModel>("OpenIdClientSettings_Edit__CodeFlow", model => PopulateViewModel(settings, model))
+                .Location(l => l.Zone("Content", "2.1").Card(S["Code flow"], "20"))
+                .OnGroup(SettingsGroupId),
+            Initialize<OpenIdClientSettingsViewModel>("OpenIdClientSettings_Edit__HybridFlow", model => PopulateViewModel(settings, model))
+                .Location(l => l.Zone("Content", "2.2").Card(S["Hybrid flow"], "30"))
+                .OnGroup(SettingsGroupId),
+            Initialize<OpenIdClientSettingsViewModel>("OpenIdClientSettings_Edit__ImplicitFlow", model => PopulateViewModel(settings, model))
+                .Location(l => l.Zone("Content", "2.3").Card(S["Implicit flow"], "40"))
+                .OnGroup(SettingsGroupId),
+            Initialize<OpenIdClientSettingsViewModel>("OpenIdClientSettings_Edit__Advanced", model => PopulateViewModel(settings, model))
+                .Location(l => l.Zone("Content", "2.4").Card(S["Advanced"], "50"))
+                .OnGroup(SettingsGroupId)
+        );
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, OpenIdClientSettings settings, UpdateEditorContext context)
@@ -204,5 +180,46 @@ public sealed class OpenIdClientSettingsDisplayDriver : SiteDisplayDriver<OpenId
         _shellReleaseManager.RequestRelease();
 
         return await EditAsync(site, settings, context);
+    }
+
+    private static void PopulateViewModel(OpenIdClientSettings settings, OpenIdClientSettingsViewModel model)
+    {
+        model.DisplayName = settings.DisplayName;
+        model.Scopes = settings.Scopes != null ? string.Join(" ", settings.Scopes) : null;
+        model.Authority = settings.Authority?.AbsoluteUri;
+        model.CallbackPath = settings.CallbackPath;
+        model.ClientId = settings.ClientId;
+        model.ClientSecret = SecretInputViewModel.Create(settings.ClientSecret, settings.ClientSecretSecretName);
+        model.SignedOutCallbackPath = settings.SignedOutCallbackPath;
+        model.SignedOutRedirectUri = settings.SignedOutRedirectUri;
+        model.ResponseMode = settings.ResponseMode;
+        model.StoreExternalTokens = settings.StoreExternalTokens;
+
+        if (settings.ResponseType == OpenIdConnectResponseType.Code)
+        {
+            model.UseCodeFlow = true;
+        }
+        else if (settings.ResponseType == OpenIdConnectResponseType.CodeIdToken)
+        {
+            model.UseCodeIdTokenFlow = true;
+        }
+        else if (settings.ResponseType == OpenIdConnectResponseType.CodeIdTokenToken)
+        {
+            model.UseCodeIdTokenTokenFlow = true;
+        }
+        else if (settings.ResponseType == OpenIdConnectResponseType.CodeToken)
+        {
+            model.UseCodeTokenFlow = true;
+        }
+        else if (settings.ResponseType == OpenIdConnectResponseType.IdToken)
+        {
+            model.UseIdTokenFlow = true;
+        }
+        else if (settings.ResponseType == OpenIdConnectResponseType.IdTokenToken)
+        {
+            model.UseIdTokenTokenFlow = true;
+        }
+
+        model.Parameters = JConvert.SerializeObject(settings.Parameters, JOptions.CamelCase);
     }
 }

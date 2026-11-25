@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using OrchardCore.Localization;
 
 namespace OrchardCore.DataSources;
@@ -34,11 +35,13 @@ public sealed class DataSourceDescriptor
     /// <summary>
     /// Gets the label shown to users, to localize with <c>IStringLocalizerFactory.Localize</c>.
     /// </summary>
+    [JsonIgnore]
     public LocalizationSource DisplayName { get; }
 
     /// <summary>
     /// Gets the description shown to users, to localize with <c>IStringLocalizerFactory.Localize</c>.
     /// </summary>
+    [JsonIgnore]
     public LocalizationSource Description { get; }
 
     /// <summary>

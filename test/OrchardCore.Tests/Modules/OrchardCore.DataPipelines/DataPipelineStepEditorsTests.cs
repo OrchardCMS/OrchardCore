@@ -160,6 +160,35 @@ public sealed class DataPipelineStepEditorsTests
     }
 
     [Fact]
+    public async Task EditorPost_SaveContentItemsContentTypeChosen_KeepsTheDefaults()
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+        var pipelineId = await CreatePipelineAsync(context, [new DataPipelineStep { StepId = "save", Type = SaveContentItemsStep.StepName }]);
+
+        // Act: a new step shows only the content type, so the form posts nothing else.
+        using var response = await PostEditorAsync(context, pipelineId, "save", new()
+        {
+            [$"{Prefix}ContentType"] = "BlogPost",
+        });
+
+        // Assert
+        using var json = JsonDocument.Parse(await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+        Assert.True(json.RootElement.GetProperty("valid").GetBoolean());
+        Assert.True(json.RootElement.GetProperty("reloadEditor").GetBoolean());
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var pipeline = await scope.ServiceProvider.GetRequiredService<DataPipelineManager>().GetAsync(pipelineId);
+            var settings = pipeline.GetEditableDefinition().FindStep("save").GetOrCreate<SaveContentItemsStepSettings>();
+
+            Assert.Equal("BlogPost", settings.ContentType);
+            Assert.Equal(100, settings.BatchSize);
+            Assert.True(settings.Publish);
+        });
+    }
+
+    [Fact]
     public async Task Editor_DataSourceFilter_NamesTheOperatorsInWords()
     {
         // Arrange

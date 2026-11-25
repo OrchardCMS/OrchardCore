@@ -1,0 +1,60 @@
+// The theme menu of the top bar: the color mode, then the schemes, each with its swatch.
+.ta-theme-menu {
+    min-width: 15rem;
+
+    .dropdown-header {
+        padding-inline: 0.75rem;
+        font-size: var(--ta-font-size-sm);
+        font-weight: var(--ta-font-weight-strong);
+        color: var(--ta-muted);
+    }
+}
+
+.ta-scheme-option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+// A scheme's four colors, outlined so the light ones stay visible on a white row or menu.
+.ta-scheme-swatch {
+    display: inline-flex;
+    flex: 0 0 auto;
+    overflow: hidden;
+    border: var(--bs-border-width) solid var(--ta-control-border);
+    border-radius: var(--bs-border-radius-sm);
+    vertical-align: middle;
+
+    > span {
+        width: 1.375rem;
+        height: 1.5rem;
+    }
+}
+
+// The default scheme on Settings > Admin: a radio button per scheme, its name beside its swatch.
+.ta-scheme-choices {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+}
+
+.ta-scheme-choice .form-check-label {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-width: 13rem;
+}
+
+// Windows contrast themes drop backgrounds: the chosen scheme is outlined, and the swatches keep their own colors.
+@media (forced-colors: active) {
+    .ta-scheme-option.active {
+        outline: 2px solid Highlight;
+        outline-offset: -2px;
+    }
+
+    .ta-scheme-swatch {
+        forced-color-adjust: none;
+    }
+}

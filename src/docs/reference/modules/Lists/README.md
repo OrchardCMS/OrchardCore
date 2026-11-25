@@ -95,6 +95,26 @@ The `list_items` filter loads published content items for a given `ContentItem` 
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/JYES1i6BdWs" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
+This video groups content items in a container with the List part.
+
+<!-- video:lists-overview -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/vkE32ZCRHXE" title="Lists: Group Content Items in a Container" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video sets the order of a list, the number of items per page, and the types it can contain.
+
+<!-- video:lists-ordering-paging -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/qOUnxBy9_Tw" title="Lists: Ordering, Paging and Contained Types" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video shows a list and its items in Liquid templates.
+
+<!-- video:lists-in-templates -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/IXGsED-FvrA" title="Lists in Templates: Liquid Filters for Containers and Their Items" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video publishes an RSS feed of your content.
+
+<!-- video:feeds-rss -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/CbMGEGMzUcE" title="Feeds: Publish an RSS Feed of Your Content" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
 ## Lucene Indexing
 
 **Breaking Change**: Every content item that is contained in a list has a `ContainedPart` associated with it.

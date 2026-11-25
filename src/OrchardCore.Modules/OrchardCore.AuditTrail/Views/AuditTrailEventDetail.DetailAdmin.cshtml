@@ -1,12 +1,10 @@
 @model AuditTrailEventViewModel
 
-<h2 class="h3">@T["Event Info"]</h2>
-
-<table class="table table-sm table-hover">
+<table class="table table-sm table-hover mb-0">
     <tbody>
         <tr>
-            <th class="border-top-0 w-25">@T["Category"]</th>
-            <td class="border-top-0">@Model.Descriptor.LocalizedCategory(Context.RequestServices)</td>
+            <th class="w-25">@T["Category"]</th>
+            <td>@Model.Descriptor.LocalizedCategory(Context.RequestServices)</td>
         </tr>
         <tr>
             <th>@T["Event name"]</th>
@@ -24,7 +22,7 @@
             <th>@T["Triggered at timestamp"]</th>
             <td>@await DisplayAsync(await New.DateTime(Utc: Model.AuditTrailEvent.CreatedUtc, Format: "g"))</td>
         </tr>
-        <tr class="border-bottom">
+        <tr>
             <th>@T["Client IP address"]</th>
             <td>@Model.AuditTrailEvent.ClientIpAddress</td>
         </tr>

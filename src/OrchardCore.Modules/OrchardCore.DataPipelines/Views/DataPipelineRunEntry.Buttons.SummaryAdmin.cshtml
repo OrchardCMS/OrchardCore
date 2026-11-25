@@ -1,0 +1,8 @@
+@model ShapeViewModel<DataPipelineRunEntry>
+
+@{
+    var run = Model.Value.Run;
+}
+
+
+<a asp-controller="Admin" asp-action="Run" asp-route-runId="@run.RunId" class="btn btn-primary btn-sm">@T["Details"]</a>

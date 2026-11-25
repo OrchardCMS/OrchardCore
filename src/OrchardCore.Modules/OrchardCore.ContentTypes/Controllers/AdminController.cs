@@ -30,6 +30,11 @@ public sealed class AdminController : Controller
     private readonly IContentDefinitionDisplayManager _contentDefinitionDisplayManager;
     private readonly INotifier _notifier;
     private readonly IUpdateModelAccessor _updateModelAccessor;
+    private readonly IDisplayManager<CreateTypeViewModel> _createTypeDisplayManager;
+    private readonly IDisplayManager<CreatePartViewModel> _createPartDisplayManager;
+    private readonly IDisplayManager<AddFieldViewModel> _addFieldDisplayManager;
+    private readonly IDisplayManager<AddPartsViewModel> _addPartsDisplayManager;
+    private readonly IDisplayManager<AddReusablePartViewModel> _addReusablePartDisplayManager;
     private readonly IEnumerable<Type> _contentPartTypes;
     private readonly IEnumerable<Type> _contentFieldTypes;
 
@@ -46,7 +51,12 @@ public sealed class AdminController : Controller
         IHtmlLocalizer<AdminController> htmlLocalizer,
         IStringLocalizer<AdminController> stringLocalizer,
         INotifier notifier,
-        IUpdateModelAccessor updateModelAccessor)
+        IUpdateModelAccessor updateModelAccessor,
+        IDisplayManager<CreateTypeViewModel> createTypeDisplayManager,
+        IDisplayManager<CreatePartViewModel> createPartDisplayManager,
+        IDisplayManager<AddFieldViewModel> addFieldDisplayManager,
+        IDisplayManager<AddPartsViewModel> addPartsDisplayManager,
+        IDisplayManager<AddReusablePartViewModel> addReusablePartDisplayManager)
     {
         _notifier = notifier;
         _contentDefinitionDisplayManager = contentDefinitionDisplayManager;
@@ -55,6 +65,11 @@ public sealed class AdminController : Controller
         _contentDefinitionService = contentDefinitionService;
         _contentDefinitionManager = contentDefinitionManager;
         _updateModelAccessor = updateModelAccessor;
+        _createTypeDisplayManager = createTypeDisplayManager;
+        _createPartDisplayManager = createPartDisplayManager;
+        _addFieldDisplayManager = addFieldDisplayManager;
+        _addPartsDisplayManager = addPartsDisplayManager;
+        _addReusablePartDisplayManager = addReusablePartDisplayManager;
         _contentPartTypes = contentOptions.Value.ContentPartOptions.Select(cpo => cpo.Type);
         _contentFieldTypes = contentOptions.Value.ContentFieldOptions.Select(cfo => cfo.Type);
 
@@ -99,7 +114,11 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        return View(new CreateTypeViewModel { DisplayName = suggestion, Name = suggestion.ToSafeName() });
+        var viewModel = new CreateTypeViewModel { DisplayName = suggestion, Name = suggestion.ToSafeName() };
+
+        viewModel.Editor = await _createTypeDisplayManager.BuildEditorAsync(viewModel, _updateModelAccessor.ModelUpdater, isNew: true);
+
+        return View(viewModel);
     }
 
     [HttpPost, ActionName("Create")]
@@ -109,6 +128,8 @@ public sealed class AdminController : Controller
         {
             return Forbid();
         }
+
+        viewModel.Editor = await _createTypeDisplayManager.UpdateEditorAsync(viewModel, _updateModelAccessor.ModelUpdater, isNew: true);
 
         viewModel.DisplayName = viewModel.DisplayName?.Trim() ?? string.Empty;
         viewModel.Name ??= string.Empty;
@@ -278,6 +299,8 @@ public sealed class AdminController : Controller
                 .ToList(),
         };
 
+        viewModel.Editor = await _addPartsDisplayManager.BuildEditorAsync(viewModel, _updateModelAccessor.ModelUpdater, isNew: true);
+
         return View(viewModel);
     }
 
@@ -310,6 +333,8 @@ public sealed class AdminController : Controller
             SelectedPartName = reusableParts.FirstOrDefault()?.Name,
         };
 
+        viewModel.Editor = await _addReusablePartDisplayManager.BuildEditorAsync(viewModel, _updateModelAccessor.ModelUpdater, isNew: true);
+
         return View(viewModel);
     }
 
@@ -333,6 +358,8 @@ public sealed class AdminController : Controller
         {
             return await AddPartsTo(id);
         }
+
+        viewModel.Editor = await _addPartsDisplayManager.UpdateEditorAsync(viewModel, _updateModelAccessor.ModelUpdater, isNew: true);
 
         if (!string.IsNullOrEmpty(submitAddAndConfigure))
         {
@@ -401,6 +428,8 @@ public sealed class AdminController : Controller
         {
             return await AddReusablePartTo(id);
         }
+
+        viewModel.Editor = await _addReusablePartDisplayManager.UpdateEditorAsync(viewModel, _updateModelAccessor.ModelUpdater, isNew: true);
 
         viewModel.DisplayName = viewModel.DisplayName?.Trim() ?? string.Empty;
         viewModel.Name ??= string.Empty;
@@ -525,7 +554,11 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        return View(new CreatePartViewModel { Name = suggestion.ToSafeName() });
+        var viewModel = new CreatePartViewModel { Name = suggestion.ToSafeName() };
+
+        viewModel.Editor = await _createPartDisplayManager.BuildEditorAsync(viewModel, _updateModelAccessor.ModelUpdater, isNew: true);
+
+        return View(viewModel);
     }
 
     [HttpPost, ActionName("CreatePart")]
@@ -535,6 +568,8 @@ public sealed class AdminController : Controller
         {
             return Forbid();
         }
+
+        viewModel.Editor = await _createPartDisplayManager.UpdateEditorAsync(viewModel, _updateModelAccessor.ModelUpdater, isNew: true);
 
         viewModel.Name ??= string.Empty;
 
@@ -690,6 +725,8 @@ public sealed class AdminController : Controller
             Fields = fields.Select(field => field.Name).OrderBy(name => name).ToList(),
         };
 
+        viewModel.Editor = await _addFieldDisplayManager.BuildEditorAsync(viewModel, _updateModelAccessor.ModelUpdater, isNew: true);
+
         ViewData["ReturnUrl"] = returnUrl;
         return View(viewModel);
     }
@@ -718,6 +755,10 @@ public sealed class AdminController : Controller
         }
 
         var partDefinition = partViewModel.PartDefinition;
+
+        viewModel.Part = partDefinition;
+        viewModel.Fields = fields.Select(x => x.Name).OrderBy(x => x).ToList();
+        viewModel.Editor = await _addFieldDisplayManager.UpdateEditorAsync(viewModel, _updateModelAccessor.ModelUpdater, isNew: true);
 
         viewModel.DisplayName = viewModel.DisplayName?.Trim() ?? string.Empty;
         viewModel.Name ??= string.Empty;
@@ -754,9 +795,6 @@ public sealed class AdminController : Controller
 
         if (!ModelState.IsValid)
         {
-            viewModel.Part = partDefinition;
-            viewModel.Fields = GetFields().Select(x => x.Name).OrderBy(x => x).ToList();
-
             await _documentStore.CancelAsync();
 
             ViewData["ReturnUrl"] = returnUrl;

@@ -139,3 +139,10 @@ Visual representation:
 
 See Elasticsearch documentation for more details:  
 <https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-geo-distance-query.html>
+
+## Video
+
+This video adds a location to content items with the Geo Point field.
+
+<!-- video:spatial-geo-point-field -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/NyJDG0sIVs8" title="Geo Point Field: Add Locations to Content Items" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

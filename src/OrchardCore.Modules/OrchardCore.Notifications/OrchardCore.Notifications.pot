@@ -104,11 +104,26 @@ msgctxt "OrchardCore.Notifications.Controllers.AdminController"
 msgid "{0} {1} unread successfully."
 msgstr ""
 
+#: Drivers/NotifyUserTaskActivityDisplayDriver.cs
+msgctxt "OrchardCore.Notifications.Drivers.NotifyUserTaskActivityDisplayDriver"
+msgid "Body"
+msgstr ""
+
 #. Format arguments: {0}: string.Join(' ', htmlBodyErrors)
 #: Drivers/NotifyUserTaskActivityDisplayDriver.cs
 #, csharp-format
 msgctxt "OrchardCore.Notifications.Drivers.NotifyUserTaskActivityDisplayDriver"
 msgid "HTML Body field does not contain a valid Liquid expression. Details: {0}"
+msgstr ""
+
+#: Drivers/NotifyUserTaskActivityDisplayDriver.cs
+msgctxt "OrchardCore.Notifications.Drivers.NotifyUserTaskActivityDisplayDriver"
+msgid "Notification"
+msgstr ""
+
+#: Drivers/NotifyUserTaskActivityDisplayDriver.cs
+msgctxt "OrchardCore.Notifications.Drivers.NotifyUserTaskActivityDisplayDriver"
+msgid "Recipients"
 msgstr ""
 
 #. Format arguments: {0}: string.Join(' ', subjectErrors)
@@ -149,6 +164,11 @@ msgstr ""
 #: Drivers/NotifyUserTaskDisplayDriver.cs
 msgctxt "OrchardCore.Notifications.Drivers.NotifyUserTaskDisplayDriver"
 msgid "Please provide at least one username to notify."
+msgstr ""
+
+#: Drivers/UserNotificationPreferencesPartDisplayDriver.cs
+msgctxt "OrchardCore.Notifications.Drivers.UserNotificationPreferencesPartDisplayDriver"
+msgid "Notifications"
 msgstr ""
 
 #: NotificationsLocalizationSources.cs
@@ -263,27 +283,12 @@ msgstr ""
 
 #: Views/Items/NotifyUserTaskActivity.Fields.Edit.cshtml
 msgctxt "OrchardCore.Notifications.Views.Items.NotifyUserTaskActivity.Fields.Edit"
-msgid "HTML Body"
-msgstr ""
-
-#: Views/Items/NotifyUserTaskActivity.Fields.Edit.cshtml
-msgctxt "OrchardCore.Notifications.Views.Items.NotifyUserTaskActivity.Fields.Edit"
-msgid "HTML message will only be sent if the notification provider supports it. You may use Liquid syntax."
-msgstr ""
-
-#: Views/Items/NotifyUserTaskActivity.Fields.Edit.cshtml
-msgctxt "OrchardCore.Notifications.Views.Items.NotifyUserTaskActivity.Fields.Edit"
 msgid "Subject"
 msgstr ""
 
 #: Views/Items/NotifyUserTaskActivity.Fields.Edit.cshtml
 msgctxt "OrchardCore.Notifications.Views.Items.NotifyUserTaskActivity.Fields.Edit"
 msgid "Summary"
-msgstr ""
-
-#: Views/Items/NotifyUserTaskActivity.Fields.Edit.cshtml
-msgctxt "OrchardCore.Notifications.Views.Items.NotifyUserTaskActivity.Fields.Edit"
-msgid "Text Body"
 msgstr ""
 
 #: Views/Items/NotifyUserTaskActivity.Fields.Edit.cshtml
@@ -298,11 +303,6 @@ msgstr ""
 
 #: Views/Items/NotifyUserTaskActivity.Fields.Edit.cshtml
 msgctxt "OrchardCore.Notifications.Views.Items.NotifyUserTaskActivity.Fields.Edit"
-msgid "This optional text body does not support HTML. You may use Liquid syntax."
-msgstr ""
-
-#: Views/Items/NotifyUserTaskActivity.Fields.Edit.cshtml
-msgctxt "OrchardCore.Notifications.Views.Items.NotifyUserTaskActivity.Fields.Edit"
 msgid "Type"
 msgstr ""
 
@@ -313,22 +313,42 @@ msgstr ""
 
 #: Views/Items/NotifyUserTaskActivity.Fields.Edit.cshtml
 msgctxt "OrchardCore.Notifications.Views.Items.NotifyUserTaskActivity.Fields.Edit"
-msgid "Use HTML Body when possible"
-msgstr ""
-
-#: Views/Items/NotifyUserTaskActivity.Fields.Edit.cshtml
-msgctxt "OrchardCore.Notifications.Views.Items.NotifyUserTaskActivity.Fields.Edit"
-msgid "When checked, the notification provider will use the HTML body if it supports HTML."
-msgstr ""
-
-#: Views/Items/NotifyUserTaskActivity.Fields.Edit.cshtml
-msgctxt "OrchardCore.Notifications.Views.Items.NotifyUserTaskActivity.Fields.Edit"
 msgid "You may use Liquid syntax."
 msgstr ""
 
 #: Views/Items/NotifyUserTaskActivity.Fields.Edit.cshtml
 msgctxt "OrchardCore.Notifications.Views.Items.NotifyUserTaskActivity.Fields.Edit"
 msgid "You may use Liquid syntax. Html is supported."
+msgstr ""
+
+#: Views/Items/NotifyUserTaskActivityBody.Fields.Edit.cshtml
+msgctxt "OrchardCore.Notifications.Views.Items.NotifyUserTaskActivityBody.Fields.Edit"
+msgid "HTML Body"
+msgstr ""
+
+#: Views/Items/NotifyUserTaskActivityBody.Fields.Edit.cshtml
+msgctxt "OrchardCore.Notifications.Views.Items.NotifyUserTaskActivityBody.Fields.Edit"
+msgid "HTML message will only be sent if the notification provider supports it. You may use Liquid syntax."
+msgstr ""
+
+#: Views/Items/NotifyUserTaskActivityBody.Fields.Edit.cshtml
+msgctxt "OrchardCore.Notifications.Views.Items.NotifyUserTaskActivityBody.Fields.Edit"
+msgid "Text Body"
+msgstr ""
+
+#: Views/Items/NotifyUserTaskActivityBody.Fields.Edit.cshtml
+msgctxt "OrchardCore.Notifications.Views.Items.NotifyUserTaskActivityBody.Fields.Edit"
+msgid "This optional text body does not support HTML. You may use Liquid syntax."
+msgstr ""
+
+#: Views/Items/NotifyUserTaskActivityBody.Fields.Edit.cshtml
+msgctxt "OrchardCore.Notifications.Views.Items.NotifyUserTaskActivityBody.Fields.Edit"
+msgid "Use HTML Body when possible"
+msgstr ""
+
+#: Views/Items/NotifyUserTaskActivityBody.Fields.Edit.cshtml
+msgctxt "OrchardCore.Notifications.Views.Items.NotifyUserTaskActivityBody.Fields.Edit"
+msgid "When checked, the notification provider will use the HTML body if it supports HTML."
 msgstr ""
 
 #: Views/NotificationsActions_DetailAdmin.cshtml

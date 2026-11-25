@@ -102,9 +102,9 @@
   },
   {
     "action": "parcel",
-    "name": "vue-multiselect-fields",
-    "source": "Assets/ts/vue-multiselect-fields.ts",
-    "dest": "wwwroot/Scripts/vue-multiselect-fields/",
+    "name": "picker-fields",
+    "source": "Assets/ts/picker-fields.ts",
+    "dest": "wwwroot/Scripts/picker-fields/",
     "tags": [ "admin", "dashboard", "js" ]
   },
   {

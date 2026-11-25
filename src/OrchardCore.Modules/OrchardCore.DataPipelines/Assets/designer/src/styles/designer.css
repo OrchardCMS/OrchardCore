@@ -4,12 +4,15 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    /* The admin's top bar above (the designer's page has no heading), and a small gap below. */
-    height: calc(100vh - 5.375rem);
+    /* The height the admin theme leaves to its content (its top bar and the padding around the content are taken
+       off), so the designer fills the page without scrolling it; the page has no heading. */
+    height: var(--oc-admin-content-height, calc(100vh - 5.375rem));
     min-height: 32rem;
-    border: var(--bs-border-width) solid var(--bs-border-color);
-    border-radius: var(--bs-border-radius);
-    background-color: var(--bs-body-bg);
+    /* The designer is a card ('.card' on its root): its border, corners and background are the card's, so it looks like
+       the other cards of the admin theme (which may also give them a shadow). */
+    border: var(--bs-border-width) solid var(--bs-card-border-color, var(--bs-border-color));
+    border-radius: var(--bs-card-border-radius, var(--bs-border-radius));
+    background-color: var(--bs-card-bg, var(--bs-body-bg));
     overflow: hidden;
 }
 
@@ -22,27 +25,41 @@
     background-color: var(--bs-tertiary-bg);
 }
 
-.dpd-back {
+/* The breadcrumb of the page, in the toolbar: the admin theme styles it as its own (.oc-breadcrumb). It only gives up
+   the space around it, shrinks before the buttons, and shows the name in the trail's size and color. */
+.dpd .dpd-toolbar .dpd-breadcrumb {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.dpd .dpd-toolbar .dpd-breadcrumb .breadcrumb {
+    flex-wrap: nowrap;
+    margin: 0;
+}
+
+.dpd .dpd-toolbar .dpd-breadcrumb .breadcrumb-item {
     flex: 0 0 auto;
-    font-size: 0.875rem;
-    text-decoration: none;
 }
 
-.dpd-back:hover {
-    text-decoration: underline;
+.dpd .dpd-toolbar .dpd-breadcrumb .breadcrumb-item.active {
+    flex: 0 1 auto;
+    min-width: 0;
 }
 
-.dpd-back-separator {
-    margin-inline: -0.125rem;
-    color: var(--bs-secondary-color);
-}
-
-.dpd-title {
+/* The headings are prefixed with the designer's class so that they keep their size whatever the heading scale of
+   the admin theme, whose stylesheet comes after this one. */
+.dpd .dpd-title {
     flex: 1 1 auto;
     min-width: 0;
     margin: 0;
     font-size: 1rem;
     font-weight: 600;
+}
+
+.dpd .dpd-breadcrumb .dpd-title {
+    font-size: inherit;
+    font-weight: inherit;
+    color: inherit;
 }
 
 /* Directional icons outside the canvas point the other way in RTL. */
@@ -98,7 +115,7 @@
     border-bottom: var(--bs-border-width) solid var(--bs-border-color);
 }
 
-.dpd-toolbox-title {
+.dpd .dpd-toolbox-title {
     flex: 1 1 auto;
     margin: 0;
     font-size: 0.8125rem;
@@ -219,7 +236,7 @@
     border-bottom: var(--bs-border-width) solid var(--bs-border-color);
 }
 
-.dpd-panel-title.dpd-step-panel-title {
+.dpd .dpd-panel-title.dpd-step-panel-title {
     flex: 0 1 auto;
     align-items: center;
     align-self: center;
@@ -229,7 +246,7 @@
     white-space: nowrap;
 }
 
-.dpd-step-panel-title small {
+.dpd .dpd-step-panel-title small {
     margin-inline-start: 0;
 }
 
@@ -369,7 +386,7 @@
     overflow: auto;
 }
 
-.dpd-panel-title {
+.dpd .dpd-panel-title {
     display: flex;
     align-items: baseline;
     gap: 0.5rem;
@@ -377,7 +394,7 @@
     padding: 1rem 1rem 0;
 }
 
-.dpd-panel-title small {
+.dpd .dpd-panel-title small {
     margin-inline-start: auto;
     font-weight: 400;
 }
@@ -392,7 +409,7 @@
     padding: 0.75rem;
 }
 
-.dpd-section-title {
+.dpd .dpd-section-title {
     margin-bottom: 0.25rem;
     font-size: 0.875rem;
     font-weight: 600;
@@ -455,12 +472,12 @@
     font-size: 0.8125rem;
 }
 
-.dpd-toolbox-category-title {
+.dpd .dpd-toolbox-category-title {
     margin: 0;
     font-size: 0.8125rem;
 }
 
-.dpd-toolbox-category-title .btn {
+.dpd .dpd-toolbox-category-title .btn {
     font-weight: 600;
 }
 
@@ -636,7 +653,7 @@
     display: none;
 }
 
-.dpd-start-picker-title {
+.dpd .dpd-start-picker-title {
     margin: 0 0 0.25rem;
     font-size: 1rem;
     font-weight: 600;
