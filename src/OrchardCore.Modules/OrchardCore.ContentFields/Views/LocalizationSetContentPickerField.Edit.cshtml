@@ -24,11 +24,11 @@
 <script asp-name="Sortable" at="Foot"></script>
 
 <div class="@($"ocat-wrapper field-wrapper field-wrapper-{Model.PartFieldDefinition.PartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" + (Model.PartFieldDefinition.IsNamedPart() ? $" field-wrapper-{Model.PartFieldDefinition.ContentTypePartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" : string.Empty))" id="@Html.IdFor(x => x.LocalizationSets)_FieldWrapper">
-    <label asp-for="LocalizationSets" class="ocat-label @(settings.Required ? "ocat-label-required" : "")">@localizedFieldName</label>
+    <label for="@Html.IdFor(x => x.LocalizationSets)_Search" class="ocat-label @(settings.Required ? "ocat-label-required" : "")">@localizedFieldName</label>
     <div class="ocat-end">
         <div class="remote-picker" data-remote-picker data-search-url="@searchUrl" data-multiple="@multiple" data-selected-items="@selectedItems" data-values-input="@Html.IdFor(x => x.LocalizationSets)" data-status-field="hasPublished" data-status-text="@T["Not published"]" data-remove-text="@T["Remove"]">
             <input type="hidden" asp-for="LocalizationSets" />
-            <select data-remote-picker-search placeholder="@T["Type to search"]" data-live-search-placeholder="@T["Search"]" data-none-results-text="@T["No results match {0}", "{0}"]" aria-label="@localizedFieldName"></select>
+            <select id="@Html.IdFor(x => x.LocalizationSets)_Search" data-remote-picker-search placeholder="@T["Type to search"]" data-live-search-placeholder="@T["Search"]" data-none-results-text="@T["No results match {0}", "{0}"]"></select>
         </div>
         @if (!string.IsNullOrEmpty(settings.Hint))
         {

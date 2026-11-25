@@ -32,8 +32,8 @@
         </div>
         <div class="card-body">
             <div class="ocat-wrapper">
-                <label asp-for="IconClass" class="ocat-label">@T["Default Icon"]</label>
-                <div class="ocat-end">
+                <span id="@Html.IdFor(m => m.IconClass)_Label" class="ocat-label">@T["Default Icon"]</span>
+                <div class="ocat-end" role="group" aria-labelledby="@Html.IdFor(m => m.IconClass)_Label">
                     <div class="btn-toolbar" role="toolbar" aria-label="Icon Selector Toolbar">
                         <div class="btn-group input-group me-2" role="group" aria-label="Icon Selector">
                             <button type="button" class="btn btn-primary sample-icon">

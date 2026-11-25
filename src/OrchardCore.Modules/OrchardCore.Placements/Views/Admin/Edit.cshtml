@@ -19,7 +19,7 @@
     @Html.HiddenFor(m => m.Creating)
     @if (!Model.Creating)
     {
-        @Html.HiddenFor(m => m.ShapeType)
+        <input type="hidden" name="@Html.NameFor(m => m.ShapeType)" value="@Model.ShapeType" />
     }
 
     <div class="ocat-wrapper" asp-validation-class-for="ShapeType">

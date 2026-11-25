@@ -4,9 +4,9 @@
 }
 
 <div class="ocat-wrapper">
-    <label asp-for="Methods" class="ocat-label">@T["Notification Methods"]</label>
+    <span id="@Html.IdFor(m => m.Methods)_Label" class="ocat-label">@T["Notification Methods"]</span>
 
-    <div class="ocat-end">
+    <div class="ocat-end" role="group" aria-labelledby="@Html.IdFor(m => m.Methods)_Label">
         <span class="hint">
             @T["Select all notification methods to receive."]
         </span>

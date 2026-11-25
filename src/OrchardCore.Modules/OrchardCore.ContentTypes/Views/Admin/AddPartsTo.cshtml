@@ -35,7 +35,7 @@
                             </div>
                             <button class="btn btn-secondary btn-sm" type="submit" name="submit.AddAndConfigure" value="@partSelection.PartName">@T["Add &amp; Configure"]</button>
                         </div>
-                        <input asp-for="PartSelections[i].IsSelected" type="hidden" />
+                        <input type="hidden" name="@Html.NameFor(m => m.PartSelections[i].IsSelected)" value="@partSelection.IsSelected" />
                         <input asp-for="PartSelections[i].PartName" type="hidden" />
                     </li>
                     i++;

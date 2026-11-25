@@ -255,8 +255,8 @@
 
     <div class="field-editor field-editor-parameters openid-parameters-editor" data-parameters="@Model.Parameters" data-parameters-input-id="@Html.IdFor(m => m.Parameters)" data-parameters-input-name="@Html.NameFor(m => m.Parameters)" data-translations="@parametersTranslationsJson">
         <div class="ocat-wrapper">
-            <label asp-for="Parameters" class="ocat-label">@T["Advanced Parameters"]</label>
-            <div class="ocat-end">
+            <span id="@Html.IdFor(m => m.Parameters)_Label" class="ocat-label">@T["Advanced Parameters"]</span>
+            <div class="ocat-end" role="group" aria-labelledby="@Html.IdFor(m => m.Parameters)_Label">
                 <div class="options-table-editor-mount"></div>
                 <div class="hint">@T["Advanced parameters that can be sent with the authorization request."]</div>
             </div>

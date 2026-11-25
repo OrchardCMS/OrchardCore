@@ -123,7 +123,7 @@
                                     <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@T["Editor"]"><i class="fa-solid fa-pen-to-square text-info" aria-hidden="true"></i> @fieldDefinition.Editor()</span>
                                 }
                             </div>
-                            <input type="hidden" asp-for="OrderedFieldNames" value="@fieldDefinition.Name" />
+                            <input type="hidden" name="@Html.NameFor(m => m.OrderedFieldNames)" value="@fieldDefinition.Name" />
                         </li>
                     }
                 </ul>
@@ -189,7 +189,7 @@
                                 <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@T["Editor"]"><i class="fa-solid fa-pen-to-square text-info" aria-hidden="true"></i> @partDefinition.Editor()</span>
                             }
                         </div>
-                        <input type="hidden" asp-for="OrderedPartNames" value="@partDefinition.Name" />
+                        <input type="hidden" name="@Html.NameFor(m => m.OrderedPartNames)" value="@partDefinition.Name" />
                     </li>
                 }
             </ul>

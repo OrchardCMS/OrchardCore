@@ -9,8 +9,8 @@
 
 <section>
     <div class="ocat-wrapper">
-        <label asp-for="Categories" class="ocat-label">@T["Events to record"]</label>
-        <div class="ocat-end">
+        <span id="@Html.IdFor(m => m.Categories)_Label" class="ocat-label">@T["Events to record"]</span>
+        <div class="ocat-end" role="group" aria-labelledby="@Html.IdFor(m => m.Categories)_Label">
             <table class="table table-hover">
                 <thead>
                     <tr>
