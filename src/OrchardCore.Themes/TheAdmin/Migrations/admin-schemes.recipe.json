@@ -17,8 +17,7 @@
           "Page": "#ffffff",
           "Toolbar": "#495057",
           "Tint": "#495057",
-          "TintDark": "#adb5bd",
-          "FontFamily": "system"
+          "TintDark": "#adb5bd"
         },
         {
           "ItemId": "blue",

@@ -81,6 +81,5 @@ public static class TheAdminSchemes
             Id = DefaultId, Name = "Gray", Position = 0,
             Primary = "#0d6efd", Deep = "#212529", Ink = "#212529", Accent = "#6ea8fe",
             LightMenu = true, Hue = 210, Saturation = 0.12, Page = "#ffffff", Toolbar = "#495057", Tint = "#495057", TintDark = "#adb5bd",
-            FontFamily = AdminSchemeTypography.SystemFont,
         };
 }

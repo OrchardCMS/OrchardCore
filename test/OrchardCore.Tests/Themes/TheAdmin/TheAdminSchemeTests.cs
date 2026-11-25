@@ -25,7 +25,7 @@ public sealed class TheAdminSchemeTests
         {
             Id = "gray", Primary = "#0d6efd", Deep = "#212529", Ink = "#212529", Accent = "#6ea8fe",
             Hue = 210, Saturation = 0.12, LightMenu = true, Page = "#fff",
-            Tint = "#495057", TintDark = "#adb5bd", Toolbar = "#495057", FontFamily = AdminSchemeTypography.SystemFont,
+            Tint = "#495057", TintDark = "#adb5bd", Toolbar = "#495057",
         },
         ["ocean"] = new() { Id = "ocean", Primary = "#12868b", Deep = "#0d4a52", Ink = "#062227", Accent = "#4fd1c5", Hue = 187, Saturation = 0.9 },
         ["forest"] = new() { Id = "forest", Primary = "#2f855a", Deep = "#1c4a36", Ink = "#0b2018", Accent = "#68d391", Hue = 150, Saturation = 0.7 },
@@ -79,11 +79,14 @@ public sealed class TheAdminSchemeTests
     }
 
     [Fact]
-    public void ImportedGray_KeepsTheSystemFontOfTheFormerTheAdmin()
+    public void ImportedSchemes_UseTheThemesFont()
     {
-        var gray = AdminSchemesRecipe.ReadSchemes().Single(scheme => scheme.Id == "gray");
-
-        Assert.StartsWith("system-ui,", Light(gray)["--ta-font-family"], StringComparison.Ordinal);
+        // No scheme names a font: they all use Lato, the theme's own.
+        Assert.All(AdminSchemesRecipe.ReadSchemes(), scheme =>
+        {
+            Assert.Null(scheme.FontFamily);
+            Assert.StartsWith("\"Lato\", system-ui,", Light(scheme)["--ta-font-family"], StringComparison.Ordinal);
+        });
     }
 
     [Theory]
