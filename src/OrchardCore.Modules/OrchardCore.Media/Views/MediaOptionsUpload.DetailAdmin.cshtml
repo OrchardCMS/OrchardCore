@@ -1,0 +1,68 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.Media.ViewModels
+
+@model ShapeViewModel<MediaOptionsViewModel>
+@{
+    var supportedSizes = string.Join(", ", Model.Value.Options.SupportedSizes);
+    var allowedFileExtensions = string.Join(", ", Model.Value.Options.AllowedFileExtensions);
+    var restrictedFileExtensions = string.Join(", ", Model.Value.Options.RestrictedFileExtensions);
+}
+
+<div class="ocat-wrapper">
+    <div class="ocat-label">@T["Supported sizes"]</div>
+    <div class="ocat-end">
+        <div><code>@supportedSizes</code></div>
+        <span class="hint">@T["The accepted sizes for custom width and height."]</span>
+    </div>
+</div>
+
+<div class="ocat-wrapper">
+    <div class="ocat-label">@T["Restricted file extensions"]</div>
+    <div class="ocat-end">
+        <div><code>@restrictedFileExtensions</code></div>
+        <span class="hint">@T["Users need the 'Upload media file extensions requiring additional permission' permission to upload files with these extensions."]</span>
+    </div>
+</div>
+
+<div class="ocat-wrapper">
+    <div class="ocat-label">@T["Allowed file extensions"]</div>
+    <div class="ocat-end">
+        <div><code>@allowedFileExtensions</code></div>
+        <span class="hint">@T["The list of allowed file extensions."]</span>
+    </div>
+</div>
+
+<div class="ocat-wrapper">
+    <div class="ocat-label">@T["Max file size"]</div>
+    <div class="ocat-end">
+        <div><code>@Model.Value.Options.MaxFileSize</code></div>
+        <span class="hint">@T["The maximum size of an uploaded file in bytes."]</span>
+    </div>
+</div>
+
+<div class="ocat-wrapper">
+    <div class="ocat-label">@T["Max upload chunk size"]</div>
+    <div class="ocat-end">
+        <div><code>@Model.Value.Options.MaxUploadChunkSize</code></div>
+        <span class="hint">@T["The maximum chunk size when uploading files in bytes. If 0 or null, no chunked upload is used."]</span>
+    </div>
+</div>
+
+<div class="ocat-wrapper">
+    <div class="ocat-label">@T["Temporary file lifetime"]</div>
+    <div class="ocat-end">
+        <div><code>@Model.Value.Options.TemporaryFileLifetime</code></div>
+        <span class="hint">@T["The lifetime of temporary files created during upload."]</span>
+    </div>
+</div>
+
+<div class="ocat-wrapper">
+    <div class="ocat-label">@T["TUS uploads"]</div>
+    <div class="ocat-end">
+        <div>
+            <i class="fa-solid @(Model.Value.TusEnabled ? "fa-check text-success" : "fa-xmark text-danger")" aria-hidden="true"></i>
+            <span class="visually-hidden">@T[Model.Value.TusEnabled ? "Yes" : "No"]</span>
+        </div>
+        <span class="hint">@T["Indicates whether the TUS resumable upload protocol is enabled."]</span>
+    </div>
+</div>

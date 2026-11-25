@@ -46,6 +46,12 @@ public sealed class AdminScheme
     public bool LightMenu { get; set; }
 
     /// <summary>
+    /// Whether the admin forms are laid out horizontally, with the label of a field beside its editor instead of above
+    /// it, on screens at least as wide as a tablet. Off by default: the forms are stacked.
+    /// </summary>
+    public bool HorizontalFormLayout { get; set; }
+
+    /// <summary>
     /// The hue of the page, borders and dark mode surfaces, 0 to 360; the deep color's when empty.
     /// </summary>
     public double? Hue { get; set; }

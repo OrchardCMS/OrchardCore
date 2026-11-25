@@ -198,7 +198,8 @@ $ui-contrast: 3.1;
     // The two header layers of a list: its toolbar, a bar in the scheme's primary (or its 'toolbar') with the text
     // color of the primary on it, and its column headers, a light shade between the page and the white records.
     $toolbar: ensure-contrast(option($scheme, toolbar, $primary), (on-primary($scheme),), $text-contrast, $ink);
-    $list-header: tone($hue, 14% * $k, 97.5%);
+    // A faint wash of the primary color, like the stripes of the tables, rather than a near gray.
+    $list-header: color.mix($primary, #fff, 6%);
     // A hovered row: a light tint of the primary, set apart from the neutral page and the white records.
     $row-hover: color.mix($primary, #fff, 8%);
     $surfaces: ($page, #fff, $surface-muted, $tint-start, $tint-end, $list-header, $row-hover);

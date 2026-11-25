@@ -25,6 +25,28 @@
             return false;
         });
 
+    // Sets --ta-action-bar-bleed-start and --ta-action-bar-bleed-end, the distances from the inner edges of the bar's
+    // parent to the edges of the content area. They are measured from the parent, not the bar, as the pinned bar's
+    // negative margins move the bar itself.
+    const setBleed = (bar: HTMLElement) => {
+        const parent = bar.parentElement;
+        const root = bar.closest<HTMLElement>('.ta-content');
+
+        if (!parent || !root) {
+            return;
+        }
+
+        const parentRect = parent.getBoundingClientRect();
+        const rootRect = root.getBoundingClientRect();
+        const style = getComputedStyle(parent);
+        const left = Math.max(0, parentRect.left + (parseFloat(style.borderLeftWidth) || 0) + (parseFloat(style.paddingLeft) || 0) - rootRect.left);
+        const right = Math.max(0, rootRect.right - (parentRect.right - (parseFloat(style.borderRightWidth) || 0) - (parseFloat(style.paddingRight) || 0)));
+        const rtl = getComputedStyle(bar).direction === 'rtl';
+
+        bar.style.setProperty('--ta-action-bar-bleed-start', (rtl ? right : left) + 'px');
+        bar.style.setProperty('--ta-action-bar-bleed-end', (rtl ? left : right) + 'px');
+    };
+
     const update = () => {
         scheduled = false;
 
@@ -46,6 +68,10 @@
                 bar.style.removeProperty('--ta-action-bar-offset');
             }
         });
+
+        // How far each bar is inset from the edges of the content area, so that a pinned bar can span all of it. This is
+        // the content padding for a bar placed directly in the page, and more for one nested in a card or a tab pane.
+        bars.forEach(setBleed);
 
         // Then the pinned state, against the offset each bar sticks at.
         const stuckBars = bars.filter(bar => {

@@ -620,6 +620,8 @@ This applies to admin-facing Razor edit views such as:
 
 > **Cards:** Every admin screen with a form, except a content item editor, groups its fields in cards declared by placement, see [Cards](#cards).
 
+> **Test the horizontal layout too:** when you add or change an admin view, check it in the stacked layout and again with **Horizontal form layout** checked on the scheme of the admin (**Design → Themes → Schemes**, or `"HorizontalFormLayout": true` on the scheme in the `AdminSchemes` recipe step). TheAdmin writes its rules into `schemes.css`, overriding the `ocat-*` classes. Every label must sit beside its editor, checkboxes and alerts must line up under the editors, and nothing may overflow. A row that stays stacked, or looks broken, isn't built with the `ocat-*` classes: fix the view, never the stylesheet.
+
 ### Standard field example
 
 ```cshtml

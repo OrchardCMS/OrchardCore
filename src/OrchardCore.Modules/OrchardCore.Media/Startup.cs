@@ -214,6 +214,9 @@ public sealed class Startup : StartupBase
         services.AddTagHelpers<ImageResizeTagHelper>();
         services.AddTagHelpers<AnchorTagHelper>();
 
+        // Builds the Media options page.
+        services.AddDisplayDriver<MediaOptionsViewModel, MediaOptionsDisplayDriver>();
+
         // Media Profiles
         services.AddScoped<MediaProfilesManager>();
 

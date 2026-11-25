@@ -148,7 +148,7 @@ html {
   --ta-toolbar-fg: #fff;
   --ta-toolbar-fg-rgb: 255, 255, 255;
   --ta-toolbar-hover-bg: rgba(0, 0, 0, 0.16);
-  --ta-list-header-bg: rgb(248.5179, 248.625, 248.7321);
+  --ta-list-header-bg: rgb(240.504, 246.2124, 254.6256);
   --ta-row-hover-bg: rgb(235.672, 243.2832, 254.5008);
   --ta-border: rgb(233.66976, 234.6, 235.53024);
   --ta-control-border: rgb(133.33488, 135.8, 138.26512);
@@ -570,6 +570,11 @@ legend.ocat-label {
 .input-group:not(.has-validation) > :not(:last-child):not(.dropdown-menu):has(+ [data-valmsg-for]:last-child) {
   border-start-end-radius: var(--bs-border-radius) !important;
   border-end-end-radius: var(--bs-border-radius) !important;
+}
+
+.input-group.has-validation:not(:has(> .invalid-feedback, > .valid-feedback, > [data-valmsg-for])) > :not(:last-child):not(.dropdown-menu):not(.dropdown-toggle):not(.form-floating) {
+  border-start-end-radius: 0;
+  border-end-end-radius: 0;
 }
 
 .label-link {
