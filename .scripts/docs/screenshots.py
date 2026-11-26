@@ -43,6 +43,8 @@ TENANTS = {
     "EntraId": "entra-id",
     # Blog site: the 'Decoupled CMS' guide, set up with the Blank site recipe.
     "Decoupled": "decoupled",
+    # Blog site: the admin theme page, set up with the Blog recipe, with "Horizontal form layout" checked on the Gray scheme.
+    "Horizontal": "horizontal",
     # Blazor site: the tenant the 'Create a Blazor CMS' guide creates, set up with the Headless site recipe.
     "FirstTenant": "tenant01",
 }
@@ -332,6 +334,9 @@ SHOTS = [
      "full_page": True},
     {"file": "../guides/microsoft-entra-id-integration/images/login.webp", "path": "/Login", "tenant": "EntraId", "anonymous": True},
     {"file": "../reference/modules/Microsoft.Authentication/images/entra-id-login-button.webp", "path": "/Login", "tenant": "EntraId", "anonymous": True},
+    # Technical Manual: Admin theme, in the tenant with the horizontal form layout.
+    {"file": "../reference/themes/images/horizontal-form-layout.webp", "path": "/Admin/Contents/ContentTypes/BlogPost/Create",
+     "tenant": "Horizontal", "full_page": True},
     # Guide 'Integrate Meta plugins'. Needs the Meta Widgets feature.
     {"file": "../guides/integrate-facebook-plugins/images/meta-widgets-feature.webp", "path": "/Admin/Features",
      "steps": [("fill", "#search-box", "Meta"), ("wait", 500)]},
