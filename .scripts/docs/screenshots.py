@@ -55,7 +55,8 @@ SEARCH_RESULTS = [("scroll", "input[name='Terms']", "start")]
 #   path:      the address to open, relative to the site, or to the tenant.
 #   steps:     optional actions after opening the page: ("follow", selector) opens the address of the first matching
 #              link, even a hidden one; ("click", selector); ("fill", selector, value); ("type", selector, value) types
-#              the value key by key; ("select", selector, value);
+#              the value key by key; ("editor", selector, text) sets the text of a code editor (CodeMirror);
+#              ("select", selector, value);
 #              ("check", selector); ("uncheck", selector); ("scroll", selector[, "start" or "end"]) scrolls the first
 #              matching element to the middle, the top or the bottom of its container; ("wait", milliseconds). Steps never save a form.
 #   anonymous: true to take the shot signed out.
@@ -278,6 +279,10 @@ SHOTS = [
      "steps": [("follow", "a[href*='/Workflows/Types/Edit/']:has-text('Contact Form Workflow')"), ("wait", 1500),
                ("click", "[data-cy='toolbox-collapse']"), ("click", "[data-cy='panel-collapse']"),
                ("click", "[data-cy='zoom-fit']"), ("wait", 800)]},
+    # Guide 'Create a Blazor CMS': the setup screen of a tenant that isn't set up yet, filled in.
+    {"file": "../guides/create-blazor-cms/images/setup.webp", "path": "/Admin/Tenants",
+     "steps": [("follow", "a:has-text('Setup')"), ("fill", "#SiteName", "BlazorCMS"), ("click", "#recipeButton"),
+               ("click", "a[data-recipe-name='Headless']"), ("fill", "#UserName", "admin"), ("fill", "#Email", "admin@example.com")]},
     # Guides 'Create a CMS application' and 'Decoupled CMS': the setup screen of a tenant that isn't set up yet, filled in.
     {"file": "../guides/create-cms-application/images/setup-screen.webp", "path": "/Admin/Tenants",
      "steps": [("follow", "a:has-text('Setup')"), ("fill", "#SiteName", "MySite"), ("click", "#recipeButton"),
@@ -336,6 +341,41 @@ SHOTS = [
     {"file": "../guides/integrate-facebook-plugins/images/meta-quote-widget.webp",
      "path": "/Admin/Contents/ContentTypes/FacebookQuote/Create?returnUrl=%2FAdmin%2FLayers&LayerMetadata.Zone=Footer&LayerMetadata.Position=11",
      "steps": [("fill", "#LayerMetadata_Title", "FB Quote"), ("select", "#LayerMetadata_LayerMetadata_Layer", "Always")]},
+    # Guide 'Create a Blazor CMS', on its own site, with the 'Markdown Page' type and the 'ORCHARD CORE' item of the
+    # guide. First without the Tenants feature:
+    {"file": "../guides/create-blazor-cms/images/content-items.webp", "path": "/Admin/Contents/ContentItems", "site": "blazor"},
+    {"file": "../guides/create-blazor-cms/images/enable-tenants.webp", "path": "/Admin/Features", "site": "blazor",
+     "steps": [("fill", "#search-box", "manage tenants"), ("wait", 500)]},
+    # Then with the Tenants feature:
+    {"file": "../guides/create-blazor-cms/images/tenants.webp", "path": "/Admin/Tenants", "site": "blazor"},
+    {"file": "../guides/create-blazor-cms/images/first-tenant.webp", "path": "/Admin/Tenants/Create", "site": "blazor",
+     "steps": [("fill", "#Name", "FirstTenant"), ("fill", "#RequestUrlPrefix", "tenant01"), ("select", "#RecipeName", "Headless"),
+               ("select", "#DatabaseProvider", "Sqlite")]},
+    # Then with the tenant FirstTenant, not set up yet:
+    {"file": "../guides/create-blazor-cms/images/setup-first-tenant.webp", "path": "/Admin/Tenants", "site": "blazor"},
+    {"file": "../guides/create-blazor-cms/images/setup-screen-first-tenant.webp", "path": "/Admin/Tenants", "site": "blazor",
+     "steps": [("follow", "a:has-text('Setup')"), ("fill", "#SiteName", "FirstTenant"), ("fill", "#UserName", "admin"),
+               ("fill", "#Email", "admin@example.com")]},
+    # Then with FirstTenant set up, with the base url of the guide:
+    {"file": "../guides/create-blazor-cms/images/tenant-site-settings.webp", "path": "/Admin/Settings/general", "site": "blazor",
+     "tenant": "FirstTenant"},
+    {"file": "../guides/create-blazor-cms/images/import-content-tenant.webp", "path": "/Admin/DeploymentPlan/Import/Json", "site": "blazor",
+     "tenant": "FirstTenant",
+     "steps": [("editor", ".CodeMirror", """{
+  "steps": [
+    {
+      "name": "Content",
+      "data": [
+        {
+          "ContentType": "MarkdownPage",
+          "DisplayText": "ORCHARD CORE FOR TENANT 01",
+          "AliasPart": { "Alias": "orchard-core" },
+          "TitlePart": { "Title": "ORCHARD CORE" }
+        }
+      ]
+    }
+  ]
+}""")]},
 ]
 
 
@@ -368,6 +408,8 @@ def capture(page, url, shot):
             page.fill(step[1], step[2])
         elif step[0] == "type":
             page.locator(step[1]).press_sequentially(step[2])
+        elif step[0] == "editor":
+            page.locator(step[1]).first.evaluate("(element, text) => element.CodeMirror.setValue(text)", step[2])
         elif step[0] == "select":
             page.select_option(step[1], step[2])
         elif step[0] == "check":
