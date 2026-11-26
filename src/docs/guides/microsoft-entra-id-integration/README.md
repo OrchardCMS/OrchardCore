@@ -16,9 +16,9 @@ An Azure Account with Microsoft Entra ID configured.
 
 Navigate to <https://localhost:5001/Admin/Features> and enable the Microsoft Entra ID Authentication and the Users Registration features
 
-![image](assets/enable-azuread.jpg)
+![The Features page filtered on Entra, with the Microsoft Entra ID Authentication feature disabled.](images/entra-id-feature.webp)
 
-![image](assets/enable-users-registration.jpg)
+![The Features page filtered on Registration, with the Users Registration feature disabled.](images/users-registration-feature.webp)
 
 ## Login to Azure Portal to configure the Directory
 
@@ -52,13 +52,13 @@ The last step is to copy Application Id and Tenant Id from Azure Portal
 
 [Navigate to Settings/Security/Authentication/Microsoft Entra ID](https://localhost:5001/Admin/Settings/OrchardCore.Microsoft.Authentication.AzureAD) in OrchardCore Admin to configure the AzureAD app.
 
-![image](assets/configure-orchardcore-azuread.jpg)
+![The Microsoft Entra ID settings, with the display name, AppId and TenantId of the app.](images/entra-id-settings.webp)
 
 ## Configure registration settings
 
 [Navigate to Settings/Security/Registration](https://localhost:5001/Admin/Settings/RegistrationSettings) and enable registration as shown
 
-![image](assets/registration-settings-a.jpg)
+![The General tab of the Registration settings.](images/registration-settings.webp)
 
 check Use a script to generate userName based on external provider claims and copy the following script to discover and use the user principal name as username if the user does not exist
 
@@ -82,7 +82,7 @@ switch (context.loginProvider) {
 
 also check the settings to disable asking user info on first registration
 
-![image](assets/registration-settings-b.jpg)
+![The External Authentication tab of the Registration settings, with the user name script.](images/external-registration-settings.webp)
 
 ## Configure login settings
 
@@ -132,7 +132,7 @@ switch (context.loginProvider) {
 
 Logout from OrchardCore. Navigate to <https://localhost:5001/admin> and use the external provider button to login.
 
-![Login](assets/login.jpg)
+![The login page, with a button to log in with Microsoft Entra ID.](images/login.webp)
 
 ## Summary
 

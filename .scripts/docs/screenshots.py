@@ -40,7 +40,7 @@ SITES = {
 # with "Display titles in top bar" and the "Menu" actions layout in Settings > Admin.
 TENANTS = {
     # Blog site: the 'Microsoft Entra ID integration' guide, set up with the Blog recipe.
-    "Entra": "entra",
+    "EntraId": "entra-id",
     # Blog site: the 'Decoupled CMS' guide, set up with the Blank site recipe.
     "Decoupled": "decoupled",
     # Blazor site: the tenant the 'Create a Blazor CMS' guide creates, set up with the Headless site recipe.
@@ -278,6 +278,23 @@ SHOTS = [
      "steps": [("follow", "a[href*='/Workflows/Types/Edit/']:has-text('Contact Form Workflow')"), ("wait", 1500),
                ("click", "[data-cy='toolbox-collapse']"), ("click", "[data-cy='panel-collapse']"),
                ("click", "[data-cy='zoom-fit']"), ("wait", 800)]},
+    # Guide 'Microsoft Entra ID integration', in a tenant set up with the Blog recipe. Taken before enabling the
+    # Microsoft Entra ID Authentication and Users Registration features:
+    {"file": "../guides/microsoft-entra-id-integration/images/entra-id-feature.webp", "path": "/Admin/Features", "tenant": "EntraId",
+     "steps": [("fill", "#search-box", "Entra"), ("wait", 500)]},
+    {"file": "../guides/microsoft-entra-id-integration/images/users-registration-feature.webp", "path": "/Admin/Features", "tenant": "EntraId",
+     "steps": [("fill", "#search-box", "Registration"), ("wait", 500)]},
+    # Then with both features enabled, and the Entra ID settings of the guide, with placeholder ids: the display name
+    # 'My Company Microsoft account', the external registration without password, user name or email, and the user name
+    # script of the guide.
+    {"file": "../guides/microsoft-entra-id-integration/images/entra-id-settings.webp", "tenant": "EntraId",
+     "path": "/Admin/Settings/OrchardCore.Microsoft.Authentication.AzureAD"},
+    {"file": "../guides/microsoft-entra-id-integration/images/registration-settings.webp", "path": "/Admin/Settings/userRegistration", "tenant": "EntraId"},
+    {"file": "../guides/microsoft-entra-id-integration/images/external-registration-settings.webp", "tenant": "EntraId",
+     "path": "/Admin/Settings/userRegistration", "steps": [("click", "[role='tab']:has-text('External Authentication')"), ("wait", 500)],
+     "full_page": True},
+    {"file": "../guides/microsoft-entra-id-integration/images/login.webp", "path": "/Login", "tenant": "EntraId", "anonymous": True},
+    {"file": "../reference/modules/Microsoft.Authentication/images/entra-id-login-button.webp", "path": "/Login", "tenant": "EntraId", "anonymous": True},
     # Guide 'Integrate Meta plugins'. Needs the Meta Widgets feature.
     {"file": "../guides/integrate-facebook-plugins/images/meta-widgets-feature.webp", "path": "/Admin/Features",
      "steps": [("fill", "#search-box", "Meta"), ("wait", 500)]},
