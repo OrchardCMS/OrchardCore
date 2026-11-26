@@ -12,7 +12,7 @@ To search for documents containing both "lorem" and "man", use the following que
 
 `lorem and man`
 
-![AND operator](images/operator-and.PNG)
+![The search page with the results of lorem and man.](images/operator-and.webp)
 
 
 ### +
@@ -20,7 +20,7 @@ The *+* operator requires that the term following the "+" symbol exists somewher
 
 `+Man explore`
 
-![required operator](images/required-operator.PNG)
+![The search page with the results of +Man explore.](images/required-operator.webp)
 
 
 ### NOT
@@ -29,7 +29,7 @@ The *NOT* operator is used to exclude documents that contain the term after the 
 To find documents that contain "Lucene" but not "Lorem", use the following query:
 `Lucene NOT Lorem`   
 
-![NOT operator](images/operator-not.PNG)
+![The search page with the results of Lucene NOT Lorem.](images/operator-not.webp)
 
 
 ### - 
@@ -39,7 +39,7 @@ To search for documents containing "Lucene" but not "Lorem", use the following q
 
 `Lucene-Lorem`
 
-![prohibition operator](images/prohibition-operator.PNG)
+![The search page with the results of Lucene-Lorem.](images/prohibition-operator.webp)
 
 
 ## MATCH ALL
@@ -47,13 +47,7 @@ The expression * *:* * is a search query that returns all documents in the index
 
 `*:*`
 
-![match-all-1](images/match-all-1.PNG)
-
-
-![match-all-2](images/match-all-2.PNG)
-
-
-![match-all-3](images/match-all-3.PNG)
+![The search page with the results of *:*, every document of the index.](images/match-all.webp)
 
 
 ## Fuzzy Searches
@@ -64,7 +58,7 @@ To search for terms that match the word "Lucen", use the approximate search:
 `Lucen~`
 
 
-![fuzzy search](images/fuzzy-search.PNG)
+![The search page with the results of Lucen~.](images/fuzzy-search.webp)
 
 
 ## Text field
@@ -75,7 +69,7 @@ To search, type the field name (e.g., Subtitle) followed by a colon ":".
 `Subtitle:What is Lorem Ipsum?`
 
 
-![text field search](images/text-field.PNG)
+![The search page with the results of Subtitle:What is Lorem Ipsum?.](images/text-field.webp)
 
 
 ## Wildcard Searches
@@ -88,12 +82,12 @@ It allows you to search for terms using patterns or wildcard characters (*, ?) i
 The single-character wildcard search "?" looks for terms that match the length and the substituted character:
 `lu?ene`
 
-![one character](images/one-character-wildcard.PNG)
+![The search page with the results of lu?ene.](images/one-character-wildcard.webp)
 
 The multi-character wildcard search "*" looks for terms that match any character:
 `Lucene*`
 
-![multiple characters](images/multi-character-wildcard.PNG)
+![The search page with the results of Lucene*.](images/multi-character-wildcard.webp)
 
 
 ## Range Searches
@@ -103,7 +97,7 @@ The search will find documents whose titles are greater than "A" and less than "
 
 `A TO P`
 
-![range searches](images/range-searches.PNG)
+![The search page with the results of A TO P.](images/range-searches.webp)
 
 
 ## Regular expressions
@@ -113,7 +107,7 @@ The search will find terms that begin with "type" and end with "ing" or "service
 
 `/type.*ing?/`
 
-![regular expressions](images/regular-expressions.PNG)
+![The search page with the results of /type.*ing?/.](images/regular-expressions.webp)
 
 ## Video
 

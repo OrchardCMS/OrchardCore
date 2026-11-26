@@ -19,6 +19,7 @@ import argparse
 import io
 import os
 import sys
+from urllib.parse import urljoin
 
 from PIL import Image
 from playwright.sync_api import sync_playwright
@@ -29,14 +30,40 @@ QUALITY = 82
 # The admin theme's default scheme, picked for every page whatever the site's default scheme is.
 SCHEME = "gray"
 
+# The sites the shots are taken from, each with its own App_Data, picked with --site.
+SITES = {
+    "blog": "the Blog recipe site described above",
+    "blazor": "a site set up with the Headless site recipe, named BlazorCMS, as in the 'Create a Blazor CMS' guide",
+}
+
+# The tenants of a site that shots are taken in, with their URL prefix. Each is set up with the `admin` account, and
+# with "Display titles in top bar" and the "Menu" actions layout in Settings > Admin.
+TENANTS = {
+    # Blog site: the 'Microsoft Entra ID integration' guide, set up with the Blog recipe.
+    "Entra": "entra",
+    # Blog site: the 'Decoupled CMS' guide, set up with the Blank site recipe.
+    "Decoupled": "decoupled",
+    # Blazor site: the tenant the 'Create a Blazor CMS' guide creates, set up with the Headless site recipe.
+    "FirstTenant": "tenant01",
+}
+
+# The results of the search page of TheBlogTheme, under its banner.
+SEARCH_RESULTS = [("scroll", "input[name='Terms']", "start")]
+
 # Each shot:
 #   file:      the image, relative to src/docs/user-manual/ (an image of the Technical Manual starts with ../).
-#   path:      the address to open, relative to the site.
+#   path:      the address to open, relative to the site, or to the tenant.
 #   steps:     optional actions after opening the page: ("follow", selector) opens the address of the first matching
-#              link, even a hidden one; ("click", selector); ("fill", selector, value); ("scroll", selector) scrolls
-#              the first matching element to the middle of its container; ("wait", milliseconds).
+#              link, even a hidden one; ("click", selector); ("fill", selector, value); ("type", selector, value) types
+#              the value key by key; ("select", selector, value);
+#              ("check", selector); ("uncheck", selector); ("scroll", selector[, "start"]) scrolls the first matching
+#              element to the middle, or the top, of its container; ("wait", milliseconds). Steps never save a form.
 #   anonymous: true to take the shot signed out.
 #   full_page: true to capture the whole page instead of the window (cut at 1600 pixels).
+#   site:      the site of SITES the shot is taken from, "blog" when omitted.
+#   tenant:    the tenant of TENANTS the shot is taken in, the site itself when omitted.
+# A guide that goes through several steps shows the site at each step: its shots are listed in the order of the guide,
+# and the comment above a group says what the site must hold, so a group can be taken again with --only.
 SHOTS = [
     # Getting started
     {"file": "getting-started/images/dashboard.webp", "path": "/Admin"},
@@ -158,7 +185,50 @@ SHOTS = [
     {"file": "../reference/modules/Secrets/images/secret-create.webp", "path": "/Admin/Secrets/Create?type=TextSecret"},
     {"file": "../reference/modules/Secrets/images/secret-edit.webp", "path": "/Admin/Secrets/Index",
      "steps": [("follow", "a[href*='/Secrets/Edit/']")]},
+    # Guide 'Implement a full-text search'. Needs the 'Blog - Lucene Search' recipe of TheBlogTheme.
+    {"file": "../guides/implement-fulltext-search/images/lucene-feature.webp", "path": "/Admin/Features",
+     "steps": [("fill", "#search-box", "Lucene"), ("wait", 500)]},
+    {"file": "../guides/implement-fulltext-search/images/indexes.webp", "path": "/Admin/indexing"},
+    {"file": "../guides/implement-fulltext-search/images/create-index.webp", "path": "/Admin/indexing/create/Lucene/Content"},
+    {"file": "../guides/implement-fulltext-search/images/search-settings.webp", "path": "/Admin/Settings/search"},
+    {"file": "../guides/implement-fulltext-search/images/anonymous-role.webp", "path": "/Admin/Roles/Edit/Anonymous",
+     "steps": [("type", "#search-box", "index"), ("wait", 500)]},
+    {"file": "../guides/implement-fulltext-search/images/search-feature.webp", "path": "/Admin/Features",
+     "steps": [("fill", "#search-box", "frontend search"), ("wait", 500)]},
+    {"file": "../guides/implement-fulltext-search/images/search-page.webp", "path": "/search?Terms=man", "anonymous": True,
+     "steps": SEARCH_RESULTS},
+    {"file": "../guides/implement-fulltext-search/images/blog-post-full-text.webp", "path": "/Admin/ContentTypes/Edit/BlogPost",
+     "steps": [("check", "#ContentTypeDefinition_IncludeFullTextTemplate"),
+               ("scroll", "#ContentTypeDefinition_IncludeFullTextTemplate")]},
+    # Guide 'Lucene query syntax'. Needs the search of the guide above, and the blog posts 'Lucenes Lorem' (subtitle
+    # 'What is Lorem Ipsum?', the Lorem Ipsum text as body) and 'Getting started with Lucene'.
+    {"file": "../guides/lucene-query-syntax/images/operator-and.webp", "path": "/search?Terms=lorem%20and%20man", "anonymous": True,
+     "steps": SEARCH_RESULTS},
+    {"file": "../guides/lucene-query-syntax/images/required-operator.webp", "path": "/search?Terms=%2BMan%20explore", "anonymous": True,
+     "steps": SEARCH_RESULTS},
+    {"file": "../guides/lucene-query-syntax/images/operator-not.webp", "path": "/search?Terms=Lucene%20NOT%20Lorem", "anonymous": True,
+     "steps": SEARCH_RESULTS},
+    {"file": "../guides/lucene-query-syntax/images/prohibition-operator.webp", "path": "/search?Terms=Lucene-Lorem", "anonymous": True,
+     "steps": SEARCH_RESULTS},
+    {"file": "../guides/lucene-query-syntax/images/match-all.webp", "path": "/search?Terms=*%3A*", "anonymous": True,
+     "steps": SEARCH_RESULTS},
+    {"file": "../guides/lucene-query-syntax/images/fuzzy-search.webp", "path": "/search?Terms=Lucen~", "anonymous": True,
+     "steps": SEARCH_RESULTS},
+    {"file": "../guides/lucene-query-syntax/images/text-field.webp", "path": "/search?Terms=Subtitle%3AWhat%20is%20Lorem%20Ipsum%3F", "anonymous": True,
+     "steps": SEARCH_RESULTS},
+    {"file": "../guides/lucene-query-syntax/images/one-character-wildcard.webp", "path": "/search?Terms=lu%3Fene", "anonymous": True,
+     "steps": SEARCH_RESULTS},
+    {"file": "../guides/lucene-query-syntax/images/multi-character-wildcard.webp", "path": "/search?Terms=Lucene*", "anonymous": True,
+     "steps": SEARCH_RESULTS},
+    {"file": "../guides/lucene-query-syntax/images/range-searches.webp", "path": "/search?Terms=A%20TO%20P", "anonymous": True,
+     "steps": SEARCH_RESULTS},
+    {"file": "../guides/lucene-query-syntax/images/regular-expressions.webp", "path": "/search?Terms=%2Ftype.*ing%3F%2F", "anonymous": True,
+     "steps": SEARCH_RESULTS},
 ]
+
+
+def tenant_url(url, tenant):
+    return url if tenant == "Default" else f"{url}/{TENANTS[tenant]}"
 
 
 def sign_in(page, url, user, password):
@@ -168,7 +238,7 @@ def sign_in(page, url, user, password):
     page.click("button[type='submit']")
     page.wait_for_load_state("networkidle")
     if "/Login" in page.url:
-        raise SystemExit("Sign-in failed: check --user and --password.")
+        raise SystemExit(f"Sign-in failed at {url}: check --user and --password.")
 
 
 def capture(page, url, shot):
@@ -177,15 +247,24 @@ def capture(page, url, shot):
 
     for step in shot.get("steps", []):
         if step[0] == "follow":
-            page.goto(url + page.get_attribute(step[1], "href").removeprefix(url))
+            page.goto(urljoin(page.url, page.get_attribute(step[1], "href")))
             page.wait_for_load_state("networkidle")
         elif step[0] == "click":
             page.click(step[1])
             page.wait_for_load_state("networkidle")
         elif step[0] == "fill":
             page.fill(step[1], step[2])
+        elif step[0] == "type":
+            page.locator(step[1]).press_sequentially(step[2])
+        elif step[0] == "select":
+            page.select_option(step[1], step[2])
+        elif step[0] == "check":
+            page.check(step[1], force=True)
+        elif step[0] == "uncheck":
+            page.uncheck(step[1], force=True)
         elif step[0] == "scroll":
-            page.locator(step[1]).first.evaluate("element => element.scrollIntoView({ block: 'center' })")
+            block = step[2] if len(step) > 2 else "center"
+            page.locator(step[1]).first.evaluate("(element, block) => element.scrollIntoView({ block })", block)
         elif step[0] == "wait":
             page.wait_for_timeout(step[1])
 
@@ -212,38 +291,49 @@ def capture(page, url, shot):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Take the screenshots of the User Manual.")
+    parser = argparse.ArgumentParser(description="Take the screenshots of the documentation.")
     parser.add_argument("--url", default="http://localhost:5000")
+    parser.add_argument("--site", default="blog", choices=SITES, help="the site --url points to")
     parser.add_argument("--user", default="admin")
     parser.add_argument("--password", default=os.environ.get("OC_DOCS_PASSWORD"))
     parser.add_argument("--browser", default="msedge", help="msedge, chrome or chromium")
-    parser.add_argument("--only", help="take only the shots whose file contains this text")
+    parser.add_argument("--only", nargs="+", help="take only the shots whose file contains one of these texts")
     args = parser.parse_args()
 
     if not args.password:
         raise SystemExit("Pass --password or set OC_DOCS_PASSWORD.")
 
     url = args.url.rstrip("/")
-    shots = [shot for shot in SHOTS if not args.only or args.only in shot["file"]]
+    shots = [
+        shot for shot in SHOTS
+        if shot.get("site", "blog") == args.site and (not args.only or any(text in shot["file"] for text in args.only))
+    ]
     failed = []
 
     with sync_playwright() as playwright:
         channel = None if args.browser == "chromium" else args.browser
         browser = playwright.chromium.launch(channel=channel)
         options = {"viewport": VIEWPORT, "color_scheme": "light", "locale": "en-US"}
-        signed_in = browser.new_context(**options)
-        anonymous = browser.new_context(**options)
-        for context in (signed_in, anonymous):
-            # The admin theme remembers the menu sections opened on earlier pages: start every page afresh.
-            context.add_init_script("try { localStorage.clear(); sessionStorage.clear(); } catch (e) {}")
-            # The admin theme reads the scheme a user picked from the '{tenant}-TheAdmin-scheme' cookie.
-            context.add_cookies([{"name": "Default-TheAdmin-scheme", "value": SCHEME, "url": url}])
-        sign_in(signed_in.new_page(), url, args.user, args.password)
-        pages = {False: signed_in.new_page(), True: anonymous.new_page()}
+        pages = {}
+
+        def page_for(tenant, anonymous):
+            # One browser context per tenant, signed in or not, opened the first time a shot needs it.
+            if (tenant, anonymous) not in pages:
+                context = browser.new_context(**options)
+                # The admin theme remembers the menu sections opened on earlier pages: start every page afresh.
+                context.add_init_script("try { localStorage.clear(); sessionStorage.clear(); } catch (e) {}")
+                # The admin theme reads the scheme a user picked from the '{tenant}-TheAdmin-scheme' cookie.
+                context.add_cookies([{"name": f"{tenant}-TheAdmin-scheme", "value": SCHEME, "url": url}])
+                if not anonymous:
+                    sign_in(context.new_page(), tenant_url(url, tenant), args.user, args.password)
+                pages[(tenant, anonymous)] = context.new_page()
+            return pages[(tenant, anonymous)]
 
         for shot in shots:
             try:
-                target = capture(pages[bool(shot.get("anonymous"))], url, shot)
+                tenant = shot.get("tenant", "Default")
+                page = page_for(tenant, bool(shot.get("anonymous")))
+                target = capture(page, tenant_url(url, tenant), shot)
                 print(f"{shot['file']}  {os.path.getsize(target) // 1024} KB")
             except Exception as error:  # noqa: BLE001 - report every failing shot, then carry on.
                 failed.append(shot["file"])
