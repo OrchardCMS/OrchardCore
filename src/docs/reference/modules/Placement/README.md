@@ -536,9 +536,19 @@ This setup would then show your template  (e.g. `GalleryPart.cshtml` or `Gallery
 
 ### Translating tab and card names
 
-The captions of the tabs and cards, the default `Content` group included, are translated with [Data Localization](../DataLocalization/README.md), in the `Tabs and Cards` category. A name remains the identifier of its group, so placement rules and the generated element ids are the same in every culture. When the `OrchardCore.DataLocalization` feature is disabled, or a name has no translation, the caption shows the name.
+A name remains the identifier of its group, so placement rules and the generated element ids are the same in every culture: only the caption of a tab or card is translated.
 
-The names are listed for translation without rendering any editor, from:
+A display driver can name a tab or card with a localized string, which PO files translate:
+
+```csharp
+.Location(l => l.Zone("Content", "1").Tab(S["Settings"], "10").Card(S["Server"], "10"))
+```
+
+The group is identified by the untranslated name, `Settings`, and shown with its translation.
+
+The other captions, the default `Content` group included, are translated with [Data Localization](../DataLocalization/README.md), in the `Tabs and Cards` category. When the `OrchardCore.DataLocalization` feature is disabled, or a name has no translation, the caption shows the name.
+
+These names are listed for translation without rendering any editor, from:
 
 - The constant locations of the display drivers, such as `.Location("Content:5#Settings")`, `.Tab("Settings")` and `.Card("Details")`. They are read at build time into a placement catalog of the assembly, and listed when their driver, or a driver derived from it, belongs to an enabled feature.
 - The rules of the `placement.json` files of the enabled modules and themes, whatever their filters.
@@ -623,6 +633,9 @@ The builder starts with `.Zone()` and all methods return the same `PlacementLoca
 
 !!! note
     The `.Column()` method parameters are: `name`, `position`, `width`. For example, `.Column("Left", "1", "9")` creates a column named "Left" at position 1 with width 9.
+
+!!! note
+    `.Tab()` and `.Card()` also accept a localized string, such as `.Tab(S["Settings"], "1")`: the group is named `Settings` in the location, and shown with the translation. See [Translating tab and card names](#translating-tab-and-card-names).
 
 Methods can be called in any order after `.Zone()`. Levels can be skipped (e.g., `.Zone().Card()` without a `.Tab()` is valid).
 

@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Localization;
+
 namespace OrchardCore.DisplayManagement.Descriptors;
 
 /// <summary>
@@ -38,9 +40,11 @@ public sealed class PlacementLocationBuilder
     private string _position;
     private string _tabName;
     private string _tabPosition;
+    private string _tabDisplayName;
     private string _group;
     private string _cardName;
     private string _cardPosition;
+    private string _cardDisplayName;
     private string _columnName;
     private string _columnPosition;
     private string _columnWidth;
@@ -110,6 +114,31 @@ public sealed class PlacementLocationBuilder
         ArgumentException.ThrowIfNullOrEmpty(name);
         _tabName = name;
         _tabPosition = position;
+        _tabDisplayName = null;
+        _cachedPlacementInfo = null;
+        return this;
+    }
+
+    /// <summary>
+    /// Groups the shape into a tab named by a localized string, such as <c>S["Settings"]</c>.
+    /// </summary>
+    /// <remarks>
+    /// The tab is identified by the untranslated <see cref="LocalizedString.Name"/>, so its element id and the placement
+    /// rules that name it are the same in every culture, and it is shown with the translated
+    /// <see cref="LocalizedString.Value"/>.
+    /// </remarks>
+    /// <param name="name">The localized tab name.</param>
+    /// <param name="position">
+    /// Optional. The position of this tab relative to other tabs.
+    /// All shapes in the same tab should use the same tab position value.
+    /// </param>
+    public PlacementLocationBuilder Tab(LocalizedString name, string position = null)
+    {
+        ArgumentNullException.ThrowIfNull(name);
+        ArgumentException.ThrowIfNullOrEmpty(name.Name, nameof(name));
+        _tabName = name.Name;
+        _tabPosition = position;
+        _tabDisplayName = GetDisplayName(name);
         _cachedPlacementInfo = null;
         return this;
     }
@@ -127,6 +156,31 @@ public sealed class PlacementLocationBuilder
         ArgumentException.ThrowIfNullOrEmpty(name);
         _cardName = name;
         _cardPosition = position;
+        _cardDisplayName = null;
+        _cachedPlacementInfo = null;
+        return this;
+    }
+
+    /// <summary>
+    /// Groups the shape into a card named by a localized string, such as <c>S["Details"]</c>.
+    /// </summary>
+    /// <remarks>
+    /// The card is identified by the untranslated <see cref="LocalizedString.Name"/>, so its element ids and the
+    /// placement rules that name it are the same in every culture, and it is shown with the translated
+    /// <see cref="LocalizedString.Value"/>.
+    /// </remarks>
+    /// <param name="name">The localized card name.</param>
+    /// <param name="position">
+    /// Optional. The position of this card relative to other cards.
+    /// All shapes in the same card should use the same card position value.
+    /// </param>
+    public PlacementLocationBuilder Card(LocalizedString name, string position = null)
+    {
+        ArgumentNullException.ThrowIfNull(name);
+        ArgumentException.ThrowIfNullOrEmpty(name.Name, nameof(name));
+        _cardName = name.Name;
+        _cardPosition = position;
+        _cardDisplayName = GetDisplayName(name);
         _cachedPlacementInfo = null;
         return this;
     }
@@ -172,11 +226,11 @@ public sealed class PlacementLocationBuilder
 
         // Create GroupingMetadata directly without string allocation.
         var tabGrouping = !string.IsNullOrEmpty(_tabName)
-            ? new GroupingMetadata(_tabName, _tabPosition)
+            ? new GroupingMetadata(_tabName, _tabPosition, width: null, _tabDisplayName)
             : GroupingMetadata.Empty;
 
         var cardGrouping = !string.IsNullOrEmpty(_cardName)
-            ? new GroupingMetadata(_cardName, _cardPosition)
+            ? new GroupingMetadata(_cardName, _cardPosition, width: null, _cardDisplayName)
             : GroupingMetadata.Empty;
 
         var columnGrouping = !string.IsNullOrEmpty(_columnName)
@@ -225,4 +279,9 @@ public sealed class PlacementLocationBuilder
     /// </summary>
     public static implicit operator string(PlacementLocationBuilder builder)
         => builder?.ToString();
+
+    // A name without a translation has no display name, so that its caption can still be translated with data
+    // localization.
+    private static string GetDisplayName(LocalizedString name)
+        => name.ResourceNotFound ? null : name.Value;
 }

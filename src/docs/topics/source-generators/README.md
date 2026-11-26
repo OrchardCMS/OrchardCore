@@ -130,11 +130,11 @@ return View("ProfileTools_Edit", profile).Location(EditorLocation);
 warning OCSG003: The placement location or name is not a compile-time constant, so its tab and card names cannot be listed for translation
 ```
 
-A location built only from text without `#` or `%` and from numbers, such as `"Actions:40." + position`, has no tab or card and isn't reported, and neither are the members marked with `[SkipLocalizationExtraction]`.
+A location built only from text without `#` or `%` and from numbers, such as `"Actions:40." + position`, has no tab or card and isn't reported, and neither are the members marked with `[SkipLocalizationExtraction]`. A tab or card named with a localized string, such as `.Tab(S["Settings"])`, is translated with PO files: it is neither reported nor listed.
 
 **Ways to fix it:**
 
-- Pass a constant.
+- Pass a constant, or name the tab or card with a localized string, such as `.Card(S["Server"])`.
 - Declare the possible locations on the driver with `[PlacementLocation]`, referencing the same constants. A type is covered by the declarations of its base types.
 - For names that come from data, list them with an `ILocalizationDataProvider` under the `Tabs and Cards` context (`TabAndCardNames.DataLocalizationContext`), and disable the rule around the call with `#pragma warning disable OCSG003`.
 

@@ -58,7 +58,7 @@ internal sealed class WorkflowTypePropertiesDisplayDriver : DisplayDriver<Workfl
         Prefix = htmlFieldPrefix ?? string.Empty;
     }
 
-    private static PlacementLocationBuilder InTab(PlacementLocationBuilder location, bool tabs, string tab, string tabPosition)
+    private static PlacementLocationBuilder InTab(PlacementLocationBuilder location, bool tabs, LocalizedString tab, string tabPosition)
     {
         if (!tabs)
         {

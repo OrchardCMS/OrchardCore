@@ -144,6 +144,8 @@ public class PlacementCatalogGeneratorTests
         const string source = """
             public class Driver
             {
+                private readonly Microsoft.Extensions.Localization.IStringLocalizer S = null;
+
                 public void Build(ShapeResult result, string location, int position)
                 {
                     result.Location("Content:1");
@@ -151,6 +153,9 @@ public class PlacementCatalogGeneratorTests
                     result.Location("Actions:40." + position);
                     result.Location("Content:" + position + PlacementInfo.TabDelimiter + "Settings");
                     result.Location(l => l.Tab($"Section{position}"));
+
+                    // Names localized in code are translated with PO files, not with data localization.
+                    result.Location(l => l.Zone("Content").Tab(S["Settings"]).Card(S["Details"]));
                 }
             }
             """;

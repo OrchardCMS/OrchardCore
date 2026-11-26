@@ -67,6 +67,53 @@ public class GroupShapesTests
         Assert.Contains("id=\"collapse-card-test-id-details\"", html);
     }
 
+    [Fact]
+    public void AdminTabs_TabPlacedWithADisplayName_ShowsItAndKeepsTheTabId()
+    {
+        // Arrange
+        var groupShapes = new GroupShapes(new TestDataLocalizer(new() { ["Site"] = "Data translation" }));
+        var placed = new Shape();
+        placed.Metadata.TabGrouping = new GroupingMetadata("Site", null, null, "Ιστότοπος");
+
+        var shape = new Shape();
+        shape.Properties["Identifier"] = "test-id";
+        shape.Properties["Tabs"] = new List<IGrouping<string, object>> { CreateGrouping("Site", new Shape(), placed) };
+
+        // Act
+        var html = GetHtmlString(groupShapes.AdminTabs(shape));
+
+        // Assert
+        Assert.Contains(">Ιστότοπος</a>", html);
+        Assert.Contains("href=\"#tab-site-test-id\"", html);
+    }
+
+    [Fact]
+    public async Task Card_CardPlacedWithADisplayName_ShowsItAndKeepsTheCardIds()
+    {
+        // Arrange
+        var groupShapes = new GroupShapes(NullDataLocalizer.Instance);
+        var displayHelper = new Mock<IDisplayHelper>();
+        displayHelper
+            .Setup(helper => helper.ShapeExecuteAsync(It.IsAny<IShape>()))
+            .ReturnsAsync(HtmlString.Empty);
+
+        var placed = new Shape();
+        placed.Metadata.CardGrouping = new GroupingMetadata("Server", null, null, "Διακομιστής");
+
+        var shape = new GroupingViewModel
+        {
+            Identifier = "test-id",
+            Grouping = CreateGrouping("Server", placed),
+        };
+
+        // Act
+        var html = GetHtmlString(await groupShapes.Card(displayHelper.Object, shape));
+
+        // Assert
+        Assert.Contains(">Διακομιστής</h5>", html);
+        Assert.Contains("id=\"heading-card-test-id-server\"", html);
+    }
+
     private static Shape CreateTabsShape(string tab)
     {
         var shape = new Shape();
@@ -77,7 +124,10 @@ public class GroupShapesTests
     }
 
     private static IGrouping<string, object> CreateGrouping(string key)
-        => new object[] { new Shape() }.ToLookup(_ => key).First();
+        => CreateGrouping(key, new Shape());
+
+    private static IGrouping<string, object> CreateGrouping(string key, params Shape[] shapes)
+        => shapes.Cast<object>().ToLookup(_ => key).First();
 
     private static string GetHtmlString(IHtmlContent htmlContent)
     {

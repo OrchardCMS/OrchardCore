@@ -87,6 +87,23 @@ public class PlacementLocationAnalyzerTests
     }
 
     [Fact]
+    public async Task Analyze_NamesLocalizedInCode_ReportsNothing()
+    {
+        // Arrange
+        const string source = """
+            public class Driver
+            {
+                private readonly Microsoft.Extensions.Localization.IStringLocalizer S = null;
+
+                public void Build(ShapeResult result) => result.Location(l => l.Zone("Content").Tab(S["Settings"], "1").Card(S["Details"]));
+            }
+            """;
+
+        // Act & Assert
+        Assert.Empty(await GetDiagnosticsAsync(source));
+    }
+
+    [Fact]
     public async Task Analyze_SkippedMember_ReportsNothing()
     {
         // Arrange

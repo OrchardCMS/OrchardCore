@@ -33,7 +33,7 @@ public class GroupShapes : IShapeAttributeProvider
             return HtmlString.Empty;
         }
 
-        var tabs = tabsGrouping.Select(group => group.Key).ToArray();
+        var tabs = tabsGrouping.ToArray();
         if (tabs.Length == 0)
         {
             return HtmlString.Empty;
@@ -63,7 +63,7 @@ public class GroupShapes : IShapeAttributeProvider
                 aTag.AddCssClass("active");
             }
 
-            var tabId = $"tab-{tab}-{identifier}".HtmlClassify();
+            var tabId = $"tab-{tab.Key}-{identifier}".HtmlClassify();
 
             aTag.Attributes["href"] = '#' + tabId;
             aTag.Attributes["data-bs-toggle"] = "tab";
@@ -72,7 +72,7 @@ public class GroupShapes : IShapeAttributeProvider
             aTag.Attributes["aria-selected"] = "false";
 
             // The name stays the identifier of the tab, only its caption is translated.
-            aTag.InnerHtml.Append(_dataLocalizer[tab, TabAndCardNames.DataLocalizationContext].Value);
+            aTag.InnerHtml.Append(TabAndCardNames.GetTabCaption(tab, _dataLocalizer));
 
             linkTag.InnerHtml.AppendHtml(aTag);
             tagBuilder.InnerHtml.AppendHtml(linkTag);
@@ -102,7 +102,7 @@ public class GroupShapes : IShapeAttributeProvider
 
         var headerTitleTag = new TagBuilder("h5");
         headerTitleTag.AddCssClass("float-start mb-0 mt-1");
-        headerTitleTag.InnerHtml.Append(_dataLocalizer[shape.Grouping.Key, TabAndCardNames.DataLocalizationContext].Value);
+        headerTitleTag.InnerHtml.Append(TabAndCardNames.GetCardCaption(shape.Grouping, _dataLocalizer));
 
         var buttonTag = new TagBuilder("button");
         buttonTag.AddCssClass("btn btn-link btn-block text-start float-end");

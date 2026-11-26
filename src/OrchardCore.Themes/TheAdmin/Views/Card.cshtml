@@ -1,10 +1,13 @@
 @model OrchardCore.DisplayManagement.ViewModels.GroupingViewModel
 @using OrchardCore.DisplayManagement
+@using OrchardCore.DisplayManagement.Descriptors
 @using OrchardCore.DisplayManagement.Shapes
 @using OrchardCore.DisplayManagement.ViewModels
+@using OrchardCore.Localization.Data
 @using OrchardCore.Mvc.Utilities
 
 @inject IShapeFactory ShapeFactory
+@inject IDataLocalizer D
 
 @*
     A card of a content zone, grouping the shapes placed in the same card, e.g. with a "Content:5%Server;10"
@@ -13,7 +16,9 @@
 *@
 
 @{
+    // The name identifies the card, its caption is the translation the card is placed with, or its data translation.
     var name = Model.Grouping.Key;
+    var caption = TabAndCardNames.GetCardCaption(Model.Grouping, D);
 
     // The columns of the shapes placed in this card, e.g. with a "Content:5%Server|Left" placement.
     var columns = await ShapeFactory.CreateAsync<GroupingViewModel>("ColumnGrouping", m =>
@@ -48,7 +53,7 @@
 else if (inTab)
 {
     <fieldset class="mb-4 ocat-card @($"ocat-card-{name}".HtmlClassify())">
-        <legend class="fs-6 fw-semibold border-bottom pb-2 mb-3 ocat-card-title">@name</legend>
+        <legend class="fs-6 fw-semibold border-bottom pb-2 mb-3 ocat-card-title">@caption</legend>
         <div class="ocat-card-body">
             @Html.Raw(html)
         </div>
@@ -58,7 +63,7 @@ else
 {
     // A group of fields is a fieldset titled by its legend, its native semantics, styled as a Bootstrap card.
     <fieldset class="card mb-3 ocat-card @($"ocat-card-{name}".HtmlClassify())">
-        <legend class="card-header fs-6 mb-0 ocat-card-title">@name</legend>
+        <legend class="card-header fs-6 mb-0 ocat-card-title">@caption</legend>
         <div class="card-body ocat-card-body">
             @Html.Raw(html)
         </div>

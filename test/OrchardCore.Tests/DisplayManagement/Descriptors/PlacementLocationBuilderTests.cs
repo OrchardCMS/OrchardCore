@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Descriptors;
 
 namespace OrchardCore.Tests.DisplayManagement.Descriptors;
@@ -909,6 +910,54 @@ public class PlacementLocationBuilderTests
         var builder = new PlacementLocationBuilder();
         var result = builder.Zone("Content").AsLayoutZone();
         Assert.Same(builder, result);
+    }
+
+    #endregion
+
+    #region Localized Name Tests
+
+    [Fact]
+    public void Build_LocalizedTabAndCard_KeepsTheNamesAndShowsTheTranslations()
+    {
+        var placement = new PlacementLocationBuilder()
+            .Zone("Content", "5")
+            .Tab(new LocalizedString("Settings", "Ρυθμίσεις"), "1")
+            .Card(new LocalizedString("Details", "Λεπτομέρειες"), "2")
+            .Build();
+
+        Assert.Equal("Settings", placement.Tab.Name);
+        Assert.Equal("1", placement.Tab.Position);
+        Assert.Equal("Ρυθμίσεις", placement.Tab.DisplayName);
+        Assert.Equal("Details", placement.Card.Name);
+        Assert.Equal("Λεπτομέρειες", placement.Card.DisplayName);
+
+        // The location string, which placement rules use, keeps the names only.
+        Assert.Equal("Content:5#Settings;1%Details;2", placement.Location);
+    }
+
+    [Fact]
+    public void Build_UntranslatedLocalizedTab_HasNoDisplayName()
+    {
+        var placement = new PlacementLocationBuilder()
+            .Zone("Content")
+            .Tab(new LocalizedString("Settings", "Settings", resourceNotFound: true))
+            .Build();
+
+        Assert.Equal("Settings", placement.Tab.Name);
+        Assert.Null(placement.Tab.DisplayName);
+    }
+
+    [Fact]
+    public void Build_TabNamedAgainWithAString_ClearsTheDisplayName()
+    {
+        var placement = new PlacementLocationBuilder()
+            .Zone("Content")
+            .Tab(new LocalizedString("Settings", "Ρυθμίσεις"))
+            .Tab("Advanced")
+            .Build();
+
+        Assert.Equal("Advanced", placement.Tab.Name);
+        Assert.Null(placement.Tab.DisplayName);
     }
 
     #endregion
