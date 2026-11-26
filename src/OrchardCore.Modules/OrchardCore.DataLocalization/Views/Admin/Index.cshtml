@@ -162,7 +162,7 @@
             @if (Model.IsUILocalization)
             {
                 <div class="form-text mt-2 mb-0">
-                    <i class="fa-solid fa-circle-info me-1" aria-hidden="true"></i>@T["Overrides are plain text. HTML is encoded when displayed. Supply every plural form, or restore fallback."]
+                    <i class="fa-solid fa-circle-info me-1" aria-hidden="true"></i>@T["Overrides are plain text. HTML is encoded when displayed. Empty translations use the localization files, shown as placeholders. Supply every plural form, or restore fallback."]
                 </div>
             }
         </div>
@@ -197,7 +197,7 @@
                 </div>
             </div>
             <div class="table-responsive" :id="'provider-body-' + index">
-                <table v-if="isExpanded(provider)" class="table table-sm table-hover align-middle mb-0 translation-table">
+                <table v-if="isExpanded(provider)" class="table table-sm table-hover mb-0 translation-table">
                     <thead>
                         <tr>
                             <th scope="col" class="translation-source">@T["Original"]</th>
@@ -209,25 +209,23 @@
                         <tr v-if="group.name" class="translation-group-header">
                             <th scope="rowgroup" colspan="3">
                                 <span class="text-break">{{ group.name }}</span>
-                                <span class="badge rounded-pill text-bg-secondary ms-1">{{ group.strings.length }}</span>
+                                <span class="translation-group-count">{{ group.strings.length }}</span>
                             </th>
                         </tr>
                         <tr v-for="(str, strIndex) in group.strings" :key="str.context + '|' + str.key" class="translation-row"
                             :class="{ 'translation-row-changed': str.changed }" :data-text="str.key.toLowerCase()">
                             <td class="translation-source">
-                                <code class="text-break">{{ str.key }}</code>
+                                <div class="translation-source-text text-break">{{ str.key }}</div>
                                 @if (Model.IsUILocalization)
                                 {
-                                    <div v-if="str.plural" class="small text-body-secondary">
-                                        <span class="visually-hidden">@T["Plural:"]</span><code class="text-break">{{ str.plural }}</code>
-                                    </div>
-                                    <div v-if="str.formatArguments && str.formatArguments.length" class="small text-body-secondary mt-1">
+                                    <div v-if="str.plural" class="translation-source-text text-break text-body-secondary"><span class="visually-hidden">@T["Plural:"]</span>{{ str.plural }}</div>
+                                    <div v-if="str.formatArguments && str.formatArguments.length" class="translation-hint">
                                         <span>@T["Available placeholders:"]</span>
-                                        <code v-for="argument in str.formatArguments" :key="argument" class="badge bg-body-secondary text-body border ms-1">{{ argument }}</code>
+                                        <span v-for="argument in str.formatArguments" :key="argument" class="translation-argument">{{ argument }}</span>
                                     </div>
-                                    <details v-if="str.metadata && str.metadata.length" class="small mt-1">
-                                        <summary class="text-body-secondary">@T["Source metadata"]</summary>
-                                        <pre class="mb-0 small">{{ str.metadata.join('\n') }}</pre>
+                                    <details v-if="str.metadata && str.metadata.length" class="translation-hint">
+                                        <summary>@T["Source metadata"]</summary>
+                                        <pre class="mb-0">{{ str.metadata.join('\n') }}</pre>
                                     </details>
                                 }
                             </td>
@@ -243,7 +241,7 @@
                                                   class="form-control form-control-sm" rows="1" v-model="str.values[form]"
                                                   :aria-label="str.plural ? null : messages.translation"
                                                   :disabled="isReadOnly || isImporting || isLoading"
-                                                  :placeholder="form === 0 ? str.key : str.plural"
+                                                  :placeholder="getPlaceholder(str, form)"
                                                   @@input="onTranslationChange(str)"></textarea>
                                     </div>
                                 }
@@ -258,13 +256,25 @@
                                 }
                             </td>
                             <td class="translation-status">
-                                <div class="d-flex align-items-center justify-content-end gap-1">
+                                <div class="translation-status-icons">
                                     <span v-if="str.changed" class="text-warning" title="@T["Unsaved"]">
                                         <i class="fa-solid fa-pen fa-fw" aria-hidden="true"></i><span class="visually-hidden">@T["Unsaved"]</span>
                                     </span>
-                                    <span v-else-if="hasTranslation(str)" class="text-success" title="@T["Translated"]">
-                                        <i class="fa-solid fa-circle-check fa-fw" aria-hidden="true"></i><span class="visually-hidden">@T["Translated"]</span>
-                                    </span>
+                                    @if (Model.IsUILocalization)
+                                    {
+                                        <span v-else-if="hasOverride(str)" class="text-success" title="@T["Overridden"]">
+                                            <i class="fa-solid fa-circle-check fa-fw" aria-hidden="true"></i><span class="visually-hidden">@T["Overridden"]</span>
+                                        </span>
+                                        <span v-else-if="hasTranslation(str)" class="text-body-secondary" title="@T["Translated in the localization files"]">
+                                            <i class="fa-regular fa-circle-check fa-fw" aria-hidden="true"></i><span class="visually-hidden">@T["Translated in the localization files"]</span>
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span v-else-if="hasTranslation(str)" class="text-success" title="@T["Translated"]">
+                                            <i class="fa-solid fa-circle-check fa-fw" aria-hidden="true"></i><span class="visually-hidden">@T["Translated"]</span>
+                                        </span>
+                                    }
                                     <span v-else class="text-body-tertiary" title="@T["Missing"]">
                                         <i class="fa-regular fa-circle fa-fw" aria-hidden="true"></i><span class="visually-hidden">@T["Missing"]</span>
                                     </span>

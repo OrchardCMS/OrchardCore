@@ -15,7 +15,8 @@ public sealed class UILocalizationStartup : StartupBase
     {
         services.AddSingleton<UILocalizationCatalog>();
         services.AddScoped<IUITranslationsManager, UITranslationsManager>();
-        services.AddSingleton<ITranslationOverrideProvider, UITranslationProvider>();
+        services.AddSingleton<UITranslationProvider>();
+        services.AddSingleton<ITranslationOverrideProvider>(sp => sp.GetRequiredService<UITranslationProvider>());
         services.AddScoped<INavigationProvider, UILocalizationAdminMenu>();
     }
 }

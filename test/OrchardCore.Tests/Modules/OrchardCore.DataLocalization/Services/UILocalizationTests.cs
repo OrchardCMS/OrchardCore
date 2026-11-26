@@ -211,6 +211,28 @@ public sealed class UILocalizationTests
     }
 
     [Fact]
+    public void GetFallbackTranslations_OverriddenAndTwoFormPoEntries_ReturnsPoValuesInCultureForms()
+    {
+        PluralizationRuleDelegate poRule = count => count > 1 ? 1 : 0;
+        var po = new Mock<ITranslationProvider>();
+        po.Setup(provider => provider.LoadTranslations("fr", It.IsAny<CultureDictionary>()))
+            .Callback<string, CultureDictionary>((_, dictionary) => dictionary.MergeTranslations([
+                new CultureDictionaryRecord("Hello", "Context", ["Bonjour"]),
+                new CultureDictionaryRecord("{0} item", "Context", ["{0} article", "{0} articles"], poRule),
+            ]));
+        var overrides = new UITranslationsDocument();
+        overrides.Translations["fr"] = [Singular(value: "Salut")];
+        var (manager, _) = CreateManager(overrides, po.Object);
+
+        var fallbacks = manager.GetFallbackTranslations("fr");
+
+        Assert.Equal(["Bonjour"], fallbacks[("Context", "Hello")]);
+        // The 'many' form of Orchard's French rule maps to the 'other' form of the two-form PO rule.
+        Assert.Equal(["{0} article", "{0} articles", "{0} articles"], fallbacks[("Context", "{0} item")]);
+        Assert.Empty(CreateManager().Manager.GetFallbackTranslations("fr"));
+    }
+
+    [Fact]
     public async Task UpdateAsync_UnknownContextCultureOrPlural_RejectsBeforeLoadingMutableDocument()
     {
         var (manager, documents) = CreateManager();
@@ -307,6 +329,10 @@ public sealed class UILocalizationTests
 
     private static (UITranslationsManager Manager, Mock<IDocumentManager<UITranslationsDocument>> Documents) CreateManager(
         params ITranslationProvider[] translationProviders)
+        => CreateManager(null, translationProviders);
+
+    private static (UITranslationsManager Manager, Mock<IDocumentManager<UITranslationsDocument>> Documents) CreateManager(
+        UITranslationsDocument overrides, params ITranslationProvider[] translationProviders)
     {
         var singular = new UILocalizationResource { Context = "Context", Key = "Hello" };
         var plural = new UILocalizationResource { Context = "Context", Key = "{0} item", Plural = "{0} items" };
@@ -314,7 +340,11 @@ public sealed class UILocalizationTests
         var localization = new Mock<ILocalizationService>();
         localization.Setup(value => value.GetSupportedCulturesAsync()).ReturnsAsync(["fr", "ja", "ar", "ru"]);
         var documents = new Mock<IDocumentManager<UITranslationsDocument>>();
-        var localizationManager = new LocalizationManager([new DefaultPluralRuleProvider()], translationProviders, new MemoryCache(new MemoryCacheOptions()));
-        return (new UITranslationsManager(documents.Object, new UILocalizationCatalog([singular, plural]), localization.Object, localizationManager), documents);
+        var provider = new UITranslationProvider();
+        var overrideProvider = new Mock<ITranslationOverrideProvider>();
+        overrideProvider.Setup(value => value.ApplyTranslations(It.IsAny<CultureDictionary>()))
+            .Returns<CultureDictionary>(dictionary => provider.ApplyTranslations(dictionary, overrides ?? new UITranslationsDocument()));
+        var localizationManager = new LocalizationManager([new DefaultPluralRuleProvider()], translationProviders, new MemoryCache(new MemoryCacheOptions()), [overrideProvider.Object]);
+        return (new UITranslationsManager(documents.Object, new UILocalizationCatalog([singular, plural]), localization.Object, localizationManager, provider), documents);
     }
 }

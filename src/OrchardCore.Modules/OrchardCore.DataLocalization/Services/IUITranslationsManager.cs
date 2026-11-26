@@ -16,6 +16,13 @@ public interface IUITranslationsManager
     /// <param name="culture">The configured culture.</param>
     int[] GetPluralFormExamples(string culture);
 
+    /// <summary>
+    /// Gets the translations of the localization files of a culture, ignoring overrides, as used when an entry has no override.
+    /// Plural entries have a value per plural form of the culture, see <see cref="GetPluralFormExamples(string)"/>.
+    /// </summary>
+    /// <param name="culture">The configured culture.</param>
+    IReadOnlyDictionary<(string Context, string Key), string[]> GetFallbackTranslations(string culture);
+
     /// <summary>Validates a batch against the embedded catalogs and saves it atomically. Empty values remove overrides.</summary>
     /// <param name="culture">The configured culture.</param>
     /// <param name="translations">The updates, identified by context and key.</param>

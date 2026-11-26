@@ -158,6 +158,7 @@ public sealed class UITranslationsController : Controller
         }
 
         var pluralFormExamples = culture == null ? [] : _manager.GetPluralFormExamples(culture);
+        var fallbacks = culture == null ? new Dictionary<(string, string), string[]>() : _manager.GetFallbackTranslations(culture);
         // A context/key can be extracted by several assemblies; edit it once and retain all metadata.
         var resources = _manager.GetResources().GroupBy(resource => (resource.Context, resource.Key)).Select(group => new
         {
@@ -191,6 +192,7 @@ public sealed class UITranslationsController : Controller
                         Values = Enumerable.Range(0, item.Resource.Plural == null ? 1 : pluralFormExamples.Length)
                             .Select(form => translatedValues.TryGetValue((item.Resource.Context, item.Resource.Key), out var values)
                                 ? values.ElementAtOrDefault(form) ?? string.Empty : string.Empty).ToArray(),
+                        Fallback = fallbacks.GetValueOrDefault((item.Resource.Context, item.Resource.Key)),
                     }).ToList(),
                 }).ToList(),
             }).ToList(),

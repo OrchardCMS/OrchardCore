@@ -41,13 +41,21 @@
   height: 0.375rem;
 }
 #translation-editor .translation-table {
+  --translation-input-height: calc(1.5em + 0.5rem + calc(var(--bs-border-width) * 2));
   table-layout: fixed;
+  font-size: 0.875rem;
 }
-#translation-editor .translation-table > thead > tr > th {
-  font-size: 0.875em;
+#translation-editor .translation-table > thead > tr > th,
+#translation-editor .translation-table .translation-group-header > th {
   font-weight: 600;
   color: var(--bs-secondary-color);
+  vertical-align: middle;
+}
+#translation-editor .translation-table > thead > tr > th {
   white-space: nowrap;
+}
+#translation-editor .translation-table > tbody > tr > td {
+  vertical-align: top;
 }
 #translation-editor .translation-table th,
 #translation-editor .translation-table td {
@@ -61,15 +69,48 @@
   width: 4.5rem;
   text-align: end;
 }
-#translation-editor .translation-table code,
-#translation-editor .translation-table pre {
+#translation-editor .translation-group-count {
+  margin-inline-start: 0.375rem;
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+}
+#translation-editor .translation-source-text {
+  padding-top: calc(0.25rem + var(--bs-border-width));
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+#translation-editor .translation-source-text + .translation-source-text {
+  padding-top: 0;
+}
+#translation-editor .translation-hint {
+  margin-top: 0.25rem;
+  font-size: 0.875em;
+  color: var(--bs-secondary-color);
+}
+#translation-editor .translation-hint summary {
+  width: fit-content;
+}
+#translation-editor .translation-hint pre {
+  font-family: inherit;
+  font-size: inherit;
   white-space: pre-wrap;
   word-break: break-word;
 }
-#translation-editor .translation-group-header > th {
-  --bs-table-bg-state: var(--bs-tertiary-bg);
-  font-size: 0.875em;
-  font-weight: 600;
+#translation-editor .translation-argument {
+  display: inline-block;
+  margin-inline-start: 0.25rem;
+  padding: 0 0.375rem;
+  border: var(--bs-border-width) solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius-sm);
+  background-color: var(--bs-tertiary-bg);
+  color: var(--bs-body-color);
+}
+#translation-editor .translation-status-icons {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.25rem;
+  min-height: var(--translation-input-height);
 }
 #translation-editor .translation-row-changed > td {
   --bs-table-bg-state: var(--bs-warning-bg-subtle);
@@ -83,7 +124,7 @@
   font-variant-numeric: tabular-nums;
 }
 #translation-editor textarea.form-control {
-  min-height: calc(1.5em + 0.5rem + var(--bs-border-width) * 2);
+  min-height: var(--translation-input-height);
   field-sizing: content;
   resize: vertical;
 }

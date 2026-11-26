@@ -11,6 +11,12 @@ namespace OrchardCore.DataLocalization.Services;
 internal sealed class UITranslationProvider : ITranslationOverrideProvider
 {
     private readonly ConditionalWeakTable<UITranslationsDocument, ConditionalWeakTable<CultureDictionary, CultureDictionary>> _cache = new();
+    private readonly ConditionalWeakTable<CultureDictionary, CultureDictionary> _fallbacks = new();
+
+    /// <summary>Gets the dictionary of the localization files a dictionary with overrides was built from.</summary>
+    /// <param name="dictionary">A dictionary returned by the localization manager.</param>
+    internal CultureDictionary GetFallback(CultureDictionary dictionary)
+        => _fallbacks.TryGetValue(dictionary, out var fallback) ? fallback : dictionary;
 
     /// <inheritdoc />
     public CultureDictionary ApplyTranslations(CultureDictionary dictionary)
@@ -53,6 +59,8 @@ internal sealed class UITranslationProvider : ITranslationOverrideProvider
             {
                 result.PlainTextTranslations.Add(record.Key);
             }
+
+            _fallbacks.AddOrUpdate(result, fallback);
 
             return result;
         });

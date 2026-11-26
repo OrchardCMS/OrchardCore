@@ -232,7 +232,12 @@ msgstr ""
 
 #: Views/Admin/Index.cshtml
 msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
-msgid "Overrides are plain text. HTML is encoded when displayed. Supply every plural form, or restore fallback."
+msgid "Overridden"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "Overrides are plain text. HTML is encoded when displayed. Empty translations use the localization files, shown as placeholders. Supply every plural form, or restore fallback."
 msgstr ""
 
 #: Views/Admin/Index.cshtml
@@ -298,6 +303,11 @@ msgstr ""
 #: Views/Admin/Index.cshtml
 msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
 msgid "Translated"
+msgstr ""
+
+#: Views/Admin/Index.cshtml
+msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
+msgid "Translated in the localization files"
 msgstr ""
 
 #: Views/Admin/Index.cshtml

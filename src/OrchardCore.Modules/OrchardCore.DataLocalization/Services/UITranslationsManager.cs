@@ -16,17 +16,20 @@ internal sealed class UITranslationsManager : IUITranslationsManager
     private readonly UILocalizationCatalog _catalog;
     private readonly ILocalizationService _localization;
     private readonly ILocalizationManager _localizationManager;
+    private readonly UITranslationProvider _translationProvider;
 
     public UITranslationsManager(
         IDocumentManager<UITranslationsDocument> documents,
         UILocalizationCatalog catalog,
         ILocalizationService localization,
-        ILocalizationManager localizationManager)
+        ILocalizationManager localizationManager,
+        UITranslationProvider translationProvider)
     {
         _documents = documents;
         _catalog = catalog;
         _localization = localization;
         _localizationManager = localizationManager;
+        _translationProvider = translationProvider;
     }
 
     /// <inheritdoc />
@@ -53,6 +56,63 @@ internal sealed class UITranslationsManager : IUITranslationsManager
 
         // Forms that no count in the range selects have no example.
         return Enumerable.Range(0, examples.Keys.Max() + 1).Select(form => examples.GetValueOrDefault(form, -1)).ToArray();
+    }
+
+    /// <inheritdoc />
+    public IReadOnlyDictionary<(string Context, string Key), string[]> GetFallbackTranslations(string culture)
+    {
+        var examples = GetPluralFormExamples(culture);
+        var dictionaries = new List<CultureDictionary>();
+        // Like the localizer, falls back to the parent cultures.
+        for (var value = CultureInfo.GetCultureInfo(culture); value != CultureInfo.InvariantCulture; value = value.Parent)
+        {
+            dictionaries.Add(_translationProvider.GetFallback(_localizationManager.GetDictionary(value)));
+        }
+
+        var result = new Dictionary<(string Context, string Key), string[]>();
+        foreach (var resource in _catalog.GetResources())
+        {
+            if (result.ContainsKey((resource.Context, resource.Key)))
+            {
+                continue;
+            }
+
+            var values = dictionaries.Select(dictionary => GetFallback(dictionary, resource, examples)).FirstOrDefault(value => value != null);
+            if (values != null)
+            {
+                result[(resource.Context, resource.Key)] = values;
+            }
+        }
+
+        return result;
+    }
+
+    private static string[] GetFallback(CultureDictionary dictionary, UILocalizationResource resource, int[] examples)
+    {
+        // Like the localizer, falls back to the entry without context.
+        foreach (var context in string.IsNullOrEmpty(resource.Context) ? [null] : new[] { resource.Context, null })
+        {
+            var key = CultureDictionaryRecord.GetKey(resource.Key, context);
+            if (!dictionary.Translations.TryGetValue(key, out var translations) || translations == null || translations.Length == 0)
+            {
+                continue;
+            }
+
+            if (resource.Plural == null)
+            {
+                return string.IsNullOrEmpty(translations[0]) ? null : [translations[0]];
+            }
+
+            // Maps the forms of the localization file, which may have another plural rule, to the forms of the culture.
+            var rule = dictionary.GetPluralRule(key);
+            var values = examples
+                .Select((count, form) => translations.ElementAtOrDefault(count < 0 ? form : rule(count)) ?? string.Empty)
+                .ToArray();
+
+            return values.All(string.IsNullOrEmpty) ? null : values;
+        }
+
+        return null;
     }
 
     /// <inheritdoc />

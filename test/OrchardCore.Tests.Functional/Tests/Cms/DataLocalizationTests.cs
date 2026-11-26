@@ -84,7 +84,7 @@ public sealed class DataLocalizationTests : CmsTestBase<DataLocalizationTestsFix
         await Assertions.Expect(visibleRows).Not.ToHaveCountAsync(0);
 
         var firstInput = visibleRows.First.Locator("input[type='text']");
-        var originalKey = (await visibleRows.First.Locator("code").TextContentAsync())?.Trim();
+        var originalKey = (await visibleRows.First.Locator(".translation-source-text").First.TextContentAsync())?.Trim();
         Assert.False(string.IsNullOrWhiteSpace(originalKey), "Expected the first translatable row to expose a non-empty key.");
         await firstInput.FillAsync("");
         await firstInput.FillAsync("Test Translated Value");

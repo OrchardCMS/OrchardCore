@@ -10,6 +10,7 @@ interface TranslationString {
     value: string;
     plural?: string | null;
     values?: string[];
+    fallback?: string[] | null;
     metadata?: string[];
     formatArguments?: string[];
     changed?: boolean;
@@ -84,6 +85,7 @@ interface EditorInstance {
     getAllStrings(): TranslationString[];
     getEntries(): TranslationString[];
     hasTranslation(str: TranslationString): boolean;
+    hasOverride(str: TranslationString): boolean;
     hasInvalidChanges(): boolean;
     onTranslationChange(str: TranslationString): void;
     cancelAutoSave(): void;
@@ -221,6 +223,7 @@ if (editorEl) {
                             (this.isUiLocalization && (
                                 s.context.toLowerCase().includes(query) || s.plural?.toLowerCase().includes(query) ||
                                 s.values?.some(value => value?.toLowerCase().includes(query)) ||
+                                s.fallback?.some(value => value?.toLowerCase().includes(query)) ||
                                 s.metadata?.some(value => value.toLowerCase().includes(query))
                             )),
                     );
@@ -279,13 +282,20 @@ if (editorEl) {
                 return count;
             },
             hasTranslation(this: EditorInstance, str: TranslationString) {
+                // UI entries without an override use the translation of the localization files.
                 return this.isUiLocalization
-                    ? Boolean(str.values?.every(value => value?.length > 0))
+                    ? this.hasOverride(str) || Boolean(str.fallback?.some(value => value?.length > 0))
                     : Boolean(str.value?.trim());
+            },
+            hasOverride(this: EditorInstance, str: TranslationString) {
+                return Boolean(str.values?.every(value => value?.length > 0));
+            },
+            getPlaceholder(this: EditorInstance, str: TranslationString, form: number) {
+                return str.fallback?.[form] || (form === 0 ? str.key : str.plural) || "";
             },
             hasInvalidChanges(this: EditorInstance) {
                 return this.isUiLocalization && this.getEntries().some(str =>
-                    str.changed && str.values?.some(value => value?.length > 0) && !this.hasTranslation(str));
+                    str.changed && str.values?.some(value => value?.length > 0) && !this.hasOverride(str));
             },
             onTranslationChange(this: EditorInstance, str: TranslationString) {
                 str.changed = true;

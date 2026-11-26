@@ -32,6 +32,12 @@ public class TranslatableStringViewModel
     public string[] Values { get; set; }
 
     /// <summary>
+    /// The translation forms of the localization files of the edited culture, used when no override exists.
+    /// Null when the localization files have no translation, and for dynamic data translations.
+    /// </summary>
+    public string[] Fallback { get; set; }
+
+    /// <summary>
     /// Extracted UI catalog comments, flags and source references.
     /// </summary>
     public string[] Metadata { get; set; }
