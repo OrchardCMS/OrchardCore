@@ -53,12 +53,17 @@ public sealed class ContainerBreadcrumbProvider : IBreadcrumbProvider
             return;
         }
 
+        var text = container.DisplayText;
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(container.ContentType);
+            text = typeDefinition is not null ? _dataLocalizer[typeDefinition.DisplayName, DataLocalizationContext.ContentType] : container.ContentType;
+        }
+
         var item = new BreadcrumbItem
         {
             Id = "Container",
-            Text = string.IsNullOrWhiteSpace(container.DisplayText)
-                ? _dataLocalizer[(await _contentDefinitionManager.GetTypeDefinitionAsync(container.ContentType)).DisplayName, DataLocalizationContext.ContentType]
-                : container.DisplayText,
+            Text = text,
 
             RouteValues = new RouteValueDictionary
             {
