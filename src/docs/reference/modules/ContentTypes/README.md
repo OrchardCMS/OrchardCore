@@ -1,5 +1,9 @@
 # Content Types (`OrchardCore.ContentTypes`)
 
+## Admin list grouping
+
+The `ContentTypes` admin list registers **Category** (`groupBy=Category`) with the shared [admin list grouping service](../Admin/README.md#grouping-admin-list-rows). It groups `ContentTypeEntry` records by their existing `ContentTypeSettings.Category`, sorting categories alphabetically and using **Uncategorized** for an empty category. Client-side search hides headings whose rows have no matches. Grouping applies to both list layouts and does not change content type definitions.
+
 ## Changing a content type's stereotype
 
 You can change a stereotype and any visible settings in the same save. For example, clear **Creatable** when assigning the `CustomUserSettings` stereotype to remove the **Create New** action for that type. When you remove a stereotype, any settings it hid keep their saved values. Reopen the type to edit the settings that are visible again.

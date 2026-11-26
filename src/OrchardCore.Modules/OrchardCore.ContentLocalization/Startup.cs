@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using OrchardCore.Admin;
 using OrchardCore.Admin.Models;
 using OrchardCore.ContentLocalization.Drivers;
 using OrchardCore.ContentLocalization.Indexing;
@@ -11,6 +12,7 @@ using OrchardCore.ContentLocalization.Liquid;
 using OrchardCore.ContentLocalization.Security;
 using OrchardCore.ContentLocalization.Services;
 using OrchardCore.ContentLocalization.Sitemaps;
+using OrchardCore.Contents;
 using OrchardCore.Contents.Services;
 using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement.Handlers;
@@ -36,6 +38,7 @@ public sealed class Startup : StartupBase
         services.AddScoped<IContentPartIndexHandler, LocalizationPartIndexHandler>();
         services.AddSingleton<ILocalizationEntries, LocalizationEntries>();
         services.AddContentLocalization();
+        services.AddAdminListGroupingProvider<LocalizationSetGroupingProvider>(ContentsAdminList.Name);
 
         services.AddPermissionProvider<Permissions>();
         services.AddScoped<IAuthorizationHandler, LocalizeContentAuthorizationHandler>();

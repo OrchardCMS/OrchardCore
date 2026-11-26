@@ -15,6 +15,32 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Admin;
 public class AdminListBuilderTests
 {
     [Theory]
+    [InlineData(AdminListLayout.List, "SummaryAdmin")]
+    [InlineData(AdminListLayout.Grid, "SummaryAdminGrid")]
+    public async Task BuildAsync_ContinuedGroup_AddsHeaderWithoutCountingItAsARow(AdminListLayout layout, string displayType)
+    {
+        var display = new Mock<IAdminListItemDisplayManager<string>>();
+        display.Setup(manager => manager.BuildDisplayAsync(It.IsAny<string>(), It.IsAny<IUpdateModel>(), displayType))
+            .ReturnsAsync(() => new Shape());
+        using var services = CreateServices(display.Object);
+        var (builder, _, _) = CreateBuilder(services, _columns, layout);
+        var shape = await CreateListAsync(new AdminListContext<string>
+        {
+            Source = ["last translation"],
+            Groups = [new AdminListGroup { Key = "set", Title = "Original title", TotalCount = 6, Source = new[] { "last translation" } }],
+        });
+
+        await builder.BuildAsync(shape, TestContext.Current.CancellationToken);
+
+        var row = Assert.Single(shape.GetProperty<IEnumerable<IShape>>("Rows"));
+        var header = row.GetProperty<IShape>("AdminListGroupHeader");
+        Assert.Equal("Original title", header.Properties["Title"]);
+        Assert.Equal(6, header.Properties["TotalCount"]);
+        Assert.Equal(1, shape.GetProperty<IShape>("Toolbar").Properties["ItemsCount"]);
+        display.Verify(manager => manager.BuildDisplayAsync("last translation", It.IsAny<IUpdateModel>(), displayType), Times.Once);
+    }
+
+    [Theory]
     [InlineData(AdminListLayout.List, true, "SummaryAdmin")]
     [InlineData(AdminListLayout.Grid, true, "SummaryAdminGrid")]
     [InlineData(AdminListLayout.Grid, false, "SummaryAdmin")]

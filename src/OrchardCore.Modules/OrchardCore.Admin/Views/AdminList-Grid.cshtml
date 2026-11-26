@@ -167,6 +167,7 @@
 @{
     // Everything the layout renders above the rows, so it can leave any of it out.
     var layoutSelector = Model.LayoutSelector;
+    var groupingSelector = Model.GroupingSelector;
     var search = Model.Search;
     var actions = Model.Actions;
 }
@@ -196,7 +197,7 @@
 }
 
 <div class="admin-list admin-list-grid">
-    @if (toolbar != null || header != null || layoutSelector != null)
+    @if (toolbar != null || header != null || layoutSelector != null || groupingSelector != null)
     {
         <div class="admin-list-toolbar text-bg-theme">
             @* Wrapping: a narrow list sends the selector to a line of its own instead of over the filters. *@
@@ -218,6 +219,10 @@
                         </div>
                     }
                 </div>
+                @if (groupingSelector != null)
+                {
+                    @await DisplayAsync(groupingSelector)
+                }
                 @if (layoutSelector != null)
                 {
                     @await DisplayAsync(layoutSelector)
@@ -237,8 +242,19 @@
             {
                 hasRows = true;
 
+                if (row.GetProperty<IShape>("AdminListGroupHeader") is { } groupHeader)
+                {
+                    <div class="admin-list-group-header" role="row" data-admin-list-group-header="@(row.GetProperty<string>("AdminListGroupKey"))">
+                        <div role="cell" aria-colspan="@columns.Count">@await DisplayAsync(groupHeader)</div>
+                    </div>
+                }
+
                 var rowTag = new TagBuilder("div");
                 rowTag.AddCssClass("admin-list-grid-row");
+                if (row.GetProperty<string>("AdminListGroupKey") is { } groupKey)
+                {
+                    rowTag.Attributes["data-admin-list-group"] = groupKey;
+                }
                 if (!string.IsNullOrEmpty(gridOptions?.ItemCssClass))
                 {
                     rowTag.AddCssClass(gridOptions.ItemCssClass);

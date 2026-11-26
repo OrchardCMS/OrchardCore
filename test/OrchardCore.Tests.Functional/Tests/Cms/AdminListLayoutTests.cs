@@ -43,6 +43,75 @@ public sealed class AdminListLayoutTests : CmsTestBase<AdminListLayoutTestsFixtu
 
     public AdminListLayoutTests(AdminListLayoutTestsFixture fixture) : base(fixture) { }
 
+    [Theory]
+    [InlineData("List", "Buttons")]
+    [InlineData("Grid", "Menu")]
+    public async Task Grouping_FilteredContent_FillsPagesRepeatsHeadersAndRemembersChoice(string layout, string actionsLayout)
+    {
+        var page = await Fixture.CreatePageAsync();
+        await page.LoginAsync();
+        var consoleErrors = page.CollectConsoleErrors();
+        await page.SetAdminListSettingsAsync(layout, allowUserSelection: true, actionsLayout);
+        await page.GotoAndAssertOkAsync("/Admin/Settings/general");
+        await page.GetByLabel("Page size", new() { Exact = true }).FillAsync("5");
+        await page.ClickSaveAsync();
+        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        var prefix = $"Grouping{layout}";
+        foreach (var type in new[] { "Article", "Page" })
+        {
+            for (var i = 0; i < 3; i++)
+            {
+                await page.GotoAndAssertOkAsync($"/Admin/Contents/ContentTypes/{type}/Create");
+                await page.Locator("#TitlePart_Title").FillAsync($"{prefix} {type} {i}");
+                await page.ClickPublishAsync();
+                await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            }
+        }
+
+        var url = $"/Admin/Contents/ContentItems?q={prefix}%20sort:Title&groupBy=ContentType&pageSize=5&layout={layout}";
+        await page.GotoAndAssertOkAsync(url);
+        var rows = page.Locator("[data-admin-list-group]");
+        var headers = page.Locator("[data-admin-list-group-header]");
+        await Assertions.Expect(rows).ToHaveCountAsync(5);
+        await Assertions.Expect(headers).ToHaveCountAsync(2);
+        Assert.Equal(0, await headers.Locator("input[type='checkbox']").CountAsync());
+        var continuedKey = await headers.Last.GetAttributeAsync("data-admin-list-group-header");
+
+        await page.Locator("a[href*='pagenum=2']").Last.ClickAsync();
+        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        Assert.Equal("ContentType", QueryHelpers.ParseQuery(new Uri(page.Url).Query)["groupBy"]);
+        await Assertions.Expect(rows).ToHaveCountAsync(1);
+        await Assertions.Expect(headers).ToHaveCountAsync(1);
+        Assert.Equal(continuedKey, await headers.First.GetAttributeAsync("data-admin-list-group-header"));
+        await Assertions.Expect(headers.First).ToContainTextAsync("3");
+
+        await page.GotoAndAssertOkAsync($"/Admin/Contents/ContentItems?q={prefix}%20sort:Title&pageSize=5&layout={layout}");
+        await Assertions.Expect(rows).ToHaveCountAsync(5);
+        await Assertions.Expect(headers).ToHaveCountAsync(2);
+        await page.Locator(".admin-list-grouping-selector button").ClickAsync();
+        await page.Locator(".admin-list-grouping-selector a", new() { HasText = "None" }).ClickAsync();
+        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        Assert.Contains("groupBy=None", page.Url);
+        Assert.Contains(prefix, QueryHelpers.ParseQuery(new Uri(page.Url).Query)["q"].ToString());
+        await Assertions.Expect(headers).ToHaveCountAsync(0);
+
+        await page.GotoAndAssertOkAsync($"/Admin/ContentTypes/List?groupBy=Category&layout={layout}");
+        await Assertions.Expect(headers.First).ToBeVisibleAsync();
+        await page.Locator("#search-box").FillAsync("no-matching-grouped-content-type");
+        await Assertions.Expect(page.Locator("[data-admin-list-group-header]:visible")).ToHaveCountAsync(0);
+        await page.Locator("#search-box").FillAsync("Article");
+        await Assertions.Expect(page.Locator("[data-admin-list-group-header]:visible")).ToHaveCountAsync(1);
+        await page.SetViewportSizeAsync(390, 844);
+        await page.WaitForFunctionAsync("document.documentElement.scrollWidth <= window.innerWidth");
+
+        await page.SetViewportSizeAsync(1280, 800);
+        await page.GotoAndAssertOkAsync("/Admin/Settings/general");
+        await page.GetByLabel("Page size", new() { Exact = true }).FillAsync("10");
+        await page.ClickSaveAsync();
+        Assert.Empty(consoleErrors);
+        await page.CloseAsync();
+    }
+
     [Fact]
     public async Task LayoutSelector_UserPicksGrid_ListRendersViewDefinedColumnsAndKeepsTheChoice()
     {

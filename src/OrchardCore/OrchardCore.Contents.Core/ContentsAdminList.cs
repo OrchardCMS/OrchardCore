@@ -1,7 +1,7 @@
 namespace OrchardCore.Contents;
 
 /// <summary>
-/// The name of the content items admin list, and the contextual data keys it passes to its column providers.
+/// The name of the content items admin list, and the contextual data keys it passes to its providers.
 /// </summary>
 public static class ContentsAdminList
 {

@@ -316,6 +316,16 @@ msgctxt "OrchardCore.ContentTypes.RecipeSteps.ContentDefinitionStep"
 msgid "Unable to add content-part to the '{0}' content-type. The part name cannot be null or empty."
 msgstr ""
 
+#: Services/CategoryGroupingProvider.cs
+msgctxt "OrchardCore.ContentTypes.Services.CategoryGroupingProvider"
+msgid "Category"
+msgstr ""
+
+#: Services/CategoryGroupingProvider.cs
+msgctxt "OrchardCore.ContentTypes.Services.CategoryGroupingProvider"
+msgid "Uncategorized"
+msgstr ""
+
 #. Format arguments: {0}: name
 #: Services/ContentDefinitionService.cs
 #, csharp-format

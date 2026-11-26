@@ -250,6 +250,53 @@ public class ContentsAdminListDuplicatesTests : IAsyncLifetime
         Assert.True(result.Grouped);
     }
 
+    [Theory]
+    [InlineData("")]
+    [InlineData("sort:Title")]
+    [InlineData("status:Published")]
+    [InlineData("type:Article C")]
+    public async Task QueryIndexAsync_FilteredSource_MatchesDocumentsWithoutLoadingThem(string filter)
+    {
+        using var services = CreateServices();
+        await using var session = _store.CreateSession();
+        var builder = new QueryEngineBuilder<ContentItem>();
+        new DefaultContentsAdminListFilterProvider().Build(builder);
+        var parser = builder.Build();
+        var service = new DefaultContentsAdminListQueryService(
+            session, services, [new TaxonomyFilter()],
+            Options.Create(new ContentsAdminListFilterOptions()),
+            NullLogger<DefaultContentsAdminListQueryService>.Instance);
+        var updater = Mock.Of<IUpdateModel>();
+        var indexes = await service.QueryIndexAsync(
+            new ContentOptionsViewModel { FilterResult = parser.Parse(filter) }, updater, TestContext.Current.CancellationToken);
+        var projectionSql = _logger.Query;
+        var documents = await (await service.QueryAsync(
+            new ContentOptionsViewModel { FilterResult = parser.Parse(filter) }, updater)).ListAsync(TestContext.Current.CancellationToken);
+
+        Assert.Equal(documents.Select(item => item.ContentItemVersionId), indexes.Select(index => index.ContentItemVersionId));
+        Assert.Equal(indexes.Count, indexes.Select(index => index.DocumentId).Distinct().Count());
+        Assert.DoesNotContain("[Content]", projectionSql, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task QueryIndexAsync_FilterReplacingQuery_RejectsUnsupportedProjection()
+    {
+        using var services = CreateServices();
+        await using var session = _store.CreateSession();
+        var builder = new QueryEngineBuilder<ContentItem>();
+        new DefaultContentsAdminListFilterProvider().Build(builder);
+        builder.WithNamedTerm("replacement", term => term
+            .OneCondition((value, query) => session.Query<ContentItem>().With<ContentItemIndex>(index => index.DisplayText == value)));
+        var service = new DefaultContentsAdminListQueryService(
+            session, services, [],
+            Options.Create(new ContentsAdminListFilterOptions()),
+            NullLogger<DefaultContentsAdminListQueryService>.Instance);
+
+        await Assert.ThrowsAsync<NotSupportedException>(() => service.QueryIndexAsync(
+            new ContentOptionsViewModel { FilterResult = builder.Build().Parse("replacement:A") },
+            Mock.Of<IUpdateModel>(), TestContext.Current.CancellationToken));
+    }
+
     [Fact]
     public async Task QueryAsync_CustomTerm_ReturnsEachItemOnce()
     {

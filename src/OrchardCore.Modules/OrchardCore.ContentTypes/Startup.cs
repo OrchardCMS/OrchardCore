@@ -55,6 +55,7 @@ public sealed class Startup : StartupBase
 
         // Build the rows of the content types and content parts admin lists.
         services.AddDisplayDriver<ContentTypeEntry, ContentTypeEntryDisplayDriver>();
+        services.AddAdminListGroupingProvider<CategoryGroupingProvider>("ContentTypes");
         services.AddDisplayDriver<ContentPartEntry, ContentPartEntryDisplayDriver>();
         services.AddScoped<IContentDefinitionDisplayHandler, ContentDefinitionDisplayCoordinator>();
         services.AddScoped<IContentDefinitionDisplayManager, DefaultContentDefinitionDisplayManager>();

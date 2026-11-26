@@ -71,6 +71,16 @@ You also need the permission to edit content items of the type.
 
 In **Content → Content Items**, use the **Culture** drop-down to show the items of one culture, or **All cultures**. You can also type `culture:fr-FR` in the search box.
 
+## See translations together
+
+1. Open **Content → Content Items**.
+2. Open **Group by**.
+3. Choose **Localization set**.
+
+Translations of the same item appear together under the title of the first matching item in the selected sort. Items without a localization set appear in their own groups. Existing filters still apply: choose **All cultures** to see translations in every culture rather than only the selected culture.
+
+The heading counts all matching rows in the group. A group can span pages, with its heading repeated. Choose **None** to return to the ordinary list.
+
 ## Let visitors switch language
 
 Turn on the **Content Culture Picker** feature. When the site has more than one culture, a language menu appears in the top navigation of the site (in themes that show the navigation bar). It lists the other cultures by their native names.

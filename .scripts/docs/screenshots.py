@@ -145,6 +145,7 @@ SHOTS = [
     {"file": "administration/images/tenants.webp", "path": "/Admin/Tenants"},
     {"file": "administration/images/create-tenant.webp", "path": "/Admin/Tenants/Create"},
     {"file": "administration/images/feature-profiles.webp", "path": "/Admin/TenantFeatureProfiles"},
+    {"file": "content/images/group-content-items.webp", "path": "/Admin/Contents/ContentItems?groupBy=ContentType"},
 ]
 
 

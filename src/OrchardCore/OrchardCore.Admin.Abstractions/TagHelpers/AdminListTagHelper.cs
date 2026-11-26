@@ -90,6 +90,7 @@ public sealed class AdminListTagHelper : TagHelper
             Name,
             Context.Source,
             Context.ItemType,
+            Context.Groups,
             Context.Columns,
             Context.Data,
             Context.Layout,

@@ -15,6 +15,7 @@ internal sealed class AdminListBuilder
     private readonly IOptionsMonitor<AdminListOptions> _options;
     private readonly ILogger _logger;
     private readonly AdminListRowBuilder _rowBuilder;
+    private readonly IAdminListGroupingService _groupingService;
 
     public AdminListBuilder(
         AdminListLayoutResolver layoutResolver,
@@ -22,7 +23,8 @@ internal sealed class AdminListBuilder
         IShapeFactory shapeFactory,
         IOptionsMonitor<AdminListOptions> options,
         ILogger<AdminListBuilder> logger,
-        AdminListRowBuilder rowBuilder)
+        AdminListRowBuilder rowBuilder,
+        IAdminListGroupingService groupingService = null)
     {
         _layoutResolver = layoutResolver;
         _columnsBuilder = columnsBuilder;
@@ -30,6 +32,7 @@ internal sealed class AdminListBuilder
         _options = options;
         _logger = logger;
         _rowBuilder = rowBuilder;
+        _groupingService = groupingService;
     }
 
     public async Task BuildAsync(IShape shape, CancellationToken cancellationToken = default)
@@ -107,15 +110,57 @@ internal sealed class AdminListBuilder
             ? OrchardCoreConstants.DisplayType.SummaryAdmin
             : OrchardCoreConstants.DisplayType.SummaryAdminGrid;
         var source = shape.GetProperty<IEnumerable>("Source");
-        var rows = source != null
-            ? (await _rowBuilder.BuildAsync(source, shape.GetProperty<Type>("ItemType"), displayType, cancellationToken)).ToArray()
-            : [];
+        var selection = _groupingService?.GetSelection(name);
+        var groups = shape.GetProperty<IReadOnlyList<AdminListGroup>>("Groups");
+        if (groups == null && selection?.Provider != null && source != null)
+        {
+            groups = await selection.Provider.GroupAsync(source, cancellationToken);
+        }
+
+        var rows = new List<IShape>();
+        if (groups != null)
+        {
+            foreach (var group in groups)
+            {
+                var groupRows = await _rowBuilder.BuildAsync(group.Source, shape.GetProperty<Type>("ItemType"), displayType, cancellationToken);
+                for (var i = 0; i < groupRows.Count; i++)
+                {
+                    var row = groupRows[i];
+                    row.Properties["AdminListGroupKey"] = group.Key;
+                    if (i == 0)
+                    {
+                        row.Properties["AdminListGroupHeader"] = await _shapeFactory.CreateAsync("AdminListGroupHeader", Arguments.From(new
+                        {
+                            ListName = name,
+                            ListLayout = layout.ToString(),
+                            group.Key,
+                            group.Title,
+                            group.TotalCount,
+                        }));
+                    }
+
+                    rows.Add(row);
+                }
+            }
+        }
+        else if (source != null)
+        {
+            rows.AddRange(await _rowBuilder.BuildAsync(source, shape.GetProperty<Type>("ItemType"), displayType, cancellationToken));
+        }
 
         var properties = shape.Properties;
         properties["Layout"] = layout;
         properties["DisplayType"] = displayType;
         properties["Rows"] = rows;
         properties["ShowLayoutSelector"] = showLayoutSelector && hasColumns;
+        if (selection?.Providers.Count > 0)
+        {
+            properties["GroupingSelector"] = await _shapeFactory.CreateAsync("AdminListGroupingSelector", Arguments.From(new
+            {
+                ListName = name,
+                Selection = selection,
+            }));
+        }
 
         if (columns != null)
         {
@@ -126,7 +171,7 @@ internal sealed class AdminListBuilder
             shape.GetProperty<IShape>("Header") == null &&
             shape.GetProperty("ShowToolbar", true))
         {
-            properties["Toolbar"] = await CreateToolbarAsync(shape, rows.Length);
+            properties["Toolbar"] = await CreateToolbarAsync(shape, rows.Count);
         }
 
         properties["AdminListInitialized"] = true;

@@ -78,6 +78,22 @@ You can combine filters with spaces, for example `status:Draft type:Article`. Fo
 
 The menus and the search box stay in step: choosing **Sort → Title** adds `sort:Title` to the box.
 
+## Group related items
+
+Use grouping to keep related content rows together under a shared heading.
+
+![The Content Items list grouped by content type](images/group-content-items.webp)
+
+1. Open **Content → Content Items**.
+2. Open **Group by** above the rows.
+3. Choose **Content type** to put items of the same type together, or **Localization set** to put translations together when **Content Localization** is enabled.
+
+Choose **None** to remove grouping. The browser remembers the choice for this list; it is not an account setting shared across browsers.
+
+Grouping works in both the **List** and **Grid** layouts. Your filters still apply, so grouping translations does not reveal items excluded by the culture, status, content type or search filters. Groups follow the selected sort, and rows keep their sort within each group. A heading shows the number of matching items in the whole group.
+
+The page size still counts content items, not headings. A group can span pages; its heading repeats on every page containing its items. Selecting all still selects only the content rows on the current page.
+
 ## Create a content item
 
 ![The editor of a new Article](images/create-article.webp)

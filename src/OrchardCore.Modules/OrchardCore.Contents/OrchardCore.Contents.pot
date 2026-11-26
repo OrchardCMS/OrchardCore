@@ -450,6 +450,11 @@ msgctxt "OrchardCore.Contents.QuickNavigation.ContentQuickNavigationSettingsDisp
 msgid "Quick navigation"
 msgstr ""
 
+#: Services/ContentTypeGroupingProvider.cs
+msgctxt "OrchardCore.Contents.Services.ContentTypeGroupingProvider"
+msgid "Content type"
+msgstr ""
+
 #. Format arguments: {0}: string.Join(' ', errors)
 #: Settings/FullTextAspectSettingsDisplayDriver.cs
 #, csharp-format

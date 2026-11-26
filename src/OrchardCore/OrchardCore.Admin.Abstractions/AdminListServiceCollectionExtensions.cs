@@ -6,6 +6,21 @@ namespace OrchardCore.Admin;
 public static class AdminListServiceCollectionExtensions
 {
     /// <summary>
+    /// Registers a scoped grouping option for a case-sensitive list name.
+    /// Registering the same provider twice has no effect.
+    /// </summary>
+    /// <typeparam name="TProvider">The provider implementation.</typeparam>
+    /// <param name="services">The service collection.</param>
+    /// <param name="listName">The list name declared by the rendering view.</param>
+    public static IServiceCollection AddAdminListGroupingProvider<TProvider>(this IServiceCollection services, string listName)
+        where TProvider : class, IAdminListGroupingProvider
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(listName);
+        services.TryAddEnumerable(ServiceDescriptor.KeyedScoped<IAdminListGroupingProvider, TProvider>(new AdminListGroupingProviderKey(listName)));
+        return services;
+    }
+
+    /// <summary>
     /// Registers a provider extending every list's view-defined columns, before list-specific providers run.
     /// Registering the same global provider twice has no effect.
     /// </summary>
