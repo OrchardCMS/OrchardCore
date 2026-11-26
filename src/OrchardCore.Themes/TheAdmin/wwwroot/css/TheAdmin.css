@@ -1783,6 +1783,26 @@ html[dir="rtl"] .CodeMirror-cursor {
   text-decoration: none;
 }
 
+.admin-list-actions-menu .dropdown-menu .dropdown-menu,
+.action-bar-menu .dropdown-menu .dropdown-menu {
+  position: static !important;
+  transform: none !important;
+  margin: 0;
+  padding-inline-start: 1rem;
+  border: 0;
+  box-shadow: none;
+}
+
+.admin-list-actions-menu .dropdown-menu .btn-group:has(> .dropdown-menu),
+.action-bar-menu .dropdown-menu .btn-group:has(> .dropdown-menu) {
+  flex-wrap: wrap;
+}
+
+.admin-list-actions-menu .dropdown-menu .btn-group:has(> .dropdown-menu) > .dropdown-menu,
+.action-bar-menu .dropdown-menu .btn-group:has(> .dropdown-menu) > .dropdown-menu {
+  width: 100%;
+}
+
 .hint,
 .form-text {
   font-size: var(--ta-font-size-sm);
