@@ -16,7 +16,7 @@
     <input type="hidden" asp-for="ConditionGroupId" />
 
     <div class="action-bar-bottom">
-        <a class="btn btn-secondary cancel" role="button" asp-route-action="Edit" asp-route-controller="Admin" asp-route-name="@Model.Name">@T["Cancel"]</a>
+        <a class="btn btn-secondary cancel" role="button" asp-route-action="Edit" asp-route-controller="Admin" asp-route-name="@Model.Name">@Localize(CommonLocalizationSources.Cancel)</a>
         <button class="btn btn-primary create" type="submit">@T["Create"]</button>
     </div>
 </form>

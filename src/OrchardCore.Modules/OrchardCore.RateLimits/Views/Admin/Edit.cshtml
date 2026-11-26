@@ -21,8 +21,8 @@
     }
 
     <div class="action-bar-bottom">
-        <a asp-action="Index" class="btn btn-secondary">@T["Cancel"]</a>
-        <button class="btn btn-primary" type="submit">@T["Save"]</button>
+        <a asp-action="Index" class="btn btn-secondary">@Localize(CommonLocalizationSources.Cancel)</a>
+        <button class="btn btn-primary" type="submit">@Localize(CommonLocalizationSources.Save)</button>
     </div>
 </form>
 
@@ -44,7 +44,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@T["Cancel"]</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@Localize(CommonLocalizationSources.Cancel)</button>
             </div>
         </div>
     </div>

@@ -13,11 +13,6 @@ msgstr ""
 
 #: AdminMenu.cs
 msgctxt "OrchardCore.ReCaptcha.AdminMenu"
-msgid "Settings"
-msgstr ""
-
-#: AdminMenu.cs
-msgctxt "OrchardCore.ReCaptcha.AdminMenu"
 msgid "reCaptcha"
 msgstr ""
 
@@ -98,11 +93,6 @@ msgstr ""
 #: Workflows/ValidateReCaptchaTask.cs
 msgctxt "OrchardCore.ReCaptcha.Workflows.ValidateReCaptchaTask"
 msgid "Captcha validation failed. Try again."
-msgstr ""
-
-#: Workflows/ValidateReCaptchaTask.cs
-msgctxt "OrchardCore.ReCaptcha.Workflows.ValidateReCaptchaTask"
-msgid "Done"
 msgstr ""
 
 #: Workflows/ValidateReCaptchaTask.cs

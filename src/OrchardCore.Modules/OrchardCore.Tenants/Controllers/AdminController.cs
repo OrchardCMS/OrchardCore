@@ -15,6 +15,7 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Removing;
+using OrchardCore.Localization;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Navigation;
@@ -28,6 +29,8 @@ namespace OrchardCore.Tenants.Controllers;
 [Admin("Tenants/{action}/{id?}", "Tenants{action}")]
 public sealed class AdminController : Controller
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     public const string CreateAndSetupValue = "createAndSetup";
 
     private readonly IShellHost _shellHost;
@@ -74,8 +77,10 @@ public sealed class AdminController : Controller
         IDisplayManager<EditTenantViewModel> tenantDisplayManager,
         IUpdateModelAccessor updateModelAccessor,
         IStringLocalizer<AdminController> stringLocalizer,
-        IHtmlLocalizer<AdminController> htmlLocalizer)
+        IHtmlLocalizer<AdminController> htmlLocalizer,
+        IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         _shellHost = shellHost;
         _shellSettingsManager = shellSettingsManager;
         _shellRemovalManager = shellRemovalManager;
@@ -211,13 +216,13 @@ public sealed class AdminController : Controller
         [
             new SelectListItem() { Text = S["All states"], Value = nameof(TenantsState.All) },
             new SelectListItem() { Text = S["Running"], Value = nameof(TenantsState.Running) },
-            new SelectListItem() { Text = S["Disabled"], Value = nameof(TenantsState.Disabled) },
+            new SelectListItem() { Text = _localizerFactory.Localize(CommonLocalizationSources.DisabledState), Value = nameof(TenantsState.Disabled) },
             new SelectListItem() { Text = S["Uninitialized"], Value = nameof(TenantsState.Uninitialized) }
         ];
 
         model.Options.TenantsSorts =
         [
-            new SelectListItem() { Text = S["Name"], Value = nameof(TenantsOrder.Name) },
+            new SelectListItem() { Text = _localizerFactory.Localize(CommonLocalizationSources.Name), Value = nameof(TenantsOrder.Name) },
             new SelectListItem() { Text = S["State"], Value = nameof(TenantsOrder.State) }
         ];
 

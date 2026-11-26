@@ -92,7 +92,7 @@ public class RegisterUserTask : TaskActivity<RegisterUserTask>, IActivityProvide
 
     // Returns the possible outcomes of this activity.
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-        => Outcome(S["Done"], S["Valid"], S["Invalid"]);
+        => Outcome(_localizerFactory.Localize(CommonLocalizationSources.Workflow.Done), S["Valid"], S["Invalid"]);
 
     // This is the heart of the activity and actually performs the work to be done.
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)

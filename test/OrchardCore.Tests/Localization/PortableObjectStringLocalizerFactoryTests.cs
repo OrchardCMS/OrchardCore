@@ -6,6 +6,37 @@ namespace OrchardCore.Tests.Localization;
 public class PortableObjectStringLocalizerFactoryTests
 {
     [Fact]
+    public void Localize_SharedTextWithDifferentMeaningsAndCultures_UsesIndependentTranslations()
+    {
+        var manager = new Mock<ILocalizationManager>();
+        foreach (var culture in new[] { "fr", "de" })
+        {
+            var dictionary = new CultureDictionary(culture, PluralizationRule.Czech);
+            dictionary.MergeTranslations(
+            [
+                new CultureDictionaryRecord("Search", "OrchardCore.Localization.CommonLocalizationSources", ["category-" + culture]),
+                new CultureDictionaryRecord("Search", "OrchardCore.Localization.CommonLocalizationSources.Commands", ["command-" + culture]),
+                new CultureDictionaryRecord("Search", "OrchardCore.Localization.CommonLocalizationSources.InputTypes", ["input-type-" + culture]),
+            ]);
+            manager.Setup(m => m.GetDictionary(It.Is<CultureInfo>(c => c.Name == culture))).Returns(dictionary);
+        }
+
+        var factory = new PortableObjectStringLocalizerFactory(manager.Object,
+            Options.Create(new RequestLocalizationOptions { FallBackToParentUICultures = false }),
+            Mock.Of<ILogger<PortableObjectStringLocalizerFactory>>());
+
+        foreach (var culture in new[] { "fr", "de" })
+        {
+            using var scope = CultureScope.Create(culture);
+
+            Assert.Equal("category-" + culture, factory.Localize(CommonLocalizationSources.Search).Value);
+            Assert.Equal("command-" + culture, factory.Localize(CommonLocalizationSources.Commands.Search).Value);
+            Assert.Equal("input-type-" + culture, factory.Localize(CommonLocalizationSources.InputTypes.Search).Value);
+            Assert.Equal("Search", factory.Localize(CommonLocalizationSources.Commands.Search).Name);
+        }
+    }
+
+    [Fact]
     public async Task LocalizerReturnsTranslationFromInnerClass_Default_Succeeds()
         => await StartupRunner.Run(typeof(PortableObjectStringLocalizerFactoryStartup), "ar", "مرحبا");
 

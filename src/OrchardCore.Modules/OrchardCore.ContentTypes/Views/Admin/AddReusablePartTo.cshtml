@@ -8,7 +8,7 @@
 <script asp-src="~/OrchardCore.ContentTypes/Scripts/autocomplete/autocomplete.js" at="Foot"></script>
 <zone Name="Title">
     <breadcrumb name="ContentTypesAddReusablePart" title="@T["Add Named Part"]">
-        <breadcrumb-item id="ContentTypes" action="List" controller="Admin" area="OrchardCore.ContentTypes" permission="@ContentTypesPermissions.ViewContentTypes.Name">@T["Content Types"]</breadcrumb-item>
+        <breadcrumb-item id="ContentTypes" action="List" controller="Admin" area="OrchardCore.ContentTypes" permission="@ContentTypesPermissions.ViewContentTypes.Name">@Localize(CommonLocalizationSources.ContentTypesTitle)</breadcrumb-item>
         <breadcrumb-item id="ContentType" action="Edit" controller="Admin" area="OrchardCore.ContentTypes" route-id="@Model.Type.Name" permission="@ContentTypesPermissions.EditContentTypes.Name">@T["Edit Content Type - {0}", localizedTypeName]</breadcrumb-item>
     </breadcrumb>
 </zone>
@@ -24,11 +24,11 @@
     @await DisplayAsync(Model.Editor)
 
     <div class="action-bar-bottom">
-        <a class="btn btn-secondary cancel" role="button" asp-route-action="Edit" asp-route-id="@Model.Type.Name">@T["Cancel"]</a>
+        <a class="btn btn-secondary cancel" role="button" asp-route-action="Edit" asp-route-id="@Model.Type.Name">@Localize(CommonLocalizationSources.Cancel)</a>
         @if (Model.PartSelections.Any())
         {
             <button class="btn btn-secondary action-bar-secondary" type="submit" name="submit.Save" value="SaveAndConfigure">@T["Save &amp; Configure"]</button>
-            <button class="btn btn-primary save" type="submit" name="submit.Save" value="Save">@T["Save"]</button>
+            <button class="btn btn-primary save" type="submit" name="submit.Save" value="Save">@Localize(CommonLocalizationSources.Save)</button>
         }
     </div>
 </form>

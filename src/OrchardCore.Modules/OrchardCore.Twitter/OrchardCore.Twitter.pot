@@ -28,11 +28,6 @@ msgstr ""
 
 #: AdminMenu.cs
 msgctxt "OrchardCore.Twitter.AdminMenu"
-msgid "Settings"
-msgstr ""
-
-#: AdminMenu.cs
-msgctxt "OrchardCore.Twitter.AdminMenu"
 msgid "X (Twitter)"
 msgstr ""
 
@@ -44,11 +39,6 @@ msgstr ""
 #: AdminMenuSignin.cs
 msgctxt "OrchardCore.Twitter.AdminMenuSignIn"
 msgid "Security"
-msgstr ""
-
-#: AdminMenuSignin.cs
-msgctxt "OrchardCore.Twitter.AdminMenuSignIn"
-msgid "Settings"
 msgstr ""
 
 #: AdminMenuSignin.cs
@@ -173,11 +163,6 @@ msgstr ""
 
 #: Views/TwitterSettings.Edit.cshtml
 msgctxt "OrchardCore.Twitter.Views.TwitterSettings.Edit"
-msgid "See documentation"
-msgstr ""
-
-#: Views/TwitterSettings.Edit.cshtml
-msgctxt "OrchardCore.Twitter.Views.TwitterSettings.Edit"
 msgid "The API key defined in the Keys and tokens tab of X (Twitter) app dashboard."
 msgstr ""
 
@@ -208,11 +193,6 @@ msgstr ""
 
 #: Views/TwitterSigninSettings.Edit.cshtml
 msgctxt "OrchardCore.Twitter.Views.TwitterSigninSettings.Edit"
-msgid "See documentation"
-msgstr ""
-
-#: Views/TwitterSigninSettings.Edit.cshtml
-msgctxt "OrchardCore.Twitter.Views.TwitterSigninSettings.Edit"
 msgid "Store external authentication tokens for reuse"
 msgstr ""
 
@@ -229,11 +209,6 @@ msgstr ""
 #: Views/TwitterSigninSettings.Edit.cshtml
 msgctxt "OrchardCore.Twitter.Views.TwitterSigninSettings.Edit"
 msgid "The website might be restarted upon saving the settings, potentially leading to temporary unresponsiveness during the process."
-msgstr ""
-
-#: Workflows/Activities/UpdateTwitterStatusTask.cs
-msgctxt "OrchardCore.Twitter.Workflows.Activities.UpdateTwitterStatusTask"
-msgid "Done"
 msgstr ""
 
 #: Workflows/Activities/UpdateTwitterStatusTask.cs

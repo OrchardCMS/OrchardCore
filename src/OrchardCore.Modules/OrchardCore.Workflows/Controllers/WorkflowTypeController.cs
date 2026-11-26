@@ -39,6 +39,8 @@ namespace OrchardCore.Workflows.Controllers;
 [Admin("Workflows/Types/{action}/{id?}", "WorkflowTypes{action}")]
 public sealed class WorkflowTypeController : Controller
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     private readonly PagerOptions _pagerOptions;
     private readonly ISession _session;
     private readonly IWorkflowTypeStore _workflowTypeStore;
@@ -72,8 +74,10 @@ public sealed class WorkflowTypeController : Controller
         IHtmlLocalizer<WorkflowTypeController> htmlLocalizer,
         ITempDirectoryProvider tempDirectoryProvider,
         IOptions<DocumentJsonSerializerOptions> jsonSerializerOptions,
-        IEnumerable<IJSLocalizer> jsLocalizers)
+        IEnumerable<IJSLocalizer> jsLocalizers,
+        IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         _pagerOptions = pagerOptions.Value;
         _session = session;
         _workflowTypeStore = workflowTypeStore;
@@ -164,7 +168,7 @@ public sealed class WorkflowTypeController : Controller
 
         model.Options.WorkflowTypesBulkAction =
         [
-            new SelectListItem(S["Delete"], nameof(WorkflowTypeBulkAction.Delete)),
+            new SelectListItem(_localizerFactory.Localize(CommonLocalizationSources.Delete), nameof(WorkflowTypeBulkAction.Delete)),
         ];
 
         // The AdminList shape renders the types with the configured layout (List, Grid, ...).

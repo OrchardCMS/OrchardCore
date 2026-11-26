@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Sms.Controllers;
@@ -8,6 +9,8 @@ namespace OrchardCore.Sms;
 
 public sealed class AdminMenu : AdminNavigationProvider
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     private static readonly RouteValueDictionary s_routeValues = new()
     {
         { "area", "OrchardCore.Settings" },
@@ -16,15 +19,16 @@ public sealed class AdminMenu : AdminNavigationProvider
 
     internal readonly IStringLocalizer S;
 
-    public AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer)
+    public AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer, IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         S = stringLocalizer;
     }
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
         builder
-            .Add(S["Settings"], settings => settings
+            .Add(_localizerFactory.Localize(CommonLocalizationSources.Settings), settings => settings
                 .Add(S["Communication"], S["Communication"].PrefixPosition(), communication => communication
                     .Add(S["SMS"], S["SMS"].PrefixPosition(), sms => sms
                         .AddClass("sms")

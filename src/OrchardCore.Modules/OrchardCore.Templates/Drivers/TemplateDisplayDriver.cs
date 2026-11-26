@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Localization;
 using OrchardCore.Templates.ViewModels;
 
 namespace OrchardCore.Templates.Drivers;
@@ -10,10 +11,13 @@ namespace OrchardCore.Templates.Drivers;
 /// </summary>
 internal sealed class TemplateDisplayDriver : DisplayDriver<TemplateViewModel>
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     internal readonly IStringLocalizer S;
 
-    public TemplateDisplayDriver(IStringLocalizer<TemplateDisplayDriver> stringLocalizer)
+    public TemplateDisplayDriver(IStringLocalizer<TemplateDisplayDriver> stringLocalizer, IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         S = stringLocalizer;
     }
 
@@ -21,7 +25,7 @@ internal sealed class TemplateDisplayDriver : DisplayDriver<TemplateViewModel>
     {
         return Combine(
             Initialize<TemplateViewModel>("TemplateGeneral_Edit", m => Populate(model, m))
-                .Location(l => l.Zone("Content", "1").Card(S["General"], "10")),
+                .Location(l => l.Zone("Content", "1").Card(_localizerFactory.Localize(CommonLocalizationSources.General), "10")),
             Initialize<TemplateViewModel>("TemplateContent_Edit", m => Populate(model, m))
                 .Location(l => l.Zone("Content", "2").Card(S["Template"], "20")));
     }

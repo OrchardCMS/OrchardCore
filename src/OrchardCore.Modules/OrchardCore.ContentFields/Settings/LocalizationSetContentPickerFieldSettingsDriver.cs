@@ -4,6 +4,7 @@ using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Localization;
 using OrchardCore.Modules;
 
 namespace OrchardCore.ContentFields.Settings;
@@ -11,10 +12,13 @@ namespace OrchardCore.ContentFields.Settings;
 [RequireFeatures("OrchardCore.ContentLocalization")]
 public sealed class LocalizationSetContentPickerFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<LocalizationSetContentPickerField>
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     internal readonly IStringLocalizer S;
 
-    public LocalizationSetContentPickerFieldSettingsDriver(IStringLocalizer<LocalizationSetContentPickerFieldSettingsDriver> stringLocalizer)
+    public LocalizationSetContentPickerFieldSettingsDriver(IStringLocalizer<LocalizationSetContentPickerFieldSettingsDriver> stringLocalizer, IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         S = stringLocalizer;
     }
 
@@ -28,7 +32,7 @@ public sealed class LocalizationSetContentPickerFieldSettingsDriver : ContentPar
             model.Required = settings.Required;
             model.Multiple = settings.Multiple;
             model.DisplayedContentTypes = settings.DisplayedContentTypes;
-        }).Location(l => l.Zone("Content").Card(S["Settings"], "20"));
+        }).Location(l => l.Zone("Content").Card(_localizerFactory.Localize(CommonLocalizationSources.Settings), "20"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)

@@ -36,11 +36,6 @@ msgctxt "OrchardCore.Markdown.GraphQL.MarkdownFieldQueryObjectType"
 msgid "the markdown value"
 msgstr ""
 
-#: Settings/MarkdownBodyPartSettingsDisplayDriver.cs
-msgctxt "OrchardCore.Markdown.Settings.MarkdownBodyPartSettingsDisplayDriver"
-msgid "Settings"
-msgstr ""
-
 #: Settings/MarkdownBodyPartWysiwygEditorSettingsDriver.cs
 msgctxt "OrchardCore.Markdown.Settings.MarkdownBodyPartWysiwygEditorSettingsDriver"
 msgid "Editor"
@@ -49,11 +44,6 @@ msgstr ""
 #: Settings/MarkdownBodyPartWysiwygEditorSettingsDriver.cs
 msgctxt "OrchardCore.Markdown.Settings.MarkdownBodyPartWysiwygEditorSettingsDriver"
 msgid "The options are written in an incorrect format."
-msgstr ""
-
-#: Settings/MarkdownFieldSettingsDriver.cs
-msgctxt "OrchardCore.Markdown.Settings.MarkdownFieldSettingsDriver"
-msgid "Settings"
 msgstr ""
 
 #: Settings/MarkdownFieldWysiwygEditorSettingsDriver.cs
@@ -76,29 +66,14 @@ msgctxt "OrchardCore.Markdown.Views.MarkdownBodyPart-Wysiwyg.Option"
 msgid "Wysiwyg editor"
 msgstr ""
 
-#: Views/MarkdownBodyPart.DisplayOption.cshtml
-msgctxt "OrchardCore.Markdown.Views.MarkdownBodyPart.DisplayOption"
-msgid "Standard"
-msgstr ""
-
 #: Views/MarkdownBodyPart.Edit.cshtml
 msgctxt "OrchardCore.Markdown.Views.MarkdownBodyPart.Edit"
 msgid "The body of the content item, in Markdown format."
 msgstr ""
 
-#: Views/MarkdownBodyPart.Option.cshtml
-msgctxt "OrchardCore.Markdown.Views.MarkdownBodyPart.Option"
-msgid "Standard"
-msgstr ""
-
 #: Views/MarkdownBodyPartSettings.Edit.cshtml
 msgctxt "OrchardCore.Markdown.Views.MarkdownBodyPartSettings.Edit"
 msgid "Sanitize Html"
-msgstr ""
-
-#: Views/MarkdownBodyPartSettings.Edit.cshtml
-msgctxt "OrchardCore.Markdown.Views.MarkdownBodyPartSettings.Edit"
-msgid "See documentation"
 msgstr ""
 
 #: Views/MarkdownBodyPartSettings.Edit.cshtml
@@ -121,16 +96,6 @@ msgctxt "OrchardCore.Markdown.Views.MarkdownField-Wysiwyg.Option"
 msgid "Wysiwyg editor"
 msgstr ""
 
-#: Views/MarkdownField.DisplayOption.cshtml
-msgctxt "OrchardCore.Markdown.Views.MarkdownField.DisplayOption"
-msgid "Standard"
-msgstr ""
-
-#: Views/MarkdownField.Option.cshtml
-msgctxt "OrchardCore.Markdown.Views.MarkdownField.Option"
-msgid "Standard"
-msgstr ""
-
 #: Views/MarkdownFieldSettings.Edit.cshtml
 msgctxt "OrchardCore.Markdown.Views.MarkdownFieldSettings.Edit"
 msgid "Hint"
@@ -139,11 +104,6 @@ msgstr ""
 #: Views/MarkdownFieldSettings.Edit.cshtml
 msgctxt "OrchardCore.Markdown.Views.MarkdownFieldSettings.Edit"
 msgid "Sanitize Html"
-msgstr ""
-
-#: Views/MarkdownFieldSettings.Edit.cshtml
-msgctxt "OrchardCore.Markdown.Views.MarkdownFieldSettings.Edit"
-msgid "See documentation"
 msgstr ""
 
 #: Views/MarkdownFieldSettings.Edit.cshtml

@@ -103,22 +103,7 @@ msgstr ""
 
 #: Views/Admin/Index.cshtml
 msgctxt "OrchardCore.Recipes.Views.Admin.Index"
-msgid "Actions"
-msgstr ""
-
-#: Views/Admin/Index.cshtml
-msgctxt "OrchardCore.Recipes.Views.Admin.Index"
-msgid "Name"
-msgstr ""
-
-#: Views/Admin/Index.cshtml
-msgctxt "OrchardCore.Recipes.Views.Admin.Index"
 msgid "Recipes"
-msgstr ""
-
-#: Views/Admin/Index.cshtml
-msgctxt "OrchardCore.Recipes.Views.Admin.Index"
-msgid "Search"
 msgstr ""
 
 #: Views/Admin/Index.cshtml
@@ -138,22 +123,12 @@ msgstr ""
 
 #: Views/RecipeEntry.Buttons.SummaryAdmin.cshtml
 msgctxt "OrchardCore.Recipes.Views.RecipeEntry.Buttons.SummaryAdmin"
-msgid "No"
-msgstr ""
-
-#: Views/RecipeEntry.Buttons.SummaryAdmin.cshtml
-msgctxt "OrchardCore.Recipes.Views.RecipeEntry.Buttons.SummaryAdmin"
 msgid "Recipes"
 msgstr ""
 
 #: Views/RecipeEntry.Buttons.SummaryAdmin.cshtml
 msgctxt "OrchardCore.Recipes.Views.RecipeEntry.Buttons.SummaryAdmin"
 msgid "Run"
-msgstr ""
-
-#: Views/RecipeEntry.Buttons.SummaryAdmin.cshtml
-msgctxt "OrchardCore.Recipes.Views.RecipeEntry.Buttons.SummaryAdmin"
-msgid "Yes"
 msgstr ""
 
 #: Views/RecipeEntry.DefaultTags.SummaryAdmin.cshtml

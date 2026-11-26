@@ -21,8 +21,8 @@
             <div class="row gx-2">
                 <div class="col">
                     <div class="input-group">
-                        <input id="search-box" class="form-control" placeholder="@T["Search"]" type="search" autofocus autocomplete="off" />
-                        <button type="submit" name="submit.Filter" value="submit.Filter" class="btn btn-outline-secondary" title="@T["Search"]" aria-label="@T["Search"]"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></button>
+                        <input id="search-box" class="form-control" placeholder="@Localize(CommonLocalizationSources.Commands.Search)" type="search" autofocus autocomplete="off" />
+                        <button type="submit" name="submit.Filter" value="submit.Filter" class="btn btn-outline-secondary" title="@Localize(CommonLocalizationSources.Commands.Search)" aria-label="@Localize(CommonLocalizationSources.Commands.Search)"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></button>
                     </div>
                 </div>
                 @if (hasManagePermission)
@@ -44,9 +44,9 @@
                     empty-message="@T["<strong>Nothing here!</strong> There are no roles for the moment."]">
             <admin-list-list item-css-class="list-group-item" />
             <admin-list-grid>
-                <admin-list-column name="Name" position="10" title="@T["Name"]" />
+                <admin-list-column name="Name" position="10" title="@Localize(CommonLocalizationSources.Name)" />
                 <admin-list-column name="Kind" position="20" title="@T["Kind"]" width="auto" />
-                <admin-list-column type="Actions" title="@T["Actions"]" />
+                <admin-list-column type="Actions" title="@Localize(CommonLocalizationSources.Actions)" />
             </admin-list-grid>
         </admin-list>
     </form>

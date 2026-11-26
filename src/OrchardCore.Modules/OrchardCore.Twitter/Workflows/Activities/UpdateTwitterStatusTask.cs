@@ -46,7 +46,7 @@ public class UpdateTwitterStatusTask : TaskActivity<UpdateTwitterStatusTask>, IA
 
     // Returns the possible outcomes of this activity.
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-        => Outcome(S["Done"], S["Failed"]);
+        => Outcome(_localizerFactory.Localize(CommonLocalizationSources.Workflow.Done), S["Failed"]);
 
     // This is the heart of the activity and actually performs the work to be done.
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)

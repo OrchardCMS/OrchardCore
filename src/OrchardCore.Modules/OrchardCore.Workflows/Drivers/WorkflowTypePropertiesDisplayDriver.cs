@@ -2,6 +2,7 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Localization;
 using OrchardCore.Workflows.ViewModels;
 
 namespace OrchardCore.Workflows.Drivers;
@@ -12,10 +13,13 @@ namespace OrchardCore.Workflows.Drivers;
 /// </summary>
 internal sealed class WorkflowTypePropertiesDisplayDriver : DisplayDriver<WorkflowTypePropertiesViewModel>
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     internal readonly IStringLocalizer S;
 
-    public WorkflowTypePropertiesDisplayDriver(IStringLocalizer<WorkflowTypePropertiesDisplayDriver> stringLocalizer)
+    public WorkflowTypePropertiesDisplayDriver(IStringLocalizer<WorkflowTypePropertiesDisplayDriver> stringLocalizer, IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         S = stringLocalizer;
     }
 
@@ -26,7 +30,7 @@ internal sealed class WorkflowTypePropertiesDisplayDriver : DisplayDriver<Workfl
 
         return Combine(
             Initialize<WorkflowTypePropertiesViewModel>("WorkflowTypeGeneral_Edit", m => Populate(model, m))
-                .Location(l => InTab(l.Zone("Content", "1"), tabs, S["Properties"], "10").Card(S["General"], "10")),
+                .Location(l => InTab(l.Zone("Content", "1"), tabs, S["Properties"], "10").Card(_localizerFactory.Localize(CommonLocalizationSources.General), "10")),
             Initialize<WorkflowTypePropertiesViewModel>("WorkflowTypeExecution_Edit", m => Populate(model, m))
                 .Location(l => InTab(l.Zone("Content", "2"), tabs, S["Properties"], "10").Card(S["Execution"], "20")),
             Initialize<WorkflowTypePropertiesViewModel>("WorkflowTypeHistory_Edit", m => Populate(model, m))

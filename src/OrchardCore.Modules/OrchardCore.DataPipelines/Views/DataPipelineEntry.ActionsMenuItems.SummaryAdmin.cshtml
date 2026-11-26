@@ -8,12 +8,12 @@
 @* Bare items, never wrapped in <li>: AdminListActions renders the menu in a <div class="dropdown-menu">. *@
 @if (Model.Value.CanRun && pipeline.Published is not null && pipeline.IsEnabled)
 {
-    <a asp-controller="Admin" asp-action="RunNow" asp-route-pipelineId="@pipeline.PipelineId" class="dropdown-item" data-url-af="UnsafeUrl" data-title="@T["Run now"]" data-message="@T["Run the pipeline '{0}' now?", pipeline.Name]" data-ok-text="@T["Run"]" data-cancel-text="@T["Cancel"]" data-ok-class="btn-primary">@T["Run now"]</a>
+    <a asp-controller="Admin" asp-action="RunNow" asp-route-pipelineId="@pipeline.PipelineId" class="dropdown-item" data-url-af="UnsafeUrl" data-title="@T["Run now"]" data-message="@T["Run the pipeline '{0}' now?", pipeline.Name]" data-ok-text="@T["Run"]" data-cancel-text="@Localize(CommonLocalizationSources.Cancel)" data-ok-class="btn-primary">@T["Run now"]</a>
 }
 <a asp-controller="Admin" asp-action="Runs" asp-route-pipelineId="@pipeline.PipelineId" class="dropdown-item">@T["Run history"]</a>
 @if (Model.Value.CanManage)
 {
-    <a asp-controller="Admin" asp-action="StartOver" asp-route-pipelineId="@pipeline.PipelineId" class="dropdown-item" data-url-af="UnsafeUrl" data-title="@T["Start over"]" data-message="@T["Forget what the runs of the pipeline '{0}' kept, such as how far its sources read new rows? Its next run starts over, and may deliver data again.", pipeline.Name]" data-ok-text="@T["Start over"]" data-cancel-text="@T["Cancel"]">@T["Start over"]</a>
+    <a asp-controller="Admin" asp-action="StartOver" asp-route-pipelineId="@pipeline.PipelineId" class="dropdown-item" data-url-af="UnsafeUrl" data-title="@T["Start over"]" data-message="@T["Forget what the runs of the pipeline '{0}' kept, such as how far its sources read new rows? Its next run starts over, and may deliver data again.", pipeline.Name]" data-ok-text="@T["Start over"]" data-cancel-text="@Localize(CommonLocalizationSources.Cancel)">@T["Start over"]</a>
     <div class="dropdown-divider"></div>
-    <a asp-controller="Admin" asp-action="Delete" asp-route-pipelineId="@pipeline.PipelineId" class="dropdown-item text-danger" data-url-af="RemoveUrl UnsafeUrl" data-title="@T["Delete"]" data-message="@T["Are you sure you want to delete the pipeline '{0}', its versions and its run history?", pipeline.Name]" data-ok-text="@T["Ok"]" data-cancel-text="@T["Cancel"]">@T["Delete"]</a>
+    <a asp-controller="Admin" asp-action="Delete" asp-route-pipelineId="@pipeline.PipelineId" class="dropdown-item text-danger" data-url-af="RemoveUrl UnsafeUrl" data-title="@Localize(CommonLocalizationSources.Delete)" data-message="@T["Are you sure you want to delete the pipeline '{0}', its versions and its run history?", pipeline.Name]" data-ok-text="@Localize(CommonLocalizationSources.Ok)" data-cancel-text="@Localize(CommonLocalizationSources.Cancel)">@Localize(CommonLocalizationSources.Delete)</a>
 }

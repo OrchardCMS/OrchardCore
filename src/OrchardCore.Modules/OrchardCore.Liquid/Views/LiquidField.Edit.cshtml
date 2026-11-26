@@ -23,7 +23,7 @@
         <textarea asp-for="Liquid" rows="5" class="form-control content-preview-text" dir="@culture.GetLanguageDirection()"></textarea>
         <span class="hint">
             @T["The content of the field, in Liquid format."]
-            <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Liquid" target="_blank">@T["See documentation"]</a>
+            <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Liquid" target="_blank">@Localize(CommonLocalizationSources.SeeDocumentation)</a>
         </span>
     </div>
 </div>

@@ -66,7 +66,7 @@ public class SetOutputTask : TaskActivity<SetOutputTask>, IActivityProvidedValue
     }
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-        => Outcome(S["Done"]);
+        => Outcome(_localizerFactory.Localize(CommonLocalizationSources.Workflow.Done));
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {

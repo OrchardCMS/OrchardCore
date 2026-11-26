@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.Contents;
 using OrchardCore.ContentTypes.Controllers;
+using OrchardCore.Localization;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 
@@ -8,12 +9,15 @@ namespace OrchardCore.ContentTypes;
 
 public sealed class AdminMenu : AdminNavigationProvider
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     private static readonly string s_adminControllerName = typeof(AdminController).ControllerName();
 
     internal readonly IStringLocalizer S;
 
-    public AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer)
+    public AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer, IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         S = stringLocalizer;
     }
 
@@ -22,7 +26,7 @@ public sealed class AdminMenu : AdminNavigationProvider
         builder
             .Add(S["Design"], content => content
                 .Add(S["Content Definition"], S["Content Definition"].PrefixPosition(), contentDefinition => contentDefinition
-                    .Add(S["Content Types"], S["Content Types"].PrefixPosition("1"), contentTypes => contentTypes
+                    .Add(_localizerFactory.Localize(CommonLocalizationSources.ContentTypesTitle), _localizerFactory.Localize(CommonLocalizationSources.ContentTypesTitle).PrefixPosition("1"), contentTypes => contentTypes
                         .Action(nameof(AdminController.List), s_adminControllerName, "OrchardCore.ContentTypes")
                         .Permission(ContentTypesPermissions.ViewContentTypes)
                         .LocalNav()

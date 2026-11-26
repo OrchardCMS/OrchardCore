@@ -5,12 +5,15 @@ using OrchardCore.ContentLocalization.Models;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Localization;
 using OrchardCore.Settings;
 
 namespace OrchardCore.ContentLocalization.Drivers;
 
 public sealed class ContentRequestCultureProviderSettingsDriver : SiteDisplayDriver<ContentRequestCultureProviderSettings>
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     public const string GroupId = "ContentRequestCultureProvider";
 
     private readonly IHttpContextAccessor _httpContextAccessor;
@@ -21,8 +24,10 @@ public sealed class ContentRequestCultureProviderSettingsDriver : SiteDisplayDri
     public ContentRequestCultureProviderSettingsDriver(
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
-        IStringLocalizer<ContentRequestCultureProviderSettingsDriver> stringLocalizer)
+        IStringLocalizer<ContentRequestCultureProviderSettingsDriver> stringLocalizer,
+        IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         S = stringLocalizer;
@@ -43,7 +48,7 @@ public sealed class ContentRequestCultureProviderSettingsDriver : SiteDisplayDri
         return Initialize<ContentRequestCultureProviderSettings>("ContentRequestCultureProviderSettings_Edit", model =>
         {
             model.SetCookie = settings.SetCookie;
-        }).Location(l => l.Zone("Content", "5").Card(S["General"], "10"))
+        }).Location(l => l.Zone("Content", "5").Card(_localizerFactory.Localize(CommonLocalizationSources.General), "10"))
         .OnGroup(SettingsGroupId);
     }
 

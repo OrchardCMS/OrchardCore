@@ -20,18 +20,18 @@
            asp-controller="Limiter"
            asp-route-policyId="@policyId"
            asp-route-limiterId="@Model.Value.Id"
-           class="btn btn-primary btn-sm">@T["Edit"]</a>
+           class="btn btn-primary btn-sm">@Localize(CommonLocalizationSources.Edit)</a>
 
         <a asp-action="Delete"
            asp-controller="Limiter"
            asp-route-policyId="@policyId"
            asp-route-limiterId="@Model.Value.Id"
            class="btn btn-danger btn-sm"
-           data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+           data-url-af="RemoveUrl UnsafeUrl">@Localize(CommonLocalizationSources.Delete)</a>
     }
     else
     {
-        <button type="button" class="btn btn-primary btn-sm" disabled title="@publishedPolicyLimiterMessage">@T["Edit"]</button>
-        <button type="button" class="btn btn-danger btn-sm" disabled title="@publishedPolicyLimiterMessage">@T["Delete"]</button>
+        <button type="button" class="btn btn-primary btn-sm" disabled title="@publishedPolicyLimiterMessage">@Localize(CommonLocalizationSources.Edit)</button>
+        <button type="button" class="btn btn-danger btn-sm" disabled title="@publishedPolicyLimiterMessage">@Localize(CommonLocalizationSources.Delete)</button>
     }
 </div>

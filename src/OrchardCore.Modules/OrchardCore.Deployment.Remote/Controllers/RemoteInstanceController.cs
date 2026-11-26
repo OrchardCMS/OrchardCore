@@ -13,6 +13,7 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Localization;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
 
@@ -21,6 +22,8 @@ namespace OrchardCore.Deployment.Remote.Controllers;
 [Admin("Deployment/RemoteInstance/{action}/{id?}", "DeploymentRemoteInstancesCreate{action}")]
 public sealed class RemoteInstanceController : Controller
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     private const string _optionsSearch = "Options.Search";
 
     private readonly IAuthorizationService _authorizationService;
@@ -44,8 +47,10 @@ public sealed class RemoteInstanceController : Controller
         INotifier notifier,
         IDisplayManager<EditRemoteInstanceViewModel> editorDisplayManager,
         IUpdateModelAccessor updateModelAccessor
-        )
+        ,
+        IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         _authorizationService = authorizationService;
         _pagerOptions = pagerOptions.Value;
         _shapeFactory = shapeFactory;
@@ -97,7 +102,7 @@ public sealed class RemoteInstanceController : Controller
 
         model.Options.ContentsBulkAction =
         [
-            new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
+            new SelectListItem(_localizerFactory.Localize(CommonLocalizationSources.Delete), nameof(ContentsBulkAction.Remove)),
         ];
 
         // The AdminList shape renders the rows with the configured layout (List, Grid, ...).

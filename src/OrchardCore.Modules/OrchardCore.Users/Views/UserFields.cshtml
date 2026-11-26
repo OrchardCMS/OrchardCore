@@ -36,7 +36,7 @@ else
 }
 @if (!Model.User.IsEnabled)
 {
-    <span class="badge text-bg-danger" title="@T["Disabled"]">
-        <i class="fa-solid fa-user-slash" aria-hidden="true"></i> @T["Disabled"]
+    <span class="badge text-bg-danger" title="@Localize(CommonLocalizationSources.DisabledState)">
+        <i class="fa-solid fa-user-slash" aria-hidden="true"></i> @Localize(CommonLocalizationSources.DisabledState)
     </span>
 }

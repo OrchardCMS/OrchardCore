@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Html;
 using OrchardCore.DisplayManagement.Title;
 using OrchardCore.DisplayManagement.Zones;
+using OrchardCore.Localization;
 using OrchardCore.Settings;
 
 namespace OrchardCore.DisplayManagement.Razor;
@@ -203,6 +204,20 @@ public abstract class RazorPage<TModel> : Microsoft.AspNetCore.Mvc.Razor.RazorPa
             return _t;
         }
     }
+
+    /// <summary>
+    /// Translates a shared source using its declaring context and the current tenant's HTML localizer factory.
+    /// </summary>
+    /// <param name="source">The shared source to translate, such as <see cref="CommonLocalizationSources.Save"/>.</param>
+    /// <param name="arguments">The format arguments, HTML encoded when rendered.</param>
+    /// <returns>The translated HTML string, or <see langword="null"/> when the source is null.</returns>
+    /// <remarks>
+    /// Like <see cref="T"/>, this preserves trusted markup in the translation. Use a string localizer factory
+    /// for plain text that must be HTML encoded by the rendering layer.
+    /// </remarks>
+    [SkipLocalizationExtraction]
+    public LocalizedHtmlString Localize(LocalizationSource source, params object[] arguments)
+        => Context.RequestServices.GetRequiredService<IHtmlLocalizerFactory>().Localize(source, arguments);
 
     /// <summary>
     /// Names a format argument of a localized string for translators, for example

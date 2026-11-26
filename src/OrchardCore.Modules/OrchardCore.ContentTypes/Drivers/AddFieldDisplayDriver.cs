@@ -2,6 +2,7 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.ContentTypes.ViewModels;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Localization;
 
 namespace OrchardCore.ContentTypes.Drivers;
 
@@ -10,17 +11,20 @@ namespace OrchardCore.ContentTypes.Drivers;
 /// </summary>
 internal sealed class AddFieldDisplayDriver : DisplayDriver<AddFieldViewModel>
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     internal readonly IStringLocalizer S;
 
-    public AddFieldDisplayDriver(IStringLocalizer<AddFieldDisplayDriver> stringLocalizer)
+    public AddFieldDisplayDriver(IStringLocalizer<AddFieldDisplayDriver> stringLocalizer, IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         S = stringLocalizer;
     }
 
     public override IDisplayResult Edit(AddFieldViewModel model, BuildEditorContext context)
     {
         return Initialize<AddFieldViewModel>("AddFieldGeneral_Edit", m => Populate(model, m))
-            .Location(l => l.Zone("Content", "1").Card(S["General"], "10"));
+            .Location(l => l.Zone("Content", "1").Card(_localizerFactory.Localize(CommonLocalizationSources.General), "10"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(AddFieldViewModel model, UpdateEditorContext context)

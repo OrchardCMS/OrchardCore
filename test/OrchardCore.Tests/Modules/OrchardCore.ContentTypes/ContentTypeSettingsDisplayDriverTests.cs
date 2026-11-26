@@ -40,7 +40,8 @@ public class ContentTypeSettingsDisplayDriverTests
             new StringLocalizer<ContentTypeSettingsDisplayDriver>(new NullStringLocalizerFactory()),
             Options.Create(options),
             Mock.Of<IStereotypeService>(),
-            Mock.Of<IContentDefinitionManager>());
+            Mock.Of<IContentDefinitionManager>(),
+            new NullStringLocalizerFactory());
 
         // Unchecked and absent checkboxes both bind to false.
         var updater = new Mock<IUpdateModel>();

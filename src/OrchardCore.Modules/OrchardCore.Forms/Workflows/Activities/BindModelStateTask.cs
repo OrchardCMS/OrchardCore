@@ -37,7 +37,7 @@ public class BindModelStateTask : TaskActivity<BindModelStateTask>, IActivityDes
     public override LocalizedString Category => _localizerFactory.Localize(CategoryName);
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-        => Outcome(S["Done"]);
+        => Outcome(_localizerFactory.Localize(CommonLocalizationSources.Workflow.Done));
 
     public override ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {

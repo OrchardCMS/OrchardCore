@@ -1,12 +1,15 @@
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Layers.Drivers;
+using OrchardCore.Localization;
 using OrchardCore.Navigation;
 
 namespace OrchardCore.Layers;
 
 public sealed class AdminMenu : AdminNavigationProvider
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     private static readonly RouteValueDictionary s_routeValues = new()
     {
         { "area", "OrchardCore.Settings" },
@@ -15,8 +18,9 @@ public sealed class AdminMenu : AdminNavigationProvider
 
     internal readonly IStringLocalizer S;
 
-    public AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer)
+    public AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer, IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         S = stringLocalizer;
     }
 
@@ -30,7 +34,7 @@ public sealed class AdminMenu : AdminNavigationProvider
                     .LocalNav()
                 )
             )
-            .Add(S["Settings"], settings => settings
+            .Add(_localizerFactory.Localize(CommonLocalizationSources.Settings), settings => settings
                 .Add(S["Zones"], S["Zones"].PrefixPosition(), zones => zones
                     .Action("Index", "Admin", s_routeValues)
                     .Permission(Permissions.ManageLayers)

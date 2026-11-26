@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 using OrchardCore.Navigation;
 using OrchardCore.Users.Drivers;
 
@@ -7,6 +8,8 @@ namespace OrchardCore.Users;
 
 public sealed class ResetPasswordAdminMenu : AdminNavigationProvider
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     private static readonly RouteValueDictionary s_routeValues = new()
     {
         { "area", "OrchardCore.Settings" },
@@ -15,15 +18,16 @@ public sealed class ResetPasswordAdminMenu : AdminNavigationProvider
 
     internal readonly IStringLocalizer S;
 
-    public ResetPasswordAdminMenu(IStringLocalizer<ResetPasswordAdminMenu> stringLocalizer)
+    public ResetPasswordAdminMenu(IStringLocalizer<ResetPasswordAdminMenu> stringLocalizer, IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         S = stringLocalizer;
     }
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
         builder
-            .Add(S["Settings"], settings => settings
+            .Add(_localizerFactory.Localize(CommonLocalizationSources.Settings), settings => settings
                 .Add(S["Security"], S["Security"].PrefixPosition(), security => security
                     .Add(S["Reset Password"], S["Reset Password"].PrefixPosition(), password => password
                         .Permission(UsersPermissions.ManageUsers)

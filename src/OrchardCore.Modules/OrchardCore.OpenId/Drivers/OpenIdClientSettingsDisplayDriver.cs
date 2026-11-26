@@ -1,3 +1,4 @@
+using OrchardCore.Localization;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
@@ -20,6 +21,8 @@ namespace OrchardCore.OpenId.Drivers;
 
 public sealed class OpenIdClientSettingsDisplayDriver : SiteDisplayDriver<OpenIdClientSettings>
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     private static readonly char[] s_separator = [' ', ','];
 
     private readonly IShellReleaseManager _shellReleaseManager;
@@ -41,8 +44,10 @@ public sealed class OpenIdClientSettingsDisplayDriver : SiteDisplayDriver<OpenId
         IHttpContextAccessor httpContextAccessor,
         IDataProtectionProvider dataProtectionProvider,
         IServiceProvider serviceProvider,
-        IStringLocalizer<OpenIdClientSettingsDisplayDriver> stringLocalizer)
+        IStringLocalizer<OpenIdClientSettingsDisplayDriver> stringLocalizer,
+        IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         _shellReleaseManager = shellReleaseManager;
         _authorizationService = authorizationService;
         _clientService = clientService;
@@ -64,7 +69,7 @@ public sealed class OpenIdClientSettingsDisplayDriver : SiteDisplayDriver<OpenId
 
         return Combine(
             Initialize<OpenIdClientSettingsViewModel>("OpenIdClientSettings_Edit", model => PopulateViewModel(settings, model))
-                .Location(l => l.Zone("Content", "2").Card(S["General"], "10"))
+                .Location(l => l.Zone("Content", "2").Card(_localizerFactory.Localize(CommonLocalizationSources.General), "10"))
                 .OnGroup(SettingsGroupId),
             Initialize<OpenIdClientSettingsViewModel>("OpenIdClientSettings_Edit__CodeFlow", model => PopulateViewModel(settings, model))
                 .Location(l => l.Zone("Content", "2.1").Card(S["Code flow"], "20"))

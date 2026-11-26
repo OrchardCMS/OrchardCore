@@ -2,6 +2,7 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.ContentTypes.ViewModels;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Localization;
 
 namespace OrchardCore.ContentTypes.Drivers;
 
@@ -10,10 +11,13 @@ namespace OrchardCore.ContentTypes.Drivers;
 /// </summary>
 internal sealed class AddReusablePartDisplayDriver : DisplayDriver<AddReusablePartViewModel>
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     internal readonly IStringLocalizer S;
 
-    public AddReusablePartDisplayDriver(IStringLocalizer<AddReusablePartDisplayDriver> stringLocalizer)
+    public AddReusablePartDisplayDriver(IStringLocalizer<AddReusablePartDisplayDriver> stringLocalizer, IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         S = stringLocalizer;
     }
 
@@ -26,7 +30,7 @@ internal sealed class AddReusablePartDisplayDriver : DisplayDriver<AddReusablePa
         }
 
         return Initialize<AddReusablePartViewModel>("AddReusablePartGeneral_Edit", m => Populate(model, m))
-            .Location(l => l.Zone("Content", "1").Card(S["General"], "10"));
+            .Location(l => l.Zone("Content", "1").Card(_localizerFactory.Localize(CommonLocalizationSources.General), "10"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(AddReusablePartViewModel model, UpdateEditorContext context)

@@ -25,7 +25,7 @@
     <breadcrumb name="ContentPartsEditField" title="@T["\"{0}\" settings", localizedFieldName]">
         @if (typeDefinition is not null)
         {
-            <breadcrumb-item id="ContentTypes" action="List" controller="Admin" area="OrchardCore.ContentTypes" permission="@ContentTypesPermissions.ViewContentTypes.Name">@T["Content Types"]</breadcrumb-item>
+            <breadcrumb-item id="ContentTypes" action="List" controller="Admin" area="OrchardCore.ContentTypes" permission="@ContentTypesPermissions.ViewContentTypes.Name">@Localize(CommonLocalizationSources.ContentTypesTitle)</breadcrumb-item>
             <breadcrumb-item id="ContentType" action="Edit" controller="Admin" area="OrchardCore.ContentTypes" route-id="@typeDefinition.Name" permission="@ContentTypesPermissions.EditContentTypes.Name">@T["Edit Content Type - {0}", D[typeDefinition.DisplayName, "Content Types"]]</breadcrumb-item>
         }
         else
@@ -68,9 +68,9 @@
     <div class="action-bar-bottom">
         @if (Url.IsLocalUrl(returnUrl))
         {
-            <a class="btn btn-secondary cancel" role="button" href="@returnUrl">@T["Cancel"]</a>
+            <a class="btn btn-secondary cancel" role="button" href="@returnUrl">@Localize(CommonLocalizationSources.Cancel)</a>
         }
-        <button class="btn btn-primary save" type="submit" name="submit.Save" value="Save">@T["Save"]</button>
+        <button class="btn btn-primary save" type="submit" name="submit.Save" value="Save">@Localize(CommonLocalizationSources.Save)</button>
     </div>
 </form>
 

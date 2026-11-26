@@ -58,7 +58,7 @@ else
        asp-route-name="@entry.Template.Name"
        asp-route-admintemplates="@entry.AdminTemplates"
        asp-route-returnUrl="@FullRequestPath"
-       class="btn btn-primary btn-sm">@T["Edit"]</a>
+       class="btn btn-primary btn-sm">@Localize(CommonLocalizationSources.Edit)</a>
 
     if (entry.Template.CanClone)
     {
@@ -85,5 +85,5 @@ else
        asp-route-returnUrl="@FullRequestPath"
        class="btn btn-danger btn-sm"
        data-url-af="RemoveUrl UnsafeUrl"
-       data-message="@T["The local template will be deleted, and the template of the source will be used again. Are you sure?"]">@T["Delete"]</a>
+       data-message="@T["The local template will be deleted, and the template of the source will be used again. Are you sure?"]">@Localize(CommonLocalizationSources.Delete)</a>
 }

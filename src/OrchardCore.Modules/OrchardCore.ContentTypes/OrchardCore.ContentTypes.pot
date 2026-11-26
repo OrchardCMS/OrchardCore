@@ -18,11 +18,6 @@ msgstr ""
 
 #: AdminMenu.cs
 msgctxt "OrchardCore.ContentTypes.AdminMenu"
-msgid "Content Types"
-msgstr ""
-
-#: AdminMenu.cs
-msgctxt "OrchardCore.ContentTypes.AdminMenu"
 msgid "Design"
 msgstr ""
 
@@ -212,39 +207,14 @@ msgctxt "OrchardCore.ContentTypes.Deployment.ReplaceContentDefinitionDeploymentS
 msgid "Content definitions"
 msgstr ""
 
-#: Drivers/AddFieldDisplayDriver.cs
-msgctxt "OrchardCore.ContentTypes.Drivers.AddFieldDisplayDriver"
-msgid "General"
-msgstr ""
-
 #: Drivers/AddPartsDisplayDriver.cs
 msgctxt "OrchardCore.ContentTypes.Drivers.AddPartsDisplayDriver"
 msgid "Parts"
 msgstr ""
 
-#: Drivers/AddReusablePartDisplayDriver.cs
-msgctxt "OrchardCore.ContentTypes.Drivers.AddReusablePartDisplayDriver"
-msgid "General"
-msgstr ""
-
-#: Drivers/CreatePartDisplayDriver.cs
-msgctxt "OrchardCore.ContentTypes.Drivers.CreatePartDisplayDriver"
-msgid "General"
-msgstr ""
-
-#: Drivers/CreateTypeDisplayDriver.cs
-msgctxt "OrchardCore.ContentTypes.Drivers.CreateTypeDisplayDriver"
-msgid "General"
-msgstr ""
-
 #: Editors/ContentPartFieldsDisplayDriver.cs
 msgctxt "OrchardCore.ContentTypes.Editors.ContentPartFieldsDisplayDriver"
 msgid "Fields"
-msgstr ""
-
-#: Editors/ContentPartSettingsDisplayDriver.cs
-msgctxt "OrchardCore.ContentTypes.Editors.ContentPartSettingsDisplayDriver"
-msgid "General"
 msgstr ""
 
 #: Editors/ContentTypeFieldsDisplayDriver.cs
@@ -264,32 +234,12 @@ msgstr ""
 
 #: Editors/ContentTypeSettingsDisplayDriver.cs
 msgctxt "OrchardCore.ContentTypes.Editors.ContentTypeSettingsDisplayDriver"
-msgid "General"
-msgstr ""
-
-#: Editors/ContentTypeSettingsDisplayDriver.cs
-msgctxt "OrchardCore.ContentTypes.Editors.ContentTypeSettingsDisplayDriver"
 msgid "The stereotype should be alphanumeric."
-msgstr ""
-
-#: Editors/DefaultContentPartFieldDisplayDriver.cs
-msgctxt "OrchardCore.ContentTypes.Editors.DefaultContentPartFieldDisplayDriver"
-msgid "General"
-msgstr ""
-
-#: Editors/DefaultContentTypeDisplayDriver.cs
-msgctxt "OrchardCore.ContentTypes.Editors.DefaultContentTypeDisplayDriver"
-msgid "General"
 msgstr ""
 
 #: Editors/DefaultContentTypeDisplayDriver.cs
 msgctxt "OrchardCore.ContentTypes.Editors.DefaultContentTypeDisplayDriver"
 msgid "The Content Type name can't be empty."
-msgstr ""
-
-#: Editors/DefaultContentTypePartDisplayDriver.cs
-msgctxt "OrchardCore.ContentTypes.Editors.DefaultContentTypePartDisplayDriver"
-msgid "General"
 msgstr ""
 
 #: GraphQL/Drivers/GraphQLContentTypePartSettingsDriver.cs
@@ -397,17 +347,7 @@ msgstr ""
 
 #: Views/Admin/AddFieldTo.cshtml
 msgctxt "OrchardCore.ContentTypes.Views.Admin.AddFieldTo"
-msgid "Cancel"
-msgstr ""
-
-#: Views/Admin/AddFieldTo.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.AddFieldTo"
 msgid "Content Parts"
-msgstr ""
-
-#: Views/Admin/AddFieldTo.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.AddFieldTo"
-msgid "Content Types"
 msgstr ""
 
 #. Format arguments: {0}: localizedPartName
@@ -426,11 +366,6 @@ msgstr ""
 
 #: Views/Admin/AddFieldTo.cshtml
 msgctxt "OrchardCore.ContentTypes.Views.Admin.AddFieldTo"
-msgid "Save"
-msgstr ""
-
-#: Views/Admin/AddFieldTo.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.AddFieldTo"
 msgid "Save &amp; Configure"
 msgstr ""
 
@@ -442,16 +377,6 @@ msgstr ""
 #: Views/Admin/AddPartsTo.cshtml
 msgctxt "OrchardCore.ContentTypes.Views.Admin.AddPartsTo"
 msgid "Add Selected Parts"
-msgstr ""
-
-#: Views/Admin/AddPartsTo.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.AddPartsTo"
-msgid "Cancel"
-msgstr ""
-
-#: Views/Admin/AddPartsTo.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.AddPartsTo"
-msgid "Content Types"
 msgstr ""
 
 #. Format arguments: {0}: localizedTypeName
@@ -466,26 +391,11 @@ msgctxt "OrchardCore.ContentTypes.Views.Admin.AddReusablePartTo"
 msgid "Add Named Part"
 msgstr ""
 
-#: Views/Admin/AddReusablePartTo.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.AddReusablePartTo"
-msgid "Cancel"
-msgstr ""
-
-#: Views/Admin/AddReusablePartTo.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.AddReusablePartTo"
-msgid "Content Types"
-msgstr ""
-
 #. Format arguments: {0}: localizedTypeName
 #: Views/Admin/AddReusablePartTo.cshtml
 #, csharp-format
 msgctxt "OrchardCore.ContentTypes.Views.Admin.AddReusablePartTo"
 msgid "Edit Content Type - {0}"
-msgstr ""
-
-#: Views/Admin/AddReusablePartTo.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.AddReusablePartTo"
-msgid "Save"
 msgstr ""
 
 #: Views/Admin/AddReusablePartTo.cshtml
@@ -500,27 +410,12 @@ msgstr ""
 
 #: Views/Admin/Create.cshtml
 msgctxt "OrchardCore.ContentTypes.Views.Admin.Create"
-msgid "Cancel"
-msgstr ""
-
-#: Views/Admin/Create.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.Create"
-msgid "Content Types"
-msgstr ""
-
-#: Views/Admin/Create.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.Create"
 msgid "Create"
 msgstr ""
 
 #: Views/Admin/Create.cshtml
 msgctxt "OrchardCore.ContentTypes.Views.Admin.Create"
 msgid "New Content Type"
-msgstr ""
-
-#: Views/Admin/CreatePart.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.CreatePart"
-msgid "Cancel"
 msgstr ""
 
 #: Views/Admin/CreatePart.cshtml
@@ -543,21 +438,6 @@ msgctxt "OrchardCore.ContentTypes.Views.Admin.Edit"
 msgid "Are you sure you want to delete this content type?"
 msgstr ""
 
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.Edit"
-msgid "Cancel"
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.Edit"
-msgid "Content Types"
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.Edit"
-msgid "Delete"
-msgstr ""
-
 #. Format arguments: {0}: localizedTypeName
 #: Views/Admin/Edit.cshtml
 #, csharp-format
@@ -567,32 +447,7 @@ msgstr ""
 
 #: Views/Admin/Edit.cshtml
 msgctxt "OrchardCore.ContentTypes.Views.Admin.Edit"
-msgid "Ok"
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.Edit"
-msgid "Save"
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.Edit"
-msgid "Save actions"
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.Edit"
-msgid "Save and continue"
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.Edit"
 msgid "System-defined types are integral components of the system and cannot be removed."
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.Edit"
-msgid "Toggle Dropdown"
 msgstr ""
 
 #: Views/Admin/Edit.cshtml
@@ -609,17 +464,7 @@ msgstr ""
 
 #: Views/Admin/EditField.cshtml
 msgctxt "OrchardCore.ContentTypes.Views.Admin.EditField"
-msgid "Cancel"
-msgstr ""
-
-#: Views/Admin/EditField.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.EditField"
 msgid "Content Parts"
-msgstr ""
-
-#: Views/Admin/EditField.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.EditField"
-msgid "Content Types"
 msgstr ""
 
 #. Format arguments: {0}: localizedPartName
@@ -636,11 +481,6 @@ msgctxt "OrchardCore.ContentTypes.Views.Admin.EditField"
 msgid "Edit Content Type - {0}"
 msgstr ""
 
-#: Views/Admin/EditField.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.EditField"
-msgid "Save"
-msgstr ""
-
 #: Views/Admin/EditPart.cshtml
 msgctxt "OrchardCore.ContentTypes.Views.Admin.EditPart"
 msgid "Are you sure you want to delete this content part?"
@@ -648,17 +488,7 @@ msgstr ""
 
 #: Views/Admin/EditPart.cshtml
 msgctxt "OrchardCore.ContentTypes.Views.Admin.EditPart"
-msgid "Cancel"
-msgstr ""
-
-#: Views/Admin/EditPart.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.EditPart"
 msgid "Content Parts"
-msgstr ""
-
-#: Views/Admin/EditPart.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.EditPart"
-msgid "Delete"
 msgstr ""
 
 #. Format arguments: {0}: localizedPartName
@@ -666,26 +496,6 @@ msgstr ""
 #, csharp-format
 msgctxt "OrchardCore.ContentTypes.Views.Admin.EditPart"
 msgid "Edit Content Part - {0}"
-msgstr ""
-
-#: Views/Admin/EditPart.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.EditPart"
-msgid "Ok"
-msgstr ""
-
-#: Views/Admin/EditPart.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.EditPart"
-msgid "Save"
-msgstr ""
-
-#: Views/Admin/EditTypePart.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.EditTypePart"
-msgid "Cancel"
-msgstr ""
-
-#: Views/Admin/EditTypePart.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.EditTypePart"
-msgid "Content Types"
 msgstr ""
 
 #. Format arguments: {0}: localizedTypeName
@@ -702,11 +512,6 @@ msgctxt "OrchardCore.ContentTypes.Views.Admin.EditTypePart"
 msgid "Edit Part - {0}"
 msgstr ""
 
-#: Views/Admin/EditTypePart.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.EditTypePart"
-msgid "Save"
-msgstr ""
-
 #. Format arguments: {0}: Url.Action("EditPart", new { id = typePart.PartDefinition.Name })
 #: Views/Admin/EditTypePart.cshtml
 #, csharp-format
@@ -721,27 +526,12 @@ msgstr ""
 
 #: Views/Admin/List.cshtml
 msgctxt "OrchardCore.ContentTypes.Views.Admin.List"
-msgid "Actions"
-msgstr ""
-
-#: Views/Admin/List.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.List"
-msgid "Content Types"
-msgstr ""
-
-#: Views/Admin/List.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.List"
 msgid "Create new type"
 msgstr ""
 
 #: Views/Admin/List.cshtml
 msgctxt "OrchardCore.ContentTypes.Views.Admin.List"
 msgid "Display name"
-msgstr ""
-
-#: Views/Admin/List.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.List"
-msgid "Search"
 msgstr ""
 
 #: Views/Admin/List.cshtml
@@ -761,11 +551,6 @@ msgstr ""
 
 #: Views/Admin/ListParts.cshtml
 msgctxt "OrchardCore.ContentTypes.Views.Admin.ListParts"
-msgid "Actions"
-msgstr ""
-
-#: Views/Admin/ListParts.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.ListParts"
 msgid "Content Parts"
 msgstr ""
 
@@ -781,37 +566,12 @@ msgstr ""
 
 #: Views/Admin/ListParts.cshtml
 msgctxt "OrchardCore.ContentTypes.Views.Admin.ListParts"
-msgid "Search"
-msgstr ""
-
-#: Views/Admin/ListParts.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Admin.ListParts"
 msgid "Your search returned no results."
 msgstr ""
 
 #: Views/ContentPartEntry.Buttons.SummaryAdmin.cshtml
 msgctxt "OrchardCore.ContentTypes.Views.ContentPartEntry.Buttons.SummaryAdmin"
 msgid "Are you sure you want to delete this content part?"
-msgstr ""
-
-#: Views/ContentPartEntry.Buttons.SummaryAdmin.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.ContentPartEntry.Buttons.SummaryAdmin"
-msgid "Cancel"
-msgstr ""
-
-#: Views/ContentPartEntry.Buttons.SummaryAdmin.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.ContentPartEntry.Buttons.SummaryAdmin"
-msgid "Delete"
-msgstr ""
-
-#: Views/ContentPartEntry.Buttons.SummaryAdmin.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.ContentPartEntry.Buttons.SummaryAdmin"
-msgid "Edit"
-msgstr ""
-
-#: Views/ContentPartEntry.Buttons.SummaryAdmin.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.ContentPartEntry.Buttons.SummaryAdmin"
-msgid "Ok"
 msgstr ""
 
 #: Views/ContentPartFieldGeneral.Edit.cshtml
@@ -847,16 +607,6 @@ msgstr ""
 #: Views/ContentPartFields.Edit.cshtml
 msgctxt "OrchardCore.ContentTypes.Views.ContentPartFields.Edit"
 msgid "Add Field"
-msgstr ""
-
-#: Views/ContentPartFields.Edit.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.ContentPartFields.Edit"
-msgid "Edit"
-msgstr ""
-
-#: Views/ContentPartFields.Edit.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.ContentPartFields.Edit"
-msgid "Remove"
 msgstr ""
 
 #: Views/ContentPartFields.Edit.cshtml
@@ -939,11 +689,6 @@ msgctxt "OrchardCore.ContentTypes.Views.ContentTypeEntry.Buttons.SummaryAdmin"
 msgid "Are you sure you want to delete this content type?"
 msgstr ""
 
-#: Views/ContentTypeEntry.Buttons.SummaryAdmin.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.ContentTypeEntry.Buttons.SummaryAdmin"
-msgid "Cancel"
-msgstr ""
-
 #. Format arguments: {0}: localizedDisplayName
 #: Views/ContentTypeEntry.Buttons.SummaryAdmin.cshtml
 #, csharp-format
@@ -953,22 +698,7 @@ msgstr ""
 
 #: Views/ContentTypeEntry.Buttons.SummaryAdmin.cshtml
 msgctxt "OrchardCore.ContentTypes.Views.ContentTypeEntry.Buttons.SummaryAdmin"
-msgid "Delete"
-msgstr ""
-
-#: Views/ContentTypeEntry.Buttons.SummaryAdmin.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.ContentTypeEntry.Buttons.SummaryAdmin"
-msgid "Edit"
-msgstr ""
-
-#: Views/ContentTypeEntry.Buttons.SummaryAdmin.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.ContentTypeEntry.Buttons.SummaryAdmin"
 msgid "List Items"
-msgstr ""
-
-#: Views/ContentTypeEntry.Buttons.SummaryAdmin.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.ContentTypeEntry.Buttons.SummaryAdmin"
-msgid "Ok"
 msgstr ""
 
 #: Views/ContentTypeEntry.Buttons.SummaryAdmin.cshtml
@@ -998,17 +728,7 @@ msgstr ""
 
 #: Views/ContentTypeFields.Edit.cshtml
 msgctxt "OrchardCore.ContentTypes.Views.ContentTypeFields.Edit"
-msgid "Edit"
-msgstr ""
-
-#: Views/ContentTypeFields.Edit.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.ContentTypeFields.Edit"
 msgid "Editor"
-msgstr ""
-
-#: Views/ContentTypeFields.Edit.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.ContentTypeFields.Edit"
-msgid "Remove"
 msgstr ""
 
 #: Views/ContentTypeFields.Edit.cshtml
@@ -1068,17 +788,7 @@ msgstr ""
 
 #: Views/ContentTypeParts.Edit.cshtml
 msgctxt "OrchardCore.ContentTypes.Views.ContentTypeParts.Edit"
-msgid "Edit"
-msgstr ""
-
-#: Views/ContentTypeParts.Edit.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.ContentTypeParts.Edit"
 msgid "Editor"
-msgstr ""
-
-#: Views/ContentTypeParts.Edit.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.ContentTypeParts.Edit"
-msgid "Remove"
 msgstr ""
 
 #: Views/ContentTypeParts.Edit.cshtml
@@ -1178,11 +888,6 @@ msgstr ""
 
 #: Views/CreatePartGeneral.Edit.cshtml
 msgctxt "OrchardCore.ContentTypes.Views.CreatePartGeneral.Edit"
-msgid "Name"
-msgstr ""
-
-#: Views/CreatePartGeneral.Edit.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.CreatePartGeneral.Edit"
 msgid "Use no spaces or special characters. For example, \"MyCustomPart\""
 msgstr ""
 
@@ -1268,11 +973,6 @@ msgstr ""
 
 #: Views/Items/ContentDefinitionDeploymentStep.Fields.Edit.cshtml
 msgctxt "OrchardCore.ContentTypes.Views.Items.ContentDefinitionDeploymentStep.Fields.Edit"
-msgid "Content Types"
-msgstr ""
-
-#: Views/Items/ContentDefinitionDeploymentStep.Fields.Edit.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Items.ContentDefinitionDeploymentStep.Fields.Edit"
 msgid "Include all content types and parts definitions."
 msgstr ""
 
@@ -1348,11 +1048,6 @@ msgstr ""
 
 #: Views/Items/ReplaceContentDefinitionDeploymentStep.Fields.Edit.cshtml
 msgctxt "OrchardCore.ContentTypes.Views.Items.ReplaceContentDefinitionDeploymentStep.Fields.Edit"
-msgid "Content Types"
-msgstr ""
-
-#: Views/Items/ReplaceContentDefinitionDeploymentStep.Fields.Edit.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Items.ReplaceContentDefinitionDeploymentStep.Fields.Edit"
 msgid "Include all content types and parts definitions."
 msgstr ""
 
@@ -1391,34 +1086,9 @@ msgctxt "OrchardCore.ContentTypes.Views.Shared.DisplayTemplates.EditPartViewMode
 msgid "Are you sure you want to delete this content part?"
 msgstr ""
 
-#: Views/Shared/DisplayTemplates/EditPartViewModel.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Shared.DisplayTemplates.EditPartViewModel"
-msgid "Cancel"
-msgstr ""
-
-#: Views/Shared/DisplayTemplates/EditPartViewModel.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Shared.DisplayTemplates.EditPartViewModel"
-msgid "Delete"
-msgstr ""
-
-#: Views/Shared/DisplayTemplates/EditPartViewModel.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Shared.DisplayTemplates.EditPartViewModel"
-msgid "Edit"
-msgstr ""
-
-#: Views/Shared/DisplayTemplates/EditPartViewModel.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Shared.DisplayTemplates.EditPartViewModel"
-msgid "Ok"
-msgstr ""
-
 #: Views/Shared/DisplayTemplates/EditTypeViewModel.cshtml
 msgctxt "OrchardCore.ContentTypes.Views.Shared.DisplayTemplates.EditTypeViewModel"
 msgid "Are you sure you want to delete this content type?"
-msgstr ""
-
-#: Views/Shared/DisplayTemplates/EditTypeViewModel.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Shared.DisplayTemplates.EditTypeViewModel"
-msgid "Cancel"
 msgstr ""
 
 #. Format arguments: {0}: localizedDisplayName
@@ -1430,22 +1100,7 @@ msgstr ""
 
 #: Views/Shared/DisplayTemplates/EditTypeViewModel.cshtml
 msgctxt "OrchardCore.ContentTypes.Views.Shared.DisplayTemplates.EditTypeViewModel"
-msgid "Delete"
-msgstr ""
-
-#: Views/Shared/DisplayTemplates/EditTypeViewModel.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Shared.DisplayTemplates.EditTypeViewModel"
-msgid "Edit"
-msgstr ""
-
-#: Views/Shared/DisplayTemplates/EditTypeViewModel.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Shared.DisplayTemplates.EditTypeViewModel"
 msgid "List Items"
-msgstr ""
-
-#: Views/Shared/DisplayTemplates/EditTypeViewModel.cshtml
-msgctxt "OrchardCore.ContentTypes.Views.Shared.DisplayTemplates.EditTypeViewModel"
-msgid "Ok"
 msgstr ""
 
 #: Views/Shared/DisplayTemplates/EditTypeViewModel.cshtml

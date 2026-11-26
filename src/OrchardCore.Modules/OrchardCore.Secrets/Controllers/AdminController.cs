@@ -1,3 +1,4 @@
+using OrchardCore.Localization;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Authorization;
@@ -20,6 +21,8 @@ namespace OrchardCore.Secrets.Controllers;
 [Admin("Secrets/{action}/{name?}", "Secrets{action}")]
 public sealed class AdminController : Controller
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     private const string OptionsSearch = "Options.Search";
     private const string OptionsStatus = "Options.Status";
     private const string OptionsType = "Options.Type";
@@ -46,8 +49,10 @@ public sealed class AdminController : Controller
         IStringLocalizer<AdminController> stringLocalizer,
         IHtmlLocalizer<AdminController> htmlLocalizer,
         IDisplayManager<SecretEditViewModel> secretDisplayManager,
-        IUpdateModelAccessor updateModelAccessor)
+        IUpdateModelAccessor updateModelAccessor,
+        IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         _secretManager = secretManager;
         _secretTypeProviders = secretTypeProviders;
         _authorizationService = authorizationService;
@@ -144,7 +149,7 @@ public sealed class AdminController : Controller
 
         options.BulkActions =
         [
-            new SelectListItem(S["Delete"], nameof(SecretsBulkAction.Remove)),
+            new SelectListItem(_localizerFactory.Localize(CommonLocalizationSources.Delete), nameof(SecretsBulkAction.Remove)),
         ];
 
         var model = new SecretIndexViewModel

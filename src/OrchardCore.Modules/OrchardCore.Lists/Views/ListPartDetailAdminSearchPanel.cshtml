@@ -27,8 +27,8 @@
                             <a class="dropdown-item" href="?Status=Owner">@T["Owned by me"]</a>
                         </div>
                         <input name="@nameof(ListPartFilterViewModel.Status)" value="@Model.ListPartFilterViewModel.Status" class="form-control" type="hidden" />
-                        <input name="@nameof(ListPartFilterViewModel.DisplayText)" value="@Model.ListPartFilterViewModel.DisplayText" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
-                        <button type="submit" class="btn btn-outline-secondary" title="@T["Search"]" aria-label="@T["Search"]"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></button>
+                        <input name="@nameof(ListPartFilterViewModel.DisplayText)" value="@Model.ListPartFilterViewModel.DisplayText" class="form-control" placeholder="@Localize(CommonLocalizationSources.Commands.Search)" type="search" autofocus />
+                        <button type="submit" class="btn btn-outline-secondary" title="@Localize(CommonLocalizationSources.Commands.Search)" aria-label="@Localize(CommonLocalizationSources.Commands.Search)"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></button>
                     </div>
                 </form>
             </div>

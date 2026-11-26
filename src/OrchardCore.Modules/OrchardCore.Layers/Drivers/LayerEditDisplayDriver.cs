@@ -2,6 +2,7 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Layers.ViewModels;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Layers.Drivers;
 
@@ -11,10 +12,13 @@ namespace OrchardCore.Layers.Drivers;
 /// </summary>
 internal sealed class LayerEditDisplayDriver : DisplayDriver<LayerEditViewModel>
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     internal readonly IStringLocalizer S;
 
-    public LayerEditDisplayDriver(IStringLocalizer<LayerEditDisplayDriver> stringLocalizer)
+    public LayerEditDisplayDriver(IStringLocalizer<LayerEditDisplayDriver> stringLocalizer, IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         S = stringLocalizer;
     }
 
@@ -23,7 +27,7 @@ internal sealed class LayerEditDisplayDriver : DisplayDriver<LayerEditViewModel>
         var results = new List<IDisplayResult>
         {
             Initialize<LayerEditViewModel>("LayerGeneral_Edit", m => Populate(model, m, context.IsNew))
-                .Location(l => l.Zone("Content", "1").Card(S["General"], "10")),
+                .Location(l => l.Zone("Content", "1").Card(_localizerFactory.Localize(CommonLocalizationSources.General), "10")),
         };
 
         // The rules of an existing layer, with the button adding one: the shape of its rule, built by the controller.

@@ -5,4 +5,4 @@
 }
 
 
-<a asp-controller="Admin" asp-action="Edit" asp-route-pipelineId="@pipeline.PipelineId" class="btn btn-primary btn-sm">@(Model.Value.CanManage ? T["Edit"] : T["View"])</a>
+<a asp-controller="Admin" asp-action="Edit" asp-route-pipelineId="@pipeline.PipelineId" class="btn btn-primary btn-sm">@(Model.Value.CanManage ? Localize(CommonLocalizationSources.Edit) : T["View"])</a>

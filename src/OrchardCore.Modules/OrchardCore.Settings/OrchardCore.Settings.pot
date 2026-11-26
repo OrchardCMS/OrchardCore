@@ -13,16 +13,6 @@ msgstr ""
 
 #: AdminMenu.cs
 msgctxt "OrchardCore.Settings.AdminMenu"
-msgid "General"
-msgstr ""
-
-#: AdminMenu.cs
-msgctxt "OrchardCore.Settings.AdminMenu"
-msgid "Settings"
-msgstr ""
-
-#: AdminMenu.cs
-msgctxt "OrchardCore.Settings.AdminMenu"
 msgid "Tools"
 msgstr ""
 
@@ -64,11 +54,6 @@ msgstr ""
 #: Drivers/DefaultSiteSettingsDisplayDriver.cs
 msgctxt "OrchardCore.Settings.Drivers.DefaultSiteSettingsDisplayDriver"
 msgid "Enter at least one page size when page size selection is allowed."
-msgstr ""
-
-#: Drivers/DefaultSiteSettingsDisplayDriver.cs
-msgctxt "OrchardCore.Settings.Drivers.DefaultSiteSettingsDisplayDriver"
-msgid "General"
 msgstr ""
 
 #: Drivers/DefaultSiteSettingsDisplayDriver.cs
@@ -135,11 +120,6 @@ msgctxt "OrchardCore.Settings.SettingsLocalizationSources"
 msgid "Site Settings"
 msgstr ""
 
-#: Views/Admin/Index.cshtml
-msgctxt "OrchardCore.Settings.Views.Admin.Index"
-msgid "Settings"
-msgstr ""
-
 #: Views/DebugSettings.Edit.cshtml
 msgctxt "OrchardCore.Settings.Views.DebugSettings.Edit"
 msgid "Wrap rendered shapes in HTML comments to help identify the template or binding that produced each fragment."
@@ -183,16 +163,6 @@ msgstr ""
 #: Views/Settings-Cache.Edit.cshtml
 msgctxt "OrchardCore.Settings.Views.Settings-Cache.Edit"
 msgid "Determines whether caches are enabled or disabled."
-msgstr ""
-
-#: Views/Settings-Cache.Edit.cshtml
-msgctxt "OrchardCore.Settings.Views.Settings-Cache.Edit"
-msgid "Disabled"
-msgstr ""
-
-#: Views/Settings-Cache.Edit.cshtml
-msgctxt "OrchardCore.Settings.Views.Settings-Cache.Edit"
-msgid "Enabled"
 msgstr ""
 
 #: Views/Settings-Cache.Edit.cshtml
@@ -350,19 +320,4 @@ msgstr ""
 #: Views/Settings-TimeZone.Edit.cshtml
 msgctxt "OrchardCore.Settings.Views.Settings-TimeZone.Edit"
 msgid "Local to server"
-msgstr ""
-
-#: Views/Shared/DisplayTemplates/RemovableCulture.cshtml
-msgctxt "OrchardCore.Settings.Views.Shared.DisplayTemplates.RemovableCulture"
-msgid "Delete"
-msgstr ""
-
-#: Views/SiteSettings.SaveButton.cshtml
-msgctxt "OrchardCore.Settings.Views.SiteSettings.SaveButton"
-msgid "Cancel"
-msgstr ""
-
-#: Views/SiteSettings.SaveButton.cshtml
-msgctxt "OrchardCore.Settings.Views.SiteSettings.SaveButton"
-msgid "Save"
 msgstr ""

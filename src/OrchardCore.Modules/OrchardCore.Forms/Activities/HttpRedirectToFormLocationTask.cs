@@ -34,7 +34,7 @@ public class HttpRedirectToFormLocationTask : TaskActivity<HttpRedirectToFormLoc
     public override LocalizedString Category => _localizerFactory.Localize(CategoryName);
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-        => Outcome(S["Done"], S["Failed"]);
+        => Outcome(_localizerFactory.Localize(CommonLocalizationSources.Workflow.Done), S["Failed"]);
 
     public string FormLocationKey
     {

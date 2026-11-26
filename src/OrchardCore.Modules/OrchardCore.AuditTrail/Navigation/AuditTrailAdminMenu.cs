@@ -2,12 +2,15 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.AuditTrail.Controllers;
 using OrchardCore.AuditTrail.Settings;
+using OrchardCore.Localization;
 using OrchardCore.Navigation;
 
 namespace OrchardCore.AuditTrail.Navigation;
 
 public sealed class AuditTrailAdminMenu : AdminNavigationProvider
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     private static readonly RouteValueDictionary s_routeValues = new()
     {
         { "area", "OrchardCore.AuditTrail" },
@@ -22,8 +25,9 @@ public sealed class AuditTrailAdminMenu : AdminNavigationProvider
 
     internal readonly IStringLocalizer S;
 
-    public AuditTrailAdminMenu(IStringLocalizer<AuditTrailAdminMenu> stringLocalizer)
+    public AuditTrailAdminMenu(IStringLocalizer<AuditTrailAdminMenu> stringLocalizer, IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         S = stringLocalizer;
     }
 
@@ -39,7 +43,7 @@ public sealed class AuditTrailAdminMenu : AdminNavigationProvider
                     .LocalNav()
                 )
             )
-            .Add(S["Settings"], settings => settings
+            .Add(_localizerFactory.Localize(CommonLocalizationSources.Settings), settings => settings
                 .Add(S["Audit Trail"], S["Audit Trail"].PrefixPosition(), auditTrail => auditTrail
                     .AddClass("audittrail")
                     .Id("audittrailSettings")

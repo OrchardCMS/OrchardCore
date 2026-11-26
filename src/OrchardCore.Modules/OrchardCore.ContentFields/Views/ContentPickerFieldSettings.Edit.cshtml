@@ -42,7 +42,7 @@
         <div class="form-check">
             <input class="form-check-input" type="radio" asp-for="Source" id="SourceContentTypes" value="@ContentPickerSettingType.ContentTypes" checked="@(Model.Source == ContentPickerSettingType.ContentTypes)">
             <label for="SourceContentTypes" class="form-check-label">
-                @T["Content Types"]
+                @Localize(CommonLocalizationSources.ContentTypesTitle)
             </label>
         </div>
         <div class="form-check">
@@ -63,7 +63,7 @@
 </div>
 
 <div class="ocat-wrapper" id="ContentTypesContainer">
-    <span id="@Html.IdFor(m => m.DisplayedContentTypes)_Label" class="ocat-label ocat-label-required">@T["Content Types"]</span>
+    <span id="@Html.IdFor(m => m.DisplayedContentTypes)_Label" class="ocat-label ocat-label-required">@Localize(CommonLocalizationSources.ContentTypesTitle)</span>
     <div class="ocat-end" role="group" aria-labelledby="@Html.IdFor(m => m.DisplayedContentTypes)_Label">
         <span class="hint">@T["The content types to display. Choose at least one."]</span>
         @await Component.InvokeAsync("SelectContentTypes", new { selectedContentTypes = Model.DisplayedContentTypes, htmlName = Html.NameFor(m => m.DisplayedContentTypes) })

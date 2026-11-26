@@ -22,7 +22,7 @@
 </div>
 
 <div class="ocat-wrapper">
-    <span id="@Html.IdFor(m => m.DisplayedContentTypes)_Label" class="ocat-label">@T["Content Types"]</span>
+    <span id="@Html.IdFor(m => m.DisplayedContentTypes)_Label" class="ocat-label">@Localize(CommonLocalizationSources.ContentTypesTitle)</span>
     <div class="ocat-end" role="group" aria-labelledby="@Html.IdFor(m => m.DisplayedContentTypes)_Label">
         <span class="hint">@T["The content types to display. Choose at least one."]</span>
         @await Component.InvokeAsync("SelectContentTypes", new { selectedContentTypes = Model.DisplayedContentTypes, htmlName = Html.NameFor(m => m.DisplayedContentTypes) })

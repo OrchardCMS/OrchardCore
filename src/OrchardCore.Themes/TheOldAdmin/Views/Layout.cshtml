@@ -96,7 +96,7 @@
         @await RenderSectionAsync("Footer", required: false)
 
     </div>
-    <div id="confirmRemoveModalMetadata" data-title="@T["Delete"]" data-message="@T["Are you sure you want to remove this element?"]" data-ok-text="@T["Ok"]" data-cancel-text="@T["Cancel"]" data-ok-class="btn-danger" data-cancel-class="btn-secondary"></div>
+    <div id="confirmRemoveModalMetadata" data-title="@Localize(CommonLocalizationSources.Delete)" data-message="@T["Are you sure you want to remove this element?"]" data-ok-text="@Localize(CommonLocalizationSources.Ok)" data-cancel-text="@Localize(CommonLocalizationSources.Cancel)" data-ok-class="btn-danger" data-cancel-class="btn-secondary"></div>
     <resources type="Footer" />
 </body>
 </html>

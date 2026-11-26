@@ -45,7 +45,7 @@ public class AddModelValidationErrorTask : TaskActivity<AddModelValidationErrorT
     }
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-        => Outcome(S["Done"]);
+        => Outcome(_localizerFactory.Localize(CommonLocalizationSources.Workflow.Done));
 
     public override ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {

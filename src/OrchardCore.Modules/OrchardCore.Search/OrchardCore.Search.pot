@@ -8,16 +8,6 @@ msgstr ""
 
 #: AdminMenu.cs
 msgctxt "OrchardCore.Search.AdminMenu"
-msgid "Search"
-msgstr ""
-
-#: AdminMenu.cs
-msgctxt "OrchardCore.Search.AdminMenu"
-msgid "Settings"
-msgstr ""
-
-#: AdminMenu.cs
-msgctxt "OrchardCore.Search.AdminMenu"
 msgid "Site Search"
 msgstr ""
 
@@ -68,19 +58,9 @@ msgctxt "OrchardCore.Search.Views.Search-Form"
 msgid "Enter your search term(s)"
 msgstr ""
 
-#: Views/Search-Form.cshtml
-msgctxt "OrchardCore.Search.Views.Search-Form"
-msgid "Search"
-msgstr ""
-
 #: Views/Search-Results.cshtml
 msgctxt "OrchardCore.Search.Views.Search-Results"
 msgid "There are no such results."
-msgstr ""
-
-#: Views/SearchFormPart.cshtml
-msgctxt "OrchardCore.Search.Views.SearchFormPart"
-msgid "Search"
 msgstr ""
 
 #: Views/SearchFormPart.Edit.cshtml

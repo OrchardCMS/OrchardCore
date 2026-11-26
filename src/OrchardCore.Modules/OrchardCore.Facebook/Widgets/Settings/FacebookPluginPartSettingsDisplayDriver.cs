@@ -5,17 +5,21 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Facebook.Widgets.Models;
 using OrchardCore.Liquid;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Facebook.Widgets.Settings;
 
 public sealed class FacebookPluginPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<FacebookPluginPart>
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     private readonly ILiquidTemplateManager _templateManager;
 
     internal readonly IStringLocalizer S;
 
-    public FacebookPluginPartSettingsDisplayDriver(ILiquidTemplateManager templateManager, IStringLocalizer<FacebookPluginPartSettingsDisplayDriver> localizer)
+    public FacebookPluginPartSettingsDisplayDriver(ILiquidTemplateManager templateManager, IStringLocalizer<FacebookPluginPartSettingsDisplayDriver> localizer, IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         _templateManager = templateManager;
         S = localizer;
     }
@@ -26,7 +30,7 @@ public sealed class FacebookPluginPartSettingsDisplayDriver : ContentTypePartDef
         {
             model.FacebookPluginPartSettings = contentTypePartDefinition.GetSettings<FacebookPluginPartSettings>();
             model.Liquid = model.FacebookPluginPartSettings.Liquid;
-        }).Location(l => l.Zone("Content").Card(S["Settings"], "20"));
+        }).Location(l => l.Zone("Content").Card(_localizerFactory.Localize(CommonLocalizationSources.Settings), "20"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)

@@ -209,7 +209,7 @@ public class SettingsDisplayDriverTests
             });
 
         var shapeResult = await DisplayDriverTestHelper.GetShapeResultAsync(
-            new TextFieldSettingsDriver(liquidTemplateManagerMock.Object, new StringLocalizer<TextFieldSettingsDriver>(new NullStringLocalizerFactory())),
+            new TextFieldSettingsDriver(liquidTemplateManagerMock.Object, new StringLocalizer<TextFieldSettingsDriver>(new NullStringLocalizerFactory()), new NullStringLocalizerFactory()),
             _shapeFactory,
             contentDefinition);
 

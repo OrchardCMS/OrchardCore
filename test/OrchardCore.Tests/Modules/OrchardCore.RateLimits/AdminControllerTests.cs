@@ -9,6 +9,7 @@ using OrchardCore.RateLimits.Core;
 using OrchardCore.RateLimits.Models;
 using OrchardCore.RateLimits.ViewModels;
 using OrchardCore.RateLimits;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.RateLimits;
 
@@ -204,7 +205,8 @@ public class AdminControllerTests
             new EmptyEndpointDataSource(),
             Options.Create(new RateLimitsOptions()),
             Mock.Of<IStringLocalizer<AdminController>>(),
-            Mock.Of<IHtmlLocalizer<AdminController>>())
+            Mock.Of<IHtmlLocalizer<AdminController>>(),
+            new NullStringLocalizerFactory())
         {
             ControllerContext = new ControllerContext
             {

@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Localization;
 using OrchardCore.Media.ViewModels;
 
 namespace OrchardCore.Media.Drivers;
@@ -10,10 +11,13 @@ namespace OrchardCore.Media.Drivers;
 /// </summary>
 internal sealed class MediaProfileDisplayDriver : DisplayDriver<MediaProfileViewModel>
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     internal readonly IStringLocalizer S;
 
-    public MediaProfileDisplayDriver(IStringLocalizer<MediaProfileDisplayDriver> stringLocalizer)
+    public MediaProfileDisplayDriver(IStringLocalizer<MediaProfileDisplayDriver> stringLocalizer, IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         S = stringLocalizer;
     }
 
@@ -24,7 +28,7 @@ internal sealed class MediaProfileDisplayDriver : DisplayDriver<MediaProfileView
 
         return Combine(
             Initialize<MediaProfileViewModel>($"{shapePrefix}General_Edit", m => Populate(model, m))
-                .Location(l => l.Zone("Content", "1").Card(S["General"], "10")),
+                .Location(l => l.Zone("Content", "1").Card(_localizerFactory.Localize(CommonLocalizationSources.General), "10")),
             Initialize<MediaProfileViewModel>($"{shapePrefix}ImageProcessing_Edit", m => Populate(model, m))
                 .Location(l => l.Zone("Content", "2").Card(S["Image processing"], "20")));
     }

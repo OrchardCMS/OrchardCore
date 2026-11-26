@@ -1,7 +1,7 @@
 @model CreatePartViewModel
 
 <div class="ocat-limited-wrapper">
-    <label asp-for="Name" class="ocat-label ocat-label-required">@T["Name"]</label>
+    <label asp-for="Name" class="ocat-label ocat-label-required">@Localize(CommonLocalizationSources.Name)</label>
     <div class="ocat-limited">
         <input asp-for="Name" class="form-control" autofocus="autofocus" />
         <span class="hint">@T["Use no spaces or special characters. For example, \"MyCustomPart\""]</span>

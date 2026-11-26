@@ -8,12 +8,15 @@ using OrchardCore.Contents.AuditTrail.ViewModels;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Localization;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Contents.AuditTrail.Drivers;
 
 public sealed class ContentAuditTrailSettingsDisplayDriver : SiteDisplayDriver<ContentAuditTrailSettings>
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
 
@@ -22,8 +25,10 @@ public sealed class ContentAuditTrailSettingsDisplayDriver : SiteDisplayDriver<C
     public ContentAuditTrailSettingsDisplayDriver(
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
-        IStringLocalizer<ContentAuditTrailSettingsDisplayDriver> stringLocalizer)
+        IStringLocalizer<ContentAuditTrailSettingsDisplayDriver> stringLocalizer,
+        IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         S = stringLocalizer;
@@ -43,7 +48,7 @@ public sealed class ContentAuditTrailSettingsDisplayDriver : SiteDisplayDriver<C
         return Initialize<ContentAuditTrailSettingsViewModel>("ContentAuditTrailSettings_Edit", model =>
         {
             model.AllowedContentTypes = section.AllowedContentTypes;
-        }).Location(l => l.Zone("Content", "10").Tab("Content", "5").Card(S["Content types"], "10"))
+        }).Location(l => l.Zone("Content", "10").Tab("Content", "5").Card(_localizerFactory.Localize(CommonLocalizationSources.ContentTypes), "10"))
         .OnGroup(SettingsGroupId);
     }
 

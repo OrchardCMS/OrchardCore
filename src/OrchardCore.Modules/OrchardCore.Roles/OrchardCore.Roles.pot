@@ -79,22 +79,7 @@ msgstr ""
 
 #: Drivers/CloneRoleDisplayDriver.cs
 msgctxt "OrchardCore.Roles.Drivers.CloneRoleDisplayDriver"
-msgid "General"
-msgstr ""
-
-#: Drivers/CloneRoleDisplayDriver.cs
-msgctxt "OrchardCore.Roles.Drivers.CloneRoleDisplayDriver"
 msgid "Permissions"
-msgstr ""
-
-#: Drivers/CreateRoleDisplayDriver.cs
-msgctxt "OrchardCore.Roles.Drivers.CreateRoleDisplayDriver"
-msgid "General"
-msgstr ""
-
-#: Drivers/EditRoleDisplayDriver.cs
-msgctxt "OrchardCore.Roles.Drivers.EditRoleDisplayDriver"
-msgid "General"
 msgstr ""
 
 #: Drivers/EditRoleDisplayDriver.cs
@@ -114,11 +99,6 @@ msgctxt "OrchardCore.Roles.Services.RoleStore"
 msgid "Role is not of a '{0}' type."
 msgstr ""
 
-#: Views/Admin/Clone.cshtml
-msgctxt "OrchardCore.Roles.Views.Admin.Clone"
-msgid "Cancel"
-msgstr ""
-
 #. Format arguments: {0}: Model.Role.RoleName
 #: Views/Admin/Clone.cshtml
 #, csharp-format
@@ -129,16 +109,6 @@ msgstr ""
 #: Views/Admin/Clone.cshtml
 msgctxt "OrchardCore.Roles.Views.Admin.Clone"
 msgid "Roles"
-msgstr ""
-
-#: Views/Admin/Clone.cshtml
-msgctxt "OrchardCore.Roles.Views.Admin.Clone"
-msgid "Save"
-msgstr ""
-
-#: Views/Admin/Create.cshtml
-msgctxt "OrchardCore.Roles.Views.Admin.Create"
-msgid "Cancel"
 msgstr ""
 
 #: Views/Admin/Create.cshtml
@@ -171,11 +141,6 @@ msgctxt "OrchardCore.Roles.Views.Admin.Display"
 msgid "Roles"
 msgstr ""
 
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.Roles.Views.Admin.Edit"
-msgid "Cancel"
-msgstr ""
-
 #. Format arguments: {0}: Model.Role.RoleName
 #: Views/Admin/Edit.cshtml
 #, csharp-format
@@ -190,37 +155,12 @@ msgstr ""
 
 #: Views/Admin/Edit.cshtml
 msgctxt "OrchardCore.Roles.Views.Admin.Edit"
-msgid "Save"
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.Roles.Views.Admin.Edit"
-msgid "Save actions"
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.Roles.Views.Admin.Edit"
-msgid "Save and continue"
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.Roles.Views.Admin.Edit"
-msgid "Toggle Dropdown"
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.Roles.Views.Admin.Edit"
 msgid "and continue"
 msgstr ""
 
 #: Views/Admin/Index.cshtml
 msgctxt "OrchardCore.Roles.Views.Admin.Index"
 msgid "<strong>Nothing here!</strong> There are no roles for the moment."
-msgstr ""
-
-#: Views/Admin/Index.cshtml
-msgctxt "OrchardCore.Roles.Views.Admin.Index"
-msgid "Actions"
 msgstr ""
 
 #: Views/Admin/Index.cshtml
@@ -235,17 +175,7 @@ msgstr ""
 
 #: Views/Admin/Index.cshtml
 msgctxt "OrchardCore.Roles.Views.Admin.Index"
-msgid "Name"
-msgstr ""
-
-#: Views/Admin/Index.cshtml
-msgctxt "OrchardCore.Roles.Views.Admin.Index"
 msgid "Roles"
-msgstr ""
-
-#: Views/Admin/Index.cshtml
-msgctxt "OrchardCore.Roles.Views.Admin.Index"
-msgid "Search"
 msgstr ""
 
 #: Views/Admin/Index.cshtml
@@ -381,11 +311,6 @@ msgctxt "OrchardCore.Roles.Views.CreateRoleGeneral.Edit"
 msgid "Description"
 msgstr ""
 
-#: Views/CreateRoleGeneral.Edit.cshtml
-msgctxt "OrchardCore.Roles.Views.CreateRoleGeneral.Edit"
-msgid "Name"
-msgstr ""
-
 #: Views/EditRoleGeneral.Edit.cshtml
 msgctxt "OrchardCore.Roles.Views.EditRoleGeneral.Edit"
 msgid "Description"
@@ -507,17 +432,7 @@ msgstr ""
 
 #: Views/RoleEntry.Buttons.SummaryAdmin.cshtml
 msgctxt "OrchardCore.Roles.Views.RoleEntry.Buttons.SummaryAdmin"
-msgid "Delete"
-msgstr ""
-
-#: Views/RoleEntry.Buttons.SummaryAdmin.cshtml
-msgctxt "OrchardCore.Roles.Views.RoleEntry.Buttons.SummaryAdmin"
 msgid "Delete role"
-msgstr ""
-
-#: Views/RoleEntry.Buttons.SummaryAdmin.cshtml
-msgctxt "OrchardCore.Roles.Views.RoleEntry.Buttons.SummaryAdmin"
-msgid "Edit"
 msgstr ""
 
 #: Views/RoleEntry.DefaultTags.SummaryAdmin.cshtml
@@ -534,11 +449,6 @@ msgstr ""
 
 #: Workflows/Activities/GetUsersByRoleTask.cs
 msgctxt "OrchardCore.Roles.Workflows.Activities.GetUsersByRoleTask"
-msgid "Done"
-msgstr ""
-
-#: Workflows/Activities/GetUsersByRoleTask.cs
-msgctxt "OrchardCore.Roles.Workflows.Activities.GetUsersByRoleTask"
 msgid "Failed"
 msgstr ""
 
@@ -550,11 +460,6 @@ msgstr ""
 #: Workflows/Activities/GetUsersByRoleTask.cs
 msgctxt "OrchardCore.Roles.Workflows.Activities.GetUsersByRoleTask"
 msgid "The users in the selected roles: their ids, by user name."
-msgstr ""
-
-#: Workflows/Activities/UnassignUserRoleTask.cs
-msgctxt "OrchardCore.Roles.Workflows.Activities.UnassignUserRoleTask"
-msgid "Done"
 msgstr ""
 
 #: Workflows/Activities/UnassignUserRoleTask.cs

@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Localization;
 using OrchardCore.Roles.ViewModels;
 
 namespace OrchardCore.Roles.Drivers;
@@ -10,10 +11,13 @@ namespace OrchardCore.Roles.Drivers;
 /// </summary>
 internal sealed class CreateRoleDisplayDriver : DisplayDriver<CreateRoleViewModel>
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     internal readonly IStringLocalizer S;
 
-    public CreateRoleDisplayDriver(IStringLocalizer<CreateRoleDisplayDriver> stringLocalizer)
+    public CreateRoleDisplayDriver(IStringLocalizer<CreateRoleDisplayDriver> stringLocalizer, IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         S = stringLocalizer;
     }
 
@@ -23,7 +27,7 @@ internal sealed class CreateRoleDisplayDriver : DisplayDriver<CreateRoleViewMode
         {
             m.RoleName = model.RoleName;
             m.RoleDescription = model.RoleDescription;
-        }).Location(l => l.Zone("Content", "1").Card(S["General"], "10"));
+        }).Location(l => l.Zone("Content", "1").Card(_localizerFactory.Localize(CommonLocalizationSources.General), "10"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(CreateRoleViewModel model, UpdateEditorContext context)

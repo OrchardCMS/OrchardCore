@@ -89,7 +89,7 @@ public class ForEachTask : TaskActivity<ForEachTask>, IActivityProvidedValues, I
     }
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-        => Outcome(S["Iterate"], S["Done"]);
+        => Outcome(S["Iterate"], _localizerFactory.Localize(CommonLocalizationSources.Workflow.Done));
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {

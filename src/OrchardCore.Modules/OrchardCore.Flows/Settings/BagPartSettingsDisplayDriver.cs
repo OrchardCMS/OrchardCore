@@ -6,20 +6,25 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Flows.Models;
 using OrchardCore.Flows.ViewModels;
+using OrchardCore.Localization;
 using OrchardCore.Mvc.ModelBinding;
 
 namespace OrchardCore.Flows.Settings;
 
 public sealed class BagPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<BagPart>
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     private readonly IContentDefinitionManager _contentDefinitionManager;
 
     internal readonly IStringLocalizer S;
 
     public BagPartSettingsDisplayDriver(
         IContentDefinitionManager contentDefinitionManager,
-        IStringLocalizer<BagPartSettingsDisplayDriver> stringLocalizer)
+        IStringLocalizer<BagPartSettingsDisplayDriver> stringLocalizer,
+        IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         _contentDefinitionManager = contentDefinitionManager;
         S = stringLocalizer;
     }
@@ -43,7 +48,7 @@ public sealed class BagPartSettingsDisplayDriver : ContentTypePartDefinitionDisp
                 model.ContentTypes.Add(contentTypeDefinition.Name, contentTypeDefinition.DisplayName);
             }
 
-        }).Location(l => l.Zone("Content").Card(S["Settings"], "20"));
+        }).Location(l => l.Zone("Content").Card(_localizerFactory.Localize(CommonLocalizationSources.Settings), "20"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)

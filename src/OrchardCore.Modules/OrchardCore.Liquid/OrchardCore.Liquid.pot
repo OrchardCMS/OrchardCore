@@ -66,22 +66,12 @@ msgstr ""
 
 #: Views/LiquidField.Edit.cshtml
 msgctxt "OrchardCore.Liquid.Views.LiquidField.Edit"
-msgid "See documentation"
-msgstr ""
-
-#: Views/LiquidField.Edit.cshtml
-msgctxt "OrchardCore.Liquid.Views.LiquidField.Edit"
 msgid "The content of the field, in Liquid format."
 msgstr ""
 
 #: Views/LiquidPart.Edit.cshtml
 msgctxt "OrchardCore.Liquid.Views.LiquidPart.Edit"
 msgid "Body"
-msgstr ""
-
-#: Views/LiquidPart.Edit.cshtml
-msgctxt "OrchardCore.Liquid.Views.LiquidPart.Edit"
-msgid "See documentation"
 msgstr ""
 
 #: Views/LiquidPart.Edit.cshtml

@@ -16,11 +16,6 @@ msgctxt "OrchardCore.Cors.AdminMenu"
 msgid "Security"
 msgstr ""
 
-#: AdminMenu.cs
-msgctxt "OrchardCore.Cors.AdminMenu"
-msgid "Settings"
-msgstr ""
-
 #. Format arguments: {0}: string.Join(", ", policyWarnings)
 #: Controllers/AdminController.cs
 #, csharp-format
@@ -120,11 +115,6 @@ msgstr ""
 
 #: Services/CorsJSLocalizer.cs
 msgctxt "OrchardCore.Cors.Services.CorsJSLocalizer"
-msgid "Cancel"
-msgstr ""
-
-#: Services/CorsJSLocalizer.cs
-msgctxt "OrchardCore.Cors.Services.CorsJSLocalizer"
 msgid "Configure the credentials behavior."
 msgstr ""
 
@@ -155,17 +145,7 @@ msgstr ""
 
 #: Services/CorsJSLocalizer.cs
 msgctxt "OrchardCore.Cors.Services.CorsJSLocalizer"
-msgid "Delete"
-msgstr ""
-
-#: Services/CorsJSLocalizer.cs
-msgctxt "OrchardCore.Cors.Services.CorsJSLocalizer"
 msgid "Details"
-msgstr ""
-
-#: Services/CorsJSLocalizer.cs
-msgctxt "OrchardCore.Cors.Services.CorsJSLocalizer"
-msgid "Edit"
 msgstr ""
 
 #: Services/CorsJSLocalizer.cs
@@ -221,16 +201,6 @@ msgstr ""
 #: Services/CorsJSLocalizer.cs
 msgctxt "OrchardCore.Cors.Services.CorsJSLocalizer"
 msgid "Provide policy details."
-msgstr ""
-
-#: Services/CorsJSLocalizer.cs
-msgctxt "OrchardCore.Cors.Services.CorsJSLocalizer"
-msgid "Save"
-msgstr ""
-
-#: Services/CorsJSLocalizer.cs
-msgctxt "OrchardCore.Cors.Services.CorsJSLocalizer"
-msgid "Search"
 msgstr ""
 
 #: Services/CorsJSLocalizer.cs

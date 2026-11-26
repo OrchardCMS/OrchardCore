@@ -88,7 +88,7 @@ public sealed class ContentDataColumnsTests
         options.Fields["GeoPointField"] = [new("Latitude", DataFieldType.Decimal)];
 
         // Act
-        var columns = ContentDataColumns.Build(definition, options, CreateContentOptions(), new PassThroughStringLocalizer<ContentDataColumnsTests>());
+        var columns = ContentDataColumns.Build(definition, options, CreateContentOptions(), new PassThroughStringLocalizer<ContentDataColumnsTests>(), new PassThroughStringLocalizerFactory());
         var names = columns.Select(column => column.Field.Name).ToList();
 
         // Assert
@@ -108,7 +108,7 @@ public sealed class ContentDataColumnsTests
         var definition = CreateDefinition();
 
         // Act
-        var names = ContentDataColumns.Build(definition, new ContentDataSourceOptions(), null, new PassThroughStringLocalizer<ContentDataColumnsTests>())
+        var names = ContentDataColumns.Build(definition, new ContentDataSourceOptions(), null, new PassThroughStringLocalizer<ContentDataColumnsTests>(), new PassThroughStringLocalizerFactory())
             .Select(column => column.Field.Name)
             .ToList();
 
@@ -203,7 +203,7 @@ public sealed class ContentDataColumnsTests
 
     private static List<ContentDataColumn> Build(ContentTypeDefinition definition)
     {
-        return ContentDataColumns.Build(definition, new ContentDataSourceOptions(), CreateContentOptions(), new PassThroughStringLocalizer<ContentDataColumnsTests>());
+        return ContentDataColumns.Build(definition, new ContentDataSourceOptions(), CreateContentOptions(), new PassThroughStringLocalizer<ContentDataColumnsTests>(), new PassThroughStringLocalizerFactory());
     }
 
     private static ContentOptions CreateContentOptions()

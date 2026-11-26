@@ -4,15 +4,19 @@ using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Localization;
 
 namespace OrchardCore.ContentFields.Settings;
 
 public sealed class TimeFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<TimeField>
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     internal readonly IStringLocalizer S;
 
-    public TimeFieldSettingsDriver(IStringLocalizer<TimeFieldSettingsDriver> stringLocalizer)
+    public TimeFieldSettingsDriver(IStringLocalizer<TimeFieldSettingsDriver> stringLocalizer, IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         S = stringLocalizer;
     }
 
@@ -25,7 +29,7 @@ public sealed class TimeFieldSettingsDriver : ContentPartFieldDefinitionDisplayD
             model.Hint = settings.Hint;
             model.Required = settings.Required;
             model.Step = settings.Step;
-        }).Location(l => l.Zone("Content").Card(S["Settings"], "20"));
+        }).Location(l => l.Zone("Content").Card(_localizerFactory.Localize(CommonLocalizationSources.Settings), "20"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)

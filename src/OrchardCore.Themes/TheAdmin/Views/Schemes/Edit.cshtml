@@ -88,7 +88,7 @@
         <div class="card-header">@T["Scheme"]</div>
         <div class="card-body">
             <div class="ocat-wrapper" asp-validation-class-for="Name">
-                <label asp-for="Name" class="ocat-label ocat-label-required">@T["Name"]</label>
+                <label asp-for="Name" class="ocat-label ocat-label-required">@Localize(CommonLocalizationSources.Name)</label>
                 <div class="ocat-end">
                     <input asp-for="Name" class="form-control" autofocus />
                     <span asp-validation-for="Name"></span>
@@ -247,8 +247,8 @@
     </div>
 
     <div class="action-bar-bottom">
-        <a asp-action="Index" class="btn btn-secondary cancel" role="button">@T["Cancel"]</a>
-        <button type="submit" class="btn btn-primary save">@T["Save"]</button>
+        <a asp-action="Index" class="btn btn-secondary cancel" role="button">@Localize(CommonLocalizationSources.Cancel)</a>
+        <button type="submit" class="btn btn-primary save">@Localize(CommonLocalizationSources.Save)</button>
     </div>
 </form>
 

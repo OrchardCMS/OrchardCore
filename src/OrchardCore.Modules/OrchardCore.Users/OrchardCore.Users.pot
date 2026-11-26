@@ -98,11 +98,6 @@ msgstr ""
 
 #: AdminMenu.cs
 msgctxt "OrchardCore.Users.AdminMenu"
-msgid "Settings"
-msgstr ""
-
-#: AdminMenu.cs
-msgctxt "OrchardCore.Users.AdminMenu"
 msgid "User Login"
 msgstr ""
 
@@ -114,11 +109,6 @@ msgstr ""
 #: AuditTrail/AdminMenu.cs
 msgctxt "OrchardCore.Users.AuditTrail.AdminMenu"
 msgid "Security"
-msgstr ""
-
-#: AuditTrail/AdminMenu.cs
-msgctxt "OrchardCore.Users.AuditTrail.AdminMenu"
-msgid "Settings"
 msgstr ""
 
 #: AuditTrail/AdminMenu.cs
@@ -258,16 +248,6 @@ msgstr ""
 
 #: AuditTrail/Services/UserAuditTrailEventConfiguration.cs
 msgctxt "OrchardCore.Users.AuditTrail.Services.UserAuditTrailEventConfiguration"
-msgid "Disabled"
-msgstr ""
-
-#: AuditTrail/Services/UserAuditTrailEventConfiguration.cs
-msgctxt "OrchardCore.Users.AuditTrail.Services.UserAuditTrailEventConfiguration"
-msgid "Enabled"
-msgstr ""
-
-#: AuditTrail/Services/UserAuditTrailEventConfiguration.cs
-msgctxt "OrchardCore.Users.AuditTrail.Services.UserAuditTrailEventConfiguration"
 msgid "Logged in"
 msgstr ""
 
@@ -299,11 +279,6 @@ msgstr ""
 #: ChangeEmailAdminMenu.cs
 msgctxt "OrchardCore.Users.ChangeEmailAdminMenu"
 msgid "Security"
-msgstr ""
-
-#: ChangeEmailAdminMenu.cs
-msgctxt "OrchardCore.Users.ChangeEmailAdminMenu"
-msgid "Settings"
 msgstr ""
 
 #: Startup.cs
@@ -392,11 +367,6 @@ msgstr ""
 
 #: Controllers/AdminController.cs
 msgctxt "OrchardCore.Users.Controllers.AdminController"
-msgid "Delete"
-msgstr ""
-
-#: Controllers/AdminController.cs
-msgctxt "OrchardCore.Users.Controllers.AdminController"
 msgid "Disable"
 msgstr ""
 
@@ -418,11 +388,6 @@ msgstr ""
 #: Controllers/AdminController.cs
 msgctxt "OrchardCore.Users.Controllers.AdminController"
 msgid "Enabled Users"
-msgstr ""
-
-#: Controllers/AdminController.cs
-msgctxt "OrchardCore.Users.Controllers.AdminController"
-msgid "Name"
 msgstr ""
 
 #. Format arguments: {0}: user.UserName
@@ -891,11 +856,6 @@ msgstr ""
 
 #: Drivers/TwoFactorLoginSettingsDisplayDriver.cs
 msgctxt "OrchardCore.Users.Drivers.TwoFactorLoginSettingsDisplayDriver"
-msgid "General"
-msgstr ""
-
-#: Drivers/TwoFactorLoginSettingsDisplayDriver.cs
-msgctxt "OrchardCore.Users.Drivers.TwoFactorLoginSettingsDisplayDriver"
 msgid "Number of Recovery Codes to Generate should be grater than 0."
 msgstr ""
 
@@ -1021,11 +981,6 @@ msgctxt "OrchardCore.Users.RegistrationAdminMenu"
 msgid "Security"
 msgstr ""
 
-#: RegistrationAdminMenu.cs
-msgctxt "OrchardCore.Users.RegistrationAdminMenu"
-msgid "Settings"
-msgstr ""
-
 #: Startup.cs
 msgctxt "OrchardCore.Users.RegistrationDeploymentStartup"
 msgid "Exports the Registration settings."
@@ -1044,11 +999,6 @@ msgstr ""
 #: ResetPasswordAdminMenu.cs
 msgctxt "OrchardCore.Users.ResetPasswordAdminMenu"
 msgid "Security"
-msgstr ""
-
-#: ResetPasswordAdminMenu.cs
-msgctxt "OrchardCore.Users.ResetPasswordAdminMenu"
-msgid "Settings"
 msgstr ""
 
 #: Startup.cs
@@ -1151,11 +1101,6 @@ msgstr ""
 #: Views/Admin/Edit.cshtml
 msgctxt "OrchardCore.Users.Views.Admin.Edit"
 msgid "Users"
-msgstr ""
-
-#: Views/Admin/EditPassword.cshtml
-msgctxt "OrchardCore.Users.Views.Admin.EditPassword"
-msgid "Cancel"
 msgstr ""
 
 #: Views/Admin/EditPassword.cshtml
@@ -1844,11 +1789,6 @@ msgstr ""
 
 #: Views/Items/TwoFactorMethod.Phone.Actions.cshtml
 msgctxt "OrchardCore.Users.Views.Items.TwoFactorMethod.Phone.Actions"
-msgid "Edit"
-msgstr ""
-
-#: Views/Items/TwoFactorMethod.Phone.Actions.cshtml
-msgctxt "OrchardCore.Users.Views.Items.TwoFactorMethod.Phone.Actions"
 msgid "Verified"
 msgstr ""
 
@@ -2019,11 +1959,6 @@ msgstr ""
 
 #: Views/Items/UsersAdminFilters-Name.Thumbnail.cshtml
 msgctxt "OrchardCore.Users.Views.Items.UsersAdminFilters-Name.Thumbnail"
-msgid "Name"
-msgstr ""
-
-#: Views/Items/UsersAdminFilters-Name.Thumbnail.cshtml
-msgctxt "OrchardCore.Users.Views.Items.UsersAdminFilters-Name.Thumbnail"
 msgid "Supports logical operators and groups"
 msgstr ""
 
@@ -2065,11 +2000,6 @@ msgstr ""
 #: Views/Items/UsersAdminFilters-Status.Thumbnail.cshtml
 msgctxt "OrchardCore.Users.Views.Items.UsersAdminFilters-Status.Thumbnail"
 msgid "Filters on a user status."
-msgstr ""
-
-#: Views/Items/UsersAdminFilters-Status.Thumbnail.cshtml
-msgctxt "OrchardCore.Users.Views.Items.UsersAdminFilters-Status.Thumbnail"
-msgid "Status"
 msgstr ""
 
 #: Views/Items/ValidateUserTask.Fields.Design.cshtml
@@ -2704,11 +2634,6 @@ msgstr ""
 
 #: Views/UserActionsMenu.cshtml
 msgctxt "OrchardCore.Users.Views.UserActionsMenu"
-msgid "Delete"
-msgstr ""
-
-#: Views/UserActionsMenu.cshtml
-msgctxt "OrchardCore.Users.Views.UserActionsMenu"
 msgid "Disable"
 msgstr ""
 
@@ -2739,11 +2664,6 @@ msgstr ""
 
 #: Views/UserButtons.cshtml
 msgctxt "OrchardCore.Users.Views.UserButtons"
-msgid "Edit"
-msgstr ""
-
-#: Views/UserButtons.cshtml
-msgctxt "OrchardCore.Users.Views.UserButtons"
 msgid "View"
 msgstr ""
 
@@ -2767,11 +2687,6 @@ msgstr ""
 #: Views/UserEmail.Edit.cshtml
 msgctxt "OrchardCore.Users.Views.UserEmail.Edit"
 msgid "Email"
-msgstr ""
-
-#: Views/UserFields.cshtml
-msgctxt "OrchardCore.Users.Views.UserFields"
-msgid "Disabled"
 msgstr ""
 
 #: Views/UserFields.cshtml
@@ -2828,27 +2743,12 @@ msgstr ""
 
 #: Views/UserInfo.cshtml
 msgctxt "OrchardCore.Users.Views.UserInfo"
-msgid "Disabled"
-msgstr ""
-
-#: Views/UserInfo.cshtml
-msgctxt "OrchardCore.Users.Views.UserInfo"
 msgid "Email"
 msgstr ""
 
 #: Views/UserInfo.cshtml
 msgctxt "OrchardCore.Users.Views.UserInfo"
-msgid "Enabled"
-msgstr ""
-
-#: Views/UserInfo.cshtml
-msgctxt "OrchardCore.Users.Views.UserInfo"
 msgid "Phone Number"
-msgstr ""
-
-#: Views/UserInfo.cshtml
-msgctxt "OrchardCore.Users.Views.UserInfo"
-msgid "Status"
 msgstr ""
 
 #: Views/UserInfo.cshtml
@@ -2973,16 +2873,6 @@ msgctxt "OrchardCore.Users.Views.UserRolesMeta"
 msgid "The roles this user has"
 msgstr ""
 
-#: Views/UserSaveButtons.Edit.cshtml
-msgctxt "OrchardCore.Users.Views.UserSaveButtons.Edit"
-msgid "Cancel"
-msgstr ""
-
-#: Views/UserSaveButtons.Edit.cshtml
-msgctxt "OrchardCore.Users.Views.UserSaveButtons.Edit"
-msgid "Save"
-msgstr ""
-
 #: Views/UserSecurity.cshtml
 msgctxt "OrchardCore.Users.Views.UserSecurity"
 msgid "There are no security settings to manage."
@@ -3015,11 +2905,6 @@ msgstr ""
 
 #: Views/UserSecurityPasskeys.cshtml
 msgctxt "OrchardCore.Users.Views.UserSecurityPasskeys"
-msgid "Name"
-msgstr ""
-
-#: Views/UserSecurityPasskeys.cshtml
-msgctxt "OrchardCore.Users.Views.UserSecurityPasskeys"
 msgid "Never used"
 msgstr ""
 
@@ -3035,17 +2920,7 @@ msgstr ""
 
 #: Views/UserSecurityPasskeys.cshtml
 msgctxt "OrchardCore.Users.Views.UserSecurityPasskeys"
-msgid "Remove"
-msgstr ""
-
-#: Views/UserSecurityPasskeys.cshtml
-msgctxt "OrchardCore.Users.Views.UserSecurityPasskeys"
 msgid "Rename"
-msgstr ""
-
-#: Views/UserSecurityPasskeys.cshtml
-msgctxt "OrchardCore.Users.Views.UserSecurityPasskeys"
-msgid "Save"
 msgstr ""
 
 #: Views/UserSecurityPasskeys.cshtml
@@ -3096,11 +2971,6 @@ msgstr ""
 #: Views/UserSecurityTwoFactor.cshtml
 msgctxt "OrchardCore.Users.Views.UserSecurityTwoFactor"
 msgid "Enable"
-msgstr ""
-
-#: Views/UserSecurityTwoFactor.cshtml
-msgctxt "OrchardCore.Users.Views.UserSecurityTwoFactor"
-msgid "Enabled"
 msgstr ""
 
 #: Views/UserSecurityTwoFactor.cshtml
@@ -3234,11 +3104,6 @@ msgstr ""
 
 #: Views/UsersAdminList.cshtml
 msgctxt "OrchardCore.Users.Views.UsersAdminList"
-msgid "Actions"
-msgstr ""
-
-#: Views/UsersAdminList.cshtml
-msgctxt "OrchardCore.Users.Views.UsersAdminList"
 msgid "Roles"
 msgstr ""
 
@@ -3250,11 +3115,6 @@ msgstr ""
 #: Views/UsersAdminList.cshtml
 msgctxt "OrchardCore.Users.Views.UsersAdminList"
 msgid "selected"
-msgstr ""
-
-#: Views/UsersAdminList.Fields.BulkActions.cshtml
-msgctxt "OrchardCore.Users.Views.UsersAdminList.Fields.BulkActions"
-msgid "Actions"
 msgstr ""
 
 #. Format arguments: {0}: @item.Text.ToLower()
@@ -3386,11 +3246,6 @@ msgstr ""
 
 #: Views/UsersAdminListSearch.cshtml
 msgctxt "OrchardCore.Users.Views.UsersAdminListSearch"
-msgid "Search"
-msgstr ""
-
-#: Views/UsersAdminListSearch.cshtml
-msgctxt "OrchardCore.Users.Views.UsersAdminListSearch"
 msgid "Single"
 msgstr ""
 
@@ -3446,17 +3301,7 @@ msgstr ""
 
 #: Workflows/Activities/AssignUserRoleTask.cs
 msgctxt "OrchardCore.Users.Workflows.Activities.AssignUserRoleTask"
-msgid "Done"
-msgstr ""
-
-#: Workflows/Activities/AssignUserRoleTask.cs
-msgctxt "OrchardCore.Users.Workflows.Activities.AssignUserRoleTask"
 msgid "Failed"
-msgstr ""
-
-#: Workflows/Activities/RegisterUserTask.cs
-msgctxt "OrchardCore.Users.Workflows.Activities.RegisterUserTask"
-msgid "Done"
 msgstr ""
 
 #: Workflows/Activities/RegisterUserTask.cs
@@ -3477,11 +3322,6 @@ msgstr ""
 #: Workflows/Activities/RegisterUserTask.cs
 msgctxt "OrchardCore.Users.Workflows.Activities.RegisterUserTask"
 msgid "Valid"
-msgstr ""
-
-#: Workflows/Activities/UserActivity.cs
-msgctxt "OrchardCore.Users.Workflows.Activities.UserActivity"
-msgid "Done"
 msgstr ""
 
 #: Workflows/Activities/UserConfirmedEvent.cs

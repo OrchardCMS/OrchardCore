@@ -1,3 +1,4 @@
+using OrchardCore.Localization;
 using System.Security.Claims;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
@@ -30,6 +31,8 @@ namespace OrchardCore.Contents.Controllers;
 
 public sealed class AdminController : Controller, IUpdateModel
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     private readonly IAuthorizationService _authorizationService;
     private readonly IContentManager _contentManager;
     private readonly IContentItemDisplayManager _contentItemDisplayManager;
@@ -50,8 +53,10 @@ public sealed class AdminController : Controller, IUpdateModel
         ISession session,
         INotifier notifier,
         IHtmlLocalizer<AdminController> htmlLocalizer,
-        IStringLocalizer<AdminController> stringLocalizer)
+        IStringLocalizer<AdminController> stringLocalizer,
+        IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         _authorizationService = authorizationService;
         _contentManager = contentManager;
         _contentItemDisplayManager = contentItemDisplayManager;
@@ -207,7 +212,7 @@ public sealed class AdminController : Controller, IUpdateModel
         [
             new SelectListItem(S["Publish Now"], nameof(ContentsBulkAction.PublishNow)),
             new SelectListItem(S["Unpublish"], nameof(ContentsBulkAction.Unpublish)),
-            new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
+            new SelectListItem(_localizerFactory.Localize(CommonLocalizationSources.Delete), nameof(ContentsBulkAction.Remove)),
         ];
 
         if (options.ContentTypeOptions == null

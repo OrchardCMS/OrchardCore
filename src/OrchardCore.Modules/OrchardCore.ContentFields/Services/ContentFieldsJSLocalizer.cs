@@ -5,7 +5,7 @@ using OrchardCore.Localization;
 
 namespace OrchardCore.ContentFields.Services;
 
-public sealed class ContentFieldsJSLocalizer(IStringLocalizer<ContentFieldsJSLocalizer> S) : IJSLocalizer
+public sealed class ContentFieldsJSLocalizer(IStringLocalizer<ContentFieldsJSLocalizer> S, IStringLocalizerFactory localizerFactory) : IJSLocalizer
 {
     public IDictionary<string, string> GetLocalizations(string group)
     {
@@ -21,7 +21,7 @@ public sealed class ContentFieldsJSLocalizer(IStringLocalizer<ContentFieldsJSLoc
                 { "AddAnOption", S["Add an option"].Value },
                 { "EditData", S["Edit Data"].Value },
                 { "Ok", S["OK"].Value },
-                { "Cancel", S["Cancel"].Value },
+                { "Cancel", localizerFactory.Localize(CommonLocalizationSources.Cancel).Value },
                 { "RemoveElementFromList", S["Remove element from list"].Value },
                 { "Options", S["Options"].Value },
                 {

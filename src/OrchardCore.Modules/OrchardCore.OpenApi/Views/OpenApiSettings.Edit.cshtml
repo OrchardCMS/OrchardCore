@@ -5,7 +5,7 @@
     <div class="ocat-end-offset">
         <div class="d-flex align-items-center mb-2">
             <span class="badge me-2 @(Model.IsSwaggerUIEnabled ? "bg-success" : "bg-secondary")">
-                @(Model.IsSwaggerUIEnabled ? T["Enabled"] : T["Disabled"])
+                @(Model.IsSwaggerUIEnabled ? Localize(CommonLocalizationSources.EnabledState) : Localize(CommonLocalizationSources.DisabledState))
             </span>
             <strong>@T["Swagger UI"]</strong>
             @if (Model.IsSwaggerUIEnabled)
@@ -16,7 +16,7 @@
 
         <div class="d-flex align-items-center mb-2">
             <span class="badge me-2 @(Model.IsReDocUIEnabled ? "bg-success" : "bg-secondary")">
-                @(Model.IsReDocUIEnabled ? T["Enabled"] : T["Disabled"])
+                @(Model.IsReDocUIEnabled ? Localize(CommonLocalizationSources.EnabledState) : Localize(CommonLocalizationSources.DisabledState))
             </span>
             <strong>@T["ReDoc UI"]</strong>
             @if (Model.IsReDocUIEnabled)
@@ -27,7 +27,7 @@
 
         <div class="d-flex align-items-center mb-2">
             <span class="badge me-2 @(Model.IsScalarUIEnabled ? "bg-success" : "bg-secondary")">
-                @(Model.IsScalarUIEnabled ? T["Enabled"] : T["Disabled"])
+                @(Model.IsScalarUIEnabled ? Localize(CommonLocalizationSources.EnabledState) : Localize(CommonLocalizationSources.DisabledState))
             </span>
             <strong>@T["Scalar UI"]</strong>
             @if (Model.IsScalarUIEnabled)

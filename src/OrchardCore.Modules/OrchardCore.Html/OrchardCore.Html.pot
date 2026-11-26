@@ -26,11 +26,6 @@ msgctxt "OrchardCore.Html.Settings.HtmlBodyPartMonacoEditorSettingsDriver"
 msgid "The options are written in an incorrect format."
 msgstr ""
 
-#: Settings/HtmlBodyPartSettingsDisplayDriver.cs
-msgctxt "OrchardCore.Html.Settings.HtmlBodyPartSettingsDisplayDriver"
-msgid "Settings"
-msgstr ""
-
 #: Settings/HtmlBodyPartTrumbowygEditorSettingsDriver.cs
 msgctxt "OrchardCore.Html.Settings.HtmlBodyPartTrumbowygEditorSettingsDriver"
 msgid "Editor"
@@ -71,19 +66,9 @@ msgctxt "OrchardCore.Html.Views.HtmlBodyPart-Wysiwyg.Option"
 msgid "Wysiwyg editor"
 msgstr ""
 
-#: Views/HtmlBodyPart.DisplayOption.cshtml
-msgctxt "OrchardCore.Html.Views.HtmlBodyPart.DisplayOption"
-msgid "Standard"
-msgstr ""
-
 #: Views/HtmlBodyPart.Edit.cshtml
 msgctxt "OrchardCore.Html.Views.HtmlBodyPart.Edit"
 msgid "The body of the content item."
-msgstr ""
-
-#: Views/HtmlBodyPart.Option.cshtml
-msgctxt "OrchardCore.Html.Views.HtmlBodyPart.Option"
-msgid "Standard"
 msgstr ""
 
 #: Views/HtmlBodyPartMonacoSettings.Edit.cshtml
@@ -99,11 +84,6 @@ msgstr ""
 #: Views/HtmlBodyPartSettings.Edit.cshtml
 msgctxt "OrchardCore.Html.Views.HtmlBodyPartSettings.Edit"
 msgid "Sanitize Html"
-msgstr ""
-
-#: Views/HtmlBodyPartSettings.Edit.cshtml
-msgctxt "OrchardCore.Html.Views.HtmlBodyPartSettings.Edit"
-msgid "See documentation"
 msgstr ""
 
 #: Views/HtmlBodyPartSettings.Edit.cshtml

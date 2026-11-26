@@ -186,7 +186,8 @@ public class SettingsAuthorizationTests
             CreateHttpContextAccessor(),
             CreateAuthorizationService(SettingsPermissions.ManageGeneralSettings, granted),
             Mock.Of<IShellReleaseManager>(),
-            new StringLocalizer<DefaultSiteSettingsDisplayDriver>(new NullStringLocalizerFactory()));
+            new StringLocalizer<DefaultSiteSettingsDisplayDriver>(new NullStringLocalizerFactory()),
+            new NullStringLocalizerFactory());
 
     private static DebugSettingsDisplayDriver CreateDebugDriver(bool granted)
         => new(

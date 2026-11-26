@@ -11,11 +11,6 @@ msgctxt "OrchardCore.OpenApi.AdminMenu"
 msgid "OpenApi"
 msgstr ""
 
-#: AdminMenu.cs
-msgctxt "OrchardCore.OpenApi.AdminMenu"
-msgid "Settings"
-msgstr ""
-
 #: Drivers/OpenApiSettingsDisplayDriver.cs
 msgctxt "OrchardCore.OpenApi.Drivers.OpenApiSettingsDisplayDriver"
 msgid "Documentation UIs"
@@ -38,17 +33,7 @@ msgstr ""
 
 #: Views/OpenApiSettings.Edit.cshtml
 msgctxt "OrchardCore.OpenApi.Views.OpenApiSettings.Edit"
-msgid "Disabled"
-msgstr ""
-
-#: Views/OpenApiSettings.Edit.cshtml
-msgctxt "OrchardCore.OpenApi.Views.OpenApiSettings.Edit"
 msgid "Enable or disable API documentation UIs via the Features page."
-msgstr ""
-
-#: Views/OpenApiSettings.Edit.cshtml
-msgctxt "OrchardCore.OpenApi.Views.OpenApiSettings.Edit"
-msgid "Enabled"
 msgstr ""
 
 #: Views/OpenApiSettings.Edit.cshtml

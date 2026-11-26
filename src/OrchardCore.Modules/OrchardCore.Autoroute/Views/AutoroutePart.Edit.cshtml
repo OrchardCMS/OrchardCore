@@ -18,7 +18,7 @@
         <div class="ocat-end-offset">
             <div class="form-check">
                 <input type="checkbox" class="form-check-input" asp-for="Disabled" checked="@Model.Disabled" data-autoroute-disabled-toggle />
-                <label class="form-check-label" asp-for="Disabled">@T["Disabled"]</label>
+                <label class="form-check-label" asp-for="Disabled">@Localize(CommonLocalizationSources.BooleanFields.Disabled)</label>
                 <span class="hint dashed">@T["Check to disable autoroute for this content item."]</span>
             </div>
         </div>

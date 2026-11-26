@@ -5,19 +5,24 @@ using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Liquid;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Alias.Settings;
 
 public sealed class AliasPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<AliasPart>
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     private readonly ILiquidTemplateManager _templateManager;
 
     internal readonly IStringLocalizer S;
 
     public AliasPartSettingsDisplayDriver(
         ILiquidTemplateManager templateManager,
-        IStringLocalizer<AliasPartSettingsDisplayDriver> localizer)
+        IStringLocalizer<AliasPartSettingsDisplayDriver> localizer,
+        IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         _templateManager = templateManager;
         S = localizer;
     }
@@ -31,7 +36,7 @@ public sealed class AliasPartSettingsDisplayDriver : ContentTypePartDefinitionDi
             model.Pattern = settings.Pattern;
             model.Options = settings.Options;
             model.AliasPartSettings = settings;
-        }).Location(l => l.Zone("Content").Card(S["Settings"], "20"));
+        }).Location(l => l.Zone("Content").Card(_localizerFactory.Localize(CommonLocalizationSources.Settings), "20"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)

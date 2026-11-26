@@ -53,7 +53,7 @@
                 }
                 @if (Model.CanCancel)
                 {
-                    <a asp-action="CancelRun" asp-route-runId="@run.RunId" class="btn btn-danger btn-sm" data-url-af="UnsafeUrl" data-title="@T["Cancel"]" data-message="@T["Cancel this run?"]">@T["Cancel"]</a>
+                    <a asp-action="CancelRun" asp-route-runId="@run.RunId" class="btn btn-danger btn-sm" data-url-af="UnsafeUrl" data-title="@Localize(CommonLocalizationSources.RunningOperations.Cancel)" data-message="@T["Cancel this run?"]">@Localize(CommonLocalizationSources.RunningOperations.Cancel)</a>
                 }
             </div>
         </div>
@@ -65,7 +65,7 @@
     <thead>
         <tr>
             <th>@T["Step"]</th>
-            <th>@T["Status"]</th>
+            <th>@Localize(CommonLocalizationSources.Status)</th>
             <th class="text-end">@T["Rows in"]</th>
             <th class="text-end">@T["Rows out"]</th>
             <th class="text-end">@T["Files"]</th>

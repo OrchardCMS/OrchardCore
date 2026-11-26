@@ -2,6 +2,7 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.Deployment.ViewModels;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Deployment.Drivers;
 
@@ -11,17 +12,20 @@ namespace OrchardCore.Deployment.Drivers;
 /// </summary>
 internal sealed class DeploymentPlanDisplayDriver : DisplayDriver<CreateDeploymentPlanViewModel>
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     internal readonly IStringLocalizer S;
 
-    public DeploymentPlanDisplayDriver(IStringLocalizer<DeploymentPlanDisplayDriver> stringLocalizer)
+    public DeploymentPlanDisplayDriver(IStringLocalizer<DeploymentPlanDisplayDriver> stringLocalizer, IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         S = stringLocalizer;
     }
 
     public override IDisplayResult Edit(CreateDeploymentPlanViewModel model, BuildEditorContext context)
     {
         return Initialize<CreateDeploymentPlanViewModel>("DeploymentPlanGeneral_Edit", m => m.Name = model.Name)
-            .Location(l => l.Zone("Content", "1").Card(S["General"], "10"));
+            .Location(l => l.Zone("Content", "1").Card(_localizerFactory.Localize(CommonLocalizationSources.General), "10"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(CreateDeploymentPlanViewModel model, UpdateEditorContext context)

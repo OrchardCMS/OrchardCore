@@ -11,11 +11,6 @@ msgctxt "OrchardCore.ReverseProxy.AdminMenu"
 msgid "Reverse Proxy"
 msgstr ""
 
-#: AdminMenu.cs
-msgctxt "OrchardCore.ReverseProxy.AdminMenu"
-msgid "Settings"
-msgstr ""
-
 #: Startup.cs
 msgctxt "OrchardCore.ReverseProxy.DeploymentStartup"
 msgid "Exports the Reverse Proxy settings."

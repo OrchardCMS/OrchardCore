@@ -12,7 +12,7 @@
 @* The content editor renders its own Cancel button when the page has a return URL. *@
 @if (string.IsNullOrWhiteSpace(Context.Request.Query["returnUrl"]))
 {
-    <a class="btn btn-secondary cancel" role="button" asp-action="Edit" asp-controller="Admin" asp-route-area="OrchardCore.Contents" asp-route-contentItemId="@menuContentItemId">@T["Cancel"]</a>
+    <a class="btn btn-secondary cancel" role="button" asp-action="Edit" asp-controller="Admin" asp-route-area="OrchardCore.Contents" asp-route-contentItemId="@menuContentItemId">@Localize(CommonLocalizationSources.Cancel)</a>
 }
 <button type="submit" class="btn btn-primary save" name="submit.Save" value="submit.Save">@T["Save Menu Item"]</button>
 

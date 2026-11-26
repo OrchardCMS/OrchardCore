@@ -2,7 +2,7 @@
 @model SetOutputTaskViewModel
 
 <div class="ocat-wrapper" asp-validation-class-for="OutputName">
-    <label asp-for="OutputName" class="ocat-label ocat-label-required">@T["Name"]</label>
+    <label asp-for="OutputName" class="ocat-label ocat-label-required">@Localize(CommonLocalizationSources.TechnicalNames.Name)</label>
     <div class="ocat-end">
         <input asp-for="OutputName" class="form-control" autofocus="autofocus" />
         <span asp-validation-for="OutputName"></span>

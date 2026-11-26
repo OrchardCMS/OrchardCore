@@ -8,6 +8,8 @@ namespace OrchardCore.Workflows.Services;
 /// </summary>
 public sealed class WorkflowsDesignerJSLocalizer : IJSLocalizer
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     /// <summary>
     /// The localization group the designer requests.
     /// </summary>
@@ -15,8 +17,9 @@ public sealed class WorkflowsDesignerJSLocalizer : IJSLocalizer
 
     internal readonly IStringLocalizer S;
 
-    public WorkflowsDesignerJSLocalizer(IStringLocalizer<WorkflowsDesignerJSLocalizer> stringLocalizer)
+    public WorkflowsDesignerJSLocalizer(IStringLocalizer<WorkflowsDesignerJSLocalizer> stringLocalizer, IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         S = stringLocalizer;
     }
 
@@ -41,7 +44,7 @@ public sealed class WorkflowsDesignerJSLocalizer : IJSLocalizer
             { "RedoShortcut", S["Redo (Ctrl+Y)"].Value },
             { "Toolbox", S["Toolbox"].Value },
             { "Close", S["Close"].Value },
-            { "Cancel", S["Cancel"].Value },
+            { "Cancel", _localizerFactory.Localize(CommonLocalizationSources.Cancel).Value },
 
             // Toolbox.
             { "SearchActivities", S["Search activities"].Value },
@@ -70,14 +73,14 @@ public sealed class WorkflowsDesignerJSLocalizer : IJSLocalizer
             { "VariablesTabHint", S["The variables of this workflow, with their types and default values. Read them with variable(\"name\") in JavaScript or {{ Workflow.Variables.name }} in Liquid."].Value },
             { "VariablesTabHintReadOnly", S["The variables of this workflow, and the values this instance has."].Value },
             { "NoVariables", S["This workflow has no variables."].Value },
-            { "VariableName", S["Name"].Value },
+            { "VariableName", _localizerFactory.Localize(CommonLocalizationSources.TechnicalNames.Name).Value },
             { "VariableType", S["Type"].Value },
             { "VariableDefault", S["Default value"].Value },
             { "VariableValue", S["Value"].Value },
             { "VariableDescription", S["Description"].Value },
             { "AvailableData", S["Available data"].Value },
             { "AvailableDataHint", S["The data this activity can use. Click an expression to insert it where the cursor was in the settings, or to copy it."].Value },
-            { "ActivitySettings", S["Settings"].Value },
+            { "ActivitySettings", _localizerFactory.Localize(CommonLocalizationSources.Settings).Value },
             { "AvailableFrom", S["From {0}"].Value },
             { "AvailableWorkflow", S["Workflow"].Value },
             { "AvailableThisActivity", S["This activity"].Value },
@@ -297,10 +300,10 @@ public sealed class WorkflowsDesignerJSLocalizer : IJSLocalizer
             { "RunQueryString", S["Query string parameters"].Value },
             { "RunNoQueryParameters", S["The workflow doesn't read any parameter by name."].Value },
             { "RunReadByTheWorkflow", S["The workflow reads this value. Leave it empty to not send it."].Value },
-            { "RunName", S["Name"].Value },
+            { "RunName", _localizerFactory.Localize(CommonLocalizationSources.Name).Value },
             { "RunValue", S["Value"].Value },
             { "RunValueOf", S["Value of {0}"].Value },
-            { "RunRemove", S["Remove"].Value },
+            { "RunRemove", _localizerFactory.Localize(CommonLocalizationSources.Commands.Remove).Value },
             { "RunAddParameter", S["Add a value"].Value },
             { "RunFormFields", S["Form fields"].Value },
             { "RunBodyText", S["JSON or text"].Value },
@@ -342,10 +345,10 @@ public sealed class WorkflowsDesignerJSLocalizer : IJSLocalizer
             { "ConnectionReplaced", S["The outcome {0} already had a connection; it was replaced."].Value },
             { "RemoveConnection", S["Remove connection {0} → {1}"].Value },
             { "DeleteConnection", S["Delete connection"].Value },
-            { "Edit", S["Edit"].Value },
+            { "Edit", _localizerFactory.Localize(CommonLocalizationSources.Edit).Value },
             { "SetAsStart", S["Set as start activity"].Value },
             { "UnsetStart", S["Unset start activity"].Value },
-            { "Delete", S["Delete"].Value },
+            { "Delete", _localizerFactory.Localize(CommonLocalizationSources.Delete).Value },
             { "DeleteSelected", S["Delete {0} activities"].Value },
             { "ActivityActions", S["Actions for {0}"].Value },
             { "ConnectionActions", S["Connection actions"].Value },

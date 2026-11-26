@@ -2,6 +2,7 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.BackgroundTasks.ViewModels;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Localization;
 
 namespace OrchardCore.BackgroundTasks.Drivers;
 
@@ -10,10 +11,13 @@ namespace OrchardCore.BackgroundTasks.Drivers;
 /// </summary>
 internal sealed class BackgroundTaskDisplayDriver : DisplayDriver<BackgroundTaskViewModel>
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     internal readonly IStringLocalizer S;
 
-    public BackgroundTaskDisplayDriver(IStringLocalizer<BackgroundTaskDisplayDriver> stringLocalizer)
+    public BackgroundTaskDisplayDriver(IStringLocalizer<BackgroundTaskDisplayDriver> stringLocalizer, IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         S = stringLocalizer;
     }
 
@@ -21,7 +25,7 @@ internal sealed class BackgroundTaskDisplayDriver : DisplayDriver<BackgroundTask
     {
         return Combine(
             Initialize<BackgroundTaskViewModel>("BackgroundTaskGeneral_Edit", m => Populate(model, m))
-                .Location(l => l.Zone("Content", "1").Tab(S["Properties"], "10").Card(S["General"], "10")),
+                .Location(l => l.Zone("Content", "1").Tab(S["Properties"], "10").Card(_localizerFactory.Localize(CommonLocalizationSources.General), "10")),
             Initialize<BackgroundTaskViewModel>("BackgroundTaskLocking_Edit", m => Populate(model, m))
                 .Location(l => l.Zone("Content", "2").Tab(S["Advanced"], "20").Card(S["Locking"], "10")));
     }

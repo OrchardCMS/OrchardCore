@@ -16,7 +16,7 @@
         <div class="ocat-end-offset">
             <div class="form-check">
                 <input asp-for="IsEnabled" type="checkbox" class="form-check-input">
-                <label class="form-check-label" asp-for="IsEnabled">@T["Enabled"]</label>
+                <label class="form-check-label" asp-for="IsEnabled">@Localize(CommonLocalizationSources.BooleanFields.Enabled)</label>
                 <span class="hint dashed">@T["Uncheck to prevent workflows of this type from being executed."]</span>
             </div>
         </div>

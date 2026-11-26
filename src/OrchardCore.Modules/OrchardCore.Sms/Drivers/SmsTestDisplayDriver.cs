@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Localization;
 using OrchardCore.Sms.ViewModels;
 
 namespace OrchardCore.Sms.Drivers;
@@ -10,17 +11,20 @@ namespace OrchardCore.Sms.Drivers;
 /// </summary>
 internal sealed class SmsTestDisplayDriver : DisplayDriver<SmsTestViewModel>
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     internal readonly IStringLocalizer S;
 
-    public SmsTestDisplayDriver(IStringLocalizer<SmsTestDisplayDriver> stringLocalizer)
+    public SmsTestDisplayDriver(IStringLocalizer<SmsTestDisplayDriver> stringLocalizer, IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         S = stringLocalizer;
     }
 
     public override IDisplayResult Edit(SmsTestViewModel model, BuildEditorContext context)
     {
         return Initialize<SmsTestViewModel>("SmsTestGeneral_Edit", m => Populate(model, m))
-            .Location(l => l.Zone("Content", "1").Card(S["General"], "10"));
+            .Location(l => l.Zone("Content", "1").Card(_localizerFactory.Localize(CommonLocalizationSources.General), "10"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(SmsTestViewModel model, UpdateEditorContext context)

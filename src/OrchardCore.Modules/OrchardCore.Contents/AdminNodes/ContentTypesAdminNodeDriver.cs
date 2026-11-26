@@ -5,12 +5,15 @@ using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Localization;
 using OrchardCore.Navigation;
 
 namespace OrchardCore.Contents.AdminNodes;
 
 public sealed class ContentTypesAdminNodeDriver : DisplayDriver<MenuItem, ContentTypesAdminNode>
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
@@ -21,8 +24,10 @@ public sealed class ContentTypesAdminNodeDriver : DisplayDriver<MenuItem, Conten
         IContentDefinitionManager contentDefinitionManager,
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
-        IStringLocalizer<ContentTypesAdminNodeDriver> stringLocalizer)
+        IStringLocalizer<ContentTypesAdminNodeDriver> stringLocalizer,
+        IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         _contentDefinitionManager = contentDefinitionManager;
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
@@ -52,7 +57,7 @@ public sealed class ContentTypesAdminNodeDriver : DisplayDriver<MenuItem, Conten
                 IsChecked = treeNode.ContentTypes.Any(selected => string.Equals(selected.ContentTypeName, x.Name, StringComparison.OrdinalIgnoreCase)),
                 IconClass = treeNode.ContentTypes.FirstOrDefault(selected => selected.ContentTypeName == x.Name)?.IconClass ?? string.Empty,
             }).ToArray();
-        }).Location(l => l.Zone("Content").Card(S["Content types"], "10"));
+        }).Location(l => l.Zone("Content").Card(_localizerFactory.Localize(CommonLocalizationSources.ContentTypes), "10"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentTypesAdminNode treeNode, UpdateEditorContext context)

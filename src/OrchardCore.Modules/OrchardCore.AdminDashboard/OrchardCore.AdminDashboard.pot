@@ -26,21 +26,6 @@ msgctxt "OrchardCore.AdminDashboard.Views.Dashboard.DeleteButton"
 msgid "Are you sure you want to delete this content item?"
 msgstr ""
 
-#: Views/Dashboard.DeleteButton.cshtml
-msgctxt "OrchardCore.AdminDashboard.Views.Dashboard.DeleteButton"
-msgid "Cancel"
-msgstr ""
-
-#: Views/Dashboard.DeleteButton.cshtml
-msgctxt "OrchardCore.AdminDashboard.Views.Dashboard.DeleteButton"
-msgid "Delete"
-msgstr ""
-
-#: Views/Dashboard.DeleteButton.cshtml
-msgctxt "OrchardCore.AdminDashboard.Views.Dashboard.DeleteButton"
-msgid "Ok"
-msgstr ""
-
 #: Views/Dashboard.DiscardDraftButton.cshtml
 msgctxt "OrchardCore.AdminDashboard.Views.Dashboard.DiscardDraftButton"
 msgid "Are you sure you want to discard this draft?"
@@ -49,21 +34,6 @@ msgstr ""
 #: Views/Dashboard.DiscardDraftButton.cshtml
 msgctxt "OrchardCore.AdminDashboard.Views.Dashboard.DiscardDraftButton"
 msgid "Discard Draft"
-msgstr ""
-
-#: Views/Dashboard.DiscardDraftButton.cshtml
-msgctxt "OrchardCore.AdminDashboard.Views.Dashboard.DiscardDraftButton"
-msgid "No"
-msgstr ""
-
-#: Views/Dashboard.DiscardDraftButton.cshtml
-msgctxt "OrchardCore.AdminDashboard.Views.Dashboard.DiscardDraftButton"
-msgid "Yes"
-msgstr ""
-
-#: Views/Dashboard.EditButton.cshtml
-msgctxt "OrchardCore.AdminDashboard.Views.Dashboard.EditButton"
-msgid "Edit"
 msgstr ""
 
 #: Views/Dashboard/Index.cshtml
@@ -118,17 +88,7 @@ msgstr ""
 
 #: Views/Dashboard.UnpublishButton.cshtml
 msgctxt "OrchardCore.AdminDashboard.Views.Dashboard.UnpublishButton"
-msgid "No"
-msgstr ""
-
-#: Views/Dashboard.UnpublishButton.cshtml
-msgctxt "OrchardCore.AdminDashboard.Views.Dashboard.UnpublishButton"
 msgid "Unpublish"
-msgstr ""
-
-#: Views/Dashboard.UnpublishButton.cshtml
-msgctxt "OrchardCore.AdminDashboard.Views.Dashboard.UnpublishButton"
-msgid "Yes"
 msgstr ""
 
 #: Views/DashboardPart.Edit.cshtml
@@ -159,21 +119,6 @@ msgstr ""
 #: Views/DashboardWidget-ContentsTags.DetailAdmin.cshtml
 msgctxt "OrchardCore.AdminDashboard.Views.DashboardWidget-ContentsTags.DetailAdmin"
 msgid "Published"
-msgstr ""
-
-#: Views/DashboardWidget-ContentsTags.DetailAdmin.cshtml
-msgctxt "OrchardCore.AdminDashboard.Views.DashboardWidget-ContentsTags.DetailAdmin"
-msgid "Status"
-msgstr ""
-
-#: Views/DashboardWidget.DetailAdmin.cshtml
-msgctxt "OrchardCore.AdminDashboard.Views.DashboardWidget.DetailAdmin"
-msgid "Actions"
-msgstr ""
-
-#: Views/DashboardWidget.SummaryAdmin.cshtml
-msgctxt "OrchardCore.AdminDashboard.Views.DashboardWidget.SummaryAdmin"
-msgid "Actions"
 msgstr ""
 
 #. Format arguments: {0}: contentItem.DisplayText

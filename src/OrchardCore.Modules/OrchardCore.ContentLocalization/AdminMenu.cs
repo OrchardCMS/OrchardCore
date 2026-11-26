@@ -1,12 +1,15 @@
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentLocalization.Drivers;
+using OrchardCore.Localization;
 using OrchardCore.Navigation;
 
 namespace OrchardCore.ContentLocalization;
 
 public sealed class AdminMenu : AdminNavigationProvider
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     private static readonly RouteValueDictionary s_providersRouteValues = new()
     {
         { "area", "OrchardCore.Settings" },
@@ -21,15 +24,16 @@ public sealed class AdminMenu : AdminNavigationProvider
 
     internal readonly IStringLocalizer S;
 
-    public AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer)
+    public AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer, IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         S = stringLocalizer;
     }
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
         builder
-            .Add(S["Settings"], settings => settings
+            .Add(_localizerFactory.Localize(CommonLocalizationSources.Settings), settings => settings
                 .Add(S["Localization"], S["Localization"].PrefixPosition(), localization => localization
                     .Add(S["Content Culture"], S["Content Culture"].PrefixPosition(), provider => provider
                         .AddClass("contentrequestcultureprovider")

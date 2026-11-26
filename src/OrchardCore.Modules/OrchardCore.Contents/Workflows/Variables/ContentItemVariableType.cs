@@ -12,7 +12,7 @@ public sealed class ContentItemVariableType : IWorkflowVariableType
 {
     public static string Name => "contentItem";
 
-    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<ContentItemVariableType>("Content item");
+    public static LocalizationSource DisplayName { get; } = CommonLocalizationSources.ContentItem;
 
     public static string Editor => "none";
 

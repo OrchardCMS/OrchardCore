@@ -13,6 +13,7 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Localization;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
 
@@ -21,6 +22,8 @@ namespace OrchardCore.AdminMenu.Controllers;
 [Admin("AdminMenu/{action}/{id?}", "AdminMenu{action}")]
 public sealed class MenuController : Controller
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     private const string _optionsSearch = "Options.Search";
 
     private readonly IAuthorizationService _authorizationService;
@@ -47,8 +50,10 @@ public sealed class MenuController : Controller
         INotifier notifier,
         IStringLocalizer<MenuController> stringLocalizer,
         IHtmlLocalizer<MenuController> htmlLocalizer,
-        ILogger<MenuController> logger)
+        ILogger<MenuController> logger,
+        IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         _authorizationService = authorizationService;
         _adminMenuService = adminMenuService;
         _pagerOptions = pagerOptions.Value;
@@ -118,7 +123,7 @@ public sealed class MenuController : Controller
 
         model.Options.ContentsBulkAction =
         [
-            new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
+            new SelectListItem(_localizerFactory.Localize(CommonLocalizationSources.Delete), nameof(ContentsBulkAction.Remove)),
         ];
 
         // The AdminList shape renders the menus with the configured layout (List, Grid, ...).

@@ -5,8 +5,8 @@
 @inject IDataLocalizer D
 <div class="w-100">
     <div class="float-end">
-        <a id="btn-edit-@Model.Name" class="btn btn-primary btn-sm edit-button list-item-action" asp-route-action="EditPart" asp-route-id="@Model.Name">@T["Edit"]</a>
-        <a class="btn btn-danger btn-sm delete-button" asp-action="DeletePart" asp-route-id="@Model.Name" asp-route-returnUrl="@FullRequestPath" data-url-af="RemoveUrl UnsafeUrl" data-title="@T["Delete"]" data-message="@T["Are you sure you want to delete this content part?"]" data-ok-text="@T["Ok"]" data-cancel-text="@T["Cancel"]">@T["Delete"]</a>
+        <a id="btn-edit-@Model.Name" class="btn btn-primary btn-sm edit-button list-item-action" asp-route-action="EditPart" asp-route-id="@Model.Name">@Localize(CommonLocalizationSources.Edit)</a>
+        <a class="btn btn-danger btn-sm delete-button" asp-action="DeletePart" asp-route-id="@Model.Name" asp-route-returnUrl="@FullRequestPath" data-url-af="RemoveUrl UnsafeUrl" data-title="@Localize(CommonLocalizationSources.Delete)" data-message="@T["Are you sure you want to delete this content part?"]" data-ok-text="@Localize(CommonLocalizationSources.Ok)" data-cancel-text="@Localize(CommonLocalizationSources.Cancel)">@Localize(CommonLocalizationSources.Delete)</a>
     </div>
     <div class="list-item-search-text">@D[Model.PartDefinition.DisplayName(), DataLocalizationContext.ContentType]</div>
     @if (!string.IsNullOrWhiteSpace(Model.Description))

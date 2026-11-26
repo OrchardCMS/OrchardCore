@@ -13,7 +13,7 @@
     @await DisplayAsync(Model.Editor)
 
     <div class="action-bar-bottom">
-        <a class="btn btn-secondary cancel" role="button" href="@Model.ReturnUrl">@T["Cancel"]</a>
+        <a class="btn btn-secondary cancel" role="button" href="@Model.ReturnUrl">@Localize(CommonLocalizationSources.Cancel)</a>
         <button class="btn btn-primary save" type="submit">@T["Create and open the designer"]</button>
     </div>
 </form>

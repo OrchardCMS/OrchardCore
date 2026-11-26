@@ -50,17 +50,7 @@ msgstr ""
 
 #: Controllers/AdminController.cs
 msgctxt "OrchardCore.Tenants.Controllers.AdminController"
-msgid "Disabled"
-msgstr ""
-
-#: Controllers/AdminController.cs
-msgctxt "OrchardCore.Tenants.Controllers.AdminController"
 msgid "Enable"
-msgstr ""
-
-#: Controllers/AdminController.cs
-msgctxt "OrchardCore.Tenants.Controllers.AdminController"
-msgid "Name"
 msgstr ""
 
 #: Controllers/AdminController.cs
@@ -122,11 +112,6 @@ msgstr ""
 #: Controllers/FeatureProfilesController.cs
 msgctxt "OrchardCore.Tenants.Controllers.FeatureProfilesController"
 msgid "A feature profile with the same name already exists."
-msgstr ""
-
-#: Controllers/FeatureProfilesController.cs
-msgctxt "OrchardCore.Tenants.Controllers.FeatureProfilesController"
-msgid "Delete"
 msgstr ""
 
 #: Controllers/FeatureProfilesController.cs
@@ -234,22 +219,12 @@ msgstr ""
 
 #: Drivers/EditTenantDisplayDriver.cs
 msgctxt "OrchardCore.Tenants.Drivers.EditTenantDisplayDriver"
-msgid "General"
-msgstr ""
-
-#: Drivers/EditTenantDisplayDriver.cs
-msgctxt "OrchardCore.Tenants.Drivers.EditTenantDisplayDriver"
 msgid "Setup presets"
 msgstr ""
 
 #: Drivers/EditTenantDisplayDriver.cs
 msgctxt "OrchardCore.Tenants.Drivers.EditTenantDisplayDriver"
 msgid "URL"
-msgstr ""
-
-#: Drivers/FeatureProfileDisplayDriver.cs
-msgctxt "OrchardCore.Tenants.Drivers.FeatureProfileDisplayDriver"
-msgid "General"
 msgstr ""
 
 #: FeatureProfilesAdminMenu.cs
@@ -382,11 +357,6 @@ msgstr ""
 
 #: Views/Admin/Create.cshtml
 msgctxt "OrchardCore.Tenants.Views.Admin.Create"
-msgid "Cancel"
-msgstr ""
-
-#: Views/Admin/Create.cshtml
-msgctxt "OrchardCore.Tenants.Views.Admin.Create"
 msgid "Create"
 msgstr ""
 
@@ -407,17 +377,7 @@ msgstr ""
 
 #: Views/Admin/Edit.cshtml
 msgctxt "OrchardCore.Tenants.Views.Admin.Edit"
-msgid "Cancel"
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.Tenants.Views.Admin.Edit"
 msgid "Edit Tenant"
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.Tenants.Views.Admin.Edit"
-msgid "Save"
 msgstr ""
 
 #: Views/Admin/Edit.cshtml
@@ -428,11 +388,6 @@ msgstr ""
 #: Views/Admin/Index.cshtml
 msgctxt "OrchardCore.Tenants.Views.Admin.Index"
 msgid "<strong>Nothing here!</strong> There are no tenants for the moment."
-msgstr ""
-
-#: Views/Admin/Index.cshtml
-msgctxt "OrchardCore.Tenants.Views.Admin.Index"
-msgid "Actions"
 msgstr ""
 
 #: Views/Admin/Index.cshtml
@@ -452,17 +407,7 @@ msgstr ""
 
 #: Views/Admin/Index.cshtml
 msgctxt "OrchardCore.Tenants.Views.Admin.Index"
-msgid "Name"
-msgstr ""
-
-#: Views/Admin/Index.cshtml
-msgctxt "OrchardCore.Tenants.Views.Admin.Index"
 msgid "Recipe"
-msgstr ""
-
-#: Views/Admin/Index.cshtml
-msgctxt "OrchardCore.Tenants.Views.Admin.Index"
-msgid "Search"
 msgstr ""
 
 #: Views/Admin/Index.cshtml
@@ -485,26 +430,11 @@ msgctxt "OrchardCore.Tenants.Views.Admin.Index"
 msgid "selected"
 msgstr ""
 
-#: Views/FeatureProfileEntry.Buttons.SummaryAdmin.cshtml
-msgctxt "OrchardCore.Tenants.Views.FeatureProfileEntry.Buttons.SummaryAdmin"
-msgid "Delete"
-msgstr ""
-
-#: Views/FeatureProfileEntry.Buttons.SummaryAdmin.cshtml
-msgctxt "OrchardCore.Tenants.Views.FeatureProfileEntry.Buttons.SummaryAdmin"
-msgid "Edit"
-msgstr ""
-
 #. Format arguments: {0}: Model.Value.Name
 #: Views/FeatureProfileEntry.Checkbox.SummaryAdmin.cshtml
 #, csharp-format
 msgctxt "OrchardCore.Tenants.Views.FeatureProfileEntry.Checkbox.SummaryAdmin"
 msgid "Select {0}"
-msgstr ""
-
-#: Views/FeatureProfileGeneral.Edit.cshtml
-msgctxt "OrchardCore.Tenants.Views.FeatureProfileGeneral.Edit"
-msgid "Name"
 msgstr ""
 
 #: Views/FeatureProfileGeneral.Edit.cshtml
@@ -526,11 +456,6 @@ msgstr ""
 
 #: Views/FeatureProfiles/Create.cshtml
 msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.Create"
-msgid "Cancel"
-msgstr ""
-
-#: Views/FeatureProfiles/Create.cshtml
-msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.Create"
 msgid "Create Feature Profile"
 msgstr ""
 
@@ -541,32 +466,7 @@ msgstr ""
 
 #: Views/FeatureProfiles/Create.cshtml
 msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.Create"
-msgid "Save"
-msgstr ""
-
-#: Views/FeatureProfiles/Create.cshtml
-msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.Create"
-msgid "Save actions"
-msgstr ""
-
-#: Views/FeatureProfiles/Create.cshtml
-msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.Create"
-msgid "Save and continue"
-msgstr ""
-
-#: Views/FeatureProfiles/Create.cshtml
-msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.Create"
-msgid "Toggle Dropdown"
-msgstr ""
-
-#: Views/FeatureProfiles/Create.cshtml
-msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.Create"
 msgid "and continue"
-msgstr ""
-
-#: Views/FeatureProfiles/Edit.cshtml
-msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.Edit"
-msgid "Cancel"
 msgstr ""
 
 #: Views/FeatureProfiles/Edit.cshtml
@@ -581,26 +481,6 @@ msgstr ""
 
 #: Views/FeatureProfiles/Edit.cshtml
 msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.Edit"
-msgid "Save"
-msgstr ""
-
-#: Views/FeatureProfiles/Edit.cshtml
-msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.Edit"
-msgid "Save actions"
-msgstr ""
-
-#: Views/FeatureProfiles/Edit.cshtml
-msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.Edit"
-msgid "Save and continue"
-msgstr ""
-
-#: Views/FeatureProfiles/Edit.cshtml
-msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.Edit"
-msgid "Toggle Dropdown"
-msgstr ""
-
-#: Views/FeatureProfiles/Edit.cshtml
-msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.Edit"
 msgid "and continue"
 msgstr ""
 
@@ -611,27 +491,12 @@ msgstr ""
 
 #: Views/FeatureProfiles/Index.cshtml
 msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.Index"
-msgid "Actions"
-msgstr ""
-
-#: Views/FeatureProfiles/Index.cshtml
-msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.Index"
 msgid "Add Feature Profile"
 msgstr ""
 
 #: Views/FeatureProfiles/Index.cshtml
 msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.Index"
 msgid "Feature Profiles"
-msgstr ""
-
-#: Views/FeatureProfiles/Index.cshtml
-msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.Index"
-msgid "Name"
-msgstr ""
-
-#: Views/FeatureProfiles/Index.cshtml
-msgctxt "OrchardCore.Tenants.Views.FeatureProfiles.Index"
-msgid "Search"
 msgstr ""
 
 #: Views/FeatureProfiles/Index.cshtml
@@ -677,11 +542,6 @@ msgstr ""
 #: Views/Items/CreateTenantTask.Fields.Edit.cshtml
 msgctxt "OrchardCore.Tenants.Views.Items.CreateTenantTask.Fields.Edit"
 msgid "Description"
-msgstr ""
-
-#: Views/Items/CreateTenantTask.Fields.Edit.cshtml
-msgctxt "OrchardCore.Tenants.Views.Items.CreateTenantTask.Fields.Edit"
-msgid "Name"
 msgstr ""
 
 #: Views/Items/CreateTenantTask.Fields.Edit.cshtml
@@ -910,17 +770,7 @@ msgstr ""
 
 #: Views/ManageTenantActionButtons.cshtml
 msgctxt "OrchardCore.Tenants.Views.ManageTenantActionButtons"
-msgid "Cancel"
-msgstr ""
-
-#: Views/ManageTenantActionButtons.cshtml
-msgctxt "OrchardCore.Tenants.Views.ManageTenantActionButtons"
 msgid "Disable"
-msgstr ""
-
-#: Views/ManageTenantActionButtons.cshtml
-msgctxt "OrchardCore.Tenants.Views.ManageTenantActionButtons"
-msgid "Edit"
 msgstr ""
 
 #: Views/ManageTenantActionButtons.cshtml
@@ -930,17 +780,7 @@ msgstr ""
 
 #: Views/ManageTenantActionButtons.cshtml
 msgctxt "OrchardCore.Tenants.Views.ManageTenantActionButtons"
-msgid "Ok"
-msgstr ""
-
-#: Views/ManageTenantActionButtons.cshtml
-msgctxt "OrchardCore.Tenants.Views.ManageTenantActionButtons"
 msgid "Reload"
-msgstr ""
-
-#: Views/ManageTenantActionButtons.cshtml
-msgctxt "OrchardCore.Tenants.Views.ManageTenantActionButtons"
-msgid "Remove"
 msgstr ""
 
 #: Views/ManageTenantActionButtons.cshtml
@@ -987,11 +827,6 @@ msgstr ""
 
 #: Views/ShellSettingsEntry.State.SummaryAdmin.cshtml
 msgctxt "OrchardCore.Tenants.Views.ShellSettingsEntry.State.SummaryAdmin"
-msgid "Disabled"
-msgstr ""
-
-#: Views/ShellSettingsEntry.State.SummaryAdmin.cshtml
-msgctxt "OrchardCore.Tenants.Views.ShellSettingsEntry.State.SummaryAdmin"
 msgid "Initializing"
 msgstr ""
 
@@ -1028,11 +863,6 @@ msgstr ""
 #: Views/TenantGeneral.Edit.cshtml
 msgctxt "OrchardCore.Tenants.Views.TenantGeneral.Edit"
 msgid "Description"
-msgstr ""
-
-#: Views/TenantGeneral.Edit.cshtml
-msgctxt "OrchardCore.Tenants.Views.TenantGeneral.Edit"
-msgid "Name"
 msgstr ""
 
 #: Views/TenantGeneral.Edit.cshtml
@@ -1206,11 +1036,6 @@ msgstr ""
 
 #: Workflows/Activities/CreateTenantTask.cs
 msgctxt "OrchardCore.Tenants.Workflows.Activities.CreateTenantTask"
-msgid "Done"
-msgstr ""
-
-#: Workflows/Activities/CreateTenantTask.cs
-msgctxt "OrchardCore.Tenants.Workflows.Activities.CreateTenantTask"
 msgid "Failed"
 msgstr ""
 
@@ -1226,11 +1051,6 @@ msgstr ""
 
 #: Workflows/Activities/DisableTenantTask.cs
 msgctxt "OrchardCore.Tenants.Workflows.Activities.DisableTenantTask"
-msgid "Disabled"
-msgstr ""
-
-#: Workflows/Activities/DisableTenantTask.cs
-msgctxt "OrchardCore.Tenants.Workflows.Activities.DisableTenantTask"
 msgid "Failed"
 msgstr ""
 
@@ -1241,17 +1061,7 @@ msgstr ""
 
 #: Workflows/Activities/EnableTenantTask.cs
 msgctxt "OrchardCore.Tenants.Workflows.Activities.EnableTenantTask"
-msgid "Enabled"
-msgstr ""
-
-#: Workflows/Activities/EnableTenantTask.cs
-msgctxt "OrchardCore.Tenants.Workflows.Activities.EnableTenantTask"
 msgid "Failed"
-msgstr ""
-
-#: Workflows/Activities/SetupTenantTask.cs
-msgctxt "OrchardCore.Tenants.Workflows.Activities.SetupTenantTask"
-msgid "Done"
 msgstr ""
 
 #: Workflows/Activities/SetupTenantTask.cs
@@ -1264,19 +1074,9 @@ msgctxt "OrchardCore.Tenants.Workflows.Activities.SetupTenantTask"
 msgid "Setup Tenant Task"
 msgstr ""
 
-#: Workflows/Activities/TenantActivity.cs
-msgctxt "OrchardCore.Tenants.Workflows.Activities.TenantActivity"
-msgid "Done"
-msgstr ""
-
 #: Workflows/Drivers/CreateTenantTaskDisplayDriver.cs
 msgctxt "OrchardCore.Tenants.Workflows.Drivers.CreateTenantTaskDisplayDriver"
 msgid "Features"
-msgstr ""
-
-#: Workflows/Drivers/CreateTenantTaskDisplayDriver.cs
-msgctxt "OrchardCore.Tenants.Workflows.Drivers.CreateTenantTaskDisplayDriver"
-msgid "General"
 msgstr ""
 
 #: Workflows/Drivers/CreateTenantTaskDisplayDriver.cs
@@ -1307,9 +1107,4 @@ msgstr ""
 #: Workflows/Drivers/SetupTenantTaskDisplayDriver.cs
 msgctxt "OrchardCore.Tenants.Workflows.Drivers.SetupTenantTaskDisplayDriver"
 msgid "Database"
-msgstr ""
-
-#: Workflows/Drivers/SetupTenantTaskDisplayDriver.cs
-msgctxt "OrchardCore.Tenants.Workflows.Drivers.SetupTenantTaskDisplayDriver"
-msgid "General"
 msgstr ""

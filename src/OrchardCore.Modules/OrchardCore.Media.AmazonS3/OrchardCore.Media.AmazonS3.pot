@@ -21,11 +21,6 @@ msgctxt "OrchardCore.Media.AmazonS3.AdminMenu"
 msgid "Media"
 msgstr ""
 
-#: AdminMenu.cs
-msgctxt "OrchardCore.Media.AmazonS3.AdminMenu"
-msgid "Settings"
-msgstr ""
-
 #: Permissions.cs
 msgctxt "OrchardCore.Media.AmazonS3.Permissions"
 msgid "View Amazon S3 Media Options"

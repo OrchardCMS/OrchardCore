@@ -67,11 +67,6 @@ msgctxt "OrchardCore.Autoroute.Settings.AutoroutePartSettingsDisplayDriver"
 msgid "Pattern doesn't contain a valid Liquid expression. Details: {0}"
 msgstr ""
 
-#: Settings/AutoroutePartSettingsDisplayDriver.cs
-msgctxt "OrchardCore.Autoroute.Settings.AutoroutePartSettingsDisplayDriver"
-msgid "Settings"
-msgstr ""
-
 #: Views/AutoroutePart.Edit.cshtml
 msgctxt "OrchardCore.Autoroute.Views.AutoroutePart.Edit"
 msgid "Absolute"
@@ -100,11 +95,6 @@ msgstr ""
 #: Views/AutoroutePart.Edit.cshtml
 msgctxt "OrchardCore.Autoroute.Views.AutoroutePart.Edit"
 msgid "Check to specify that a child content item will be routed to an absolute path."
-msgstr ""
-
-#: Views/AutoroutePart.Edit.cshtml
-msgctxt "OrchardCore.Autoroute.Views.AutoroutePart.Edit"
-msgid "Disabled"
 msgstr ""
 
 #: Views/AutoroutePart.Edit.cshtml

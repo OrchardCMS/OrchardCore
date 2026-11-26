@@ -9,6 +9,7 @@ using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Localization;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
 using OrchardCore.Sitemaps.Models;
@@ -20,6 +21,8 @@ namespace OrchardCore.Sitemaps.Controllers;
 [Admin("SitemapIndexes/{action}/{sitemapId?}", "SitemapIndexes{action}")]
 public sealed class SitemapIndexController : Controller
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     private const string _optionsSearch = "Options.Search";
 
     private readonly ISitemapHelperService _sitemapService;
@@ -46,8 +49,10 @@ public sealed class SitemapIndexController : Controller
         IShapeFactory shapeFactory,
         IStringLocalizer<SitemapIndexController> stringLocalizer,
         IHtmlLocalizer<SitemapIndexController> htmlLocalizer,
-        INotifier notifier)
+        INotifier notifier,
+        IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         _sitemapService = sitemapService;
         _authorizationService = authorizationService;
         _sitemapIdGenerator = sitemapIdGenerator;
@@ -106,7 +111,7 @@ public sealed class SitemapIndexController : Controller
 
         model.Options.ContentsBulkAction =
         [
-            new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
+            new SelectListItem(_localizerFactory.Localize(CommonLocalizationSources.Delete), nameof(ContentsBulkAction.Remove)),
         ];
 
         // The AdminList shape renders the rows with the configured layout (List, Grid, ...).

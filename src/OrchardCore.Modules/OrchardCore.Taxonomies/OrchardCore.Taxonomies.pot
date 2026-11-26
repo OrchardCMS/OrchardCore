@@ -8,11 +8,6 @@ msgstr ""
 
 #: AdminMenu.cs
 msgctxt "OrchardCore.Taxonomies.AdminMenu"
-msgid "Settings"
-msgstr ""
-
-#: AdminMenu.cs
-msgctxt "OrchardCore.Taxonomies.AdminMenu"
 msgid "Taxonomy Filters"
 msgstr ""
 
@@ -48,21 +43,11 @@ msgctxt "OrchardCore.Taxonomies.Drivers.TaxonomyFieldDisplayDriver"
 msgid "A value is required for {0}."
 msgstr ""
 
-#: Drivers/TaxonomyFieldSettingsDriver.cs
-msgctxt "OrchardCore.Taxonomies.Drivers.TaxonomyFieldSettingsDriver"
-msgid "Settings"
-msgstr ""
-
 #. Format arguments: {0}: context.PartFieldDefinition.DisplayName()
 #: Drivers/TaxonomyFieldTagsDisplayDriver.cs
 #, csharp-format
 msgctxt "OrchardCore.Taxonomies.Drivers.TaxonomyFieldTagsDisplayDriver"
 msgid "A value is required for {0}."
-msgstr ""
-
-#: Drivers/TaxonomyFieldTagsEditorSettingsDriver.cs
-msgctxt "OrchardCore.Taxonomies.Drivers.TaxonomyFieldTagsEditorSettingsDriver"
-msgid "Settings"
 msgstr ""
 
 #: Drivers/TaxonomyPartDisplayDriver.cs
@@ -162,16 +147,6 @@ msgctxt "OrchardCore.Taxonomies.Views.Content.TermAdmin"
 msgid "Add"
 msgstr ""
 
-#: Views/Content.TermAdmin.cshtml
-msgctxt "OrchardCore.Taxonomies.Views.Content.TermAdmin"
-msgid "Delete"
-msgstr ""
-
-#: Views/Content.TermAdmin.cshtml
-msgctxt "OrchardCore.Taxonomies.Views.Content.TermAdmin"
-msgid "Edit"
-msgstr ""
-
 #. Format arguments: {0}: Model.DisplayText
 #: Views/ContentsAdminListTaxonomyFilter.cshtml
 #, csharp-format
@@ -227,16 +202,6 @@ msgstr ""
 
 #: Views/TaxonomyField-Tags.Edit.cshtml
 msgctxt "OrchardCore.Taxonomies.Views.TaxonomyField-Tags.Edit"
-msgid "Remove"
-msgstr ""
-
-#: Views/TaxonomyField-Tags.Edit.cshtml
-msgctxt "OrchardCore.Taxonomies.Views.TaxonomyField-Tags.Edit"
-msgid "Search"
-msgstr ""
-
-#: Views/TaxonomyField-Tags.Edit.cshtml
-msgctxt "OrchardCore.Taxonomies.Views.TaxonomyField-Tags.Edit"
 msgid "The taxonomy could not be found. Please check the settings for this field."
 msgstr ""
 
@@ -250,19 +215,9 @@ msgctxt "OrchardCore.Taxonomies.Views.TaxonomyField-Tags.Option"
 msgid "Tags"
 msgstr ""
 
-#: Views/TaxonomyField.DisplayOption.cshtml
-msgctxt "OrchardCore.Taxonomies.Views.TaxonomyField.DisplayOption"
-msgid "Standard"
-msgstr ""
-
 #: Views/TaxonomyField.Edit.cshtml
 msgctxt "OrchardCore.Taxonomies.Views.TaxonomyField.Edit"
 msgid "The taxonomy could not be found. Please check the settings for this field."
-msgstr ""
-
-#: Views/TaxonomyField.Option.cshtml
-msgctxt "OrchardCore.Taxonomies.Views.TaxonomyField.Option"
-msgid "Standard"
 msgstr ""
 
 #: Views/TaxonomyFieldSettings.Edit.cshtml
@@ -361,11 +316,6 @@ msgstr ""
 #: Views/Term.cshtml
 msgctxt "OrchardCore.Taxonomies.Views.Term"
 msgid "The list is empty"
-msgstr ""
-
-#: Views/TermEditorActions.cshtml
-msgctxt "OrchardCore.Taxonomies.Views.TermEditorActions"
-msgid "Cancel"
 msgstr ""
 
 #: Views/TermEditorActions.cshtml

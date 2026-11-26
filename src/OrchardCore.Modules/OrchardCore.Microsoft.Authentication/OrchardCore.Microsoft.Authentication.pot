@@ -38,11 +38,6 @@ msgctxt "OrchardCore.Microsoft.Authentication.AdminMenuAAD"
 msgid "Security"
 msgstr ""
 
-#: AdminMenuAAD.cs
-msgctxt "OrchardCore.Microsoft.Authentication.AdminMenuAAD"
-msgid "Settings"
-msgstr ""
-
 #: AdminMenuMicrosoftAccount.cs
 msgctxt "OrchardCore.Microsoft.Authentication.AdminMenuMicrosoftAccount"
 msgid "Authentication"
@@ -56,11 +51,6 @@ msgstr ""
 #: AdminMenuMicrosoftAccount.cs
 msgctxt "OrchardCore.Microsoft.Authentication.AdminMenuMicrosoftAccount"
 msgid "Security"
-msgstr ""
-
-#: AdminMenuMicrosoftAccount.cs
-msgctxt "OrchardCore.Microsoft.Authentication.AdminMenuMicrosoftAccount"
-msgid "Settings"
 msgstr ""
 
 #: Drivers/AzureADSettingsDisplayDriver.cs
@@ -190,11 +180,6 @@ msgstr ""
 
 #: Views/MicrosoftAccountSettings.Edit.cshtml
 msgctxt "OrchardCore.Microsoft.Authentication.Views.MicrosoftAccountSettings.Edit"
-msgid "See documentation"
-msgstr ""
-
-#: Views/MicrosoftAccountSettings.Edit.cshtml
-msgctxt "OrchardCore.Microsoft.Authentication.Views.MicrosoftAccountSettings.Edit"
 msgid "Store external authentication tokens for reuse"
 msgstr ""
 
@@ -236,11 +221,6 @@ msgstr ""
 #: Views/MicrosoftEntraIDSettings.Edit.cshtml
 msgctxt "OrchardCore.Microsoft.Authentication.Views.MicrosoftEntraIDSettings.Edit"
 msgid "Display Name"
-msgstr ""
-
-#: Views/MicrosoftEntraIDSettings.Edit.cshtml
-msgctxt "OrchardCore.Microsoft.Authentication.Views.MicrosoftEntraIDSettings.Edit"
-msgid "See documentation"
 msgstr ""
 
 #: Views/MicrosoftEntraIDSettings.Edit.cshtml

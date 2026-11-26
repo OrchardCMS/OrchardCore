@@ -16,11 +16,6 @@ msgctxt "OrchardCore.Media.Azure.AdminMenu"
 msgid "Media"
 msgstr ""
 
-#: AdminMenu.cs
-msgctxt "OrchardCore.Media.Azure.AdminMenu"
-msgid "Settings"
-msgstr ""
-
 #: Filters/MediaGalleryCapabilitiesFilter.cs
 msgctxt "OrchardCore.Media.Azure.Filters.MediaGalleryCapabilitiesFilter"
 msgid "This site's Azure Storage account has Hierarchical Namespace (ADLS Gen2) enabled. The current Media Library has not been fully verified against Gen2 storage yet; some behavior may be affected. Full support is coming with the next Media Library update — until then, prefer a Gen1 (flat-namespace) storage account for this site."
@@ -117,11 +112,6 @@ msgstr ""
 #: Views/Admin/Options.cshtml
 msgctxt "OrchardCore.Media.Azure.Views.Admin.Options"
 msgid "Remove Files From Base Path"
-msgstr ""
-
-#: Views/Admin/Options.cshtml
-msgctxt "OrchardCore.Media.Azure.Views.Admin.Options"
-msgid "See documentation"
 msgstr ""
 
 #: Views/Admin/Options.cshtml

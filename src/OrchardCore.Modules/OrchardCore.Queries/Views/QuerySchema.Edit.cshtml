@@ -5,7 +5,7 @@
     <div class="ocat-end">
     <textarea asp-for="Schema" hidden class="monaco-json-settings-editor-value"></textarea>
     <div id="@Html.IdFor(x => x.Schema)_editor" style="min-height: 300px;" class="form-control monaco-json-settings-editor-container"></div>
-    <span class="hint">@T["The schema the GraphQL API will use to return results."] <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Queries/#graphql" target="_blank">@T["See documentation"]</a></span>
+    <span class="hint">@T["The schema the GraphQL API will use to return results."] <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Queries/#graphql" target="_blank">@Localize(CommonLocalizationSources.SeeDocumentation)</a></span>
     </div>
 </div>
 <style asp-name="monaco"></style>

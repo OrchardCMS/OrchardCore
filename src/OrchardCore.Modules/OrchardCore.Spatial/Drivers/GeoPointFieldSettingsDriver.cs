@@ -3,6 +3,7 @@ using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Localization;
 using OrchardCore.Spatial.Fields;
 using OrchardCore.Spatial.Settings;
 
@@ -10,10 +11,13 @@ namespace OrchardCore.Spatial.Drivers;
 
 public sealed class GeoPointFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<GeoPointField>
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     internal readonly IStringLocalizer S;
 
-    public GeoPointFieldSettingsDriver(IStringLocalizer<GeoPointFieldSettingsDriver> stringLocalizer)
+    public GeoPointFieldSettingsDriver(IStringLocalizer<GeoPointFieldSettingsDriver> stringLocalizer, IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         S = stringLocalizer;
     }
 
@@ -25,7 +29,7 @@ public sealed class GeoPointFieldSettingsDriver : ContentPartFieldDefinitionDisp
 
             model.Hint = settings.Hint;
             model.Required = settings.Required;
-        }).Location(l => l.Zone("Content").Card(S["Settings"], "20"));
+        }).Location(l => l.Zone("Content").Card(_localizerFactory.Localize(CommonLocalizationSources.Settings), "20"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)

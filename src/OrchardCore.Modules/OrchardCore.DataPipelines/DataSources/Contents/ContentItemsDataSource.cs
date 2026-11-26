@@ -23,6 +23,7 @@ namespace OrchardCore.DataSources.Contents;
 /// </summary>
 public sealed class ContentItemsDataSource : IDataSource
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
     /// <summary>
     /// The technical name of the data source.
     /// </summary>
@@ -41,8 +42,10 @@ public sealed class ContentItemsDataSource : IDataSource
         IAuthorizationService authorizationService,
         IOptions<ContentDataSourceOptions> options,
         IOptions<ContentOptions> contentOptions,
-        IStringLocalizer<ContentItemsDataSource> localizer)
+        IStringLocalizer<ContentItemsDataSource> localizer,
+        IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         _contentDefinitionManager = contentDefinitionManager;
         _session = session;
         _authorizationService = authorizationService;
@@ -270,6 +273,6 @@ public sealed class ContentItemsDataSource : IDataSource
 
     private List<ContentDataColumn> BuildColumns(ContentTypeDefinition definition)
     {
-        return ContentDataColumns.Build(definition, _options, _contentOptions, S);
+        return ContentDataColumns.Build(definition, _options, _contentOptions, S, _localizerFactory);
     }
 }

@@ -7,7 +7,7 @@
 }
 
 <div class="btn-group filter filter-options">
-    <select name="status" class="selectpicker show-tick" data-header="@T["Filter by status"]" data-width="fit" data-selected-text-format="static" data-dropdown-align-right="true" title="@T["Status"]" data-style="btn-sm" aria-label="@T["Filter by status"]">
+    <select name="status" class="selectpicker show-tick" data-header="@T["Filter by status"]" data-width="fit" data-selected-text-format="static" data-dropdown-align-right="true" title="@Localize(CommonLocalizationSources.Status)" data-style="btn-sm" aria-label="@T["Filter by status"]">
         <option value="" selected="@(current is null)">@T["Every status"]</option>
         @foreach (var status in Enum.GetValues<DataPipelineRunStatus>())
         {

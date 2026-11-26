@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Localization;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.OpenId.ViewModels;
 
@@ -10,6 +11,8 @@ namespace OrchardCore.OpenId.Drivers;
 
 public sealed class OpenIdValidationSettingsDisplayDriver : DisplayDriver<OpenIdValidationSettings>
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
 
@@ -18,8 +21,10 @@ public sealed class OpenIdValidationSettingsDisplayDriver : DisplayDriver<OpenId
     public OpenIdValidationSettingsDisplayDriver(
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
-        IStringLocalizer<OpenIdValidationSettingsDisplayDriver> stringLocalizer)
+        IStringLocalizer<OpenIdValidationSettingsDisplayDriver> stringLocalizer,
+        IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         S = stringLocalizer;
@@ -43,7 +48,7 @@ public sealed class OpenIdValidationSettingsDisplayDriver : DisplayDriver<OpenId
             model.Audience = settings.Audience;
             model.DisableTokenTypeValidation = settings.DisableTokenTypeValidation;
             model.Tenant = settings.Tenant;
-        }).Location(l => l.Zone("Content", "2").Card(S["General"], "10"));
+        }).Location(l => l.Zone("Content", "2").Card(_localizerFactory.Localize(CommonLocalizationSources.General), "10"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(OpenIdValidationSettings settings, UpdateEditorContext context)

@@ -1,3 +1,4 @@
+using OrchardCore.Localization;
 using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
@@ -23,6 +24,8 @@ namespace OrchardCore.Deployment.Remote.Controllers;
 [Admin("Deployment/RemoteClient/{action}/{id?}", "DeploymentRemoteClient{action}")]
 public sealed class RemoteClientController : Controller
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     private const string _optionsSearch = "Options.Search";
 
     private readonly IDataProtector _dataProtector;
@@ -48,8 +51,10 @@ public sealed class RemoteClientController : Controller
         INotifier notifier,
         IDisplayManager<EditRemoteClientViewModel> editorDisplayManager,
         IUpdateModelAccessor updateModelAccessor
-        )
+        ,
+        IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         _authorizationService = authorizationService;
         _pagerOptions = pagerOptions.Value;
         _shapeFactory = shapeFactory;
@@ -104,7 +109,7 @@ public sealed class RemoteClientController : Controller
 
         model.Options.ContentsBulkAction =
         [
-            new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
+            new SelectListItem(_localizerFactory.Localize(CommonLocalizationSources.Delete), nameof(ContentsBulkAction.Remove)),
         ];
 
         // The AdminList shape renders the rows with the configured layout (List, Grid, ...).

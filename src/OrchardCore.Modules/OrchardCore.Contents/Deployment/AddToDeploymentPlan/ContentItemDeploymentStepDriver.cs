@@ -3,19 +3,24 @@ using OrchardCore.ContentManagement;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Localization;
 using OrchardCore.Mvc.ModelBinding;
 
 namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan;
 
 public sealed class ContentItemDeploymentStepDriver : DisplayDriver<DeploymentStep, ContentItemDeploymentStep>
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     private readonly IContentManager _contentManager;
 
     internal readonly IStringLocalizer S;
 
     public ContentItemDeploymentStepDriver(IContentManager contentManager,
-        IStringLocalizer<ContentItemDeploymentStepDriver> stringLocalizer)
+        IStringLocalizer<ContentItemDeploymentStepDriver> stringLocalizer,
+        IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         _contentManager = contentManager;
         S = stringLocalizer;
     }
@@ -34,7 +39,7 @@ public sealed class ContentItemDeploymentStepDriver : DisplayDriver<DeploymentSt
         return Initialize<ContentItemDeploymentStepViewModel>("ContentItemDeploymentStep_Fields_Edit", model =>
         {
             model.ContentItemId = step.ContentItemId;
-        }).Location(l => l.Zone("Content").Card(S["Content item"], "10"));
+        }).Location(l => l.Zone("Content").Card(_localizerFactory.Localize(CommonLocalizationSources.ContentItem), "10"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentItemDeploymentStep step, UpdateEditorContext context)

@@ -6,15 +6,19 @@ using OrchardCore.Contents.AuditTrail.ViewModels;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Contents.AuditTrail.Drivers;
 
 public sealed class AuditTrailPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     internal readonly IStringLocalizer S;
 
-    public AuditTrailPartSettingsDisplayDriver(IStringLocalizer<AuditTrailPartSettingsDisplayDriver> stringLocalizer)
+    public AuditTrailPartSettingsDisplayDriver(IStringLocalizer<AuditTrailPartSettingsDisplayDriver> stringLocalizer, IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         S = stringLocalizer;
     }
 
@@ -29,7 +33,7 @@ public sealed class AuditTrailPartSettingsDisplayDriver : ContentTypePartDefinit
         {
             var settings = model.GetSettings<AuditTrailPartSettings>();
             viewModel.ShowCommentInput = settings.ShowCommentInput;
-        }).Location(l => l.Zone("Content").Card(S["Settings"], "20"));
+        }).Location(l => l.Zone("Content").Card(_localizerFactory.Localize(CommonLocalizationSources.Settings), "20"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition model, UpdateTypePartEditorContext context)

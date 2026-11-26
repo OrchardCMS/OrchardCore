@@ -16,11 +16,6 @@ msgctxt "OrchardCore.ArchiveLater.Views.ArchiveLaterPart.Edit"
 msgid "Cancel Archive Later"
 msgstr ""
 
-#: Views/ArchiveLaterPart.Option.cshtml
-msgctxt "OrchardCore.ArchiveLater.Views.ArchiveLaterPart.Option"
-msgid "Standard"
-msgstr ""
-
 #. Format arguments: {0}: await DisplayAsync(await New.DateTime(Utc: Model.ScheduledArchiveUtc, Format: "g"))
 #: Views/ArchiveLaterPart.SummaryAdmin.cshtml
 #, csharp-format

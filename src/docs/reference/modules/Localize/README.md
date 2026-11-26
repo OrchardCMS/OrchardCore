@@ -290,7 +290,7 @@ A `LocalizationSource` is a static declaration owned by code, not data, so it is
 
 Because a source is immutable and doesn't depend on a tenant or a culture, it can be declared once and reused wherever the same text has the same meaning. A shared source is translated once, with a single PO entry, and an existing source can be found before a new one is created.
 
-- `CommonLocalizationSources`, in `OrchardCore.Abstractions`, declares the text that is used by several modules, such as `CommonLocalizationSources.ContentManagement`, or that is general to every module, such as `CommonLocalizationSources.Settings`. A source used by a single project, even a general word such as the name of the module, belongs in that project. Its PO context is `OrchardCore.Localization.CommonLocalizationSources`.
+- `CommonLocalizationSources`, in `OrchardCore.Abstractions`, declares shared categories, editor headings, commands and labels. Its root sources use the PO context `OrchardCore.Localization.CommonLocalizationSources`. Nested classes provide separate contexts for meanings that have the same English text. A source used by a single project, unless it is general to every module, belongs in that project.
 - A module declares its other sources in an internal static class at its root, named after the module, for example `LuceneLocalizationSources` in `OrchardCore.Lucene`. Its PO context is the full name of that class.
 
 ```csharp
@@ -315,6 +315,51 @@ msgstr "Exporter mes données"
 ```
 
 Permission descriptions stay in the `*Permissions` class that declares the permissions. Text that is shown by a single view stays in the view, and is localized with `T`.
+
+Choose a shared source by its meaning, not just its English spelling. The XML documentation describes when to use each member, and its `LocalizationSource.Create(..., note: "...")` declaration supplies the same guidance to translators as a `#.` comment in the POT file.
+
+| Meaning | Source |
+| --- | --- |
+| Dismiss an editor or dialog | `CommonLocalizationSources.Cancel` |
+| Stop a running workflow or pipeline | `CommonLocalizationSources.RunningOperations.Cancel` |
+| Search category | `CommonLocalizationSources.Search` |
+| Search command or search-box prompt | `CommonLocalizationSources.Commands.Search` |
+| HTML search input type | `CommonLocalizationSources.InputTypes.Search` |
+| Item-action menu or column | `CommonLocalizationSources.Actions` |
+| Action names defined by a workflow user task | `CommonLocalizationSources.Workflow.Actions` |
+| Enabled state | `CommonLocalizationSources.EnabledState` |
+| Caption of an enabling boolean field | `CommonLocalizationSources.BooleanFields.Enabled` |
+| Past enabling audit event | `CommonLocalizationSources.AuditEvents.Enabled` |
+| Enabling workflow outcome | `CommonLocalizationSources.Workflow.Enabled` |
+| Default editor | `CommonLocalizationSources.StandardEditor` |
+| Default content display mode | `CommonLocalizationSources.DisplayModes.Standard` |
+| Standard form-label or validation rendering | `CommonLocalizationSources.FormLabels.Standard` or `CommonLocalizationSources.FormValidation.Standard` |
+| Name of an entity, technical identifier or user | `CommonLocalizationSources.Name`, `CommonLocalizationSources.TechnicalNames.Name` or `CommonLocalizationSources.UserNames.Name` |
+| Remove a selection or relationship without deleting the entity | `CommonLocalizationSources.Remove` |
+| Delete a record or credential, using the label "Remove" | `CommonLocalizationSources.Commands.Remove` |
+| Answer a confirmation question | `CommonLocalizationSources.Yes` or `CommonLocalizationSources.No` |
+| Display a boolean value | `CommonLocalizationSources.BooleanValues.Yes` or `CommonLocalizationSources.BooleanValues.No` |
+
+For example, the search command uses a different PO entry from the search category:
+
+```po
+msgctxt "OrchardCore.Localization.CommonLocalizationSources.Commands"
+msgid "Search"
+msgstr ""
+```
+
+Property names and translator notes do not participate in the translation identity: two sources with the same type and value use the same PO entry. Use distinct declaring types, such as the nested classes above, when the meanings must be translated independently. Capitalization variants such as `ContentItem` ("Content item") and `ContentItemTitle` ("Content Item") preserve their respective English labels.
+
+Resolve sources at display time with the current tenant's `IStringLocalizerFactory` or `IHtmlLocalizerFactory`. Orchard Razor pages expose `Localize(source, arguments)` as an HTML-localization helper, with the same trusted-markup behavior as `T`:
+
+```cshtml
+@using OrchardCore.Localization
+
+<button type="submit">@Localize(CommonLocalizationSources.Save)</button>
+```
+
+!!! warning
+    Replacing a view- or class-local string with a shared source changes its PO context. Copy existing translations to the appropriate shared context and regenerate the affected POT templates. Keeping the English text unchanged does not preserve its old translation identity.
 
 ### Analyzer rules
 

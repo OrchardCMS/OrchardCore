@@ -55,7 +55,7 @@ public class SmsTask : TaskActivity<SmsTask>, IActivityProvidedValues, IActivity
     }
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-        => Outcome(S["Done"], S["Failed"]);
+        => Outcome(_localizerFactory.Localize(CommonLocalizationSources.Workflow.Done), S["Failed"]);
 
     private static readonly ActivityProvidedValue[] s_providedValues = [ActivityProvidedValue.LastResult("object", LocalizationSource.Create<SmsTask>("The result of sending the message."), WorkflowValueMembers.Result)];
 

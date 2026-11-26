@@ -59,11 +59,6 @@ msgctxt "OrchardCore.Menu.Services.MenuItemStereotypesProvider"
 msgid "Menu Item"
 msgstr ""
 
-#: Settings/HtmlMenuItemPartSettingsDisplayDriver.cs
-msgctxt "OrchardCore.Menu.Settings.HtmlMenuItemPartSettingsDisplayDriver"
-msgid "Settings"
-msgstr ""
-
 #. Format arguments: {0}: menuDisplayText
 #: Views/Admin/Create.cshtml
 #, csharp-format
@@ -116,11 +111,6 @@ msgstr ""
 
 #: Views/ContentMenuItemPart.Edit.cshtml
 msgctxt "OrchardCore.Menu.Views.ContentMenuItemPart.Edit"
-msgid "Name"
-msgstr ""
-
-#: Views/ContentMenuItemPart.Edit.cshtml
-msgctxt "OrchardCore.Menu.Views.ContentMenuItemPart.Edit"
 msgid "When enabled, we will verify the user's permission to view content items before displaying them in the menu. This process may negatively impact performance, so it is highly recommended to cache the menu when this option is activated."
 msgstr ""
 
@@ -137,11 +127,6 @@ msgstr ""
 #: Views/HtmlMenuItemPart.Edit.cshtml
 msgctxt "OrchardCore.Menu.Views.HtmlMenuItemPart.Edit"
 msgid "Html"
-msgstr ""
-
-#: Views/HtmlMenuItemPart.Edit.cshtml
-msgctxt "OrchardCore.Menu.Views.HtmlMenuItemPart.Edit"
-msgid "Name"
 msgstr ""
 
 #: Views/HtmlMenuItemPart.Edit.cshtml
@@ -196,17 +181,7 @@ msgstr ""
 
 #: Views/HtmlMenuItemPartSettings.Edit.cshtml
 msgctxt "OrchardCore.Menu.Views.HtmlMenuItemPartSettings.Edit"
-msgid "See documentation"
-msgstr ""
-
-#: Views/HtmlMenuItemPartSettings.Edit.cshtml
-msgctxt "OrchardCore.Menu.Views.HtmlMenuItemPartSettings.Edit"
 msgid "Whether the Html is sanitized to prevent custom scripts."
-msgstr ""
-
-#: Views/LinkMenuItemPart.Edit.cshtml
-msgctxt "OrchardCore.Menu.Views.LinkMenuItemPart.Edit"
-msgid "Name"
 msgstr ""
 
 #: Views/LinkMenuItemPart.Edit.cshtml
@@ -259,24 +234,9 @@ msgctxt "OrchardCore.Menu.Views.MenuItem.Admin"
 msgid "Add"
 msgstr ""
 
-#: Views/MenuItem.Admin.cshtml
-msgctxt "OrchardCore.Menu.Views.MenuItem.Admin"
-msgid "Delete"
-msgstr ""
-
-#: Views/MenuItem.Admin.cshtml
-msgctxt "OrchardCore.Menu.Views.MenuItem.Admin"
-msgid "Edit"
-msgstr ""
-
 #: Views/MenuItem.Thumbnail.cshtml
 msgctxt "OrchardCore.Menu.Views.MenuItem.Thumbnail"
 msgid "Add"
-msgstr ""
-
-#: Views/MenuItemEditorActions.cshtml
-msgctxt "OrchardCore.Menu.Views.MenuItemEditorActions"
-msgid "Cancel"
 msgstr ""
 
 #: Views/MenuItemEditorActions.cshtml
@@ -298,16 +258,6 @@ msgstr ""
 
 #: Views/MenuItemPermissionPart.Edit.cshtml
 msgctxt "OrchardCore.Menu.Views.MenuItemPermissionPart.Edit"
-msgid "Remove"
-msgstr ""
-
-#: Views/MenuItemPermissionPart.Edit.cshtml
-msgctxt "OrchardCore.Menu.Views.MenuItemPermissionPart.Edit"
-msgid "Search"
-msgstr ""
-
-#: Views/MenuItemPermissionPart.Edit.cshtml
-msgctxt "OrchardCore.Menu.Views.MenuItemPermissionPart.Edit"
 msgid "The permissions required to display this menu item (optional)."
 msgstr ""
 
@@ -324,11 +274,6 @@ msgstr ""
 #: Views/MenuPart.Edit.cshtml
 msgctxt "OrchardCore.Menu.Views.MenuPart.Edit"
 msgid "Available Menu Items"
-msgstr ""
-
-#: Views/MenuPart.Edit.cshtml
-msgctxt "OrchardCore.Menu.Views.MenuPart.Edit"
-msgid "Cancel"
 msgstr ""
 
 #: Views/MenuPart.Edit.cshtml

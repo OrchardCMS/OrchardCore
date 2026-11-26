@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Localization;
 using OrchardCore.OpenId.ViewModels;
 
 namespace OrchardCore.OpenId.Drivers;
@@ -10,17 +11,20 @@ namespace OrchardCore.OpenId.Drivers;
 /// </summary>
 internal sealed class CreateOpenIdScopeDisplayDriver : DisplayDriver<CreateOpenIdScopeViewModel>
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     internal readonly IStringLocalizer S;
 
-    public CreateOpenIdScopeDisplayDriver(IStringLocalizer<CreateOpenIdScopeDisplayDriver> stringLocalizer)
+    public CreateOpenIdScopeDisplayDriver(IStringLocalizer<CreateOpenIdScopeDisplayDriver> stringLocalizer, IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         S = stringLocalizer;
     }
 
     public override IDisplayResult Edit(CreateOpenIdScopeViewModel model, BuildEditorContext context)
     {
         return Initialize<CreateOpenIdScopeViewModel>("CreateOpenIdScopeGeneral_Edit", m => Populate(model, m))
-            .Location(l => l.Zone("Content", "1").Card(S["General"], "10"));
+            .Location(l => l.Zone("Content", "1").Card(_localizerFactory.Localize(CommonLocalizationSources.General), "10"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(CreateOpenIdScopeViewModel model, UpdateEditorContext context)

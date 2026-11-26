@@ -25,7 +25,7 @@
                   data-error-message="@T["The passkey couldn't be added. Try again."]">
                 <input type="hidden" name="Credential" />
                 @* The page also renders in the site theme, which doesn't style the 'ocat-*' classes. *@
-                <label for="PasskeyName" class="form-label">@T["Name"]</label>
+                <label for="PasskeyName" class="form-label">@Localize(CommonLocalizationSources.Name)</label>
                 <div class="d-flex gap-2">
                     <input id="PasskeyName" name="Name" class="form-control" maxlength="@RenamePasskeyViewModel.MaxNameLength" placeholder="@T["For example, my laptop"]" aria-describedby="PasskeyNameHint" />
                     <button type="submit" class="btn btn-primary text-nowrap" data-passkey-button disabled>
@@ -80,7 +80,7 @@
                         </div>
                         <form asp-action="Delete" asp-controller="Passkey" method="post" class="no-multisubmit" data-passkey-confirm="@T["Are you sure you want to remove this passkey? You won't be able to log in with it anymore."]">
                             <input type="hidden" name="Id" value="@passkey.Id" />
-                            <button type="submit" class="btn btn-sm btn-danger">@T["Remove"]</button>
+                            <button type="submit" class="btn btn-sm btn-danger">@Localize(CommonLocalizationSources.Commands.Remove)</button>
                         </form>
                     </div>
                     <details class="mt-2">
@@ -88,8 +88,8 @@
                         <form asp-action="Rename" asp-controller="Passkey" method="post" class="mt-2 no-multisubmit">
                             <input type="hidden" name="Id" value="@passkey.Id" />
                             <div class="input-group">
-                                <input name="Name" class="form-control" value="@passkey.Name" maxlength="@RenamePasskeyViewModel.MaxNameLength" required aria-label="@T["Name"]" />
-                                <button type="submit" class="btn btn-primary">@T["Save"]</button>
+                                <input name="Name" class="form-control" value="@passkey.Name" maxlength="@RenamePasskeyViewModel.MaxNameLength" required aria-label="@Localize(CommonLocalizationSources.Name)" />
+                                <button type="submit" class="btn btn-primary">@Localize(CommonLocalizationSources.Save)</button>
                             </div>
                         </form>
                     </details>

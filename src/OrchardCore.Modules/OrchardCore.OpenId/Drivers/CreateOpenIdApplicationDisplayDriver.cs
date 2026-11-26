@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Localization;
 using OrchardCore.OpenId.ViewModels;
 
 namespace OrchardCore.OpenId.Drivers;
@@ -10,10 +11,13 @@ namespace OrchardCore.OpenId.Drivers;
 /// </summary>
 internal sealed class CreateOpenIdApplicationDisplayDriver : DisplayDriver<CreateOpenIdApplicationViewModel>
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     internal readonly IStringLocalizer S;
 
-    public CreateOpenIdApplicationDisplayDriver(IStringLocalizer<CreateOpenIdApplicationDisplayDriver> stringLocalizer)
+    public CreateOpenIdApplicationDisplayDriver(IStringLocalizer<CreateOpenIdApplicationDisplayDriver> stringLocalizer, IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         S = stringLocalizer;
     }
 
@@ -21,7 +25,7 @@ internal sealed class CreateOpenIdApplicationDisplayDriver : DisplayDriver<Creat
     {
         return Combine(
             Initialize<CreateOpenIdApplicationViewModel>("CreateOpenIdApplicationGeneral_Edit", m => Populate(model, m))
-                .Location(l => l.Zone("Content", "1").Card(S["General"], "10")),
+                .Location(l => l.Zone("Content", "1").Card(_localizerFactory.Localize(CommonLocalizationSources.General), "10")),
             Initialize<CreateOpenIdApplicationViewModel>("CreateOpenIdApplicationFlows_Edit", m => Populate(model, m))
                 .Location(l => l.Zone("Content", "2").Card(S["Flows"], "20")),
 

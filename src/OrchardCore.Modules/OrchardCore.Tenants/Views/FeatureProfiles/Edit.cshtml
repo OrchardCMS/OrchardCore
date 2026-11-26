@@ -14,19 +14,19 @@
     @await DisplayAsync(Model.Editor)
 
     <div class="action-bar-bottom">
-        <a class="btn btn-secondary cancel" role="button" asp-route-action="Index">@T["Cancel"]</a>
+        <a class="btn btn-secondary cancel" role="button" asp-route-action="Index">@Localize(CommonLocalizationSources.Cancel)</a>
 
         <div class="btn-group"
              role="group"
-             aria-label="@T["Save actions"]"
+             aria-label="@Localize(CommonLocalizationSources.SaveActions)"
              data-action-group="oc-feature-profile-save-action"
              data-action-default="Save"
-             data-label-default="@T["Save"]"
+             data-label-default="@Localize(CommonLocalizationSources.Save)"
              data-action-alt="SaveAndContinue"
-             data-label-alt="@T["Save and continue"]">
-            <button type="submit" value="Save" name="submit" class="btn btn-primary save">@T["Save"]</button>
+             data-label-alt="@Localize(CommonLocalizationSources.SaveAndContinue)">
+            <button type="submit" value="Save" name="submit" class="btn btn-primary save">@Localize(CommonLocalizationSources.Save)</button>
             <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-reference="parent" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <span class="visually-hidden">@T["Toggle Dropdown"]</span>
+                <span class="visually-hidden">@Localize(CommonLocalizationSources.ToggleDropdown)</span>
             </button>
             <div class="dropdown-menu">
                 <button class="dropdown-item save-continue" name="submit" type="submit" value="SaveAndContinue">@T["and continue"]</button>

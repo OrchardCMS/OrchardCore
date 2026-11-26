@@ -11,6 +11,7 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.Localization;
 using OrchardCore.Navigation;
 using OrchardCore.Queries.ViewModels;
 using OrchardCore.Routing;
@@ -20,6 +21,8 @@ namespace OrchardCore.Queries.Controllers;
 [Admin("Queries/{action}/{id?}", "Queries{action}")]
 public sealed class AdminController : Controller
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     private const string _optionsSearch = "Options.Search";
 
     private readonly IAuthorizationService _authorizationService;
@@ -44,8 +47,10 @@ public sealed class AdminController : Controller
         INotifier notifier,
         IQueryManager queryManager,
         IServiceProvider serviceProvider,
-        IUpdateModelAccessor updateModelAccessor)
+        IUpdateModelAccessor updateModelAccessor,
+        IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         _displayManager = displayManager;
         _authorizationService = authorizationService;
         _pagerOptions = pagerOptions.Value;
@@ -92,7 +97,7 @@ public sealed class AdminController : Controller
 
         model.Options.ContentsBulkAction =
         [
-            new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
+            new SelectListItem(_localizerFactory.Localize(CommonLocalizationSources.Delete), nameof(ContentsBulkAction.Remove)),
         ];
 
         // The AdminList shape renders the queries with the configured layout (List, Grid, ...).

@@ -11,16 +11,6 @@ msgctxt "OrchardCore.AzureAI.AdminMenu"
 msgid "Azure AI Search"
 msgstr ""
 
-#: AdminMenu.cs
-msgctxt "OrchardCore.AzureAI.AdminMenu"
-msgid "Search"
-msgstr ""
-
-#: AdminMenu.cs
-msgctxt "OrchardCore.AzureAI.AdminMenu"
-msgid "Settings"
-msgstr ""
-
 #: Startup.cs
 msgctxt "OrchardCore.AzureAI.ContentsStartup"
 msgid "Content in Azure AI Search"

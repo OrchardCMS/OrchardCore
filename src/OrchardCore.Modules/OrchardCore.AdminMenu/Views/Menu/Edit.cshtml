@@ -16,8 +16,8 @@
 <form asp-action="Edit" method="post" class="no-multisubmit">
     @await DisplayAsync(Model.Editor)
     <div class="action-bar-bottom">
-        <a class="btn btn-secondary cancel" role="button" asp-route-action="List">@T["Cancel"]</a>
+        <a class="btn btn-secondary cancel" role="button" asp-route-action="List">@Localize(CommonLocalizationSources.Cancel)</a>
         <a class="btn btn-secondary edit-nodes action-bar-secondary" role="button" asp-route-controller="Node" asp-route-action="List" asp-route-id="@Model.Id">@T["Edit Admin Nodes"] </a>
-        <button class="btn btn-primary save" type="submit">@T["Save"]</button>
+        <button class="btn btn-primary save" type="submit">@Localize(CommonLocalizationSources.Save)</button>
     </div>
 </form>

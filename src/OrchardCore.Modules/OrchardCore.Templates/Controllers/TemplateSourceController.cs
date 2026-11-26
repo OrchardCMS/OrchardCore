@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
+using OrchardCore.Localization;
 using OrchardCore.Modules;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
@@ -25,6 +26,8 @@ namespace OrchardCore.Templates.Controllers;
 [Admin("TemplateSources/{source}/{action}", "TemplateSources.{action}")]
 public sealed class TemplateSourceController : Controller
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     private const string _optionsSearch = "Options.Search";
     private const string _optionsFilter = "Options.Filter";
     private const string _optionsAdminTemplates = "Options.AdminTemplates";
@@ -54,8 +57,10 @@ public sealed class TemplateSourceController : Controller
         IOptions<PagerOptions> pagerOptions,
         INotifier notifier,
         IStringLocalizer<TemplateSourceController> stringLocalizer,
-        IHtmlLocalizer<TemplateSourceController> htmlLocalizer)
+        IHtmlLocalizer<TemplateSourceController> htmlLocalizer,
+        IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         _authorizationService = authorizationService;
         _sourceTemplatesService = sourceTemplatesService;
         _templateAlternatesService = templateAlternatesService;
@@ -204,11 +209,11 @@ public sealed class TemplateSourceController : Controller
             [
                 new SelectListItem(S["Clone"], nameof(SourceTemplatesBulkAction.Clone)),
                 new SelectListItem(S["Reset"], nameof(SourceTemplatesBulkAction.Reset)),
-                new SelectListItem(S["Delete"], nameof(SourceTemplatesBulkAction.Remove)),
+                new SelectListItem(_localizerFactory.Localize(CommonLocalizationSources.Delete), nameof(SourceTemplatesBulkAction.Remove)),
             ]
             :
             [
-                new SelectListItem(S["Delete"], nameof(SourceTemplatesBulkAction.Remove)),
+                new SelectListItem(_localizerFactory.Localize(CommonLocalizationSources.Delete), nameof(SourceTemplatesBulkAction.Remove)),
             ];
 
         var search = await _shapeFactory.CreateAsync(AdminListConstants.SearchShapeType, Arguments.From(new

@@ -53,11 +53,6 @@ msgstr ""
 
 #: Navigation/AuditTrailAdminMenu.cs
 msgctxt "OrchardCore.AuditTrail.Navigation.AuditTrailAdminMenu"
-msgid "Settings"
-msgstr ""
-
-#: Navigation/AuditTrailAdminMenu.cs
-msgctxt "OrchardCore.AuditTrail.Navigation.AuditTrailAdminMenu"
 msgid "Tools"
 msgstr ""
 
@@ -159,11 +154,6 @@ msgstr ""
 #: Views/Admin/Index.cshtml
 msgctxt "OrchardCore.AuditTrail.Views.Admin.Index"
 msgid "Audit Trail"
-msgstr ""
-
-#: Views/AuditTrailAdminList.cshtml
-msgctxt "OrchardCore.AuditTrail.Views.AuditTrailAdminList"
-msgid "Actions"
 msgstr ""
 
 #: Views/AuditTrailAdminList.cshtml
@@ -330,11 +320,6 @@ msgstr ""
 
 #: Views/AuditTrailAdminListSearch.cshtml
 msgctxt "OrchardCore.AuditTrail.Views.AuditTrailAdminListSearch"
-msgid "Search"
-msgstr ""
-
-#: Views/AuditTrailAdminListSearch.cshtml
-msgctxt "OrchardCore.AuditTrail.Views.AuditTrailAdminListSearch"
 msgid "Single"
 msgstr ""
 
@@ -406,11 +391,6 @@ msgid_plural "{0} items"
 msgstr[0] ""
 msgstr[1] ""
 
-#: Views/AuditTrailEvent.SummaryAdmin.cshtml
-msgctxt "OrchardCore.AuditTrail.Views.AuditTrailEvent.SummaryAdmin"
-msgid "Actions"
-msgstr ""
-
 #: Views/AuditTrailEventActions.SummaryAdmin.cshtml
 msgctxt "OrchardCore.AuditTrail.Views.AuditTrailEventActions.SummaryAdmin"
 msgid "Details"
@@ -479,11 +459,6 @@ msgstr ""
 #: Views/AuditTrailSettings.Edit.cshtml
 msgctxt "OrchardCore.AuditTrail.Views.AuditTrailSettings.Edit"
 msgid "Description"
-msgstr ""
-
-#: Views/AuditTrailSettings.Edit.cshtml
-msgctxt "OrchardCore.AuditTrail.Views.AuditTrailSettings.Edit"
-msgid "Enabled"
 msgstr ""
 
 #: Views/AuditTrailSettings.Edit.cshtml

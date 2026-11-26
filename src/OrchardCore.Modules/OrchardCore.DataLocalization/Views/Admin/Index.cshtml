@@ -62,7 +62,7 @@
                     </div>
                 </div>
                 <div class="ocat-wrapper col-xl-4 col-sm-8">
-                    <label class="ocat-label" for="search-box">@T["Search"]</label>
+                    <label class="ocat-label" for="search-box">@Localize(CommonLocalizationSources.Commands.Search)</label>
                     <div class="ocat-end">
                         <div class="input-group filter-options">
                             <input id="search-box" type="search" class="form-control" v-model="searchQuery" placeholder="@T["Search translations"]" autocomplete="off" />
@@ -175,7 +175,7 @@
         <a class="btn btn-secondary" role="button" href="@Url.Action("Statistics", "Admin", new { area = "OrchardCore.DataLocalization" })">@T["Statistics"]</a>
         <button type="button" class="btn btn-primary save" @@click="saveTranslations" :disabled="!isDirty || isSaving">
             <span v-if="isSaving" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
-            @T["Save"]
+            @Localize(CommonLocalizationSources.Save)
         </button>
     </div>
 </div>

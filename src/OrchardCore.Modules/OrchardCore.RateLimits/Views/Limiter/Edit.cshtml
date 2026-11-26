@@ -26,6 +26,6 @@
 
     <div class="action-bar-bottom">
         <a asp-action="Edit" asp-controller="Admin" asp-route-policyId="@ViewContext.RouteData.Values["policyId"]" class="btn btn-secondary">@T["Back"]</a>
-        <button class="btn btn-primary" type="submit">@T["Save"]</button>
+        <button class="btn btn-primary" type="submit">@Localize(CommonLocalizationSources.Save)</button>
     </div>
 </form>

@@ -1,10 +1,19 @@
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.AuditTrail.Services.Models;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Users.AuditTrail.Services;
 
 public sealed class UserAuditTrailEventConfiguration : IConfigureOptions<AuditTrailOptions>
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
+    public UserAuditTrailEventConfiguration(IStringLocalizerFactory localizerFactory)
+    {
+        _localizerFactory = localizerFactory;
+    }
+
     [Obsolete($"Use {nameof(CategoryName)} for clarity.")]
     public const string User = CategoryName;
     public const string CategoryName = "User";
@@ -26,8 +35,8 @@ public sealed class UserAuditTrailEventConfiguration : IConfigureOptions<AuditTr
             .WithEvent(LoggedIn, S => S["Logged in"], S => S["A user was successfully logged in."], true)
             .WithEvent(LogInFailed, S => S["Login failed"], S => S["An attempt to login failed."], false) // Intentionally not enabled by default.
             .WithEvent(LogInIsLockedOut, S => S["Login account locked"], S => S["An attempt to login failed because the user is locked out."], true)
-            .WithEvent(Enabled, S => S["Enabled"], S => S["A user was enabled."], true)
-            .WithEvent(Disabled, S => S["Disabled"], S => S["A user was disabled."], true)
+            .WithEvent(Enabled, S => _localizerFactory.Localize(CommonLocalizationSources.AuditEvents.Enabled), S => S["A user was enabled."], true)
+            .WithEvent(Disabled, S => _localizerFactory.Localize(CommonLocalizationSources.AuditEvents.Disabled), S => S["A user was disabled."], true)
             .WithEvent(Created, S => S["Created"], S => S["A user was created."], true)
             .WithEvent(Updated, S => S["Updated"], S => S["A user was updated."], true)
             .WithEvent(Deleted, S => S["Deleted"], S => S["A user was deleted."], true)

@@ -18,7 +18,7 @@
     // are grouped in the "General" card.
     if (Model.Editor.Content is IEnumerable<object> editorShapes)
     {
-        var generalCard = new OrchardCore.DisplayManagement.Descriptors.GroupingMetadata(T["General"].Value, "10");
+        var generalCard = new OrchardCore.DisplayManagement.Descriptors.GroupingMetadata(Localize(CommonLocalizationSources.General).Value, "10");
 
         foreach (var shape in editorShapes.OfType<OrchardCore.DisplayManagement.IShape>())
         {
@@ -39,7 +39,7 @@
     <input type="hidden" asp-for="SitemapSourceType" />
 
     <div class="action-bar-bottom">
-        <a class="btn btn-secondary cancel" role="button" asp-route-action="Display" asp-route-controller="Admin" asp-route-sitemapId="@Model.SitemapId">@T["Cancel"]</a>
+        <a class="btn btn-secondary cancel" role="button" asp-route-action="Display" asp-route-controller="Admin" asp-route-sitemapId="@Model.SitemapId">@Localize(CommonLocalizationSources.Cancel)</a>
         <button class="btn btn-primary create" type="submit">@T["Create"]</button>
     </div>
 

@@ -7,11 +7,14 @@ using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Lists.Models;
 using OrchardCore.Lists.Services;
 using OrchardCore.Lists.ViewModels;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Lists.Settings;
 
 public sealed class ListPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<ListPart>
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly IContainerService _containerService;
 
@@ -20,8 +23,10 @@ public sealed class ListPartSettingsDisplayDriver : ContentTypePartDefinitionDis
     public ListPartSettingsDisplayDriver(
         IContentDefinitionManager contentDefinitionManager,
         IContainerService containerService,
-        IStringLocalizer<ListPartSettingsDisplayDriver> localizer)
+        IStringLocalizer<ListPartSettingsDisplayDriver> localizer,
+        IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         _contentDefinitionManager = contentDefinitionManager;
         _containerService = containerService;
         S = localizer;
@@ -43,7 +48,7 @@ public sealed class ListPartSettingsDisplayDriver : ContentTypePartDefinitionDis
             {
                 model.ContentTypes.Add(contentTypeDefinition.Name, contentTypeDefinition.DisplayName);
             }
-        }).Location(l => l.Zone("Content").Card(S["Settings"], "20"));
+        }).Location(l => l.Zone("Content").Card(_localizerFactory.Localize(CommonLocalizationSources.Settings), "20"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)

@@ -3,7 +3,7 @@
 
 @model ShapeViewModel<BackgroundTaskEntry>
 
-<a asp-action="Edit" asp-controller="BackgroundTask" asp-route-name="@Model.Value.Name" class="btn btn-primary btn-sm">@T["Edit"]</a>
+<a asp-action="Edit" asp-controller="BackgroundTask" asp-route-name="@Model.Value.Name" class="btn btn-primary btn-sm">@Localize(CommonLocalizationSources.Edit)</a>
 
 @if (Model.Value.Enable)
 {

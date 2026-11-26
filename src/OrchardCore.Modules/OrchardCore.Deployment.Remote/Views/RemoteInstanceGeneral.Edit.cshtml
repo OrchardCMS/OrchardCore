@@ -1,7 +1,7 @@
 @model EditRemoteInstanceViewModel
 
 <div class="ocat-wrapper" asp-validation-class-for="Name">
-    <label asp-for="Name" class="ocat-label ocat-label-required">@T["Name"]</label>
+    <label asp-for="Name" class="ocat-label ocat-label-required">@Localize(CommonLocalizationSources.Name)</label>
     <div class="ocat-end">
         <input asp-for="Name" class="form-control" autofocus />
         <span asp-validation-for="Name" class="text-danger"></span>

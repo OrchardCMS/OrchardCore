@@ -19,7 +19,7 @@
 }
 
 <div class="ocat-wrapper" asp-validation-class-for="Name">
-    <label asp-for="Name" class="ocat-label ocat-label-required">@T["Name"]</label>
+    <label asp-for="Name" class="ocat-label ocat-label-required">@Localize(CommonLocalizationSources.Name)</label>
     <div class="ocat-end">
         <input asp-for="Name" class="form-control" autofocus />
         <span asp-validation-for="Name"></span>
@@ -47,7 +47,7 @@
     <label for="shortcodeCategories" class="ocat-label">@T["Categories"]</label>
     <div class="ocat-end">
         <input type="hidden" asp-for="SelectedCategories" />
-        <select id="shortcodeCategories" multiple data-shortcode-categories data-values-input="@Html.IdFor(x => x.SelectedCategories)" data-values-format="json" data-live-search="true" data-show-selected-tags="true" data-open-options="true" data-open-options-text="@T["Add the category: {0}", "{0}"]" data-width="100%" placeholder="@T["Type to search"]" data-live-search-placeholder="@T["Search"]" data-none-results-text="@T["No categories match {0}", "{0}"]" data-selected-tag-remove-label="@T["Remove"]">
+        <select id="shortcodeCategories" multiple data-shortcode-categories data-values-input="@Html.IdFor(x => x.SelectedCategories)" data-values-format="json" data-live-search="true" data-show-selected-tags="true" data-open-options="true" data-open-options-text="@T["Add the category: {0}", "{0}"]" data-width="100%" placeholder="@T["Type to search"]" data-live-search-placeholder="@Localize(CommonLocalizationSources.Commands.Search)" data-none-results-text="@T["No categories match {0}", "{0}"]" data-selected-tag-remove-label="@Localize(CommonLocalizationSources.Remove)">
             @foreach (var category in categories)
             {
                 <option value="@category" selected="@selectedCategories.Contains(category, StringComparer.OrdinalIgnoreCase)">@category</option>

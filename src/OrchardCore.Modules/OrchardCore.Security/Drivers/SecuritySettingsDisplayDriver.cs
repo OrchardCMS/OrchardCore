@@ -8,6 +8,7 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Localization;
 using OrchardCore.Security.Options;
 using OrchardCore.Security.Settings;
 using OrchardCore.Security.ViewModels;
@@ -17,6 +18,8 @@ namespace OrchardCore.Security.Drivers;
 
 public sealed class SecuritySettingsDisplayDriver : SiteDisplayDriver<SecuritySettings>
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     internal const string GroupId = "SecurityHeaders";
 
     private readonly IShellReleaseManager _shellReleaseManager;
@@ -39,8 +42,10 @@ public sealed class SecuritySettingsDisplayDriver : SiteDisplayDriver<SecuritySe
         IOptionsSnapshot<SecuritySettings> securitySettings,
         INotifier notifier,
         IHtmlLocalizer<SecuritySettingsDisplayDriver> htmlLocalizer,
-        IStringLocalizer<SecuritySettingsDisplayDriver> stringLocalizer)
+        IStringLocalizer<SecuritySettingsDisplayDriver> stringLocalizer,
+        IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         _shellReleaseManager = shellReleaseManager;
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
@@ -84,7 +89,7 @@ public sealed class SecuritySettingsDisplayDriver : SiteDisplayDriver<SecuritySe
         }
 
         var contentSecurityPolicyShapeResult = Initialize<SecuritySettingsViewModel>("ContentSecurityPolicySettings_Edit", PopulateContentSecurityPolicy)
-            .Location(l => l.Zone("Content", "2").Tab("Content Security Policy", "5").Card(S["General"], "10"))
+            .Location(l => l.Zone("Content", "2").Tab("Content Security Policy", "5").Card(_localizerFactory.Localize(CommonLocalizationSources.General), "10"))
             .OnGroup(SettingsGroupId);
 
         var contentSecurityPolicyDirectivesShapeResult = Initialize<SecuritySettingsViewModel>("ContentSecurityPolicySettings_Edit__Directives", PopulateContentSecurityPolicy)

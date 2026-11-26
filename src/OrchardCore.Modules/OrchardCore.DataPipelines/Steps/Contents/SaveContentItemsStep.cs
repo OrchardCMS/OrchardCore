@@ -332,7 +332,7 @@ public sealed class SaveContentItemsStep : DataPipelineStepType<SaveContentItems
 
         var contentOptions = services.GetService<IOptions<ContentOptions>>()?.Value;
 
-        return ContentDataColumns.Build(definition, options, contentOptions, S);
+        return ContentDataColumns.Build(definition, options, contentOptions, S, services.GetRequiredService<IStringLocalizerFactory>());
     }
 
     private enum SaveResult

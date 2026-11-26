@@ -38,11 +38,6 @@ msgstr ""
 
 #: Controllers/DeploymentPlanController.cs
 msgctxt "OrchardCore.Deployment.Controllers.DeploymentPlanController"
-msgid "Delete"
-msgstr ""
-
-#: Controllers/DeploymentPlanController.cs
-msgctxt "OrchardCore.Deployment.Controllers.DeploymentPlanController"
 msgid "Deployment plan deleted successfully."
 msgstr ""
 
@@ -158,11 +153,6 @@ msgctxt "OrchardCore.Deployment.DeploymentLocalizationSources"
 msgid "Recipe File"
 msgstr ""
 
-#: Drivers/DeploymentPlanDisplayDriver.cs
-msgctxt "OrchardCore.Deployment.Drivers.DeploymentPlanDisplayDriver"
-msgid "General"
-msgstr ""
-
 #: Drivers/ImportJsonDisplayDriver.cs
 msgctxt "OrchardCore.Deployment.Drivers.ImportJsonDisplayDriver"
 msgid "Recipe"
@@ -222,17 +212,7 @@ msgstr ""
 
 #: Steps/RecipeFileDeploymentStepDriver.cs
 msgctxt "OrchardCore.Deployment.Steps.RecipeFileDeploymentStepDriver"
-msgid "General"
-msgstr ""
-
-#: Steps/RecipeFileDeploymentStepDriver.cs
-msgctxt "OrchardCore.Deployment.Steps.RecipeFileDeploymentStepDriver"
 msgid "Metadata"
-msgstr ""
-
-#: Views/DeploymentPlan/Create.cshtml
-msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Create"
-msgid "Cancel"
 msgstr ""
 
 #: Views/DeploymentPlan/Create.cshtml
@@ -277,11 +257,6 @@ msgstr ""
 
 #: Views/DeploymentPlan/Display.cshtml
 msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Display"
-msgid "Cancel"
-msgstr ""
-
-#: Views/DeploymentPlan/Display.cshtml
-msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Display"
 msgid "Deployment Plan"
 msgstr ""
 
@@ -312,11 +287,6 @@ msgstr ""
 
 #: Views/DeploymentPlan/Edit.cshtml
 msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Edit"
-msgid "Cancel"
-msgstr ""
-
-#: Views/DeploymentPlan/Edit.cshtml
-msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Edit"
 msgid "Deployment Plans"
 msgstr ""
 
@@ -325,19 +295,9 @@ msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Edit"
 msgid "Edit Deployment Plan"
 msgstr ""
 
-#: Views/DeploymentPlan/Edit.cshtml
-msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Edit"
-msgid "Save"
-msgstr ""
-
 #: Views/DeploymentPlan/Index.cshtml
 msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Index"
 msgid "<strong>Nothing here!</strong> There are no deployment plans at the moment."
-msgstr ""
-
-#: Views/DeploymentPlan/Index.cshtml
-msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Index"
-msgid "Actions"
 msgstr ""
 
 #: Views/DeploymentPlan/Index.cshtml
@@ -352,27 +312,7 @@ msgstr ""
 
 #: Views/DeploymentPlan/Index.cshtml
 msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Index"
-msgid "Name"
-msgstr ""
-
-#: Views/DeploymentPlan/Index.cshtml
-msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Index"
-msgid "Search"
-msgstr ""
-
-#: Views/DeploymentPlan/Index.cshtml
-msgctxt "OrchardCore.Deployment.Views.DeploymentPlan.Index"
 msgid "selected"
-msgstr ""
-
-#: Views/DeploymentPlanEntry.Buttons.SummaryAdmin.cshtml
-msgctxt "OrchardCore.Deployment.Views.DeploymentPlanEntry.Buttons.SummaryAdmin"
-msgid "Delete"
-msgstr ""
-
-#: Views/DeploymentPlanEntry.Buttons.SummaryAdmin.cshtml
-msgctxt "OrchardCore.Deployment.Views.DeploymentPlanEntry.Buttons.SummaryAdmin"
-msgid "Edit"
 msgstr ""
 
 #: Views/DeploymentPlanEntry.Buttons.SummaryAdmin.cshtml
@@ -385,26 +325,6 @@ msgstr ""
 #, csharp-format
 msgctxt "OrchardCore.Deployment.Views.DeploymentPlanEntry.Checkbox.SummaryAdmin"
 msgid "Select {0}"
-msgstr ""
-
-#: Views/DeploymentPlanGeneral.Edit.cshtml
-msgctxt "OrchardCore.Deployment.Views.DeploymentPlanGeneral.Edit"
-msgid "Name"
-msgstr ""
-
-#: Views/DeploymentStep.Edit.cshtml
-msgctxt "OrchardCore.Deployment.Views.DeploymentStep.Edit"
-msgid "General"
-msgstr ""
-
-#: Views/DeploymentStep.Summary.cshtml
-msgctxt "OrchardCore.Deployment.Views.DeploymentStep.Summary"
-msgid "Delete"
-msgstr ""
-
-#: Views/DeploymentStep.Summary.cshtml
-msgctxt "OrchardCore.Deployment.Views.DeploymentStep.Summary"
-msgid "Edit"
 msgstr ""
 
 #: Views/DeploymentStep.Thumbnail.cshtml
@@ -666,11 +586,6 @@ msgstr ""
 
 #: Views/Step/Create.cshtml
 msgctxt "OrchardCore.Deployment.Views.Step.Create"
-msgid "Cancel"
-msgstr ""
-
-#: Views/Step/Create.cshtml
-msgctxt "OrchardCore.Deployment.Views.Step.Create"
 msgid "Create"
 msgstr ""
 
@@ -691,27 +606,12 @@ msgstr ""
 
 #: Views/Step/Edit.cshtml
 msgctxt "OrchardCore.Deployment.Views.Step.Edit"
-msgid "Cancel"
-msgstr ""
-
-#: Views/Step/Edit.cshtml
-msgctxt "OrchardCore.Deployment.Views.Step.Edit"
-msgid "Delete"
-msgstr ""
-
-#: Views/Step/Edit.cshtml
-msgctxt "OrchardCore.Deployment.Views.Step.Edit"
 msgid "Deployment Plan"
 msgstr ""
 
 #: Views/Step/Edit.cshtml
 msgctxt "OrchardCore.Deployment.Views.Step.Edit"
 msgid "Deployment Plans"
-msgstr ""
-
-#: Views/Step/Edit.cshtml
-msgctxt "OrchardCore.Deployment.Views.Step.Edit"
-msgid "Save"
 msgstr ""
 
 #: Views/Step/Edit.cshtml

@@ -2,6 +2,7 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.Deployment.Remote.ViewModels;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Deployment.Remote.Drivers;
 
@@ -11,10 +12,13 @@ namespace OrchardCore.Deployment.Remote.Drivers;
 /// </summary>
 internal sealed class EditRemoteInstanceDisplayDriver : DisplayDriver<EditRemoteInstanceViewModel>
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     internal readonly IStringLocalizer S;
 
-    public EditRemoteInstanceDisplayDriver(IStringLocalizer<EditRemoteInstanceDisplayDriver> stringLocalizer)
+    public EditRemoteInstanceDisplayDriver(IStringLocalizer<EditRemoteInstanceDisplayDriver> stringLocalizer, IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         S = stringLocalizer;
     }
 
@@ -22,7 +26,7 @@ internal sealed class EditRemoteInstanceDisplayDriver : DisplayDriver<EditRemote
     {
         return Combine(
             Initialize<EditRemoteInstanceViewModel>("RemoteInstanceGeneral_Edit", m => Populate(model, m))
-                .Location(l => l.Zone("Content", "1").Card(S["General"], "10")),
+                .Location(l => l.Zone("Content", "1").Card(_localizerFactory.Localize(CommonLocalizationSources.General), "10")),
             Initialize<EditRemoteInstanceViewModel>("RemoteInstanceCredentials_Edit", m => Populate(model, m))
                 .Location(l => l.Zone("Content", "2").Card(S["Credentials"], "20")));
     }

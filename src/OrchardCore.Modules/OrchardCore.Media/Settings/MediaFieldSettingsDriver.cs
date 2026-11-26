@@ -5,6 +5,7 @@ using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Localization;
 using OrchardCore.Media.Fields;
 using OrchardCore.Media.Services;
 using OrchardCore.Media.ViewModels;
@@ -14,6 +15,8 @@ namespace OrchardCore.Media.Settings;
 
 public sealed class MediaFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<MediaField>
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     private readonly IContentTypeProvider _contentTypeProvider;
     private readonly MediaOptions _mediaOptions;
 
@@ -22,8 +25,10 @@ public sealed class MediaFieldSettingsDriver : ContentPartFieldDefinitionDisplay
     public MediaFieldSettingsDriver(
         IContentTypeProvider contentTypeProvider,
         IOptions<MediaOptions> mediaOptions,
-        IStringLocalizer<MediaFieldSettingsDriver> stringLocalizer)
+        IStringLocalizer<MediaFieldSettingsDriver> stringLocalizer,
+        IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         _contentTypeProvider = contentTypeProvider;
         _mediaOptions = mediaOptions.Value;
         S = stringLocalizer;
@@ -33,7 +38,7 @@ public sealed class MediaFieldSettingsDriver : ContentPartFieldDefinitionDisplay
     {
         return Combine(
             Initialize<MediaFieldSettingsViewModel>("MediaFieldSettings_Edit", model => PopulateViewModel(partFieldDefinition, model))
-                .Location(l => l.Zone("Content").Card(S["Settings"], "20")),
+                .Location(l => l.Zone("Content").Card(_localizerFactory.Localize(CommonLocalizationSources.Settings), "20")),
             Initialize<MediaFieldSettingsViewModel>("MediaFieldSettingsMediaTypes_Edit", model => PopulateViewModel(partFieldDefinition, model))
                 .Location(l => l.Zone("Content").Card(S["Media types"], "25")));
     }

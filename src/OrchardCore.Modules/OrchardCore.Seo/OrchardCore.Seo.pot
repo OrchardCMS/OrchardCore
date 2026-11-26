@@ -13,17 +13,7 @@ msgstr ""
 
 #: AdminMenu.cs
 msgctxt "OrchardCore.Seo.AdminMenu"
-msgid "Search"
-msgstr ""
-
-#: AdminMenu.cs
-msgctxt "OrchardCore.Seo.AdminMenu"
 msgid "Search Engine Optimization"
-msgstr ""
-
-#: AdminMenu.cs
-msgctxt "OrchardCore.Seo.AdminMenu"
-msgid "Settings"
 msgstr ""
 
 #. Format arguments: {0}: SeoConstants.RobotsFileName
@@ -182,11 +172,6 @@ msgstr ""
 
 #: Services/SeoJSLocalizer.cs
 msgctxt "OrchardCore.Seo.Services.SeoJSLocalizer"
-msgid "Cancel"
-msgstr ""
-
-#: Services/SeoJSLocalizer.cs
-msgctxt "OrchardCore.Seo.Services.SeoJSLocalizer"
 msgid "Charset"
 msgstr ""
 
@@ -208,11 +193,6 @@ msgstr ""
 #: Services/SeoJSLocalizer.cs
 msgctxt "OrchardCore.Seo.Services.SeoJSLocalizer"
 msgid "Http Equiv"
-msgstr ""
-
-#: Services/SeoJSLocalizer.cs
-msgctxt "OrchardCore.Seo.Services.SeoJSLocalizer"
-msgid "Name"
 msgstr ""
 
 #: Services/SeoJSLocalizer.cs
@@ -460,9 +440,4 @@ msgstr ""
 #: Views/SeoMetaPartTwitter.Edit.cshtml
 msgctxt "OrchardCore.Seo.Views.SeoMetaPartTwitter.Edit"
 msgid "Twitter Title"
-msgstr ""
-
-#: Settings/SeoMetaPartSettingsDisplayDriver.cs
-msgctxt "OrchardCore.SeoMeta.Settings.SeoMetaPartSettingsDisplayDriver"
-msgid "Settings"
 msgstr ""

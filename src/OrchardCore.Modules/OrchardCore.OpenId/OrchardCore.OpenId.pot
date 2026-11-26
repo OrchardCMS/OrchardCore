@@ -57,12 +57,6 @@ msgctxt "OrchardCore.OpenId.ClientAdminMenu"
 msgid "OpenID Connect"
 msgstr ""
 
-#: ClientAdminMenu.cs
-#: ServerAdminMenu.cs
-msgctxt "OrchardCore.OpenId.ClientAdminMenu"
-msgid "Settings"
-msgstr ""
-
 #: Controllers/ApplicationController.cs
 msgctxt "OrchardCore.OpenId.Controllers.ApplicationController"
 msgid "No client secret can be set for public applications."
@@ -135,16 +129,6 @@ msgctxt "OrchardCore.OpenId.Drivers.CreateOpenIdApplicationDisplayDriver"
 msgid "Flows"
 msgstr ""
 
-#: Drivers/CreateOpenIdApplicationDisplayDriver.cs
-msgctxt "OrchardCore.OpenId.Drivers.CreateOpenIdApplicationDisplayDriver"
-msgid "General"
-msgstr ""
-
-#: Drivers/CreateOpenIdScopeDisplayDriver.cs
-msgctxt "OrchardCore.OpenId.Drivers.CreateOpenIdScopeDisplayDriver"
-msgid "General"
-msgstr ""
-
 #: Drivers/EditOpenIdApplicationDisplayDriver.cs
 msgctxt "OrchardCore.OpenId.Drivers.EditOpenIdApplicationDisplayDriver"
 msgid "Allowed scopes"
@@ -163,16 +147,6 @@ msgstr ""
 #: Drivers/EditOpenIdApplicationDisplayDriver.cs
 msgctxt "OrchardCore.OpenId.Drivers.EditOpenIdApplicationDisplayDriver"
 msgid "Flows"
-msgstr ""
-
-#: Drivers/EditOpenIdApplicationDisplayDriver.cs
-msgctxt "OrchardCore.OpenId.Drivers.EditOpenIdApplicationDisplayDriver"
-msgid "General"
-msgstr ""
-
-#: Drivers/EditOpenIdScopeDisplayDriver.cs
-msgctxt "OrchardCore.OpenId.Drivers.EditOpenIdScopeDisplayDriver"
-msgid "General"
 msgstr ""
 
 #: Drivers/OpenIdClientSecretMigrationDisplayDriver.cs
@@ -198,11 +172,6 @@ msgstr ""
 #: Drivers/OpenIdClientSettingsDisplayDriver.cs
 msgctxt "OrchardCore.OpenId.Drivers.OpenIdClientSettingsDisplayDriver"
 msgid "Code flow"
-msgstr ""
-
-#: Drivers/OpenIdClientSettingsDisplayDriver.cs
-msgctxt "OrchardCore.OpenId.Drivers.OpenIdClientSettingsDisplayDriver"
-msgid "General"
 msgstr ""
 
 #: Drivers/OpenIdClientSettingsDisplayDriver.cs
@@ -243,11 +212,6 @@ msgstr ""
 #: Drivers/OpenIdServerSettingsDisplayDriver.cs
 msgctxt "OrchardCore.OpenId.Drivers.OpenIdServerSettingsDisplayDriver"
 msgid "Flows"
-msgstr ""
-
-#: Drivers/OpenIdValidationSettingsDisplayDriver.cs
-msgctxt "OrchardCore.OpenId.Drivers.OpenIdValidationSettingsDisplayDriver"
-msgid "General"
 msgstr ""
 
 #: ManagementAdminMenu.cs
@@ -325,11 +289,6 @@ msgstr ""
 #: Services/OpenIdJSLocalizer.cs
 msgctxt "OrchardCore.OpenId.Services.OpenIdJSLocalizer"
 msgid "Add a parameter"
-msgstr ""
-
-#: Services/OpenIdJSLocalizer.cs
-msgctxt "OrchardCore.OpenId.Services.OpenIdJSLocalizer"
-msgid "Cancel"
 msgstr ""
 
 #: Services/OpenIdJSLocalizer.cs
@@ -529,11 +488,6 @@ msgstr ""
 
 #: ValidationAdminMenu.cs
 msgctxt "OrchardCore.OpenId.ValidationAdminMenu"
-msgid "Settings"
-msgstr ""
-
-#: ValidationAdminMenu.cs
-msgctxt "OrchardCore.OpenId.ValidationAdminMenu"
 msgid "Token Validation"
 msgstr ""
 
@@ -577,17 +531,7 @@ msgstr ""
 
 #: Views/Application/Create.cshtml
 msgctxt "OrchardCore.OpenId.Views.Application.Create"
-msgid "Cancel"
-msgstr ""
-
-#: Views/Application/Create.cshtml
-msgctxt "OrchardCore.OpenId.Views.Application.Create"
 msgid "Create a new application"
-msgstr ""
-
-#: Views/Application/Create.cshtml
-msgctxt "OrchardCore.OpenId.Views.Application.Create"
-msgid "Save"
 msgstr ""
 
 #: Views/Application/Edit.cshtml
@@ -597,27 +541,12 @@ msgstr ""
 
 #: Views/Application/Edit.cshtml
 msgctxt "OrchardCore.OpenId.Views.Application.Edit"
-msgid "Cancel"
-msgstr ""
-
-#: Views/Application/Edit.cshtml
-msgctxt "OrchardCore.OpenId.Views.Application.Edit"
 msgid "Edit an application"
-msgstr ""
-
-#: Views/Application/Edit.cshtml
-msgctxt "OrchardCore.OpenId.Views.Application.Edit"
-msgid "Save"
 msgstr ""
 
 #: Views/Application/Index.cshtml
 msgctxt "OrchardCore.OpenId.Views.Application.Index"
 msgid "<strong>Nothing here!</strong> There are no applications at the moment."
-msgstr ""
-
-#: Views/Application/Index.cshtml
-msgctxt "OrchardCore.OpenId.Views.Application.Index"
-msgid "Actions"
 msgstr ""
 
 #: Views/Application/Index.cshtml
@@ -638,11 +567,6 @@ msgstr ""
 #: Views/Application/Index.cshtml
 msgctxt "OrchardCore.OpenId.Views.Application.Index"
 msgid "New application"
-msgstr ""
-
-#: Views/Application/Index.cshtml
-msgctxt "OrchardCore.OpenId.Views.Application.Index"
-msgid "Search"
 msgstr ""
 
 #: Views/CreateOpenIdApplicationAuthorization.Edit.cshtml
@@ -877,11 +801,6 @@ msgstr ""
 #: Views/CreateOpenIdScopeGeneral.Edit.cshtml
 msgctxt "OrchardCore.OpenId.Views.CreateOpenIdScopeGeneral.Edit"
 msgid "Display Name"
-msgstr ""
-
-#: Views/CreateOpenIdScopeGeneral.Edit.cshtml
-msgctxt "OrchardCore.OpenId.Views.CreateOpenIdScopeGeneral.Edit"
-msgid "Name"
 msgstr ""
 
 #: Views/EditOpenIdApplicationAuthorization.Edit.cshtml
@@ -1133,11 +1052,6 @@ msgctxt "OrchardCore.OpenId.Views.EditOpenIdScopeGeneral.Edit"
 msgid "Display Name"
 msgstr ""
 
-#: Views/EditOpenIdScopeGeneral.Edit.cshtml
-msgctxt "OrchardCore.OpenId.Views.EditOpenIdScopeGeneral.Edit"
-msgid "Name"
-msgstr ""
-
 #: Views/Items/OpenIdServerDeploymentStep.Edit.cshtml
 msgctxt "OrchardCore.OpenId.Views.Items.OpenIdServerDeploymentStep.Edit"
 msgid "OpenID Server Settings"
@@ -1188,16 +1102,6 @@ msgctxt "OrchardCore.OpenId.Views.Items.OpenIdValidationDeploymentStep.Thumbnail
 msgid "OpenID Validation Settings"
 msgstr ""
 
-#: Views/OpenIdApplicationEntry.Buttons.SummaryAdmin.cshtml
-msgctxt "OrchardCore.OpenId.Views.OpenIdApplicationEntry.Buttons.SummaryAdmin"
-msgid "Delete"
-msgstr ""
-
-#: Views/OpenIdApplicationEntry.Buttons.SummaryAdmin.cshtml
-msgctxt "OrchardCore.OpenId.Views.OpenIdApplicationEntry.Buttons.SummaryAdmin"
-msgid "Edit"
-msgstr ""
-
 #. Format arguments: {0}: "[ { name: 'First parameter', value: 'parameter1' }, { name: 'Second parameter', value: 'parameter2' } ]"
 #: Views/OpenIdClientSettings-Advanced.Edit.cshtml
 #, csharp-format
@@ -1218,11 +1122,6 @@ msgstr ""
 #: Views/OpenIdClientSettings-Advanced.Edit.cshtml
 msgctxt "OrchardCore.OpenId.Views.OpenIdClientSettings-Advanced.Edit"
 msgid "Advanced parameters that can be sent with the authorization request."
-msgstr ""
-
-#: Views/OpenIdClientSettings-Advanced.Edit.cshtml
-msgctxt "OrchardCore.OpenId.Views.OpenIdClientSettings-Advanced.Edit"
-msgid "Cancel"
 msgstr ""
 
 #. Format arguments: {0}: "http://openid.net/specs/openid-connect-core-1_0.html#ImplicitAuthResponse"
@@ -1439,21 +1338,6 @@ msgstr ""
 #: Views/OpenIdClientSettings.Edit.cshtml
 msgctxt "OrchardCore.OpenId.Views.OpenIdClientSettings.Edit"
 msgid "User-Friendly Display Name of the identity provider"
-msgstr ""
-
-#: Views/OpenIdScopeEntry.Buttons.SummaryAdmin.cshtml
-msgctxt "OrchardCore.OpenId.Views.OpenIdScopeEntry.Buttons.SummaryAdmin"
-msgid "Delete"
-msgstr ""
-
-#: Views/OpenIdScopeEntry.Buttons.SummaryAdmin.cshtml
-msgctxt "OrchardCore.OpenId.Views.OpenIdScopeEntry.Buttons.SummaryAdmin"
-msgid "Edit"
-msgstr ""
-
-#: Views/OpenIdScopeEntry.DefaultTags.SummaryAdmin.cshtml
-msgctxt "OrchardCore.OpenId.Views.OpenIdScopeEntry.DefaultTags.SummaryAdmin"
-msgid "Name"
 msgstr ""
 
 #: Views/OpenIdSecretSettings.Edit.cshtml
@@ -1817,17 +1701,7 @@ msgstr ""
 
 #: Views/Scope/Create.cshtml
 msgctxt "OrchardCore.OpenId.Views.Scope.Create"
-msgid "Cancel"
-msgstr ""
-
-#: Views/Scope/Create.cshtml
-msgctxt "OrchardCore.OpenId.Views.Scope.Create"
 msgid "Create a new scope"
-msgstr ""
-
-#: Views/Scope/Create.cshtml
-msgctxt "OrchardCore.OpenId.Views.Scope.Create"
-msgid "Save"
 msgstr ""
 
 #: Views/Scope/Create.cshtml
@@ -1837,17 +1711,7 @@ msgstr ""
 
 #: Views/Scope/Edit.cshtml
 msgctxt "OrchardCore.OpenId.Views.Scope.Edit"
-msgid "Cancel"
-msgstr ""
-
-#: Views/Scope/Edit.cshtml
-msgctxt "OrchardCore.OpenId.Views.Scope.Edit"
 msgid "Edit a scope"
-msgstr ""
-
-#: Views/Scope/Edit.cshtml
-msgctxt "OrchardCore.OpenId.Views.Scope.Edit"
-msgid "Save"
 msgstr ""
 
 #: Views/Scope/Edit.cshtml
@@ -1862,22 +1726,12 @@ msgstr ""
 
 #: Views/Scope/Index.cshtml
 msgctxt "OrchardCore.OpenId.Views.Scope.Index"
-msgid "Actions"
-msgstr ""
-
-#: Views/Scope/Index.cshtml
-msgctxt "OrchardCore.OpenId.Views.Scope.Index"
 msgid "Clear"
 msgstr ""
 
 #: Views/Scope/Index.cshtml
 msgctxt "OrchardCore.OpenId.Views.Scope.Index"
 msgid "Display name"
-msgstr ""
-
-#: Views/Scope/Index.cshtml
-msgctxt "OrchardCore.OpenId.Views.Scope.Index"
-msgid "Name"
 msgstr ""
 
 #: Views/Scope/Index.cshtml
@@ -1890,19 +1744,9 @@ msgctxt "OrchardCore.OpenId.Views.Scope.Index"
 msgid "Scopes"
 msgstr ""
 
-#: Views/Scope/Index.cshtml
-msgctxt "OrchardCore.OpenId.Views.Scope.Index"
-msgid "Search"
-msgstr ""
-
 #: Views/ServerConfiguration/Index.cshtml
 msgctxt "OrchardCore.OpenId.Views.ServerConfiguration.Index"
 msgid "Configure OpenID Connect server settings"
-msgstr ""
-
-#: Views/ServerConfiguration/Index.cshtml
-msgctxt "OrchardCore.OpenId.Views.ServerConfiguration.Index"
-msgid "Save"
 msgstr ""
 
 #: Views/ServerConfiguration/Index.cshtml
@@ -1913,11 +1757,6 @@ msgstr ""
 #: Views/ValidationConfiguration/Index.cshtml
 msgctxt "OrchardCore.OpenId.Views.ValidationConfiguration.Index"
 msgid "Configure OpenID Connect validation settings"
-msgstr ""
-
-#: Views/ValidationConfiguration/Index.cshtml
-msgctxt "OrchardCore.OpenId.Views.ValidationConfiguration.Index"
-msgid "Save"
 msgstr ""
 
 #: Views/ValidationConfiguration/Index.cshtml

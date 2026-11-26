@@ -3,6 +3,7 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Localization;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.UrlRewriting.Models;
 using OrchardCore.UrlRewriting.ViewModels;
@@ -11,14 +12,18 @@ namespace OrchardCore.UrlRewriting.Drivers;
 
 public sealed class RewriteRulesDisplayDriver : DisplayDriver<RewriteRule>
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     private readonly IShellReleaseManager _shellReleaseManager;
 
     internal readonly IStringLocalizer S;
 
     public RewriteRulesDisplayDriver(
         IShellReleaseManager shellReleaseManager,
-        IStringLocalizer<RewriteRulesDisplayDriver> stringLocalizer)
+        IStringLocalizer<RewriteRulesDisplayDriver> stringLocalizer,
+        IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         _shellReleaseManager = shellReleaseManager;
         S = stringLocalizer;
     }
@@ -55,7 +60,7 @@ public sealed class RewriteRulesDisplayDriver : DisplayDriver<RewriteRule>
         return Initialize<EditRewriteRuleViewModel>("RewriteRule_Fields_Edit", model =>
         {
             model.Name = rule.Name;
-        }).Location(l => l.Zone("Content", "1").Card(S["General"], "10"));
+        }).Location(l => l.Zone("Content", "1").Card(_localizerFactory.Localize(CommonLocalizationSources.General), "10"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(RewriteRule rule, UpdateEditorContext context)

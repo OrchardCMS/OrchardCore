@@ -63,11 +63,6 @@ msgstr ""
 
 #: Controllers/MenuController.cs
 msgctxt "OrchardCore.AdminMenu.Controllers.MenuController"
-msgid "Delete"
-msgstr ""
-
-#: Controllers/MenuController.cs
-msgctxt "OrchardCore.AdminMenu.Controllers.MenuController"
 msgid "Error when retrieving the list of admin menus."
 msgstr ""
 
@@ -101,16 +96,6 @@ msgctxt "OrchardCore.AdminMenu.Deployment.AdminMenuDeploymentStepDriver"
 msgid "Admin menus"
 msgstr ""
 
-#: Drivers/AdminMenuCreateDisplayDriver.cs
-msgctxt "OrchardCore.AdminMenu.Drivers.AdminMenuCreateDisplayDriver"
-msgid "General"
-msgstr ""
-
-#: Drivers/AdminMenuEditDisplayDriver.cs
-msgctxt "OrchardCore.AdminMenu.Drivers.AdminMenuEditDisplayDriver"
-msgid "General"
-msgstr ""
-
 #: Drivers/AdminNodePositionDisplayDriver.cs
 msgctxt "OrchardCore.AdminMenu.Drivers.AdminNodePositionDisplayDriver"
 msgid "Position"
@@ -121,16 +106,6 @@ msgstr ""
 #, csharp-format
 msgctxt "OrchardCore.AdminMenu.Permissions"
 msgid "View Admin Menu - {0}"
-msgstr ""
-
-#: Views/AdminMenuCreateGeneral.Edit.cshtml
-msgctxt "OrchardCore.AdminMenu.Views.AdminMenuCreateGeneral.Edit"
-msgid "Name"
-msgstr ""
-
-#: Views/AdminMenuEditGeneral.Edit.cshtml
-msgctxt "OrchardCore.AdminMenu.Views.AdminMenuEditGeneral.Edit"
-msgid "Name"
 msgstr ""
 
 #: Views/AdminMenuEntry.ActionsMenuItems.SummaryAdmin.cshtml
@@ -145,16 +120,6 @@ msgstr ""
 
 #: Views/AdminMenuEntry.Buttons.SummaryAdmin.cshtml
 msgctxt "OrchardCore.AdminMenu.Views.AdminMenuEntry.Buttons.SummaryAdmin"
-msgid "Delete"
-msgstr ""
-
-#: Views/AdminMenuEntry.Buttons.SummaryAdmin.cshtml
-msgctxt "OrchardCore.AdminMenu.Views.AdminMenuEntry.Buttons.SummaryAdmin"
-msgid "Edit"
-msgstr ""
-
-#: Views/AdminMenuEntry.Buttons.SummaryAdmin.cshtml
-msgctxt "OrchardCore.AdminMenu.Views.AdminMenuEntry.Buttons.SummaryAdmin"
 msgid "Edit Nodes"
 msgstr ""
 
@@ -163,21 +128,6 @@ msgstr ""
 #, csharp-format
 msgctxt "OrchardCore.AdminMenu.Views.AdminMenuEntry.Checkbox.SummaryAdmin"
 msgid "Select {0}"
-msgstr ""
-
-#: Views/AdminMenuEntry.DefaultTags.SummaryAdmin.cshtml
-msgctxt "OrchardCore.AdminMenu.Views.AdminMenuEntry.DefaultTags.SummaryAdmin"
-msgid "Disabled"
-msgstr ""
-
-#: Views/AdminMenuEntry.DefaultTags.SummaryAdmin.cshtml
-msgctxt "OrchardCore.AdminMenu.Views.AdminMenuEntry.DefaultTags.SummaryAdmin"
-msgid "Enabled"
-msgstr ""
-
-#: Views/AdminMenuEntry.DefaultTags.SummaryAdmin.cshtml
-msgctxt "OrchardCore.AdminMenu.Views.AdminMenuEntry.DefaultTags.SummaryAdmin"
-msgid "Status"
 msgstr ""
 
 #: Views/AdminNodePosition.Edit.cshtml
@@ -284,16 +234,6 @@ msgstr ""
 
 #: Views/Items/LinkAdminNode.Fields.TreeEdit.cshtml
 msgctxt "OrchardCore.AdminMenu.Views.Items.LinkAdminNode.Fields.TreeEdit"
-msgid "Remove"
-msgstr ""
-
-#: Views/Items/LinkAdminNode.Fields.TreeEdit.cshtml
-msgctxt "OrchardCore.AdminMenu.Views.Items.LinkAdminNode.Fields.TreeEdit"
-msgid "Search"
-msgstr ""
-
-#: Views/Items/LinkAdminNode.Fields.TreeEdit.cshtml
-msgctxt "OrchardCore.AdminMenu.Views.Items.LinkAdminNode.Fields.TreeEdit"
 msgid "Select an icon to display when this link is a first level menu item."
 msgstr ""
 
@@ -376,16 +316,6 @@ msgstr ""
 
 #: Views/Items/PlaceholderAdminNode.Fields.TreeEdit.cshtml
 msgctxt "OrchardCore.AdminMenu.Views.Items.PlaceholderAdminNode.Fields.TreeEdit"
-msgid "Remove"
-msgstr ""
-
-#: Views/Items/PlaceholderAdminNode.Fields.TreeEdit.cshtml
-msgctxt "OrchardCore.AdminMenu.Views.Items.PlaceholderAdminNode.Fields.TreeEdit"
-msgid "Search"
-msgstr ""
-
-#: Views/Items/PlaceholderAdminNode.Fields.TreeEdit.cshtml
-msgctxt "OrchardCore.AdminMenu.Views.Items.PlaceholderAdminNode.Fields.TreeEdit"
 msgid "Select an icon to display when this menu item is at the first level."
 msgstr ""
 
@@ -426,11 +356,6 @@ msgstr ""
 
 #: Views/Menu/Create.cshtml
 msgctxt "OrchardCore.AdminMenu.Views.Menu.Create"
-msgid "Cancel"
-msgstr ""
-
-#: Views/Menu/Create.cshtml
-msgctxt "OrchardCore.AdminMenu.Views.Menu.Create"
 msgid "Create"
 msgstr ""
 
@@ -442,11 +367,6 @@ msgstr ""
 #: Views/Menu/Edit.cshtml
 msgctxt "OrchardCore.AdminMenu.Views.Menu.Edit"
 msgid "Admin Menus"
-msgstr ""
-
-#: Views/Menu/Edit.cshtml
-msgctxt "OrchardCore.AdminMenu.Views.Menu.Edit"
-msgid "Cancel"
 msgstr ""
 
 #. Format arguments: {0}: localizedAdminMenuName
@@ -461,19 +381,9 @@ msgctxt "OrchardCore.AdminMenu.Views.Menu.Edit"
 msgid "Edit Admin Nodes"
 msgstr ""
 
-#: Views/Menu/Edit.cshtml
-msgctxt "OrchardCore.AdminMenu.Views.Menu.Edit"
-msgid "Save"
-msgstr ""
-
 #: Views/Menu/List.cshtml
 msgctxt "OrchardCore.AdminMenu.Views.Menu.List"
 msgid "<strong>Nothing here!</strong> There are no admin menus for the moment."
-msgstr ""
-
-#: Views/Menu/List.cshtml
-msgctxt "OrchardCore.AdminMenu.Views.Menu.List"
-msgid "Actions"
 msgstr ""
 
 #: Views/Menu/List.cshtml
@@ -484,21 +394,6 @@ msgstr ""
 #: Views/Menu/List.cshtml
 msgctxt "OrchardCore.AdminMenu.Views.Menu.List"
 msgid "Admin Menus"
-msgstr ""
-
-#: Views/Menu/List.cshtml
-msgctxt "OrchardCore.AdminMenu.Views.Menu.List"
-msgid "Name"
-msgstr ""
-
-#: Views/Menu/List.cshtml
-msgctxt "OrchardCore.AdminMenu.Views.Menu.List"
-msgid "Search"
-msgstr ""
-
-#: Views/Menu/List.cshtml
-msgctxt "OrchardCore.AdminMenu.Views.Menu.List"
-msgid "Status"
 msgstr ""
 
 #: Views/Menu/List.cshtml
@@ -515,17 +410,7 @@ msgstr ""
 
 #: Views/MenuItem.TreeSummary.cshtml
 msgctxt "OrchardCore.AdminMenu.Views.MenuItem.TreeSummary"
-msgid "Delete"
-msgstr ""
-
-#: Views/MenuItem.TreeSummary.cshtml
-msgctxt "OrchardCore.AdminMenu.Views.MenuItem.TreeSummary"
 msgid "Disable"
-msgstr ""
-
-#: Views/MenuItem.TreeSummary.cshtml
-msgctxt "OrchardCore.AdminMenu.Views.MenuItem.TreeSummary"
-msgid "Edit"
 msgstr ""
 
 #: Views/MenuItem.TreeSummary.cshtml
@@ -550,11 +435,6 @@ msgstr ""
 
 #: Views/Node/Create.cshtml
 msgctxt "OrchardCore.AdminMenu.Views.Node.Create"
-msgid "Cancel"
-msgstr ""
-
-#: Views/Node/Create.cshtml
-msgctxt "OrchardCore.AdminMenu.Views.Node.Create"
 msgid "Create"
 msgstr ""
 
@@ -570,24 +450,9 @@ msgctxt "OrchardCore.AdminMenu.Views.Node.Create"
 msgid "Edit Nodes for '{0}'"
 msgstr ""
 
-#: Views/Node/Create.cshtml
-msgctxt "OrchardCore.AdminMenu.Views.Node.Create"
-msgid "General"
-msgstr ""
-
 #: Views/Node/Edit.cshtml
 msgctxt "OrchardCore.AdminMenu.Views.Node.Edit"
 msgid "Admin Menus"
-msgstr ""
-
-#: Views/Node/Edit.cshtml
-msgctxt "OrchardCore.AdminMenu.Views.Node.Edit"
-msgid "Cancel"
-msgstr ""
-
-#: Views/Node/Edit.cshtml
-msgctxt "OrchardCore.AdminMenu.Views.Node.Edit"
-msgid "Delete"
 msgstr ""
 
 #: Views/Node/Edit.cshtml
@@ -600,31 +465,6 @@ msgstr ""
 #, csharp-format
 msgctxt "OrchardCore.AdminMenu.Views.Node.Edit"
 msgid "Edit Nodes for '{0}'"
-msgstr ""
-
-#: Views/Node/Edit.cshtml
-msgctxt "OrchardCore.AdminMenu.Views.Node.Edit"
-msgid "General"
-msgstr ""
-
-#: Views/Node/Edit.cshtml
-msgctxt "OrchardCore.AdminMenu.Views.Node.Edit"
-msgid "Save"
-msgstr ""
-
-#: Views/Node/Edit.cshtml
-msgctxt "OrchardCore.AdminMenu.Views.Node.Edit"
-msgid "Save actions"
-msgstr ""
-
-#: Views/Node/Edit.cshtml
-msgctxt "OrchardCore.AdminMenu.Views.Node.Edit"
-msgid "Save and continue"
-msgstr ""
-
-#: Views/Node/Edit.cshtml
-msgctxt "OrchardCore.AdminMenu.Views.Node.Edit"
-msgid "Toggle Dropdown"
 msgstr ""
 
 #: Views/Node/Edit.cshtml
@@ -655,11 +495,6 @@ msgstr ""
 #: Views/Node/List.cshtml
 msgctxt "OrchardCore.AdminMenu.Views.Node.List"
 msgid "Back"
-msgstr ""
-
-#: Views/Node/List.cshtml
-msgctxt "OrchardCore.AdminMenu.Views.Node.List"
-msgid "Cancel"
 msgstr ""
 
 #. Format arguments: {0}: localizedAdminMenuName

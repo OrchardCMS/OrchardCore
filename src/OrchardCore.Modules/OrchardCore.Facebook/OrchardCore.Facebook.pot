@@ -8,11 +8,6 @@ msgstr ""
 
 #: Activities/MetaConversionsApiEventTask.cs
 msgctxt "OrchardCore.Facebook.Activities.MetaConversionsApiEventTask"
-msgid "Done"
-msgstr ""
-
-#: Activities/MetaConversionsApiEventTask.cs
-msgctxt "OrchardCore.Facebook.Activities.MetaConversionsApiEventTask"
 msgid "Failed"
 msgstr ""
 
@@ -34,11 +29,6 @@ msgstr ""
 #: AdminMenu.cs
 msgctxt "OrchardCore.Facebook.AdminMenu"
 msgid "Meta App"
-msgstr ""
-
-#: AdminMenu.cs
-msgctxt "OrchardCore.Facebook.AdminMenu"
-msgid "Settings"
 msgstr ""
 
 #: AdminMenuLogin.cs
@@ -64,12 +54,6 @@ msgstr ""
 #: AdminMenuLogin.cs
 msgctxt "OrchardCore.Facebook.AdminMenuLogin"
 msgid "Security"
-msgstr ""
-
-#: AdminMenuLogin.cs
-#: AdminMenuPixel.cs
-msgctxt "OrchardCore.Facebook.AdminMenuLogin"
-msgid "Settings"
 msgstr ""
 
 #: Drivers/FacebookPixelSettingsDisplayDriver.cs
@@ -184,11 +168,6 @@ msgstr ""
 #: Views/FacebookLoginSettings.Edit.cshtml
 msgctxt "OrchardCore.Facebook.Views.FacebookLoginSettings.Edit"
 msgid "CallbackPath"
-msgstr ""
-
-#: Views/FacebookLoginSettings.Edit.cshtml
-msgctxt "OrchardCore.Facebook.Views.FacebookLoginSettings.Edit"
-msgid "See documentation"
 msgstr ""
 
 #: Views/FacebookLoginSettings.Edit.cshtml
@@ -318,11 +297,6 @@ msgstr ""
 
 #: Views/FacebookSettings.Edit.cshtml
 msgctxt "OrchardCore.Facebook.Views.FacebookSettings.Edit"
-msgid "See documentation"
-msgstr ""
-
-#: Views/FacebookSettings.Edit.cshtml
-msgctxt "OrchardCore.Facebook.Views.FacebookSettings.Edit"
 msgid "The Application ID found on the Meta developer portal parameters."
 msgstr ""
 
@@ -426,11 +400,6 @@ msgstr ""
 #: Widgets/Drivers/FacebookPluginPartDisplayDriver.cs
 msgctxt "OrchardCore.Facebook.Widgets.Drivers.FacebookPluginPartDisplayDriver"
 msgid "You do not have permission to manage Liquid templates."
-msgstr ""
-
-#: Widgets/Settings/FacebookPluginPartSettingsDisplayDriver.cs
-msgctxt "OrchardCore.Facebook.Widgets.Settings.FacebookPluginPartSettingsDisplayDriver"
-msgid "Settings"
 msgstr ""
 
 #. Format arguments: {0}: string.Join(" ", errors)

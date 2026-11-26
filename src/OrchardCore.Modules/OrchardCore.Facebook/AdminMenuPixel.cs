@@ -1,11 +1,14 @@
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 using OrchardCore.Navigation;
 
 namespace OrchardCore.Facebook;
 
 public sealed class AdminMenuPixel : AdminNavigationProvider
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     private static readonly RouteValueDictionary s_routeValues = new()
     {
         { "area", "OrchardCore.Settings" },
@@ -15,15 +18,17 @@ public sealed class AdminMenuPixel : AdminNavigationProvider
     internal readonly IStringLocalizer S;
 
     public AdminMenuPixel(
-        IStringLocalizer<AdminMenuLogin> stringLocalizer)
+        IStringLocalizer<AdminMenuLogin> stringLocalizer,
+        IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         S = stringLocalizer;
     }
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
         builder
-            .Add(S["Settings"], settings => settings
+            .Add(_localizerFactory.Localize(CommonLocalizationSources.Settings), settings => settings
                 .Add(S["Integrations"], S["Integrations"].PrefixPosition(), integrations => integrations
                     .Add(S["Meta Pixel"], S["Meta Pixel"].PrefixPosition(), pixel => pixel
                         .AddClass("facebookPixel")

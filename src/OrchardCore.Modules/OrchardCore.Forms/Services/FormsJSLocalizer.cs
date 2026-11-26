@@ -5,7 +5,7 @@ using OrchardCore.Localization;
 
 namespace OrchardCore.Forms.Services;
 
-public sealed class FormsJSLocalizer(IStringLocalizer<FormsJSLocalizer> S) : IJSLocalizer
+public sealed class FormsJSLocalizer(IStringLocalizer<FormsJSLocalizer> S, IStringLocalizerFactory localizerFactory) : IJSLocalizer
 {
     public IDictionary<string, string> GetLocalizations(string group)
     {
@@ -27,7 +27,7 @@ public sealed class FormsJSLocalizer(IStringLocalizer<FormsJSLocalizer> S) : IJS
                 { "DefaultValue", S["Default value"].Value },
                 { "DefaultValueHint", S["(Optional) The value to assign to the select field."].Value },
                 { "Ok", S["OK"].Value },
-                { "Cancel", S["Cancel"].Value },
+                { "Cancel", localizerFactory.Localize(CommonLocalizationSources.Cancel).Value },
             };
         }
 

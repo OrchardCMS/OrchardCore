@@ -153,27 +153,12 @@ msgstr ""
 
 #: Views/AdminSchemePreview.cshtml
 msgctxt "TheAdmin.Views.AdminSchemePreview"
-msgid "Save"
-msgstr ""
-
-#: Views/AdminSchemePreview.cshtml
-msgctxt "TheAdmin.Views.AdminSchemePreview"
-msgid "Settings"
-msgstr ""
-
-#: Views/AdminSchemePreview.cshtml
-msgctxt "TheAdmin.Views.AdminSchemePreview"
 msgid "Site"
 msgstr ""
 
 #: Views/Breadcrumb.cshtml
 msgctxt "TheAdmin.Views.Breadcrumb"
 msgid "Breadcrumb"
-msgstr ""
-
-#: Views/Items/AdminScheme.ActionsMenu.SummaryAdmin.cshtml
-msgctxt "TheAdmin.Views.Items.AdminScheme.ActionsMenu.SummaryAdmin"
-msgid "Delete"
 msgstr ""
 
 #. Format arguments: {0}: Model.Value.Scheme.Name
@@ -186,11 +171,6 @@ msgstr ""
 #: Views/Items/AdminScheme.ActionsMenu.SummaryAdmin.cshtml
 msgctxt "TheAdmin.Views.Items.AdminScheme.ActionsMenu.SummaryAdmin"
 msgid "Set as default"
-msgstr ""
-
-#: Views/Items/AdminScheme.Buttons.SummaryAdmin.cshtml
-msgctxt "TheAdmin.Views.Items.AdminScheme.Buttons.SummaryAdmin"
-msgid "Edit"
 msgstr ""
 
 #: Views/Items/AdminScheme.Fields.SummaryAdmin.cshtml
@@ -242,27 +222,12 @@ msgstr ""
 
 #: Views/Layout.cshtml
 msgctxt "TheAdmin.Views.Layout"
-msgid "Cancel"
-msgstr ""
-
-#: Views/Layout.cshtml
-msgctxt "TheAdmin.Views.Layout"
 msgid "Collapse / expand menu"
 msgstr ""
 
 #: Views/Layout.cshtml
 msgctxt "TheAdmin.Views.Layout"
-msgid "Delete"
-msgstr ""
-
-#: Views/Layout.cshtml
-msgctxt "TheAdmin.Views.Layout"
 msgid "More actions"
-msgstr ""
-
-#: Views/Layout.cshtml
-msgctxt "TheAdmin.Views.Layout"
-msgid "Ok"
 msgstr ""
 
 #: Views/Layout.cshtml
@@ -353,11 +318,6 @@ msgstr ""
 #: Views/Schemes/Edit.cshtml
 msgctxt "TheAdmin.Views.Schemes.Edit"
 msgid "Buttons, links and the current page of the menu."
-msgstr ""
-
-#: Views/Schemes/Edit.cshtml
-msgctxt "TheAdmin.Views.Schemes.Edit"
-msgid "Cancel"
 msgstr ""
 
 #: Views/Schemes/Edit.cshtml
@@ -474,11 +434,6 @@ msgstr ""
 
 #: Views/Schemes/Edit.cshtml
 msgctxt "TheAdmin.Views.Schemes.Edit"
-msgid "Name"
-msgstr ""
-
-#: Views/Schemes/Edit.cshtml
-msgctxt "TheAdmin.Views.Schemes.Edit"
 msgid "Page"
 msgstr ""
 
@@ -517,11 +472,6 @@ msgstr ""
 #: Views/Schemes/Edit.cshtml
 msgctxt "TheAdmin.Views.Schemes.Edit"
 msgid "Same as the text"
-msgstr ""
-
-#: Views/Schemes/Edit.cshtml
-msgctxt "TheAdmin.Views.Schemes.Edit"
-msgid "Save"
 msgstr ""
 
 #: Views/Schemes/Edit.cshtml
@@ -655,11 +605,6 @@ msgstr ""
 
 #: Views/Schemes/Index.cshtml
 msgctxt "TheAdmin.Views.Schemes.Index"
-msgid "Actions"
-msgstr ""
-
-#: Views/Schemes/Index.cshtml
-msgctxt "TheAdmin.Views.Schemes.Index"
 msgid "Add scheme"
 msgstr ""
 
@@ -671,11 +616,6 @@ msgstr ""
 #: Views/Schemes/Index.cshtml
 msgctxt "TheAdmin.Views.Schemes.Index"
 msgid "Colors"
-msgstr ""
-
-#: Views/Schemes/Index.cshtml
-msgctxt "TheAdmin.Views.Schemes.Index"
-msgid "Name"
 msgstr ""
 
 #: Views/Schemes/Index.cshtml

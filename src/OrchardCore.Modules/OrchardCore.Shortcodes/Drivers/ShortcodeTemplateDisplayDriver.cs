@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Localization;
 using OrchardCore.Shortcodes.ViewModels;
 
 namespace OrchardCore.Shortcodes.Drivers;
@@ -11,10 +12,13 @@ namespace OrchardCore.Shortcodes.Drivers;
 /// </summary>
 internal sealed class ShortcodeTemplateDisplayDriver : DisplayDriver<ShortcodeTemplateViewModel>
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     internal readonly IStringLocalizer S;
 
-    public ShortcodeTemplateDisplayDriver(IStringLocalizer<ShortcodeTemplateDisplayDriver> stringLocalizer)
+    public ShortcodeTemplateDisplayDriver(IStringLocalizer<ShortcodeTemplateDisplayDriver> stringLocalizer, IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         S = stringLocalizer;
     }
 
@@ -22,7 +26,7 @@ internal sealed class ShortcodeTemplateDisplayDriver : DisplayDriver<ShortcodeTe
     {
         return Combine(
             Initialize<ShortcodeTemplateViewModel>("ShortcodeTemplateGeneral_Edit", m => Populate(model, m))
-                .Location(l => l.Zone("Content", "1").Card(S["General"], "10")),
+                .Location(l => l.Zone("Content", "1").Card(_localizerFactory.Localize(CommonLocalizationSources.General), "10")),
             // The page creating a template describes its content differently.
             Initialize<ShortcodeTemplateViewModel>(context.IsNew ? "ShortcodeTemplateCreateContent_Edit" : "ShortcodeTemplateContent_Edit", m => Populate(model, m))
                 .Location(l => l.Zone("Footer", "1").Card(S["Template"], "20")));

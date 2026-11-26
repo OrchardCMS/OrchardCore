@@ -6,19 +6,24 @@ using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Liquid;
+using OrchardCore.Localization;
 
 namespace OrchardCore.ContentPreview.Settings;
 
 public sealed class PreviewPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<PreviewPart>
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     private readonly ILiquidTemplateManager _templateManager;
 
     internal readonly IStringLocalizer S;
 
     public PreviewPartSettingsDisplayDriver(
         ILiquidTemplateManager templateManager,
-        IStringLocalizer<PreviewPartSettingsDisplayDriver> localizer)
+        IStringLocalizer<PreviewPartSettingsDisplayDriver> localizer,
+        IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         _templateManager = templateManager;
         S = localizer;
     }
@@ -31,7 +36,7 @@ public sealed class PreviewPartSettingsDisplayDriver : ContentTypePartDefinition
 
             model.Pattern = settings.Pattern;
             model.PreviewPartSettings = settings;
-        }).Location(l => l.Zone("Content").Card(S["Settings"], "20"));
+        }).Location(l => l.Zone("Content").Card(_localizerFactory.Localize(CommonLocalizationSources.Settings), "20"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)

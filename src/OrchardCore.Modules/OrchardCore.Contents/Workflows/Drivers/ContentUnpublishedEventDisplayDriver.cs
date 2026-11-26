@@ -4,24 +4,29 @@ using OrchardCore.Contents.Workflows.Activities;
 using OrchardCore.Contents.Workflows.ViewModels;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Contents.Workflows.Drivers;
 
 public sealed class ContentUnpublishedEventDisplayDriver : ContentEventDisplayDriver<ContentUnpublishedEvent, ContentUnpublishedEventViewModel>
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     internal readonly IStringLocalizer S;
 
     public ContentUnpublishedEventDisplayDriver(
         IContentDefinitionManager contentDefinitionManager,
-        IStringLocalizer<ContentUnpublishedEventDisplayDriver> stringLocalizer)
+        IStringLocalizer<ContentUnpublishedEventDisplayDriver> stringLocalizer,
+        IStringLocalizerFactory localizerFactory)
         : base(contentDefinitionManager)
     {
+        _localizerFactory = localizerFactory;
         S = stringLocalizer;
     }
 
     public override IDisplayResult Edit(ContentUnpublishedEvent activity, BuildEditorContext context)
     {
         return Initialize<ContentUnpublishedEventViewModel>("ContentUnpublishedEvent_Fields_Edit", model => EditActivityAsync(activity, model))
-            .Location(l => l.Zone("Content", "1").Card(S["Content types"], "10"));
+            .Location(l => l.Zone("Content", "1").Card(_localizerFactory.Localize(CommonLocalizationSources.ContentTypes), "10"));
     }
 }

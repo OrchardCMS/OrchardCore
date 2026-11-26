@@ -114,7 +114,7 @@ public sealed class AdminController : Controller, IUpdateModel
         [
             new(S["Mark as read"], nameof(NotificationBulkAction.Read)),
             new(S["Mark as unread"], nameof(NotificationBulkAction.Unread)),
-            new(S["Remove"], nameof(NotificationBulkAction.Remove)),
+            new(_localizerFactory.Localize(CommonLocalizationSources.Commands.Remove), nameof(NotificationBulkAction.Remove)),
         ];
 
         var pager = new Pager(pagerParameters, _pagerOptions);

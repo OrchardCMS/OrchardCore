@@ -11,7 +11,7 @@
         <div class="ocat-end">
             <select asp-for="LabelOption" class="form-select content-preview-select field-label-option-select-menu">
                 <option value="@nameof(LabelOptions.None)">@T["None"]</option>
-                <option value="@nameof(LabelOptions.Standard)">@T["Standard"]</option>
+                <option value="@nameof(LabelOptions.Standard)">@Localize(CommonLocalizationSources.FormLabels.Standard)</option>
                 <option value="@nameof(LabelOptions.ScreenReaders)">@T["Screen Readers"]</option>
             </select>
             <span class="hint">@T["The type of label to create for this field."]</span>

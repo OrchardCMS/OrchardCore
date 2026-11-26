@@ -35,7 +35,7 @@
                 asp-controller="Node"
                 asp-route-id="@Model.AdminMenuId"
                 asp-route-treeNodeId="@Model.MenuItem.UniqueId"
-                class="btn btn-primary btn-sm">@T["Edit"]</a>;
+                class="btn btn-primary btn-sm">@Localize(CommonLocalizationSources.Edit)</a>;
 
         Func<object, object> toggleAction =
             @<a asp-controller="Node"
@@ -54,7 +54,7 @@
             asp-route-id="@Model.AdminMenuId"
             asp-route-treeNodeId="@Model.MenuItem.UniqueId"
             class="btn btn-danger btn-sm"
-            data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>;
+            data-url-af="RemoveUrl UnsafeUrl">@Localize(CommonLocalizationSources.Delete)</a>;
 
     await zones["Actions"].AddAsync(deleteAction(null), "20");
 }

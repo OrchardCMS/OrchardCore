@@ -29,7 +29,7 @@
             }
             else if (Model.IsTwoFaEnabled)
             {
-                <div class="btn btn-sm btn-success disabled">@T["Enabled"]</div>
+                <div class="btn btn-sm btn-success disabled">@Localize(CommonLocalizationSources.EnabledState)</div>
             }
             else if (!Model.IsTwoFaEnabled && Model.ValidTwoFactorProviders.Count > 0)
             {

@@ -3,6 +3,7 @@ using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Localization;
 using OrchardCore.Taxonomies.Fields;
 using OrchardCore.Taxonomies.Settings;
 
@@ -10,10 +11,13 @@ namespace OrchardCore.Taxonomies.Drivers;
 
 public sealed class TaxonomyFieldTagsEditorSettingsDriver : ContentPartFieldDefinitionDisplayDriver<TaxonomyField>
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     internal readonly IStringLocalizer S;
 
-    public TaxonomyFieldTagsEditorSettingsDriver(IStringLocalizer<TaxonomyFieldTagsEditorSettingsDriver> stringLocalizer)
+    public TaxonomyFieldTagsEditorSettingsDriver(IStringLocalizer<TaxonomyFieldTagsEditorSettingsDriver> stringLocalizer, IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         S = stringLocalizer;
     }
 
@@ -24,7 +28,7 @@ public sealed class TaxonomyFieldTagsEditorSettingsDriver : ContentPartFieldDefi
             var settings = partFieldDefinition.GetSettings<TaxonomyFieldTagsEditorSettings>();
 
             model.Open = settings.Open;
-        }).Location(l => l.Zone("Content", "2").Card(S["Settings"], "20"));
+        }).Location(l => l.Zone("Content", "2").Card(_localizerFactory.Localize(CommonLocalizationSources.Settings), "20"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)

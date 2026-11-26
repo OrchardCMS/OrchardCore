@@ -4,15 +4,19 @@ using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentTypes.ViewModels;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Localization;
 
 namespace OrchardCore.ContentTypes.Editors;
 
 public sealed class ContentPartSettingsDisplayDriver : ContentPartDefinitionDisplayDriver
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     internal readonly IStringLocalizer S;
 
-    public ContentPartSettingsDisplayDriver(IStringLocalizer<ContentPartSettingsDisplayDriver> stringLocalizer)
+    public ContentPartSettingsDisplayDriver(IStringLocalizer<ContentPartSettingsDisplayDriver> stringLocalizer, IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         S = stringLocalizer;
     }
 
@@ -27,7 +31,7 @@ public sealed class ContentPartSettingsDisplayDriver : ContentPartDefinitionDisp
             model.Description = settings.Description;
             model.DisplayName = settings.DisplayName;
             model.ContentPartDefinition = contentPartDefinition;
-        }).Location(l => l.Zone("Content", "1").Card(S["General"], "10"));
+        }).Location(l => l.Zone("Content", "1").Card(_localizerFactory.Localize(CommonLocalizationSources.General), "10"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentPartDefinition contentPartDefinition, UpdatePartEditorContext context)

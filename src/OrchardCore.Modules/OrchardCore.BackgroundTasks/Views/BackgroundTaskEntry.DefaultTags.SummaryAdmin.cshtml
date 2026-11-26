@@ -3,7 +3,7 @@
 
 @model ShapeViewModel<BackgroundTaskEntry>
 
-<span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@T["Status"]">
+<span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@Localize(CommonLocalizationSources.Status)">
     <i class="fa-solid @(Model.Value.Enable ? "fa-check text-success" : "fa-ban text-secondary")" aria-hidden="true"></i>
-    @(Model.Value.Enable ? T["Enabled"] : T["Disabled"])
+    @(Model.Value.Enable ? Localize(CommonLocalizationSources.EnabledState) : Localize(CommonLocalizationSources.DisabledState))
 </span>

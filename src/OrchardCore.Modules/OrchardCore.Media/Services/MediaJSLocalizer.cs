@@ -8,7 +8,7 @@ namespace OrchardCore.Media.Services;
 /// <summary>
 /// Necessary because of IStringLocalizer of T
 /// </summary>
-public class MediaJSLocalizer(IStringLocalizer<MediaJSLocalizer> S) : IJSLocalizer
+public class MediaJSLocalizer(IStringLocalizer<MediaJSLocalizer> S, IStringLocalizerFactory localizerFactory) : IJSLocalizer
 {
     /// <summary>
     /// This dictionary needs to be affected either here or
@@ -25,7 +25,7 @@ public class MediaJSLocalizer(IStringLocalizer<MediaJSLocalizer> S) : IJSLocaliz
                 { "DropHere", S["Drop your file here"].Value },
                 { "DropTitle", S["Your files will be uploaded to the current folder when you drop them here"].Value },
                 { "UploadFiles", S["Upload files"].Value },
-                { "DeleteAll", S["Delete"].Value },
+                { "DeleteAll", localizerFactory.Localize(CommonLocalizationSources.Delete).Value },
                 { "DownloadAll", S["Download"].Value },
                 { "Filter", S["Search and filter..."].Value },
                 { "FileLibrary", S["Files"].Value },
@@ -34,7 +34,7 @@ public class MediaJSLocalizer(IStringLocalizer<MediaJSLocalizer> S) : IJSLocaliz
                 // File items table
                 { "SelectAll", S["Select All"].Value },
                 { "SelectNone", S["Select None"].Value },
-                { "NameHeader", S["Name"].Value },
+                { "NameHeader", localizerFactory.Localize(CommonLocalizationSources.Name).Value },
                 { "LastModifyHeader", S["Last modified"].Value },
                 { "SizeHeader", S["Size"].Value },
                 // File context menu
@@ -46,7 +46,7 @@ public class MediaJSLocalizer(IStringLocalizer<MediaJSLocalizer> S) : IJSLocaliz
                 { "CopySingleFileTitle", S["Copy file"].Value },
                 { "View", S["View"].Value },
                 { "Download", S["Download"].Value },
-                { "Delete", S["Delete"].Value },
+                { "Delete", localizerFactory.Localize(CommonLocalizationSources.Delete).Value },
                 { "DeleteFileTitle", S["Delete file"].Value },
                 { "DeleteSingleFileMessage", S["Are you sure you want to delete this file?"].Value },
                 { "DeleteMultipleFilesMessage", S["Are you sure you want to delete these files?"].Value },
@@ -66,8 +66,8 @@ public class MediaJSLocalizer(IStringLocalizer<MediaJSLocalizer> S) : IJSLocaliz
                 { "DeleteFolderTitle", S["Delete folder"].Value },
                 { "DeleteFolderMessage", S["Are you sure you want to delete this folder?"].Value },
                 // Common modal buttons
-                { "Ok", S["Ok"].Value },
-                { "Cancel", S["Cancel"].Value },
+                { "Ok", localizerFactory.Localize(CommonLocalizationSources.Ok).Value },
+                { "Cancel", localizerFactory.Localize(CommonLocalizationSources.Cancel).Value },
                 // Upload component
                 { "SizeError", S["Error:"].Value },
                 { "Uploads", S["Uploads"].Value },
@@ -117,7 +117,7 @@ public class MediaJSLocalizer(IStringLocalizer<MediaJSLocalizer> S) : IJSLocaliz
             {
                 { "noImages", S["No Files"].Value },
                 { "addMedia", S["Add media"].Value },
-                { "removeMedia", S["Remove"].Value },
+                { "removeMedia", localizerFactory.Localize(CommonLocalizationSources.Remove).Value },
                 { "downloadMedia", S["Download"].Value },
                 { "mediaText", S["Media text"].Value },
                 { "editMediaText", S["Enter media text"].Value },
@@ -125,7 +125,7 @@ public class MediaJSLocalizer(IStringLocalizer<MediaJSLocalizer> S) : IJSLocaliz
                 { "editAnchor", S["Select an anchor"].Value },
                 { "resetAnchor", S["Reset Anchor"].Value },
                 { "ok", S["OK"].Value },
-                { "cancel", S["Cancel"].Value },
+                { "cancel", localizerFactory.Localize(CommonLocalizationSources.Cancel).Value },
                 { "mediaNotFound", S["Not Found"].Value },
                 { "mediaTemporarilyUnavailable", S["Temporarily unavailable"].Value },
                 { "smallThumbsTitle", S["Small Thumbs"].Value },

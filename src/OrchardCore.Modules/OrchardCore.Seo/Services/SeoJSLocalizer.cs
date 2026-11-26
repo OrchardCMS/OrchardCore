@@ -5,7 +5,7 @@ using OrchardCore.Localization;
 
 namespace OrchardCore.Seo.Services;
 
-public sealed class SeoJSLocalizer(IStringLocalizer<SeoJSLocalizer> S) : IJSLocalizer
+public sealed class SeoJSLocalizer(IStringLocalizer<SeoJSLocalizer> S, IStringLocalizerFactory localizerFactory) : IJSLocalizer
 {
     public IDictionary<string, string> GetLocalizations(string group)
     {
@@ -14,14 +14,14 @@ public sealed class SeoJSLocalizer(IStringLocalizer<SeoJSLocalizer> S) : IJSLoca
             return new Dictionary<string, string>
             {
                 { "ContentColumn", S["Content"].Value },
-                { "NameColumn", S["Name"].Value },
+                { "NameColumn", localizerFactory.Localize(CommonLocalizationSources.TechnicalNames.Name).Value },
                 { "PropertyColumn", S["Property"].Value },
                 { "HttpEquivColumn", S["Http Equiv"].Value },
                 { "CharsetColumn", S["Charset"].Value },
                 { "AddACustomMetaTag", S["Add a custom meta tag"].Value },
                 { "EditData", S["Edit Data"].Value },
                 { "Ok", S["OK"].Value },
-                { "Cancel", S["Cancel"].Value },
+                { "Cancel", localizerFactory.Localize(CommonLocalizationSources.Cancel).Value },
                 { "RemoveElementFromList", S["Remove element from list"].Value },
                 { "CustomMetaTags", S["Custom Meta Tags"].Value },
                 {

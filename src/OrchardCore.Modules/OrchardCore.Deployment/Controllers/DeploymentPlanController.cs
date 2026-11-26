@@ -12,6 +12,7 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Localization;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
@@ -117,7 +118,7 @@ public sealed class DeploymentPlanController : Controller
 
         model.Options.DeploymentPlansBulkAction =
         [
-            new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Delete)),
+            new SelectListItem(_stringLocalizerFactory.Localize(CommonLocalizationSources.Delete), nameof(ContentsBulkAction.Delete)),
         ];
 
         // The AdminList shape renders the plans with the configured layout (List, Grid, ...).

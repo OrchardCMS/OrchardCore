@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Localization;
 using OrchardCore.Roles.ViewModels;
 
 namespace OrchardCore.Roles.Drivers;
@@ -10,10 +11,13 @@ namespace OrchardCore.Roles.Drivers;
 /// </summary>
 internal sealed class CloneRoleDisplayDriver : DisplayDriver<CloneRoleViewModel>
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     internal readonly IStringLocalizer S;
 
-    public CloneRoleDisplayDriver(IStringLocalizer<CloneRoleDisplayDriver> stringLocalizer)
+    public CloneRoleDisplayDriver(IStringLocalizer<CloneRoleDisplayDriver> stringLocalizer, IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         S = stringLocalizer;
     }
 
@@ -25,7 +29,7 @@ internal sealed class CloneRoleDisplayDriver : DisplayDriver<CloneRoleViewModel>
                 m.Role = model.Role;
                 m.Name = model.Name;
                 m.RoleDescription = model.RoleDescription;
-            }).Location(l => l.Zone("Content", "1").Card(S["General"], "10")),
+            }).Location(l => l.Zone("Content", "1").Card(_localizerFactory.Localize(CommonLocalizationSources.General), "10")),
 
             // The permissions are posted as checkboxes that the controller reads from the form.
             Initialize<RolePermissionsViewModel>("RolePermissions_Edit", m => RolePermissionsEditor.Populate(model.Permissions, m))

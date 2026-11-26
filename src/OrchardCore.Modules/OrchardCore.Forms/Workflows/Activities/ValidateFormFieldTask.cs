@@ -50,7 +50,7 @@ public class ValidateFormFieldTask : TaskActivity<ValidateFormFieldTask>, IActiv
     }
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-        => Outcome(S["Done"], S["Valid"], S["Invalid"]);
+        => Outcome(_localizerFactory.Localize(CommonLocalizationSources.Workflow.Done), S["Valid"], S["Invalid"]);
 
     public override ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {

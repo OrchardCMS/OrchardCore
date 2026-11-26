@@ -13,8 +13,8 @@
             <div class="row gx-2">
                 <div class="col">
                     <div class="input-group">
-                        <input id="search-box" name="q" value="@Model.Search" class="form-control" placeholder="@T["Search"]" type="search" aria-label="@T["Search the pipelines"]" autofocus autocomplete="off" />
-                        <button type="submit" class="btn btn-outline-secondary" title="@T["Search"]" aria-label="@T["Search"]"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></button>
+                        <input id="search-box" name="q" value="@Model.Search" class="form-control" placeholder="@Localize(CommonLocalizationSources.Commands.Search)" type="search" aria-label="@T["Search the pipelines"]" autofocus autocomplete="off" />
+                        <button type="submit" class="btn btn-outline-secondary" title="@Localize(CommonLocalizationSources.Commands.Search)" aria-label="@Localize(CommonLocalizationSources.Commands.Search)"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></button>
                     </div>
                 </div>
                 @if (Model.CanManage)
@@ -34,11 +34,11 @@
                     : T["<strong>Nothing here!</strong> No data pipeline matches your search."])">
         <admin-list-list item-css-class="list-group-item" />
         <admin-list-grid>
-            <admin-list-column name="Name" position="20" title="@T["Name"]" />
-            <admin-list-column name="Status" position="30" title="@T["Status"]" width="auto" />
+            <admin-list-column name="Name" position="20" title="@Localize(CommonLocalizationSources.Name)" />
+            <admin-list-column name="Status" position="30" title="@Localize(CommonLocalizationSources.Status)" width="auto" />
             <admin-list-column name="LastRun" position="40" title="@T["Last run"]" width="auto" no-wrap="true" />
             <admin-list-column name="Modified" position="50" title="@T["Modified"]" width="auto" no-wrap="true" />
-            <admin-list-column type="Actions" title="@T["Actions"]" />
+            <admin-list-column type="Actions" title="@Localize(CommonLocalizationSources.Actions)" />
         </admin-list-grid>
     </admin-list>
 </form>

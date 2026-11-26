@@ -16,16 +16,6 @@ msgctxt "OrchardCore.Queries.AdminMenu"
 msgid "Queries"
 msgstr ""
 
-#: AdminMenu.cs
-msgctxt "OrchardCore.Queries.AdminMenu"
-msgid "Search"
-msgstr ""
-
-#: Controllers/AdminController.cs
-msgctxt "OrchardCore.Queries.Controllers.AdminController"
-msgid "Delete"
-msgstr ""
-
 #: Controllers/AdminController.cs
 msgctxt "OrchardCore.Queries.Controllers.AdminController"
 msgid "Queries successfully removed."
@@ -69,11 +59,6 @@ msgstr ""
 #: Drivers/QueryDisplayDriver.cs
 msgctxt "OrchardCore.Queries.Drivers.QueryDisplayDriver"
 msgid "A query with the same name already exists"
-msgstr ""
-
-#: Drivers/QueryDisplayDriver.cs
-msgctxt "OrchardCore.Queries.Drivers.QueryDisplayDriver"
-msgid "General"
 msgstr ""
 
 #: Drivers/QueryDisplayDriver.cs
@@ -128,11 +113,6 @@ msgstr ""
 #: Sql/AdminMenu.cs
 msgctxt "OrchardCore.Queries.Sql.AdminMenu"
 msgid "Run SQL Query"
-msgstr ""
-
-#: Sql/AdminMenu.cs
-msgctxt "OrchardCore.Queries.Sql.AdminMenu"
-msgid "Search"
 msgstr ""
 
 #. Format arguments: {0}: e.Message
@@ -200,11 +180,6 @@ msgstr ""
 
 #: Views/Admin/Index.cshtml
 msgctxt "OrchardCore.Queries.Views.Admin.Index"
-msgid "Actions"
-msgstr ""
-
-#: Views/Admin/Index.cshtml
-msgctxt "OrchardCore.Queries.Views.Admin.Index"
 msgid "Add Query"
 msgstr ""
 
@@ -215,27 +190,12 @@ msgstr ""
 
 #: Views/Admin/Index.cshtml
 msgctxt "OrchardCore.Queries.Views.Admin.Index"
-msgid "Cancel"
-msgstr ""
-
-#: Views/Admin/Index.cshtml
-msgctxt "OrchardCore.Queries.Views.Admin.Index"
 msgid "Go to Features"
 msgstr ""
 
 #: Views/Admin/Index.cshtml
 msgctxt "OrchardCore.Queries.Views.Admin.Index"
-msgid "Name"
-msgstr ""
-
-#: Views/Admin/Index.cshtml
-msgctxt "OrchardCore.Queries.Views.Admin.Index"
 msgid "Queries"
-msgstr ""
-
-#: Views/Admin/Index.cshtml
-msgctxt "OrchardCore.Queries.Views.Admin.Index"
-msgid "Search"
 msgstr ""
 
 #: Views/Admin/Index.cshtml
@@ -385,36 +345,11 @@ msgctxt "OrchardCore.Queries.Views.Query-Sql.Link"
 msgid "SQL"
 msgstr ""
 
-#: Views/Query.Buttons.SummaryAdmin.cshtml
-msgctxt "OrchardCore.Queries.Views.Query.Buttons.SummaryAdmin"
-msgid "Delete"
-msgstr ""
-
-#: Views/Query.Buttons.SummaryAdmin.cshtml
-msgctxt "OrchardCore.Queries.Views.Query.Buttons.SummaryAdmin"
-msgid "Edit"
-msgstr ""
-
 #. Format arguments: {0}: Model.Name
 #: Views/Query.Checkbox.SummaryAdmin.cshtml
 #, csharp-format
 msgctxt "OrchardCore.Queries.Views.Query.Checkbox.SummaryAdmin"
 msgid "Select {0}"
-msgstr ""
-
-#: Views/Query.Fields.Buttons.cshtml
-msgctxt "OrchardCore.Queries.Views.Query.Fields.Buttons"
-msgid "Cancel"
-msgstr ""
-
-#: Views/Query.Fields.Buttons.cshtml
-msgctxt "OrchardCore.Queries.Views.Query.Fields.Buttons"
-msgid "Save"
-msgstr ""
-
-#: Views/Query.Fields.Edit.cshtml
-msgctxt "OrchardCore.Queries.Views.Query.Fields.Edit"
-msgid "Name"
 msgstr ""
 
 #: Views/Query.Fields.Edit.cshtml
@@ -425,11 +360,6 @@ msgstr ""
 #: Views/QuerySchema.Edit.cshtml
 msgctxt "OrchardCore.Queries.Views.QuerySchema.Edit"
 msgid "Schema"
-msgstr ""
-
-#: Views/QuerySchema.Edit.cshtml
-msgctxt "OrchardCore.Queries.Views.QuerySchema.Edit"
-msgid "See documentation"
 msgstr ""
 
 #: Views/QuerySchema.Edit.cshtml

@@ -6,19 +6,24 @@ using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Liquid;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Autoroute.Settings;
 
 public sealed class AutoroutePartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<AutoroutePart>
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     private readonly ILiquidTemplateManager _templateManager;
 
     internal readonly IStringLocalizer S;
 
     public AutoroutePartSettingsDisplayDriver(
         ILiquidTemplateManager templateManager,
-        IStringLocalizer<AutoroutePartSettingsDisplayDriver> localizer)
+        IStringLocalizer<AutoroutePartSettingsDisplayDriver> localizer,
+        IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         _templateManager = templateManager;
         S = localizer;
     }
@@ -29,7 +34,7 @@ public sealed class AutoroutePartSettingsDisplayDriver : ContentTypePartDefiniti
 
         return Combine(
             Initialize<AutoroutePartSettingsViewModel>("AutoroutePartSettings_Edit", model => PopulateViewModel(settings, model))
-                .Location(l => l.Zone("Content", "1").Card(S["Settings"], "20")),
+                .Location(l => l.Zone("Content", "1").Card(_localizerFactory.Localize(CommonLocalizationSources.Settings), "20")),
             Initialize<AutoroutePartSettingsViewModel>("AutoroutePartSettingsContainer_Edit", model => PopulateViewModel(settings, model))
                 .Location(l => l.Zone("Content", "1").Card(S["Contained items"], "25")));
     }

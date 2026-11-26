@@ -18,7 +18,7 @@
     // are grouped in the "General" card.
     if (Model.Editor.Content is IEnumerable<object> editorShapes)
     {
-        var generalCard = new OrchardCore.DisplayManagement.Descriptors.GroupingMetadata(T["General"].Value, "10");
+        var generalCard = new OrchardCore.DisplayManagement.Descriptors.GroupingMetadata(Localize(CommonLocalizationSources.General).Value, "10");
 
         foreach (var shape in editorShapes.OfType<OrchardCore.DisplayManagement.IShape>())
         {
@@ -42,26 +42,26 @@
         <a class="btn btn-secondary cancel"
            role="button"
            asp-route-action="List"
-           asp-route-id="@Model.AdminMenuId">@T["Cancel"]</a>
+           asp-route-id="@Model.AdminMenuId">@Localize(CommonLocalizationSources.Cancel)</a>
 
         <a class="btn btn-danger delete action-bar-secondary"
            asp-action="Delete"
            asp-controller="Node"
            asp-route-id="@Model.AdminMenuId"
            asp-route-treeNodeId="@Model.AdminNodeId"
-           data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+           data-url-af="RemoveUrl UnsafeUrl">@Localize(CommonLocalizationSources.Delete)</a>
 
         <div class="btn-group"
              role="group"
-             aria-label="@T["Save actions"]"
+             aria-label="@Localize(CommonLocalizationSources.SaveActions)"
              data-action-group="oc-admin-menu-node-save-action"
              data-action-default="save"
-             data-label-default="@T["Save"]"
+             data-label-default="@Localize(CommonLocalizationSources.Save)"
              data-action-alt="SaveAndContinue"
-             data-label-alt="@T["Save and continue"]">
-            <button class="btn btn-primary save" type="submit" name="submit" value="save">@T["Save"]</button>
+             data-label-alt="@Localize(CommonLocalizationSources.SaveAndContinue)">
+            <button class="btn btn-primary save" type="submit" name="submit" value="save">@Localize(CommonLocalizationSources.Save)</button>
             <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-reference="parent" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <span class="visually-hidden">@T["Toggle Dropdown"]</span>
+                <span class="visually-hidden">@Localize(CommonLocalizationSources.ToggleDropdown)</span>
             </button>
             <div class="dropdown-menu">
                 <button class="dropdown-item save-continue" type="submit" name="submit" value="SaveAndContinue">@T["and continue"]</button>

@@ -6,14 +6,14 @@
            asp-controller="Source" 
            asp-route-sitemapId="@Model.SitemapId" 
            asp-route-sourceId="@Model.SitemapSource.Id" 
-           class="btn btn-primary btn-sm">@T["Edit"]</a>
+           class="btn btn-primary btn-sm">@Localize(CommonLocalizationSources.Edit)</a>
 
         <a asp-action="Delete" 
            asp-controller="Source" 
            asp-route-sitemapId="@Model.SitemapId" 
            asp-route-sourceId="@Model.SitemapSource.Id" 
            class="btn btn-danger btn-sm" 
-           data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+           data-url-af="RemoveUrl UnsafeUrl">@Localize(CommonLocalizationSources.Delete)</a>
     </div>
 
     @await DisplayAsync(Model.Content)

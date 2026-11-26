@@ -1,3 +1,4 @@
+using OrchardCore.Localization;
 using System.Globalization;
 using System.Security.Claims;
 using System.Text.RegularExpressions;
@@ -29,6 +30,8 @@ namespace OrchardCore.RateLimits.Controllers;
 [Admin("RateLimits/{action}/{policyId?}", "RateLimits.{action}")]
 public sealed class AdminController : Controller
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     private const string PublishedPolicyLimiterMessage = "This policy is enabled and cannot be modified. To modify it, disable it first or create another policy.";
     private const string DefaultClonedPolicyName = "Policy";
     private static readonly Regex s_indexedNameRegex = new(@"^(.*?)(?:\s*\((\d+)\))$", RegexOptions.Compiled);
@@ -67,8 +70,10 @@ public sealed class AdminController : Controller
         EndpointDataSource endpointDataSource,
         IOptions<RateLimitsOptions> rateLimitsOptions,
         IStringLocalizer<AdminController> stringLocalizer,
-        IHtmlLocalizer<AdminController> htmlLocalizer)
+        IHtmlLocalizer<AdminController> htmlLocalizer,
+        IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         _authorizationService = authorizationService;
         _displayManager = displayManager;
         _policyDisplayManager = policyDisplayManager;
@@ -130,7 +135,7 @@ public sealed class AdminController : Controller
             [
                 new SelectListItem(S["Enable"], nameof(RateLimitPolicyBulkAction.Enable)),
                 new SelectListItem(S["Disable"], nameof(RateLimitPolicyBulkAction.Disable)),
-                new SelectListItem(S["Delete"], nameof(RateLimitPolicyBulkAction.Remove)),
+                new SelectListItem(_localizerFactory.Localize(CommonLocalizationSources.Delete), nameof(RateLimitPolicyBulkAction.Remove)),
             ],
             Pager = totalCount > pager.PageSize
                 ? await shapeFactory.PagerAsync(pager, totalCount, routeData)
