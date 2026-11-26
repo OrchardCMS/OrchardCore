@@ -3,8 +3,9 @@
 Each entry of SHOTS names an image of the docs, most under src/docs/user-manual/, and the admin page it shows. Run the
 script again whenever a screen changes, and commit the images that change.
 
-The site must be set up with the Blog recipe, with an `admin` account and the features the pages describe turned on
-(see "Screenshots" in src/docs/contributing/contributing-documentation.md).
+The site must be set up with the Blog recipe, with an `admin` account and the features the pages describe turned on,
+and with "Display titles in top bar" checked and the "Menu" actions layout in Settings > Admin (see "Screenshots" in
+src/docs/contributing/contributing-documentation.md).
 
 Usage:
     pip install playwright pillow
