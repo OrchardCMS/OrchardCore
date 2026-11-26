@@ -65,6 +65,15 @@ legend.ocat-label {
     border-end-end-radius: var(--bs-border-radius) !important;
 }
 
+// Bootstrap's 'has-validation' is for a group that holds its validation message as a last child. Most views add it to
+// groups whose message follows the group, so Bootstrap leaves the end of the controls before the last one rounded, and
+// a rounded edge faces the next control (the permalink input before its link button, an icon before its input).
+// Square them like the groups without the class.
+.input-group.has-validation:not(:has(> .invalid-feedback, > .valid-feedback, > [data-valmsg-for])) > :not(:last-child):not(.dropdown-menu):not(.dropdown-toggle):not(.form-floating) {
+    border-start-end-radius: 0;
+    border-end-end-radius: 0;
+}
+
 .label-link {
     float: right;
     font-size: var(--ta-font-size-xs);

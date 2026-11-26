@@ -210,6 +210,26 @@ msgctxt "OrchardCore.Media.Drivers.MediaFieldDisplayDriver"
 msgid "{0}: There was an error handling the files."
 msgstr ""
 
+#: Drivers/MediaOptionsDisplayDriver.cs
+msgctxt "OrchardCore.Media.Drivers.MediaOptionsDisplayDriver"
+msgid "Assets"
+msgstr ""
+
+#: Drivers/MediaOptionsDisplayDriver.cs
+msgctxt "OrchardCore.Media.Drivers.MediaOptionsDisplayDriver"
+msgid "Caching"
+msgstr ""
+
+#: Drivers/MediaOptionsDisplayDriver.cs
+msgctxt "OrchardCore.Media.Drivers.MediaOptionsDisplayDriver"
+msgid "Storage"
+msgstr ""
+
+#: Drivers/MediaOptionsDisplayDriver.cs
+msgctxt "OrchardCore.Media.Drivers.MediaOptionsDisplayDriver"
+msgid "Uploads"
+msgstr ""
+
 #: Drivers/MediaProfileDisplayDriver.cs
 msgctxt "OrchardCore.Media.Drivers.MediaProfileDisplayDriver"
 msgid "General"
@@ -930,96 +950,6 @@ msgstr ""
 
 #: Views/Admin/Options.cshtml
 msgctxt "OrchardCore.Media.Views.Admin.Options"
-msgid "A CDN base url that will be prefixed to the request path when serving images."
-msgstr ""
-
-#: Views/Admin/Options.cshtml
-msgctxt "OrchardCore.Media.Views.Admin.Options"
-msgid "Allowed file extensions"
-msgstr ""
-
-#: Views/Admin/Options.cshtml
-msgctxt "OrchardCore.Media.Views.Admin.Options"
-msgid "Assets path"
-msgstr ""
-
-#: Views/Admin/Options.cshtml
-msgctxt "OrchardCore.Media.Views.Admin.Options"
-msgid "Assets request path"
-msgstr ""
-
-#: Views/Admin/Options.cshtml
-msgctxt "OrchardCore.Media.Views.Admin.Options"
-msgid "Assets users folder"
-msgstr ""
-
-#: Views/Admin/Options.cshtml
-msgctxt "OrchardCore.Media.Views.Admin.Options"
-msgid "Atomic move"
-msgstr ""
-
-#: Views/Admin/Options.cshtml
-msgctxt "OrchardCore.Media.Views.Admin.Options"
-msgid "Cdn base url"
-msgstr ""
-
-#: Views/Admin/Options.cshtml
-msgctxt "OrchardCore.Media.Views.Admin.Options"
-msgid "Hierarchical namespace"
-msgstr ""
-
-#: Views/Admin/Options.cshtml
-msgctxt "OrchardCore.Media.Views.Admin.Options"
-msgid "Indicates whether SignalR is enabled for real-time media updates."
-msgstr ""
-
-#: Views/Admin/Options.cshtml
-msgctxt "OrchardCore.Media.Views.Admin.Options"
-msgid "Indicates whether the TUS resumable upload protocol is enabled."
-msgstr ""
-
-#: Views/Admin/Options.cshtml
-msgctxt "OrchardCore.Media.Views.Admin.Options"
-msgid "Indicates whether the storage provider supports a true hierarchical folder structure."
-msgstr ""
-
-#: Views/Admin/Options.cshtml
-msgctxt "OrchardCore.Media.Views.Admin.Options"
-msgid "Indicates whether the storage provider supports atomic move operations."
-msgstr ""
-
-#: Views/Admin/Options.cshtml
-msgctxt "OrchardCore.Media.Views.Admin.Options"
-msgid "Indicates whether the thumbnails (grid) view is disabled in the media gallery."
-msgstr ""
-
-#: Views/Admin/Options.cshtml
-msgctxt "OrchardCore.Media.Views.Admin.Options"
-msgid "Max browser cache days"
-msgstr ""
-
-#: Views/Admin/Options.cshtml
-msgctxt "OrchardCore.Media.Views.Admin.Options"
-msgid "Max cache days"
-msgstr ""
-
-#: Views/Admin/Options.cshtml
-msgctxt "OrchardCore.Media.Views.Admin.Options"
-msgid "Max file size"
-msgstr ""
-
-#: Views/Admin/Options.cshtml
-msgctxt "OrchardCore.Media.Views.Admin.Options"
-msgid "Max secure files browser cache days"
-msgstr ""
-
-#: Views/Admin/Options.cshtml
-msgctxt "OrchardCore.Media.Views.Admin.Options"
-msgid "Max upload chunk size"
-msgstr ""
-
-#: Views/Admin/Options.cshtml
-msgctxt "OrchardCore.Media.Views.Admin.Options"
 msgid "Media is configured with appsettings.json."
 msgstr ""
 
@@ -1030,107 +960,7 @@ msgstr ""
 
 #: Views/Admin/Options.cshtml
 msgctxt "OrchardCore.Media.Views.Admin.Options"
-msgid "Restricted file extensions"
-msgstr ""
-
-#: Views/Admin/Options.cshtml
-msgctxt "OrchardCore.Media.Views.Admin.Options"
 msgid "See documentation"
-msgstr ""
-
-#: Views/Admin/Options.cshtml
-msgctxt "OrchardCore.Media.Views.Admin.Options"
-msgid "SignalR"
-msgstr ""
-
-#: Views/Admin/Options.cshtml
-msgctxt "OrchardCore.Media.Views.Admin.Options"
-msgid "Storage provider"
-msgstr ""
-
-#: Views/Admin/Options.cshtml
-msgctxt "OrchardCore.Media.Views.Admin.Options"
-msgid "Supported sizes"
-msgstr ""
-
-#: Views/Admin/Options.cshtml
-msgctxt "OrchardCore.Media.Views.Admin.Options"
-msgid "TUS uploads"
-msgstr ""
-
-#: Views/Admin/Options.cshtml
-msgctxt "OrchardCore.Media.Views.Admin.Options"
-msgid "Temporary file lifetime"
-msgstr ""
-
-#: Views/Admin/Options.cshtml
-msgctxt "OrchardCore.Media.Views.Admin.Options"
-msgid "The accepted sizes for custom width and height."
-msgstr ""
-
-#: Views/Admin/Options.cshtml
-msgctxt "OrchardCore.Media.Views.Admin.Options"
-msgid "The default number of days for the media cache control header for secure files."
-msgstr ""
-
-#: Views/Admin/Options.cshtml
-msgctxt "OrchardCore.Media.Views.Admin.Options"
-msgid "The default number of days for the media cache control header."
-msgstr ""
-
-#: Views/Admin/Options.cshtml
-msgctxt "OrchardCore.Media.Views.Admin.Options"
-msgid "The folder under AssetsPath used to store users own media assets."
-msgstr ""
-
-#: Views/Admin/Options.cshtml
-msgctxt "OrchardCore.Media.Views.Admin.Options"
-msgid "The lifetime of temporary files created during upload."
-msgstr ""
-
-#: Views/Admin/Options.cshtml
-msgctxt "OrchardCore.Media.Views.Admin.Options"
-msgid "The list of allowed file extensions."
-msgstr ""
-
-#: Views/Admin/Options.cshtml
-msgctxt "OrchardCore.Media.Views.Admin.Options"
-msgid "The maximum chunk size when uploading files in bytes. If 0 or null, no chunked upload is used."
-msgstr ""
-
-#: Views/Admin/Options.cshtml
-msgctxt "OrchardCore.Media.Views.Admin.Options"
-msgid "The maximum number of days a cached resized media item will be valid for, before being rebuilt on request."
-msgstr ""
-
-#: Views/Admin/Options.cshtml
-msgctxt "OrchardCore.Media.Views.Admin.Options"
-msgid "The maximum size of an uploaded file in bytes."
-msgstr ""
-
-#: Views/Admin/Options.cshtml
-msgctxt "OrchardCore.Media.Views.Admin.Options"
-msgid "The name of the configured media storage provider."
-msgstr ""
-
-#: Views/Admin/Options.cshtml
-msgctxt "OrchardCore.Media.Views.Admin.Options"
-msgid "The name of the folder used to store media assets inside the App_Data folder."
-msgstr ""
-
-#: Views/Admin/Options.cshtml
-msgctxt "OrchardCore.Media.Views.Admin.Options"
-msgid "The request path used to route asset files."
-msgstr ""
-
-#: Views/Admin/Options.cshtml
-msgctxt "OrchardCore.Media.Views.Admin.Options"
-msgid "Thumbnails disabled"
-msgstr ""
-
-#: Views/Admin/Options.cshtml
-msgctxt "OrchardCore.Media.Views.Admin.Options"
-msgid "Users need the 'Upload media file extensions requiring additional permission' permission to upload files with these extensions."
 msgstr ""
 
 #: Views/Items/AllMediaProfilesDeploymentStep.Edit.cshtml
@@ -1325,6 +1155,196 @@ msgstr ""
 #, csharp-format
 msgctxt "OrchardCore.Media.Views.MediaFieldSettingsMediaTypes.Edit"
 msgid "{0} types"
+msgstr ""
+
+#: Views/MediaOptionsAssets.DetailAdmin.cshtml
+msgctxt "OrchardCore.Media.Views.MediaOptionsAssets.DetailAdmin"
+msgid "Assets path"
+msgstr ""
+
+#: Views/MediaOptionsAssets.DetailAdmin.cshtml
+msgctxt "OrchardCore.Media.Views.MediaOptionsAssets.DetailAdmin"
+msgid "Assets request path"
+msgstr ""
+
+#: Views/MediaOptionsAssets.DetailAdmin.cshtml
+msgctxt "OrchardCore.Media.Views.MediaOptionsAssets.DetailAdmin"
+msgid "Assets users folder"
+msgstr ""
+
+#: Views/MediaOptionsAssets.DetailAdmin.cshtml
+msgctxt "OrchardCore.Media.Views.MediaOptionsAssets.DetailAdmin"
+msgid "Indicates whether the thumbnails (grid) view is disabled in the media gallery."
+msgstr ""
+
+#: Views/MediaOptionsAssets.DetailAdmin.cshtml
+msgctxt "OrchardCore.Media.Views.MediaOptionsAssets.DetailAdmin"
+msgid "The folder under AssetsPath used to store users own media assets."
+msgstr ""
+
+#: Views/MediaOptionsAssets.DetailAdmin.cshtml
+msgctxt "OrchardCore.Media.Views.MediaOptionsAssets.DetailAdmin"
+msgid "The name of the folder used to store media assets inside the App_Data folder."
+msgstr ""
+
+#: Views/MediaOptionsAssets.DetailAdmin.cshtml
+msgctxt "OrchardCore.Media.Views.MediaOptionsAssets.DetailAdmin"
+msgid "The request path used to route asset files."
+msgstr ""
+
+#: Views/MediaOptionsAssets.DetailAdmin.cshtml
+msgctxt "OrchardCore.Media.Views.MediaOptionsAssets.DetailAdmin"
+msgid "Thumbnails disabled"
+msgstr ""
+
+#: Views/MediaOptionsCache.DetailAdmin.cshtml
+msgctxt "OrchardCore.Media.Views.MediaOptionsCache.DetailAdmin"
+msgid "A CDN base url that will be prefixed to the request path when serving images."
+msgstr ""
+
+#: Views/MediaOptionsCache.DetailAdmin.cshtml
+msgctxt "OrchardCore.Media.Views.MediaOptionsCache.DetailAdmin"
+msgid "Cdn base url"
+msgstr ""
+
+#: Views/MediaOptionsCache.DetailAdmin.cshtml
+msgctxt "OrchardCore.Media.Views.MediaOptionsCache.DetailAdmin"
+msgid "Max browser cache days"
+msgstr ""
+
+#: Views/MediaOptionsCache.DetailAdmin.cshtml
+msgctxt "OrchardCore.Media.Views.MediaOptionsCache.DetailAdmin"
+msgid "Max cache days"
+msgstr ""
+
+#: Views/MediaOptionsCache.DetailAdmin.cshtml
+msgctxt "OrchardCore.Media.Views.MediaOptionsCache.DetailAdmin"
+msgid "Max secure files browser cache days"
+msgstr ""
+
+#: Views/MediaOptionsCache.DetailAdmin.cshtml
+msgctxt "OrchardCore.Media.Views.MediaOptionsCache.DetailAdmin"
+msgid "The default number of days for the media cache control header for secure files."
+msgstr ""
+
+#: Views/MediaOptionsCache.DetailAdmin.cshtml
+msgctxt "OrchardCore.Media.Views.MediaOptionsCache.DetailAdmin"
+msgid "The default number of days for the media cache control header."
+msgstr ""
+
+#: Views/MediaOptionsCache.DetailAdmin.cshtml
+msgctxt "OrchardCore.Media.Views.MediaOptionsCache.DetailAdmin"
+msgid "The maximum number of days a cached resized media item will be valid for, before being rebuilt on request."
+msgstr ""
+
+#: Views/MediaOptionsStorage.DetailAdmin.cshtml
+msgctxt "OrchardCore.Media.Views.MediaOptionsStorage.DetailAdmin"
+msgid "Atomic move"
+msgstr ""
+
+#: Views/MediaOptionsStorage.DetailAdmin.cshtml
+msgctxt "OrchardCore.Media.Views.MediaOptionsStorage.DetailAdmin"
+msgid "Hierarchical namespace"
+msgstr ""
+
+#: Views/MediaOptionsStorage.DetailAdmin.cshtml
+msgctxt "OrchardCore.Media.Views.MediaOptionsStorage.DetailAdmin"
+msgid "Indicates whether SignalR is enabled for real-time media updates."
+msgstr ""
+
+#: Views/MediaOptionsStorage.DetailAdmin.cshtml
+msgctxt "OrchardCore.Media.Views.MediaOptionsStorage.DetailAdmin"
+msgid "Indicates whether the storage provider supports a true hierarchical folder structure."
+msgstr ""
+
+#: Views/MediaOptionsStorage.DetailAdmin.cshtml
+msgctxt "OrchardCore.Media.Views.MediaOptionsStorage.DetailAdmin"
+msgid "Indicates whether the storage provider supports atomic move operations."
+msgstr ""
+
+#: Views/MediaOptionsStorage.DetailAdmin.cshtml
+msgctxt "OrchardCore.Media.Views.MediaOptionsStorage.DetailAdmin"
+msgid "SignalR"
+msgstr ""
+
+#: Views/MediaOptionsStorage.DetailAdmin.cshtml
+msgctxt "OrchardCore.Media.Views.MediaOptionsStorage.DetailAdmin"
+msgid "Storage provider"
+msgstr ""
+
+#: Views/MediaOptionsStorage.DetailAdmin.cshtml
+msgctxt "OrchardCore.Media.Views.MediaOptionsStorage.DetailAdmin"
+msgid "The name of the configured media storage provider."
+msgstr ""
+
+#: Views/MediaOptionsUpload.DetailAdmin.cshtml
+msgctxt "OrchardCore.Media.Views.MediaOptionsUpload.DetailAdmin"
+msgid "Allowed file extensions"
+msgstr ""
+
+#: Views/MediaOptionsUpload.DetailAdmin.cshtml
+msgctxt "OrchardCore.Media.Views.MediaOptionsUpload.DetailAdmin"
+msgid "Indicates whether the TUS resumable upload protocol is enabled."
+msgstr ""
+
+#: Views/MediaOptionsUpload.DetailAdmin.cshtml
+msgctxt "OrchardCore.Media.Views.MediaOptionsUpload.DetailAdmin"
+msgid "Max file size"
+msgstr ""
+
+#: Views/MediaOptionsUpload.DetailAdmin.cshtml
+msgctxt "OrchardCore.Media.Views.MediaOptionsUpload.DetailAdmin"
+msgid "Max upload chunk size"
+msgstr ""
+
+#: Views/MediaOptionsUpload.DetailAdmin.cshtml
+msgctxt "OrchardCore.Media.Views.MediaOptionsUpload.DetailAdmin"
+msgid "Restricted file extensions"
+msgstr ""
+
+#: Views/MediaOptionsUpload.DetailAdmin.cshtml
+msgctxt "OrchardCore.Media.Views.MediaOptionsUpload.DetailAdmin"
+msgid "Supported sizes"
+msgstr ""
+
+#: Views/MediaOptionsUpload.DetailAdmin.cshtml
+msgctxt "OrchardCore.Media.Views.MediaOptionsUpload.DetailAdmin"
+msgid "TUS uploads"
+msgstr ""
+
+#: Views/MediaOptionsUpload.DetailAdmin.cshtml
+msgctxt "OrchardCore.Media.Views.MediaOptionsUpload.DetailAdmin"
+msgid "Temporary file lifetime"
+msgstr ""
+
+#: Views/MediaOptionsUpload.DetailAdmin.cshtml
+msgctxt "OrchardCore.Media.Views.MediaOptionsUpload.DetailAdmin"
+msgid "The accepted sizes for custom width and height."
+msgstr ""
+
+#: Views/MediaOptionsUpload.DetailAdmin.cshtml
+msgctxt "OrchardCore.Media.Views.MediaOptionsUpload.DetailAdmin"
+msgid "The lifetime of temporary files created during upload."
+msgstr ""
+
+#: Views/MediaOptionsUpload.DetailAdmin.cshtml
+msgctxt "OrchardCore.Media.Views.MediaOptionsUpload.DetailAdmin"
+msgid "The list of allowed file extensions."
+msgstr ""
+
+#: Views/MediaOptionsUpload.DetailAdmin.cshtml
+msgctxt "OrchardCore.Media.Views.MediaOptionsUpload.DetailAdmin"
+msgid "The maximum chunk size when uploading files in bytes. If 0 or null, no chunked upload is used."
+msgstr ""
+
+#: Views/MediaOptionsUpload.DetailAdmin.cshtml
+msgctxt "OrchardCore.Media.Views.MediaOptionsUpload.DetailAdmin"
+msgid "The maximum size of an uploaded file in bytes."
+msgstr ""
+
+#: Views/MediaOptionsUpload.DetailAdmin.cshtml
+msgctxt "OrchardCore.Media.Views.MediaOptionsUpload.DetailAdmin"
+msgid "Users need the 'Upload media file extensions requiring additional permission' permission to upload files with these extensions."
 msgstr ""
 
 #: Views/MediaProfileCreateGeneral.Edit.cshtml

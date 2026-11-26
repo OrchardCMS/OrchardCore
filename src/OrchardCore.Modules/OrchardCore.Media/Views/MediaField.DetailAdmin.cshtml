@@ -1,0 +1,38 @@
+@model OrchardCore.Media.ViewModels.DisplayMediaFieldViewModel
+@using OrchardCore.ContentFields
+@using OrchardCore.ContentManagement.Metadata.Models
+@using OrchardCore.Localization.Data
+@using OrchardCore.Mvc.Utilities
+@inject IDataLocalizer D
+@{
+    var name = (Model.PartFieldDefinition.PartDefinition.Name + "-" + Model.PartFieldDefinition.Name).HtmlClassify();
+    string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), DataLocalizationContext.ContentField(Model.PartFieldDefinition.PartDefinition.Name)];
+    var paths = Model.Paths ?? Array.Empty<string>();
+    var mediaTexts = Model.Field?.MediaTexts ?? Array.Empty<string>();
+}
+@if (paths.Length > 0)
+{
+    <div class="ocat-wrapper field field-type-mediafield field-name-@name">
+        <div class="ocat-label">@localizedFieldName</div>
+        <div class="ocat-end">
+            <div class="value">
+                @for (int i = 0; i < paths.Length; i++)
+                {
+                    var path = paths[i];
+                    var url = Orchard.AssetUrl(path);
+
+                    if (Orchard.IsImageFile(path))
+                    {
+                        var alt = !string.IsNullOrEmpty(mediaTexts.ElementAtOrDefault(i)) ? mediaTexts[i] : string.Empty;
+                        <img src="@url" alt="@alt" class="img-fluid" />
+                    }
+                    else
+                    {
+                        var text = !string.IsNullOrEmpty(mediaTexts.ElementAtOrDefault(i)) ? mediaTexts[i] : path;
+                        <a href="@url">@text</a>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+}

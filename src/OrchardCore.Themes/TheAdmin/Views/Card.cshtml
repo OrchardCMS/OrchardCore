@@ -1,5 +1,6 @@
 @model OrchardCore.DisplayManagement.ViewModels.GroupingViewModel
 @using OrchardCore.DisplayManagement
+@using OrchardCore.DisplayManagement.Shapes
 @using OrchardCore.DisplayManagement.ViewModels
 @using OrchardCore.Mvc.Utilities
 
@@ -7,7 +8,7 @@
 
 @*
     A card of a content zone, grouping the shapes placed in the same card, e.g. with a "Content:5%Server;10"
-    placement, rendered as a fieldset styled as a Bootstrap card, or as a plain fieldset in a tab, always expanded:
+    placement, rendered as a fieldset styled as a Bootstrap card, or as a plain fieldset in a tab pane, always expanded:
     it groups fields, it doesn't hide them. The shapes placed in no card are grouped under the "Content" key: they render as they are.
 *@
 
@@ -33,9 +34,10 @@
         return;
     }
 
-    // In a tab, which already frames them, the groups of fields are fieldsets titled by their legends, e.g. in the
-    // general, email and SMS settings. A group holding a table, e.g. the events of the audit trail, stays a card.
-    var inTab = Model.Grouping.OfType<IShape>().Any(shape => shape.Metadata.TabGrouping.HasValue) &&
+    // In a tab pane, which already frames them, the groups of fields are fieldsets titled by their legends. A tab placed
+    // alone is no tab pane: it has no frame, so its groups are cards. A group holding a table, e.g. the events of the
+    // audit trail, stays a card.
+    var inTab = Model.Properties.ContainsKey(GroupShapes.InTabPaneProperty) &&
         !html.Contains("<table", StringComparison.OrdinalIgnoreCase);
 }
 

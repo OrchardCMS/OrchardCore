@@ -150,7 +150,7 @@ html {
   --ta-toolbar-fg: #fff;
   --ta-toolbar-fg-rgb: 255, 255, 255;
   --ta-toolbar-hover-bg: rgba(0, 0, 0, 0.16);
-  --ta-list-header-bg: rgb(248.5179, 248.625, 248.7321);
+  --ta-list-header-bg: rgb(240.504, 246.2124, 254.6256);
   --ta-row-hover-bg: rgb(235.672, 243.2832, 254.5008);
   --ta-border: rgb(233.66976, 234.6, 235.53024);
   --ta-control-border: rgb(133.33488, 135.8, 138.26512);
@@ -749,8 +749,10 @@ html:has(body.ta-admin) {
 }
 
 .action-bar.action-bar-stuck.card, .action-bar.action-bar-stuck > .card {
-  margin-inline: calc(-1 * var(--ta-content-padding-x));
-  padding-inline: var(--ta-content-padding-x);
+  margin-inline-start: calc(-1 * var(--ta-action-bar-bleed-start, var(--ta-content-padding-x)));
+  margin-inline-end: calc(-1 * var(--ta-action-bar-bleed-end, var(--ta-content-padding-x)));
+  padding-inline-start: var(--ta-action-bar-bleed-start, var(--ta-content-padding-x));
+  padding-inline-end: var(--ta-action-bar-bleed-end, var(--ta-content-padding-x));
   border-top-color: transparent;
   border-inline-color: transparent;
   border-radius: 0;
@@ -1482,6 +1484,11 @@ html:has(.action-bar-bottom) {
   color: var(--bs-btn-color);
 }
 
+.bootstrap-select > .btn.dropdown-toggle, .bootstrap-select > .dropdown-toggle.button {
+  font-weight: var(--ta-font-weight-normal);
+  border-color: var(--ta-control-border);
+}
+
 .oc-breadcrumb .breadcrumb {
   --bs-breadcrumb-divider: '\203A';
   --bs-breadcrumb-divider-color: var(--ta-muted);
@@ -1833,6 +1840,11 @@ legend.ocat-label {
 .input-group:not(.has-validation) > :not(:last-child):not(.dropdown-menu):has(+ [data-valmsg-for]:last-child) {
   border-start-end-radius: var(--bs-border-radius) !important;
   border-end-end-radius: var(--bs-border-radius) !important;
+}
+
+.input-group.has-validation:not(:has(> .invalid-feedback, > .valid-feedback, > [data-valmsg-for])) > :not(:last-child):not(.dropdown-menu):not(.dropdown-toggle):not(.form-floating) {
+  border-start-end-radius: 0;
+  border-end-end-radius: 0;
 }
 
 .label-link {
@@ -11854,6 +11866,7 @@ div.editor-widget.find-widget .button.codicon:active {
   --bs-table-bg: var(--ta-surface);
   --bs-table-border-color: var(--ta-border);
   --bs-table-hover-bg: var(--ta-row-hover-bg);
+  --bs-table-striped-bg: color-mix(in srgb, var(--ta-primary) 5%, var(--ta-surface));
 }
 
 .ta-content .table > thead th {

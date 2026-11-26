@@ -16,11 +16,6 @@
     <span id="@Html.IdFor(x => x.TermEntries)_Label" class="ocat-label @(settings.Required ? "ocat-label-required" : "")">@localizedFieldName</span>
     <div class="ocat-end" role="group" aria-labelledby="@Html.IdFor(x => x.TermEntries)_Label">
 
-        @if (!string.IsNullOrEmpty(settings.Hint))
-        {
-            @await DisplayAsync(await New.Hint_Admin(Hint: settings.Hint))
-        }
-
         @if (Model.Taxonomy == null)
         {
             <div class="alert alert-danger" role="alert">
@@ -102,6 +97,11 @@
         </div>
 
         <span asp-validation-for="TermEntries"></span>
+
+        @if (!string.IsNullOrEmpty(settings.Hint))
+        {
+            @await DisplayAsync(await New.Hint_Admin(Hint: settings.Hint))
+        }
 
     </div>
 </div>
