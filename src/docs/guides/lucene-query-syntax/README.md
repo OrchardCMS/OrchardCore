@@ -37,9 +37,9 @@ The *-* or prohibition operator excludes documents containing the term that appe
 
 To search for documents containing "Lucene" but not "Lorem", use the following query:
 
-`Lucene-Lorem`
+`Lucene -Lorem`
 
-![The search page with the results of Lucene-Lorem.](images/prohibition-operator.webp)
+![The search page with the results of Lucene -Lorem.](images/prohibition-operator.webp)
 
 
 ## MATCH ALL

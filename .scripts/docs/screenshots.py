@@ -5,11 +5,12 @@ script again whenever a screen changes, and commit the images that change.
 
 The site must be set up with the Blog recipe, with an `admin` account and the features the pages describe turned on,
 and with "Display titles in top bar" checked and the "Menu" actions layout in Settings > Admin (see "Screenshots" in
-src/docs/contributing/contributing-documentation.md).
+src/docs/contributing/contributing-documentation.md). A guide that sets up a site of its own is taken in a tenant of
+TENANTS, or on another site of SITES with --site; the comment above its shots says what the site must hold.
 
 Usage:
     pip install playwright pillow
-    python .scripts/docs/screenshots.py --url http://localhost:5000 --password <admin password> [--only <name>]
+    python .scripts/docs/screenshots.py --url http://localhost:5000 --password <admin password> [--site <site>] [--only <name> ...]
 
 The script uses the Microsoft Edge or Google Chrome installed on the machine. Without either, run
 `python -m playwright install chromium` and pass `--browser chromium`.
@@ -211,7 +212,7 @@ SHOTS = [
      "steps": SEARCH_RESULTS},
     {"file": "../guides/lucene-query-syntax/images/operator-not.webp", "path": "/search?Terms=Lucene%20NOT%20Lorem", "anonymous": True,
      "steps": SEARCH_RESULTS},
-    {"file": "../guides/lucene-query-syntax/images/prohibition-operator.webp", "path": "/search?Terms=Lucene-Lorem", "anonymous": True,
+    {"file": "../guides/lucene-query-syntax/images/prohibition-operator.webp", "path": "/search?Terms=Lucene%20-Lorem", "anonymous": True,
      "steps": SEARCH_RESULTS},
     {"file": "../guides/lucene-query-syntax/images/match-all.webp", "path": "/search?Terms=*%3A*", "anonymous": True,
      "steps": SEARCH_RESULTS},
