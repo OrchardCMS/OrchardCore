@@ -224,6 +224,69 @@ SHOTS = [
      "steps": SEARCH_RESULTS},
     {"file": "../guides/lucene-query-syntax/images/regular-expressions.webp", "path": "/search?Terms=%2Ftype.*ing%3F%2F", "anonymous": True,
      "steps": SEARCH_RESULTS},
+    # Technical Manual: Workflows. Needs the 'Article approval' workflow (Http Request Event 'Article submitted', Notify
+    # Task 'Notify the editors', Signal Event 'Wait for approval', Notify Task 'Notify the author', one under the other),
+    # run once.
+    {"file": "../reference/modules/Workflows/images/workflow-designer.webp", "path": "/Admin/Workflows/Types",
+     "steps": [("follow", "a[href*='/Workflows/Types/Edit/']:has-text('Article approval')"), ("wait", 1500),
+               ("type", "#wfd-toolbox-search", "notify"), ("click", ".wfd-node:has(h4:text-is('Notify the author'))"), ("wait", 800)]},
+    {"file": "../reference/modules/Workflows/images/workflow-instance.webp", "path": "/Admin/Workflows/Types",
+     "steps": [("follow", "a[href*='/Instances/Index']:near(a:has-text('Article approval'))"),
+               ("follow", "a[href*='/Workflow/Details/']"), ("wait", 1500),
+               ("click", ".wfd-node:has(h4:text-is('Wait for approval'))"), ("wait", 800)]},
+    # Technical Manual: Layers. Needs the layer 'This is a Layer', with a Homepage condition.
+    {"file": "../reference/modules/Layers/images/create-layer.webp", "path": "/Admin/Layers/Create",
+     "steps": [("fill", "input[name='Name']", "This is a Layer"),
+               ("fill", "textarea[name='Description']", "Add a description. Say it is part of an onion or something.")]},
+    {"file": "../reference/modules/Layers/images/add-widget.webp", "path": "/Admin/Layers",
+     "steps": [("click", ".layer-zone button.dropdown-toggle"), ("wait", 300)]},
+    {"file": "../reference/modules/Layers/images/layer-rules.webp", "path": "/Admin/Layers/Edit?name=This%20is%20a%20Layer",
+     "steps": [("scroll", "button[data-bs-target='#modalConditions']"), ("click", "button[data-bs-target='#modalConditions']"),
+               ("wait", 500)]},
+    # Technical Manual: Themes. Needs the Project type (Title, a Url text field, Markdown with the Wysiwyg editor), the
+    # Portfolio type (Title, Autoroute, a Bag of projects) and the portfolio 'My Projects' at /portfolio with two projects.
+    {"file": "../reference/modules/Themes/images/portfolio-page.webp", "path": "/portfolio", "anonymous": True, "full_page": True},
+    {"file": "../reference/modules/Themes/images/new-content-type.webp", "path": "/Admin/ContentTypes/Create",
+     "steps": [("type", "input[name='DisplayName']", "Project")]},
+    {"file": "../reference/modules/Themes/images/project-type.webp", "path": "/Admin/ContentTypes/Edit/Project",
+     "steps": [("scroll", "#fields", "start")]},
+    {"file": "../reference/modules/Themes/images/portfolio-type.webp", "path": "/Admin/ContentTypes/Edit/Portfolio",
+     "steps": [("scroll", "#fields", "start")]},
+    # Topic: Content relationships. Needs the FAQ (a Bag of FAQ items), Product and Bundle (a content picker of products
+    # and a price) types, with the items they show, and the 'About us' page with a flow of widgets.
+    {"file": "../topics/content-relationships/images/faq-page-editor.webp", "path": "/Admin/Contents/ContentItems/?Options.SelectedContentType=FAQ",
+     "steps": [("follow", "a[href*='/Edit']:has-text('Frequently Asked Questions')")]},
+    {"file": "../topics/content-relationships/images/product-bundle.webp", "path": "/Admin/Contents/ContentItems/?Options.SelectedContentType=Bundle",
+     "steps": [("follow", "a[href*='/Edit']:has-text('Space Invaders Christmas Bundle')")]},
+    {"file": "../topics/content-relationships/images/page-editor-with-flow-part.webp", "path": "/Admin/Contents/ContentItems/?Options.SelectedContentType=Page",
+     "steps": [("follow", "a[href*='/Edit']:has-text('About us')")], "full_page": True},
+    {"file": "../topics/content-relationships/images/blog-posts-list.webp", "path": "/Admin/Contents/ContentItems/?Options.SelectedContentType=Blog",
+     "steps": [("follow", "a:has-text('BlogPost Items')")]},
+    {"file": "../topics/content-relationships/images/blog-post-tags-categories.webp", "path": "/Admin/Contents/ContentItems/?Options.SelectedContentType=BlogPost",
+     "steps": [("follow", "a[href*='/Edit']:has-text('Man must explore')"), ("scroll", "[name$='TagNames'], .tags-editor, [id*='Tags']")]},
+    {"file": "../topics/content-relationships/images/taxonomy-editor.webp", "path": "/Admin/Contents/ContentItems/?Options.SelectedContentType=Taxonomy",
+     "steps": [("follow", "a[href*='/Edit']:has-text('Categories')")]},
+    # Technical Manual: Forms. Needs the 'Contact Form' page (a Form widget with a validation summary, Name, Email and
+    # Message fields, a reCAPTCHA and a Submit! button) and the 'Contact Form Workflow' it posts to.
+    {"file": "../reference/modules/Forms/images/contact-form-editor.webp", "path": "/Admin/Contents/ContentItems/?Options.SelectedContentType=Page",
+     # The action holds the token of the workflow, shown as a placeholder.
+     "steps": [("follow", "a[href*='/Edit']:has-text('Contact Form')"), ("fill", "input[name$='FormPart.Action']", "/workflows/invoke/{token}")],
+     "full_page": True},
+    {"file": "../reference/modules/Forms/images/contact-form.webp", "path": "/contact-form", "anonymous": True,
+     "steps": [("scroll", "form", "start")]},
+    {"file": "../reference/modules/Forms/images/contact-form-workflow.webp", "path": "/Admin/Workflows/Types",
+     "steps": [("follow", "a[href*='/Workflows/Types/Edit/']:has-text('Contact Form Workflow')"), ("wait", 1500),
+               ("click", "[data-cy='toolbox-collapse']"), ("click", "[data-cy='panel-collapse']"),
+               ("click", "[data-cy='zoom-fit']"), ("wait", 800)]},
+    # Guide 'Integrate Meta plugins'. Needs the Meta Widgets feature.
+    {"file": "../guides/integrate-facebook-plugins/images/meta-widgets-feature.webp", "path": "/Admin/Features",
+     "steps": [("fill", "#search-box", "Meta"), ("wait", 500)]},
+    {"file": "../guides/integrate-facebook-plugins/images/meta-app-settings.webp", "path": "/Admin/Settings/OrchardCore.Facebook"},
+    {"file": "../guides/integrate-facebook-plugins/images/add-meta-widget.webp", "path": "/Admin/Layers",
+     "steps": [("click", ":nth-match(.layer-zone button.dropdown-toggle, 2)"), ("wait", 300)]},
+    {"file": "../guides/integrate-facebook-plugins/images/meta-quote-widget.webp",
+     "path": "/Admin/Contents/ContentTypes/FacebookQuote/Create?returnUrl=%2FAdmin%2FLayers&LayerMetadata.Zone=Footer&LayerMetadata.Position=11",
+     "steps": [("fill", "#LayerMetadata_Title", "FB Quote"), ("select", "#LayerMetadata_LayerMetadata_Layer", "Always")]},
 ]
 
 

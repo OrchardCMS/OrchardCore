@@ -4,19 +4,19 @@ The Layers can be managed from the **Design → Widgets** page in the admin.
 
 A Layer has a name, a description and a rule in which you specify a condition to render the widgets that will be associated to this Layer.
 
-![Create Layer.](./assets/create-layer.png)
+![The Create Layer page, with the name and description of a layer.](images/create-layer.webp)
 
 _The Layer needs to be saved first to reveal the Rule option._
 
 When you add a widget into a zone, you must also select a Layer to associate the widget with. The widget is displayed if the Layer's corresponding display rule evaluates to true.
 
-![Add widget.](./assets/add-widget.png)
+![The Widgets and Layers page, with the Add Widget menu of the Content zone open.](images/add-widget.webp)
 
 You can select the checkbox next to each Layer in order to highlight the associated Widgets on the left.
 
 In the rule you may specify multiple conditions which must evaluate to true, or you can use condition groups, `All` or `Any`, to vary the rule.
 
-![Rules](./assets/rules.png)
+![The Edit Layer page, with the Available Rules dialog open.](images/layer-rules.webp)
 
 _There can be multiple Rules in place for one Layer._
 

@@ -14,21 +14,21 @@ Follow the guide to [create a new Orchard Core CMS website](../../guides/create-
 
 Navigate to <https://localhost:5001/admin> and enable the Facebook Social Plugins Widgets.
 
-![image](assets/enable-facebook-widgets.jpg)
+![The Features page filtered on Meta, with the Meta Social Plugins Widgets feature enabled.](images/meta-widgets-feature.webp)
 
 Create a new application at <https://developers.facebook.com/apps/> and copy the appid and app secret to <https://localhost:5001/Admin/Settings/OrchardCore.Facebook>
 
-![image](assets/update-facebook-settings.jpg)
+![The Meta App settings, with the Application Identifier and Secret Key fields.](images/meta-app-settings.webp)
 
 ## Add the Facebook Quote widget to Footer Layer
 
 Navigate to <https://localhost:5001/OrchardCore.Layers/Admin/Index>. At the Footer Zone Press Add Widget and Select `Facebook Quote` from the list.
 
-![image](assets/add-fb-widget.jpg)
+![The Widgets and Layers page, with the Add Widget menu of the Footer zone open.](images/add-meta-widget.webp)
 
 Give a title and publish the widget.
 
-![image](assets/configure-fb-widget.jpg)
+![The editor of a new Facebook Quote widget, titled FB Quote, in the Always layer.](images/meta-quote-widget.webp)
 
 ## Check the result
 
