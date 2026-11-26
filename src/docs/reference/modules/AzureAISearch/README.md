@@ -2,7 +2,7 @@
 
 The Azure AI Search module allows you to manage Azure AI Search indices.
 
-Before enabling the service, you'll need to configure the connection to the service. By default, you can navigate to `Settings` → `Search` → `Azure AI Search` and provide the Azure Search AI service info.
+Before enabling the service, you'll need to configure the connection to the service. By default, you can navigate to **Settings → Search → Azure AI Search** and provide the Azure Search AI service info.
 
 Alternatively, you can configure the Azure Search AI service for all your tenants using one of the configuration providers. For example, you can add the following to the `appsettings.json`:
 
@@ -25,7 +25,7 @@ Alternatively, you can configure the Azure Search AI service for all your tenant
 }
 ```
 
-Then navigate to `Search` > `Indexes` to add an index.
+Then navigate to **Search → Indexes** to add an index.
 
 ![image](images/management.gif)
 
@@ -365,7 +365,7 @@ To rebuild all indices:
 
 When the Search module is enabled along with Azure AI Search, you'll be able to use run the frontend site search against your Azure AI Search indices.
 
-To configure the frontend site search settings, navigate to `Settings` >> `Search` >> `Site Search`. Select the default index to use.
+To configure the frontend site search settings, navigate to **Settings → Search → Site Search**. Select the default index to use.
 
 ### Using the Search Feature to Perform Full-Text Search
 ![image](images/frontend-search.gif)

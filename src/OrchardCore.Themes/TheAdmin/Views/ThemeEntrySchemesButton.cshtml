@@ -1,0 +1,11 @@
+@* The button opening the schemes of TheAdmin, on its card under Design > Themes. *@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.Themes.Models
+
+@model ShapeViewModel<ThemeEntry>
+
+<a asp-action="Index" asp-controller="Schemes" asp-area="TheAdmin" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1 text-nowrap" title="@T["Schemes"]" aria-label="@T["Schemes"]">
+    <i class="fa-solid fa-palette" aria-hidden="true"></i>
+    @* The icon alone on small screens; the link is named by its label in every size. *@
+    <span class="d-none d-md-inline">@T["Schemes"]</span>
+</a>

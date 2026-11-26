@@ -77,3 +77,73 @@ body {
 #media-gallery {
   height: 100vh;
 }
+
+/* The pager uses Bootstrap's pagination classes (see PagerComponent.vue), which Bootstrap styles when the gallery is
+   embedded. The standalone host loads no Bootstrap, so they are styled here. */
+.pagination {
+  display: flex;
+  padding-left: 0;
+  list-style: none;
+  margin: 0;
+}
+
+.page-link {
+  position: relative;
+  display: block;
+  padding: 0.25rem 0.5rem;
+  font: inherit;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--bs-pagination-color, var(--media-primary, #0d6efd));
+  text-align: center;
+  text-decoration: none;
+  background-color: var(--bs-pagination-bg, var(--surface-0, #fff));
+  border: 1px solid var(--bs-pagination-border-color, var(--gray-300, #dee2e6));
+  appearance: none;
+  cursor: pointer;
+  transition: color 0.15s, background-color 0.15s, border-color 0.15s, box-shadow 0.15s;
+}
+
+.page-link:hover {
+  z-index: 2;
+  color: var(--bs-pagination-hover-color, #0a58ca);
+  background-color: var(--bs-pagination-hover-bg, var(--gray-200, #e9ecef));
+  border-color: var(--bs-pagination-hover-border-color, var(--gray-300, #dee2e6));
+}
+
+.page-link:focus-visible {
+  z-index: 3;
+  color: var(--bs-pagination-focus-color, var(--bs-pagination-hover-color, #0a58ca));
+  background-color: var(--bs-pagination-focus-bg, var(--bs-pagination-hover-bg, var(--gray-200, #e9ecef)));
+  border-color: var(--bs-pagination-focus-border-color, var(--bs-pagination-hover-border-color, var(--gray-300, #dee2e6)));
+  outline: 0;
+  box-shadow: var(--bs-pagination-focus-box-shadow, var(--oc-media-focus-ring));
+}
+
+.page-item:first-child .page-link {
+  border-top-left-radius: 0.25rem;
+  border-bottom-left-radius: 0.25rem;
+}
+
+.page-item:last-child .page-link {
+  border-top-right-radius: 0.25rem;
+  border-bottom-right-radius: 0.25rem;
+}
+
+.page-item + .page-item .page-link {
+  margin-left: -1px;
+}
+
+.page-item.active .page-link {
+  z-index: 3;
+  color: var(--bs-pagination-active-color, #fff);
+  background-color: var(--bs-pagination-active-bg, var(--media-primary, #0d6efd));
+  border-color: var(--bs-pagination-active-border-color, var(--media-primary, #0d6efd));
+}
+
+.page-item.disabled .page-link {
+  color: var(--bs-pagination-disabled-color, var(--gray-400, #ced4da));
+  pointer-events: none;
+  background-color: var(--bs-pagination-disabled-bg, #fff);
+  border-color: var(--bs-pagination-disabled-border-color, var(--gray-300, #dee2e6));
+}

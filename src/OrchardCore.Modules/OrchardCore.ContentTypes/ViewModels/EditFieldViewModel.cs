@@ -32,4 +32,16 @@ public class EditFieldViewModel
     /// The display mode of the field.
     /// </summary>
     public string DisplayMode { get; set; }
+
+    /// <summary>
+    /// Gets or sets the names of the shapes rendering the options of the editor select, e.g. <c>TextField_Option__Monaco</c>.
+    /// </summary>
+    [BindNever]
+    public IEnumerable<string> EditorShapes { get; set; } = [];
+
+    /// <summary>
+    /// Gets or sets the names of the shapes rendering the options of the display mode select, e.g. <c>TextField_DisplayOption__Header</c>.
+    /// </summary>
+    [BindNever]
+    public IEnumerable<string> DisplayShapes { get; set; } = [];
 }

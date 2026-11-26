@@ -8,7 +8,8 @@
 
 <form asp-action="Create" method="post" class="no-multisubmit">
     @Html.ValidationSummary()
-    @await Html.PartialAsync("RateLimitPolicy.Fields", Model)
+
+    @await DisplayAsync(Model.Editor)
 
     <div class="ocat-wrapper">
         <div class="ocat-end-offset">
@@ -19,7 +20,7 @@
     </div>
 
     <div class="action-bar-bottom">
-        <button class="btn btn-primary" type="submit">@T["Save and Continue"]</button>
         <a asp-action="Index" class="btn btn-secondary">@T["Cancel"]</a>
+        <button class="btn btn-primary" type="submit">@T["Save and Continue"]</button>
     </div>
 </form>

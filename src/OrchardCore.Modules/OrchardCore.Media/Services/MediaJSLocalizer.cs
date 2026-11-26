@@ -118,6 +118,7 @@ public class MediaJSLocalizer(IStringLocalizer<MediaJSLocalizer> S) : IJSLocaliz
                 { "noImages", S["No Files"].Value },
                 { "addMedia", S["Add media"].Value },
                 { "removeMedia", S["Remove"].Value },
+                { "downloadMedia", S["Download"].Value },
                 { "mediaText", S["Media text"].Value },
                 { "editMediaText", S["Enter media text"].Value },
                 { "anchor", S["Anchor"].Value },

@@ -60,7 +60,9 @@ public sealed class SourceController : Controller
             return NotFound();
         }
 
-        var source = _factories.FirstOrDefault(x => x.Name == sourceType)?.Create();
+        var factory = _factories.FirstOrDefault(x => x.Name == sourceType)
+            ?? _factories.FirstOrDefault(x => string.Equals(x.Name, sourceType, StringComparison.OrdinalIgnoreCase));
+        var source = factory?.Create();
 
         if (source == null)
         {
@@ -72,7 +74,7 @@ public sealed class SourceController : Controller
             SitemapId = sitemapId,
             SitemapSource = source,
             SitemapSourceId = source.Id,
-            SitemapSourceType = sourceType,
+            SitemapSourceType = factory.Name,
             Editor = await _displayManager.BuildEditorAsync(source, updater: _updateModelAccessor.ModelUpdater, isNew: true, "", ""),
         };
 

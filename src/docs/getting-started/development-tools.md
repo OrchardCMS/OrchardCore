@@ -15,3 +15,10 @@ What tools do we recommend to build your app with Orchard Core, or work on Orcha
 
 - [DB Browser for SQLite](https://sqlitebrowser.org/) is a free and open-source tool to browse the SQLite database files created by Orchard. You can use it to open the `yessql.db` files under the tenant folders in `App_Data/Sites` and e.g. browse the tables, run queries, display the JSON documents in a nicely formatted way.
 - [smtp4dev](https://github.com/rnwood/smtp4dev) is a small SMTP server that you can run locally to test sending emails. Just install it via `dotnet` and configure Orchard to use it as an SMTP server. It even features a web interface where you can browse processed emails.
+
+## Video
+
+This video sets up the preview package feed and a local NuGet feed.
+
+<!-- video:development-tools -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/wUvs6BXgksc" title="Development Tools: Preview Packages and Local NuGet Feeds" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

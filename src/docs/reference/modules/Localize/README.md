@@ -9,6 +9,77 @@ It also supports plural forms.
 
 The localization files for the different cultures are available on [Crowdin](https://crowdin.com/project/orchard-core).
 
+### Translation package updates
+
+`OrchardCore.Application.Cms.Targets` includes `OrchardCore.Translations.All`. Its version is managed in
+`Directory.Packages.props`. On `main`, Renovate tracks the latest `major.minor.patch-preview-<build>` package
+from Cloudsmith, independently of the normal weekly dependency schedule and 15-day update delay. Preview
+packages contain translations for OC `main`, even when their version prefix differs from OC's.
+Renovate accepts higher preview version prefixes automatically, so aligning the translation packages or
+starting a new OC major version requires no change to the translation-specific Renovate rule.
+
+The reference uses an exact NuGet version range (`[version]`), not a floating version. New previews arrive
+through a dedicated PR, which can automerge after the required checks pass. "Latest" therefore means the latest
+version detected and merged by Renovate, not a different version on every restore. Old previews can be removed
+from the feed; keep the update PRs moving rather than relying on an old development commit indefinitely.
+
+The repository's `NuGet.config` permits only `OrchardCore.Translations.*` packages from Cloudsmith. Stable
+translations can also be restored from NuGet.org; other dependencies use NuGet.org.
+
+### Selecting translations for a release
+
+Translation publication and Crowdin review remain in
+[OrchardCore.Translations](https://github.com/OrchardCMS/OrchardCore.Translations). Orchard Core does not publish
+translation packages or change that repository's versioning.
+
+Before creating an OC release tag:
+
+1. Review the translations for the release's source catalogs and publish a stable translation package in the
+   translations repository, if needed. An OC patch release may reuse a compatible existing stable package;
+   the translation version does not have to equal the OC version.
+2. Run **Prepare Release Translations** from the Actions tab. Select the intended `release/*` or
+   `release-prep/*` branch. Leave the version empty to use that branch's `VersionPrefix` from
+   `src/OrchardCore.Build/OrchardCore.Commons.props`, or enter an existing compatible stable translation
+   version, for example `3.0.0`, to override it.
+   The workflow must be present on that branch as well as the default branch.
+3. The workflow restores the meta-package and all dependencies from NuGet.org using an isolated package
+   cache. It rejects missing packages, prereleases, and mismatched culture-package versions, then opens or
+   updates a PR pinning the selected version in `Directory.Packages.props`. If the default version is not
+   published, the workflow fails; publish it first or explicitly override the version. It never silently
+   substitutes an older package.
+4. Review and merge the PR before tagging the OC release. If the branch already references the selected exact
+   version, no PR is needed.
+
+**One-time workflow setup:** add the repository Actions secret `TRANSLATIONS_PR_TOKEN`, using a fine-grained
+personal access token with **Contents: read and write** and **Pull requests: read and write** access to
+OrchardCore. Ensure the token has any required organization approval and renew it before it expires.
+A separate token is required because PRs created with `GITHUB_TOKEN` do not trigger the normal PR checks.
+Do not configure this secret with `GITHUB_TOKEN`.
+
+The release CI repeats the stable-package validation before building and disables Cloudsmith for the release
+build. It fails instead of substituting stable translations automatically. To perform the same validation
+locally, run:
+
+```powershell
+./.github/scripts/Test-TranslationsPackage.ps1
+```
+
+To select the stable translation package matching OC's `VersionPrefix` locally:
+
+```powershell
+./.github/scripts/Test-TranslationsPackage.ps1 -UpdateReference
+```
+
+To override that default with an already-published compatible stable version:
+
+```powershell
+./.github/scripts/Test-TranslationsPackage.ps1 -Version 3.0.0 -UpdateReference
+```
+
+When merging a release branch back to `main`, preserve `main`'s preview translation reference rather than
+replacing it with the release's stable reference. Renovate does not downgrade a stable version to its
+prereleases. Translation previews remain disabled for release branches.
+
 ## PO files locations
 
 PO files are found at these locations:
@@ -212,6 +283,8 @@ With string localization, no formatting is applied when no arguments are supplie
 
 !!! warning
     Use HTML localization only for trusted translation markup. It does not encode the translation itself. For plain labels, permission descriptions, attributes, and other text, use string localization and retain the rendering layer's encoding.
+
+A `LocalizationSource` is a static declaration owned by code, not data, so it is never serialized or deserialized: its source type can't be serialized, and creating a type from a name read from a document isn't safe. The serializers of Orchard Core enforce this in the JSON contract: the documents saved by YesSql, `JOptions`, MVC and SignalR remove every property that holds a `LocalizationSource`, or an array, a collection or a dictionary of sources, with `LocalizationSourceJsonModifier` of `OrchardCore.Json.Serialization`, so it is neither written nor read, even from a document that still has the value. Add the same exclusion to your own `JsonSerializerOptions` with `options.IgnoreLocalizationSources()` from `OrchardCore.Json.Extensions`. Also mark every instance property of this type with `[JsonIgnore]`, for example on a descriptor, a deployment step or a model, so it stays out of any other serializer. `System.Text.Json` doesn't apply the attribute of a base property to an override, so repeat `[JsonIgnore]` on each override. Static properties are not serialized and don't need it. Read the source from code instead of persisting it.
 
 ### Sharing `LocalizationSource` instances
 
@@ -508,6 +581,8 @@ Extraction covers semantic C# localizer calls, Razor views and pages, and litera
 
 DataAnnotations validation attributes (including custom attributes derived from `ValidationAttribute`) are processed by a separate semantic extractor. Explicit constant `ErrorMessage` values, such as `[Required(ErrorMessage = "Username is required.")]`, use the `OrchardCore.Localization.DataAnnotations.DataAnnotationsDefaultErrorMessages` context that the runtime metadata provider looks up. When the message contains the member name or an explicit `DisplayAttribute.Name`, its `{0}` replacement fallback is included too. Default framework messages continue to come from the existing default-message marker catalog. Resource-backed messages are not evaluated, and resource property names or display labels are not treated as validation message keys. Messages assigned inside custom attribute constructors cannot be inferred; specify `ErrorMessage` explicitly when they need extraction. Marked `[SkipLocalizationExtraction]` scopes are excluded.
 
+At runtime, an explicit `ErrorMessage` is translated as is, then with the member name replaced by `{0}`. A default message is translated with the member name, e.g. `"The UserName field is required."`, then as its unformatted template, e.g. `"The field {0} must be between {1} and {2}."`, then with the member name replaced by `{0}` and the other arguments left as they are. The translations of the templates keep their placeholders, which the attribute formats with its arguments, such as the range or the regular expression pattern. A message without a translation, or set with `ErrorMessageResourceName`, is left unchanged.
+
 A template only depends on the sources, so that it can be compared byte for byte: entries, references, and format flags are sorted and written without timestamps; source references name the file without its line, unless `LocalizationCatalogLineNumbers` is `true`, so that editing a file only changes the template when a message, its context, or the files declaring it change; the `DEBUG` and `TRACE` constants are not defined while extracting, so strings in code compiled only in one configuration are not extracted; and a multi-targeting project extracts its template from its first target framework. Templates use LF line endings, which the repository's `.gitattributes` preserves on every platform.
 
 | Build property | Purpose |
@@ -601,6 +676,16 @@ For more information on using locaization filters in Liquid templates, see the [
 ## Video
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/cwKa1OA48-4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video takes a tour of the admin: its menu, its search and its main screens.
+
+<!-- video:admin-tour -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/hQPLynQAPeY" title="The Admin: Find Your Way Around Orchard Core" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video creates an admin theme to restyle the admin.
+
+<!-- video:admin-theme-create -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/ht6M2TWKLaU" title="Create an Admin Theme: Restyle the Admin" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ## Recipe Configuration
 

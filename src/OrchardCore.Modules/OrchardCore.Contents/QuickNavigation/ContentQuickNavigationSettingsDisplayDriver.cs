@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Localization;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
@@ -13,12 +14,16 @@ public sealed class ContentQuickNavigationSettingsDisplayDriver : SiteDisplayDri
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
 
+    internal readonly IStringLocalizer S;
+
     public ContentQuickNavigationSettingsDisplayDriver(
         IHttpContextAccessor httpContextAccessor,
-        IAuthorizationService authorizationService)
+        IAuthorizationService authorizationService,
+        IStringLocalizer<ContentQuickNavigationSettingsDisplayDriver> stringLocalizer)
     {
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
+        S = stringLocalizer;
     }
 
     protected override string SettingsGroupId => "admin";
@@ -35,7 +40,7 @@ public sealed class ContentQuickNavigationSettingsDisplayDriver : SiteDisplayDri
             "ContentQuickNavigationSettings_Edit",
             static (model, settings) => model.MaxItems = settings.MaxItems,
             settings)
-            .Location("Content:4")
+            .Location(l => l.Zone("Content", "4").Card(S["Quick navigation"], "20"))
             .OnGroup(SettingsGroupId);
     }
 

@@ -11,6 +11,6 @@ public sealed class ContentPreviewDriver : ContentDisplayDriver
     public override IDisplayResult Edit(ContentItem contentItem, BuildEditorContext context)
     {
         return Factory("ContentPreview_Button", static (ContentItem item) => new ContentItemViewModel(item), contentItem)
-            .Location("Actions:after");
+            .Location("Actions:5");
     }
 }

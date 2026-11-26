@@ -1,7 +1,5 @@
 /* The light theme is also the default theme. */
 /* Do not wrap the these classes for the light theme specific. */
+/* The colors of both modes come from the scheme tokens (main/_schemes.scss); only what they do not cover is here. */
 
-@import "badge";
-@import "card";
-@import "modal";
-@import "theme_helpers";
+@use 'theme_helpers';

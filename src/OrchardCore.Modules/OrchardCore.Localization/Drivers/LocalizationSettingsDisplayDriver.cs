@@ -87,7 +87,7 @@ public sealed class LocalizationSettingsDisplayDriver : SiteDisplayDriver<Locali
             }
 
             model.FallBackToParentCultures = settings.FallBackToParentCulture;
-        }).Location("Content:2")
+        }).Location(l => l.Zone("Content", "2").Card(S["Cultures"], "10"))
         .OnGroup(SettingsGroupId);
     }
 

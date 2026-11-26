@@ -46,6 +46,7 @@ const kinds: { value: ActivityKind; label: string }[] = [
     <div class="wfd-toolbox-inner">
         <div class="wfd-toolbox-filters">
             <input
+                id="wfd-toolbox-search"
                 v-model="query"
                 type="search"
                 class="form-control form-control-sm"

@@ -207,18 +207,18 @@ const optionsTableComponent = {
                 <template #item="{ element: row, index }">
                     <tr>
                         <td v-for="column in columns" :key="column.key">
-                            <input type="text" class="form-control courrier" v-model="row[column.key]" :placeholder="column.placeholderKey ? t[column.placeholderKey] : ''" v-on:input="onColumnInput(row, column.key)" />
+                            <input type="text" class="form-control courrier" :id="idPrefix + '_' + index + '_' + column.key" :aria-label="t[column.labelKey]" v-model="row[column.key]" :placeholder="column.placeholderKey ? t[column.placeholderKey] : ''" v-on:input="onColumnInput(row, column.key)" />
                         </td>
                         <td v-if="defaultColumn && defaultColumn.mode === 'radio'" class="text-center align-middle">
                             <div class="form-check ms-2">
-                                <input type="radio" class="form-check-input" :id="'customRadio_' + index" :name="defaultColumn.radioGroupName" :value="row[defaultColumn.key]" :checked="row === selectedRow" v-on:click="onRadioClick(row)" />
-                                <label class="form-check-label" :title="t[defaultColumn.labelKey]" v-bind:for="'customRadio_' + index"></label>
+                                <input type="radio" class="form-check-input" :id="idPrefix + '_Default_' + index" :name="defaultColumn.radioGroupName" :value="row[defaultColumn.key]" :checked="row === selectedRow" v-on:click="onRadioClick(row)" />
+                                <label class="form-check-label" :title="t[defaultColumn.labelKey]" v-bind:for="idPrefix + '_Default_' + index"></label>
                             </div>
                         </td>
                         <td v-else-if="defaultColumn" class="text-center align-middle">
                             <div class="form-check ms-2">
-                                <input type="checkbox" class="form-check-input" :id="'customRadio_' + index" v-model="row[defaultColumn.key]" true-value="true" false-value="" />
-                                <label class="form-check-label" :title="t[defaultColumn.labelKey]" v-bind:for="'customRadio_' + index"></label>
+                                <input type="checkbox" class="form-check-input" :id="idPrefix + '_Default_' + index" v-model="row[defaultColumn.key]" true-value="true" false-value="" />
+                                <label class="form-check-label" :title="t[defaultColumn.labelKey]" v-bind:for="idPrefix + '_Default_' + index"></label>
                             </div>
                         </td>
                         <td class="text-center">
@@ -235,6 +235,7 @@ const optionsTableComponent = {
     `,
     components: { draggable: vuedraggable },
     props: {
+        idPrefix: { type: String, required: true },
         rows: { type: Array, required: true },
         columns: { type: Array, required: true },
         defaultColumn: { type: Object, default: null },
@@ -383,29 +384,30 @@ const jsonModalComponent = {
                     </div>
                     <div class="modal-body">
                         <div class="ocat-wrapper">
-                            <label class="ocat-label">{{ t[jsonTextareaLabelKey] }}</label>
+                            <label class="ocat-label" :for="idPrefix + '_Json'">{{ t[jsonTextareaLabelKey] }}</label>
                             <div class="ocat-end">
-                                <textarea rows="8" class="form-control" :value="JSON.stringify(rows)" v-on:input="updateFromJson($event.target.value)"></textarea>
+                                <textarea rows="8" class="form-control" :id="idPrefix + '_Json'" :value="JSON.stringify(rows)" v-on:input="updateFromJson($event.target.value)"></textarea>
                                 <span class="hint">{{ t[jsonTextareaHintKey] }}</span>
                             </div>
                         </div>
                         <div class="ocat-wrapper" v-if="showDefaultValueRow">
-                            <label class="ocat-label">{{ t[defaultValueLabelKey] }}</label>
+                            <label class="ocat-label" :for="idPrefix + '_JsonDefaultValue'">{{ t[defaultValueLabelKey] }}</label>
                             <div class="ocat-end">
-                                <input class="form-control" type="text" :value="rootDefaultValue" v-on:input="$emit('update:rootDefaultValue', $event.target.value)" />
+                                <input class="form-control" type="text" :id="idPrefix + '_JsonDefaultValue'" :value="rootDefaultValue" v-on:input="$emit('update:rootDefaultValue', $event.target.value)" />
                                 <span class="hint">{{ t[defaultValueHintKey] }}</span>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-primary btn-submit" v-on:click="closeModal()">{{ t[okKey] }}</button>
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ t[cancelKey] }}</button>
+                        <button type="button" class="btn btn-primary btn-submit" v-on:click="closeModal()">{{ t[okKey] }}</button>
                     </div>
                 </div>
             </div>
         </div>
     `,
     props: {
+        idPrefix: { type: String, required: true },
         rows: { type: Array, required: true },
         autoFillColumn: { type: Object, default: null },
         defaultColumn: { type: Object, default: null },
@@ -494,6 +496,7 @@ const initOptionsTableEditor = (config: OptionsTableEditorConfig): void => {
         data() {
             return {
                 t: getTranslations(),
+                idPrefix: config.hiddenInputId,
                 rows: config.rows,
                 columns: config.columns,
                 defaultColumn: config.defaultColumn ?? null,
@@ -527,6 +530,7 @@ const initOptionsTableEditor = (config: OptionsTableEditorConfig): void => {
         template: `
             <a href="javascript:void(0)" v-on:click="showModal" class="float-end" :title="t[editDataKey]"><i class="fa-solid fa-pen-to-square" aria-hidden="true"></i></a>
             <options-table
+                :id-prefix="idPrefix"
                 v-model:rows="rows"
                 v-model:root-default-value="rootDefaultValue"
                 :columns="columns"
@@ -537,6 +541,7 @@ const initOptionsTableEditor = (config: OptionsTableEditorConfig): void => {
             ></options-table>
             <options-modal
                 ref="modal"
+                :id-prefix="idPrefix"
                 v-model:rows="rows"
                 v-model:root-default-value="rootDefaultValue"
                 :auto-fill-column="autoFillColumn"

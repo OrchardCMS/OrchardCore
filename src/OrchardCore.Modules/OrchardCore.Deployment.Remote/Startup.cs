@@ -5,6 +5,7 @@ using OrchardCore.Deployment.Remote;
 using OrchardCore.Deployment.Remote.Services;
 using OrchardCore.Deployment.Remote.Models;
 using OrchardCore.Deployment.Remote.Drivers;
+using OrchardCore.Deployment.Remote.ViewModels;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.FileStorage;
 using OrchardCore.Modules;
@@ -29,6 +30,10 @@ public sealed class Startup : StartupBase
         // Build the rows of the remote instances and remote clients admin lists.
         services.AddDisplayDriver<RemoteInstance, RemoteInstanceDisplayDriver>();
         services.AddDisplayDriver<RemoteClient, RemoteClientDisplayDriver>();
+
+        // Build the editors of the pages creating and editing a remote instance or a remote client.
+        services.AddDisplayDriver<EditRemoteInstanceViewModel, EditRemoteInstanceDisplayDriver>();
+        services.AddDisplayDriver<EditRemoteClientViewModel, EditRemoteClientDisplayDriver>();
 
     }
 }

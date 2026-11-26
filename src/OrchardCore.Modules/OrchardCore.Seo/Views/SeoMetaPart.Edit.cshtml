@@ -65,7 +65,7 @@
     <script asp-src="~/OrchardCore.Seo/Scripts/seo-meta-part/seo-meta-part.min.js" debug-src="~/OrchardCore.Seo/Scripts/seo-meta-part/seo-meta-part.js" at="Foot" depends-on="vuejs, vue-draggable" type="module"></script>
 
     <div id="@Html.IdFor(m => m)" class="ocat-wrapper seo-meta-part-custom-tags" data-custom-meta-tags="@Model.CustomMetaTags" data-custom-meta-tags-input-id="@Html.IdFor(m => m.CustomMetaTags)" data-custom-meta-tags-input-name="@Html.NameFor(m => m.CustomMetaTags)" data-translations="@translationsJson">
-        <label asp-for="CustomMetaTags" class="ocat-label">@T["Custom Meta Tags"]</label>
-        <div class="options-table-editor-mount"></div>
+        <span id="@Html.IdFor(m => m.CustomMetaTags)_Label" class="ocat-label">@T["Custom Meta Tags"]</span>
+        <div class="options-table-editor-mount" role="group" aria-labelledby="@Html.IdFor(m => m.CustomMetaTags)_Label"></div>
     </div>
 }

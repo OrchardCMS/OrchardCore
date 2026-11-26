@@ -386,6 +386,12 @@ You can access the `TagNames` property directly with the following accessor:
 !!! note
     If the display text property of the term is updated any content items will need to be republished to reflect this change.
 
+## Editing terms
+
+A term is not a content item of its own: it is stored in the content of its taxonomy. Its editor saves it in the taxonomy with a **Save Term** button, and the taxonomy is published from the taxonomy editor, with its **Publish** button. Saving a term of a draftable taxonomy saves a draft of the taxonomy, so the change isn't visible on the site until the taxonomy is published. When the taxonomy has unpublished changes, the editor of a term shows a warning saying so.
+
+The actions of the editor of a term are rendered by the `TermEditorActions` shape, which replaces the actions of a content item, such as **Publish** or **Delete**. Override `TermEditorActions.cshtml` to change them.
+
 ## Taxonomies Contents List Filters
 
 Provides taxonomy filters in the admin contents list.
@@ -428,3 +434,33 @@ Taxonomy admin list settings can be configured using the `Settings` recipe step:
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/NVjRz5ru7N4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/0pmrmmqF8-4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video explains how taxonomies categorize your content.
+
+<!-- video:taxonomies-overview -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/ZamtKKu53Lo" title="Taxonomies: Categorize Your Content" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video creates a taxonomy and organizes its terms.
+
+<!-- video:taxonomies-create-terms -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/3VE0pO491kw" title="Taxonomies: Create a Taxonomy and Organize Its Terms" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video adds categories and tags to content items with the Taxonomy field.
+
+<!-- video:taxonomies-field-and-tags -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/Ev9Ie1MVrhM" title="Taxonomy Field: Categories and Tags on Your Content" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video shows the term pages that list the content items of a term.
+
+<!-- video:taxonomies-term-pages -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/NmtoLt7F65o" title="Taxonomies: Term Pages That List Their Content" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video filters the content items list by term.
+
+<!-- video:taxonomies-contents-list-filters -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/YthQGl_C0B0" title="Taxonomies: Filter the Content Items List by Term" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video finds the content items of a term in Liquid templates and queries.
+
+<!-- video:taxonomies-query-content -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/hwRD0KJ3e4o" title="Taxonomies in Code: Query Content Items by Term" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

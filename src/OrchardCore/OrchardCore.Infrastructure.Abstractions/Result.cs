@@ -9,7 +9,7 @@ public class Result
 {
     private static readonly ResultError[] s_emptyErrors = [];
     private static readonly Result s_success = new Result { Succeeded = true };
-    private IEnumerable<ResultError> _errors = s_emptyErrors;
+    private readonly IEnumerable<ResultError> _errors = s_emptyErrors;
 
     protected Result()
     {

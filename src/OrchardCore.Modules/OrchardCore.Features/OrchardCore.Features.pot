@@ -49,6 +49,11 @@ msgctxt "OrchardCore.Features.Controllers.AdminController"
 msgid "Uncategorized"
 msgstr ""
 
+#: Deployment/AllFeaturesDeploymentStepDriver.cs
+msgctxt "OrchardCore.Features.Deployment.AllFeaturesDeploymentStepDriver"
+msgid "Features"
+msgstr ""
+
 #: FeaturesLocalizationSources.cs
 msgctxt "OrchardCore.Features.FeaturesLocalizationSources"
 msgid "All Features"
@@ -228,6 +233,13 @@ msgstr ""
 #: Views/FeatureEntry.Buttons.SummaryAdmin.cshtml
 msgctxt "OrchardCore.Features.Views.FeatureEntry.Buttons.SummaryAdmin"
 msgid "Yes"
+msgstr ""
+
+#. Format arguments: {0}: Model.Value.Feature.Descriptor.Name
+#: Views/FeatureEntry.Checkbox.SummaryAdmin.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Features.Views.FeatureEntry.Checkbox.SummaryAdmin"
+msgid "Select {0}"
 msgstr ""
 
 #: Views/FeatureEntry.DefaultMeta.SummaryAdmin.cshtml

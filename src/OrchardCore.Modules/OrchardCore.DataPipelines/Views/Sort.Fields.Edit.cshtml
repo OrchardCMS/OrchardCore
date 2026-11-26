@@ -3,8 +3,8 @@
 <script asp-name="data-pipelines-editors" at="Foot"></script>
 
 <div class="ocat-wrapper">
-    <label class="ocat-label ocat-label-required">@T["Sort by"]</label>
-    <div class="ocat-end" data-dp-list data-dp-prefix="@Html.Name("Keys")">
+    <span id="@Html.Id("Keys")_Label" class="ocat-label ocat-label-required">@T["Sort by"]</span>
+    <div class="ocat-end" role="group" aria-labelledby="@Html.Id("Keys")_Label" data-dp-list data-dp-prefix="@Html.Name("Keys")">
         <template data-dp-template>
             <partial name="DataPipelineSortRow" model="@((Model.AvailableFields, new SortField(), "__index__"))" />
         </template>

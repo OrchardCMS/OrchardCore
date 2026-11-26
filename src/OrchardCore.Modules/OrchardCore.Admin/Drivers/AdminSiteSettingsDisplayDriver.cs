@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Localization;
 using OrchardCore.Admin.Models;
 using OrchardCore.Admin.ViewModels;
 using OrchardCore.DisplayManagement.Entities;
@@ -18,14 +19,18 @@ public sealed class AdminSiteSettingsDisplayDriver : SiteDisplayDriver<AdminSett
     private readonly IAuthorizationService _authorizationService;
     private readonly IOptionsUpdateNotifier _optionsUpdateNotifier;
 
+    internal readonly IStringLocalizer S;
+
     public AdminSiteSettingsDisplayDriver(
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
-        IOptionsUpdateNotifier optionsUpdateNotifier)
+        IOptionsUpdateNotifier optionsUpdateNotifier,
+        IStringLocalizer<AdminSiteSettingsDisplayDriver> stringLocalizer)
     {
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         _optionsUpdateNotifier = optionsUpdateNotifier;
+        S = stringLocalizer;
     }
 
     protected override string SettingsGroupId
@@ -40,20 +45,16 @@ public sealed class AdminSiteSettingsDisplayDriver : SiteDisplayDriver<AdminSett
             return null;
         }
 
-        return Initialize<AdminSettingsViewModel, AdminSettings>("AdminSettings_Edit", static (model, settings) =>
-        {
-            model.DisplayThemeToggler = settings.DisplayThemeToggler;
-            model.DisplayMenuFilter = settings.DisplayMenuFilter;
-            model.DisplayQuickNavigation = settings.DisplayQuickNavigation;
-            model.DisplayNewMenu = settings.DisplayNewMenu;
-            model.DisplayTitlesInTopbar = settings.DisplayTitlesInTopbar;
-            model.ShowBreadcrumb = settings.ShowBreadcrumb;
-            model.MenuBehavior = settings.MenuBehavior;
-            model.ListLayout = settings.ListLayout;
-            model.ActionsLayout = settings.ActionsLayout;
-            model.AllowUserListLayoutSelection = settings.AllowUserListLayoutSelection;
-        }, settings).Location("Content:3")
-        .OnGroup(SettingsGroupId);
+        return Combine(
+            Initialize<AdminSettingsViewModel, AdminSettings>("AdminSettings_Edit", PopulateViewModel, settings)
+                .Location(l => l.Zone("Content", "3").Card(S["Appearance"], "10"))
+                .OnGroup(SettingsGroupId),
+            Initialize<AdminSettingsViewModel, AdminSettings>("AdminSettings_Edit__Navigation", PopulateViewModel, settings)
+                .Location(l => l.Zone("Content", "3").Card(S["Navigation"], "20"))
+                .OnGroup(SettingsGroupId),
+            Initialize<AdminSettingsViewModel, AdminSettings>("AdminSettings_Edit__Lists", PopulateViewModel, settings)
+                .Location(l => l.Zone("Content", "3").Card(S["Lists"], "30"))
+                .OnGroup(SettingsGroupId));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, AdminSettings settings, UpdateEditorContext context)
@@ -98,5 +99,19 @@ public sealed class AdminSiteSettingsDisplayDriver : SiteDisplayDriver<AdminSett
         settings.AllowUserListLayoutSelection = model.AllowUserListLayoutSelection;
 
         return await EditAsync(site, settings, context);
+    }
+
+    private static void PopulateViewModel(AdminSettingsViewModel model, AdminSettings settings)
+    {
+        model.DisplayThemeToggler = settings.DisplayThemeToggler;
+        model.DisplayMenuFilter = settings.DisplayMenuFilter;
+        model.DisplayQuickNavigation = settings.DisplayQuickNavigation;
+        model.DisplayNewMenu = settings.DisplayNewMenu;
+        model.DisplayTitlesInTopbar = settings.DisplayTitlesInTopbar;
+        model.ShowBreadcrumb = settings.ShowBreadcrumb;
+        model.MenuBehavior = settings.MenuBehavior;
+        model.ListLayout = settings.ListLayout;
+        model.ActionsLayout = settings.ActionsLayout;
+        model.AllowUserListLayoutSelection = settings.AllowUserListLayoutSelection;
     }
 }

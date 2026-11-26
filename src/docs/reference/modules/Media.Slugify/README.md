@@ -29,3 +29,40 @@ By default, transliteration happens when the feature is enabled. The following c
 
 !!! note
     Enabling the Media Slugify feature will not rename existing folders and files, only new folders and files will be _slugified_.
+
+## Videos
+
+This video gives an overview of how Orchard Core manages the files of your site.
+
+<!-- video:media-overview -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/rZ8-gT1Rcxg" title="Media: Manage the Files of Your Site" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video uploads, organizes and reuses files in the media library.
+
+<!-- video:media-library-basics -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/96HKBh1upho" title="Media Library: Upload, Organize and Reuse Files" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video attaches images and files to content items with the Media field.
+
+<!-- video:media-field -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/5wbolSzAOpg" title="Media Field: Attach Images and Files to Content" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video resizes and crops images the same way everywhere with media profiles.
+
+<!-- video:media-profiles -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/kobmZSw_z_w" title="Media Profiles: Resize and Crop Images Consistently" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video goes through the media options, the allowed file types and the media API.
+
+<!-- video:media-settings -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/8UT6FKmFhSo" title="Media Settings: Options, Allowed Files and the Media API" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video covers web-friendly file names, resumable uploads and live updates of the media library.
+
+<!-- video:media-uploads -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/GPew_nIP47o" title="Media Uploads: Slugified Names, Resumable Uploads and Live Updates" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video resizes images, builds asset URLs and uses the media tag helpers in templates.
+
+<!-- video:media-in-templates -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/aGWXBEQEa-0" title="Media in Templates: Image Resizing, Asset URLs and Tag Helpers" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

@@ -1,0 +1,28 @@
+.alert {
+    --bs-alert-padding-x: var(--ta-surface-padding-x);
+    --bs-alert-padding-y: var(--ta-row-padding-y);
+    --bs-alert-border-radius: var(--ta-radius);
+}
+
+// Links in alerts take the alert's link color and stay underlined, as they sit in a run of text.
+.alert a:not(.btn):not(.alert-link) {
+    color: var(--bs-alert-link-color);
+    text-decoration: underline;
+}
+
+// The muted color is checked against the surfaces of the scheme, not against the fills of alerts: secondary text in an
+// alert takes the alert's own text color.
+.alert .hint,
+.alert .form-text,
+.alert .text-muted {
+    color: var(--bs-alert-color) !important;
+}
+
+// The same goes for the subtle backgrounds of Bootstrap: secondary text on them takes their matching text color.
+@each $color in (primary, secondary, success, info, warning, danger, light, dark) {
+    .bg-#{$color}-subtle .hint,
+    .bg-#{$color}-subtle .form-text,
+    .bg-#{$color}-subtle .text-muted {
+        color: var(--bs-#{$color}-text-emphasis) !important;
+    }
+}

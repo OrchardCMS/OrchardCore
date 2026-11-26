@@ -8,6 +8,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentPreview;
+using OrchardCore.Contents;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Navigation;
@@ -159,6 +160,76 @@ public class TemplateAuthorizationTests
                 new JsonObject()),
             null));
     }
+
+    [Theory]
+    [InlineData(true, false, true)]
+    [InlineData(false, false, true)]
+    [InlineData(false, true, false)]
+    public async Task TemplateInspectorIndex_ContentItemNotInspectable_Forbids(bool published, bool viewContent, bool previewContent)
+    {
+        var authorizationService = CreateAuthorizationService(manageTemplates: true, manageLiquidTemplates: true);
+        authorizationService
+            .Setup(service => service.AuthorizeAsync(
+                It.IsAny<ClaimsPrincipal>(),
+                It.IsNotNull<ContentItem>(),
+                It.IsAny<IEnumerable<IAuthorizationRequirement>>()))
+            .ReturnsAsync((ClaimsPrincipal _, object _, IEnumerable<IAuthorizationRequirement> requirements) =>
+            {
+                var permission = Assert.Single(requirements.OfType<PermissionRequirement>()).Permission;
+
+                return (permission == CommonPermissions.ViewContent ? viewContent : previewContent)
+                    ? AuthorizationResult.Success()
+                    : AuthorizationResult.Failed();
+            });
+
+        var contentManager = new Mock<IContentManager>();
+        contentManager
+            .Setup(manager => manager.GetAsync("id", It.IsAny<VersionOptions>()))
+            .ReturnsAsync(new ContentItem { ContentItemId = "id", ContentType = "Article", Published = published });
+
+        var result = await CreateTemplateInspectorController(authorizationService, contentManager).Index("id");
+
+        Assert.IsType<ForbidResult>(result);
+    }
+
+    [Fact]
+    public async Task TemplateInspectorIndex_UnknownContentItem_ReturnsNotFound()
+    {
+        var controller = CreateTemplateInspectorController(
+            CreateAuthorizationService(manageTemplates: true, manageLiquidTemplates: true),
+            new Mock<IContentManager>());
+
+        Assert.IsType<NotFoundResult>(await controller.Index("unknown"));
+    }
+
+    [Theory]
+    [InlineData(false, true, false)]
+    [InlineData(true, false, false)]
+    [InlineData(true, true, true)]
+    public async Task TemplateInspector_MissingTemplatesPermission_Forbids(bool manageTemplates, bool manageLiquidTemplates, bool adminTemplates)
+    {
+        var contentManager = new Mock<IContentManager>(MockBehavior.Strict);
+        var controller = CreateTemplateInspectorController(CreateAuthorizationService(manageTemplates, manageLiquidTemplates), contentManager);
+
+        Assert.IsType<ForbidResult>(await controller.Index("id", adminTemplates: adminTemplates));
+        Assert.IsType<ForbidResult>(await controller.SearchContentItems(adminTemplates: adminTemplates));
+    }
+
+    // Only the actions refused before an inspection are tested, as an inspection needs a shell scope.
+    private static TemplateInspectorController CreateTemplateInspectorController(Mock<IAuthorizationService> authorizationService, Mock<IContentManager> contentManager)
+        => new(
+            authorizationService.Object,
+            contentManager.Object,
+            Mock.Of<YesSql.ISession>(),
+            templateInspectionService: null,
+            sourceTemplatesService: null,
+            CreateLocalizer<TemplateInspectorController>())
+        {
+            ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext { User = new ClaimsPrincipal(new ClaimsIdentity("Test")) },
+            },
+        };
 
     private static Mock<IAuthorizationService> CreateAuthorizationService(
         bool manageTemplates,

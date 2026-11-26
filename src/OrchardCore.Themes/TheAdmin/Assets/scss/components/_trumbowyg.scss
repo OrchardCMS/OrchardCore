@@ -1,5 +1,5 @@
 .trumbowyg {
-    font-size: 16px;
+    font-size: var(--ta-font-size-md);
 }
 
 .trumbowyg-box .trumbowyg-editor {
@@ -8,7 +8,7 @@
 
 [dir] .trumbowyg-box,
 [dir] .trumbowyg-dark .trumbowyg-box {
-    border: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color);
+    border: var(--bs-border-width) var(--bs-border-style) var(--ta-control-border);
     border-radius: var(--bs-border-radius);
     background-color: var(--bs-body-bg);
     color: var(--bs-body-color);
@@ -20,15 +20,51 @@
     color: var(--bs-body-color);
 }
 
+// The toolbar is drawn on the surface of the field rather than on Trumbowyg's gray, with the theme's hover state.
 [dir] .trumbowyg-button-pane,
 [dir] .trumbowyg-dark .trumbowyg-button-pane {
-    border-bottom: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color);
+    border-bottom: var(--bs-border-width) var(--bs-border-style) var(--ta-border);
+    background-color: var(--ta-surface);
+
+    button {
+        border-radius: var(--bs-border-radius-sm);
+        color: var(--ta-muted);
+
+        svg {
+            fill: currentColor;
+            color: inherit;
+        }
+
+        &:not(.trumbowyg-disable):hover,
+        &:not(.trumbowyg-disable):focus,
+        &.trumbowyg-active {
+            background-color: var(--ta-row-hover-bg);
+            color: var(--ta-link);
+        }
+    }
+}
+
+// The box is rounded, but the toolbar and the text area inside it are square and opaque, so they would paint over the
+// curve of its border: their outer corners follow it.
+.trumbowyg-box {
+    --ta-editor-inner-radius: calc(var(--bs-border-radius) - var(--bs-border-width));
+
+    .trumbowyg-button-pane {
+        border-start-start-radius: var(--ta-editor-inner-radius);
+        border-start-end-radius: var(--ta-editor-inner-radius);
+    }
+
+    .trumbowyg-editor-box,
+    .trumbowyg-textarea {
+        border-end-start-radius: var(--ta-editor-inner-radius);
+        border-end-end-radius: var(--ta-editor-inner-radius);
+    }
 }
 
 [dir] .trumbowyg-button-pane .trumbowyg-button-group:not(:empty),
 [dir] .trumbowyg-dark .trumbowyg-button-pane .trumbowyg-button-group:not(:empty) {
     &::after {
-        background: var(--bs-border-color);
+        background: var(--ta-border);
     }
 }
 

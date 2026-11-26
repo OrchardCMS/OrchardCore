@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
@@ -11,9 +12,14 @@ public sealed class UserPickerFieldSettingsDriver : ContentPartFieldDefinitionDi
 {
     private readonly IRoleService _roleService;
 
-    public UserPickerFieldSettingsDriver(IRoleService roleService)
+    internal readonly IStringLocalizer S;
+
+    public UserPickerFieldSettingsDriver(
+        IRoleService roleService,
+        IStringLocalizer<UserPickerFieldSettingsDriver> stringLocalizer)
     {
         _roleService = roleService;
+        S = stringLocalizer;
     }
 
     public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
@@ -34,7 +40,7 @@ public sealed class UserPickerFieldSettingsDriver : ContentPartFieldDefinitionDi
             model.Roles = roleEntries;
             model.DisplayAllUsers = settings.DisplayAllUsers || !roleEntries.Where(x => x.IsSelected).Any();
             model.Placeholder = settings.Placeholder;
-        }).Location("Content");
+        }).Location(l => l.Zone("Content").Card(S["Settings"], "20"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)

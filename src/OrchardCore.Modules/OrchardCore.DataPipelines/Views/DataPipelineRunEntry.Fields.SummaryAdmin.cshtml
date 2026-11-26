@@ -1,0 +1,9 @@
+@model ShapeViewModel<DataPipelineRunEntry>
+
+@{
+    var run = Model.Value.Run;
+}
+
+
+@* Plain link to the details of the run, like the title of a content item in the Manage Content list. *@
+<a asp-controller="Admin" asp-action="Run" asp-route-runId="@run.RunId">@run.PipelineName</a>

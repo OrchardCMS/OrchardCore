@@ -14,8 +14,8 @@
         <div class="form-check">
             <input type="checkbox" asp-for="UseLocalTime" class="form-check-input" />
             <label asp-for="UseLocalTime" class="form-check-label">@T["Use site time zone"]</label>
+            <span class="hint dashed">@T["The CRON expression uses UTC by default. Check this box to use the site's time zone instead."]</span>
         </div>
         <span asp-validation-for="UseLocalTime"></span>
-        <span class="hint dashed">@T["The CRON expression uses UTC by default. Check this box to use the site's time zone instead."]</span>
     </div>
 </div>

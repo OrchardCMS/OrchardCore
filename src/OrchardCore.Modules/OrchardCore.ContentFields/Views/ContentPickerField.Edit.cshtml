@@ -11,22 +11,22 @@
     var partName = Model.PartFieldDefinition.PartDefinition.Name;
     var fieldName = Model.PartFieldDefinition.Name;
     var editUrl = Url.RouteUrl(new { area = "OrchardCore.Contents", controller = "Admin", action = "Edit", contentItemId = "contentItemId", returnUrl = FullRequestPath });
-    var viewUrl = Url.RouteUrl(new { area = "OrchardCore.Contents", controller = "Admin", action = "Display", contentItemId = "contentItemId" });
     var searchUrl = Url.RouteUrl(new { area = "OrchardCore.ContentFields", controller = "ContentPickerAdmin", action = "SearchContentItems", part = partName, field = fieldName });
-    var vueElementId = $"ContentPicker_{partName}_{fieldName}_{Guid.NewGuid().ToString("n")}";
     var multiple = settings.Multiple.ToString().ToLowerInvariant();
+    var placeholder = string.IsNullOrEmpty(settings.Placeholder) ? T["Type to search"].Value : settings.Placeholder;
     string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), DataLocalizationContext.ContentField(Model.PartFieldDefinition.PartDefinition.Name)];
-    var translations = Orchard.GetJSLocalizations("content-fields-multiselect-picker");
-    var translationsJson = Json.Serialize(translations).ToString();
 }
 
-<script asp-name="vue-draggable" at="Foot"></script>
-<style asp-name="vue-multiselect" at="Foot"></style>
+<style asp-name="bootstrap-select" at="Head"></style>
+<script asp-name="bootstrap-select" at="Foot"></script>
+<script asp-name="Sortable" at="Foot"></script>
 
 <div class="@($"ocat-wrapper field-wrapper field-wrapper-{Model.PartFieldDefinition.PartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" + (Model.PartFieldDefinition.IsNamedPart() ? $" field-wrapper-{Model.PartFieldDefinition.ContentTypePartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" : string.Empty))" id="@Html.IdFor(x => x.ContentItemIds)_FieldWrapper">
-    <label asp-for="ContentItemIds" class="ocat-label @(settings.Required ? "ocat-label-required" : "")">@localizedFieldName</label>
+    <label for="@Html.IdFor(x => x.ContentItemIds)_Search" class="ocat-label @(settings.Required ? "ocat-label-required" : "")">@localizedFieldName</label>
     <div class="ocat-end">
-        <div id="@vueElementId" class="vue-multiselect" data-part="@partName" data-field="@fieldName" data-editor-type="ContentPicker" data-selected-items="@selectedItems" data-edit-url="@editUrl" data-view-url="@viewUrl" data-search-url="@searchUrl" data-multiple="@multiple" data-translations="@translationsJson" data-selected-ids-input-id="@Html.IdFor(x => x.ContentItemIds)" data-selected-ids-input-name="@Html.NameFor(x => x.ContentItemIds)">
+        <div class="remote-picker" data-remote-picker data-search-url="@searchUrl" data-multiple="@multiple" data-selected-items="@selectedItems" data-values-input="@Html.IdFor(x => x.ContentItemIds)" data-status-field="hasPublished" data-status-text="@T["Not published"]" data-edit-url="@editUrl" data-remove-text="@T["Remove"]">
+            <input type="hidden" asp-for="ContentItemIds" />
+            <select id="@Html.IdFor(x => x.ContentItemIds)_Search" data-remote-picker-search placeholder="@placeholder" data-live-search-placeholder="@T["Search"]" data-none-results-text="@T["No results match {0}", "{0}"]"></select>
         </div>
         @if (!string.IsNullOrEmpty(settings.Hint))
         {
@@ -35,4 +35,4 @@
         <span asp-validation-for="ContentItemIds"></span>
     </div>
 </div>
-<script asp-src="~/OrchardCore.ContentFields/Scripts/vue-multiselect-fields/vue-multiselect-fields.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/vue-multiselect-fields/vue-multiselect-fields.js" at="Foot" depends-on="vuejs, vue-multiselect, vue-draggable" type="module"></script>
+<script asp-src="~/OrchardCore.ContentFields/Scripts/picker-fields/picker-fields.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/picker-fields/picker-fields.js" at="Foot" depends-on="bootstrap-select, Sortable" type="module"></script>

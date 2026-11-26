@@ -58,47 +58,4 @@
     </div>
 </div>
 
-<fieldset>
-    <div class="ocat-wrapper">
-        <div class="ocat-end-offset">
-            <h5 class="my-3">@T["Container Settings"]<span class="hint dashed">@T["Settings for parent or child content items."]</span></h5>
-        </div>
-    </div>
-    <div class="ocat-wrapper">
-        <div class="ocat-end-offset">
-            <div class="form-check">
-                <input type="checkbox" class="form-check-input" asp-for="AllowRouteContainedItems" checked="@Model.AllowRouteContainedItems">
-                <label class="form-check-label" asp-for="AllowRouteContainedItems">@T["Allow contained item routing"]</label>
-                <span class="hint dashed">@T["Check to allow users to enable routing of child content items. This setting must be applied to the parent content item."]</span>
-            </div>
-        </div>
-    </div>
-
-    <div class="ocat-wrapper">
-        <div class="ocat-end-offset">
-            <div class="form-check">
-                <input type="checkbox" class="form-check-input" asp-for="ManageContainedItemRoutes" checked="@Model.ManageContainedItemRoutes">
-                <label class="form-check-label" asp-for="ManageContainedItemRoutes">@T["Manage contained item routes"]</label>
-                <span class="hint dashed">@T["Check to allow this part to apply routes to child content items. This setting must be applied to the child content item."]</span>
-            </div>
-        </div>
-    </div>
-
-    <div class="ocat-wrapper">
-        <div class="manage-contained-item-routes" style="@(Model.ManageContainedItemRoutes ? "" : "display: none")">
-            <div class="ocat-end-offset">
-                <div class="form-check">
-                    <input type="checkbox" class="form-check-input" asp-for="AllowAbsolutePath" checked="@Model.AllowAbsolutePath">
-                    <label class="form-check-label" asp-for="AllowAbsolutePath">@T["Allow absolute path"]</label>
-                    <span class="hint dashed">@T["Check to allow users to enable absolute paths for child content items. When disabled the path is relative to the parents path."]</span>
-                </div>
-                <div class="ps-2">
-                    <div class="hint ms-3">@T["When relative : https://mysite.com/my-parent/my-child-item."]</div>
-                    <div class="hint ms-3">@T["When absolute : https://mysite.com/my-child-item."]</div>
-                </div>
-            </div>
-        </div>
-    </div>
-</fieldset>
-
 <script asp-src="~/OrchardCore.Autoroute/Scripts/autoroute-editors/autoroute-part-settings.min.js" debug-src="~/OrchardCore.Autoroute/Scripts/autoroute-editors/autoroute-part-settings.js" at="Foot" type="module"></script>

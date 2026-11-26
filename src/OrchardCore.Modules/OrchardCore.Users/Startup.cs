@@ -151,6 +151,9 @@ public sealed class Startup : StartupBase
         services.AddDisplayDriver<User, UserDisplayDriver>();
         services.AddDisplayDriver<User, UserInformationDisplayDriver>();
         services.AddDisplayDriver<User, UserButtonsDisplayDriver>();
+
+        // Builds the editor of the new password of a user.
+        services.AddDisplayDriver<EditPasswordViewModel, EditPasswordDisplayDriver>();
         services.AddScoped<IRecipeEnvironmentProvider, RecipeEnvironmentSuperUserProvider>();
 
         services.AddScoped<IUsersAdminListQueryService, DefaultUsersAdminListQueryService>();

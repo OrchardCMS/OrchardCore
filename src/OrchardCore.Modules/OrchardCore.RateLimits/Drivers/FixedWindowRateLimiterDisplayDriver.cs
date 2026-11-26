@@ -37,7 +37,7 @@ public sealed class FixedWindowRateLimiterDisplayDriver : DisplayDriver<RateLimi
             model.PermitLimit = data.PermitLimit;
             model.QueueLimit = data.QueueLimit;
             model.WindowSeconds = data.WindowSeconds;
-        }).Location("Content:5");
+        }).Location(l => l.Zone("Content", "5").Card(S["Limits"], "10"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(RateLimitLimiter limiter, UpdateEditorContext context)

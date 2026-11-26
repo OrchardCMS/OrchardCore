@@ -13,6 +13,23 @@
     </breadcrumb>
 </zone>
 
+@{
+    // The shapes of the editor placed in no card, such as the editor of a node whose driver doesn't declare a card,
+    // are grouped in the "General" card.
+    if (Model.Editor.Content is IEnumerable<object> editorShapes)
+    {
+        var generalCard = new OrchardCore.DisplayManagement.Descriptors.GroupingMetadata(T["General"].Value, "10");
+
+        foreach (var shape in editorShapes.OfType<OrchardCore.DisplayManagement.IShape>())
+        {
+            if (!shape.Metadata.CardGrouping.HasValue)
+            {
+                shape.Metadata.CardGrouping = generalCard;
+            }
+        }
+    }
+}
+
 <div asp-validation-summary="All"></div>
 <form asp-action="Edit" method="post" class="no-multisubmit">
     @await DisplayAsync(Model.Editor.Content)
@@ -21,35 +38,11 @@
     <input type="hidden" asp-for="AdminNodeId" />
     <input type="hidden" asp-for="AdminNodeType" />
 
-    <div class="mb-3">
-        <label asp-for="Priority" class="form-label">@T["Selection Priority"]</label>
-        <input asp-for="Priority" class="form-control w-sm-25">
-        <span class="hint">@T["The priority of this link to be displayed as active instead of another one when both are pointing to the same url. The link with the highest value has the active status in the navigation."]</span>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="Position" class="form-label">@T["Position Order"]</label>
-        <input asp-for="Position" class="form-control w-sm-25">
-        <span class="hint">@T["The position order of this link in the admin menu."]</span>
-    </div>
-
     <div class="action-bar-bottom">
-        <div class="btn-group"
-             role="group"
-             aria-label="@T["Save actions"]"
-             data-action-group="oc-admin-menu-node-save-action"
-             data-action-default="save"
-             data-label-default="@T["Save"]"
-             data-action-alt="SaveAndContinue"
-             data-label-alt="@T["Save and continue"]">
-            <button class="btn btn-success save" type="submit" name="submit" value="save">@T["Save"]</button>
-            <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-reference="parent" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <span class="visually-hidden">@T["Toggle Dropdown"]</span>
-            </button>
-            <div class="dropdown-menu">
-                <button class="dropdown-item save-continue" type="submit" name="submit" value="SaveAndContinue">@T["and continue"]</button>
-            </div>
-        </div>
+        <a class="btn btn-secondary cancel"
+           role="button"
+           asp-route-action="List"
+           asp-route-id="@Model.AdminMenuId">@T["Cancel"]</a>
 
         <a class="btn btn-danger delete action-bar-secondary"
            asp-action="Delete"
@@ -58,9 +51,21 @@
            asp-route-treeNodeId="@Model.AdminNodeId"
            data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
 
-        <a class="btn btn-secondary cancel"
-           role="button"
-           asp-route-action="List"
-           asp-route-id="@Model.AdminMenuId">@T["Cancel"]</a>
+        <div class="btn-group"
+             role="group"
+             aria-label="@T["Save actions"]"
+             data-action-group="oc-admin-menu-node-save-action"
+             data-action-default="save"
+             data-label-default="@T["Save"]"
+             data-action-alt="SaveAndContinue"
+             data-label-alt="@T["Save and continue"]">
+            <button class="btn btn-primary save" type="submit" name="submit" value="save">@T["Save"]</button>
+            <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-reference="parent" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="visually-hidden">@T["Toggle Dropdown"]</span>
+            </button>
+            <div class="dropdown-menu">
+                <button class="dropdown-item save-continue" type="submit" name="submit" value="SaveAndContinue">@T["and continue"]</button>
+            </div>
+        </div>
     </div>
 </form>

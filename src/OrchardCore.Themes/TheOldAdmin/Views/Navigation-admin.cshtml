@@ -1,0 +1,31 @@
+@using OrchardCore.DisplayManagement
+@inject OrchardCore.Settings.ISiteService siteService
+@using OrchardCore.Entities
+@using OrchardCore.Admin.Models
+@using OrchardCore.Navigation
+@{
+    var adminSettings = (await siteService.GetSiteSettingsAsync()).GetOrCreate<AdminSettings>();
+    TagBuilder tag = Tag(Model, "ul");
+    tag.Attributes["Id"] = NavigationConstants.AdminMenuId;
+
+    // The items are rendered through their static type, to not dispatch each call dynamically.
+    foreach (var item in ((IShape)Model).Items)
+    {
+        tag.InnerHtml.AppendHtml(await DisplayAsync(item));
+    }
+}
+@if (adminSettings.DisplayMenuFilter)
+{
+    <div class="nav-filter">
+        <i class="fa-solid fa-magnifying-glass nav-filter-icon" aria-hidden="true"></i>
+        <input id="filter" class="form-control" placeholder="@T["Filter"]" type="search" autocomplete="off" aria-label="@T["Filter the admin menu"]" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-html="true" title="Ctrl+Shift+F" />
+    </div>
+}
+<nav id="left-nav" aria-label="@T["Admin menu"]" data-menu-behavior="@(adminSettings.MenuBehavior == AdminMenuBehavior.Focused ? "focused" : "persistent")">
+    @tag
+</nav>
+@if (adminSettings.DisplayMenuFilter)
+{
+    <script asp-src="~/TheOldAdmin/js/navigation-admin/NavigationAdmin.min.js" debug-src="~/TheOldAdmin/js/navigation-admin/NavigationAdmin.js" at="Foot" type="module"></script>
+}
+<!-- Menu rendered on @DateTime.UtcNow.ToString("r") -->

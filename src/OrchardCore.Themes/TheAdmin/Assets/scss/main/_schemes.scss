@@ -1,0 +1,322 @@
+// ---------------------------------------------------------------------------
+// Color schemes.
+//
+// A scheme is four colors and a hue:
+//  - primary: actions, links and the current page;
+//  - deep   : headings and the top of the menu;
+//  - ink    : the bottom of the menu, the darkest surface;
+//  - accent : links and highlights on dark surfaces;
+//  - hue and saturation: the tint of the page, the borders and the dark mode surfaces, so that every surface
+//    belongs to the scheme instead of being a neutral gray (or black, in dark mode).
+//
+// Every '--ta-*' color token, and through them Bootstrap's own variables, is derived from those, for the light
+// and the dark mode. The scheme a user picks is rendered on <html> as 'data-ta-scheme'. This file derives the
+// stylesheet's fallback (':root'); AdminSchemePalette.cs, AdminSchemeStylesheet.cs and
+// TheAdminSchemeTokens.cs derive the same tokens for every scheme record, and a parity test keeps both in step.
+// ---------------------------------------------------------------------------
+
+@use "sass:color";
+@use "sass:map";
+@use "sass:math";
+@use "sass:string";
+
+$default-scheme: "gray";
+
+// The stylesheet's fallback: Gray, the default scheme. Every scheme a site uses, Gray included, is a record its admins
+// edit (Design > Themes > Schemes); the server writes their rules with the same derivation, in C#,
+// in a stylesheet of its own loaded after this one. These rules only apply when a site has no scheme at all, or
+// before its schemes are seeded.
+$schemes: (
+    "gray": (primary: #0d6efd, deep: #212529, ink: #212529, accent: #6ea8fe, hue: 210, saturation: 0.12, menu: light, page: #fff,
+        tint: #495057, tint-dark: #adb5bd, toolbar: #495057),
+);
+
+// The value of an optional key of a scheme.
+@function option($scheme, $key, $default) {
+    @if map.has-key($scheme, $key) {
+        @return map.get($scheme, $key);
+    }
+
+    @return $default;
+}
+
+@function rgb-triplet($color) {
+    @return math.round(color.channel($color, "red", $space: rgb)) + ", " +
+        math.round(color.channel($color, "green", $space: rgb)) + ", " +
+        math.round(color.channel($color, "blue", $space: rgb));
+}
+
+@function tone($hue, $saturation, $lightness) {
+    @return color.to-space(hsl($hue, $saturation, $lightness), rgb);
+}
+
+// WCAG 2 contrast
+// ---------------
+// Every color that text or a control is drawn in is checked against the surfaces it is drawn on, and moved toward a
+// darker (or, in dark mode, lighter) tone until it passes: 4.5:1 for text, 3:1 for the boundaries of controls and for
+// focus indicators (WCAG 2.2 AA, 1.4.3 and 1.4.11). A small margin covers rounding in the browsers.
+$text-contrast: 4.6;
+$ui-contrast: 3.1;
+
+@function channel-luminance($value) {
+    $v: math.div($value, 255);
+
+    @if $v <= 0.03928 {
+        @return math.div($v, 12.92);
+    }
+
+    @return math.pow(math.div($v + 0.055, 1.055), 2.4);
+}
+
+@function luminance($color) {
+    $c: color.to-space($color, rgb);
+
+    @return 0.2126 * channel-luminance(color.channel($c, "red", $space: rgb)) +
+        0.7152 * channel-luminance(color.channel($c, "green", $space: rgb)) +
+        0.0722 * channel-luminance(color.channel($c, "blue", $space: rgb));
+}
+
+@function contrast($a, $b) {
+    $la: luminance($a);
+    $lb: luminance($b);
+
+    @return math.div(math.max($la, $lb) + 0.05, math.min($la, $lb) + 0.05);
+}
+
+@function min-contrast($color, $backgrounds) {
+    $lowest: 21;
+
+    @each $background in $backgrounds {
+        $lowest: math.min($lowest, contrast($color, $background));
+    }
+
+    @return $lowest;
+}
+
+// Mixes $color with $target, 2% at a time, until it reaches $min against every background.
+@function ensure-contrast($color, $backgrounds, $min, $target) {
+    $result: $color;
+    $step: 0;
+
+    @while min-contrast($result, $backgrounds) < $min and $step < 50 {
+        $step: $step + 1;
+        $result: color.mix($target, $color, $step * 2%);
+    }
+
+    @return color.to-space($result, rgb);
+}
+
+// The color of text and marks drawn on the primary (buttons, the current page, checked boxes): white, or the
+// scheme's 'on-primary'.
+@function on-primary($scheme) {
+    @return option($scheme, on-primary, #fff);
+}
+
+// Hovering and pressing move the primary away from its text color: darker under white text, lighter under dark text,
+// so the text keeps its contrast.
+@function press($primary, $scheme, $toward-dark, $amount) {
+    @if luminance(on-primary($scheme)) > 0.5 {
+        @return color.mix($toward-dark, $primary, $amount);
+    }
+
+    @return color.mix(#fff, $primary, $amount);
+}
+
+@function if-light-text($scheme, $when-light, $when-dark) {
+    @if luminance(on-primary($scheme)) > 0.5 {
+        @return $when-light;
+    }
+
+    @return $when-dark;
+}
+
+@function svg-color($color) {
+    @return "%23" + string.slice("#{color.to-space($color, rgb)}", 2);
+}
+
+// The icons of checked controls are Bootstrap's artwork (MIT, see THIRD-PARTY-NOTICES.txt), drawn in the color of
+// text on the primary.
+@mixin on-primary-tokens($scheme) {
+    $on: on-primary($scheme);
+    $c: svg-color($on);
+
+    --ta-on-primary: #{$on};
+    --ta-check-icon: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='#{$c}' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='m6 10 3 3 6-6'/%3e%3c/svg%3e");
+    --ta-indeterminate-icon: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='#{$c}' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='M6 10h8'/%3e%3c/svg%3e");
+    --ta-radio-icon: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='2' fill='#{$c}'/%3e%3c/svg%3e");
+    --ta-switch-icon: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='#{$c}'/%3e%3c/svg%3e");
+}
+
+// The menu: dark with light text, or (a scheme with 'menu: light') light gray with dark text, like TheAdmin's.
+@mixin menu-dark($scheme, $primary) {
+    --ta-menu-strong: #fff;
+    --ta-menu-strong-rgb: 255, 255, 255;
+    --ta-menu-color: rgba(255, 255, 255, 0.78);
+    --ta-menu-muted: rgba(255, 255, 255, 0.72);
+    --ta-menu-hover-bg: rgba(255, 255, 255, 0.08);
+    --ta-menu-border: rgba(255, 255, 255, 0.08);
+    --ta-menu-active-bg: #{$primary};
+    --ta-menu-active-color: #{on-primary($scheme)};
+    --ta-menu-accent: #{map.get($scheme, accent)};
+    --ta-menu-accent-rgb: #{rgb-triplet(map.get($scheme, accent))};
+}
+
+@mixin menu-light($primary) {
+    $menu: #f1f3f5;
+
+    --ta-menu-strong: #212529;
+    --ta-menu-strong-rgb: 33, 37, 41;
+    --ta-menu-color: #495057;
+    --ta-menu-muted: #5c636a;
+    --ta-menu-hover-bg: rgba(73, 80, 87, 0.08);
+    --ta-menu-border: #dee2e6;
+    --ta-menu-active-bg: #{color.mix(#495057, $menu, 14%)};
+    --ta-menu-active-color: #212529;
+    --ta-menu-accent: #{ensure-contrast($primary, ($menu,), $ui-contrast, #000)};
+    --ta-menu-accent-rgb: #{rgb-triplet(ensure-contrast($primary, ($menu,), $ui-contrast, #000))};
+    --ta-menu-bg: #{$menu};
+    --ta-menu-gradient: linear-gradient(180deg, #{$menu} 0%, #{$menu} 100%);
+}
+
+// Light mode, and the tokens both modes share.
+@mixin scheme-light($scheme) {
+    $deep: map.get($scheme, deep);
+    $ink: map.get($scheme, ink);
+    // White text on the buttons and on the current page of the menu.
+    $primary: ensure-contrast(map.get($scheme, primary), (on-primary($scheme),), $text-contrast, $ink);
+    $accent: map.get($scheme, accent);
+    $hue: map.get($scheme, hue);
+    $k: map.get($scheme, saturation);
+    $primary-hover: press($primary, $scheme, $deep, 22%);
+    $primary-active: press($primary, $scheme, $deep, 34%);
+    $page: option($scheme, page, tone($hue, 50% * $k, 97%));
+    $surface-muted: tone($hue, 60% * $k, 98.2%);
+    // The page is a soft gradient from a hint of the primary to a hint of the accent (a scheme with a 'tint' uses it
+    // for both ends); text is checked against both ends too.
+    $tint-start: color.mix(option($scheme, tint, $primary), $page, 7%);
+    $tint-end: color.mix(option($scheme, tint, $accent), $page, 9%);
+    // The two header layers of a list: its toolbar, a bar in the scheme's primary (or its 'toolbar') with the text
+    // color of the primary on it, and its column headers, a light shade between the page and the white records.
+    $toolbar: ensure-contrast(option($scheme, toolbar, $primary), (on-primary($scheme),), $text-contrast, $ink);
+    // A faint wash of the primary color, like the stripes of the tables, rather than a near gray.
+    $list-header: color.mix($primary, #fff, 6%);
+    // A hovered row: a light tint of the primary, set apart from the neutral page and the white records.
+    $row-hover: color.mix($primary, #fff, 8%);
+    $surfaces: ($page, #fff, $surface-muted, $tint-start, $tint-end, $list-header, $row-hover);
+    $border: tone($hue, 38% * $k, 92%);
+    $menu-middle: color.mix($deep, $ink, 50%);
+    $link: ensure-contrast($primary, $surfaces, $text-contrast, $ink);
+
+    --ta-primary: #{$primary};
+    --ta-primary-rgb: #{rgb-triplet($primary)};
+    --ta-primary-hover: #{$primary-hover};
+    --ta-primary-active: #{$primary-active};
+    --ta-primary-subtle: #{color.mix($primary, #fff, 20%)};
+    --ta-primary-border-subtle: #{color.mix($primary, #fff, 40%)};
+    --ta-primary-emphasis: #{color.mix($primary, #000, 40%)};
+    --ta-navy: #{$deep};
+    --ta-navy-rgb: #{rgb-triplet($deep)};
+    --ta-ink: #{$ink};
+    --ta-sky: #{$accent};
+    --ta-sky-rgb: #{rgb-triplet($accent)};
+    --ta-tint: #{color.mix($primary, #fff, 9%)};
+    --ta-link: #{$link};
+    --ta-link-rgb: #{rgb-triplet($link)};
+    --ta-focus-color: #{$link};
+    --ta-link-hover: #{$deep};
+    --ta-link-hover-rgb: #{rgb-triplet($deep)};
+    --ta-page-bg: #{$page};
+    --ta-surface: #ffffff;
+    --ta-surface-rgb: 255, 255, 255;
+    --ta-surface-muted: #{$surface-muted};
+    --ta-toolbar-bg: #{$toolbar};
+    --ta-toolbar-fg: #{on-primary($scheme)};
+    --ta-toolbar-fg-rgb: #{rgb-triplet(on-primary($scheme))};
+    // Hovering a control on the bar moves it away from the text color: darker under white text, lighter under dark.
+    --ta-toolbar-hover-bg: #{if-light-text($scheme, rgba(#000, 0.16), rgba(#fff, 0.3))};
+    --ta-list-header-bg: #{$list-header};
+    --ta-row-hover-bg: #{$row-hover};
+    --ta-border: #{$border};
+    // The outline of fields, selects and check boxes, which is what shows they are there.
+    --ta-control-border: #{ensure-contrast($border, $surfaces, $ui-contrast, $deep)};
+    --ta-control-checked-border: #{ensure-contrast($primary, $surfaces, $ui-contrast, $ink)};
+
+    @include on-primary-tokens($scheme);
+    --ta-muted: #{ensure-contrast(#6d7384, $surfaces, $text-contrast, #000)};
+    --ta-heading: #{$deep};
+    --ta-label: #{tone($hue, 32% * $k, 35%)};
+    --ta-topbar-color: #{tone($hue, 28% * $k, 28%)};
+    --ta-page-gradient: linear-gradient(135deg, #{$tint-start} 0%, #{$page} 48%, #{$tint-end} 100%);
+
+    @if map.get($scheme, menu) == light {
+        @include menu-light($primary);
+    } @else {
+        @include menu-dark($scheme, $primary);
+        --ta-menu-bg: #{$menu-middle};
+        --ta-menu-gradient: linear-gradient(180deg, #{$deep} 0%, #{$menu-middle} 48%, #{$ink} 100%);
+    }
+}
+
+// Dark mode: the surfaces stay in the hue of the scheme, they never turn black.
+@mixin scheme-dark($scheme) {
+    $ink: map.get($scheme, ink);
+    $primary: ensure-contrast(map.get($scheme, primary), (on-primary($scheme),), $text-contrast, $ink);
+    $accent: map.get($scheme, accent);
+    $hue: map.get($scheme, hue);
+    $k: map.get($scheme, saturation);
+    $page: tone($hue, 57% * $k, 13.5%);
+    $surface: tone($hue, 57% * $k, 18.5%);
+    $surface-muted: tone($hue, 56% * $k, 21.6%);
+    $tint-start: color.mix(option($scheme, tint-dark, $accent), $page, 8%);
+    $tint-end: color.mix(option($scheme, tint-dark, $primary), $page, 12%);
+    $list-header: tone($hue, 50% * $k, 21%);
+    $row-hover: color.mix($primary, $surface, 16%);
+    $surfaces: ($page, $surface, $surface-muted, $tint-start, $tint-end, $list-header, $row-hover);
+    $border: tone($hue, 49% * $k, 28%);
+    $body-color: tone($hue, 35% * $k, 92%);
+    $link: ensure-contrast($accent, $surfaces, $text-contrast, #fff);
+
+    // Hovering and pressing darken the buttons in both modes, so their white text keeps its contrast.
+    --ta-primary-hover: #{press($primary, $scheme, $ink, 14%)};
+    --ta-primary-active: #{press($primary, $scheme, $ink, 24%)};
+    --ta-primary-subtle: #{color.mix($primary, tone($hue, 57% * $k, 12%), 22%)};
+    --ta-primary-border-subtle: #{color.mix($primary, tone($hue, 57% * $k, 12%), 50%)};
+    --ta-primary-emphasis: #{color.mix($accent, #fff, 60%)};
+    --ta-link: #{$link};
+    --ta-link-rgb: #{rgb-triplet($link)};
+    --ta-link-hover: #{color.mix($link, #fff, 70%)};
+    --ta-link-hover-rgb: #{rgb-triplet(color.mix($link, #fff, 70%))};
+    --ta-focus-color: #{$link};
+    --ta-heading: #{tone($hue, 45% * $k, 94%)};
+    --ta-page-bg: #{$page};
+    --ta-surface: #{$surface};
+    --ta-surface-rgb: #{rgb-triplet($surface)};
+    --ta-surface-muted: #{$surface-muted};
+    --ta-list-header-bg: #{$list-header};
+    --ta-row-hover-bg: #{$row-hover};
+    --ta-secondary-bg: #{tone($hue, 55% * $k, 23.3%)};
+    --ta-border: #{$border};
+    --ta-control-border: #{ensure-contrast($border, $surfaces, $ui-contrast, #fff)};
+    // A checked box keeps the primary fill under its white mark, outlined in the accent so it stands out.
+    --ta-control-checked-border: #{ensure-contrast($accent, $surfaces, $ui-contrast, #fff)};
+    --ta-muted: #{ensure-contrast(tone($hue, 29% * $k, 70%), $surfaces, $text-contrast, #fff)};
+    --ta-label: #{tone($hue, 33% * $k, 79%)};
+    --ta-body-color: #{$body-color};
+    --ta-body-color-rgb: #{rgb-triplet($body-color)};
+    --ta-topbar-bg: #{tone($hue, 56% * $k, 17%)};
+    --ta-topbar-color: #{tone($hue, 30% * $k, 83%)};
+    --ta-menu-bg: #{tone($hue, 70% * $k, 17%)};
+    --ta-menu-gradient: linear-gradient(180deg, #{tone($hue, 68% * $k, 23.5%)} 0%, #{tone($hue, 70% * $k, 18%)} 55%, #{tone($hue, 71% * $k, 14.7%)} 100%);
+    --ta-page-gradient: linear-gradient(135deg, #{$tint-start} 0%, #{$page} 48%, #{$tint-end} 100%);
+
+    // The menu is dark in dark mode, in every scheme.
+    @include menu-dark($scheme, $primary);
+}
+
+:root {
+    @include scheme-light(map.get($schemes, $default-scheme));
+}
+
+:root[data-bs-theme="dark"] {
+    @include scheme-dark(map.get($schemes, $default-scheme));
+}

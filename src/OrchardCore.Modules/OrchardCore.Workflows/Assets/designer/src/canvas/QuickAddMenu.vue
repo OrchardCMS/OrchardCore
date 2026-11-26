@@ -96,6 +96,7 @@ onBeforeUnmount(() => document.removeEventListener("pointerdown", onDocumentPoin
         <div class="card-body p-2">
             <div class="wfd-quick-add-title">{{ t("AddNextActivity", outcome) }}</div>
             <input
+                :id="`${ids}-search`"
                 ref="input"
                 v-model="query"
                 type="search"

@@ -65,6 +65,25 @@ From a `Content` template, you can reference a field's value like this
 
 From a field shape (see Shape Type in the table listing all the fields) you can also access properties specific to each view model.
 
+### Default field templates
+
+The default template of each field renders the display name of the field next to its value, localized with the `Content Fields:{PartName}` context of the data localizer:
+
+- On the front end, the `{FieldType}.cshtml` template, e.g. `TextField.cshtml`, renders the name in a `<span class="name">` element and the value in a `value` element:
+
+    ``` html
+    <div class="field field-type-textfield field-name-lead-rating">
+        <span class="name">Rating</span>
+        <span class="value">Hot</span>
+    </div>
+    ```
+
+- In the admin, the `{FieldType}.DetailAdmin.cshtml` template, e.g. `TextField.DetailAdmin.cshtml`, renders the field as a row of the admin theme, with the name in an `ocat-label` element and the value in an `ocat-end` element. A field is rendered in the `DetailAdmin` display type when a placement places it there. The display modes have their own `DetailAdmin` template, named after their alternate, e.g. `TextField-Header.Display.DetailAdmin.cshtml`, which renders the value in the same row.
+
+On the front end, the `TaxonomyField-Tags` and `UserPickerField-UserNames` display modes render the name too, and the `TextField-Header` display mode renders the value alone, as a heading.
+
+To render a value without its name, override the template of the field in your theme, for a single field with an alternate such as `{PartType}-{FieldName}.cshtml`, e.g. `RawHtml-Content.liquid` in **TheBlogTheme**.
+
 ### Common field properties
 
 The convention for a field view model is to also expose these properties:
@@ -819,3 +838,23 @@ Example recipe snippet for creating fields:
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/NDUjn5_KdEM" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/bayT58i7DVY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
+This video covers the text, number, date and yes-or-no fields.
+
+<!-- video:content-fields-overview -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/mC1uIlK9bQs" title="Content Fields: Text, Numbers, Dates and Yes or No" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video covers the link, rich text, Markdown and YouTube fields.
+
+<!-- video:content-fields-links-html-youtube -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/t495H9BAZVA" title="Content Fields: Links, Rich Text, Markdown and YouTube Videos" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video shows how field editors and display modes give one field many faces.
+
+<!-- video:content-fields-editors -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/zujP0UIdETM" title="Field Editors and Display Modes: One Field, Many Faces" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video relates content items to each other and to users with the Content Picker and User Picker fields.
+
+<!-- video:content-picker-fields -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/6a2SSz2Ky60" title="Content Picker and User Picker Fields: Relate Content Items" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

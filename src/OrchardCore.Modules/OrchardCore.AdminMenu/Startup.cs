@@ -9,7 +9,6 @@ using OrchardCore.AdminMenu.Drivers;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
-using OrchardCore.Localization;
 using OrchardCore.Localization.Data;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
@@ -24,12 +23,18 @@ public sealed class Startup : StartupBase
     {
         services.AddPermissionProvider<Permissions>();
         services.AddNavigationProvider<AdminMenu>();
-        services.AddScoped<IJSLocalizer, AdminMenuJSLocalizer>();
 
         services.AddScoped<IAdminMenuService, AdminMenuService>();
 
         // Builds the rows of the admin menus list.
         services.AddDisplayDriver<AdminMenuEntry, AdminMenuEntryDisplayDriver>();
+
+        // Build the editors of the pages creating and editing an admin menu.
+        services.AddDisplayDriver<AdminMenuCreateViewModel, AdminMenuCreateDisplayDriver>();
+        services.AddDisplayDriver<AdminMenuEditViewModel, AdminMenuEditDisplayDriver>();
+
+        // Adds the position of an existing admin node to its editor.
+        services.AddDisplayDriver<MenuItem, AdminNodePositionDisplayDriver>();
         services.AddScoped<IAdminMenuAccessor, AdminMenuAccessor>();
         services.AddScoped<AdminMenuNavigationProvidersCoordinator>();
 

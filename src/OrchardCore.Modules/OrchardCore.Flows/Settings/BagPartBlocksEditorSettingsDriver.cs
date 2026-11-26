@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Handlers;
@@ -9,6 +10,13 @@ namespace OrchardCore.Flows.Settings;
 
 public sealed class BagPartBlocksEditorSettingsDriver : ContentTypePartDefinitionDisplayDriver<BagPart>
 {
+    internal readonly IStringLocalizer S;
+
+    public BagPartBlocksEditorSettingsDriver(IStringLocalizer<BagPartBlocksEditorSettingsDriver> stringLocalizer)
+    {
+        S = stringLocalizer;
+    }
+
     public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
     {
         return Initialize<BagPartBlocksEditorSettingsViewModel>("BagPartBlocksEditorSettings_Edit", model =>
@@ -16,7 +24,7 @@ public sealed class BagPartBlocksEditorSettingsDriver : ContentTypePartDefinitio
             var settings = contentTypePartDefinition.GetSettings<BagPartBlocksEditorSettings>();
             model.AddButtonText = settings.AddButtonText;
             model.ModalTitleText = settings.ModalTitleText;
-        }).Location("Editor");
+        }).Location(l => l.Zone("Editor").Card(S["Editor"], "30"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)

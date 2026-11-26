@@ -12,8 +12,8 @@
 </div>
 
 <div class="ocat-wrapper" asp-validation-class-for="Roles">
-    <label asp-for="Roles" class="ocat-label">@T["Roles"]</label>
-    <div class="ocat-end">
+    <span id="@Html.IdFor(m => m.Roles)_Label" class="ocat-label">@T["Roles"]</span>
+    <div class="ocat-end" role="group" aria-labelledby="@Html.IdFor(m => m.Roles)_Label">
         @await Component.InvokeAsync("SelectRoles", new { selectedRoles = Model.Roles, htmlName = Html.NameFor(m => m.Roles), except = new[] { OrchardCoreConstants.Roles.Anonymous, OrchardCoreConstants.Roles.Authenticated } })
         <span asp-validation-for="Roles"></span>
         <span class="hint">@T["The 'InRole' outcome will be triggered if the user has at least one of the selected roles."]</span>

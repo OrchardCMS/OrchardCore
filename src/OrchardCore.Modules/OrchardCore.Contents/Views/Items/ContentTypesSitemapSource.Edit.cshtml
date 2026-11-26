@@ -1,10 +1,5 @@
 @model ContentTypesSitemapSourceViewModel
 @using OrchardCore.Sitemaps.Models
-<div class="ocat-wrapper">
-    <div class="ocat-end-offset">
-        <h5>@T["Content Types"]</h5>
-    </div>
-</div>
 
 @*Panel Switcher*@
 <div class="ocat-wrapper">
@@ -27,191 +22,164 @@
 </div>
 
 @*Index All Panel*@
-<div id="index-all-row" class="row @(Model.IndexAll ? "" : "collapse")">
-    <div class="col-6">
-        <div class="card mb-4">
-            <div class="card-header">
-                @T["Index All Content Types"]
-            </div>
-            <div class="card-body">
-                <div class="ocat-wrapper" asp-validation-class-for="ChangeFrequency">
-                    <label asp-for="ChangeFrequency" class="ocat-label">@T["Change Frequency"] </label>
-                    <div class="ocat-end">
-                        <select asp-for="ChangeFrequency" class="form-select w-25" asp-items="Html.GetEnumSelectList<ChangeFrequency>()"></select>
-                        <span class="hint">@T["The default frequency with which these content types are likely to change."]</span>
-                    </div>
-                </div>
-                <div class="ocat-wrapper" asp-validation-class-for="Priority">
-                    <label asp-for="Priority" class="ocat-label">@T["Priority"] </label>
-                    <div class="ocat-end">
-                        <select asp-for="Priority" class="form-select w-25">
-                            <option value="0">@T["0.0"]</option>
-                            <option value="1">@T["0.1"]</option>
-                            <option value="2">@T["0.2"]</option>
-                            <option value="3">@T["0.3"]</option>
-                            <option value="4">@T["0.4"]</option>
-                            <option value="5">@T["0.5"]</option>
-                            <option value="6">@T["0.6"]</option>
-                            <option value="7">@T["0.7"]</option>
-                            <option value="8">@T["0.8"]</option>
-                            <option value="9">@T["0.9"]</option>
-                            <option value="10">@T["1.0"]</option>
-                        </select>
-                        <span class="hint">@T["The default priority of these content types relative to other content on your site."]</span>
-                    </div>
-                </div>
-            </div>
+<div id="index-all-row" class="@(Model.IndexAll ? "" : "collapse")">
+    <div class="ocat-wrapper" asp-validation-class-for="ChangeFrequency">
+        <label asp-for="ChangeFrequency" class="ocat-label">@T["Change Frequency"] </label>
+        <div class="ocat-end">
+            <select asp-for="ChangeFrequency" class="form-select w-25" asp-items="Html.GetEnumSelectList<ChangeFrequency>()"></select>
+            <span class="hint">@T["The default frequency with which these content types are likely to change."]</span>
+        </div>
+    </div>
+    <div class="ocat-wrapper" asp-validation-class-for="Priority">
+        <label asp-for="Priority" class="ocat-label">@T["Priority"] </label>
+        <div class="ocat-end">
+            <select asp-for="Priority" class="form-select w-25">
+                <option value="0">@T["0.0"]</option>
+                <option value="1">@T["0.1"]</option>
+                <option value="2">@T["0.2"]</option>
+                <option value="3">@T["0.3"]</option>
+                <option value="4">@T["0.4"]</option>
+                <option value="5">@T["0.5"]</option>
+                <option value="6">@T["0.6"]</option>
+                <option value="7">@T["0.7"]</option>
+                <option value="8">@T["0.8"]</option>
+                <option value="9">@T["0.9"]</option>
+                <option value="10">@T["1.0"]</option>
+            </select>
+            <span class="hint">@T["The default priority of these content types relative to other content on your site."]</span>
         </div>
     </div>
 </div>
 
 @*Content Types Selection Panel*@
-<div id="index-selected-row" class="row @(Model.IndexAll || Model.LimitItems ? "collapse" : "")">
-    <div class="col col-xl-9">
-        <div class="card mb-4">
-            <div class="card-header">
-                @T["Select Content Types"]
-            </div>
-            <div class="card-body px-4">
-                <ul class="list-group">
-                    @for (int i = 0; i < Model.ContentTypes.Length; i++)
-                    {
-                        var checkd = Model.ContentTypes[i].IsChecked;
-                        var notChecked = !checkd;
-                        <li class="list-group-item d-flex row px-0">
-                            @* Select content types *@
-                            <div class="col-12 col-md-4">
-                                <input type="hidden" name="@Html.NameFor(m => m.ContentTypes[i].ContentTypeName)"
-                                       value="@Model.ContentTypes[i].ContentTypeName" />
-                                <div class="ocat-wrapper">
-                                    <div class="ocat-end-offset">
-                                        <div class="form-check">
-                                            <input asp-for="ContentTypes[i].IsChecked" type="checkbox" class="form-check-input content-type-checkbox" />
-                                            <label asp-for="ContentTypes[i].IsChecked" class="form-check-label">@Model.ContentTypes[i].ContentTypeDisplayName</label>
-                                        </div>
-                                    </div>
-                                </div>
+<div id="index-selected-row" class="@(Model.IndexAll || Model.LimitItems ? "collapse" : "")">
+    <ul class="list-group">
+        @for (int i = 0; i < Model.ContentTypes.Length; i++)
+        {
+            var checkd = Model.ContentTypes[i].IsChecked;
+            var notChecked = !checkd;
+            <li class="list-group-item d-flex row px-0">
+                @* Select content types *@
+                <div class="col-12 col-md-4">
+                    <input type="hidden" name="@Html.NameFor(m => m.ContentTypes[i].ContentTypeName)"
+                           value="@Model.ContentTypes[i].ContentTypeName" />
+                    <div class="ocat-wrapper">
+                        <div class="ocat-end-offset">
+                            <div class="form-check">
+                                <input asp-for="ContentTypes[i].IsChecked" type="checkbox" class="form-check-input content-type-checkbox" />
+                                <label asp-for="ContentTypes[i].IsChecked" class="form-check-label">@Model.ContentTypes[i].ContentTypeDisplayName</label>
                             </div>
-                            <div class="col-12 col-md-4">
-                                <div class="ocat-wrapper" asp-validation-class-for="ContentTypes[i].ChangeFrequency">
-                                    <label asp-for="ContentTypes[i].ChangeFrequency" class="ocat-label">@T["Change Frequency"] </label>
-                                    <div class="ocat-end">
-                                        <select asp-for="ContentTypes[i].ChangeFrequency" class="form-select" asp-items="Html.GetEnumSelectList<ChangeFrequency>()" disabled="@notChecked"></select>
-                                        <span class="hint">@T["The default frequency these content types are likely to change."]</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-12 col-md-4">
-                                <div class="ocat-wrapper" asp-validation-class-for="ContentTypes[i].Priority">
-                                    <label asp-for="ContentTypes[i].Priority" class="ocat-label">@T["Priority"] </label>
-                                    <div class="ocat-end">
-                                        <select asp-for="ContentTypes[i].Priority" class="form-select" disabled="@notChecked">
-                                            <option value="0">@T["0.0"]</option>
-                                            <option value="1">@T["0.1"]</option>
-                                            <option value="2">@T["0.2"]</option>
-                                            <option value="3">@T["0.3"]</option>
-                                            <option value="4">@T["0.4"]</option>
-                                            <option value="5">@T["0.5"]</option>
-                                            <option value="6">@T["0.6"]</option>
-                                            <option value="7">@T["0.7"]</option>
-                                            <option value="8">@T["0.8"]</option>
-                                            <option value="9">@T["0.9"]</option>
-                                            <option value="10">@T["1.0"]</option>
-                                        </select>
-                                        <span class="hint">@T["The default priority of these content types relative to other content on your site."]</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
-                    }
-                </ul>
-                <span class="hint">@T["The content types to add to the sitemap."]</span>
-            </div>
-        </div>
-    </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-4">
+                    <div class="ocat-wrapper" asp-validation-class-for="ContentTypes[i].ChangeFrequency">
+                        <label asp-for="ContentTypes[i].ChangeFrequency" class="ocat-label">@T["Change Frequency"] </label>
+                        <div class="ocat-end">
+                            <select asp-for="ContentTypes[i].ChangeFrequency" class="form-select" asp-items="Html.GetEnumSelectList<ChangeFrequency>()" disabled="@notChecked"></select>
+                            <span class="hint">@T["The default frequency these content types are likely to change."]</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-4">
+                    <div class="ocat-wrapper" asp-validation-class-for="ContentTypes[i].Priority">
+                        <label asp-for="ContentTypes[i].Priority" class="ocat-label">@T["Priority"] </label>
+                        <div class="ocat-end">
+                            <select asp-for="ContentTypes[i].Priority" class="form-select" disabled="@notChecked">
+                                <option value="0">@T["0.0"]</option>
+                                <option value="1">@T["0.1"]</option>
+                                <option value="2">@T["0.2"]</option>
+                                <option value="3">@T["0.3"]</option>
+                                <option value="4">@T["0.4"]</option>
+                                <option value="5">@T["0.5"]</option>
+                                <option value="6">@T["0.6"]</option>
+                                <option value="7">@T["0.7"]</option>
+                                <option value="8">@T["0.8"]</option>
+                                <option value="9">@T["0.9"]</option>
+                                <option value="10">@T["1.0"]</option>
+                            </select>
+                            <span class="hint">@T["The default priority of these content types relative to other content on your site."]</span>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        }
+    </ul>
+    <span class="hint">@T["The content types to add to the sitemap."]</span>
 </div>
 
 @*Limited Content Types Selection panel*@
-<div id="index-limit-row" class="row @(Model.IndexAll || !Model.LimitItems ? "collapse" : "")">
-    <div class="col col-xl-9">
-        <div class="card mb-4">
-            <div class="card-header">
-                @T["Select Content Types"]
-            </div>
-            <div class="card-body px-4">
-                <ul class="list-group">
-                    @for (int i = 0; i < Model.LimitedContentTypes.Length; i++)
-                    {
-                        var checkd = string.Equals(Model.LimitedContentTypes[i].ContentTypeName, Model.LimitedContentType);
-                        var notChecked = !checkd;
-                        <li class="list-group-item d-flex row px-0">
-                            @* Select content types *@
-                            <div class="col-12 col-md-3">
-                                <input type="hidden" name="@Html.NameFor(m => m.LimitedContentTypes[i].ContentTypeName)"
-                                       value="@Model.LimitedContentTypes[i].ContentTypeName" />
-                                <div class="ocat-wrapper">
-                                    <div class="ocat-end-offset">
-                                        <div class="form-check">
-                                            <input type="radio" id="LimitedContentTypes_@i" asp-for="LimitedContentType" value="@Model.LimitedContentTypes[i].ContentTypeName" class="form-check-input content-type-radio" />
-                                            <label for="LimitedContentTypes_@i" class="form-check-label">@Model.LimitedContentTypes[i].ContentTypeDisplayName</label>
-                                        </div>
-                                    </div>
-                                </div>
+<div id="index-limit-row" class="@(Model.IndexAll || !Model.LimitItems ? "collapse" : "")">
+    <ul class="list-group">
+        @for (int i = 0; i < Model.LimitedContentTypes.Length; i++)
+        {
+            var checkd = string.Equals(Model.LimitedContentTypes[i].ContentTypeName, Model.LimitedContentType);
+            var notChecked = !checkd;
+            <li class="list-group-item d-flex row px-0">
+                @* Select content types *@
+                <div class="col-12 col-md-3">
+                    <input type="hidden" name="@Html.NameFor(m => m.LimitedContentTypes[i].ContentTypeName)"
+                           value="@Model.LimitedContentTypes[i].ContentTypeName" />
+                    <div class="ocat-wrapper">
+                        <div class="ocat-end-offset">
+                            <div class="form-check">
+                                <input type="radio" id="LimitedContentTypes_@i" asp-for="LimitedContentType" value="@Model.LimitedContentTypes[i].ContentTypeName" class="form-check-input content-type-radio" />
+                                <label for="LimitedContentTypes_@i" class="form-check-label">@Model.LimitedContentTypes[i].ContentTypeDisplayName</label>
                             </div>
-                            <div class="col-12 col-md-3 ">
-                                <div class="ocat-wrapper" asp-validation-class-for="LimitedContentTypes[i].ChangeFrequency">
-                                    <label asp-for="LimitedContentTypes[i].ChangeFrequency" class="ocat-label">@T["Change Frequency"] </label>
-                                    <div class="ocat-end">
-                                        <select asp-for="LimitedContentTypes[i].ChangeFrequency" class="form-select" asp-items="Html.GetEnumSelectList<ChangeFrequency>()" disabled="@notChecked"></select>
-                                        <span class="hint">@T["The default frequency these content types are likely to change."]</span>
-                                    </div>
-                                </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-3 ">
+                    <div class="ocat-wrapper" asp-validation-class-for="LimitedContentTypes[i].ChangeFrequency">
+                        <label asp-for="LimitedContentTypes[i].ChangeFrequency" class="ocat-label">@T["Change Frequency"] </label>
+                        <div class="ocat-end">
+                            <select asp-for="LimitedContentTypes[i].ChangeFrequency" class="form-select" asp-items="Html.GetEnumSelectList<ChangeFrequency>()" disabled="@notChecked"></select>
+                            <span class="hint">@T["The default frequency these content types are likely to change."]</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-3">
+                    <div class="ocat-wrapper" asp-validation-class-for="LimitedContentTypes[i].Priority">
+                        <label asp-for="LimitedContentTypes[i].Priority" class="ocat-label">@T["Priority"] </label>
+                        <div class="ocat-end">
+                            <select asp-for="LimitedContentTypes[i].Priority" class="form-select" disabled="@notChecked">
+                                <option value="0">@T["0.0"]</option>
+                                <option value="1">@T["0.1"]</option>
+                                <option value="2">@T["0.2"]</option>
+                                <option value="3">@T["0.3"]</option>
+                                <option value="4">@T["0.4"]</option>
+                                <option value="5">@T["0.5"]</option>
+                                <option value="6">@T["0.6"]</option>
+                                <option value="7">@T["0.7"]</option>
+                                <option value="8">@T["0.8"]</option>
+                                <option value="9">@T["0.9"]</option>
+                                <option value="10">@T["1.0"]</option>
+                            </select>
+                            <span class="hint">@T["The default priority of these content types relative to other content on your site."]</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-3 limit-items">
+                    <div class="d-flex flex-column justify-content-center content-types-take-container">
+                        <div class="ocat-wrapper">
+                            <label asp-for="LimitedContentTypes[i].Skip" class="ocat-label pr-3">@T["Skip"]</label>
+                            <div class="ocat-end">
+                                <input asp-for="LimitedContentTypes[i].Skip" class="form-control w-100" readonly="@notChecked" />
                             </div>
-                            <div class="col-12 col-md-3">
-                                <div class="ocat-wrapper" asp-validation-class-for="LimitedContentTypes[i].Priority">
-                                    <label asp-for="LimitedContentTypes[i].Priority" class="ocat-label">@T["Priority"] </label>
-                                    <div class="ocat-end">
-                                        <select asp-for="LimitedContentTypes[i].Priority" class="form-select" disabled="@notChecked">
-                                            <option value="0">@T["0.0"]</option>
-                                            <option value="1">@T["0.1"]</option>
-                                            <option value="2">@T["0.2"]</option>
-                                            <option value="3">@T["0.3"]</option>
-                                            <option value="4">@T["0.4"]</option>
-                                            <option value="5">@T["0.5"]</option>
-                                            <option value="6">@T["0.6"]</option>
-                                            <option value="7">@T["0.7"]</option>
-                                            <option value="8">@T["0.8"]</option>
-                                            <option value="9">@T["0.9"]</option>
-                                            <option value="10">@T["1.0"]</option>
-                                        </select>
-                                        <span class="hint">@T["The default priority of these content types relative to other content on your site."]</span>
-                                    </div>
-                                </div>
+                        </div>
+                        <div class="ocat-wrapper">
+                            <label asp-for="LimitedContentTypes[i].Take" class="ocat-label pr-3">@T["Take"]</label>
+                            <div class="ocat-end">
+                                <input asp-for="LimitedContentTypes[i].Take" class="form-control w-100" readonly="@notChecked" />
                             </div>
-                            <div class="col-12 col-md-3 limit-items">
-                                <div class="d-flex flex-column justify-content-center content-types-take-container">
-                                    <div class="ocat-wrapper">
-                                        <label asp-for="LimitedContentTypes[i].Skip" class="ocat-label pr-3">@T["Skip"]</label>
-                                        <div class="ocat-end">
-                                            <input asp-for="LimitedContentTypes[i].Skip" class="form-control w-100" readonly="@notChecked" />
-                                        </div>
-                                    </div>
-                                    <div class="ocat-wrapper">
-                                        <label asp-for="LimitedContentTypes[i].Take" class="ocat-label pr-3">@T["Take"]</label>
-                                        <div class="ocat-end">
-                                            <input asp-for="LimitedContentTypes[i].Take" class="form-control w-100" readonly="@notChecked" />
-                                        </div>
-                                    </div>
-                                    <span class="hint">@T["Adjust quantity of content items in sitemap."]</span>
-                                </div>
-                            </div>
-                        </li>
-                    }
-                </ul>
-                <span class="hint">@T["The content types to add to the sitemap."]</span>
-            </div>
-        </div>
-    </div>
+                        </div>
+                        <span class="hint">@T["Adjust quantity of content items in sitemap."]</span>
+                    </div>
+                </div>
+            </li>
+        }
+    </ul>
+    <span class="hint">@T["The content types to add to the sitemap."]</span>
 </div>
 
 <script asp-src="~/OrchardCore.Contents/Scripts/content-types-sitemap-source/content-types-sitemap-source.min.js" debug-src="~/OrchardCore.Contents/Scripts/content-types-sitemap-source/content-types-sitemap-source.js" at="Foot" type="module"></script>

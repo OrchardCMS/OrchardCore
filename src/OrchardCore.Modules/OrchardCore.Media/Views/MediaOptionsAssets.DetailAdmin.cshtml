@@ -1,0 +1,39 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.Media.ViewModels
+
+@model ShapeViewModel<MediaOptionsViewModel>
+
+<div class="ocat-wrapper">
+    <div class="ocat-label">@T["Assets request path"]</div>
+    <div class="ocat-end">
+        <div><code>@Model.Value.Options.AssetsRequestPath</code></div>
+        <span class="hint">@T["The request path used to route asset files."]</span>
+    </div>
+</div>
+
+<div class="ocat-wrapper">
+    <div class="ocat-label">@T["Assets path"]</div>
+    <div class="ocat-end">
+        <div><code>@Model.Value.Options.AssetsPath</code></div>
+        <span class="hint">@T["The name of the folder used to store media assets inside the App_Data folder."]</span>
+    </div>
+</div>
+
+<div class="ocat-wrapper">
+    <div class="ocat-label">@T["Assets users folder"]</div>
+    <div class="ocat-end">
+        <div><code>@Model.Value.Options.AssetsUsersFolder</code></div>
+        <span class="hint">@T["The folder under AssetsPath used to store users own media assets."]</span>
+    </div>
+</div>
+
+<div class="ocat-wrapper">
+    <div class="ocat-label">@T["Thumbnails disabled"]</div>
+    <div class="ocat-end">
+        <div>
+            <i class="fa-solid @(Model.Value.Options.DisableThumbnails ? "fa-check text-success" : "fa-xmark text-danger")" aria-hidden="true"></i>
+            <span class="visually-hidden">@T[Model.Value.Options.DisableThumbnails ? "Yes" : "No"]</span>
+        </div>
+        <span class="hint">@T["Indicates whether the thumbnails (grid) view is disabled in the media gallery."]</span>
+    </div>
+</div>

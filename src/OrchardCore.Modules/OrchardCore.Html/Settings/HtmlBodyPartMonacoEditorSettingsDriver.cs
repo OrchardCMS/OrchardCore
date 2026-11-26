@@ -31,7 +31,7 @@ public sealed class HtmlBodyPartMonacoEditorSettingsDriver : ContentTypePartDefi
                 settings.Options = JConvert.SerializeObject(new { automaticLayout = true, language = "html" }, JOptions.Indented);
             }
             model.Options = settings.Options;
-        }).Location("Editor");
+        }).Location(l => l.Zone("Editor").Card(S["Editor"], "30"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)

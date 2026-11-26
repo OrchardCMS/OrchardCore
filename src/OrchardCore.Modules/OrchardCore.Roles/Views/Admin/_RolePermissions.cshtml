@@ -44,17 +44,24 @@ else
             </div>
         </div>
 
-        <div class="mb-3">
-            <div class="input-group filter-options">
-                <input id="search-box" class="form-control" placeholder="@T["Search permissions"]" type="search" autofocus autocomplete="off" />
+        <div class="card text-bg-theme mb-3 position-sticky action-bar">
+            <div class="card-body">
+                <div class="input-group filter-options">
+                    <input id="search-box" class="form-control" placeholder="@T["Search permissions"]" type="search" autofocus autocomplete="off" />
+                </div>
             </div>
+        </div>
+
+        <div id="permissions-alert" class="alert alert-info my-3 d-none text-center" role="alert">
+            @T["Your search returned no results."]
         </div>
 
         @foreach (var group in Model.RoleCategoryPermissions.OrderBy(x => x.Key.Title).ThenBy(x => x.Key.Source))
         {
             var permissionsContext = $"Permissions{Constants.ContextSeparator}{group.Key.Title}";
-            <fieldset class="permissions-list">
-                <legend>
+            @* A heading above a card of the permissions, like the categories of the features. *@
+            <fieldset class="permissions-list mb-3">
+                <legend class="h3 mb-2">
                     <span>@D[group.Key.Title, permissionsContext]</span>
                     @if (!string.IsNullOrEmpty(group.Key.Source))
                     {
@@ -62,7 +69,8 @@ else
                     }
                 </legend>
 
-                <table class="table">
+                <div class="card">
+                <table class="table mb-0">
                     <thead>
                         <tr>
                             <th class="col-10">@T["Permission"]</th>
@@ -129,19 +137,20 @@ else
                                 <td class="col-1">
                                     <div class="form-check">
                                         <input type="checkbox" class="form-check-input" disabled="@(!Model.CanEdit)" id="Checkbox.@permission.Name" name="Checkbox.@permission.Name" checked="@isAssigned" value="true">
-                                        <label class="form-check-label" for="Checkbox.@permission.Name"></label>
+                                        <label class="form-check-label" for="Checkbox.@permission.Name"><span class="visually-hidden">@T["Allow {0}", description]</span></label>
                                     </div>
                                 </td>
                                 <td class="col-1">
                                     <div class="form-check" data-bs-toggle="tooltip" data-bs-html="true" title="@toolTip">
                                         <input type="checkbox" class="form-check-input" disabled="disabled" id="Effective.@permission.Name" name="Effective.@permission.Name" checked="@isEffective">
-                                        <label class="form-check-label" for="Effective.@permission.Name"></label>
+                                        <label class="form-check-label" for="Effective.@permission.Name"><span class="visually-hidden">@T["Effective: {0}", description]</span></label>
                                     </div>
                                 </td>
                             </tr>
                         }
                     </tbody>
                 </table>
+                </div>
             </fieldset>
         }
     </div>

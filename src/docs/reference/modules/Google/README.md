@@ -10,7 +10,7 @@ Navigate to [Google Analytics](https://analytics.google.com/analytics/web) porta
 
 Copy the Tracking ID from the Admin->Tracking Info->Tracking Code link.
 
-Το configure Orchard Core, go to _Google -> Google Analytics_ settings menu in the admin dashboard and enter the Tracking ID.
+Το configure Orchard Core, go to **Google → Google Analytics** settings menu in the admin dashboard and enter the Tracking ID.
 
 ## Google Tag Manager
 
@@ -20,7 +20,7 @@ Navigate to [Google Tag Manager](https://tagmanager.google.com/) portal and crea
 
 Copy the _Container ID_ generated for you to use on your website.
 
-Το configure Orchard Core, go to _Google -> Google Tag Manager_ settings menu in the admin dashboard and enter the Container ID.
+Το configure Orchard Core, go to **Google → Google Tag Manager** settings menu in the admin dashboard and enter the Container ID.
 
 ## Google Authentication
 
@@ -43,7 +43,7 @@ The next step is to parameterize the consent screen that will appear to the user
 
 Now you can download your credentials.
 
-Configuration can be set through the _Google -> Google Authentication_ settings menu in the admin dashboard.
+Configuration can be set through the **Google → Google Authentication** settings menu in the admin dashboard.
 
 Available settings are:
 
@@ -147,3 +147,10 @@ Google module settings can be configured using the `Settings` recipe step:
 | Property      | Type   | Description                                        |
 |---------------|--------|----------------------------------------------------|
 | `ContainerID` | String | The Google Tag Manager container ID. **Required.** |
+
+## Video
+
+This video measures your visitors with Google Analytics and Google Tag Manager.
+
+<!-- video:google-analytics-tag-manager -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/Vk-BUPp_Guo" title="Google Analytics and Tag Manager: Measure Your Visitors" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

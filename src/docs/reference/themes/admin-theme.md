@@ -13,13 +13,22 @@ By default, the `ocat-*` classes render a stacked (vertical) form layout equival
 | CSS Class | Purpose | Default Style |
 |-----------|---------|---------------|
 | `ocat-wrapper` | Outer wrapper for each form field group | `margin-bottom: 1rem` |
-| `ocat-label` | Label element styling | Same as Bootstrap `.form-label` |
+| `ocat-label` | Label element styling: a `<label>` for one control, or a `<span>` captioning a group of controls or a value | Same as Bootstrap `.form-label` |
 | `ocat-label-required` | Additional class for required field labels | Appends a `*` indicator in the `--bs-danger` color, separated from the text by a `0.25rem` inline-start padding so it reads well in LTR and RTL |
 | `ocat-end` | Container for the input and hint content | _(no additional styles)_ |
 | `ocat-end-offset` | Container for input content when no label exists (e.g., standalone checkboxes) | _(no additional styles)_ |
 | `ocat-start` | Leading element container (for push/alignment) | _(no additional styles)_ |
 | `ocat-limited-wrapper` | Wrapper for limited-width fields (dropdowns, numbers) | Stacked field wrapper with `margin-bottom: 1rem` |
 | `ocat-limited` | Constrains input width for limited-width fields | `100%`, then `50%` at `md`, `33.333%` at `lg`, `25%` at `xxl` |
+
+### Cards
+
+Every admin form groups its fields in cards, each a logical section of the form with a short title, e.g. "Server", "Authentication" and "Sender" in the SMTP settings. Every card comes from placement: the editor shapes of display drivers declare the card they belong to, and placement files can move them to other cards. Views never write card markup.
+
+- **Editors built by display drivers** (site settings, users, content type, part and field settings, workflow activities, deployment steps, ...): each editor shape declares its card in its placement location, with a name localized by the driver, e.g. `.Location(l => l.Zone("Content", "1").Card(S["Server"], "10"))`. Shapes placed in the same card share it, and a placement file can move a shape to another card, e.g. `"place": "Content:5%Server;10"`. See [Editor shape placement](../modules/Placement/README.md#editor-shape-placement).
+- **Admin pages with a form**, a controller editing a view model (e.g. a template or an OpenID application): the page renders an editor built by the display drivers of its view model, `@await DisplayAsync(Model.Editor)`, and the drivers place its shapes in cards. The controller builds the editor with `IDisplayManager<TViewModel>.BuildEditorAsync` and updates it with `UpdateEditorAsync` before validating the model. Other modules can add fields and cards to these pages with drivers of the same view model.
+
+The admin theme renders a card (the `Card` shape) as a `<fieldset>`, the HTML element grouping related form fields, styled as a Bootstrap card: `card` with its `card-header` legend and `card-body`, always expanded: cards group fields, they don't hide them. In a tab, which already frames them (e.g. the general, email and SMS settings), the cards render as plain fieldsets titled by their legends, except the ones holding a table, such as the events of the audit trail. The legend titles the card for assistive technologies, and the card carries the `ocat-card`, `ocat-card-title` and `ocat-card-body` classes as hooks. A card whose shapes render nothing is not shown. To render cards differently, override the `Card` and `CardContainer` shapes in a custom admin theme.
 
 ### Using OCAT Classes in Custom Views
 
@@ -76,6 +85,25 @@ When building custom admin editor views, use the `ocat-*` classes so your views 
 </div>
 ```
 
+**Group of controls pattern:**
+
+A `<label>` labels a single control, whose id matches its `for`. When the caption applies to several controls, such as a list of checkboxes or radio buttons, or to a widget rendered by a script, render it as a `<span>` with an id and label the container of the controls with it. Use `role="radiogroup"` for radio buttons. A row that shows a value without a control also uses a `<span class="ocat-label">`.
+
+```html
+<div class="ocat-wrapper">
+    <span id="@Html.IdFor(m => m.ContentTypes)_Label" class="ocat-label">@T["Content types"]</span>
+    <div class="ocat-end" role="group" aria-labelledby="@Html.IdFor(m => m.ContentTypes)_Label">
+        @for (var i = 0; i < Model.ContentTypes.Length; i++)
+        {
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" asp-for="ContentTypes[i].IsSelected" />
+                <label class="form-check-label" asp-for="ContentTypes[i].IsSelected">@Model.ContentTypes[i].DisplayName</label>
+            </div>
+        }
+    </div>
+</div>
+```
+
 ### Customizing Content Field Hints
 
 Content field editors render their configured hint with the `Hint_Admin` shape. The default
@@ -105,7 +133,9 @@ Bootstrap tooltips for elements with the `data-bs-toggle="tooltip"` attribute.
 
 ### Creating a Horizontal Form Layout
 
-To achieve a horizontal form layout, override the `ocat-*` classes in your custom admin theme CSS or SCSS. Here's a pure CSS example:
+**TheAdmin** has this layout built in, and it is off by default: the forms are stacked. It is an option of a [scheme](#admin-schemes), so it follows the scheme of the site, or the one a user picks. Check **Horizontal form layout** when you edit a scheme, or set `HorizontalFormLayout` to `true` on the scheme in the `AdminSchemes` recipe step. Its rules are written in `~/TheAdmin/schemes.css`, under the selector of the scheme, from screens as wide as a tablet (768 pixels) up; no other stylesheet is added to the pages. It is also the way to check that a new view builds its forms from the `ocat-*` classes: a view that doesn't keeps its stacked layout when the option is on.
+
+A custom admin theme that doesn't build on **TheAdmin** can override the `ocat-*` classes in your custom admin theme CSS or SCSS. Here's a pure CSS example:
 
 ```css
 /* Horizontal form layout for admin editors */
@@ -188,6 +218,120 @@ If the part or field is a named part, also append the named-part-specific class:
 
 These classes enable targeted styling of specific content type editors without relying on C# helper extensions.
 
+## Admin Schemes
+
+The look of **TheAdmin** comes from a scheme: its colors, typefaces, base font size, density and corners. Admins manage the schemes from the **Schemes** button of TheAdmin's card on **Design > Themes** (they need the `ApplyTheme` permission). The default scheme is set with the **Set as default** action of the list and shown with a **Default** badge; it can't be deleted. Each user can pick another scheme from the theme menu of the top bar, under the light and dark modes, where the default scheme is marked "(default)": picking it follows the site's choice again. A user's pick is kept in a `{tenant}-TheAdmin-scheme` cookie.
+
+A scheme is made of four colors, from which every other color of the admin is derived for the light and the dark mode, each checked against the surfaces it is drawn on so that text reaches 4.5:1 and the boundaries of controls and focus indicators 3:1 (WCAG 2.2 AA):
+
+| Color | Used for |
+|-------|----------|
+| Primary | Buttons, links, the current page of the menu, checked boxes, the toolbar of lists |
+| Deep | Headings, and the top of the menu |
+| Ink | The bottom of the menu, the darkest surface |
+| Accent | Links and highlights on dark surfaces |
+
+Optional settings fine tune what is derived: the hue and saturation of the page, borders and dark mode surfaces, a light menu (light gray with dark text), the color of text on the primary, the page color, the toolbar color and the page gradient. A second group sets the typography and shape:
+
+| Setting | Values | CSS custom property |
+|---------|--------|---------------------|
+| Font | Lato (the default), System font, or any font typed by name | `--ta-font-family` |
+| Heading font | The same, or the font of the text when empty | `--ta-heading-font-family` |
+| Base font size | 14 px to 18 px, as a share of the browser's own size | `--ta-font-scale` |
+| Density | Compact, Default, Comfortable | `--ta-density` |
+| Corners | Square, Subtle, Default, Round | `--ta-radius-scale` |
+
+The fonts are typed, with the theme's font suggested. Lato is served by the theme, and the admin never calls a font CDN; any other font, e.g. `Segoe UI` or `Georgia, serif`, must be installed on the users' devices.
+
+Lato is licensed under the SIL Open Font License 1.1, whose text the theme serves at `~/TheAdmin/fonts/lato-LICENSE.txt`, while the rest of the theme is under the BSD 3-Clause License. The theme's package declares both (`BSD-3-Clause AND OFL-1.1`), and its `THIRD-PARTY-NOTICES.txt` credits Lato, Bootstrap, whose check box, radio button, switch and invalid field icons the theme's stylesheets and the schemes stylesheet draw in the scheme's colors, and js-cookie (MIT), which the theme's scripts bundle.
+
+TheAdmin starts with seven schemes (Gray, the default, which keeps the colors of the previous TheAdmin, Blue, Ocean, Forest, Plum, Sunset and Graphite). A migration of the theme imports them, and makes Gray the default scheme, from its `Migrations/admin-schemes.recipe.json` recipe: when the theme is enabled during the setup of a site, or on the first start of an existing site after the upgrade. They are ordinary records from then on, and they are imported once: deleting them doesn't bring them back. If no scheme is left at all, the admin falls back to Gray.
+
+Schemes are exported with the **Admin schemes** deployment step and imported with the `AdminSchemes` recipe step. An entry whose `ItemId` matches a stored scheme replaces it; any other is added. The optional `DefaultSchemeId` makes a scheme the default one.
+
+```json
+{
+  "steps": [
+    {
+      "name": "AdminSchemes",
+      "Schemes": [
+        {
+          "ItemId": "harbor",
+          "Name": "Harbor",
+          "Primary": "#1f6f8b",
+          "Deep": "#123c4c",
+          "Ink": "#081a21",
+          "Accent": "#5bc0de",
+          "FontFamily": "Georgia, serif",
+          "FontScale": 1,
+          "Density": 1,
+          "RadiusScale": 1
+        }
+      ],
+      "DefaultSchemeId": "harbor"
+    }
+  ]
+}
+```
+
+| Property | Description |
+|----------|-------------|
+| `ItemId` | Optional. The id of the scheme: lowercase letters, digits and dashes, starting with a letter. A new id is given when it is empty. |
+| `Name` | Required. The name shown in the pickers. |
+| `Primary`, `Deep`, `Ink`, `Accent` | Required. `#rrggbb` colors. |
+| `Position` | Optional. The place of the scheme in the pickers; after the others when empty. |
+| `LightMenu` | Optional. `true` for a light gray menu with dark text. |
+| `HorizontalFormLayout` | Optional. `true` to lay out the admin forms horizontally, with the label of a field beside its editor, from the width of a tablet. `false` (stacked forms) when empty. |
+| `Hue`, `Saturation` | Optional. The hue (0 to 360) and saturation (0 to 1) of the page, borders and dark mode surfaces. |
+| `OnPrimary`, `Page`, `Toolbar`, `Tint`, `TintDark` | Optional. `#rrggbb` colors of the text on the primary, the page, the toolbar of lists and the page gradient in light and dark mode. |
+| `FontFamily`, `HeadingFontFamily` | Optional. `lato`, `system`, or any font families separated by commas (e.g. `Georgia, serif`). An empty `HeadingFontFamily` uses the body font. |
+| `FontScale`, `RadiusScale`, `Density` | Optional. 0.875 to 1.125, 0 to 1.5, and 0.75 to 1.25. |
+
+The schemes are served as one stylesheet, `~/TheAdmin/schemes.css`, built once per change and versioned by a short hash of its text.
+
+### Design Tokens
+
+Every component of the theme reads the same tokens, so a theme that depends on **TheAdmin** can restyle the admin by overriding them, without rebuilding its stylesheets:
+
+| Tokens | Purpose |
+|--------|---------|
+| `--ta-font-size-xs`, `-sm`, `-md`, `-lg`, `-xl`, `-page-title` | The type scale. Body text, fields and buttons are `md`; hints, column headers, breadcrumbs, metadata and the items of the menu are `sm`; badges are `xs`. |
+| `--ta-surface-padding-x`, `--ta-surface-padding-y`, `--ta-row-padding-y` | The padding inside every surface: card bodies and headers, list rows and toolbars, table cells, tab panes, alerts. |
+| `--ta-stack-gap`, `--ta-content-padding-x` | The space between the surfaces of a page, and around the page. |
+| `--ta-radius-sm`, `--ta-radius-md`, `--ta-radius`, `--ta-radius-lg` | The corners, from fields and buttons to cards and dialogs. |
+| `--ta-primary`, `--ta-link`, `--ta-heading`, `--ta-label`, `--ta-muted`, `--ta-border`, `--ta-control-border`, `--ta-page-bg`, `--ta-surface`, `--ta-toolbar-bg`, `--ta-row-hover-bg`, `--ta-menu-*` | The colors of the scheme. Bootstrap's own variables (`--bs-primary`, `--bs-link-color`, `--bs-border-color`, `--bs-secondary-color`...) read them. |
+
+## TheOldAdmin
+
+**The Old Admin Theme** (`TheOldAdmin`) is a separate admin theme with the look TheAdmin had before admin schemes: its menu, top bar, lists, forms and log in pages, with Bootstrap's colors and a light and dark mode. It is for sites that need to keep that look, for example a site whose custom admin views or admin theme were styled against it. It is part of the `OrchardCore.Application.Cms.Core.Targets` package, like TheAdmin, and works like any other admin theme.
+
+To use it, make it the current admin theme on **Design > Themes**, or set it in the `themes` step of a recipe, and enable it in the `feature` step:
+
+```json
+{
+  "steps": [
+    {
+      "name": "feature",
+      "enable": [
+        "TheOldAdmin"
+      ]
+    },
+    {
+      "name": "themes",
+      "admin": "TheOldAdmin"
+    }
+  ]
+}
+```
+
+An admin theme can build on it with `BaseTheme = "TheOldAdmin"` in its manifest, the same way as on TheAdmin (see [Creating an Admin Theme](../../guides/create-admin-theme/README.md)). Its templates have the same shape names as TheAdmin's, so a template that overrides one of TheAdmin's overrides it in TheOldAdmin too.
+
+TheOldAdmin keeps the views and stylesheets TheAdmin had before admin schemes, and changes to TheAdmin don't apply to it:
+
+- It has no admin schemes: no **Schemes** button on its card, no scheme picker in its theme menu, and no `--ta-*` design tokens. The theme menu offers the **Auto**, **Light** and **Dark** modes.
+- Its resources have names of their own, so both themes can be enabled together: the scripts `the-old-admin` and `the-old-admin-main` and the style `the-old-admin`, served from `~/TheOldAdmin/`. A view that asks for TheAdmin's resources (`the-admin`, `admin-main`) or links to `~/TheAdmin/` files gets TheAdmin's.
+- The admin pages of the modules are shared by both themes. Where a page uses markup styled by TheAdmin only, such as the icon tile of the dashboard cards, TheOldAdmin shows it with Bootstrap's own styles.
+
 ## The `[Admin]` Attribute
 
 To ensure a controller or a specific action uses the Admin Theme, decorate it with the `[Admin]` attribute. This is essential when creating custom administration pages.
@@ -256,3 +400,10 @@ public sealed class MyService
     }
 }
 ```
+
+## Video
+
+This video creates an admin theme to restyle the admin.
+
+<!-- video:admin-theme-create -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/ht6M2TWKLaU" title="Create an Admin Theme: Restyle the Admin" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

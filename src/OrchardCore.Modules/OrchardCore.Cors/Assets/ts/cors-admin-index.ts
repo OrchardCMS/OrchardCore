@@ -39,6 +39,7 @@ const optionsListComponent = {
     props: {
         options: { type: Array, required: true },
         optionType: { type: String, required: true },
+        inputId: { type: String, required: true },
         title: { type: String, required: true },
         subTitle: { type: String, default: "" },
     },
@@ -63,11 +64,11 @@ const optionsListComponent = {
     },
     template: `
         <div class="ocat-wrapper">
-            <label class="ocat-label">{{ title }}</label>
+            <label class="ocat-label" :for="inputId">{{ title }}</label>
             <div class="ocat-end">
                 <span class="hint" v-if="subTitle">{{ subTitle }}</span>
                 <div class="input-group input-group-sm mb-2 w-50">
-                    <input type="text" class="form-control" v-model="newOption">
+                    <input type="text" :id="inputId" class="form-control" v-model="newOption">
                     <button class="btn btn-primary btn-sm" type="button" v-on:click="addOption(newOption)">{{ t.Add }} {{ optionType }}</button>
                 </div>
                 <ul class="list-group mt-3" v-if="options.length > 0">
@@ -98,9 +99,9 @@ const policyDetailsComponent = {
                         <span class="hint dashed">{{ t.ProvidePolicyDetails }}</span>
                     </h5>
                     <div class="ocat-wrapper">
-                        <label class="ocat-label">{{ t.PolicyName }}</label>
+                        <label class="ocat-label" for="policy-name">{{ t.PolicyName }}</label>
                         <div class="ocat-end">
-                        <input v-model="policy.name" type="text" class="form-control" />
+                        <input id="policy-name" v-model="policy.name" type="text" class="form-control" />
                         <span class="hint">{{ t.PolicyNameHint }}</span>
                         </div>
                     </div>
@@ -145,7 +146,7 @@ const policyDetailsComponent = {
                                 </div>
                             </div>
                         </div>
-                        <options-list v-bind:options="policy.allowedOrigins" v-bind:option-type="t.Origin" v-bind:title="t.AllowedOrigins" sub-title="" />
+                        <options-list v-bind:options="policy.allowedOrigins" input-id="allowed-origins-new" v-bind:option-type="t.Origin" v-bind:title="t.AllowedOrigins" sub-title="" />
                     </div>
                 </div>
             </div>
@@ -164,7 +165,7 @@ const policyDetailsComponent = {
                                 </div>
                             </div>
                         </div>
-                        <options-list v-bind:options="policy.allowedHeaders" v-bind:option-type="t.Header" v-bind:title="t.AllowedHeaders" sub-title="" />
+                        <options-list v-bind:options="policy.allowedHeaders" input-id="allowed-headers-new" v-bind:option-type="t.Header" v-bind:title="t.AllowedHeaders" sub-title="" />
                     </div>
                 </div>
             </div>
@@ -183,7 +184,7 @@ const policyDetailsComponent = {
                                 </div>
                             </div>
                         </div>
-                        <options-list v-bind:options="policy.allowedMethods" v-bind:option-type="t.Method" v-bind:title="t.AllowedMethods" sub-title="" />
+                        <options-list v-bind:options="policy.allowedMethods" input-id="allowed-methods-new" v-bind:option-type="t.Method" v-bind:title="t.AllowedMethods" sub-title="" />
                     </div>
                 </div>
             </div>
@@ -194,13 +195,13 @@ const policyDetailsComponent = {
                     </h5>
                     <div>
                         <span class="hint">{{ t.ExposedHeadersHint }}</span>
-                        <options-list v-bind:options="policy.exposedHeaders" v-bind:option-type="t.Header" v-bind:title="t.ExposedHeaders" sub-title="" />
+                        <options-list v-bind:options="policy.exposedHeaders" input-id="exposed-headers-new" v-bind:option-type="t.Header" v-bind:title="t.ExposedHeaders" sub-title="" />
                     </div>
                 </div>
             </div>
             <div class="action-bar-bottom">
-                <button type="button" class="btn btn-primary" v-on:click="$emit('ok', policy, $event)">{{ t.Save }}</button>
                 <button type="button" class="btn btn-secondary" v-on:click="$emit('back')">{{ t.Cancel }}</button>
+                <button type="button" class="btn btn-primary" v-on:click="$emit('ok', policy, $event)">{{ t.Save }}</button>
             </div>
         </div>
     `,

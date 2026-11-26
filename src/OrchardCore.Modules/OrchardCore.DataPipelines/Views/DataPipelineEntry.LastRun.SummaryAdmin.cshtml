@@ -1,0 +1,19 @@
+@model ShapeViewModel<DataPipelineEntry>
+
+@{
+    var pipeline = Model.Value.Pipeline;
+}
+
+
+@if (Model.Value.LastRun is { } run)
+{
+    <a asp-controller="Admin" asp-action="Run" asp-route-runId="@run.RunId" class="badge ta-badge fw-normal" title="@T["Last run"]">
+        <i class="@run.Status.GetIcon()" aria-hidden="true"></i>
+        @T[run.Status.ToString()] · <time datetime="@run.QueuedUtc.ToString("o")">@await DisplayAsync(await New.Timespan(Utc: run.QueuedUtc))</time>
+    </a>
+}
+else if (Model.Metadata.DisplayType == OrchardCoreConstants.DisplayType.SummaryAdminGrid)
+{
+    @* The pipeline never ran, as the empty cell of its column tells. *@
+    <span class="text-body-secondary">&mdash;</span>
+}

@@ -10,7 +10,7 @@ A deployment plan is an ordered list of deployment steps. Each step contributes 
 
 To create and execute a plan:
 
-1. In the admin, go to **Tools** > **Deployments** > **Plans**.
+1. In the admin, go to **Tools → Deployments → Plans**.
 2. Select **Add Deployment Plan**, enter a name, and save the plan.
 3. Open the plan and select **Add Step**.
 4. Configure each step and arrange the steps in the order in which they should be added to the package.
@@ -30,7 +30,7 @@ The Deployment module provides these general-purpose steps:
 
 ## Import a package
 
-In the admin, go to **Tools** > **Deployments** and use one of these options:
+In the admin, go to **Tools → Deployments** and use one of these options:
 
 - **Package Import** accepts a `.zip` deployment package or a `.json` recipe file.
 - **JSON Import** accepts recipe JSON entered directly in the editor.
@@ -130,7 +130,7 @@ public sealed class MyDeploymentStep : DeploymentStep
 The properties return static readonly fields, so the sources are not allocated for every step instance. They can be shared across tenants and cultures because they are translated only when they are shown with `IStringLocalizerFactory.Localize()`. The translation uses the class that declares the source as the context, so a PO file entry for the title above uses `msgctxt "MyModule.MyModuleLocalizationSources"`, and the categories use `msgctxt "OrchardCore.Localization.CommonLocalizationSources"`. These sources are not persisted with the deployment plan; they are always read from the step's type.
 
 !!! warning
-    Add `[JsonIgnore]` to the `Category` and `Title` overrides. `System.Text.Json` doesn't apply the attribute of the base property to an override, and a `LocalizationSource` can't be serialized, so saving a plan that contains the step fails without it. See [Sharing LocalizationSource instances](../Localize/README.md#sharing-localizationsource-instances).
+    Add `[JsonIgnore]` to the `Category` and `Title` overrides. `System.Text.Json` doesn't apply the attribute of the base property to an override. A `LocalizationSource` is a static declaration and is never serialized or deserialized: the serializer that saves the plans also removes these properties from its contract, and the attribute keeps them out of every other serializer. See [Deferring localization with LocalizationSource](../Localize/README.md#deferring-localization-with-localizationsource).
 
 The source processes the configured step and adds recipe steps or files to the `DeploymentPlanResult`. Register a custom execution destination by implementing `IDeploymentTargetProvider`.
 

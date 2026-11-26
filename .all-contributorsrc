@@ -3763,6 +3763,24 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "menes97",
+      "name": "menes97",
+      "avatar_url": "https://avatars.githubusercontent.com/u/38889017?v=4",
+      "profile": "https://github.com/menes97",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "ZainnQureshii",
+      "name": "Zain Qureshi",
+      "avatar_url": "https://avatars.githubusercontent.com/u/43629888?v=4",
+      "profile": "https://github.com/ZainnQureshii",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,

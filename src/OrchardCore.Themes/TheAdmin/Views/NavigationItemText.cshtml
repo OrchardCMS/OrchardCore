@@ -30,11 +30,11 @@
 
 @if (iconClasses is not null)
 {
-    <span class="icon"><i class="@iconClasses" aria-hidden="true"></i></span>
+    <span class="icon" aria-hidden="true"><i class="@iconClasses"></i></span>
 }
 else
 {
-    <span class="icon icon-none"></span>
+    <span class="icon icon-none" aria-hidden="true"></span>
 }
 
 <span class="title">@D[text, context]</span>

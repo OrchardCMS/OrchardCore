@@ -99,3 +99,10 @@ Sample content:
 You can override the HTML editor for the `Default` editor by creating a shape file named  
 `HtmlBodyPart.Edit.cshtml`. The Wysiwyg editor is defined by using the file named  
 `HtmlBodyPart-Wysiwyg.Edit.cshtml`.
+
+## Video
+
+This video writes the body of a content item with the Html and Markdown editors.
+
+<!-- video:html-and-markdown-editors -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/3clJc4yscS0" title="Html and Markdown: Write the Body of Your Content" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

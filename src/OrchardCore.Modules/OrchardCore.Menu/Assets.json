@@ -19,12 +19,6 @@
     "tags": ["admin", "dashboard", "js"]
   },
   {
-    "action": "sass",
-    "name": "menu-permission-picker",
-    "source": "Assets/scss/menu-permission-picker.scss",
-    "tags": ["admin", "dashboard", "css"]
-  },
-  {
     "action": "parcel",
     "name": "menu-part",
     "source": "Assets/ts/menu-part.ts",

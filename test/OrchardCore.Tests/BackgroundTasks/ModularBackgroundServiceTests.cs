@@ -1,5 +1,7 @@
+using System.Collections.Concurrent;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
@@ -83,7 +85,7 @@ public class ModularBackgroundServiceTests
     }
 
     [Fact]
-    public async Task RequestRun_WhileATaskOfAnotherTenantRuns_StaysQueuedUntilItCompletes()
+    public async Task RequestRun_WhileATaskOfAnotherTenantRunsWithinThePollingTime_StaysQueuedUntilItCompletes()
     {
         var blockingWork = new TaskWork { Blocked = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously) };
         var work = new TaskWork();
@@ -99,7 +101,7 @@ public class ModularBackgroundServiceTests
 
         await host.Monitor.RequestRunAsync(TenantB, _secondTask);
 
-        // The background service waits for all the tasks of an iteration before starting the next one.
+        // The background service waits for the tasks of an iteration, up to its polling time, before starting the next one.
         await Task.Delay(TimeSpan.FromSeconds(2), TestContext.Current.CancellationToken);
         Assert.Equal(BackgroundTaskStatus.Queued, (await host.Monitor.GetStateAsync(TenantB, _secondTask)).Status);
         Assert.Equal(0, work.Count);
@@ -108,6 +110,153 @@ public class ModularBackgroundServiceTests
 
         await host.WaitForRunCountAsync(TenantB, _secondTask, 1);
         Assert.Equal(1, work.Count);
+    }
+
+    [Fact]
+    public async Task RequestRun_WhileATaskOfAnotherTenantNeverCompletes_RunsWithoutWaitingForIt()
+    {
+        var stuckWork = new TaskWork { WaitForCancellation = true };
+        var work = new TaskWork();
+        await using var host = new TestHost(pollingTime: TimeSpan.FromMilliseconds(20));
+        host.AddTenant(TenantA, [new FirstTask(stuckWork)]);
+        host.AddTenant(TenantB, [new SecondTask(work)]);
+
+        await host.StartAndWaitForTasksAsync(TenantA, 1);
+        await host.WaitForTasksAsync(TenantB, 1);
+
+        await host.Monitor.RequestRunAsync(TenantA, _firstTask);
+        await host.WaitForStatusAsync(TenantA, _firstTask, BackgroundTaskStatus.Running);
+
+        await host.Monitor.RequestRunAsync(TenantB, _secondTask);
+        var state = await host.WaitForRunCountAsync(TenantB, _secondTask, 1);
+
+        Assert.Equal(1, work.Count);
+        Assert.Equal(BackgroundTaskTrigger.Manual, state.LastRun.Trigger);
+        Assert.Equal(BackgroundTaskStatus.Running, (await host.Monitor.GetStateAsync(TenantA, _firstTask)).Status);
+    }
+
+    [Fact]
+    public async Task Schedule_TaskThatNeverCompletes_StillRunsTheTasksOfTheOtherTenants()
+    {
+        var stuckWork = new TaskWork { WaitForCancellation = true };
+        var work = new TaskWork();
+        await using var host = new TestHost(pollingTime: TimeSpan.FromMilliseconds(20));
+        host.AddTenant(TenantA, [new FirstTask(stuckWork)]);
+        host.AddTenant(TenantB, [new SecondTask(work)]);
+
+        await host.StartAndWaitForTasksAsync(TenantA, 1);
+        await host.WaitForTasksAsync(TenantB, 1);
+
+        host.Clock.Advance(TimeSpan.FromMinutes(2));
+        await host.WaitForStatusAsync(TenantA, _firstTask, BackgroundTaskStatus.Running);
+        await host.WaitForRunCountAsync(TenantB, _secondTask, 1);
+
+        // TenantB's first run can start alongside TenantA's task, so only its next run proves it isn't held up.
+        host.Clock.Advance(TimeSpan.FromMinutes(2));
+        var state = await host.WaitForRunCountAsync(TenantB, _secondTask, 2);
+
+        Assert.Equal(2, work.Count);
+        Assert.Equal(BackgroundTaskTrigger.Schedule, state.LastRun.Trigger);
+        Assert.Equal(1, stuckWork.Count);
+    }
+
+    [Fact]
+    public async Task Schedule_TaskThatBlocksItsThread_StillRunsTheTasksOfTheOtherTenants()
+    {
+        var threadBlockingWork = new TaskWork { BlocksItsThread = true };
+        var work = new TaskWork();
+        await using var host = new TestHost(pollingTime: TimeSpan.FromMilliseconds(20));
+        host.AddTenant(TenantA, [new FirstTask(threadBlockingWork)]);
+        host.AddTenant(TenantB, [new SecondTask(work)]);
+
+        await host.StartAndWaitForTasksAsync(TenantA, 1);
+        await host.WaitForTasksAsync(TenantB, 1);
+
+        host.Clock.Advance(TimeSpan.FromMinutes(2));
+        await host.WaitForStatusAsync(TenantA, _firstTask, BackgroundTaskStatus.Running);
+        await host.WaitForRunCountAsync(TenantB, _secondTask, 1);
+
+        // TenantB's first run can start alongside TenantA's task, so only its next run proves it isn't held up.
+        host.Clock.Advance(TimeSpan.FromMinutes(2));
+        await host.WaitForRunCountAsync(TenantB, _secondTask, 2);
+
+        Assert.Equal(2, work.Count);
+        Assert.Equal(1, threadBlockingWork.Count);
+    }
+
+    [Fact]
+    public async Task Schedule_TaskThatNeverCompletes_StillRunsTheOtherTasksOfItsTenant()
+    {
+        var stuckWork = new TaskWork { WaitForCancellation = true };
+        var work = new TaskWork();
+        await using var host = new TestHost(pollingTime: TimeSpan.FromMilliseconds(20));
+        host.AddTenant(TenantA, [new FirstTask(stuckWork), new SecondTask(work)]);
+
+        await host.StartAndWaitForTasksAsync(TenantA, 2);
+
+        host.Clock.Advance(TimeSpan.FromMinutes(2));
+        await host.WaitForStatusAsync(TenantA, _firstTask, BackgroundTaskStatus.Running);
+        await host.WaitForRunCountAsync(TenantA, _secondTask, 1);
+
+        // The second task can run before the first one, so only its next run proves it isn't held up.
+        host.Clock.Advance(TimeSpan.FromMinutes(2));
+        await host.WaitForRunCountAsync(TenantA, _secondTask, 2);
+
+        Assert.Equal(2, work.Count);
+        Assert.Equal(1, stuckWork.Count);
+    }
+
+    [Fact]
+    public async Task Schedule_TaskStillRunningWhenDueAgain_IsNotRunAgainUntilItCompletes()
+    {
+        var blockingWork = new TaskWork { Blocked = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously) };
+        await using var host = new TestHost(pollingTime: TimeSpan.FromMilliseconds(20));
+        host.AddTenant(TenantA, [new FirstTask(blockingWork)]);
+
+        await host.StartAndWaitForTasksAsync(TenantA, 1);
+
+        host.Clock.Advance(TimeSpan.FromMinutes(2));
+        await host.WaitForStatusAsync(TenantA, _firstTask, BackgroundTaskStatus.Running);
+
+        // The service doesn't wait for a run longer than the polling time, so it has to skip the task
+        // until that run completes, even when the task is due again.
+        host.Clock.Advance(TimeSpan.FromMinutes(2));
+        await Task.Delay(TimeSpan.FromMilliseconds(200), TestContext.Current.CancellationToken);
+
+        Assert.Equal(1, blockingWork.Count);
+        Assert.Equal(BackgroundTaskRunRequestResult.AlreadyRunning, await host.Monitor.RequestRunAsync(TenantA, _firstTask));
+
+        // Once it completes, the task runs again for the occurrence it missed.
+        blockingWork.Blocked.SetResult();
+        var state = await host.WaitForRunCountAsync(TenantA, _firstTask, 2);
+
+        Assert.Equal(2, blockingWork.Count);
+        Assert.Equal(BackgroundTaskRunResult.Succeeded, state.LastRun.Result);
+    }
+
+    [Fact]
+    public async Task Run_TaskLongerThanThePollingTime_LogsASingleWarning()
+    {
+        var logger = new TestLogger();
+        var longWork = new TaskWork { WaitForCancellation = true };
+        var work = new TaskWork();
+        await using var host = new TestHost(logger: logger);
+        host.AddTenant(TenantA, [new FirstTask(longWork), new SecondTask(work)]);
+
+        await host.StartAndWaitForTasksAsync(TenantA, 2);
+
+        await host.Monitor.RequestRunAsync(TenantA, _firstTask);
+        await host.WaitForStatusAsync(TenantA, _firstTask, BackgroundTaskStatus.Running);
+
+        // The second task only runs once the service has stopped waiting for the first one, which is when it logs the warning.
+        await host.Monitor.RequestRunAsync(TenantA, _secondTask);
+        await host.WaitForRunCountAsync(TenantA, _secondTask, 1);
+
+        // Let the background service poll a few times while the long task is still running.
+        await Task.Delay(TimeSpan.FromMilliseconds(500), TestContext.Current.CancellationToken);
+
+        var warning = Assert.Single(logger.Warnings, message => message.Contains(_firstTask, StringComparison.Ordinal));
+        Assert.Contains(TenantA, warning);
     }
 
     [Fact]
@@ -228,6 +377,44 @@ public class ModularBackgroundServiceTests
     }
 
     [Fact]
+    public async Task Stop_TaskLongerThanThePollingTime_WaitsForItToComplete()
+    {
+        var stuckWork = new TaskWork { BlockedIgnoringCancellation = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously) };
+        var work = new TaskWork();
+        await using var host = new TestHost();
+        host.AddTenant(TenantA, [new FirstTask(stuckWork), new SecondTask(work)]);
+
+        try
+        {
+            await host.StartAndWaitForTasksAsync(TenantA, 2);
+
+            await host.Monitor.RequestRunAsync(TenantA, _firstTask);
+            await host.WaitForStatusAsync(TenantA, _firstTask, BackgroundTaskStatus.Running);
+
+            // The second task only runs once the service has stopped waiting for the stuck one.
+            await host.Monitor.RequestRunAsync(TenantA, _secondTask);
+            await host.WaitForRunCountAsync(TenantA, _secondTask, 1);
+
+            var stop = host.StopAsync();
+
+            await Task.Delay(TimeSpan.FromMilliseconds(200), TestContext.Current.CancellationToken);
+            Assert.False(stop.IsCompleted);
+
+            stuckWork.BlockedIgnoringCancellation.SetResult();
+            await stop;
+
+            var state = await host.Monitor.GetStateAsync(TenantA, _firstTask);
+
+            Assert.Equal(BackgroundTaskRunResult.Succeeded, state.LastRun.Result);
+            Assert.Equal(BackgroundTaskStatus.Idle, state.Status);
+        }
+        finally
+        {
+            stuckWork.BlockedIgnoringCancellation.TrySetResult();
+        }
+    }
+
+    [Fact]
     public async Task RequestRun_AtomicTaskWhoseLockIsHeld_StaysQueuedUntilTheLockIsReleased()
     {
         var work = new TaskWork();
@@ -333,6 +520,8 @@ public class ModularBackgroundServiceTests
         public int Count => Volatile.Read(ref _count);
         public Exception Exception { get; init; }
         public TaskCompletionSource Blocked { get; init; }
+        public TaskCompletionSource BlockedIgnoringCancellation { get; init; }
+        public bool BlocksItsThread { get; init; }
         public bool WaitForCancellation { get; init; }
         public Action OnRun { get; init; }
 
@@ -341,9 +530,21 @@ public class ModularBackgroundServiceTests
             Interlocked.Increment(ref _count);
             OnRun?.Invoke();
 
+            // Waits synchronously before the first await, so it blocks its thread until the service stops.
+            if (BlocksItsThread)
+            {
+                cancellationToken.WaitHandle.WaitOne();
+            }
+
             if (Blocked is not null)
             {
                 await Blocked.Task.WaitAsync(cancellationToken);
+            }
+
+            // Stopping the service has to wait until the test releases it.
+            if (BlockedIgnoringCancellation is not null)
+            {
+                await BlockedIgnoringCancellation.Task;
             }
 
             if (WaitForCancellation)
@@ -459,6 +660,26 @@ public class ModularBackgroundServiceTests
         }
     }
 
+    private sealed class TestLogger : ILogger<ModularBackgroundService>
+    {
+        private readonly ConcurrentQueue<(LogLevel Level, string Message)> _entries = new();
+
+        public string[] Warnings => _entries
+            .Where(entry => entry.Level == LogLevel.Warning)
+            .Select(entry => entry.Message)
+            .ToArray();
+
+        public IDisposable BeginScope<TState>(TState state)
+            where TState : notnull
+            => null;
+
+        public bool IsEnabled(LogLevel logLevel)
+            => true;
+
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+            => _entries.Enqueue((logLevel, formatter(state, exception)));
+    }
+
     private sealed class TestShellHost : IShellHost
     {
         private readonly Dictionary<string, ShellContext> _shells = [];
@@ -542,7 +763,7 @@ public class ModularBackgroundServiceTests
         private readonly ModularBackgroundService _service;
         private bool _started;
 
-        public TestHost(TimeSpan? pollingTime = null)
+        public TestHost(TimeSpan? pollingTime = null, ILogger<ModularBackgroundService> logger = null)
         {
             _service = new ModularBackgroundService(
                 _shellHost,
@@ -554,7 +775,7 @@ public class ModularBackgroundServiceTests
                     PollingTime = pollingTime ?? TimeSpan.FromMilliseconds(100),
                     MinimumIdleTime = TimeSpan.FromMilliseconds(10),
                 }),
-                NullLogger<ModularBackgroundService>.Instance,
+                logger ?? NullLogger<ModularBackgroundService>.Instance,
                 Clock);
         }
 
@@ -640,7 +861,12 @@ public class ModularBackgroundServiceTests
             return await Monitor.GetStateAsync(tenant, name);
         }
 
-        public Task StopAsync() => _service.StopAsync(CancellationToken.None);
+        public async Task StopAsync()
+        {
+            // Stops waiting after a timeout, as a host does on shutdown, so a run that never completes doesn't hang the test.
+            using var timeout = new CancellationTokenSource(_waitTimeout);
+            await _service.StopAsync(timeout.Token);
+        }
 
         public async ValueTask DisposeAsync()
         {

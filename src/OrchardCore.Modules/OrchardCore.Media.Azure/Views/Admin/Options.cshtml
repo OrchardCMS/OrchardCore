@@ -7,7 +7,7 @@
 </p>
 
 <div class="ocat-wrapper">
-    <label asp-for="ConnectionString" class="ocat-label">@T["Connection String"]</label>
+    <span class="ocat-label">@T["Connection String"]</span>
     <div class="ocat-end">
         <code>
             @if (!string.IsNullOrEmpty(Model.ConnectionString))
@@ -25,14 +25,14 @@
 <div class="ocat-wrapper">
     <label asp-for="ContainerName" class="ocat-label">@T["Container Name"]</label>
     <div class="ocat-end">
-        <code><input type="text" class="form-control-plaintext" value="@Model.ContainerName" readonly /></code>
+        <code><input id="@Html.IdFor(m => m.ContainerName)" type="text" class="form-control-plaintext" value="@Model.ContainerName" readonly /></code>
     </div>
 </div>
 
 <div class="ocat-wrapper">
     <label asp-for="BasePath" class="ocat-label">@T["Base Path"]</label>
     <div class="ocat-end">
-        <code><input type="text" class="form-control-plaintext" value="@Model.BasePath" readonly /></code>
+        <code><input id="@Html.IdFor(m => m.BasePath)" type="text" class="form-control-plaintext" value="@Model.BasePath" readonly /></code>
     </div>
 </div>
 

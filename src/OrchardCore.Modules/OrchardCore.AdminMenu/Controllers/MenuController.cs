@@ -27,6 +27,9 @@ public sealed class MenuController : Controller
     private readonly IAdminMenuService _adminMenuService;
     private readonly PagerOptions _pagerOptions;
     private readonly IShapeFactory _shapeFactory;
+    private readonly IDisplayManager<AdminMenuCreateViewModel> _createDisplayManager;
+    private readonly IDisplayManager<AdminMenuEditViewModel> _editDisplayManager;
+    private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly INotifier _notifier;
     private readonly ILogger _logger;
 
@@ -38,6 +41,9 @@ public sealed class MenuController : Controller
         IAdminMenuService adminMenuService,
         IOptions<PagerOptions> pagerOptions,
         IShapeFactory shapeFactory,
+        IDisplayManager<AdminMenuCreateViewModel> createDisplayManager,
+        IDisplayManager<AdminMenuEditViewModel> editDisplayManager,
+        IUpdateModelAccessor updateModelAccessor,
         INotifier notifier,
         IStringLocalizer<MenuController> stringLocalizer,
         IHtmlLocalizer<MenuController> htmlLocalizer,
@@ -47,6 +53,9 @@ public sealed class MenuController : Controller
         _adminMenuService = adminMenuService;
         _pagerOptions = pagerOptions.Value;
         _shapeFactory = shapeFactory;
+        _createDisplayManager = createDisplayManager;
+        _editDisplayManager = editDisplayManager;
+        _updateModelAccessor = updateModelAccessor;
         _notifier = notifier;
         S = stringLocalizer;
         H = htmlLocalizer;
@@ -139,6 +148,8 @@ public sealed class MenuController : Controller
 
         var model = new AdminMenuCreateViewModel();
 
+        model.Editor = await _createDisplayManager.BuildEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: true);
+
         return View(model);
     }
 
@@ -149,6 +160,8 @@ public sealed class MenuController : Controller
         {
             return Forbid();
         }
+
+        model.Editor = await _createDisplayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: true);
 
         if (ModelState.IsValid)
         {
@@ -183,6 +196,8 @@ public sealed class MenuController : Controller
             Name = adminMenu.Name,
         };
 
+        model.Editor = await _editDisplayManager.BuildEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: false);
+
         return View(model);
     }
 
@@ -201,6 +216,8 @@ public sealed class MenuController : Controller
         {
             return NotFound();
         }
+
+        model.Editor = await _editDisplayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: false);
 
         if (ModelState.IsValid)
         {

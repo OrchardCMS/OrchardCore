@@ -12,6 +12,7 @@ using OrchardCore.Secrets.Filters;
 using OrchardCore.Secrets.Providers;
 using OrchardCore.Secrets.Recipes;
 using OrchardCore.Secrets.Services;
+using OrchardCore.Secrets.ViewModels;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Secrets;
@@ -36,6 +37,10 @@ public sealed class Startup : StartupBase
         services.AddDisplayDriver<TextSecret, TextSecretDisplayDriver>();
         services.AddDisplayDriver<RsaKeySecret, RsaSecretDisplayDriver>();
         services.AddDisplayDriver<X509Secret, X509SecretDisplayDriver>();
+
+        // Build the editors of a secret and of the move of secrets to another store.
+        services.AddDisplayDriver<SecretEditViewModel, SecretEditDisplayDriver>();
+        services.AddDisplayDriver<SecretStoreViewModel, SecretStoreDisplayDriver>();
 
         services.AddDeployment<SecretsDeploymentSource, SecretsDeploymentStep, SecretsDeploymentStepDriver>();
         services.AddRecipeExecutionStep<SecretsRecipeStep>();
