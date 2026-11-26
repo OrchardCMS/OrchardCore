@@ -38,9 +38,49 @@ msgctxt "OrchardCore.Elasticsearch.ContentsStartup"
 msgid "Create an Elasticsearch index based on site contents."
 msgstr ""
 
+#: Drivers/ElasticIndexDeploymentStepDriver.cs
+msgctxt "OrchardCore.Elasticsearch.Core.Deployment.ElasticIndexDeploymentStepDriver"
+msgid "Indexes"
+msgstr ""
+
+#: Drivers/ElasticIndexRebuildDeploymentStepDriver.cs
+msgctxt "OrchardCore.Elasticsearch.Core.Deployment.ElasticIndexRebuildDeploymentStepDriver"
+msgid "Indexes"
+msgstr ""
+
+#: Drivers/ElasticIndexResetDeploymentStepDriver.cs
+msgctxt "OrchardCore.Elasticsearch.Core.Deployment.ElasticIndexResetDeploymentStepDriver"
+msgid "Indexes"
+msgstr ""
+
+#: Drivers/ContentPartFieldIndexSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Elasticsearch.Drivers.ContentPartFieldIndexSettingsDisplayDriver"
+msgid "Indexing"
+msgstr ""
+
+#: Drivers/ContentPickerFieldElasticEditorSettingsDriver.cs
+msgctxt "OrchardCore.Elasticsearch.Drivers.ContentPickerFieldElasticEditorSettingsDriver"
+msgid "Editor"
+msgstr ""
+
+#: Drivers/ContentTypePartIndexSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Elasticsearch.Drivers.ContentTypePartIndexSettingsDisplayDriver"
+msgid "Indexing"
+msgstr ""
+
 #: Drivers/ElasticsearchIndexProfileDisplayDriver.cs
 msgctxt "OrchardCore.Elasticsearch.Drivers.ElasticsearchIndexProfileDisplayDriver"
 msgid "Custom Query"
+msgstr ""
+
+#: Drivers/ElasticsearchIndexProfileDisplayDriver.cs
+msgctxt "OrchardCore.Elasticsearch.Drivers.ElasticsearchIndexProfileDisplayDriver"
+msgid "Default query"
+msgstr ""
+
+#: Drivers/ElasticsearchIndexProfileDisplayDriver.cs
+msgctxt "OrchardCore.Elasticsearch.Drivers.ElasticsearchIndexProfileDisplayDriver"
+msgid "Index settings"
 msgstr ""
 
 #: Drivers/ElasticsearchIndexProfileDisplayDriver.cs
@@ -65,12 +105,22 @@ msgstr ""
 
 #: Drivers/ElasticsearchQueryDisplayDriver.cs
 msgctxt "OrchardCore.Elasticsearch.Drivers.ElasticsearchQueryDisplayDriver"
+msgid "Query"
+msgstr ""
+
+#: Drivers/ElasticsearchQueryDisplayDriver.cs
+msgctxt "OrchardCore.Elasticsearch.Drivers.ElasticsearchQueryDisplayDriver"
 msgid "The index field is required"
 msgstr ""
 
 #: Drivers/ElasticsearchQueryDisplayDriver.cs
 msgctxt "OrchardCore.Elasticsearch.Drivers.ElasticsearchQueryDisplayDriver"
 msgid "The query field is required"
+msgstr ""
+
+#: Drivers/ElasticsearchQueryRunnerDisplayDriver.cs
+msgctxt "OrchardCore.Elasticsearch.Drivers.ElasticsearchQueryRunnerDisplayDriver"
+msgid "Query"
 msgstr ""
 
 #. Format arguments: {0}: query.Source; {1}: query.Name
@@ -111,11 +161,6 @@ msgstr ""
 
 #: Views/Admin/Query.cshtml
 msgctxt "OrchardCore.Elasticsearch.Views.Admin.Query"
-msgid "An optional Json object containing the parameter values for this query."
-msgstr ""
-
-#: Views/Admin/Query.cshtml
-msgctxt "OrchardCore.Elasticsearch.Views.Admin.Query"
 msgid "Elasticsearch Query"
 msgstr ""
 
@@ -128,22 +173,7 @@ msgstr ""
 
 #: Views/Admin/Query.cshtml
 msgctxt "OrchardCore.Elasticsearch.Views.Admin.Query"
-msgid "Index"
-msgstr ""
-
-#: Views/Admin/Query.cshtml
-msgctxt "OrchardCore.Elasticsearch.Views.Admin.Query"
 msgid "NULL"
-msgstr ""
-
-#: Views/Admin/Query.cshtml
-msgctxt "OrchardCore.Elasticsearch.Views.Admin.Query"
-msgid "Parameters"
-msgstr ""
-
-#: Views/Admin/Query.cshtml
-msgctxt "OrchardCore.Elasticsearch.Views.Admin.Query"
-msgid "Query"
 msgstr ""
 
 #: Views/Admin/Query.cshtml
@@ -158,34 +188,12 @@ msgstr ""
 
 #: Views/Admin/Query.cshtml
 msgctxt "OrchardCore.Elasticsearch.Views.Admin.Query"
-msgid "Select an index"
-msgstr ""
-
-#: Views/Admin/Query.cshtml
-msgctxt "OrchardCore.Elasticsearch.Views.Admin.Query"
-msgid "The Elasticsearch index to search on"
-msgstr ""
-
-#: Views/Admin/Query.cshtml
-msgctxt "OrchardCore.Elasticsearch.Views.Admin.Query"
 msgid "The results displayed in this table are coming from the _source data."
 msgstr ""
 
 #: Views/Admin/Query.cshtml
 msgctxt "OrchardCore.Elasticsearch.Views.Admin.Query"
 msgid "The results displayed in this table are coming from the field(s) data."
-msgstr ""
-
-#: Views/Admin/Query.cshtml
-msgctxt "OrchardCore.Elasticsearch.Views.Admin.Query"
-msgid "The search query uses the Elasticsearch format. Some documentation can be found here <a target=\"_blank\" href=\"https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html\">https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html</a>"
-msgstr ""
-
-#. Format arguments: {0}: Html.Raw(Url.Action("Query", "Admin", new { area = "OrchardCore.Elasticsearch", query = Model.MatchAllQuery, id = Model.Id }))
-#: Views/Admin/Query.cshtml
-#, csharp-format
-msgctxt "OrchardCore.Elasticsearch.Views.Admin.Query"
-msgid "You can use the <a href=\"{0}\">Match all query</a> to search all documents."
 msgstr ""
 
 #: Views/ContentPickerFieldElasticEditorSettings.Edit.cshtml
@@ -205,7 +213,7 @@ msgstr ""
 
 #: Views/ElasticContentIndexSettings.Edit.cshtml
 msgctxt "OrchardCore.Elasticsearch.Views.ElasticContentIndexSettings.Edit"
-msgid "Elasticsearch Index settings"
+msgid "Elasticsearch"
 msgstr ""
 
 #: Views/ElasticContentIndexSettings.Edit.cshtml
@@ -288,16 +296,53 @@ msgctxt "OrchardCore.Elasticsearch.Views.ElasticsearchIndexProfile.Edit"
 msgid "Store Source Data"
 msgstr ""
 
+#: Views/ElasticsearchQueryRunner.Edit.cshtml
+msgctxt "OrchardCore.Elasticsearch.Views.ElasticsearchQueryRunner.Edit"
+msgid "An optional Json object containing the parameter values for this query."
+msgstr ""
+
+#: Views/ElasticsearchQueryRunner.Edit.cshtml
+msgctxt "OrchardCore.Elasticsearch.Views.ElasticsearchQueryRunner.Edit"
+msgid "Index"
+msgstr ""
+
+#: Views/ElasticsearchQueryRunner.Edit.cshtml
+msgctxt "OrchardCore.Elasticsearch.Views.ElasticsearchQueryRunner.Edit"
+msgid "Parameters"
+msgstr ""
+
+#: Views/ElasticsearchQueryRunner.Edit.cshtml
+msgctxt "OrchardCore.Elasticsearch.Views.ElasticsearchQueryRunner.Edit"
+msgid "Query"
+msgstr ""
+
+#: Views/ElasticsearchQueryRunner.Edit.cshtml
+msgctxt "OrchardCore.Elasticsearch.Views.ElasticsearchQueryRunner.Edit"
+msgid "Select an index"
+msgstr ""
+
+#: Views/ElasticsearchQueryRunner.Edit.cshtml
+msgctxt "OrchardCore.Elasticsearch.Views.ElasticsearchQueryRunner.Edit"
+msgid "The Elasticsearch index to search on"
+msgstr ""
+
+#: Views/ElasticsearchQueryRunner.Edit.cshtml
+msgctxt "OrchardCore.Elasticsearch.Views.ElasticsearchQueryRunner.Edit"
+msgid "The search query uses the Elasticsearch format. Some documentation can be found here <a target=\"_blank\" href=\"https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html\">https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html</a>"
+msgstr ""
+
+#. Format arguments: {0}: Html.Raw(Url.Action("Query", "Admin", new { area = "OrchardCore.Elasticsearch", query = Model.MatchAllQuery, id = Model.Id }))
+#: Views/ElasticsearchQueryRunner.Edit.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Elasticsearch.Views.ElasticsearchQueryRunner.Edit"
+msgid "You can use the <a href=\"{0}\">Match all query</a> to search all documents."
+msgstr ""
+
 #. Format arguments: {0}: "{{ term }}"
 #: Views/ElasticsearchQuerySettings.Edit.cshtml
 #, csharp-format
 msgctxt "OrchardCore.Elasticsearch.Views.ElasticsearchQuerySettings.Edit"
 msgid "Create a custom Elasticsearch query to be utilized for each search request. Liquid is supported, so use the <code>{0}</code> template as a substitute for the user-provided search term."
-msgstr ""
-
-#: Views/ElasticsearchQuerySettings.Edit.cshtml
-msgctxt "OrchardCore.Elasticsearch.Views.ElasticsearchQuerySettings.Edit"
-msgid "Default Query Settings"
 msgstr ""
 
 #: Views/ElasticsearchQuerySettings.Edit.cshtml

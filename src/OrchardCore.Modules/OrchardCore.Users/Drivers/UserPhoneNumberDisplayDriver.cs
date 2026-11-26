@@ -56,7 +56,7 @@ public sealed class UserPhoneNumberDisplayDriver : DisplayDriver<User>
             model.PhoneNumberConfirmed = user.PhoneNumberConfirmed;
             model.AllowEditing = context.IsNew || (settings.AllowChangingPhoneNumber && canEditUserInfo);
             model.Required = required;
-        }).Location("Content:1.3");
+        }).Location(l => l.Zone("Content", "1.3").Card(S["Account"], "10"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(User user, UpdateEditorContext context)

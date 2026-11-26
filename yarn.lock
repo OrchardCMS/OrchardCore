@@ -1885,6 +1885,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@fontsource/lato@npm:5.3.0":
+  version: 5.3.0
+  resolution: "@fontsource/lato@npm:5.3.0"
+  checksum: 10/c5be04b6868019d67218832ed92d8a8f087b21d1a4985867157bc61f420edb565252df9d99e0246fde5b0a4543edeabe27984c92d78b4ab5bc95e92a106417f3
+  languageName: node
+  linkType: hard
+
 "@fortawesome/fontawesome-common-types@npm:6.7.2":
   version: 6.7.2
   resolution: "@fortawesome/fontawesome-common-types@npm:6.7.2"
@@ -3171,6 +3178,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@orchardcore/theadmin@workspace:src/OrchardCore.Themes/TheAdmin/Assets"
   dependencies:
+    "@fontsource/lato": "npm:5.3.0"
     "@popperjs/core": "npm:2.11.8"
     "@types/js-cookie": "npm:^3.0.6"
     bootstrap: "npm:5.3.8"
@@ -3212,6 +3220,18 @@ __metadata:
   dependencies:
     "@popperjs/core": "npm:2.11.8"
     bootstrap: "npm:5.3.8"
+  languageName: unknown
+  linkType: soft
+
+"@orchardcore/theoldadmin@workspace:src/OrchardCore.Themes/TheOldAdmin/Assets":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/theoldadmin@workspace:src/OrchardCore.Themes/TheOldAdmin/Assets"
+  dependencies:
+    "@popperjs/core": "npm:2.11.8"
+    "@types/js-cookie": "npm:^3.0.6"
+    bootstrap: "npm:5.3.8"
+    js-cookie: "npm:^3.0.5"
+    nouislider: "npm:15.7.0"
   languageName: unknown
   linkType: soft
 

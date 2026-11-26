@@ -388,7 +388,7 @@ The **Issues** tab warns about a Set Variable activity or an output that names a
 
 ### Samples
 
-The **Workflow Variables Samples** recipe adds three sample workflows. Run it from **Configuration** → **Recipes**; it also enables the **Workflows** and **HTTP Workflows Activities** features. Each sample starts with an HTTP request: open that activity's editor to generate its URL, then open the URL in a browser.
+The **Workflow Variables Samples** recipe adds three sample workflows. Run it from **Tools → Recipes**; it also enables the **Workflows** and **HTTP Workflows Activities** features. Each sample starts with an HTTP request: open that activity's editor to generate its URL, then open the URL in a browser.
 
 - **Sample: order total.** Its variables have defaults, and its activities set them one after the other:
     1. **Read the query string** (Script) sets `customer` and `quantity` with `setVariable()`. The text `3` becomes the number `3`, since `quantity` is a number.
@@ -1199,3 +1199,43 @@ See [Configuration](../Configuration/README.md) for more information on such con
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/pi_WiSqp5x4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/Sd-aYy5DblI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video automates tasks with workflows, without writing code.
+
+<!-- video:workflows-overview -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/_nlyO00Cusc" title="Workflows: Automate Tasks Without Writing Code" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video explains the events, tasks and outcomes of a workflow.
+
+<!-- video:workflows-events-tasks-outcomes -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/0Nu728nj938" title="Workflows: Events, Tasks and Outcomes" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video sends an email when content is published.
+
+<!-- video:workflows-send-email-on-publish -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/1VGSI2vwPqg" title="Workflows: Send an Email When Content Is Published" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video creates, updates and publishes content automatically with a workflow.
+
+<!-- video:workflows-content-tasks -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/d8eJUVHGMHI" title="Workflows: Create, Update and Publish Content Automatically" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video follows and troubleshoots each run of a workflow.
+
+<!-- video:workflows-instances -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/SoduJoUp6Rs" title="Workflow Instances: Follow and Troubleshoot Each Run" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video runs tasks on a schedule with timer workflows.
+
+<!-- video:workflows-timers -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/afsRRLc6MW0" title="Timer Workflows: Run Tasks on a Schedule" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video handles HTTP requests and calls web APIs from a workflow.
+
+<!-- video:workflows-http -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/iJ1bmOI-bvg" title="HTTP Workflows: Handle Requests and Call Web APIs" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video reacts to registrations, sign-ins and role changes with a workflow.
+
+<!-- video:workflows-user-events -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/5OSh78XTbI4" title="Workflows: React to Registrations, Sign-Ins and Role Changes" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

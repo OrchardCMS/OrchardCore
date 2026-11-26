@@ -40,7 +40,7 @@ public sealed class UrlRewriteRuleDisplayDriver : DisplayDriver<RewriteRule>
                 new(S["Append Query String from Original Request"], nameof(QueryStringPolicy.Append)),
                 new(S["Exclude Query String from Original Request"], nameof(QueryStringPolicy.Drop)),
             ];
-        }).Location("Content:5");
+        }).Location(l => l.Zone("Content", "5").Card(S["Rewrite"], "20"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(RewriteRule rule, UpdateEditorContext context)
@@ -63,7 +63,7 @@ public sealed class UrlRewriteRuleDisplayDriver : DisplayDriver<RewriteRule>
         {
             context.Updater.ModelState.AddModelError(Prefix, nameof(model.Pattern), "The Match URL Pattern is required.");
         }
-        else if (!PatternHelper.IsValidRegex(model.Pattern))
+        else if (!PatternHelper.IsValidMatchPattern(model.Pattern))
         {
             context.Updater.ModelState.AddModelError(Prefix, nameof(model.Pattern), S["A valid Match URL Pattern is required."]);
         }
@@ -72,7 +72,7 @@ public sealed class UrlRewriteRuleDisplayDriver : DisplayDriver<RewriteRule>
         {
             context.Updater.ModelState.AddModelError(Prefix, nameof(model.SubstitutionPattern), S["The Substitution URL Pattern is required."]);
         }
-        else if (!PatternHelper.IsValidRegex(model.SubstitutionPattern))
+        else if (!PatternHelper.IsValidSubstitutionPattern(model.SubstitutionPattern))
         {
             context.Updater.ModelState.AddModelError(Prefix, nameof(model.SubstitutionPattern), S["A valid Substitution URL Pattern is required."]);
         }

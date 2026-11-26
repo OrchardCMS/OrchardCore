@@ -1,0 +1,16 @@
+@model ShapeViewModel<DataPipelineRunEntry>
+
+@{
+    var run = Model.Value.Run;
+}
+
+
+@if (run.CompletedUtc is { } completed && run.StartedUtc is { } started)
+{
+    <span class="badge ta-badge fw-normal" title="@T["Duration"]"><i class="fa-solid fa-stopwatch text-secondary" aria-hidden="true"></i> @T["{0:N1} s", (completed - started).TotalSeconds]</span>
+}
+else if (Model.Metadata.DisplayType == OrchardCoreConstants.DisplayType.SummaryAdminGrid)
+{
+    @* The run is not over, as its status tells. *@
+    <span class="text-body-secondary">&mdash;</span>
+}

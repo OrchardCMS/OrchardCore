@@ -1,0 +1,31 @@
+@model OrchardCore.ContentFields.ViewModels.DisplayUserPickerFieldViewModel
+@using OrchardCore.ContentFields
+@using OrchardCore.ContentManagement.Metadata.Models
+@using OrchardCore.Localization.Data
+@using OrchardCore.Mvc.Utilities
+@inject IDataLocalizer D
+@{
+    var name = (Model.PartFieldDefinition.PartDefinition.Name + "-" + Model.PartFieldDefinition.Name).HtmlClassify();
+    string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), DataLocalizationContext.ContentField(Model.PartFieldDefinition.PartDefinition.Name)];
+    var users = await Orchard.GetUsersByIdsAsync(Model.UserIds);
+}
+<div class="ocat-wrapper field field-type-userpickerfield field-name-@name">
+    <div class="ocat-label">@localizedFieldName</div>
+    <div class="ocat-end">
+        @if (users.Any())
+        {
+            foreach (var user in users)
+            {
+                <span class="value">@user.UserName</span>
+                if (user != users.Last())
+                {
+                    <span>,</span>
+                }
+            }
+        }
+        else
+        {
+            <span class="value">@T["No users."]</span>
+        }
+    </div>
+</div>

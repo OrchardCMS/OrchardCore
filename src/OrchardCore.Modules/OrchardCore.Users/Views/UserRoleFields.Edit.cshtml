@@ -3,8 +3,8 @@
 @if (Model.Roles.Length > 0)
 {
     <div class="ocat-wrapper">
-        <label class="ocat-label">@T["Roles"]</label>
-        <div class="ocat-end">
+        <span id="@Html.IdFor(m => m.Roles)_Label" class="ocat-label">@T["Roles"]</span>
+        <div class="ocat-end" role="group" aria-labelledby="@Html.IdFor(m => m.Roles)_Label">
             @for (var i = 0; i < Model.Roles.Length; i++)
             {
                 <div class="form-check">

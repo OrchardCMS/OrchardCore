@@ -47,19 +47,14 @@ public abstract class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewMo
             results.Add(Initialize<TEditViewModel>(EditShapeType, viewModel =>
             {
                 return EditActivityAsync(activity, viewModel);
-            }).Location("Content"));
+            }).Location(l => l.Zone("Content", "1").Card(S["Recipients"], "10")));
         }
 
-        results.Add(Initialize<NotifyUserTaskActivityViewModel, NotifyUserTaskActivity>("NotifyUserTaskActivity_Fields_Edit", static (model, activity) =>
-        {
-            model.Subject = activity.Subject.Expression;
-            model.Summary = activity.Summary.Expression;
-            model.TextBody = activity.TextBody.Expression;
-            model.HtmlBody = activity.HtmlBody.Expression;
-            model.IsHtmlPreferred = activity.IsHtmlPreferred;
-            model.Url = activity.Url.Expression;
-            model.NotificationType = activity.NotificationType;
-        }, activity).Location("Content"));
+        results.Add(Initialize<NotifyUserTaskActivityViewModel, NotifyUserTaskActivity>("NotifyUserTaskActivity_Fields_Edit", PopulateNotification, activity)
+            .Location(l => l.Zone("Content", "1").Card(S["Notification"], "20")));
+
+        results.Add(Initialize<NotifyUserTaskActivityViewModel, NotifyUserTaskActivity>("NotifyUserTaskActivityBody_Fields_Edit", PopulateNotification, activity)
+            .Location(l => l.Zone("Content", "1").Card(S["Body"], "30")));
 
         return Combine(results);
     }
@@ -151,6 +146,17 @@ public abstract class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewMo
     protected override void UpdateActivity(TEditViewModel model, TActivity activity)
     {
         // Nothing to do by default, derived drivers override this to update their own properties.
+    }
+
+    private static void PopulateNotification(NotifyUserTaskActivityViewModel model, NotifyUserTaskActivity activity)
+    {
+        model.Subject = activity.Subject.Expression;
+        model.Summary = activity.Summary.Expression;
+        model.TextBody = activity.TextBody.Expression;
+        model.HtmlBody = activity.HtmlBody.Expression;
+        model.IsHtmlPreferred = activity.IsHtmlPreferred;
+        model.Url = activity.Url.Expression;
+        model.NotificationType = activity.NotificationType;
     }
 
     public override Task<IDisplayResult> DisplayAsync(TActivity activity, BuildDisplayContext context)

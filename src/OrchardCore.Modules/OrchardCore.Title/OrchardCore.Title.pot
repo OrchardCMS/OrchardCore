@@ -21,6 +21,11 @@ msgctxt "OrchardCore.Title.Settings.TitlePartSettingsDisplayDriver"
 msgid "A pattern is required when using the selected behavior option."
 msgstr ""
 
+#: Settings/TitlePartSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Title.Settings.TitlePartSettingsDisplayDriver"
+msgid "Settings"
+msgstr ""
+
 #. Format arguments: {0}: string.Join(' ', errors)
 #: Settings/TitlePartSettingsDisplayDriver.cs
 #, csharp-format

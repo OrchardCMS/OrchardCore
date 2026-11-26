@@ -37,3 +37,10 @@ Example: `nuget init c:\OrchardCoreNuget \\{YourServer}\NuGetServer`
 ```
 
 - Make sure all of your projects are referencing the OrchardCore version in your local feed.
+
+## Video
+
+This video sets up the preview package feed and a local NuGet feed.
+
+<!-- video:development-tools -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/wUvs6BXgksc" title="Development Tools: Preview Packages and Local NuGet Feeds" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

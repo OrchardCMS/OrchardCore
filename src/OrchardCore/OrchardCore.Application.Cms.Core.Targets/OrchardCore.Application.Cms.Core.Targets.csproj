@@ -6,7 +6,7 @@
     <Description>
       $(OCCMSDescription)
 
-      Converts the application into a modular OrchardCore CMS application with TheAdmin theme but without any front-end Themes.
+      Converts the application into a modular OrchardCore CMS application with TheAdmin theme, and TheOldAdmin theme (the previous look of TheAdmin), but without any front-end Themes.
     </Description>
     <PackageTags>$(PackageTags) OrchardCoreCMS CMS</PackageTags>
   </PropertyGroup>
@@ -141,6 +141,7 @@
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Workflows\OrchardCore.Workflows.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.XmlRpc\OrchardCore.XmlRpc.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Themes\TheAdmin\TheAdmin.csproj" PrivateAssets="none" />
+    <ProjectReference Include="..\..\OrchardCore.Themes\TheOldAdmin\TheOldAdmin.csproj" PrivateAssets="none" />
   </ItemGroup>
 
 </Project>

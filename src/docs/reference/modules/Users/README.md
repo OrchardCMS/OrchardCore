@@ -66,11 +66,11 @@ The page is the `UserSecurity` shape, built by the display drivers of the `UserS
 
 The `/TwoFactor` path, and its custom value set in `TwoFactorAuthenticationPath`, redirects to the Two-Factor Authentication section.
 
-By default, the Security page and the pages it links to, such as the setup of an authenticator app or the recovery codes, use the admin theme. To use the site theme instead, select **Use site theme for the security pages** in `Settings` → `Security` → `User Login`, on the **Security Page** tab.
+By default, the Security page and the pages it links to, such as the setup of an authenticator app or the recovery codes, use the admin theme. To use the site theme instead, select **Use site theme for the security pages** in **Settings → Security → User Login**, on the **Security Page** tab.
 
 ## Two-factor Authentication
 
-Orchard Core includes the features needed to secure your app with two-factor authentication. To use two-factor authentication, enable "Two-Factor Email Method" and/or "Two-Factor Authenticator App Method". Configure the process from `Settings` → `Security` → `User Login` on the "Two-Factor Authentication" tab.
+Orchard Core includes the features needed to secure your app with two-factor authentication. To use two-factor authentication, enable "Two-Factor Email Method" and/or "Two-Factor Authenticator App Method". Configure the process from **Settings → Security → User Login** on the "Two-Factor Authentication" tab.
 
 ## Passkeys
 
@@ -185,9 +185,9 @@ If you want to specify custom paths to access the authentication related urls, y
 
 ## Audit Trail Integration
 
-By enabling the "Users Audit Trail" feature within this module, user events such as user creation, updating, or deletion are logged in Admin > Tools > Audit Trail. By default, the event stores the user's name and ID beyond the common Audit Trail data.
+By enabling the "Users Audit Trail" feature within this module, user events such as user creation, updating, or deletion are logged in **Tools → Audit Trail**. By default, the event stores the user's name and ID beyond the common Audit Trail data.
 
-It's also possible to include a partial JSON snapshot of the `User` object. To prevent storing particularly sensitive data, this functionality is limited out of the box. You have to go to Admin > Settings > Security > User Audit Trail and select which properties or custom user settings should be stored. The following options are available:
+It's also possible to include a partial JSON snapshot of the `User` object. To prevent storing particularly sensitive data, this functionality is limited out of the box. You have to go to **Settings → Security → User Audit Trail** and select which properties or custom user settings should be stored. The following options are available:
 
 - Store: Stores the value of the property as a string.
 - ErasingRedactor: Stores an empty string instead of the value. This is to indicate that the property exists for the `User` object in question.
@@ -200,7 +200,7 @@ Note that when a user is deleted, all `User` snapshots are cleared out from exis
 
 ## Documenting Filters in the Admin UI
 
-The users admin list (**Security** → **Users**) has a **Filters** dropdown next to the search box. Its **Filter syntax** entry opens the **Available Filters** dialog, which lists every filter a user can type into the search box (`name:`, `email:`, `status:`, `role:`, `sort:`, …) as a compact grid of cards. Each card shows the filter title, its capability icons, the syntax token, and a short description.
+The users admin list (**Security → Users**) has a **Filters** dropdown next to the search box. Its **Filter syntax** entry opens the **Available Filters** dialog, which lists every filter a user can type into the search box (`name:`, `email:`, `status:`, `role:`, `sort:`, …) as a compact grid of cards. Each card shows the filter title, its capability icons, the syntax token, and a short description.
 
 The list works exactly like the [content items admin list filters](../Contents/README.md#documenting-filters-in-the-admin-ui); only the model type differs. There are two independent extension points: the filter *logic* and the filter *card* that documents it in the dialog.
 
@@ -470,3 +470,8 @@ For example, to create an administrator during setup from a recipe:
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/FmgZHpFHCcg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/b-lHY0NxZNI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
+This video reacts to registrations, sign-ins and role changes with a workflow.
+
+<!-- video:workflows-user-events -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/5OSh78XTbI4" title="Workflows: React to Registrations, Sign-Ins and Role Changes" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

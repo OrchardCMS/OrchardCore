@@ -20,17 +20,26 @@ The `ocat-*` CSS class system was introduced in OrchardCore to provide a consist
 ### `ocat-label`
 
 **Replaces:** `form-label`  
-**Element:** `<label>`  
+**Element:** `<label>` associated with the control, or `<span>` when the row has several controls or no control  
 **Purpose:** Styles the label in the left column of the field row.
 
 ```html
 <label asp-for="FieldName" class="ocat-label">@T["Label Text"]</label>
 ```
 
+A `<label>` must target a control rendered with that id. When the caption applies to several controls (checkboxes, radio buttons, a script-rendered widget), use a `<span>` with an id and label the container with it:
+
+```html
+<span id="@Html.IdFor(m => m.FieldName)_Label" class="ocat-label">@T["Label Text"]</span>
+<div class="ocat-end" role="group" aria-labelledby="@Html.IdFor(m => m.FieldName)_Label">
+    <!-- the controls, each with its own label -->
+</div>
+```
+
 ### `ocat-label-required`
 
 **Used with:** `ocat-label`  
-**Element:** `<label>`  
+**Element:** `<label>` or `<span>`  
 **Purpose:** Marks a field as required with a visual indicator. Always combine with `ocat-label`.
 
 ```html
@@ -70,7 +79,7 @@ The `ocat-*` CSS class system was introduced in OrchardCore to provide a consist
 ## Rules
 
 1. **Every field row** must use `ocat-wrapper` as the outer container.
-2. **Fields with a label** must use `ocat-label` on the label element and `ocat-end` around the input.
+2. **Fields with a label** must use `ocat-label` on the label element and `ocat-end` around the input. The label's `for` must match the id of a rendered control; a row with several controls or no control uses a `<span class="ocat-label">` instead.
 3. **Checkboxes/toggles** use `ocat-end-offset` (no `ocat-label`) to keep alignment.
 4. **Validation spans** (`<span asp-validation-for="...">`) always go inside `ocat-end` or `ocat-end-offset`.
 5. **Hint spans** (`<span class="hint">`) always go inside `ocat-end` or `ocat-end-offset`.
@@ -99,6 +108,8 @@ The `ocat-*` CSS class system was introduced in OrchardCore to provide a consist
 | Checkbox inside `ocat-end` (with label in left column) | Checkbox inside `ocat-end-offset` (no left label) |
 | Standalone alert or headline directly in the form flow | Standalone alert or headline inside `ocat-wrapper` + `ocat-end-offset` |
 | Row containing both `ocat-end` and `ocat-end-offset` | Row containing exactly one of the two wrappers |
+| `<label asp-for>` targeting a hidden input, a list of controls or no control | `<span id="..._Label" class="ocat-label">` + `role="group"` and `aria-labelledby` on `ocat-end` |
+| The same `asp-for` rendered twice (e.g. a hidden copy of a disabled select) | Keep `asp-for` and set a unique `id`, e.g. `id="@Html.IdFor(m => m.X)_Hidden"` |
 
 ## File Locations
 

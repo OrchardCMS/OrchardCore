@@ -71,6 +71,7 @@ function readTranslations(el: HTMLElement): Record<string, string> {
     noImages: "No images",
     addMedia: "Add media",
     removeMedia: "Remove",
+    downloadMedia: "Download",
     mediaText: "Media text",
     editMediaText: "Edit media text",
     anchor: "Anchor",

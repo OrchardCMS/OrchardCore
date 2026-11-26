@@ -636,14 +636,17 @@ defineExpose({ canvas, panel, activityPanel, addActivity, autosave, publish, dis
 </script>
 
 <template>
-    <div class="wfd" :class="{ 'wfd-readonly': config.readOnly }" data-cy="workflow-designer">
+    <div class="wfd card" :class="{ 'wfd-readonly': config.readOnly }" data-cy="workflow-designer">
         <header class="wfd-toolbar" data-cy="designer-toolbar">
-            <!-- The designer's page has no breadcrumb, to leave the height to the canvas: the toolbar links back to the list. -->
-            <template v-if="!config.readOnly && config.listUrl">
-                <a :href="config.listUrl" class="wfd-back link-secondary" data-cy="toolbar-list">{{ t("WorkflowsList") }}</a>
-                <span class="wfd-back-separator" aria-hidden="true">/</span>
-            </template>
-            <h2 class="wfd-title text-truncate">{{ state.settings?.name }}</h2>
+            <!-- The designer's page has no breadcrumb of its own, to leave the height to the canvas: the toolbar holds it, with
+                 the admin's breadcrumb markup so it takes the admin theme's style. -->
+            <nav v-if="!config.readOnly && config.listUrl" class="oc-breadcrumb wfd-breadcrumb" :aria-label="t('Breadcrumb')">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a :href="config.listUrl" data-cy="toolbar-list">{{ t("WorkflowsList") }}</a></li>
+                    <li class="breadcrumb-item active" aria-current="page"><h2 class="wfd-title text-truncate">{{ state.settings?.name }}</h2></li>
+                </ol>
+            </nav>
+            <h2 v-else class="wfd-title text-truncate">{{ state.settings?.name }}</h2>
 
             <span
                 v-if="config.mode !== 'version' && !config.readOnly && state.publishedVersion"

@@ -1,0 +1,36 @@
+.oc-breadcrumb {
+    .breadcrumb {
+        // The default Bootstrap divider is a slash, a chevron reads better in a trail of pages.
+        --bs-breadcrumb-divider: '\203A';
+        align-items: center;
+        flex-wrap: wrap;
+        row-gap: 0.25rem;
+
+        // The trail is a small path above the title, not a heading: it stays quiet and lets the page title
+        // rendered below it lead.
+        font-size: 0.8125rem;
+        margin-bottom: 0.25rem;
+    }
+
+    // The trail reads right to left, so the chevron points the other way.
+    [dir="rtl"] & .breadcrumb {
+        --bs-breadcrumb-divider: '\2039';
+    }
+
+    .breadcrumb-item {
+        display: flex;
+        align-items: center;
+    }
+}
+
+// The page title rendered below the trail. It inherits the theme's '.ta-content h1' size, so it reads as the title
+// did before the trail was introduced; only the space between it and the trail above is set here.
+.oc-breadcrumb-title {
+    margin-top: 0;
+}
+
+// When titles are displayed in the top bar, the title sits in it as before and the trail is left to the content area
+// rather than crowding the bar. With no title below it there, the trail keeps the space the title would have left.
+.oc-breadcrumb:not(:has(+ .oc-breadcrumb-title)) .breadcrumb {
+    margin-bottom: 1rem;
+}

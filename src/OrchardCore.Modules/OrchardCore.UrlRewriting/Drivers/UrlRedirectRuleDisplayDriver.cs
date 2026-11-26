@@ -49,7 +49,7 @@ public sealed class UrlRedirectRuleDisplayDriver : DisplayDriver<RewriteRule>
                 new(S["Temporary Redirect (307)"], nameof(RedirectType.TemporaryRedirect)),
                 new(S["Permanent Redirect (308)"], nameof(RedirectType.PermanentRedirect)),
             ];
-        }).Location("Content:5");
+        }).Location(l => l.Zone("Content", "5").Card(S["Redirect"], "20"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(RewriteRule rule, UpdateEditorContext context)
@@ -72,7 +72,7 @@ public sealed class UrlRedirectRuleDisplayDriver : DisplayDriver<RewriteRule>
         {
             context.Updater.ModelState.AddModelError(Prefix, nameof(model.Pattern), S["The Match URL Pattern is required."]);
         }
-        else if (!PatternHelper.IsValidRegex(model.Pattern))
+        else if (!PatternHelper.IsValidMatchPattern(model.Pattern))
         {
             context.Updater.ModelState.AddModelError(Prefix, nameof(model.Pattern), S["A valid Match URL Pattern is required."]);
         }
@@ -81,7 +81,7 @@ public sealed class UrlRedirectRuleDisplayDriver : DisplayDriver<RewriteRule>
         {
             context.Updater.ModelState.AddModelError(Prefix, nameof(model.SubstitutionPattern), S["The Substitution URL Pattern is required."]);
         }
-        else if (!PatternHelper.IsValidRegex(model.SubstitutionPattern))
+        else if (!PatternHelper.IsValidSubstitutionPattern(model.SubstitutionPattern))
         {
             context.Updater.ModelState.AddModelError(Prefix, nameof(model.SubstitutionPattern), S["A valid Substitution URL Pattern is required."]);
         }

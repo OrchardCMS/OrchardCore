@@ -19,26 +19,19 @@
     @Html.HiddenFor(m => m.Creating)
     @if (!Model.Creating)
     {
-        @Html.HiddenFor(m => m.ShapeType)
+        <input asp-for="ShapeType" type="hidden" id="@Html.IdFor(m => m.ShapeType)_Hidden" />
     }
 
-    <div class="ocat-wrapper" asp-validation-class-for="ShapeType">
-        <label asp-for="ShapeType" class="ocat-label @(Model.Creating ? "ocat-label-required" : null)">@T["Shape type"]</label>
-        <div class="ocat-end">
-        <input asp-for="ShapeType" asp-is-disabled="!Model.Creating" class="form-control" required autofocus />
-        <span asp-validation-for="ShapeType"></span>
-        <span class="hint">@T["The type of the shape."]</span>
-        </div>
-    </div>
-
-    <div class="ocat-wrapper" asp-validation-class-for="Nodes">
-        <label asp-for="Nodes" class="ocat-label">@T["Placement rules"]</label>
-        <div class="ocat-end">
-        <textarea asp-for="Nodes" rows="10" class="form-control placement-nodes-editor"></textarea>
-        </div>
-    </div>
+    @await DisplayAsync(Model.Editor)
 
     <div class="action-bar-bottom">
+        <a class="btn btn-secondary cancel" role="button" href="@returnUrl">@T["Cancel"]</a>
+
+        @if (!Model.Creating)
+        {
+            <a asp-route-action="Delete" asp-route-area="OrchardCore.Placements" asp-route-shapeType="@Model.ShapeType" class="btn btn-danger action-bar-secondary" role="button" data-url-af="UnsafeUrl RemoveUrl">@T["Delete"]</a>
+        }
+
         <div class="btn-group"
              role="group"
              aria-label="@T["Save actions"]"
@@ -55,13 +48,6 @@
                 <button class="dropdown-item" name="submit" type="submit" value="SaveAndContinue">@T["and continue"]</button>
             </div>
         </div>
-
-        @if (!Model.Creating)
-        {
-            <a asp-route-action="Delete" asp-route-area="OrchardCore.Placements" asp-route-shapeType="@Model.ShapeType" class="btn btn-danger action-bar-secondary" role="button" data-url-af="UnsafeUrl RemoveUrl">@T["Delete"]</a>
-        }
-
-        <a class="btn btn-secondary cancel" role="button" href="@returnUrl">@T["Cancel"]</a>
     </div>
 </form>
 

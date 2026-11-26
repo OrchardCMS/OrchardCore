@@ -26,7 +26,7 @@ public sealed class FacebookPluginPartSettingsDisplayDriver : ContentTypePartDef
         {
             model.FacebookPluginPartSettings = contentTypePartDefinition.GetSettings<FacebookPluginPartSettings>();
             model.Liquid = model.FacebookPluginPartSettings.Liquid;
-        }).Location("Content");
+        }).Location(l => l.Zone("Content").Card(S["Settings"], "20"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)

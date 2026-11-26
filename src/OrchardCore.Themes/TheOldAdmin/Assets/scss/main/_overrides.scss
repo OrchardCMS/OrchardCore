@@ -1,0 +1,26 @@
+a {
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.btn {
+    &:hover {
+        text-decoration: none;
+    }
+}
+
+.btn-link {
+    &:focus-visible {
+        text-decoration: none;
+    }
+}
+
+.navbar-brand {
+    &:hover,
+    &:focus {
+        text-decoration: none;
+    }
+}

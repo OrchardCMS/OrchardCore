@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -18,14 +19,18 @@ public sealed class WorkflowTrimmingDisplayDriver : SiteDisplayDriver<WorkflowTr
     private readonly IAuthorizationService _authorizationService;
     private readonly IDocumentManager<WorkflowTrimmingState> _workflowTrimmingStateDocumentManager;
 
+    internal readonly IStringLocalizer S;
+
     public WorkflowTrimmingDisplayDriver(
         IAuthorizationService authorizationService,
         IHttpContextAccessor httpContextAccessor,
-        IDocumentManager<WorkflowTrimmingState> workflowTrimmingStateDocumentManager)
+        IDocumentManager<WorkflowTrimmingState> workflowTrimmingStateDocumentManager,
+        IStringLocalizer<WorkflowTrimmingDisplayDriver> stringLocalizer)
     {
         _authorizationService = authorizationService;
         _httpContextAccessor = httpContextAccessor;
         _workflowTrimmingStateDocumentManager = workflowTrimmingStateDocumentManager;
+        S = stringLocalizer;
     }
 
     protected override string SettingsGroupId
@@ -38,18 +43,24 @@ public sealed class WorkflowTrimmingDisplayDriver : SiteDisplayDriver<WorkflowTr
             return null;
         }
 
-        return Initialize<WorkflowTrimmingViewModel>("WorkflowTrimming_Fields_Edit", async model =>
-        {
-            model.RetentionDays = settings.RetentionDays;
-            model.LastRunUtc = (await _workflowTrimmingStateDocumentManager.GetOrCreateImmutableAsync()).LastRunUtc;
-            model.Disabled = settings.Disabled;
-
-            foreach (var status in settings.Statuses ?? [])
+        return Combine(
+            Initialize<WorkflowTrimmingViewModel>("WorkflowTrimming_Fields_Edit", model =>
             {
-                model.Statuses.Single(statusItem => statusItem.Status == status).IsSelected = true;
-            }
-        }).Location("Content:5")
-        .OnGroup(GroupId);
+                model.RetentionDays = settings.RetentionDays;
+
+                foreach (var status in settings.Statuses ?? [])
+                {
+                    model.Statuses.Single(statusItem => statusItem.Status == status).IsSelected = true;
+                }
+            }).Location(l => l.Zone("Content", "5").Card(S["Retention"], "10"))
+            .OnGroup(GroupId),
+            Initialize<WorkflowTrimmingViewModel>("WorkflowTrimmingTask_Fields_Edit", async model =>
+            {
+                model.Disabled = settings.Disabled;
+                model.LastRunUtc = (await _workflowTrimmingStateDocumentManager.GetOrCreateImmutableAsync()).LastRunUtc;
+            }).Location(l => l.Zone("Content", "6").Card(S["Background task"], "20"))
+            .OnGroup(GroupId)
+        );
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, WorkflowTrimmingSettings settings, UpdateEditorContext context)

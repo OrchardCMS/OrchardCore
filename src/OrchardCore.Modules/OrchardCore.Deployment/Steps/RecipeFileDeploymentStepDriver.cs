@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.Deployment.ViewModels;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -6,6 +7,13 @@ namespace OrchardCore.Deployment.Steps;
 
 public sealed class RecipeFileDeploymentStepDriver : DisplayDriver<DeploymentStep, RecipeFileDeploymentStep>
 {
+    internal readonly IStringLocalizer S;
+
+    public RecipeFileDeploymentStepDriver(IStringLocalizer<RecipeFileDeploymentStepDriver> stringLocalizer)
+    {
+        S = stringLocalizer;
+    }
+
     public override Task<IDisplayResult> DisplayAsync(RecipeFileDeploymentStep step, BuildDisplayContext context)
     {
         return
@@ -17,18 +25,23 @@ public sealed class RecipeFileDeploymentStepDriver : DisplayDriver<DeploymentSte
 
     public override IDisplayResult Edit(RecipeFileDeploymentStep step, BuildEditorContext context)
     {
-        return Initialize<RecipeFileDeploymentStepViewModel>("RecipeFileDeploymentStep_Fields_Edit", model =>
-        {
-            model.RecipeName = step.RecipeName;
-            model.DisplayName = step.DisplayName;
-            model.Description = step.Description;
-            model.Author = step.Author;
-            model.WebSite = step.WebSite;
-            model.Version = step.Version;
-            model.IsSetupRecipe = step.IsSetupRecipe;
-            model.Categories = step.Categories;
-            model.Tags = step.Tags;
-        }).Location("Content");
+        return Combine(
+            Initialize<RecipeFileDeploymentStepViewModel>("RecipeFileDeploymentStep_Fields_Edit", model =>
+            {
+                model.RecipeName = step.RecipeName;
+                model.DisplayName = step.DisplayName;
+                model.Description = step.Description;
+                model.IsSetupRecipe = step.IsSetupRecipe;
+            }).Location(l => l.Zone("Content", "1").Card(S["General"], "10")),
+            Initialize<RecipeFileDeploymentStepViewModel>("RecipeFileDeploymentStepMetadata_Fields_Edit", model =>
+            {
+                model.Author = step.Author;
+                model.WebSite = step.WebSite;
+                model.Version = step.Version;
+                model.Categories = step.Categories;
+                model.Tags = step.Tags;
+            }).Location(l => l.Zone("Content", "2").Card(S["Metadata"], "20"))
+        );
     }
 
     public override async Task<IDisplayResult> UpdateAsync(RecipeFileDeploymentStep step, UpdateEditorContext context)

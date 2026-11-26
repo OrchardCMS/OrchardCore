@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -10,9 +11,12 @@ public sealed class LuceneIndexRebuildDeploymentStepDriver : DisplayDriver<Deplo
 {
     private readonly IIndexProfileStore _indexStore;
 
-    public LuceneIndexRebuildDeploymentStepDriver(IIndexProfileStore indexStore)
+    internal readonly IStringLocalizer S;
+
+    public LuceneIndexRebuildDeploymentStepDriver(IIndexProfileStore indexStore, IStringLocalizer<LuceneIndexRebuildDeploymentStepDriver> stringLocalizer)
     {
         _indexStore = indexStore;
+        S = stringLocalizer;
     }
 
     public override Task<IDisplayResult> DisplayAsync(LuceneIndexRebuildDeploymentStep step, BuildDisplayContext context)
@@ -31,7 +35,7 @@ public sealed class LuceneIndexRebuildDeploymentStepDriver : DisplayDriver<Deplo
             model.IncludeAll = step.IncludeAll;
             model.IndexNames = step.IndexNames;
             model.AllIndexNames = (await _indexStore.GetByProviderAsync(LuceneConstants.ProviderName)).Select(x => x.IndexName).ToArray();
-        }).Location("Content");
+        }).Location(l => l.Zone("Content").Card(S["Indexes"], "10"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(LuceneIndexRebuildDeploymentStep rebuildIndexStep, UpdateEditorContext context)

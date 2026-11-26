@@ -146,7 +146,8 @@ public class ZoneShapes : IShapeAttributeProvider
             return ContentKey;
         });
 
-        if (groupings.Count > 1)
+        // A single card is rendered too, unless it is the default group of the shapes placed in no card.
+        if (groupings.Count > 1 || (groupings.Count == 1 && groupings.First().Key != ContentKey))
         {
             var container = await ShapeFactory.CreateAsync<GroupViewModel>("CardContainer", m =>
             {
@@ -175,6 +176,11 @@ public class ZoneShapes : IShapeAttributeProvider
                     m.Identifier = Shape.Identifier;
                     m.Grouping = orderedGrouping;
                 });
+
+                if (Shape.Properties.ContainsKey(GroupShapes.InTabPaneProperty))
+                {
+                    groupingShape.Properties[GroupShapes.InTabPaneProperty] = true;
+                }
 
                 foreach (var item in orderedGrouping)
                 {

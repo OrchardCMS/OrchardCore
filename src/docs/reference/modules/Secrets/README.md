@@ -154,7 +154,7 @@ Register the named client in the host as shown in [Azure Key Vault Store](#azure
 
 ### Enabling the Feature
 
-1. Navigate to **Admin → Configuration → Features**
+1. Navigate to **Admin → Tools → Features**
 2. Search for "Secrets"
 3. Click **Enable** on the "Secrets" feature
 
@@ -326,7 +326,7 @@ builder.AddKeyedAzureClient<SecretClient, SecretClientSettings>(
 #pragma warning restore SCME0002
 ```
 
-Here `builder` is an `IHostApplicationBuilder`. The service key (`SecretClient`) is independent of the configuration path (`AzureClients:SecretClient`); `AzureClient` must match the service key exactly. JSON configuration alone does not register a client. The module only resolves an existing keyed registration; it does not construct clients, choose credentials, or fall back to an unkeyed client. Missing or blank names, unregistered clients, and the reserved alias key `OrchardCore.Secrets.AzureKeyVault` fail explicitly.
+Here `builder` is an `IHostApplicationBuilder`. The service key (`SecretClient`) is independent of the configuration path (`AzureClients:SecretClient`); `AzureClient` must match the service key exactly. JSON configuration alone does not register a client. The module only resolves an existing keyed registration; it does not construct clients, choose credentials, or fall back to an unkeyed client. A missing or blank name, an unregistered client, or the reserved alias key `OrchardCore.Secrets.AzureKeyVault` leaves the store inactive, see [Missing or Invalid Configuration](#missing-or-invalid-configuration).
 
 `SecretClientSettings` binds the global client configuration, including `VaultUri`, `Credential`, and `Options`. Select an appropriate token credential in the host configuration. Key Vault does not support API-key authentication.
 
@@ -370,6 +370,12 @@ These namespaces prevent accidental cross-tenant access through the store but ar
 Deletion is a normal Key Vault soft delete. It never purges secrets, so purge permission is not required and purge protection remains effective. Azure's retention rules may prevent reusing a deleted name until it is recovered or its retention period ends.
 
 The store is immutable when editing a secret in the admin UI. Edit and delete operations target the displayed store only. Clearing a description or expiration explicitly removes that metadata; programmatic saves without a `SecretSaveOptions` object preserve it.
+
+#### Missing or Invalid Configuration
+
+When `AzureClient` is missing or blank, is the reserved alias key `OrchardCore.Secrets.AzureKeyVault`, or doesn't name a `SecretClient` registered by the host, or when `NamePrefix` is blank or longer than 256 characters, an error is logged and the tenant keeps running without the Azure Key Vault store. The store isn't listed in the admin, and new secrets are saved to the database store. Fix the configuration and restart the application to activate it.
+
+The keyed alias isn't registered in that case either, so a service that can run without it should resolve it with `GetKeyedService<SecretClient>(AzureKeyVaultSecretStore.SecretClientServiceKey)` and handle `null`.
 
 #### Local development with the Azure Key Vault Emulator
 
@@ -607,7 +613,7 @@ In both cases, the source needs only the public key.
 
 #### Creating an Encrypted Export
 
-1. Go to **Configuration → Import/Export → Deployment Plans**
+1. Go to **Tools → Deployments → Plans**
 2. Create or edit a deployment plan
 3. Add a **Secrets** step
 4. In the **Encryption Key** dropdown, select your encryption key (e.g., `Deployment.EncryptionKey`)

@@ -1,0 +1,8 @@
+@model ShapeViewModel<DataPipelineEntry>
+
+@{
+    var pipeline = Model.Value.Pipeline;
+}
+
+
+<a asp-controller="Admin" asp-action="Edit" asp-route-pipelineId="@pipeline.PipelineId" class="btn btn-primary btn-sm">@(Model.Value.CanManage ? T["Edit"] : T["View"])</a>

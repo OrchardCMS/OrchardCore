@@ -214,11 +214,17 @@ public sealed class Startup : StartupBase
         services.AddTagHelpers<ImageResizeTagHelper>();
         services.AddTagHelpers<AnchorTagHelper>();
 
+        // Builds the Media options page.
+        services.AddDisplayDriver<MediaOptionsViewModel, MediaOptionsDisplayDriver>();
+
         // Media Profiles
         services.AddScoped<MediaProfilesManager>();
 
         // Builds the rows of the media profiles admin list.
         services.AddDisplayDriver<MediaProfileEntry, MediaProfileEntryDisplayDriver>();
+
+        // Builds the editor of the pages creating and editing a media profile.
+        services.AddDisplayDriver<MediaProfileViewModel, MediaProfileDisplayDriver>();
         services.AddScoped<IMediaProfileService, MediaProfileService>();
         services.AddRecipeExecutionStep<MediaProfileStep>();
 

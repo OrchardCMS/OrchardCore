@@ -35,7 +35,7 @@ public sealed class UrlRedirectRuleHandler : RewriteRuleHandlerBase
         {
             context.Result.Fail(new ValidationResult(S["The Match URL Pattern is required."], [nameof(UrlRedirectSourceMetadata.Pattern)]));
         }
-        else if (!PatternHelper.IsValidRegex(metadata.Pattern))
+        else if (!PatternHelper.IsValidMatchPattern(metadata.Pattern))
         {
             context.Result.Fail(new ValidationResult(S["A valid Match URL Pattern is required."], [nameof(UrlRedirectSourceMetadata.Pattern)]));
         }
@@ -44,7 +44,7 @@ public sealed class UrlRedirectRuleHandler : RewriteRuleHandlerBase
         {
             context.Result.Fail(new ValidationResult(S["The Substitution URL Pattern is required."], [nameof(UrlRedirectSourceMetadata.SubstitutionPattern)]));
         }
-        else if (!PatternHelper.IsValidRegex(metadata.SubstitutionPattern))
+        else if (!PatternHelper.IsValidSubstitutionPattern(metadata.SubstitutionPattern))
         {
             context.Result.Fail(new ValidationResult(S["A valid Substitution URL Pattern is required."], [nameof(UrlRedirectSourceMetadata.SubstitutionPattern)]));
         }

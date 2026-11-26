@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -20,18 +21,22 @@ public sealed class GitHubAuthenticationSettingsDisplayDriver : SiteDisplayDrive
     private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly IServiceProvider _serviceProvider;
 
+    internal readonly IStringLocalizer S;
+
     public GitHubAuthenticationSettingsDisplayDriver(
         IShellReleaseManager shellReleaseManager,
         IAuthorizationService authorizationService,
         IHttpContextAccessor httpContextAccessor,
         IDataProtectionProvider dataProtectionProvider,
-        IServiceProvider serviceProvider)
+        IServiceProvider serviceProvider,
+        IStringLocalizer<GitHubAuthenticationSettingsDisplayDriver> stringLocalizer)
     {
         _shellReleaseManager = shellReleaseManager;
         _authorizationService = authorizationService;
         _httpContextAccessor = httpContextAccessor;
         _dataProtectionProvider = dataProtectionProvider;
         _serviceProvider = serviceProvider;
+        S = stringLocalizer;
     }
 
     protected override string SettingsGroupId
@@ -54,7 +59,7 @@ public sealed class GitHubAuthenticationSettingsDisplayDriver : SiteDisplayDrive
                 model.CallbackUrl = settings.CallbackPath.Value;
             }
             model.SaveTokens = settings.SaveTokens;
-        }).Location("Content:5")
+        }).Location(l => l.Zone("Content", "5").Card(S["Application"], "10"))
         .OnGroup(SettingsGroupId);
     }
 

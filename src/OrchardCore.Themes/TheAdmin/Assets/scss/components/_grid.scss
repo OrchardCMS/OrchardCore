@@ -2,11 +2,13 @@
 // Creates mixins to target all breakpoints
 // ------------------------------
 @use 'sass:math';
-@import '../mixins/_grid';
+@use 'sass:map';
+@use '../mixins/grid' as *;
+@use '../config' as *;
 
 .ta-col-grouping {
     // Column fixes
-    @each $breakpoint in map-keys($grid-breakpoints) {
+    @each $breakpoint in map.keys($grid-breakpoints) {
         @if $grid-row-columns > 0 {
             // Column fixes
             @include make-col-grouping(#{$breakpoint}); // Include a fix for unspecified cols, i.e. col-md

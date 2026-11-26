@@ -9,5 +9,5 @@
 
 <div class="form-check">
     <input type="checkbox" class="form-check-input" name="taskNames" value="@Model.Value.Name" id="@checkboxId">
-    <label class="form-check-label" for="@checkboxId">&nbsp;</label>
+    <label class="form-check-label" for="@checkboxId">&nbsp;<span class="visually-hidden">@T["Select {0}", Model.Value.Name]</span></label>
 </div>

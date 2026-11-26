@@ -7,6 +7,9 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Media.Core.Helpers;
 using OrchardCore.Settings;
@@ -23,6 +26,8 @@ public sealed class AdminController : Controller
     private readonly IAuthorizationService _authorizationService;
     private readonly MediaOptions _mediaOptions;
     private readonly FileSizeHelper _fileSizeHelper;
+    private readonly IDisplayManager<MediaOptionsViewModel> _optionsDisplayManager;
+    private readonly IUpdateModelAccessor _updateModelAccessor;
 
     internal readonly IStringLocalizer S;
 
@@ -31,12 +36,16 @@ public sealed class AdminController : Controller
         IAuthorizationService authorizationService,
         IOptions<MediaOptions> options,
         FileSizeHelper fileSizeHelper,
+        IDisplayManager<MediaOptionsViewModel> optionsDisplayManager,
+        IUpdateModelAccessor updateModelAccessor,
         IStringLocalizer<AdminController> stringLocalizer)
     {
         _mediaFileStore = mediaFileStore;
         _authorizationService = authorizationService;
         _mediaOptions = options.Value;
         _fileSizeHelper = fileSizeHelper;
+        _optionsDisplayManager = optionsDisplayManager;
+        _updateModelAccessor = updateModelAccessor;
         S = stringLocalizer;
     }
 
@@ -88,7 +97,19 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        return View(_mediaOptions);
+        var model = new MediaOptionsViewModel
+        {
+            Options = _mediaOptions,
+            StorageName = _mediaFileStore.StorageName,
+            HasHierarchicalNamespace = _mediaFileStore.Capabilities.HasHierarchicalNamespace,
+            SupportsAtomicMove = _mediaFileStore.Capabilities.SupportsAtomicMove,
+            SignalrEnabled = HttpContext.RequestServices.GetService<IHubContext<MediaHub>>() != null,
+            TusEnabled = HttpContext.RequestServices.IsMediaTusEnabled(),
+        };
+
+        var shape = await _optionsDisplayManager.BuildDisplayAsync(model, _updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.DetailAdmin);
+
+        return View(shape);
     }
 
     public async Task<ActionResult<object>> GetPermittedStorage()

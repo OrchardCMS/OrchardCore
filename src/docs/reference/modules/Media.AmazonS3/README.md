@@ -275,3 +275,10 @@ The AWS settings such as `Region` are read from the `Media:AmazonS3` section, as
 
 !!! note
     Templating the configuration and configuring a bucket per tenant, as well as using a local emulator work the same way as for Amazon S3 Media Storage; follow its documentation above.
+
+## Video
+
+This video keeps the media files in an Amazon S3 bucket.
+
+<!-- video:media-amazon-s3 -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/Y-kcW6Njz18" title="Amazon S3 Media Storage: Keep Media in an S3 Bucket" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

@@ -3,25 +3,15 @@ using OrchardCore.DisplayManagement;
 namespace OrchardCore.Workflows.ViewModels;
 
 /// <summary>
-/// A server-rendered form returned to the designer as <c>{ valid, content, scripts, styles }</c>: either an
-/// activity editor shape, or a partial view.
+/// A server-rendered form returned to the designer as <c>{ valid, content, scripts, styles }</c>: the editor of an
+/// activity, or of the properties of the workflow type.
 /// </summary>
 public sealed class WorkflowDesignerFragmentViewModel
 {
     /// <summary>
-    /// The shape to render, for activity editors.
+    /// The editor shape to render.
     /// </summary>
     public IShape Shape { get; init; }
-
-    /// <summary>
-    /// The partial view to render when <see cref="Shape"/> is not set.
-    /// </summary>
-    public string PartialName { get; init; }
-
-    /// <summary>
-    /// The model of <see cref="PartialName"/>.
-    /// </summary>
-    public object PartialModel { get; init; }
 
     /// <summary>
     /// The document identifier of the workflow type, exposed as <c>data-workflow-type-id</c>.

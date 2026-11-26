@@ -16,7 +16,7 @@ Sitemap Indexes are configured by creating a Sitemap Index and selecting which S
 
 - Ensure the Sitemaps feature is enabled.
 
-- Go to _Tools -> Search Engine Optimization -> Sitemaps_
+- Go to **Tools → Search Engine Optimization → Sitemaps**
 
 - Create a new Sitemap.
 
@@ -118,11 +118,11 @@ Sitemaps are cached on a tenant by tenant basic in the `wwwroot/sm-cache` folder
 
 The cache is automatically cleared when content items are published.
 
-To clear the cache manually use the _Tools -> Search Engine Optimization -> Sitemaps Cache_ feature.
+To clear the cache manually use the **Tools → Search Engine Optimization → Sitemaps Cache** feature.
 
 ## `robots.txt` File
 
-When both `SEO` and `Sitemaps` features are enabled and no `robots.txt` file is found on the filesystem, the sitemap indexes and sitemaps are added to the `robots.txt` file by default. This can be changed by navigating to **Settings** → **Search** → **Search Engine Optimization** → **Robots**.
+When both `SEO` and `Sitemaps` features are enabled and no `robots.txt` file is found on the filesystem, the sitemap indexes and sitemaps are added to the `robots.txt` file by default. This can be changed by navigating to **Settings → Search → Search Engine Optimization → Robots**.
 
 ## Recipe Configuration
 
@@ -148,6 +148,21 @@ Sitemaps robots settings can be configured using the `Settings` recipe step:
 ## Video
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/fG_rFD0wffw" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video creates a sitemap that helps search engines find your pages.
+
+<!-- video:sitemaps-create -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/qysbJTqgEzY" title="Sitemaps: Help Search Engines Find Your Pages" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video groups sitemaps in a sitemap index and explains the sitemaps cache.
+
+<!-- video:sitemaps-indexes-and-cache -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/-UlSXMG0xPs" title="Sitemap Indexes and the Sitemaps Cache" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video adds localized content and Razor Pages to sitemaps.
+
+<!-- video:sitemaps-localized-and-razor-pages -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/1nxII1bpURA" title="Sitemaps for Localized Content and Razor Pages" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ## CREDITS
 

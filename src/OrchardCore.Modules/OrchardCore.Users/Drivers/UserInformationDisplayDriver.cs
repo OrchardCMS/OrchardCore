@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Settings;
@@ -15,13 +16,17 @@ public sealed class UserInformationDisplayDriver : DisplayDriver<User>
     private readonly IAuthorizationService _authorizationService;
     private readonly ISiteService _siteService;
 
+    internal readonly IStringLocalizer S;
+
     public UserInformationDisplayDriver(
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
+        IStringLocalizer<UserInformationDisplayDriver> stringLocalizer,
         ISiteService siteService)
     {
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
+        S = stringLocalizer;
         _siteService = siteService;
     }
 
@@ -40,13 +45,13 @@ public sealed class UserInformationDisplayDriver : DisplayDriver<User>
             {
                 model.UserName = user.UserName;
                 model.AllowEditing = context.IsNew || (settings.AllowChangingUsername && canEditUserInfo);
-            }).Location("Content:1"),
+            }).Location(l => l.Zone("Content", "1").Card(S["Account"], "10")),
 
             Initialize<EditUserEmailViewModel>("UserEmail_Edit", model =>
             {
                 model.Email = user.Email;
                 model.AllowEditing = context.IsNew || (settings.AllowChangingEmail && canEditUserInfo);
-            }).Location("Content:1.3")
+            }).Location(l => l.Zone("Content", "1.3").Card(S["Account"], "10"))
         );
     }
 

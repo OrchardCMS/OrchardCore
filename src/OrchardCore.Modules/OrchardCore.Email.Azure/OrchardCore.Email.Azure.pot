@@ -23,6 +23,16 @@ msgstr ""
 
 #: Drivers/AzureEmailSettingsDisplayDriver.cs
 msgctxt "OrchardCore.Azure.Email.Drivers.AzureEmailSettingsDisplayDriver"
+msgid "Azure Communication Services"
+msgstr ""
+
+#: Drivers/AzureEmailSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Azure.Email.Drivers.AzureEmailSettingsDisplayDriver"
+msgid "Azure provider"
+msgstr ""
+
+#: Drivers/AzureEmailSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Azure.Email.Drivers.AzureEmailSettingsDisplayDriver"
 msgid "Connection string is required."
 msgstr ""
 

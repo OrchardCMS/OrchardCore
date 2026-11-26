@@ -49,7 +49,7 @@ public sealed partial class TextFieldSettingsDriver : ContentPartFieldDefinition
                 new(S["Generated Hidden"], nameof(FieldBehaviorType.GeneratedHidden)),
                 new(S["Generated Disabled"], nameof(FieldBehaviorType.GeneratedDisabled)),
             };
-        }).Location("Content");
+        }).Location(l => l.Zone("Content").Card(S["Settings"], "20"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)

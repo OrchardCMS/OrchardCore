@@ -69,7 +69,7 @@ public sealed class ElasticsearchQueryDisplayDriver : DisplayDriver<Query>
             model.Index = viewModel.Index;
             model.Indexes = (await _store.GetByProviderAsync(ElasticsearchConstants.ProviderName)).Select(x => new SelectListItem(x.Name, x.Name)).ToArray();
             model.ReturnContentItems = query.ReturnContentItems;
-        }).Location("Content:5");
+        }).Location(l => l.Zone("Content", "5").Card(S["Query"], "20"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(Query query, UpdateEditorContext context)

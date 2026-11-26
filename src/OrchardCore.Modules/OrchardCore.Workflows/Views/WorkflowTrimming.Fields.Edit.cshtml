@@ -3,16 +3,6 @@
 @using OrchardCore.Workflows.Trimming.ViewModels
 @model WorkflowTrimmingViewModel
 
-<div class="ocat-wrapper">
-    <div class="ocat-end-offset">
-        <div class="form-check">
-            <input type="checkbox" class="form-check-input" asp-for="Disabled" checked="@Model.Disabled" />
-            <label class="form-check-label" asp-for="Disabled">@T["Disable"]</label>
-            <span class="hint dashed">@T["Whether the task is disabled."]</span>
-        </div>
-    </div>
-</div>
-
 <div class="ocat-wrapper" asp-validation-class-for="RetentionDays">
     <label asp-for="RetentionDays" class="ocat-label">@T["Retention period"]</label>
     <div class="ocat-end">
@@ -21,25 +11,13 @@
     </div>
 </div>
 
-<div class="ocat-wrapper" asp-validation-class-for="LastRunUtc">
-    <label asp-for="LastRunUtc" class="ocat-label">@T["Last run"]</label>
-    <div class="ocat-end">
-        <div class="form-control">
-            @(Model.LastRunUtc.HasValue
-                ? await DisplayAsync(await New.DateTime(Utc: Model.LastRunUtc.Value, Format: "g"))
-                : T["Never"])
-        </div>
-        <span class="hint">@T["The last time the background trimming task was run."]</span>
-    </div>
-</div>
-
 @{
     var statusIterator = 0;
 }
 
 <div class="ocat-wrapper">
-    <label asp-for="Statuses" class="ocat-label">@T["Statuses"]</label>
-    <div class="ocat-end">
+    <span id="@Html.IdFor(m => m.Statuses)_Label" class="ocat-label">@T["Statuses"]</span>
+    <div class="ocat-end" role="group" aria-labelledby="@Html.IdFor(m => m.Statuses)_Label">
         @foreach (var status in Enum.GetValues<WorkflowStatus>())
         {
             <div class="col-xs-12">

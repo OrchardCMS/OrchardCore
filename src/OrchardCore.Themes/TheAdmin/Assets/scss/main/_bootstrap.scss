@@ -1,0 +1,264 @@
+// ---------------------------------------------------------------------------
+// Bootstrap 5.3, rebranded.
+//
+// Bootstrap is never compiled here: the admin keeps loading Orchard Core's own
+// Bootstrap build. Bootstrap 5.3
+// reads most colors from custom properties, which are redefined below; the few
+// components that compile their colors in (buttons, focus rings, checks, pills,
+// pagination, list groups, dropdowns, progress bars) are given the brand colors
+// through their own component variables.
+// ---------------------------------------------------------------------------
+
+:root,
+[data-bs-theme="light"],
+:root[data-bs-theme="dark"],
+[data-bs-theme="dark"] {
+    --bs-primary: var(--ta-primary);
+    --bs-primary-rgb: var(--ta-primary-rgb);
+    --bs-primary-text-emphasis: var(--ta-primary-emphasis);
+    --bs-primary-bg-subtle: var(--ta-primary-subtle);
+    --bs-primary-border-subtle: var(--ta-primary-border-subtle);
+    --bs-link-color: var(--ta-link);
+    --bs-link-color-rgb: var(--ta-link-rgb);
+    --bs-link-hover-color: var(--ta-link-hover);
+    --bs-link-hover-color-rgb: var(--ta-link-hover-rgb);
+    --bs-focus-ring-color: rgba(var(--ta-link-rgb), 0.25);
+    --bs-heading-color: var(--ta-heading);
+    --bs-border-color: var(--ta-border);
+    --bs-secondary-color: var(--ta-muted);
+    --bs-tertiary-bg: var(--ta-surface-muted);
+}
+
+:root[data-bs-theme="dark"],
+[data-bs-theme="dark"] {
+    /* The body color is the color of the surfaces (cards, inputs, menus), the page itself is darker. */
+    --bs-body-bg: var(--ta-surface);
+    --bs-body-bg-rgb: var(--ta-surface-rgb);
+    --bs-secondary-bg: var(--ta-secondary-bg);
+    --bs-body-color: var(--ta-body-color);
+    --bs-body-color-rgb: var(--ta-body-color-rgb);
+}
+
+:root {
+    --bs-body-font-family: var(--ta-font-family);
+    --bs-body-font-size: var(--ta-font-size-md);
+    --bs-body-line-height: var(--ta-line-height);
+    --bs-border-radius: var(--ta-radius-md);
+    --bs-border-radius-sm: var(--ta-radius-sm);
+    --bs-border-radius-lg: var(--ta-radius);
+    --bs-border-radius-xl: var(--ta-radius-lg);
+    --bs-border-radius-xxl: calc(2rem * var(--ta-radius-scale));
+}
+
+body {
+    background-color: var(--ta-page-bg);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+// Headings use the heading typeface and color of the scheme, at one weight.
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+    font-family: var(--ta-heading-font-family);
+    font-weight: var(--ta-font-weight-strong);
+    line-height: var(--ta-line-height-tight);
+    color: var(--ta-heading);
+}
+
+// Buttons.
+.btn {
+    font-weight: var(--ta-font-weight-strong);
+}
+
+strong,
+b {
+    font-weight: var(--ta-font-weight-strong);
+}
+
+.btn-primary {
+    --bs-btn-color: var(--ta-on-primary);
+    --bs-btn-hover-color: var(--ta-on-primary);
+    --bs-btn-active-color: var(--ta-on-primary);
+    --bs-btn-disabled-color: var(--ta-on-primary);
+    --bs-btn-bg: var(--ta-primary);
+    --bs-btn-border-color: var(--ta-primary);
+    --bs-btn-hover-bg: var(--ta-primary-hover);
+    --bs-btn-hover-border-color: var(--ta-primary-hover);
+    --bs-btn-active-bg: var(--ta-primary-active);
+    --bs-btn-active-border-color: var(--ta-primary-active);
+    --bs-btn-disabled-bg: var(--ta-primary);
+    --bs-btn-disabled-border-color: var(--ta-primary);
+    --bs-btn-focus-shadow-rgb: var(--ta-primary-rgb);
+}
+
+.btn-outline-primary {
+    --bs-btn-color: var(--ta-link);
+    --bs-btn-border-color: var(--ta-primary);
+    --bs-btn-hover-color: var(--ta-on-primary);
+    --bs-btn-active-color: var(--ta-on-primary);
+    --bs-btn-hover-bg: var(--ta-primary);
+    --bs-btn-hover-border-color: var(--ta-primary);
+    --bs-btn-active-bg: var(--ta-primary-active);
+    --bs-btn-active-border-color: var(--ta-primary-active);
+    --bs-btn-disabled-color: var(--ta-link);
+    --bs-btn-disabled-border-color: var(--ta-primary);
+    --bs-btn-focus-shadow-rgb: var(--ta-primary-rgb);
+}
+
+[data-bs-theme="dark"] .btn-outline-primary {
+    --bs-btn-color: var(--ta-sky);
+    --bs-btn-border-color: var(--ta-sky);
+}
+
+// Focus rings and form controls.
+// The boundary of a field is drawn in the control border color (3:1 against the page, WCAG 1.4.11), and the focus
+// takes the focus color on the border, which carries the contrast, with a soft halo of it around the field.
+.form-control,
+.form-select,
+.form-check-input {
+    border-color: var(--ta-control-border);
+}
+
+.form-control:focus,
+.form-select:focus,
+.form-check-input:focus {
+    border-color: var(--ta-focus-color);
+    box-shadow: var(--ta-focus-halo);
+}
+
+.form-check-input:checked,
+.form-check-input[type="checkbox"]:indeterminate {
+    background-color: var(--ta-primary);
+    border-color: var(--ta-control-checked-border);
+}
+
+// The marks are drawn in the color of text on the primary (dark on a light primary).
+.form-check-input:checked[type="checkbox"] {
+    --bs-form-check-bg-image: var(--ta-check-icon);
+}
+
+.form-check-input[type="checkbox"]:indeterminate {
+    --bs-form-check-bg-image: var(--ta-indeterminate-icon);
+}
+
+.form-check-input:checked[type="radio"] {
+    --bs-form-check-bg-image: var(--ta-radio-icon);
+}
+
+.form-switch .form-check-input:checked {
+    --bs-form-switch-bg: var(--ta-switch-icon);
+}
+
+.text-bg-primary {
+    color: var(--ta-on-primary) !important;
+}
+
+.form-switch .form-check-input:focus:not(:checked) {
+    // Bootstrap's switch icon (MIT, see THIRD-PARTY-NOTICES.txt).
+    --bs-form-switch-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%2395c0dd'/%3e%3c/svg%3e");
+}
+
+.form-range::-webkit-slider-thumb {
+    background-color: var(--ta-primary);
+}
+
+.form-range::-moz-range-thumb {
+    background-color: var(--ta-primary);
+}
+
+// Buttons, links and every other control show a solid outline when focused from the keyboard: Bootstrap's own halo is a
+// 50% tint, under the 3:1 a focus indicator needs. Fields, even those with a tabindex, keep the focus of a field above.
+.btn:focus-visible,
+.btn-close:focus-visible,
+.page-link:focus-visible,
+.nav-link:focus-visible,
+.dropdown-item:focus-visible,
+.list-group-item-action:focus-visible,
+.accordion-button:focus-visible,
+a:focus-visible,
+summary:focus-visible,
+[tabindex]:not(input, select, textarea, .form-control, .form-select, .form-check-input):focus-visible {
+    outline: 2px solid var(--ta-focus-color);
+    outline-offset: 2px;
+    box-shadow: none;
+}
+
+// Components compiling their own colors.
+.nav-pills {
+    --bs-nav-pills-link-active-color: var(--ta-on-primary);
+    --bs-nav-pills-link-active-bg: var(--ta-primary);
+}
+
+.pagination {
+    --bs-pagination-active-color: var(--ta-on-primary);
+    --bs-pagination-active-bg: var(--ta-primary);
+    --bs-pagination-active-border-color: var(--ta-primary);
+    --bs-pagination-focus-box-shadow: none;
+    --bs-pagination-border-radius: var(--bs-border-radius);
+}
+
+.list-group {
+    --bs-list-group-active-color: var(--ta-on-primary);
+    --bs-list-group-active-bg: var(--ta-primary);
+    --bs-list-group-active-border-color: var(--ta-primary);
+}
+
+.dropdown-menu {
+    --bs-dropdown-link-active-color: var(--ta-on-primary);
+    --bs-dropdown-link-active-bg: var(--ta-primary);
+    --bs-dropdown-border-color: var(--ta-border);
+    --bs-dropdown-box-shadow: var(--ta-shadow-lg);
+    --bs-dropdown-border-radius: var(--ta-radius);
+    --bs-dropdown-item-border-radius: var(--bs-border-radius-sm);
+    --bs-dropdown-item-padding-x: 0.75rem;
+    padding: 0.375rem;
+    box-shadow: var(--bs-dropdown-box-shadow);
+}
+
+.dropdown-item {
+    border-radius: var(--bs-dropdown-item-border-radius);
+}
+
+.progress,
+.progress-stacked {
+    --bs-progress-bar-bg: var(--ta-primary);
+}
+
+.accordion {
+    --bs-accordion-btn-focus-box-shadow: none;
+}
+
+.modal {
+    --bs-modal-border-radius: var(--ta-radius-lg);
+    --bs-modal-border-color: var(--ta-border);
+    --bs-modal-box-shadow: var(--ta-shadow-lg);
+}
+
+// Bootstrap's info and warning colors are fills, too light for text on a light surface (about 2:1). Where they color
+// text, an icon or the outline of a button, light mode uses darker shades of them that reach 4.5:1. The filled
+// buttons, badges and alerts keep Bootstrap's colors, which pass with their dark text.
+:root:not([data-bs-theme="dark"]) {
+    .text-info,
+    .link-info {
+        color: #087990 !important;
+    }
+
+    .text-warning,
+    .link-warning {
+        color: #8a6a04 !important;
+    }
+
+    .btn-outline-info {
+        --bs-btn-color: #087990;
+        --bs-btn-border-color: #087990;
+        --bs-btn-disabled-color: #087990;
+        --bs-btn-disabled-border-color: #087990;
+    }
+
+    .btn-outline-warning {
+        --bs-btn-color: #8a6a04;
+        --bs-btn-border-color: #8a6a04;
+        --bs-btn-disabled-color: #8a6a04;
+        --bs-btn-disabled-border-color: #8a6a04;
+    }
+}

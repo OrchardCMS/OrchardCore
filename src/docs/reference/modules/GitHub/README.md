@@ -9,7 +9,7 @@ Authenticates users with their GitHub Account.
 Create an OAuth app in the [GitHub Developer applications](https://GitHub.com/settings/developers).  
 In the app details, you must configure the Authorization Callback URL. The default url in OrchardCore is [tenant]/signin-github.
 
-Configuration can be set through the _GitHub -> Authenticate with GitHub_ settings menu in the admin dashboard.
+Configuration can be set through the **GitHub → Authenticate with GitHub** settings menu in the admin dashboard.
 
 Available settings are:
 

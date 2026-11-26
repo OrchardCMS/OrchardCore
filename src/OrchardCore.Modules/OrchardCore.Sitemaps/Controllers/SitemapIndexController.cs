@@ -26,6 +26,7 @@ public sealed class SitemapIndexController : Controller
     private readonly IAuthorizationService _authorizationService;
     private readonly ISitemapIdGenerator _sitemapIdGenerator;
     private readonly ISitemapManager _sitemapManager;
+    private readonly IDisplayManager<CreateSitemapIndexViewModel> _displayManager;
     private readonly PagerOptions _pagerOptions;
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly INotifier _notifier;
@@ -39,6 +40,7 @@ public sealed class SitemapIndexController : Controller
         IAuthorizationService authorizationService,
         ISitemapIdGenerator sitemapIdGenerator,
         ISitemapManager sitemapManager,
+        IDisplayManager<CreateSitemapIndexViewModel> displayManager,
         IOptions<PagerOptions> pagerOptions,
         IUpdateModelAccessor updateModelAccessor,
         IShapeFactory shapeFactory,
@@ -50,6 +52,7 @@ public sealed class SitemapIndexController : Controller
         _authorizationService = authorizationService;
         _sitemapIdGenerator = sitemapIdGenerator;
         _sitemapManager = sitemapManager;
+        _displayManager = displayManager;
         _pagerOptions = pagerOptions.Value;
         _updateModelAccessor = updateModelAccessor;
         _notifier = notifier;
@@ -149,6 +152,8 @@ public sealed class SitemapIndexController : Controller
             ContainableSitemaps = containableSitemaps,
         };
 
+        model.Editor = await _displayManager.BuildEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: true);
+
         return View(model);
     }
 
@@ -171,6 +176,8 @@ public sealed class SitemapIndexController : Controller
         };
 
         sitemap.SitemapSources.Add(indexSource);
+
+        model.Editor = await _displayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: true);
 
         if (ModelState.IsValid)
         {
@@ -240,6 +247,8 @@ public sealed class SitemapIndexController : Controller
             ContainableSitemaps = containableSitemaps,
         };
 
+        model.Editor = await _displayManager.BuildEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: false);
+
         return View(model);
     }
 
@@ -261,6 +270,8 @@ public sealed class SitemapIndexController : Controller
         var indexSource = sitemap.SitemapSources.FirstOrDefault() as SitemapIndexSource;
 
         model.SitemapIndexSource = indexSource;
+
+        model.Editor = await _displayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: false);
 
         if (ModelState.IsValid)
         {

@@ -42,6 +42,11 @@ msgctxt "OrchardCore.Alias.Settings.AliasPartSettingsDisplayDriver"
 msgid "Pattern doesn't contain a valid Liquid expression. Details: {0}"
 msgstr ""
 
+#: Settings/AliasPartSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Alias.Settings.AliasPartSettingsDisplayDriver"
+msgid "Settings"
+msgstr ""
+
 #: Views/AliasPart.Edit.cshtml
 msgctxt "OrchardCore.Alias.Views.AliasPart.Edit"
 msgid "Alias"

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Localization;
 using OrchardCore.AuditTrail.Services;
 using OrchardCore.AuditTrail.Settings;
 using OrchardCore.AuditTrail.ViewModels;
@@ -17,16 +18,20 @@ public sealed class AuditTrailSettingsDisplayDriver : SiteDisplayDriver<AuditTra
     private readonly IAuthorizationService _authorizationService;
     private readonly IServiceProvider _serviceProvider;
 
+    internal readonly IStringLocalizer S;
+
     public AuditTrailSettingsDisplayDriver(
         IAuditTrailManager auditTrailManager,
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
-        IServiceProvider serviceProvider)
+        IServiceProvider serviceProvider,
+        IStringLocalizer<AuditTrailSettingsDisplayDriver> stringLocalizer)
     {
         _auditTrailManager = auditTrailManager;
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         _serviceProvider = serviceProvider;
+        S = stringLocalizer;
     }
 
     protected override string SettingsGroupId
@@ -39,42 +44,49 @@ public sealed class AuditTrailSettingsDisplayDriver : SiteDisplayDriver<AuditTra
             return null;
         }
 
-        return Initialize<AuditTrailSettingsViewModel>("AuditTrailSettings_Edit", model =>
-        {
-            var categories = _auditTrailManager.DescribeCategories();
+        return Combine(
+            Initialize<AuditTrailSettingsViewModel>("AuditTrailSettings_Edit", model => PopulateViewModel(settings, model))
+                .Location(l => l.Zone("Content", "1").Tab("Events").Card(S["Events"], "10"))
+                .OnGroup(SettingsGroupId),
+            Initialize<AuditTrailSettingsViewModel>("AuditTrailSettingsPrivacy_Edit", model => model.ClientIpAddressAllowed = settings.ClientIpAddressAllowed)
+                .Location(l => l.Zone("Content", "2").Tab("Events").Card(S["Privacy"], "20"))
+                .OnGroup(SettingsGroupId));
+    }
 
-            var settingsGroups = settings.Categories
-                .ToLookup(category => category.Events
-                .FirstOrDefault()?.Category ?? "");
+    private void PopulateViewModel(AuditTrailSettings settings, AuditTrailSettingsViewModel model)
+    {
+        var categories = _auditTrailManager.DescribeCategories();
 
-            var categoriesViewModel = categories
-                .Select(category => new AuditTrailCategorySettingsViewModel()
-                {
-                    Name = category.Name,
-                    LocalizedName = category.LocalizedName(_serviceProvider),
-                    Events = category.Events.Values
-                        .Select(auditTrailEvent =>
+        var settingsGroups = settings.Categories
+            .ToLookup(category => category.Events
+            .FirstOrDefault()?.Category ?? "");
+
+        var categoriesViewModel = categories
+            .Select(category => new AuditTrailCategorySettingsViewModel()
+            {
+                Name = category.Name,
+                LocalizedName = category.LocalizedName(_serviceProvider),
+                Events = category.Events.Values
+                    .Select(auditTrailEvent =>
+                    {
+                        var settings = settingsGroups[auditTrailEvent.Category]
+                            .FirstOrDefault()?.Events
+                            .FirstOrDefault(settings => settings.Name == auditTrailEvent.Name);
+
+                        return new AuditTrailEventSettingsViewModel()
                         {
-                            var settings = settingsGroups[auditTrailEvent.Category]
-                                .FirstOrDefault()?.Events
-                                .FirstOrDefault(settings => settings.Name == auditTrailEvent.Name);
+                            Name = auditTrailEvent.Name,
+                            Category = auditTrailEvent.Category,
+                            LocalizedName = auditTrailEvent.LocalizedName(_serviceProvider),
+                            Description = auditTrailEvent.Description(_serviceProvider),
+                            IsEnabled = auditTrailEvent.IsMandatory || (settings?.IsEnabled ?? auditTrailEvent.IsEnabledByDefault),
+                            IsMandatory = auditTrailEvent.IsMandatory,
+                        };
+                    }).ToArray(),
+            }).ToArray();
 
-                            return new AuditTrailEventSettingsViewModel()
-                            {
-                                Name = auditTrailEvent.Name,
-                                Category = auditTrailEvent.Category,
-                                LocalizedName = auditTrailEvent.LocalizedName(_serviceProvider),
-                                Description = auditTrailEvent.Description(_serviceProvider),
-                                IsEnabled = auditTrailEvent.IsMandatory || (settings?.IsEnabled ?? auditTrailEvent.IsEnabledByDefault),
-                                IsMandatory = auditTrailEvent.IsMandatory,
-                            };
-                        }).ToArray(),
-                }).ToArray();
-
-            model.Categories = categoriesViewModel;
-            model.ClientIpAddressAllowed = settings.ClientIpAddressAllowed;
-        }).Location("Content:1#Events")
-        .OnGroup(SettingsGroupId);
+        model.Categories = categoriesViewModel;
+        model.ClientIpAddressAllowed = settings.ClientIpAddressAllowed;
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, AuditTrailSettings settings, UpdateEditorContext context)

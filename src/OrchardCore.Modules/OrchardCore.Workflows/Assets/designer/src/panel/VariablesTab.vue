@@ -291,6 +291,7 @@ const defaultOf = (variable: VariableDefinition) => formatDefault(variable.defau
                     <p v-if="editor(row) === 'none'" class="small text-secondary mb-0" data-cy="variable-no-default">{{ t("NoDefaultForType") }}</p>
                     <select
                         v-else-if="editor(row) === 'boolean'"
+                        :id="`${ids}-default-${row.key}`"
                         v-model="row.defaultText"
                         class="form-select form-select-sm"
                         :aria-label="t('VariableDefault')"
@@ -303,6 +304,7 @@ const defaultOf = (variable: VariableDefinition) => formatDefault(variable.defau
                     </select>
                     <textarea
                         v-else-if="editor(row) === 'json'"
+                        :id="`${ids}-default-${row.key}`"
                         v-model="row.defaultText"
                         class="form-control form-control-sm font-monospace"
                         rows="3"
@@ -315,6 +317,7 @@ const defaultOf = (variable: VariableDefinition) => formatDefault(variable.defau
                     ></textarea>
                     <input
                         v-else
+                        :id="`${ids}-default-${row.key}`"
                         v-model="row.defaultText"
                         :type="editor(row) === 'number' ? 'number' : editor(row) === 'datetime' ? 'datetime-local' : 'text'"
                         :step="editor(row) === 'number' ? 'any' : undefined"
@@ -327,6 +330,7 @@ const defaultOf = (variable: VariableDefinition) => formatDefault(variable.defau
                     />
 
                     <input
+                        :id="`${ids}-description-${row.key}`"
                         v-model="row.description"
                         type="text"
                         class="form-control form-control-sm"

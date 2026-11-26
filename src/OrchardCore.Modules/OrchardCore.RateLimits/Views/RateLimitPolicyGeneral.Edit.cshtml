@@ -1,0 +1,21 @@
+@model OrchardCore.RateLimits.ViewModels.RateLimitPolicyEditViewModel
+
+<div class="ocat-wrapper" asp-validation-class-for="Name">
+    <label asp-for="Name" class="ocat-label ocat-label-required">@T["Policy name"]</label>
+    <div class="ocat-end">
+        <input asp-for="Name" class="form-control" autofocus="autofocus" />
+        <span asp-validation-for="Name"></span>
+        <span class="hint">@T["Use a unique name to identify this tenant policy."]</span>
+    </div>
+</div>
+
+<div class="ocat-wrapper" asp-validation-class-for="Description">
+    <label asp-for="Description" class="ocat-label">@T["Description"]</label>
+    <div class="ocat-end">
+        <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+        <span asp-validation-for="Description"></span>
+        <span class="hint">@T["Optionally describe what this policy is intended to protect."]</span>
+    </div>
+</div>
+
+<input asp-for="IsEnabled" type="hidden" />

@@ -27,7 +27,7 @@ Results are paged using the site's configured page size, with "previous"/"next" 
 
 ## Settings
 
-Configure the search experience under **Search** > **Settings** > **Site Search** in the admin (requires the `Manage Search Settings` permission).
+Configure the search experience under **Search → Settings → Site Search** in the admin (requires the `Manage Search Settings` permission).
 
 | Setting               | Description                                                                                  |
 |-----------------------|----------------------------------------------------------------------------------------------|
@@ -62,3 +62,15 @@ The search UI is rendered through shapes that you can override in your theme:
 | `Search-List`    | `Search-List.cshtml`| The container of the result items.       |
 
 Copy these templates into your theme to customize the markup. Result highlighting is provided when the underlying search provider returns highlights.
+
+## Video
+
+This video adds site search to your site.
+
+<!-- video:search-overview -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/73AR8SVjZYQ" title="Search: Add Site Search to Your Site" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video sets the index, the fields and the results page of site search.
+
+<!-- video:search-settings -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/d3WzdaAHEw0" title="Site Search Settings: Index, Fields and Results Page" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

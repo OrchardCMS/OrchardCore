@@ -55,7 +55,7 @@ public sealed class RewriteRulesDisplayDriver : DisplayDriver<RewriteRule>
         return Initialize<EditRewriteRuleViewModel>("RewriteRule_Fields_Edit", model =>
         {
             model.Name = rule.Name;
-        }).Location("Content:1");
+        }).Location(l => l.Zone("Content", "1").Card(S["General"], "10"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(RewriteRule rule, UpdateEditorContext context)

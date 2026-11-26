@@ -1,0 +1,34 @@
+@model WorkflowTypePropertiesViewModel
+@{
+    // The designer's Workflow tab shows the Enabled setting with the name, the pages creating and cloning a workflow in the Execution card.
+    var designer = Model.Page == WorkflowTypePropertiesPage.Designer;
+}
+
+<div class="ocat-wrapper" asp-validation-class-for="Name">
+    <label asp-for="Name" class="ocat-label ocat-label-required">@T["Name"]</label>
+    <div class="ocat-end">
+        <input asp-for="Name" class="form-control" autofocus="@(designer ? null : "autofocus")" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+        @if (Model.Page == WorkflowTypePropertiesPage.Create)
+        {
+            <span class="hint">@T["What the workflow does, such as \"Notify the editors when an article is published\"."]</span>
+        }
+        else
+        {
+            <span class="hint">@T["The name of the workflow."]</span>
+        }
+    </div>
+</div>
+
+@if (designer)
+{
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
+            <div class="form-check">
+                <input asp-for="IsEnabled" type="checkbox" class="form-check-input" />
+                <label class="form-check-label" asp-for="IsEnabled">@T["Enabled"]</label>
+                <span class="hint dashed">@T["Uncheck to prevent workflows of this type from being executed."]</span>
+            </div>
+        </div>
+    </div>
+}

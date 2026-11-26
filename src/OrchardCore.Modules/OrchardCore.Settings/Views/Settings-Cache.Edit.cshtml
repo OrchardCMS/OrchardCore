@@ -1,11 +1,5 @@
 @model SiteSettingsViewModel
 
-<div class="ocat-wrapper">
-    <div class="ocat-end-offset">
-        <h5 class="mb-0">@T["Settings for dynamic caches"]</h5>
-    </div>
-</div>
-
 <div class="ocat-limited-wrapper" asp-validation-class-for="CacheMode">
     <label asp-for="CacheMode" class="ocat-label">@T["Cache Mode"]</label>
     <div class="ocat-limited">

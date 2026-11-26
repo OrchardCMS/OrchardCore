@@ -10,6 +10,7 @@ using OrchardCore.DataPipelines.Models;
 using OrchardCore.DataPipelines.Services;
 using OrchardCore.DataPipelines.ViewModels;
 using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
 using OrchardCore.Settings;
@@ -29,6 +30,8 @@ public sealed class AdminController : Controller
     private readonly IDataPipelineStepTypeManager _stepTypeManager;
     private readonly IAuthorizationService _authorizationService;
     private readonly IShapeFactory _shapeFactory;
+    private readonly IDisplayManager<DataPipelineCreateViewModel> _createDisplayManager;
+    private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly ISiteService _siteService;
     private readonly INotifier _notifier;
     private readonly IStringLocalizerFactory _localizerFactory;
@@ -42,6 +45,8 @@ public sealed class AdminController : Controller
         IDataPipelineStepTypeManager stepTypeManager,
         IAuthorizationService authorizationService,
         IShapeFactory shapeFactory,
+        IDisplayManager<DataPipelineCreateViewModel> createDisplayManager,
+        IUpdateModelAccessor updateModelAccessor,
         ISiteService siteService,
         INotifier notifier,
         IStringLocalizerFactory localizerFactory,
@@ -55,6 +60,8 @@ public sealed class AdminController : Controller
         _localizerFactory = localizerFactory;
         _authorizationService = authorizationService;
         _shapeFactory = shapeFactory;
+        _createDisplayManager = createDisplayManager;
+        _updateModelAccessor = updateModelAccessor;
         _siteService = siteService;
         _notifier = notifier;
         H = htmlLocalizer;
@@ -72,22 +79,34 @@ public sealed class AdminController : Controller
         var pager = new Pager(pagerParameters, (await _siteService.GetSiteSettingsAsync()).PageSize);
         var (pipelines, count) = await _pipelineManager.ListAsync(q, pager.GetStartIndex(), pager.PageSize);
 
-        var model = new DataPipelineIndexViewModel
-        {
-            Search = q,
-            TotalCount = count,
-            Pager = await _shapeFactory.PagerAsync(pager, count, new RouteData(new RouteValueDictionary { ["q"] = q })),
-            CanManage = await _authorizationService.AuthorizeAsync(User, DataPipelinePermissions.ManageDataPipelines),
-            CanRun = await _authorizationService.AuthorizeAsync(User, DataPipelinePermissions.RunDataPipelines),
-        };
+        var canManage = await _authorizationService.AuthorizeAsync(User, DataPipelinePermissions.ManageDataPipelines);
+        var canRun = await _authorizationService.AuthorizeAsync(User, DataPipelinePermissions.RunDataPipelines);
+        var entries = new List<DataPipelineEntry>();
 
         foreach (var pipeline in pipelines)
         {
             var (runs, _) = await _runManager.ListAsync(pipeline.PipelineId, 0, 1);
-            model.Pipelines.Add(new DataPipelineEntryViewModel { Pipeline = pipeline, LastRun = runs.Count > 0 ? runs[0] : null });
+            entries.Add(new DataPipelineEntry
+            {
+                Pipeline = pipeline,
+                LastRun = runs.Count > 0 ? runs[0] : null,
+                CanManage = canManage,
+                CanRun = canRun,
+            });
         }
 
-        return View(model);
+        return View(new DataPipelineIndexViewModel
+        {
+            Search = q,
+            CanManage = canManage,
+
+            // The AdminList shape renders the pipelines with the configured layout (List, Grid, ...).
+            List = new AdminListContext<DataPipelineEntry>
+            {
+                Source = entries,
+                Pager = await _shapeFactory.PagerAsync(pager, count, new RouteData(new RouteValueDictionary { ["q"] = q })),
+            },
+        });
     }
 
     [Admin("DataPipelines/Create", "DataPipelinesCreate")]
@@ -98,7 +117,11 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        return View(new DataPipelineCreateViewModel());
+        var model = new DataPipelineCreateViewModel();
+
+        model.Editor = await _createDisplayManager.BuildEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: true);
+
+        return View(model);
     }
 
     [HttpPost]
@@ -110,6 +133,8 @@ public sealed class AdminController : Controller
         {
             return Forbid();
         }
+
+        model.Editor = await _createDisplayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, isNew: true);
 
         if (!ModelState.IsValid || string.IsNullOrWhiteSpace(model.Name))
         {
@@ -273,20 +298,30 @@ public sealed class AdminController : Controller
         var filter = new DataPipelineRunFilter { PipelineId = pipelineId, Search = pipeline is null ? q : null, Status = status };
         var (runs, count) = await _runManager.ListAsync(filter, pager.GetStartIndex(), pager.PageSize);
 
+        var canRun = await _authorizationService.AuthorizeAsync(User, DataPipelinePermissions.RunDataPipelines);
+
         return View(new DataPipelineRunsViewModel
         {
             Pipeline = pipeline,
             Search = filter.Search,
             Status = status,
-            TotalCount = count,
-            Runs = runs.ToList(),
-            Pager = await _shapeFactory.PagerAsync(pager, count, new RouteData(new RouteValueDictionary
+
+            // The AdminList shape renders the runs with the configured layout (List, Grid, ...); the status filter sits at
+            // the end of its toolbar.
+            List = new AdminListContext<DataPipelineRunEntry>
             {
-                ["pipelineId"] = pipelineId,
-                ["q"] = filter.Search,
-                ["status"] = status?.ToString(),
-            })),
-            CanRun = await _authorizationService.AuthorizeAsync(User, DataPipelinePermissions.RunDataPipelines),
+                Source = [.. runs.Select(run => new DataPipelineRunEntry { Run = run, CanRun = canRun, ShowPipelineHistory = pipeline is null })],
+                Pager = await _shapeFactory.PagerAsync(pager, count, new RouteData(new RouteValueDictionary
+                {
+                    ["pipelineId"] = pipelineId,
+                    ["q"] = filter.Search,
+                    ["status"] = status?.ToString(),
+                })),
+                ToolbarActions = await _shapeFactory.CreateAsync("DataPipelineRunsFilters", Arguments.From(new
+                {
+                    Status = status,
+                })),
+            },
         });
     }
 

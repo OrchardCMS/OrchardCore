@@ -1,0 +1,98 @@
+@using OrchardCore.DisplayManagement
+@using OrchardCore.Localization
+@using OrchardCore.Navigation
+@{
+    // The shape is used through its static type, as it is rendered for each menu item, falling back to
+    // dynamic accesses for shapes that are not navigation items.
+    var shape = (IShape)Model;
+    var navigationItem = shape as NavigationItemViewModel;
+
+    // Morphing the shape to keep Model untouched.
+    shape.Metadata.Alternates.Clear();
+    shape.Metadata.Type = "NavigationItemText";
+
+    if (shape.Id != null)
+    {
+        shape.Metadata.Alternates.Add("NavigationItemText_Id__" + shape.Id);
+    }
+
+    var level = navigationItem?.Level ?? (int)Model.Level;
+    var hasItems = navigationItem?.HasItems ?? (bool)Model.HasItems;
+    var href = navigationItem is not null ? navigationItem.Href : Model.Href?.ToString();
+
+    // When an item has children but no page of its own, the whole row toggles those children.
+    var isToggleOnlyItem = hasItems && (string.IsNullOrEmpty(href) || href == "#");
+
+    var hash = navigationItem is not null ? navigationItem.Hash : (string)Model.Hash;
+    var target = navigationItem is not null ? navigationItem.Target : (string)Model.Target;
+
+    TagBuilder tag = Tag(shape, isToggleOnlyItem ? "button" : "a");
+    tag.Attributes["id"] = null;
+    tag.Attributes["data-admin-hash"] = hash;
+
+    if (isToggleOnlyItem)
+    {
+        tag.Attributes["type"] = "button";
+    }
+    else
+    {
+        tag.Attributes["href"] = navigationItem is not null ? navigationItem.Href : (string)Model.Href;
+    }
+
+    if (!string.IsNullOrEmpty(target))
+    {
+        tag.Attributes["target"] = target;
+    }
+
+    // Extract classes that are not icons from 'Model.Classes'.
+    string notIconClasses = null;
+
+    foreach (var className in shape.Classes)
+    {
+        if (!className.StartsWith(NavigationConstants.CssClassPrefix, StringComparison.OrdinalIgnoreCase))
+        {
+            notIconClasses = notIconClasses is null ? className : notIconClasses + " " + className;
+        }
+    }
+
+    if (notIconClasses is not null)
+    {
+        tag.Attributes["class"] = notIconClasses;
+    }
+    else
+    {
+        // This removes the class attribute on the li element when
+        // an empty class attribute gets rendered.
+        tag.Attributes.Remove("class");
+    }
+
+    tag.AddCssClass("item-label");
+
+    if (level == 1 && hasItems)
+    {
+        tag.AddCssClass("nav-group-label");
+    }
+
+    if (isToggleOnlyItem)
+    {
+        var targetId = "m" + hash;
+
+        tag.Attributes["data-bs-toggle"] = "collapse";
+        tag.Attributes["data-bs-target"] = "#" + targetId;
+        tag.Attributes["aria-controls"] = targetId;
+
+        // Nothing is expanded when the menu is rendered, the script restores what the
+        // user last left open.
+        tag.Attributes["aria-expanded"] = "false";
+        tag.TagRenderMode = TagRenderMode.Normal;
+    }
+
+    tag.InnerHtml.AppendHtml(await DisplayAsync(shape));
+
+    if (isToggleOnlyItem)
+    {
+        tag.InnerHtml.AppendHtml(Html.Raw("<span class=\"collapse-icon\"><i class=\"fa-solid fa-chevron-" + (Orchard.CultureDir() == LanguageDirection.LTR ? "right" : "left") + " chevron\" aria-hidden=\"true\"></i></span>"));
+    }
+}
+
+@tag

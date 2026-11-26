@@ -1,0 +1,28 @@
+// The menu editor: each item of the tree is a row of its own on the page, nested items indented under their parent
+// (by the editor's script). The rows are given a surface, so they read apart from the page, and a hover state, as they
+// are dragged to reorder them.
+#menu {
+    > li,
+    li {
+        background-color: transparent;
+    }
+
+    .menu-item-title {
+        min-height: 3rem;
+        border-color: var(--ta-border) !important;
+        border-radius: var(--bs-border-radius) !important;
+        background-color: var(--ta-surface);
+        box-shadow: var(--ta-shadow-sm);
+        transition: border-color 0.15s ease-in-out, background-color 0.15s ease-in-out;
+
+        &:hover {
+            border-color: rgba(var(--ta-primary-rgb), 0.45) !important;
+            background-color: var(--ta-surface-muted);
+        }
+    }
+
+    li li .menu-item-title,
+    li[data-depth]:not([data-depth="0"]) .menu-item-title {
+        background-color: var(--ta-surface-muted);
+    }
+}

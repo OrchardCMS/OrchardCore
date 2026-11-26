@@ -3,8 +3,8 @@
 <script asp-name="data-pipelines-editors" at="Foot"></script>
 
 <div class="ocat-wrapper">
-    <label class="ocat-label">@T["Fields"]</label>
-    <div class="ocat-end" data-dp-list data-dp-prefix="@Html.Name("Fields")">
+    <span id="@Html.Id("Fields")_Label" class="ocat-label">@T["Fields"]</span>
+    <div class="ocat-end" role="group" aria-labelledby="@Html.Id("Fields")_Label" data-dp-list data-dp-prefix="@Html.Name("Fields")">
         <template data-dp-template>
             <partial name="DataPipelineSelectedFieldRow" model="@((Model.AvailableFields, new SelectedFieldRow(), "__index__"))" />
         </template>

@@ -301,7 +301,7 @@ The connection types documentation and examples can be found [in the official El
 
 ### Indexing settings
 
-When editing an Elasticsearch-based index from the Index Management page (Search > Indexing), you can configure both general indexing settings and Elasticsearch-specific settings.
+When editing an Elasticsearch-based index from the Index Management page (**Search → Indexing**), you can configure both general indexing settings and Elasticsearch-specific settings.
 
 Under the Elasticsearch-specific settings, the following configuration options are available:
 
@@ -470,7 +470,11 @@ There may be differences between Lucene and Elasticsearch indexed fields. Lucene
 
 ### Indexed vs Stored
 
-When we say that a field is indexed it means that it is parsed by the configured Analyzer that is set on the index (Elasticsearch also allows to pass custom Analyzers on Queries too).
+For indexing, Elasticsearch uses the `analyzer` specified in a `text` field's mapping first. Text fields without a field-level analyzer, such as `Content.ContentItem.FullText`, use the index default.
+
+When Orchard Core creates or rebuilds an index with a configured analyzer other than `standard`, it sets that analyzer as the index default. If the profile uses `standard` or leaves the analyzer unset, a matching Elasticsearch index template can still supply the default. Elasticsearch falls back to `standard` when there is no index default.
+
+Full-text search queries can also specify their own analyzer.
 
 Though, when a field is stored it can have different contexts.
 
@@ -491,3 +495,18 @@ Here is a small table to compare Lucene and Elasticsearch (string) types:
 ## Video
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/7Mx1Vjsy3Xw" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
+This video relates content items to each other and to users with the Content Picker and User Picker fields.
+
+<!-- video:content-picker-fields -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/6a2SSz2Ky60" title="Content Picker and User Picker Fields: Relate Content Items" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video searches indexes on an Elasticsearch server.
+
+<!-- video:elasticsearch-search -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/Nmv3RxGGVgk" title="Elasticsearch: Search Indexes on an Elasticsearch Server" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video searches from a saved Lucene or Elasticsearch query.
+
+<!-- video:queries-lucene-elasticsearch -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/oXM2A97Hvio" title="Lucene and Elasticsearch Queries: Search From a Saved Query" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

@@ -21,6 +21,11 @@ msgctxt "OrchardCore.Search.AdminMenu"
 msgid "Site Search"
 msgstr ""
 
+#: Drivers/SearchSettingsDisplayDriver.cs
+msgctxt "OrchardCore.Search.Drivers.SearchSettingsDisplayDriver"
+msgid "Search page"
+msgstr ""
+
 #: Controllers/SearchController.cs
 msgctxt "OrchardCore.Search.SearchController"
 msgid "No default search index has been configured."

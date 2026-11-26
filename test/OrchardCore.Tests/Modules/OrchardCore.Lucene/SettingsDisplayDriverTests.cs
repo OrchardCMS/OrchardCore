@@ -9,11 +9,12 @@ using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Indexing;
 using OrchardCore.Indexing.Models;
+using OrchardCore.Localization;
 using OrchardCore.Locking;
 using OrchardCore.Locking.Distributed;
+using OrchardCore.Lucene.Settings;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Scripting;
-using OrchardCore.Lucene.Settings;
 using OrchardCore.Tests.Modules.OrchardCore.ContentFields.Settings;
 using OrchardCore.Tests.Stubs;
 
@@ -113,7 +114,7 @@ public partial class SettingsDisplayDriverTests
             var contentDefinition = DisplayDriverTestHelper.GetContentPartDefinition<ContentPickerField>(field => field.WithSettings(settings));
 
             // Act
-            var shapeResult = await DisplayDriverTestHelper.GetShapeResultAsync(_shapeFactory, contentDefinition, new ContentPickerFieldLuceneEditorSettingsDriver(storeMock.Object));
+            var shapeResult = await DisplayDriverTestHelper.GetShapeResultAsync(_shapeFactory, contentDefinition, new ContentPickerFieldLuceneEditorSettingsDriver(storeMock.Object, new StringLocalizer<ContentPickerFieldLuceneEditorSettingsDriver>(new NullStringLocalizerFactory())));
             var shape = (ContentPickerFieldLuceneEditorSettings)shapeResult.Shape;
 
             // Assert

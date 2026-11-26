@@ -1,0 +1,65 @@
+@model EditOpenIdApplicationViewModel
+@using OpenIddict.Abstractions
+@using OrchardCore.OpenId.ViewModels
+
+<div class="ocat-wrapper" asp-validation-class-for="DisplayName">
+    <label asp-for="DisplayName" class="ocat-label ocat-label-required">@T["Display Name"]</label>
+    <div class="ocat-end">
+        <input asp-for="DisplayName" class="form-control" autofocus />
+        <span asp-validation-for="DisplayName" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="ocat-wrapper" asp-validation-class-for="Type">
+    <label asp-for="Type" class="ocat-label">@T["Type"]</label>
+    <div class="ocat-end">
+        <select asp-for="Type" class="form-select" data-openid-field="Type">
+            <option value="@OpenIddictConstants.ClientTypes.Confidential" data-is-confidential="true">@T["Confidential client"]</option>
+            <option value="@OpenIddictConstants.ClientTypes.Public">@T["Public client"]</option>
+        </select>
+        <div class="hint">@T["Confidential applications MUST send their client secret when communicating with the token and revocation endpoints. This guarantees that only the legit client can exchange an authorization code or get a refresh token."]</div>
+    </div>
+</div>
+
+<div class="ocat-wrapper" asp-validation-class-for="ClientId">
+    <label asp-for="ClientId" class="ocat-label ocat-label-required">@T["Client Id"]</label>
+    <div class="ocat-end">
+        <div class="input-group">
+            <input asp-for="ClientId" class="form-control" autocomplete="new-password" data-openid-field="ClientId" />
+            <button tabindex="-1" class="btn btn-outline-secondary" type="button" id="copyClientId" title="@T["Click here to copy the value"]"><i class="fa-solid fa-copy"></i></button>
+            <button tabindex="-1" class="btn btn-outline-secondary" type="button" id="generateClientId" title="@T["Click here to generate new value"]"><i class="fa-solid fa-shuffle"></i></button>
+        </div>
+        <span asp-validation-for="ClientId" class="text-danger"></span>
+    </div>
+</div>
+
+<div id="ClientSecretWrapper" class="ocat-wrapper" asp-validation-class-for="ClientSecret">
+    <label asp-for="ClientSecret" class="ocat-label">@T["Client Secret"]</label>
+    <div class="ocat-end">
+        <div class="input-group">
+            <input type="password" asp-for="ClientSecret" placeholder="@T["enter a new value to replace the existing secret"]" class="form-control" autocomplete="new-password" data-openid-field="ClientSecret" />
+            <button tabindex="-1" class="btn btn-outline-secondary" type="button" id="toggleClientSecret" title="@T["Click here toggle secret visibility"]"><i class="icon fa-solid fa-eye"></i></button>
+            <button tabindex="-1" class="btn btn-outline-secondary" type="button" id="copyClientSecret" title="@T["Click here to copy the value"]"><i class="fa-solid fa-copy"></i></button>
+            <button tabindex="-1" class="btn btn-outline-secondary" type="button" id="generateClientSecret" title="@T["Click here to generate new value"]"><i class="fa-solid fa-shuffle"></i></button>
+        </div>
+        <span asp-validation-for="ClientSecret" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="AllowIntrospectionEndpoint" checked="@Model.AllowIntrospectionEndpoint">
+            <label class="form-check-label" asp-for="AllowIntrospectionEndpoint">@T["Allow Introspection Endpoint"]</label>
+        </div>
+    </div>
+</div>
+
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="AllowRevocationEndpoint" checked="@Model.AllowRevocationEndpoint">
+            <label class="form-check-label" asp-for="AllowRevocationEndpoint">@T["Allow Revocation Endpoint"]</label>
+        </div>
+    </div>
+</div>

@@ -60,3 +60,10 @@ In order to configure it and start writing content you can go to <https://localh
 ## Summary
 
 You just created an Orchard Core CMS powered blog engine.
+
+## Video
+
+This video creates a CMS web application with the `dotnet new` templates.
+
+<!-- video:create-cms-web-application -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/AL5UNqnC-W0" title="Create a CMS Web Application With dotnet new" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

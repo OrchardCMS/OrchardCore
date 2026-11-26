@@ -1,10 +1,17 @@
+// Obsolete: styles the 'vue-multiselect' resource, which nothing in Orchard Core uses anymore. Will be removed with
+// the resource in the next major version.
 .vue-multiselect {
     color: var(--bs-body-color) !important;
     background-color: var(--bs-body-bg) !important;
 }
 
-.multiselect__tags, .multiselect__content-wrapper {
+.multiselect__content-wrapper {
     border: var(--bs-border-width) solid var(--bs-border-color) !important;
+}
+
+// The field itself is outlined like the other fields.
+.multiselect__tags {
+    border: var(--bs-border-width) solid var(--ta-control-border) !important;
 }
 
 .multiselect__tags {
@@ -23,4 +30,20 @@
 
 .multiselect__spinner {
     background-color: var(--bs-body-bg) !important;
+}
+
+.multiselect__tag,
+.multiselect__option--highlight,
+.multiselect__option--highlight::after {
+    background-color: var(--bs-success) !important;
+}
+
+.multiselect__tag-icon:hover,
+.multiselect__tag-icon:focus {
+    background-color: var(--bs-success-text-emphasis) !important;
+}
+
+.multiselect__option--selected.multiselect__option--highlight,
+.multiselect__option--selected.multiselect__option--highlight::after {
+    background-color: var(--bs-danger) !important;
 }

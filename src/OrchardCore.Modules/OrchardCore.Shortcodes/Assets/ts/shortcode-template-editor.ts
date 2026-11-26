@@ -1,9 +1,7 @@
-import { getDatasetJson } from "@orchardcore/bloom/helpers/dataset";
-import initShortcodeCategoriesEditor from "@orchardcore/bloom/components/shortcode-categories-editor";
+import { initSelectPicker } from "@orchardcore/bloom/components/select-picker";
 
-// Defined by this module's own Assets/js/shortcode-templates.js (classic global) - still handles
-// the CodeMirror wiring and preview-panel updates, unrelated to the Vue-owned categories editor
-// migrated below.
+// Defined by this module's own Assets/js/shortcode-templates.js (classic global): the CodeMirror
+// wiring and the preview-panel updates.
 declare function initializeShortcodeCodeMirrorEditors(
     contentElement: Element | null,
     usageElement: Element | null,
@@ -20,20 +18,10 @@ initializeShortcodeCodeMirrorEditors(
     document.getElementById("Hint"),
 );
 
-const categoriesElement = document.getElementById("shortcodeCategories");
-if (categoriesElement) {
-    const allCategories = getDatasetJson<string[]>(categoriesElement, "categories") ?? [];
-    const selectedCategories = getDatasetJson<string[]>(categoriesElement, "selectedCategories") ?? [];
-    const translations = getDatasetJson<Record<string, string>>(categoriesElement, "translations");
+// The categories of the shortcode: a bootstrap-select of the categories of the shortcodes, where a category typed in
+// the search box that doesn't exist yet is added.
+const categoriesSelect = document.querySelector<HTMLSelectElement>("select[data-shortcode-categories]");
 
-    if (translations) {
-        initShortcodeCategoriesEditor({
-            element: categoriesElement,
-            allCategories,
-            selectedCategories,
-            hiddenInputId: categoriesElement.dataset.hiddenInputId ?? "",
-            hiddenInputName: categoriesElement.dataset.hiddenInputName ?? "",
-            translations,
-        });
-    }
+if (categoriesSelect) {
+    initSelectPicker(categoriesSelect);
 }

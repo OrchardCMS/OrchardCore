@@ -4,11 +4,11 @@ This module provides Content Management services.
 
 ## Content Quick Navigation
 
-Enable **Content Quick Navigation** (`OrchardCore.Contents.QuickNavigation`) from **Configuration → Features** to add recently updated content items to the [admin quick navigation palette](../Admin/README.md#quick-navigation). This feature is opt-in and depends on `OrchardCore.Contents` and `OrchardCore.Admin`.
+Enable **Content Quick Navigation** (`OrchardCore.Contents.QuickNavigation`) from **Tools → Features** to add recently updated content items to the [admin quick navigation palette](../Admin/README.md#quick-navigation). This feature is opt-in and depends on `OrchardCore.Contents` and `OrchardCore.Admin`.
 
 The `ContentItemNavigationSource` contributes the **50 most recently updated content items** by default. Each destination uses the item's full display text and opens its **Edit** view. Only items that the current user can edit are displayed, using the same content-item authorization as the edit page.
 
-Configure **Recent content items in quick navigation** under **Configuration → Settings → Admin**. The count must be at least 1 and defaults to 50. This field appears only while the feature is enabled and requires the **Manage Admin Settings** permission. Quick navigation itself must also be enabled in the Admin settings.
+Configure **Recent content items in quick navigation** under **Settings → Admin**. The count must be at least 1 and defaults to 50. This field appears only while the feature is enabled and requires the **Manage Admin Settings** permission. Quick navigation itself must also be enabled in the Admin settings.
 
 The source queries the latest content item versions, ordered by `ModifiedUtc` descending and then by content item ID for consistent ordering. This includes drafts and unpublished items, but not removed items or older versions. The limit is applied before filtering out items the user cannot edit or whose display text is empty, so fewer destinations may be displayed. Content translations remain separate content items with their own display text; the **Content** breadcrumb is localized for the current UI culture.
 
@@ -236,7 +236,7 @@ It is usually better to **create a dedicated user for performing API calls**, ma
 }
 ```
 
-> This payload example model was obtained using the GraphiQL panel available in the Admin: _Configuration_ → _GraphiQL_. In this [video](https://www.youtube.com/watch?v=8SbW3TLNhF0) you can find an overview of how to use GraphiQL. 
+> This payload example model was obtained using the GraphiQL panel available in the Admin: **Tools → GraphiQL**. In this [video](https://www.youtube.com/watch?v=8SbW3TLNhF0) you can find an overview of how to use GraphiQL. 
 
 ##### Responses
 
@@ -698,7 +698,7 @@ The latest draft and the published version of an item are **never** deleted; onl
 
 ### Settings
 
-Enable the feature, then configure it under **Configuration** → **Settings** → **Content Version Pruning** (requires the `Manage Content Version Pruning settings` permission, granted to the `Administrator` role by default).
+Enable the feature, then configure it under **Settings → Content Version Pruning** (requires the `Manage Content Version Pruning settings` permission, granted to the `Administrator` role by default).
 
 | Setting                              | Default | Description                                                                                                                                  |
 |--------------------------------------|---------|--------------------------------------------------------------------------------------------------------------------------------------------|
@@ -709,7 +709,7 @@ Enable the feature, then configure it under **Configuration** → **Settings** �
 
 ### How it works
 
-A background task — *Content Version Pruning Background Task* — runs on a daily schedule (`0 0 * * *`). It is **disabled by default**; enable it under **Configuration** → **Tasks** → **Background Tasks** in addition to enabling the feature and selecting content types. When it runs, it:
+A background task — *Content Version Pruning Background Task* — runs on a daily schedule (`0 0 * * *`). It is **disabled by default**; enable it under **Tools → Background Tasks** in addition to enabling the feature and selecting content types. When it runs, it:
 
 1. Skips entirely if the **Disable** setting is on, or if no content types are selected.
 2. Computes a retention threshold of `now - RetentionDays`.
@@ -725,3 +725,38 @@ Deletions are flushed in batches to keep the unit of work bounded, and a failure
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/j6xuupq9FYY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/wbTEUl_N0Lk" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video takes a tour of the admin: its menu, its search and its main screens.
+
+<!-- video:admin-tour -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/hQPLynQAPeY" title="The Admin: Find Your Way Around Orchard Core" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video creates, edits and publishes a content item.
+
+<!-- video:contents-create-edit-publish -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/gQgMKIZpCNY" title="Content Items: Create, Edit and Publish" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video searches and filters the content items list, and acts on several items at once.
+
+<!-- video:contents-list-search-filter -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/c6qgnS49bKQ" title="Content Items List: Search, Filter and Act on Many Items" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video shows how drafts and versions let you change content without changing the live page.
+
+<!-- video:contents-drafts-versions -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/wy2nPHfp2qE" title="Drafts and Versions: Change Content Without Losing the Live Page" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video sets up Content Version Pruning to remove old versions automatically.
+
+<!-- video:content-version-pruning -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/0c7PkSaO4Q4" title="Content Version Pruning: Remove Old Versions Automatically" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video sends an email when content is published.
+
+<!-- video:workflows-send-email-on-publish -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/1VGSI2vwPqg" title="Workflows: Send an Email When Content Is Published" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video creates, updates and publishes content automatically with a workflow.
+
+<!-- video:workflows-content-tasks -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/d8eJUVHGMHI" title="Workflows: Create, Update and Publish Content Automatically" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

@@ -5,7 +5,7 @@ This module provides the infrastructure necessary to send emails using multiple 
 
 ## Settings
 
-Enabling the `Email` feature will add a new settings page under `Settings` → `Communication` → `Email`. You can utilize these settings to set up the default Email provider. The following are the providers that are readily accessible in OrchardCore:
+Enabling the `Email` feature will add a new settings page under **Settings → Communication → Email**. You can utilize these settings to set up the default Email provider. The following are the providers that are readily accessible in OrchardCore:
 
 
 | Provider                                         | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
@@ -99,7 +99,7 @@ public class TestController
 
 ## Testing Provider
 
-After configuring a provider, you may test it by visiting `Tools` → `Testing` → `Email Test`.
+After configuring a provider, you may test it by visiting **Tools → Testing → Email Test**.
 
 ## Events
 
@@ -108,6 +108,11 @@ You can easily monitor various events triggered during the message-sending proce
 ## Video
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/FmgZHpFHCcg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video sends an email when content is published.
+
+<!-- video:workflows-send-email-on-publish -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/1VGSI2vwPqg" title="Workflows: Send an Email When Content Is Published" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ## Recipe Configuration
 

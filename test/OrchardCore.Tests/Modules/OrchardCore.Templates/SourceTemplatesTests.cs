@@ -1,0 +1,835 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
+using Moq;
+using OrchardCore.Admin;
+using OrchardCore.Data.Documents;
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy;
+using OrchardCore.DisplayManagement.Manifest;
+using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Documents;
+using OrchardCore.Environment.Extensions;
+using OrchardCore.Environment.Extensions.Features;
+using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Extensions.Manifests;
+using OrchardCore.Modules;
+using OrchardCore.Modules.Manifest;
+using OrchardCore.Navigation;
+using OrchardCore.Templates.Controllers;
+using OrchardCore.Templates.Models;
+using OrchardCore.Templates.Services;
+using OrchardCore.Templates.ViewModels;
+using OrchardCore.Themes.Services;
+
+namespace OrchardCore.Tests.Modules.OrchardCore.Templates;
+
+public sealed class SourceTemplatesTests : IDisposable
+{
+    private readonly DirectoryInfo _root = Directory.CreateTempSubdirectory("source-templates-");
+    private readonly TemplatesDocument _templates = new();
+    private readonly AdminTemplatesDocument _adminTemplates = new();
+    private readonly TemplateOverridesDocument _overrides = new();
+    private readonly AdminTemplateOverridesDocument _adminOverrides = new();
+    private readonly List<IExtensionInfo> _extensions = [];
+    private readonly Dictionary<string, ShapeBinding> _bindings = new(StringComparer.OrdinalIgnoreCase);
+    private readonly Dictionary<string, ShapeBinding> _moduleBindings = new(StringComparer.OrdinalIgnoreCase);
+    private readonly HashSet<string> _disabled = [];
+    private readonly HashSet<string> _unavailable = [];
+    private string _siteThemeId = "SiteTheme";
+
+    public void Dispose() => _root.Delete(recursive: true);
+
+    [Theory]
+    [InlineData("Views/Layout.liquid", "Layout")]
+    [InlineData("Views/Content-BlogPost.Summary.liquid", "Content_Summary__BlogPost")]
+    [InlineData("Views/MenuItemLink-ContentMenuItem.liquid", "MenuItemLink__ContentMenuItem")]
+    [InlineData("Views/Parts/Foo-Bar.liquid", "Parts_Foo__Bar")]
+    [InlineData("Views/Items/Content.Summary.cshtml", "Content_Summary")]
+    [InlineData("Views/Layout.cshtml", "Layout")]
+    public void TryGetTemplateName_ShapeTemplate_ReturnsName(string relativePath, string expectedName)
+    {
+        Assert.True(SourceTemplateNames.TryGetTemplateName(relativePath, out var name));
+        Assert.Equal(expectedName, name);
+    }
+
+    [Theory]
+    [InlineData("Views/_ViewImports.cshtml")]
+    [InlineData("Views/Shared/Layout.liquid")]
+    [InlineData("Recipes/Snippets/Content__ComingSoon.liquid")]
+    [InlineData("Views/Layout")]
+    [InlineData("")]
+    public void TryGetTemplateName_OtherFile_ReturnsFalse(string relativePath)
+    {
+        Assert.False(SourceTemplateNames.TryGetTemplateName(relativePath, out _));
+    }
+
+    [Theory]
+    [InlineData("TextField_Edit", true)]
+    [InlineData("Content_SummaryAdmin", true)]
+    [InlineData("ContentPartSettings_Edit", true)]
+    [InlineData("NavigationItemText__multitenancy_Id", true)]
+    [InlineData("ScriptTask_Fields_Design", true)]
+    [InlineData("ContentPickerField_Option", true)]
+    [InlineData("Content_Summary__BlogPost", false)]
+    [InlineData("TextField", false)]
+    [InlineData("MenuItemLink__ContentMenuItem", false)]
+    [InlineData("Credits", false)]
+    [InlineData("ContentPickerField", false)]
+    [InlineData("UserPickerField_Display__UserNames", false)]
+    public void IsAdminTemplate_TemplateName_GuessesAdmin(string templateName, bool expected)
+    {
+        Assert.Equal(expected, SourceTemplateNames.IsAdminTemplate(templateName));
+    }
+
+    [Fact]
+    public void ComputeHash_DifferentLineEndings_ReturnsSameHash()
+    {
+        Assert.Equal(SourceTemplatesService.ComputeHash("a\r\nb"), SourceTemplatesService.ComputeHash("a\nb"));
+        Assert.NotEqual(SourceTemplatesService.ComputeHash("a\nb"), SourceTemplatesService.ComputeHash("a\nc"));
+    }
+
+    [Fact]
+    public async Task GetTemplatesAsync_ActiveSiteTheme_ListsTemplatesOfThemeAndBaseTheme()
+    {
+        AddExtension("BaseTheme");
+        AddExtension("SiteTheme", baseTheme: "BaseTheme");
+        AddExtension("OrchardCore.Contents", isTheme: false);
+        AddFile("SiteTheme", "Views/Layout.liquid", "site");
+        AddFile("BaseTheme", "Views/Layout.liquid", "base");
+        AddFile("BaseTheme", "Views/Menu.cshtml", "@Model");
+        AddFile("OrchardCore.Contents", "Views/Content.cshtml", "@Model");
+
+        var templates = (await CreateSource().GetTemplatesAsync(adminTemplates: false, scope: null)).ToList();
+
+        Assert.Equal(["Layout", "Menu"], templates.Select(template => template.Name).Order());
+        Assert.All(templates, template => Assert.True(template.IsInUse));
+
+        // The template of the theme wins over the one of the theme it is based on.
+        Assert.Contains(templates, template => template.Name == "Layout" && template.CanClone && template.ExtensionId == "SiteTheme");
+        Assert.Contains(templates, template => template.Name == "Menu" && !template.CanClone && template.RelativePath == "Views/Menu.cshtml");
+    }
+
+    [Fact]
+    public async Task GetScopesAsync_SiteTemplates_ListsSiteThemesActiveFirst()
+    {
+        AddExtension("AnotherTheme");
+        AddExtension("SiteTheme");
+        AddExtension("AdminTheme", admin: true);
+        AddExtension("OrchardCore.Contents", isTheme: false);
+
+        var scopes = (await CreateSource().GetScopesAsync(adminTemplates: false)).ToList();
+
+        Assert.Equal(["SiteTheme", "AnotherTheme"], scopes.Select(scope => scope.Name));
+        Assert.True(scopes[0].IsInUse);
+        Assert.False(scopes[1].IsInUse);
+    }
+
+    [Fact]
+    public async Task GetScopesAsync_AdminTemplates_ListsAdminThemes()
+    {
+        AddExtension("SiteTheme");
+        AddExtension("AdminTheme", admin: true);
+
+        var scope = Assert.Single(await CreateSource().GetScopesAsync(adminTemplates: true));
+
+        Assert.Equal("AdminTheme", scope.Name);
+        Assert.True(scope.IsInUse);
+    }
+
+    [Fact]
+    public async Task GetTemplatesAsync_InactiveTheme_CanOnlyBeViewed()
+    {
+        AddExtension("SiteTheme");
+        AddExtension("AnotherTheme");
+        AddFile("AnotherTheme", "Views/Layout.liquid", "another");
+        var service = CreateService();
+        var source = service.GetSource(ThemeTemplateSource.SourceName);
+
+        var entry = Assert.Single(await service.GetEntriesAsync(source, adminTemplates: false, scope: "AnotherTheme"));
+
+        Assert.False(entry.Template.IsInUse);
+        Assert.False(entry.Template.CanClone);
+        Assert.False(await service.CloneAsync(entry.Template, adminTemplates: false, overwrite: false));
+        Assert.Empty(_templates.Templates);
+    }
+
+    [Fact]
+    public async Task ThemeSource_ThemeNotAvailableToTheTenant_IsNotListed()
+    {
+        AddExtension("SiteTheme");
+        AddExtension("ExcludedTheme");
+        AddFile("ExcludedTheme", "Views/Layout.liquid", "excluded");
+        _unavailable.Add("ExcludedTheme");
+
+        var source = CreateSource();
+
+        Assert.Equal(["SiteTheme"], (await source.GetScopesAsync(adminTemplates: false)).Select(scope => scope.Name));
+        Assert.Empty(await source.GetTemplatesAsync(adminTemplates: false, scope: "ExcludedTheme"));
+    }
+
+    [Fact]
+    public async Task GetTemplatesAsync_ThemeOfTheOtherList_ReturnsNothing()
+    {
+        AddExtension("SiteTheme");
+        AddExtension("AdminTheme", admin: true);
+        AddFile("AdminTheme", "Views/Layout.cshtml", "admin");
+
+        Assert.Empty(await CreateSource().GetTemplatesAsync(adminTemplates: false, scope: "AdminTheme"));
+    }
+
+    [Fact]
+    public async Task CloneAsync_LiquidTemplate_IsMonitoredUntilDeleted()
+    {
+        AddExtension("SiteTheme");
+        AddFile("SiteTheme", "Views/Layout.liquid", "original");
+        var service = CreateService();
+        var source = service.GetSource(ThemeTemplateSource.SourceName);
+
+        var entry = Assert.Single(await service.GetEntriesAsync(source, adminTemplates: false, scope: null));
+        Assert.False(entry.IsOverridden);
+
+        Assert.True(await service.CloneAsync(entry.Template, adminTemplates: false, overwrite: false));
+        Assert.Equal("original", _templates.Templates["Layout"].Content);
+        entry = Assert.Single(await service.GetEntriesAsync(source, adminTemplates: false, scope: null));
+        Assert.True(entry.IsOverridden && entry.IsCloned);
+        Assert.False(entry.IsModified || entry.IsSourceChanged);
+
+        // A second clone would lose the local template.
+        Assert.False(await service.CloneAsync(entry.Template, adminTemplates: false, overwrite: false));
+
+        _templates.Templates["Layout"].Content = "edited";
+        AddFile("SiteTheme", "Views/Layout.liquid", "updated");
+        entry = Assert.Single(await service.GetEntriesAsync(source, adminTemplates: false, scope: null));
+        Assert.True(entry.IsModified && entry.IsSourceChanged);
+
+        Assert.True(await service.CloneAsync(entry.Template, adminTemplates: false, overwrite: true));
+        Assert.Equal("updated", _templates.Templates["Layout"].Content);
+        entry = Assert.Single(await service.GetEntriesAsync(source, adminTemplates: false, scope: null));
+        Assert.False(entry.IsModified || entry.IsSourceChanged);
+
+        Assert.True(await service.DeleteAsync("Layout", adminTemplates: false));
+        Assert.Empty(_templates.Templates);
+        Assert.Empty(_overrides.Overrides);
+    }
+
+    [Fact]
+    public void GetExtensionTemplates_CalledTwice_ListsTheFilesOnceAndReturnsNewTemplates()
+    {
+        AddExtension("SiteTheme");
+        AddFile("SiteTheme", "Views/Layout.liquid", "original");
+        var shapeTemplateFiles = CreateShapeTemplateFiles();
+
+        var first = Assert.Single(shapeTemplateFiles.GetExtensionTemplates(["SiteTheme"]));
+        AddFile("SiteTheme", "Views/Menu.liquid", "original");
+        var second = Assert.Single(shapeTemplateFiles.GetExtensionTemplates(["SiteTheme"]));
+
+        // The callers change the templates they get, e.g. what overrides them.
+        Assert.NotSame(first, second);
+    }
+
+    [Fact]
+    public void GetExtensionTemplates_TwoFilesForOneShape_ListsTheFileTheShapeTableBinds()
+    {
+        AddExtension("SiteTheme");
+        AddExtension("BaseTheme");
+        AddFile("SiteTheme", "Views/Content.liquid", "first");
+        AddFile("SiteTheme", "Views/Items/Content.cshtml", "last");
+        AddFile("BaseTheme", "Views/Content.liquid", "base");
+
+        var template = Assert.Single(CreateShapeTemplateFiles().GetExtensionTemplates(["SiteTheme", "BaseTheme"]));
+
+        Assert.Equal("SiteTheme", template.ExtensionId);
+        Assert.Equal("Views/Items/Content.cshtml", template.RelativePath);
+    }
+
+    [Fact]
+    public async Task FindSourceTemplatesAsync_Names_ReturnsThoseOfTheSources()
+    {
+        AddExtension("SiteTheme");
+        AddFile("SiteTheme", "Views/Layout.liquid", "original");
+        var service = CreateService();
+
+        var templates = await service.FindSourceTemplatesAsync(["layout", "NotInASource"], adminTemplates: false);
+
+        var template = Assert.Single(templates).Value;
+        Assert.Equal(ThemeTemplateSource.SourceName, template.Source);
+        Assert.Equal("Layout", template.Template.Name);
+    }
+
+    [Fact]
+    public async Task ForgetClonesAsync_DeletedClone_TemplateWrittenByHandLaterIsNotCloned()
+    {
+        AddExtension("SiteTheme");
+        AddFile("SiteTheme", "Views/Layout.liquid", "original");
+        var service = CreateService();
+        var source = service.GetSource(ThemeTemplateSource.SourceName);
+        var entry = Assert.Single(await service.GetEntriesAsync(source, adminTemplates: false, scope: null));
+        Assert.True(await service.CloneAsync(entry.Template, adminTemplates: false, overwrite: false));
+
+        // The clone is deleted from the Templates list, whether the Assisted Templates feature is enabled or not, then written by hand.
+        _templates.Templates.Remove("Layout");
+        await CreateOverridesManager().ForgetClonesAsync(["Layout"], adminTemplates: false);
+        _templates.Templates["Layout"] = new Template { Content = "by hand" };
+
+        entry = Assert.Single(await service.GetEntriesAsync(source, adminTemplates: false, scope: null));
+
+        Assert.Empty(_overrides.Overrides);
+        Assert.True(entry.IsOverridden);
+        Assert.False(entry.IsCloned || entry.IsModified || entry.IsSourceChanged);
+    }
+
+    [Fact]
+    public async Task GetEntriesAsync_ClonedFromThemeActiveBefore_IsNotComparedToTheActiveTheme()
+    {
+        AddExtension("SiteTheme");
+        AddExtension("NewTheme");
+        AddFile("SiteTheme", "Views/Layout.liquid", "site");
+        AddFile("NewTheme", "Views/Layout.liquid", "new");
+        var service = CreateService();
+        var source = service.GetSource(ThemeTemplateSource.SourceName);
+        var entry = Assert.Single(await service.GetEntriesAsync(source, adminTemplates: false, scope: null));
+        Assert.True(await service.CloneAsync(entry.Template, adminTemplates: false, overwrite: false));
+
+        _siteThemeId = "NewTheme";
+        entry = Assert.Single(await service.GetEntriesAsync(source, adminTemplates: false, scope: null));
+
+        Assert.True(entry.IsOverridden);
+        Assert.Equal("SiteTheme", entry.ClonedFrom);
+        Assert.False(entry.IsCloned || entry.IsModified || entry.IsSourceChanged);
+    }
+
+    [Theory]
+    [InlineData("Views/Foo.liquid", true, null, true)]
+    [InlineData("Views/Foo.cshtml", true, null, false)]
+    [InlineData("Views/Foo.liquid", false, null, false)]
+    [InlineData("Views/Foo.liquid", true, "SiteTheme", false)]
+    public void CanClone_Template_OnlyWhenLiquidAndRenderingItsShape(string filePath, bool isInUse, string overriddenBy, bool expected)
+    {
+        var template = new SourceTemplate { FilePath = filePath, IsInUse = isInUse, OverriddenBy = overriddenBy };
+
+        Assert.Equal(expected, template.CanClone);
+    }
+
+    [Fact]
+    public async Task CloneAsync_ResetToTheThemeActiveNow_UpdatesOnlyTheGeneratedDescription()
+    {
+        AddExtension("SiteTheme");
+        AddExtension("NewTheme");
+        AddFile("SiteTheme", "Views/Generated.liquid", "old");
+        AddFile("SiteTheme", "Views/Given.liquid", "old");
+        AddFile("NewTheme", "Views/Generated.liquid", "new");
+        AddFile("NewTheme", "Views/Given.liquid", "new");
+
+        var service = CreateService();
+        var source = service.GetSource(ThemeTemplateSource.SourceName);
+
+        foreach (var entry in await service.GetEntriesAsync(source, adminTemplates: false, scope: null))
+        {
+            Assert.True(await service.CloneAsync(entry.Template, adminTemplates: false, overwrite: false));
+        }
+
+        _templates.Templates["Given"].Description = "Mine";
+        _siteThemeId = "NewTheme";
+
+        foreach (var entry in await service.GetEntriesAsync(source, adminTemplates: false, scope: null))
+        {
+            Assert.True(await service.CloneAsync(entry.Template, adminTemplates: false, overwrite: true));
+        }
+
+        Assert.Equal("Cloned from NewTheme (Views/Generated.liquid).", _templates.Templates["Generated"].Description);
+        Assert.Equal("Mine", _templates.Templates["Given"].Description);
+    }
+
+    [Fact]
+    public async Task CloneAsync_RazorTemplate_ReturnsFalse()
+    {
+        AddExtension("AdminTheme", admin: true);
+        AddFile("AdminTheme", "Views/Layout.cshtml", "@Model");
+        var service = CreateService();
+        var source = service.GetSource(ThemeTemplateSource.SourceName);
+
+        var entry = Assert.Single(await service.GetEntriesAsync(source, adminTemplates: true, scope: null));
+
+        Assert.False(await service.CloneAsync(entry.Template, adminTemplates: true, overwrite: false));
+        Assert.Empty(_adminTemplates.Templates);
+    }
+
+    [Fact]
+    public async Task GetEntriesAsync_TemplateWrittenByHand_IsOverriddenButNotCloned()
+    {
+        AddExtension("SiteTheme");
+        AddFile("SiteTheme", "Views/Layout.liquid", "original");
+        _templates.Templates["layout"] = new Template { Content = "by hand" };
+        var service = CreateService();
+
+        var entry = Assert.Single(await service.GetEntriesAsync(service.GetSource(ThemeTemplateSource.SourceName), adminTemplates: false, scope: null));
+
+        Assert.True(entry.IsOverridden);
+        Assert.False(entry.IsCloned || entry.IsModified || entry.IsSourceChanged);
+        Assert.Null(entry.ClonedFrom);
+    }
+
+    [Fact]
+    public async Task GetTemplatesAsync_AllFeatures_ListsTemplateOfLastEnabledModuleByShape()
+    {
+        AddExtension("SiteTheme");
+        AddExtension("Base.Module", isTheme: false);
+        AddExtension("Dependent.Module", isTheme: false);
+        AddExtension("Disabled.Module", isTheme: false, enabled: false);
+        AddFile("Base.Module", "Views/TextField.cshtml", "base");
+        AddFile("Base.Module", "Views/TextField.Edit.cshtml", "editor");
+        AddFile("Dependent.Module", "Views/TextField.cshtml", "dependent");
+        AddFile("Disabled.Module", "Views/Disabled.cshtml", "disabled");
+        AddFile("SiteTheme", "Views/Layout.liquid", "theme");
+
+        var templates = (await CreateFeatureSource().GetTemplatesAsync(adminTemplates: false, scope: null)).ToList();
+
+        Assert.Equal(["TextField", "TextField_Edit"], templates.Select(template => template.Name).Order());
+        Assert.Contains(templates, template => template.Name == "TextField" && template.ExtensionId == "Dependent.Module" && template.OverriddenBy == null && template.IsAdmin == false);
+        Assert.Contains(templates, template => template.Name == "TextField_Edit" && template.IsAdmin == true);
+    }
+
+    [Fact]
+    public async Task GetTemplatesAsync_ShapeTableOrdersModulesDifferently_ListsTemplateOfModuleRenderingIt()
+    {
+        // The shape table decides which module renders a shape, whatever the order of the enabled features.
+        AddExtension("SiteTheme");
+        AddExtension("Rendering.Module", isTheme: false);
+        AddExtension("Other.Module", isTheme: false);
+        AddFile("Rendering.Module", "Views/TextField.cshtml", "rendering");
+        AddFile("Other.Module", "Views/TextField.cshtml", "other");
+        BindModule("TextField", "Rendering.Module", "Views/TextField.cshtml");
+
+        var source = CreateFeatureSource();
+
+        var template = Assert.Single(await source.GetTemplatesAsync(adminTemplates: false, scope: null));
+        Assert.Equal("Rendering.Module", template.ExtensionId);
+        Assert.Null(template.OverriddenBy);
+
+        template = Assert.Single(await source.GetTemplatesAsync(adminTemplates: false, scope: "Other.Module"));
+        Assert.Equal("Rendering.Module", template.OverriddenBy);
+    }
+
+    [Fact]
+    public async Task GetTemplatesAsync_NoActiveTheme_MarksTemplatesOverriddenByModule()
+    {
+        _siteThemeId = null;
+        AddExtension("Base.Module", isTheme: false);
+        AddExtension("Dependent.Module", isTheme: false);
+        AddFile("Base.Module", "Views/TextField.cshtml", "base");
+        AddFile("Dependent.Module", "Views/TextField.cshtml", "dependent");
+        BindModule("TextField", "Dependent.Module", "Views/TextField.cshtml");
+
+        var template = Assert.Single(await CreateFeatureSource().GetTemplatesAsync(adminTemplates: false, scope: "Base.Module"));
+
+        Assert.Equal("Dependent.Module", template.OverriddenBy);
+    }
+
+    [Fact]
+    public async Task GetTemplatesAsync_OneFeature_MarksTemplatesOverriddenByThemeOrModule()
+    {
+        AddExtension("SiteTheme");
+        AddExtension("Base.Module", isTheme: false);
+        AddExtension("Dependent.Module", isTheme: false);
+        AddFile("Base.Module", "Views/TextField.cshtml", "base");
+        AddFile("Base.Module", "Views/Menu.cshtml", "menu");
+        AddFile("Base.Module", "Views/Content.cshtml", "content");
+        AddFile("Dependent.Module", "Views/TextField.cshtml", "dependent");
+        AddFile("SiteTheme", "Views/Menu.liquid", "theme menu");
+        Bind("Menu", "SiteTheme", "Views/Menu.liquid");
+        Bind("TextField", "Dependent.Module", "Views/TextField.cshtml");
+        Bind("Content", "Base.Module", "Views/Content.cshtml");
+
+        var source = CreateFeatureSource();
+        var templates = (await source.GetTemplatesAsync(adminTemplates: false, scope: "Base.Module")).ToDictionary(template => template.Name);
+
+        Assert.Equal("SiteTheme", templates["Menu"].OverriddenBy);
+        Assert.Equal("Dependent.Module", templates["TextField"].OverriddenBy);
+        Assert.Null(templates["Content"].OverriddenBy);
+
+        var scopes = (await source.GetScopesAsync(adminTemplates: false)).Select(scope => scope.Name).ToList();
+        Assert.Equal([FeatureTemplateSource.AllFeaturesScope, "Base.Module", "Dependent.Module"], scopes);
+    }
+
+    [Fact]
+    public async Task IndexBulkActionPOST_Reset_OnlyResetsClonesOfTheListedTemplates()
+    {
+        AddExtension("SiteTheme");
+        AddFile("SiteTheme", "Views/Edited.liquid", "source");
+        AddFile("SiteTheme", "Views/ByHand.liquid", "source");
+        AddFile("SiteTheme", "Views/FromOtherTheme.liquid", "source");
+        AddFile("SiteTheme", "Views/NotSelected.liquid", "source");
+
+        var service = CreateService();
+        var source = service.GetSource(ThemeTemplateSource.SourceName);
+
+        foreach (var entry in await service.GetEntriesAsync(source, adminTemplates: false, scope: null))
+        {
+            if (entry.Template.Name is "Edited" or "NotSelected")
+            {
+                Assert.True(await service.CloneAsync(entry.Template, adminTemplates: false, overwrite: false));
+            }
+        }
+
+        _templates.Templates["Edited"].Content = "edited";
+        _templates.Templates["NotSelected"].Content = "edited";
+        _templates.Templates["ByHand"] = new Template { Content = "by hand" };
+        _templates.Templates["FromOtherTheme"] = new Template { Content = "other" };
+        _overrides.Overrides["FromOtherTheme"] = new TemplateOverride { ExtensionId = "OtherTheme", RelativePath = "Views/FromOtherTheme.liquid", Hash = SourceTemplatesService.ComputeHash("other") };
+
+        await CreateController().IndexBulkActionPOST(
+            ThemeTemplateSource.SourceName,
+            new SourceTemplatesOptions { BulkAction = SourceTemplatesBulkAction.Reset },
+            ["Edited", "ByHand", "FromOtherTheme"]);
+
+        Assert.Equal("source", _templates.Templates["Edited"].Content);
+        Assert.Equal("by hand", _templates.Templates["ByHand"].Content);
+        Assert.Equal("other", _templates.Templates["FromOtherTheme"].Content);
+        Assert.Equal("edited", _templates.Templates["NotSelected"].Content);
+    }
+
+    [Fact]
+    public async Task IndexBulkActionPOST_ResetInInactiveTheme_ChangesNothing()
+    {
+        AddExtension("SiteTheme");
+        AddExtension("OtherTheme");
+        AddFile("OtherTheme", "Views/Layout.liquid", "source");
+        _templates.Templates["Layout"] = new Template { Content = "edited" };
+        _overrides.Overrides["Layout"] = new TemplateOverride { ExtensionId = "OtherTheme", RelativePath = "Views/Layout.liquid", Hash = SourceTemplatesService.ComputeHash("source") };
+
+        await CreateController().IndexBulkActionPOST(
+            ThemeTemplateSource.SourceName,
+            new SourceTemplatesOptions { BulkAction = SourceTemplatesBulkAction.Reset, Scope = "OtherTheme" },
+            ["Layout"]);
+
+        Assert.Equal("edited", _templates.Templates["Layout"].Content);
+    }
+
+    [Fact]
+    public async Task IndexBulkActionPOST_Clone_OnlyClonesLiquidTemplatesWithoutOverride()
+    {
+        AddExtension("SiteTheme");
+        AddFile("SiteTheme", "Views/Liquid.liquid", "source");
+        AddFile("SiteTheme", "Views/Razor.cshtml", "source");
+        AddFile("SiteTheme", "Views/ByHand.liquid", "source");
+        AddFile("SiteTheme", "Views/NotSelected.liquid", "source");
+        _templates.Templates["ByHand"] = new Template { Content = "by hand" };
+
+        await CreateController().IndexBulkActionPOST(
+            ThemeTemplateSource.SourceName,
+            new SourceTemplatesOptions { BulkAction = SourceTemplatesBulkAction.Clone },
+            ["Liquid", "Razor", "ByHand"]);
+
+        Assert.Equal(["ByHand", "Liquid"], _templates.Templates.Keys.Order());
+        Assert.Equal("by hand", _templates.Templates["ByHand"].Content);
+        Assert.Equal(["Liquid"], _overrides.Overrides.Keys);
+    }
+
+    [Fact]
+    public async Task IndexBulkActionPOST_Remove_DeletesSelectedOverridesAndForgetsTheirClones()
+    {
+        AddExtension("SiteTheme");
+        AddFile("SiteTheme", "Views/Cloned.liquid", "source");
+        AddFile("SiteTheme", "Views/ByHand.liquid", "source");
+        AddFile("SiteTheme", "Views/NotSelected.liquid", "source");
+
+        var controller = CreateController();
+
+        await controller.IndexBulkActionPOST(ThemeTemplateSource.SourceName, new SourceTemplatesOptions { BulkAction = SourceTemplatesBulkAction.Clone }, ["Cloned", "NotSelected"]);
+        _templates.Templates["ByHand"] = new Template { Content = "by hand" };
+
+        await controller.IndexBulkActionPOST(ThemeTemplateSource.SourceName, new SourceTemplatesOptions { BulkAction = SourceTemplatesBulkAction.Remove }, ["Cloned", "ByHand"]);
+
+        Assert.Equal(["NotSelected"], _templates.Templates.Keys);
+        Assert.Equal(["NotSelected"], _overrides.Overrides.Keys);
+    }
+
+    [Fact]
+    public async Task IndexBulkActionPOST_FilteredList_RedirectsToTheSameList()
+    {
+        AddExtension("SiteTheme");
+        AddFile("SiteTheme", "Views/Layout.liquid", "source");
+
+        var result = Assert.IsType<RedirectToActionResult>(await CreateController().IndexBulkActionPOST(
+            ThemeTemplateSource.SourceName,
+            new SourceTemplatesOptions
+            {
+                BulkAction = SourceTemplatesBulkAction.Clone,
+                Scope = "SiteTheme",
+                Search = "Lay",
+                Filter = SourceTemplatesFilter.NotOverridden,
+                Area = SourceTemplatesArea.All,
+                Language = SourceTemplatesLanguage.Liquid,
+            },
+            ["Layout"]));
+
+        Assert.Equal("SiteTheme", result.RouteValues["Options.Scope"]);
+        Assert.Equal("Lay", result.RouteValues["Options.Search"]);
+        Assert.Equal(SourceTemplatesFilter.NotOverridden, result.RouteValues["Options.Filter"]);
+        Assert.Equal(SourceTemplatesArea.All, result.RouteValues["Options.Area"]);
+        Assert.Equal(SourceTemplatesLanguage.Liquid, result.RouteValues["Options.Language"]);
+    }
+
+    [Fact]
+    public async Task Reset_TemplateWrittenByHand_ReplacesItAndMonitorsIt()
+    {
+        AddExtension("SiteTheme");
+        AddFile("SiteTheme", "Views/Layout.liquid", "source");
+        _templates.Templates["Layout"] = new Template { Content = "by hand", Description = "Mine" };
+
+        await CreateController().Reset(ThemeTemplateSource.SourceName, "Layout");
+
+        Assert.Equal("source", _templates.Templates["Layout"].Content);
+        Assert.Equal("Mine", _templates.Templates["Layout"].Description);
+        Assert.Contains("Layout", _overrides.Overrides.Keys);
+    }
+
+    [Fact]
+    public async Task Clone_ReturnUrlOfAnotherSite_RedirectsToTheList()
+    {
+        AddExtension("SiteTheme");
+        AddFile("SiteTheme", "Views/Layout.liquid", "source");
+
+        var controller = CreateController();
+        controller.Url = Mock.Of<IUrlHelper>(helper => helper.IsLocalUrl("https://example.com/") == false);
+
+        var result = await controller.Clone(ThemeTemplateSource.SourceName, "Layout", returnUrl: "https://example.com/");
+
+        Assert.Equal(nameof(TemplateSourceController.Index), Assert.IsType<RedirectToActionResult>(result).ActionName);
+    }
+
+    [Fact]
+    public async Task Delete_NoLocalTemplate_ReturnsNotFound()
+    {
+        AddExtension("SiteTheme");
+        AddFile("SiteTheme", "Views/Layout.liquid", "source");
+
+        Assert.IsType<NotFoundResult>(await CreateController().Delete(ThemeTemplateSource.SourceName, "Layout"));
+    }
+
+    [Fact]
+    public async Task CloneAs_NameIsNotAnAlternate_ReturnsNotFoundWithoutCreatingIt()
+    {
+        AddExtension("SiteTheme");
+        AddFile("SiteTheme", "Views/Layout.liquid", "source");
+
+        Assert.IsType<NotFoundResult>(await CreateController().CloneAs(ThemeTemplateSource.SourceName, "Layout", "AnyTemplate"));
+        Assert.Empty(_templates.Templates);
+    }
+
+    [Fact]
+    public async Task Actions_NotAuthorized_ForbidWithoutChangingTemplates()
+    {
+        AddExtension("SiteTheme");
+        AddFile("SiteTheme", "Views/Layout.liquid", "source");
+        _templates.Templates["Layout"] = new Template { Content = "by hand" };
+
+        var controller = CreateController(authorized: false);
+        var source = ThemeTemplateSource.SourceName;
+
+        Assert.IsType<ForbidResult>(await controller.Index(source, new SourceTemplatesOptions(), new PagerParameters()));
+        Assert.IsType<ForbidResult>(await controller.Display(source, "Layout"));
+        Assert.IsType<ForbidResult>(await controller.Alternates(source, "Layout", new PagerParameters()));
+        Assert.IsType<ForbidResult>(await controller.Clone(source, "Layout"));
+        Assert.IsType<ForbidResult>(await controller.CloneAs(source, "Layout", "Layout__Other"));
+        Assert.IsType<ForbidResult>(await controller.Reset(source, "Layout"));
+        Assert.IsType<ForbidResult>(await controller.Delete(source, "Layout"));
+        Assert.IsType<ForbidResult>(await controller.IndexBulkActionPOST(source, new SourceTemplatesOptions { BulkAction = SourceTemplatesBulkAction.Remove }, ["Layout"]));
+
+        Assert.Equal("by hand", _templates.Templates["Layout"].Content);
+    }
+
+    private TemplateSourceController CreateController(bool authorized = true)
+    {
+        var authorizationService = new Mock<IAuthorizationService>();
+        authorizationService
+            .Setup(service => service.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<object>(), It.IsAny<IEnumerable<IAuthorizationRequirement>>()))
+            .ReturnsAsync(authorized ? AuthorizationResult.Success() : AuthorizationResult.Failed());
+
+        var localizer = new Mock<IStringLocalizer<TemplateSourceController>>();
+        localizer.Setup(localizer => localizer[It.IsAny<string>()]).Returns((string name) => new LocalizedString(name, name));
+
+        var htmlLocalizer = new Mock<IHtmlLocalizer<TemplateSourceController>>();
+        htmlLocalizer.Setup(localizer => localizer[It.IsAny<string>(), It.IsAny<object[]>()]).Returns((string name, object[] _) => new LocalizedHtmlString(name, name));
+
+        return new TemplateSourceController(
+            authorizationService.Object,
+            CreateService(),
+            new TemplateAlternatesService([]),
+            CreateShapeTemplateFiles(),
+            CreateActiveThemes(),
+            Mock.Of<IShapeFactory>(),
+            Options.Create(new PagerOptions()),
+            Mock.Of<INotifier>(),
+            localizer.Object,
+            htmlLocalizer.Object)
+        {
+            ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext { User = new ClaimsPrincipal(new ClaimsIdentity("Test")) },
+            },
+            Url = Mock.Of<IUrlHelper>(),
+        };
+    }
+
+    private void Bind(string shapeType, string extensionId, string relativePath)
+        => _bindings[shapeType] = CreateBinding(shapeType, extensionId, relativePath);
+
+    // The shape table without a theme, of the modules only.
+    private void BindModule(string shapeType, string extensionId, string relativePath)
+        => _moduleBindings[shapeType] = CreateBinding(shapeType, extensionId, relativePath);
+
+    private static ShapeBinding CreateBinding(string shapeType, string extensionId, string relativePath)
+        => new() { BindingName = shapeType.ToLowerInvariant(), BindingSource = $"{Application.ModulesRoot}{extensionId}/{relativePath}" };
+
+    private FeatureTemplateSource CreateFeatureSource()
+    {
+        var siteThemeService = new Mock<ISiteThemeService>();
+        siteThemeService.Setup(service => service.GetSiteThemeNameAsync()).ReturnsAsync(() => _siteThemeId);
+
+        var localizer = new Mock<IStringLocalizer<FeatureTemplateSource>>();
+        localizer.Setup(localizer => localizer[It.IsAny<string>()]).Returns((string name) => new LocalizedString(name, name));
+
+        return new FeatureTemplateSource(
+            CreateShapeTemplateFiles(),
+            CreateShellFeaturesManager(),
+            new ActiveThemes([siteThemeService.Object], []),
+            localizer.Object);
+    }
+
+    private IShellFeaturesManager CreateShellFeaturesManager()
+    {
+        var shellFeaturesManager = new Mock<IShellFeaturesManager>();
+        shellFeaturesManager.Setup(manager => manager.GetEnabledFeaturesAsync()).ReturnsAsync(() => CreateFeatures(_disabled));
+        shellFeaturesManager.Setup(manager => manager.GetAvailableFeaturesAsync()).ReturnsAsync(() => CreateFeatures(_unavailable));
+
+        return shellFeaturesManager.Object;
+    }
+
+    private List<IFeatureInfo> CreateFeatures(HashSet<string> excluded)
+        => _extensions
+            .Where(extension => !excluded.Contains(extension.Id))
+            .Select(extension =>
+            {
+                var feature = new Mock<IFeatureInfo>();
+                feature.SetupGet(feature => feature.Id).Returns(extension.Id);
+                feature.SetupGet(feature => feature.Extension).Returns(extension);
+
+                return feature.Object;
+            })
+            .ToList();
+
+    private void AddExtension(string id, string baseTheme = null, bool isTheme = true, bool admin = false, bool enabled = true)
+    {
+        var manifest = new Mock<IManifestInfo>();
+        manifest.SetupGet(manifest => manifest.ModuleInfo).Returns(isTheme ? new ThemeAttribute { BaseTheme = baseTheme } : new ModuleAttribute());
+        manifest.SetupGet(manifest => manifest.Name).Returns(id);
+        manifest.SetupGet(manifest => manifest.Tags).Returns(admin ? [ManifestConstants.AdminTag] : []);
+
+        var extension = new Mock<IExtensionInfo>();
+        extension.SetupGet(extension => extension.Id).Returns(id);
+        extension.SetupGet(extension => extension.SubPath).Returns(Application.ModulesRoot + id);
+        extension.SetupGet(extension => extension.Exists).Returns(true);
+        extension.SetupGet(extension => extension.Manifest).Returns(manifest.Object);
+        extension.SetupGet(extension => extension.Features).Returns([]);
+
+        _extensions.Add(extension.Object);
+
+        if (!enabled)
+        {
+            _disabled.Add(id);
+        }
+    }
+
+    private void AddFile(string extensionId, string relativePath, string content)
+    {
+        var fullPath = Path.Combine(_root.FullName, $"{Application.ModulesRoot}{extensionId}/{relativePath}");
+
+        Directory.CreateDirectory(Path.GetDirectoryName(fullPath));
+        File.WriteAllText(fullPath, content);
+    }
+
+    private IExtensionManager CreateExtensionManager()
+    {
+        var extensionManager = new Mock<IExtensionManager>();
+        extensionManager.Setup(manager => manager.GetExtensions()).Returns(() => _extensions);
+        extensionManager.Setup(manager => manager.GetExtension(It.IsAny<string>()))
+            .Returns((string id) => _extensions.FirstOrDefault(extension => extension.Id == id));
+
+        return extensionManager.Object;
+    }
+
+    private ShapeTemplateFiles CreateShapeTemplateFiles()
+    {
+        var fileProviderAccessor = new Mock<IShapeTemplateFileProviderAccessor>();
+        fileProviderAccessor.SetupGet(accessor => accessor.FileProvider).Returns(new PhysicalFileProvider(_root.FullName));
+
+        var liquid = new Mock<IShapeTemplateViewEngine>();
+        liquid.SetupGet(engine => engine.TemplateFileExtensions).Returns([".liquid"]);
+
+        var razor = new Mock<IShapeTemplateViewEngine>();
+        razor.SetupGet(engine => engine.TemplateFileExtensions).Returns([".cshtml"]);
+
+        var shapeTableManager = new Mock<IShapeTableManager>();
+        shapeTableManager.Setup(manager => manager.GetShapeTableAsync(It.IsAny<string>()))
+            .ReturnsAsync((string themeId) => new ShapeTable(
+                new Dictionary<string, ShapeDescriptor>(),
+                (themeId == null ? _moduleBindings : _bindings).Values.ToDictionary(binding => binding.BindingName, StringComparer.OrdinalIgnoreCase)));
+
+        return new ShapeTemplateFiles(shapeTableManager.Object, CreateExtensionManager(), fileProviderAccessor.Object, [liquid.Object, razor.Object]);
+    }
+
+    private ActiveThemes CreateActiveThemes()
+    {
+        var siteThemeService = new Mock<ISiteThemeService>();
+        siteThemeService.Setup(service => service.GetSiteThemeNameAsync()).ReturnsAsync(() => _siteThemeId);
+
+        var adminThemeService = new Mock<IAdminThemeService>();
+        adminThemeService.Setup(service => service.GetAdminThemeNameAsync()).ReturnsAsync("AdminTheme");
+
+        return new ActiveThemes([siteThemeService.Object], [adminThemeService.Object]);
+    }
+
+    private ThemeTemplateSource CreateSource()
+    {
+        var localizer = new Mock<IStringLocalizer<ThemeTemplateSource>>();
+        localizer.Setup(localizer => localizer[It.IsAny<string>()]).Returns((string name) => new LocalizedString(name, name));
+
+        return new ThemeTemplateSource(
+            CreateShapeTemplateFiles(),
+            CreateExtensionManager(),
+            CreateShellFeaturesManager(),
+            CreateActiveThemes(),
+            localizer.Object);
+    }
+
+    private SourceTemplatesService CreateService()
+    {
+        return new SourceTemplatesService(
+            [CreateSource()],
+            CreateShapeTemplateFiles(),
+            new TemplatesManager(CreateDocumentManager(_templates)),
+            new AdminTemplatesManager(CreateDocumentManager(_adminTemplates)),
+            CreateOverridesManager());
+    }
+
+    private TemplateOverridesManager CreateOverridesManager()
+        => new(CreateDocumentManager(_overrides), CreateDocumentManager(_adminOverrides));
+
+    // The tests change and read the same document, as a store would after it is committed.
+    private static IDocumentManager<TDocument> CreateDocumentManager<TDocument>(TDocument document)
+        where TDocument : class, IDocument, new()
+    {
+        var documentManager = new Mock<IDocumentManager<TDocument>>();
+        documentManager.Setup(manager => manager.GetOrCreateMutableAsync(It.IsAny<Func<Task<TDocument>>>())).ReturnsAsync(document);
+        documentManager.Setup(manager => manager.GetOrCreateImmutableAsync(It.IsAny<Func<Task<TDocument>>>())).ReturnsAsync(document);
+        documentManager.Setup(manager => manager.UpdateAsync(It.IsAny<TDocument>(), It.IsAny<Func<TDocument, Task>>())).Returns(Task.CompletedTask);
+
+        return documentManager.Object;
+    }
+}

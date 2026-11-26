@@ -15,6 +15,7 @@ using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Entities;
 using OrchardCore.Extensions;
 using OrchardCore.Json;
+using OrchardCore.Localization;
 using OrchardCore.Security;
 using OrchardCore.Settings;
 using OrchardCore.Tests.Utilities;
@@ -242,7 +243,9 @@ public class ContentQuickNavigationTests : IAsyncLifetime
     public async Task Settings_WithoutManageAdminSettingsPermission_DoesNotDisplayOrUpdate()
     {
         var driver = new ContentQuickNavigationSettingsDisplayDriver(
-            _httpContextAccessor.Object, _authorization.Object);
+            _httpContextAccessor.Object,
+            _authorization.Object,
+            new StringLocalizer<ContentQuickNavigationSettingsDisplayDriver>(new NullStringLocalizerFactory()));
         var settings = new ContentQuickNavigationSettings();
 
         Assert.Null(await driver.EditAsync(_site, settings, new BuildEditorContext(new Shape(), "admin", false, "", null, null, null)));

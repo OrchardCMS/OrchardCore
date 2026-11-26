@@ -9,16 +9,13 @@
 
 <div asp-validation-summary="ModelOnly"></div>
 <form asp-action="Edit" method="post" class="no-multisubmit">
-    <div class="ocat-wrapper">
-        <div class="ocat-end-offset">
-            @await DisplayAsync(Model.Editor)
-        </div>
-    </div>
+    @await DisplayAsync(Model.Editor)
 
     <input type="hidden" asp-for="Name" />
     <input type="hidden" asp-for="ConditionId" />
 
     <div class="action-bar-bottom">
+        <a class="btn btn-secondary cancel" role="button" asp-route-action="Edit" asp-route-controller="Admin" asp-route-name="@Model.Name">@T["Cancel"]</a>
         <button class="btn btn-primary save" type="submit">@T["Save"]</button>
     </div>
 </form>
