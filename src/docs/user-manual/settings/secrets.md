@@ -23,7 +23,7 @@ Secret values are encrypted, and once saved they are never shown again, not even
 Secrets live in a **store**:
 
 - **Database**: the default store, in the site's own database, encrypted.
-- **AzureKeyVault**: an Azure Key Vault, a secure vault service from Microsoft, when the **Secrets - Azure Key Vault** feature is on. Your developer or IT team connects the vault to the site in its configuration; there is no screen for that. Once connected, you can pick it as the store of a secret.
+- **AzureKeyVault**: an Azure Key Vault, a secure vault service from Microsoft, when the **Secrets - Azure Key Vault** feature is on. Your developer or IT team connects the vault to the site in its configuration; there is no screen for that. Once connected, you can pick it as the store of a secret. Until then, the **AzureKeyVault** store isn't listed and secrets are kept in the database.
 
 ## Add a secret
 

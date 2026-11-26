@@ -19,7 +19,7 @@
     @Html.HiddenFor(m => m.Creating)
     @if (!Model.Creating)
     {
-        @Html.HiddenFor(m => m.ShapeType)
+        <input asp-for="ShapeType" type="hidden" id="@Html.IdFor(m => m.ShapeType)_Hidden" />
     }
 
     @await DisplayAsync(Model.Editor)

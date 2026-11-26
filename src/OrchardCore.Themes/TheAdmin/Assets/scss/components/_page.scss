@@ -40,6 +40,8 @@
     --bs-table-bg: var(--ta-surface);
     --bs-table-border-color: var(--ta-border);
     --bs-table-hover-bg: var(--ta-row-hover-bg);
+    // The stripes are a faint wash of the scheme's primary color, not Bootstrap's gray.
+    --bs-table-striped-bg: color-mix(in srgb, var(--ta-primary) 5%, var(--ta-surface));
 
     > thead th {
         font-size: var(--ta-font-size-sm);

@@ -5,31 +5,41 @@ using Azure.Security.KeyVault.Secrets;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
 using Moq;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Configuration;
+using OrchardCore.Locking.Distributed;
 using OrchardCore.Secrets;
 using OrchardCore.Secrets.AzureKeyVault;
+using KeyVaultStartup = OrchardCore.Secrets.AzureKeyVault.Startup;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Secrets;
 
 #pragma warning disable SCME0002 // Azure SDK configuration support is experimental.
 public class AzureKeyVaultStartupTests
 {
-    private static void ConfigureTenant(IServiceCollection services, string clientName = "SecretClient", string tenant = "Default")
+    public static TheoryData<string> InvalidNamePrefixes => [" ", new string('a', 257)];
+
+    private static void ConfigureTenant(
+        IServiceCollection services,
+        string clientName = "SecretClient",
+        string tenant = "Default",
+        string namePrefix = null,
+        ILogger<KeyVaultStartup> logger = null)
     {
         var configuration = new ShellConfiguration(new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string>
             {
                 ["Secrets:AzureKeyVault:AzureClient"] = clientName,
+                ["Secrets:AzureKeyVault:NamePrefix"] = namePrefix,
             }));
+        var shellSettings = new ShellSettings { Name = tenant };
         services.AddOptions();
         services.AddLogging();
         services.AddSingleton<IShellConfiguration>(configuration);
-        services.AddSingleton(new ShellSettings { Name = tenant });
-        new global::OrchardCore.Secrets.AzureKeyVault.Startup().ConfigureServices(services);
+        services.AddSingleton(shellSettings);
+        new KeyVaultStartup(shellSettings, configuration, logger ?? NullLogger<KeyVaultStartup>.Instance).ConfigureServices(services);
     }
 
     private static HostApplicationBuilder CreateHost()
@@ -185,28 +195,114 @@ public class AzureKeyVaultStartupTests
     [InlineData("")]
     [InlineData(" ")]
     [InlineData(AzureKeyVaultSecretStore.SecretClientServiceKey)]
-    public void Startup_InvalidClientNameFailsExplicitly(string name)
+    public void ConfigureServices_InvalidClientName_DoesNotRegisterStore(string name)
     {
+        // Arrange
         var services = new ServiceCollection();
-        ConfigureTenant(services, name);
+        services.AddKeyedSingleton("SecretClient", Mock.Of<SecretClient>());
+        var logger = new ListLogger();
+
+        // Act
+        ConfigureTenant(services, name, logger: logger);
         using var provider = services.BuildServiceProvider();
 
-        Assert.Throws<OptionsValidationException>(() =>
-            provider.GetRequiredKeyedService<SecretClient>(AzureKeyVaultSecretStore.SecretClientServiceKey));
+        // Assert
+        Assert.Empty(provider.GetServices<ISecretStore>());
+        Assert.Null(provider.GetKeyedService<SecretClient>(AzureKeyVaultSecretStore.SecretClientServiceKey));
+        var entry = Assert.Single(logger.Entries);
+        Assert.Equal(LogLevel.Error, entry.Level);
+        Assert.Contains("'Secrets:AzureKeyVault:AzureClient'", entry.Message);
     }
 
     [Fact]
-    public void Startup_UnregisteredClientDoesNotFallBackToDefault()
+    public void ConfigureServices_UnregisteredClient_DoesNotRegisterStoreOrFallBackToDefault()
     {
+        // Arrange
         var services = new ServiceCollection();
         services.AddSingleton(Mock.Of<SecretClient>());
-        ConfigureTenant(services, "MissingClient");
+        services.AddKeyedSingleton("OtherClient", Mock.Of<SecretClient>());
+        var logger = new ListLogger();
+
+        // Act
+        ConfigureTenant(services, "MissingClient", logger: logger);
         using var provider = services.BuildServiceProvider();
 
-        var exception = Assert.Throws<InvalidOperationException>(() =>
-            provider.GetRequiredKeyedService<SecretClient>(AzureKeyVaultSecretStore.SecretClientServiceKey));
+        // Assert
+        Assert.Empty(provider.GetServices<ISecretStore>());
+        Assert.Null(provider.GetKeyedService<SecretClient>(AzureKeyVaultSecretStore.SecretClientServiceKey));
+        var entry = Assert.Single(logger.Entries);
+        Assert.Equal(LogLevel.Error, entry.Level);
+        Assert.Contains("'MissingClient'", entry.Message);
+    }
 
-        Assert.Contains("MissingClient", exception.Message);
+    [Theory]
+    [MemberData(nameof(InvalidNamePrefixes))]
+    public void ConfigureServices_InvalidNamePrefix_DoesNotRegisterStore(string namePrefix)
+    {
+        // Arrange
+        var services = new ServiceCollection();
+        services.AddKeyedSingleton("SecretClient", Mock.Of<SecretClient>());
+        var logger = new ListLogger();
+
+        // Act
+        ConfigureTenant(services, namePrefix: namePrefix, logger: logger);
+        using var provider = services.BuildServiceProvider();
+
+        // Assert
+        Assert.Empty(provider.GetServices<ISecretStore>());
+        var entry = Assert.Single(logger.Entries);
+        Assert.Equal(LogLevel.Error, entry.Level);
+        Assert.Contains("'Secrets:AzureKeyVault:NamePrefix'", entry.Message);
+    }
+
+    [Fact]
+    public void ConfigureServices_ValidConfiguration_LogsNothing()
+    {
+        // Arrange
+        var services = new ServiceCollection();
+        services.AddKeyedSingleton("SecretClient", Mock.Of<SecretClient>());
+        var logger = new ListLogger();
+
+        // Act
+        ConfigureTenant(services, logger: logger);
+        using var provider = services.BuildServiceProvider();
+
+        // Assert
+        Assert.IsType<AzureKeyVaultSecretStore>(Assert.Single(provider.GetServices<ISecretStore>()));
+        Assert.Empty(logger.Entries);
+    }
+
+    [Fact]
+    public async Task GetSecretInfosAsync_MissingConfiguration_SecretManagerHasNoKeyVaultStore()
+    {
+        // Arrange
+        var services = new ServiceCollection();
+        services.AddSecrets();
+        services.AddSingleton(Mock.Of<IDistributedLock>());
+        ConfigureTenant(services, clientName: null);
+        using var provider = services.BuildServiceProvider();
+
+        // Act
+        var manager = provider.GetRequiredService<ISecretManager>();
+        var secrets = await manager.GetSecretInfosAsync();
+
+        // Assert
+        Assert.Empty(manager.GetStores());
+        Assert.Empty(secrets);
+    }
+
+    private sealed class ListLogger : ILogger<KeyVaultStartup>
+    {
+        public List<(LogLevel Level, string Message)> Entries { get; } = [];
+
+        public IDisposable BeginScope<TState>(TState state)
+            where TState : notnull
+            => null;
+
+        public bool IsEnabled(LogLevel logLevel) => true;
+
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+            => Entries.Add((logLevel, formatter(state, exception)));
     }
 }
 #pragma warning restore SCME0002

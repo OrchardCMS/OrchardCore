@@ -97,7 +97,7 @@ The **Schemes** button is on the card of The Admin Theme in **Design → Themes*
 4. Type the **Name** users see in the scheme picker.
 5. Pick the **Primary**, **Deep**, **Ink** and **Accent** colors, with the color picker or as a six-digit hex code, such as #2a81bb.
 6. Optionally, check **Light menu** for a light gray menu with dark text in light mode.
-7. Optionally, under **Typography and shape**, set the **Font**, **Heading font**, **Font size**, **Corners** and **Density**.
+7. Optionally, under **Typography and shape**, set the **Font**, **Heading font**, **Font size**, **Corners** and **Density**, and check **Horizontal form layout** to show the label of each field beside its editor instead of above it, on screens at least as wide as a tablet.
 8. Optionally, under **Advanced**, fine tune what is worked out from the four colors: **Surface hue**, **Surface saturation**, **Text on primary**, **Page**, **List toolbar**, **Page tint**, **Dark page tint**, and the **Position** of the scheme in the pickers. Leave a setting empty to keep it automatic.
 9. Check the **Preview**, which shows a small admin page in light and dark mode as you type.
 10. Click **Save**.

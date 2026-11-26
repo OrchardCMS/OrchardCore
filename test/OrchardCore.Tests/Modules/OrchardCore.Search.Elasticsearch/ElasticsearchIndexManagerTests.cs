@@ -14,9 +14,14 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Elasticsearch;
 
 public sealed class ElasticsearchIndexManagerTests
 {
-    [Fact]
-    public async Task CreateAsync_SameAnalysisForSeveralIndexes_SendsConfiguredTypes()
+    [Theory]
+    [InlineData("mystop", "stop", "stop")]
+    [InlineData("default", "stop", "stop")]
+    [InlineData("standard", "standard", null)]
+    [InlineData(null, "standard", null)]
+    public async Task CreateAsync_SameAnalysisForSeveralIndexes_SendsConfiguredTypes(string analyzerName, string analyzerType, string defaultAnalyzerType)
     {
+        var configuredAnalyzerName = analyzerName ?? "standard";
         var requestBodies = new List<string>();
 
         var settings = new ElasticsearchClientSettings(new SingleNodePool(new Uri("http://localhost:9200")), new InMemoryRequestInvoker(responseBody: null, statusCode: 404))
@@ -30,7 +35,7 @@ public sealed class ElasticsearchIndexManagerTests
             });
 
         var elasticsearchOptions = new ElasticsearchOptions();
-        elasticsearchOptions.Analyzers.Add("mystop", new JsonObject { ["type"] = "stop" });
+        elasticsearchOptions.Analyzers.Add(configuredAnalyzerName, new JsonObject { ["type"] = analyzerType });
         elasticsearchOptions.TokenFilters.Add("mylowercase", new JsonObject { ["type"] = "lowercase" });
 
         var indexManager = new ElasticsearchIndexManager(
@@ -50,7 +55,7 @@ public sealed class ElasticsearchIndexManagerTests
 
             index.Put(new ElasticsearchIndexMetadata
             {
-                AnalyzerName = "mystop",
+                AnalyzerName = analyzerName,
                 IndexMappings = new ElasticsearchIndexMap(),
             });
 
@@ -62,7 +67,8 @@ public sealed class ElasticsearchIndexManagerTests
         {
             var analysis = JsonNode.Parse(body)["settings"]["analysis"];
 
-            Assert.Equal("stop", analysis["analyzer"]["mystop"]["type"].GetValue<string>());
+            Assert.Equal(analyzerType, analysis["analyzer"][configuredAnalyzerName]["type"].GetValue<string>());
+            Assert.Equal(defaultAnalyzerType, analysis["analyzer"]["default"]?["type"].GetValue<string>());
             Assert.Equal("lowercase", analysis["filter"]["mylowercase"]["type"].GetValue<string>());
         });
     }

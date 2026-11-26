@@ -102,7 +102,7 @@
                     <label for="@color.Name" class="ocat-label ocat-label-required">@color.Label</label>
                     <div class="ocat-end">
                         <div class="ta-color-field">
-                            <input type="color" class="form-control form-control-color" value="@color.Value" data-scheme-color-picker="@color.Name" aria-label="@T["Pick the {0} color", color.Label.Value]" />
+                            <input type="color" id="@(color.Name)_Picker" class="form-control form-control-color" value="@color.Value" data-scheme-color-picker="@color.Name" aria-label="@T["Pick the {0} color", color.Label.Value]" />
                             <input type="text" id="@color.Name" name="@color.Name" class="form-control" value="@color.Value" maxlength="7" spellcheck="false" autocomplete="off" data-scheme-color-hex="@color.Name" pattern="^#[0-9a-fA-F]{6}$" required />
                         </div>
                         @Html.ValidationMessage(color.Name)
@@ -170,13 +170,27 @@
                     </div>
                 </div>
             }
+
+            <div class="ocat-wrapper">
+                <div class="ocat-end-offset">
+                    <div class="form-check">
+                        <input asp-for="HorizontalFormLayout" class="form-check-input" type="checkbox" />
+                        <label asp-for="HorizontalFormLayout" class="form-check-label">@T["Horizontal form layout"]</label>
+                        <span class="hint dashed">@T["Shows the label of each field of the admin forms beside its editor instead of above it, on screens at least as wide as a tablet."]</span>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <div class="card mb-3">
         <div class="card-header">@T["Advanced"]</div>
         <div class="card-body">
-            <p class="hint">@T["Leave a setting empty to work it out from the four colors."]</p>
+            <div class="ocat-wrapper">
+                <div class="ocat-end-offset">
+                    <span class="hint">@T["Leave a setting empty to work it out from the four colors."]</span>
+                </div>
+            </div>
 
             <div class="ocat-wrapper" asp-validation-class-for="Hue">
                 <label asp-for="Hue" class="ocat-label">@T["Surface hue"]</label>
@@ -204,7 +218,7 @@
                     <label for="@color.Name" class="ocat-label">@color.Label</label>
                     <div class="ocat-end">
                         <div class="ta-color-field">
-                            <input type="color" class="form-control form-control-color" value="@(string.IsNullOrEmpty(color.Value) ? "#ffffff" : color.Value)" data-scheme-color-picker="@color.Name" aria-label="@T["Pick the {0} color", color.Label.Value]" />
+                            <input type="color" id="@(color.Name)_Picker" class="form-control form-control-color" value="@(string.IsNullOrEmpty(color.Value) ? "#ffffff" : color.Value)" data-scheme-color-picker="@color.Name" aria-label="@T["Pick the {0} color", color.Label.Value]" />
                             <input type="text" id="@color.Name" name="@color.Name" class="form-control" value="@color.Value" maxlength="7" spellcheck="false" autocomplete="off" data-scheme-color-hex="@color.Name" pattern="^(#[0-9a-fA-F]{6})?$" placeholder="@T["Automatic"]" />
                         </div>
                         @Html.ValidationMessage(color.Name)

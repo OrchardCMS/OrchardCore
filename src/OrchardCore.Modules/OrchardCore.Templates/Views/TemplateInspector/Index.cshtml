@@ -51,7 +51,7 @@
                 <div class="col-md">
                     <div id="TemplateInspector_ContentItem" class="remote-picker" data-remote-picker data-search-url="@searchUrl" data-multiple="false" data-selected-items="@selectedItems" data-values-input="contentItemId" data-remove-text="@T["Remove"]">
                         <input type="hidden" id="contentItemId" name="contentItemId" value="@Model.ContentItem?.ContentItemId" />
-                        <select data-remote-picker-search placeholder="@T["Type to search"]" data-live-search-placeholder="@T["Search"]" data-none-results-text="@T["No results match {0}", "{0}"]" aria-label="@T["Content item"]"></select>
+                        <select id="TemplateInspector_ContentItem_Search" data-remote-picker-search placeholder="@T["Type to search"]" data-live-search-placeholder="@T["Search"]" data-none-results-text="@T["No results match {0}", "{0}"]" aria-label="@T["Content item"]"></select>
                     </div>
                 </div>
                 <div class="col-md-auto">

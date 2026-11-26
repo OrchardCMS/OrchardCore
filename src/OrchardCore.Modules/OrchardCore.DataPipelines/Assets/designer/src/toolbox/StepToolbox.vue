@@ -47,7 +47,7 @@ const onDragStart = (step: LibraryStep, event: DragEvent) => {
 <template>
     <div class="dpd-toolbox-inner">
         <div class="dpd-toolbox-filters">
-            <input v-model="query" type="search" class="form-control form-control-sm" :placeholder="t('SearchSteps', 'Search the steps')" :aria-label="t('SearchSteps', 'Search the steps')" data-cy="toolbox-search" />
+            <input id="dpd-toolbox-search" v-model="query" type="search" class="form-control form-control-sm" :placeholder="t('SearchSteps', 'Search the steps')" :aria-label="t('SearchSteps', 'Search the steps')" data-cy="toolbox-search" />
         </div>
 
         <div v-if="loading" class="dpd-toolbox-message">

@@ -38,6 +38,8 @@ public class AdminSchemeViewModel
 
     public bool LightMenu { get; set; }
 
+    public bool HorizontalFormLayout { get; set; }
+
     [Range(0, 360)]
     public double? Hue { get; set; }
 

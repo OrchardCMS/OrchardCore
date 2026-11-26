@@ -1,0 +1,21 @@
+@model OrchardCore.Taxonomies.ViewModels.DisplayTaxonomyFieldTagsViewModel
+@using OrchardCore.ContentFields
+@using OrchardCore.ContentManagement.Metadata.Models
+@using OrchardCore.Localization.Data
+@using OrchardCore.Mvc.Utilities
+@inject IDataLocalizer D
+@{
+    var name = (Model.PartFieldDefinition.PartDefinition.Name + "-" + Model.PartFieldDefinition.Name).HtmlClassify();
+    string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), DataLocalizationContext.ContentField(Model.PartFieldDefinition.PartDefinition.Name)];
+}
+<div class="ocat-wrapper field field-type-taxonomyfield field-display-mode-tags field-name-@name">
+    <div class="ocat-label">@localizedFieldName</div>
+    <div class="ocat-end">
+        <span class="value">
+            @foreach (var tagName in Model.TagNames)
+            {
+                <span class="taxonomy-tag-term">@tagName</span>
+            }
+        </span>
+    </div>
+</div>

@@ -63,6 +63,40 @@ public static class AdminSchemeStylesheet
         AppendRule(css, GetSelector(scheme.Id), BuildTokens(palette, AdminSchemeMode.Light));
         AppendRule(css, TheAdminSchemes.DarkModeSelector + GetSelector(scheme.Id), BuildTokens(palette, AdminSchemeMode.Dark));
         TheAdminSchemeTokens.AppendRules(css, scheme, palette);
+
+        if (scheme.HorizontalFormLayout)
+        {
+            AppendHorizontalFormLayout(css, GetSelector(scheme.Id));
+        }
+    }
+
+    /// <summary>
+    /// Appends the rules of the horizontal form layout under the selector of a scheme: the label of a field beside its
+    /// editor, from the width of a tablet. Views build their forms from the <c>ocat-*</c> classes only, so these rules
+    /// lay out every form of the admin without touching a view.
+    /// </summary>
+    public static void AppendHorizontalFormLayout(StringBuilder css, string selector)
+    {
+        ArgumentNullException.ThrowIfNull(css);
+        ArgumentException.ThrowIfNullOrEmpty(selector);
+
+        // A grid with a gap, not negative margins and padding on the children: the wrappers of a part or a field often
+        // hold another wrapper (a content part, then its editor), and those would add up at each level. A wrapper that
+        // holds no label or column of its own only groups other wrappers, so it stays a block.
+        const string Columns = ".ocat-label,.ocat-end,.ocat-end-offset,.ocat-start";
+
+        css.Append("@media (min-width:768px){\n")
+            .Append(selector).Append(" .ocat-wrapper{display:grid;grid-template-columns:25% minmax(0,1fr);column-gap:1.5rem;margin-bottom:1rem}\n")
+            .Append(selector).Append(" .ocat-wrapper:not(:has(>:is(").Append(Columns).Append("))){display:block}\n")
+            .Append(selector).Append(" .ocat-limited-wrapper{display:grid;grid-template-columns:25% minmax(0,33.333%);column-gap:1.5rem;margin-bottom:1rem}\n")
+            .Append(selector).Append(" .ocat-limited-wrapper:not(:has(>.ocat-label)){display:block}\n")
+            .Append(selector).Append(" .ocat-label{display:block;grid-column:1;margin-bottom:0;padding-block:calc(0.375rem + var(--bs-border-width));text-align:end}\n")
+            .Append(selector).Append(" .ocat-start{grid-column:1;min-width:0}\n")
+            .Append(selector).Append(" .ocat-end,").Append(selector).Append(" .ocat-end-offset,").Append(selector).Append(" .ocat-limited-wrapper>.ocat-limited{grid-column:2;min-width:0}\n")
+            .Append(selector).Append(" .ocat-limited-wrapper:has(>.ocat-label)>.ocat-limited{width:auto;max-width:none}\n")
+            // A check box or a radio button list beside a label, on the line of the label.
+            .Append(selector).Append(" .ocat-end>.form-check:first-child,").Append(selector).Append(" .ocat-end>.term-entries-area:first-child{padding-top:calc(0.375rem + var(--bs-border-width))}\n")
+            .Append("}\n");
     }
 
     /// <summary>

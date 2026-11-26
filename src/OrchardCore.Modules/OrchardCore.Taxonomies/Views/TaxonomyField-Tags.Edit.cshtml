@@ -34,13 +34,8 @@
 <script asp-name="bootstrap-select" at="Foot"></script>
 
 <div class="@($"ocat-wrapper field-wrapper field-wrapper-{Model.PartFieldDefinition.PartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" + (Model.PartFieldDefinition.IsNamedPart() ? $" field-wrapper-{Model.PartFieldDefinition.ContentTypePartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" : string.Empty))" id="@Html.IdFor(x => x.TermContentItemIds)_FieldWrapper">
-    <label class="ocat-label @(taxonomySettings.Required ? "ocat-label-required" : "")">@localizedFieldName</label>
-    <div class="ocat-end">
-        @if (!string.IsNullOrEmpty(taxonomySettings.Hint))
-        {
-            @await DisplayAsync(await New.Hint_Admin(Hint: taxonomySettings.Hint))
-        }
-
+    <span id="@Html.IdFor(x => x.TermContentItemIds)_Label" class="ocat-label @(taxonomySettings.Required ? "ocat-label-required" : "")">@localizedFieldName</span>
+    <div class="ocat-end" role="group" aria-labelledby="@Html.IdFor(x => x.TermContentItemIds)_Label">
         @if (Model.Taxonomy == null)
         {
             <div class="alert alert-warning" role="alert">
@@ -77,6 +72,11 @@
             <script asp-src="~/OrchardCore.Taxonomies/Scripts/taxonomy-field-tags/taxonomy-field-tags.min.js" debug-src="~/OrchardCore.Taxonomies/Scripts/taxonomy-field-tags/taxonomy-field-tags.js" at="Foot" depends-on="bootstrap-select" type="module"></script>
 
             <span asp-validation-for="TermContentItemIds"></span>
+        }
+
+        @if (!string.IsNullOrEmpty(taxonomySettings.Hint))
+        {
+            @await DisplayAsync(await New.Hint_Admin(Hint: taxonomySettings.Hint))
         }
     </div>
 </div>

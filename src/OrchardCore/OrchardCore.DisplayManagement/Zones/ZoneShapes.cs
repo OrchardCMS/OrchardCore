@@ -177,6 +177,11 @@ public class ZoneShapes : IShapeAttributeProvider
                     m.Grouping = orderedGrouping;
                 });
 
+                if (Shape.Properties.ContainsKey(GroupShapes.InTabPaneProperty))
+                {
+                    groupingShape.Properties[GroupShapes.InTabPaneProperty] = true;
+                }
+
                 foreach (var item in orderedGrouping)
                 {
                     await groupingShape.AddAsync(item);

@@ -13,7 +13,7 @@ By default, the `ocat-*` classes render a stacked (vertical) form layout equival
 | CSS Class | Purpose | Default Style |
 |-----------|---------|---------------|
 | `ocat-wrapper` | Outer wrapper for each form field group | `margin-bottom: 1rem` |
-| `ocat-label` | Label element styling | Same as Bootstrap `.form-label` |
+| `ocat-label` | Label element styling: a `<label>` for one control, or a `<span>` captioning a group of controls or a value | Same as Bootstrap `.form-label` |
 | `ocat-label-required` | Additional class for required field labels | Appends a `*` indicator in the `--bs-danger` color, separated from the text by a `0.25rem` inline-start padding so it reads well in LTR and RTL |
 | `ocat-end` | Container for the input and hint content | _(no additional styles)_ |
 | `ocat-end-offset` | Container for input content when no label exists (e.g., standalone checkboxes) | _(no additional styles)_ |
@@ -85,6 +85,25 @@ When building custom admin editor views, use the `ocat-*` classes so your views 
 </div>
 ```
 
+**Group of controls pattern:**
+
+A `<label>` labels a single control, whose id matches its `for`. When the caption applies to several controls, such as a list of checkboxes or radio buttons, or to a widget rendered by a script, render it as a `<span>` with an id and label the container of the controls with it. Use `role="radiogroup"` for radio buttons. A row that shows a value without a control also uses a `<span class="ocat-label">`.
+
+```html
+<div class="ocat-wrapper">
+    <span id="@Html.IdFor(m => m.ContentTypes)_Label" class="ocat-label">@T["Content types"]</span>
+    <div class="ocat-end" role="group" aria-labelledby="@Html.IdFor(m => m.ContentTypes)_Label">
+        @for (var i = 0; i < Model.ContentTypes.Length; i++)
+        {
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" asp-for="ContentTypes[i].IsSelected" />
+                <label class="form-check-label" asp-for="ContentTypes[i].IsSelected">@Model.ContentTypes[i].DisplayName</label>
+            </div>
+        }
+    </div>
+</div>
+```
+
 ### Customizing Content Field Hints
 
 Content field editors render their configured hint with the `Hint_Admin` shape. The default
@@ -114,7 +133,9 @@ Bootstrap tooltips for elements with the `data-bs-toggle="tooltip"` attribute.
 
 ### Creating a Horizontal Form Layout
 
-To achieve a horizontal form layout, override the `ocat-*` classes in your custom admin theme CSS or SCSS. Here's a pure CSS example:
+**TheAdmin** has this layout built in, and it is off by default: the forms are stacked. It is an option of a [scheme](#admin-schemes), so it follows the scheme of the site, or the one a user picks. Check **Horizontal form layout** when you edit a scheme, or set `HorizontalFormLayout` to `true` on the scheme in the `AdminSchemes` recipe step. Its rules are written in `~/TheAdmin/schemes.css`, under the selector of the scheme, from screens as wide as a tablet (768 pixels) up; no other stylesheet is added to the pages. It is also the way to check that a new view builds its forms from the `ocat-*` classes: a view that doesn't keeps its stacked layout when the option is on.
+
+A custom admin theme that doesn't build on **TheAdmin** can override the `ocat-*` classes in your custom admin theme CSS or SCSS. Here's a pure CSS example:
 
 ```css
 /* Horizontal form layout for admin editors */
@@ -260,6 +281,7 @@ Schemes are exported with the **Admin schemes** deployment step and imported wit
 | `Primary`, `Deep`, `Ink`, `Accent` | Required. `#rrggbb` colors. |
 | `Position` | Optional. The place of the scheme in the pickers; after the others when empty. |
 | `LightMenu` | Optional. `true` for a light gray menu with dark text. |
+| `HorizontalFormLayout` | Optional. `true` to lay out the admin forms horizontally, with the label of a field beside its editor, from the width of a tablet. `false` (stacked forms) when empty. |
 | `Hue`, `Saturation` | Optional. The hue (0 to 360) and saturation (0 to 1) of the page, borders and dark mode surfaces. |
 | `OnPrimary`, `Page`, `Toolbar`, `Tint`, `TintDark` | Optional. `#rrggbb` colors of the text on the primary, the page, the toolbar of lists and the page gradient in light and dark mode. |
 | `FontFamily`, `HeadingFontFamily` | Optional. `lato`, `system`, or any font families separated by commas (e.g. `Georgia, serif`). An empty `HeadingFontFamily` uses the body font. |

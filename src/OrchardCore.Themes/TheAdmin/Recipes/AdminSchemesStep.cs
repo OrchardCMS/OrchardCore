@@ -68,6 +68,7 @@ public sealed class AdminSchemesStep : NamedRecipeStepHandler
             Ink = ReadString(entry, nameof(AdminScheme.Ink), invalid),
             Accent = ReadString(entry, nameof(AdminScheme.Accent), invalid),
             LightMenu = Read<bool>(entry, nameof(AdminScheme.LightMenu), invalid) ?? false,
+            HorizontalFormLayout = Read<bool>(entry, nameof(AdminScheme.HorizontalFormLayout), invalid) ?? false,
             Position = Read<int>(entry, nameof(AdminScheme.Position), invalid) ?? position++,
             Hue = Read<double>(entry, nameof(AdminScheme.Hue), invalid),
             Saturation = Read<double>(entry, nameof(AdminScheme.Saturation), invalid),
@@ -85,7 +86,7 @@ public sealed class AdminSchemesStep : NamedRecipeStepHandler
 
         if (invalid.Count > 0)
         {
-            context.Errors.Add(S["The scheme '{0}' has values of the wrong type: {1}. ItemId, Name, the colors and the fonts are strings, LightMenu is a boolean, Position is a whole number, and the other settings are numbers.", scheme.Id, string.Join(", ", invalid)]);
+            context.Errors.Add(S["The scheme '{0}' has values of the wrong type: {1}. ItemId, Name, the colors and the fonts are strings, LightMenu and HorizontalFormLayout are booleans, Position is a whole number, and the other settings are numbers.", scheme.Id, string.Join(", ", invalid)]);
 
             return position;
         }

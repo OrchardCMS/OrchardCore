@@ -724,6 +724,11 @@ msgctxt "OrchardCore.ContentFields.Views.ContentPickerField"
 msgid "No content items."
 msgstr ""
 
+#: Views/ContentPickerField.DetailAdmin.cshtml
+msgctxt "OrchardCore.ContentFields.Views.ContentPickerField.DetailAdmin"
+msgid "No content items."
+msgstr ""
+
 #: Views/ContentPickerField.DisplayOption.cshtml
 msgctxt "OrchardCore.ContentFields.Views.ContentPickerField.DisplayOption"
 msgid "Standard"
@@ -1176,6 +1181,11 @@ msgctxt "OrchardCore.ContentFields.Views.LocalizationSetContentPickerField"
 msgid "No content items."
 msgstr ""
 
+#: Views/LocalizationSetContentPickerField.DetailAdmin.cshtml
+msgctxt "OrchardCore.ContentFields.Views.LocalizationSetContentPickerField.DetailAdmin"
+msgid "No content items."
+msgstr ""
+
 #: Views/LocalizationSetContentPickerField.DisplayOption.cshtml
 msgctxt "OrchardCore.ContentFields.Views.LocalizationSetContentPickerField.DisplayOption"
 msgid "Standard"
@@ -1288,6 +1298,11 @@ msgstr ""
 #: Views/MultiTextField-Picker.Option.cshtml
 msgctxt "OrchardCore.ContentFields.Views.MultiTextField-Picker.Option"
 msgid "Picker"
+msgstr ""
+
+#: Views/MultiTextField.DetailAdmin.cshtml
+msgctxt "OrchardCore.ContentFields.Views.MultiTextField.DetailAdmin"
+msgid ", "
 msgstr ""
 
 #: Views/MultiTextField.DisplayOption.cshtml
@@ -1690,9 +1705,19 @@ msgctxt "OrchardCore.ContentFields.Views.UserPickerField-UserNames.Display"
 msgid "No users."
 msgstr ""
 
+#: Views/UserPickerField-UserNames.Display.DetailAdmin.cshtml
+msgctxt "OrchardCore.ContentFields.Views.UserPickerField-UserNames.Display.DetailAdmin"
+msgid "No users."
+msgstr ""
+
 #: Views/UserPickerField-UserNames.DisplayOption.cshtml
 msgctxt "OrchardCore.ContentFields.Views.UserPickerField-UserNames.DisplayOption"
 msgid "User Names"
+msgstr ""
+
+#: Views/UserPickerField.DetailAdmin.cshtml
+msgctxt "OrchardCore.ContentFields.Views.UserPickerField.DetailAdmin"
+msgid "No users."
 msgstr ""
 
 #: Views/UserPickerField.DisplayOption.cshtml

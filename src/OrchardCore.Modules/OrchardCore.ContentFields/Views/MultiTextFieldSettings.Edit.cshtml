@@ -30,7 +30,7 @@
 
 <div id="@Html.IdFor(m => m)" class="options-editor-wrapper" data-options="@Model.Options" data-options-input-id="@Html.IdFor(m => m.Options)" data-options-input-name="@Html.NameFor(m => m.Options)" data-translations="@translationsJson">
     <div class="ocat-limited-wrapper">
-        <label asp-for="Options" class="ocat-label">@T["Options"]</label>
-        <div class="ocat-limited options-table-editor-mount"></div>
+        <span id="@Html.IdFor(m => m.Options)_Label" class="ocat-label">@T["Options"]</span>
+        <div class="ocat-limited options-table-editor-mount" role="group" aria-labelledby="@Html.IdFor(m => m.Options)_Label"></div>
     </div>
 </div>

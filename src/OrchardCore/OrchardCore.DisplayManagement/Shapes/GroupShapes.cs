@@ -10,6 +10,12 @@ namespace OrchardCore.DisplayManagement.Shapes;
 [Feature(Application.DefaultFeatureId)]
 public class GroupShapes : IShapeAttributeProvider
 {
+    /// <summary>
+    /// The property set on the shapes of the cards of a tab that is rendered in a tab pane, so that a theme can draw
+    /// them without a frame of their own: the tab pane already frames them.
+    /// </summary>
+    public const string InTabPaneProperty = "InTabPane";
+
     [Shape]
     public static IHtmlContent AdminTabs(IShape shape)
     {
@@ -161,6 +167,9 @@ public class GroupShapes : IShapeAttributeProvider
         var tagBuilder = shape.GetTagBuilder("div");
         tagBuilder.Attributes["id"] = $"tab-{shape.Grouping.Key}-{shape.Identifier}".HtmlClassify();
         tagBuilder.AddCssClass("tab-pane fade");
+
+        // Lets the cards of the tab know that a tab pane frames them (see the Card shape of the admin theme).
+        shape.Properties[GroupShapes.InTabPaneProperty] = true;
 
         // Morphing this shape to a grouping shape to keep Model untouched.
         shape.Metadata.Alternates.Clear();
