@@ -16,12 +16,12 @@ public class ThemeTogglerService
         IHttpContextAccessor httpContextAccessor,
         ISiteService siteService,
         ShellSettings shellSettings,
-        IOptions<CookieNameOptions> cookieNameOptions)
+        IOptions<ThemesCookieOptions> cookieOptions)
     {
         _httpContextAccessor = httpContextAccessor;
         _siteService = siteService;
         CurrentTenant = shellSettings.Name;
-        _cookieName = cookieNameOptions.Value.AdminTheme;
+        _cookieName = cookieOptions.Value.AdminTheme;
     }
 
     public string CurrentTenant { get; }

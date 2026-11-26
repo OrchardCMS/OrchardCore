@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.AspNetCore.DataProtection.XmlEncryption;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -22,6 +21,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using OrchardCore;
+using OrchardCore.Cookies;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
@@ -188,11 +188,11 @@ public static class ServiceCollectionExtensions
             services.Configure<CultureOptions>(configuration.GetSectionCompat("Localization:CultureOptions", "OrchardCore_Localization_CultureOptions"));
             services.Configure<TempDirectoryOptions>(configuration.GetSection("TempDirectory"));
 
-            services.Configure<CookieNameOptions>(configuration.GetSection("Cookies"));
-            services.AddTransient<IPostConfigureOptions<CookieNameOptions>, CookieNameOptionsSetup>();
-            services.AddTransient<IConfigureOptions<CookieTempDataProviderOptions>, CookieNamesConfiguration>();
-            services.AddTransient<IConfigureOptions<CookiePolicyOptions>, CookieNamesConfiguration>();
-            services.AddTransient<IPostConfigureOptions<RequestLocalizationOptions>, CookieNamesConfiguration>();
+            services.ConfigureOptions<CoreCookieOptionsSetup>();
+            services.AddOptions<CookieTempDataProviderOptions>()
+                .Configure<IOptions<CoreCookieOptions>>((options, cookieOptions) => options.Cookie.Name = cookieOptions.Value.TempData);
+            services.AddOptions<CookiePolicyOptions>()
+                .Configure<IOptions<CoreCookieOptions>>((options, cookieOptions) => options.ConsentCookie.Name = cookieOptions.Value.Consent);
         });
 
         services.AddSingleton(new FluidParser());
@@ -460,7 +460,7 @@ public static class ServiceCollectionExtensions
             // tenant prefix but may also start by a path related e.g to a virtual folder.
             collection
                 .AddOptions<AntiforgeryOptions>()
-                .Configure<IOptions<CookieNameOptions>>((options, cookieNames) => options.Cookie.Name = cookieNames.Value.Antiforgery);
+                .Configure<IOptions<CoreCookieOptions>>((options, cookieOptions) => options.Cookie.Name = cookieOptions.Value.Antiforgery);
 
             services.Add(collection);
         });

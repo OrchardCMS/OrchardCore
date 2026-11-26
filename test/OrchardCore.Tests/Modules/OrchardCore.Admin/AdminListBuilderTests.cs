@@ -239,7 +239,7 @@ public class AdminListBuilderTests
         var accessor = new HttpContextAccessor { HttpContext = http };
         var options = Mock.Of<IOptionsMonitor<AdminListOptions>>(monitor => monitor.CurrentValue ==
             new AdminListOptions { DefaultLayout = layout, AllowUserSelection = allowSelection });
-        var resolver = new AdminListLayoutResolver(options, accessor, new AdminListLayoutPreference(accessor, Options.Create(new CookieNameOptions())));
+        var resolver = new AdminListLayoutResolver(options, accessor, new AdminListLayoutPreference(accessor, Options.Create(new AdminCookieOptions { ListLayout = AdminCookieOptions.DefaultListLayout })));
         var columnsBuilder = new Mock<IAdminListColumnsBuilder>();
         columnsBuilder.Setup(value => value.BuildColumnsAsync(It.IsAny<string>(), It.IsAny<IEnumerable<AdminListColumn>>(),
                 It.IsAny<IReadOnlyDictionary<string, object>>(), It.IsAny<CancellationToken>()))

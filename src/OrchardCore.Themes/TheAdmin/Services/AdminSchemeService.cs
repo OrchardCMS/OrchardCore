@@ -20,19 +20,19 @@ public sealed class AdminSchemeService
     /// </summary>
     public AdminSchemeService(
         IHttpContextAccessor httpContextAccessor,
-        IOptions<CookieNameOptions> cookieNameOptions,
+        IOptions<TheAdminCookieOptions> cookieOptions,
         AdminSchemeStore store)
     {
         _httpContextAccessor = httpContextAccessor;
         _store = store;
 
         // Named per tenant by default, like the color mode cookie of the theme toggler.
-        CookieName = cookieNameOptions.Value.AdminScheme;
+        CookieName = cookieOptions.Value.Scheme;
     }
 
     /// <summary>
     /// The name of the cookie holding the scheme the user picked, '{tenant}-TheAdmin-scheme' by default, see
-    /// <see cref="CookieNameOptions.AdminScheme"/>.
+    /// <see cref="TheAdminCookieOptions.Scheme"/>.
     /// </summary>
     public string CookieName { get; }
 

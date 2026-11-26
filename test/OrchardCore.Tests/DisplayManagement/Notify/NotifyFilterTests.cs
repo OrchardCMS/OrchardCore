@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Net.Http.Headers;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 
 namespace OrchardCore.Tests.DisplayManagement.Notify;
@@ -38,7 +39,7 @@ public class NotifyFilterTests
     {
         var filter = CreateFilter(new Notifier(NullLogger<Notifier>.Instance));
         var httpContext = CreateHttpContext(scheme);
-        httpContext.Request.Headers.Cookie = $"{CookieNames.Notify}=invalid";
+        httpContext.Request.Headers.Cookie = $"{DisplayManagementCookieOptions.DefaultNotify}=invalid";
         var actionContext = new ActionContext(httpContext, new RouteData(), new ActionDescriptor());
 
         filter.OnActionExecuting(new ActionExecutingContext(actionContext, [], new Dictionary<string, object>(), controller: null));
@@ -65,7 +66,7 @@ public class NotifyFilterTests
             new EphemeralDataProtectionProvider(),
             HtmlEncoder.Default,
             Options.Create(options),
-            Options.Create(new CookieNameOptions()),
+            Options.Create(new DisplayManagementCookieOptions { Notify = DisplayManagementCookieOptions.DefaultNotify }),
             NullLogger<NotifyFilter>.Instance);
     }
 
@@ -79,5 +80,5 @@ public class NotifyFilterTests
     }
 
     private static SetCookieHeaderValue GetNotifySetCookie(DefaultHttpContext httpContext)
-        => SetCookieHeaderValue.Parse(Assert.Single(httpContext.Response.Headers.SetCookie, cookie => cookie.StartsWith($"{CookieNames.Notify}=", StringComparison.Ordinal)));
+        => SetCookieHeaderValue.Parse(Assert.Single(httpContext.Response.Headers.SetCookie, cookie => cookie.StartsWith($"{DisplayManagementCookieOptions.DefaultNotify}=", StringComparison.Ordinal)));
 }

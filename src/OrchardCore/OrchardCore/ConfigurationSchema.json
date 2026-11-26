@@ -4,6 +4,30 @@
     "OrchardCore": {
       "type": "object",
       "properties": {
+        "Cookies": {
+          "type": "object",
+          "description": "Configures the names of the cookies used by the tenant, in a section per module. Leave a name empty to keep its default name. Can be set in a section named after a tenant, e.g. 'OrchardCore:MyTenant:Cookies'; names set directly under 'OrchardCore' apply to all tenants. See https://docs.orchardcore.net/en/latest/reference/modules/Configuration/#cookie-names.",
+          "properties": {
+            "Core": {
+              "type": "object",
+              "description": "The names of the cookies used by the Orchard Core framework.",
+              "properties": {
+                "Antiforgery": {
+                  "type": "string",
+                  "description": "The antiforgery cookie. Defaults to '__orchantiforgery_{TenantVersionId}'."
+                },
+                "TempData": {
+                  "type": "string",
+                  "description": "The cookie holding the MVC temp data. Defaults to '.AspNetCore.Mvc.CookieTempDataProvider'."
+                },
+                "Consent": {
+                  "type": "string",
+                  "description": "The cookie holding the tracking consent of the user. Defaults to '.AspNet.Consent'."
+                }
+              }
+            }
+          }
+        },
         "State": {
           "type": "string",
           "enum": [
@@ -143,76 +167,6 @@
             "Path": {
               "type": "string",
               "description": "The base path under which tenant-scoped temporary files are stored. When not set, the operating system temporary directory is used. Point it to a larger or shared volume, such as a mounted Azure Files or AWS EFS/FSx share."
-            }
-          }
-        },
-        "Cookies": {
-          "type": "object",
-          "description": "Configures the names of the cookies used by the tenant. Leave a name empty to keep its default name. Can be set in a section named after a tenant, e.g. 'OrchardCore:MyTenant:Cookies'; names set directly under 'OrchardCore' apply to all tenants. See https://docs.orchardcore.net/en/latest/reference/modules/Configuration/.",
-          "properties": {
-            "Antiforgery": {
-              "type": "string",
-              "description": "The antiforgery cookie. Defaults to '__orchantiforgery_{TenantVersionId}'."
-            },
-            "Authentication": {
-              "type": "string",
-              "description": "The authentication cookie of the users. Defaults to 'orchauth_{TenantName}'."
-            },
-            "EmailConfirmation": {
-              "type": "string",
-              "description": "The cookie remembering the user whose email must be confirmed. Defaults to 'orchemail_{TenantName}'."
-            },
-            "Passkey": {
-              "type": "string",
-              "description": "The cookie used while signing in with a passkey. Defaults to 'orchpasskey_{TenantName}'."
-            },
-            "ExternalAuthentication": {
-              "type": "string",
-              "description": "The cookie used while signing in with an external provider. Defaults to 'Identity.External'."
-            },
-            "TwoFactorUserId": {
-              "type": "string",
-              "description": "The cookie remembering the user during a two-factor sign-in. Defaults to 'Identity.TwoFactorUserId'."
-            },
-            "TwoFactorRememberMe": {
-              "type": "string",
-              "description": "The cookie remembering the browser of a two-factor sign-in. Defaults to 'Identity.TwoFactorRememberMe'."
-            },
-            "Notify": {
-              "type": "string",
-              "description": "The cookie holding the notifications shown after a redirect. Defaults to 'orch_notify'."
-            },
-            "TempData": {
-              "type": "string",
-              "description": "The cookie holding the MVC temp data. Defaults to '.AspNetCore.Mvc.CookieTempDataProvider'."
-            },
-            "Culture": {
-              "type": "string",
-              "description": "The cookie holding the culture picked on the site. Defaults to '.AspNetCore.Culture'."
-            },
-            "Consent": {
-              "type": "string",
-              "description": "The cookie holding the tracking consent of the user. Defaults to '.AspNet.Consent'."
-            },
-            "AdminCulture": {
-              "type": "string",
-              "description": "The cookie holding the culture picked in the admin. Defaults to 'admin_culture_{TenantVersionId}'."
-            },
-            "AdminListLayout": {
-              "type": "string",
-              "description": "The cookie holding the layout picked for the admin lists. Defaults to 'orchardcore_admin_list_layout'."
-            },
-            "AdminTheme": {
-              "type": "string",
-              "description": "The cookie holding the light or dark mode picked in the admin. Defaults to '{TenantName}-admintheme'."
-            },
-            "AdminScheme": {
-              "type": "string",
-              "description": "The cookie holding the color scheme picked in the admin. Defaults to '{TenantName}-TheAdmin-scheme'."
-            },
-            "AdminPreferences": {
-              "type": "string",
-              "description": "The cookie holding the admin preferences, e.g. the state of the admin menu. Defaults to '{TenantName}-adminPreferences'."
             }
           }
         },

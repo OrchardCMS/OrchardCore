@@ -19,8 +19,8 @@ public sealed class AdminListLayoutPreference
     /// <summary>
     /// The default name of the cookie holding the layouts a user picked.
     /// </summary>
-    [Obsolete("Use the configured 'CookieNameOptions.AdminListLayout' name instead. This constant will be removed in a future version.")]
-    public const string CookieName = CookieNames.AdminListLayout;
+    [Obsolete("Use the configured 'AdminCookieOptions.ListLayout' name instead. This constant will be removed in a future version.")]
+    public const string CookieName = AdminCookieOptions.DefaultListLayout;
 
     /// <summary>
     /// The query string key a list uses to ask for a layout, e.g. <c>?layout=Grid</c>.
@@ -35,10 +35,10 @@ public sealed class AdminListLayoutPreference
 
     private Dictionary<string, string> _entries;
 
-    public AdminListLayoutPreference(IHttpContextAccessor httpContextAccessor, IOptions<CookieNameOptions> cookieNameOptions)
+    public AdminListLayoutPreference(IHttpContextAccessor httpContextAccessor, IOptions<AdminCookieOptions> cookieOptions)
     {
         _httpContextAccessor = httpContextAccessor;
-        _cookieName = cookieNameOptions.Value.AdminListLayout;
+        _cookieName = cookieOptions.Value.ListLayout;
     }
 
     /// <summary>

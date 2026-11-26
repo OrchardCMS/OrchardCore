@@ -209,28 +209,76 @@ A related topic is [Shells Configuration Providers](../Shells/README.md). See es
 
 ### Cookie names
 
-The names of the cookies used by a tenant are configured in the `Cookies` section. A cookie that isn't configured, or has an empty name, keeps its default name. In code, the names are available through `IOptions<CookieNameOptions>`, and their default values and prefixes are defined in the `CookieNames` class.
+The names of the cookies used by a tenant are configured in the `Cookies` section, with a section for each module that uses cookies. A cookie that isn't configured, or has an empty name, keeps its default name. In code, each module exposes the names of its cookies through its own options class, which also defines their default values and prefixes as constants.
+
+`{TenantName}` is the name of the tenant, URL encoded for the cookies of the `Users` section, and `{TenantVersionId}` is an identifier that changes when the tenant is set up again. These placeholders are only used by the default names: a configured name is used as is.
+
+#### `Cookies:Core`
+
+The cookies of the Orchard Core framework, available through `IOptions<CoreCookieOptions>`.
 
 | Setting | Default name | Usage |
 | --- | --- | --- |
 | `Antiforgery` | `__orchantiforgery_{TenantVersionId}` | The antiforgery token. |
+| `TempData` | `.AspNetCore.Mvc.CookieTempDataProvider` | The MVC temp data. |
+| `Consent` | `.AspNet.Consent` | The tracking consent of the user. |
+
+#### `Cookies:DisplayManagement`
+
+The cookies of the display management, available through `IOptions<DisplayManagementCookieOptions>`.
+
+| Setting | Default name | Usage |
+| --- | --- | --- |
+| `Notify` | `orch_notify` | The notifications shown after a redirect. |
+
+#### `Cookies:Users`
+
+The cookies of the `OrchardCore.Users` module, available through `IOptions<UsersCookieOptions>`.
+
+| Setting | Default name | Usage |
+| --- | --- | --- |
 | `Authentication` | `orchauth_{TenantName}` | The authentication of the users. |
 | `EmailConfirmation` | `orchemail_{TenantName}` | The user whose email must be confirmed. |
 | `Passkey` | `orchpasskey_{TenantName}` | The sign-in with a passkey. |
 | `ExternalAuthentication` | `Identity.External` | The sign-in with an external provider. |
 | `TwoFactorUserId` | `Identity.TwoFactorUserId` | The user during a two-factor sign-in. |
 | `TwoFactorRememberMe` | `Identity.TwoFactorRememberMe` | The browser remembered by a two-factor sign-in. |
-| `Notify` | `orch_notify` | The notifications shown after a redirect. |
-| `TempData` | `.AspNetCore.Mvc.CookieTempDataProvider` | The MVC temp data. |
-| `Culture` | `.AspNetCore.Culture` | The culture picked on the site. |
-| `Consent` | `.AspNet.Consent` | The tracking consent of the user. |
+
+#### `Cookies:Localization`
+
+The cookies of the `OrchardCore.Localization` module, available through `IOptions<LocalizationCookieOptions>`.
+
+| Setting | Default name | Usage |
+| --- | --- | --- |
+| `Culture` | `.AspNetCore.Culture` | The culture picked on the site, e.g. with the content culture picker. |
 | `AdminCulture` | `admin_culture_{TenantVersionId}` | The culture picked in the admin. |
-| `AdminListLayout` | `orchardcore_admin_list_layout` | The layout picked for the admin lists. |
+
+#### `Cookies:Admin`
+
+The cookies of the `OrchardCore.Admin` module, available through `IOptions<AdminCookieOptions>`.
+
+| Setting | Default name | Usage |
+| --- | --- | --- |
+| `ListLayout` | `orchardcore_admin_list_layout` | The layout picked for the admin lists. |
+
+#### `Cookies:Themes`
+
+The cookies of the `OrchardCore.Themes` module, also used by the admin themes, available through `IOptions<ThemesCookieOptions>`.
+
+| Setting | Default name | Usage |
+| --- | --- | --- |
 | `AdminTheme` | `{TenantName}-admintheme` | The light or dark mode picked in the admin. |
-| `AdminScheme` | `{TenantName}-TheAdmin-scheme` | The color scheme picked in the admin. |
 | `AdminPreferences` | `{TenantName}-adminPreferences` | The admin preferences, e.g. the state of the admin menu. |
 
-`{TenantName}` is the name of the tenant, URL encoded for the authentication cookies, and `{TenantVersionId}` is an identifier that changes when the tenant is set up again. These placeholders are only used by the default names: a configured name is used as is.
+#### `Cookies:TheAdmin`
+
+The cookies of the `TheAdmin` theme, available through `IOptions<TheAdminCookieOptions>`.
+
+| Setting | Default name | Usage |
+| --- | --- | --- |
+| `Scheme` | `{TenantName}-TheAdmin-scheme` | The color scheme picked in the admin. |
+
+#### Configure the cookie names
 
 Set the names in a section named after the tenant to configure a single tenant:
 
@@ -239,8 +287,12 @@ Set the names in a section named after the tenant to configure a single tenant:
   "OrchardCore": {
     "Default": {
       "Cookies": {
-        "Authentication": "myapp_auth",
-        "Antiforgery": "myapp_antiforgery"
+        "Core": {
+          "Antiforgery": "myapp_antiforgery"
+        },
+        "Users": {
+          "Authentication": "myapp_auth"
+        }
       }
     }
   }
@@ -248,11 +300,13 @@ Set the names in a section named after the tenant to configure a single tenant:
 ```
 
 !!! warning
-    Names set directly in the `OrchardCore:Cookies` section apply to all tenants. Tenants sharing the same host must not use the same name for a cookie that depends on the tenant, such as `Authentication` or `Antiforgery`, otherwise they overwrite each other's cookie.
+    Names set directly in the `OrchardCore:Cookies` section apply to all tenants. Tenants sharing the same host must not use the same name for a cookie that depends on the tenant, such as `Users:Authentication` or `Core:Antiforgery`, otherwise they overwrite each other's cookie.
 
-Renaming a cookie on a running site discards the cookie the browsers already have, e.g. renaming `Authentication` signs out every user.
+Renaming a cookie on a running site discards the cookie the browsers already have, e.g. renaming `Users:Authentication` signs out every user.
 
 The cookies of the external authentication providers, such as the correlation and nonce cookies of OpenID Connect, are configured by these providers and are not part of this section.
+
+A module that adds cookies of its own defines an options class for their names, binds it from a `Cookies:{Module}` section of the tenant configuration, and documents its cookies in this section.
 
 ### `IOptions` Configuration
 

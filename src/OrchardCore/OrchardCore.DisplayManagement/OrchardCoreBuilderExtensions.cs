@@ -48,6 +48,7 @@ public static class OrchardCoreBuilderExtensions
                 });
 
                 services.AddTransient<IConfigureOptions<NotifyJsonSerializerOptions>, NotifyJsonSerializerOptionsConfiguration>();
+                services.ConfigureOptions<DisplayManagementCookieOptionsSetup>();
 
                 // Used as a service when we create a fake 'ActionContext'.
                 services.AddScoped<IAsyncViewActionFilter, RazorViewActionFilter>();

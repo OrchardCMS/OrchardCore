@@ -14,8 +14,8 @@ namespace OrchardCore.DisplayManagement.Notify;
 
 public sealed class NotifyFilter : IActionFilter, IAsyncResultFilter, IPageFilter
 {
-    [Obsolete("Use the configured 'CookieNameOptions.Notify' name instead. This constant will be removed in a future version.")]
-    public const string CookiePrefix = CookieNames.Notify;
+    [Obsolete("Use the configured 'DisplayManagementCookieOptions.Notify' name instead. This constant will be removed in a future version.")]
+    public const string CookiePrefix = DisplayManagementCookieOptions.DefaultNotify;
 
     private readonly INotifier _notifier;
     private readonly IShapeFactory _shapeFactory;
@@ -36,7 +36,7 @@ public sealed class NotifyFilter : IActionFilter, IAsyncResultFilter, IPageFilte
         IDataProtectionProvider dataProtectionProvider,
         HtmlEncoder htmlEncoder,
         IOptions<NotifyJsonSerializerOptions> notifyJsonSerializerOptions,
-        IOptions<CookieNameOptions> cookieNameOptions,
+        IOptions<DisplayManagementCookieOptions> cookieOptions,
         ILogger<NotifyFilter> logger)
     {
         _notifier = notifier;
@@ -46,7 +46,7 @@ public sealed class NotifyFilter : IActionFilter, IAsyncResultFilter, IPageFilte
         _htmlEncoder = htmlEncoder;
         _notifyJsonSerializerOptions = notifyJsonSerializerOptions;
         _logger = logger;
-        _cookieName = cookieNameOptions.Value.Notify;
+        _cookieName = cookieOptions.Value.Notify;
     }
 
     private void OnHandlerExecuting(FilterContext filterContext)

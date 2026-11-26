@@ -85,6 +85,7 @@ public sealed class Startup : StartupBase
         services.AddIdentity<IUser, IRole>()
             .AddTokenProvider<DataProtectorTokenProvider<IUser>>(TokenOptions.DefaultProvider);
 
+        services.ConfigureOptions<UsersCookieOptionsSetup>();
         services.ConfigureCookieName(IdentityConstants.ApplicationScheme, cookieNames => cookieNames.Authentication);
         services.ConfigureCookieName(IdentityConstants.ExternalScheme, cookieNames => cookieNames.ExternalAuthentication);
         services.ConfigureCookieName(IdentityConstants.TwoFactorUserIdScheme, cookieNames => cookieNames.TwoFactorUserId);

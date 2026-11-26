@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Options;
@@ -22,14 +23,18 @@ public class ContentCulturePickerService : IContentCulturePickerService
         ISiteService siteService,
         IHttpContextAccessor httpContextAccessor,
         IOptions<CulturePickerOptions> culturePickerOptions,
-        IOptions<CookieNameOptions> cookieNameOptions)
+        IOptions<RequestLocalizationOptions> requestLocalizationOptions)
     {
         _autorouteEntries = autorouteEntries;
         _localizationEntries = localizationEntries;
         _siteService = siteService;
         _httpContextAccessor = httpContextAccessor;
         _culturePickerOptions = culturePickerOptions.Value;
-        _cookieName = cookieNameOptions.Value.Culture;
+        // Use the cookie read by the request localization, its name is configured by the 'OrchardCore.Localization' module.
+        _cookieName = requestLocalizationOptions.Value.RequestCultureProviders
+            .FirstOrDefault(provider => provider.GetType() == typeof(CookieRequestCultureProvider)) is CookieRequestCultureProvider provider
+            ? provider.CookieName
+            : CookieRequestCultureProvider.DefaultCookieName;
     }
 
     public async Task<string> GetContentItemIdFromRouteAsync(PathString url)

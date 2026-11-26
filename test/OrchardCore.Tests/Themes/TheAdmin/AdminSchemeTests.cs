@@ -14,6 +14,7 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Tests.Stubs;
 using OrchardCore.Themes.Models;
+using OrchardCore.Themes.TheAdmin;
 using OrchardCore.Themes.TheAdmin.Schemes;
 using OrchardCore.Themes.TheAdmin.Controllers;
 using OrchardCore.Themes.TheAdmin.Deployment;
@@ -575,7 +576,7 @@ public sealed class AdminSchemeTests
     }
 
     private static AdminSchemeService CreateService(AdminSchemeStore store, HttpContext httpContext)
-        => new(new HttpContextAccessor { HttpContext = httpContext }, Options.Create(new CookieNameOptions { AdminScheme = "Default" + CookieNames.AdminSchemeSuffix }), store);
+        => new(new HttpContextAccessor { HttpContext = httpContext }, Options.Create(new TheAdminCookieOptions { Scheme = "Default" + TheAdminCookieOptions.DefaultSchemeSuffix }), store);
 
     private static IUrlHelper CreateUrlHelper()
     {

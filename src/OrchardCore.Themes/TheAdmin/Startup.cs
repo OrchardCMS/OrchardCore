@@ -27,6 +27,7 @@ public sealed class Startup : StartupBase
         // The schemes: imported once by a migration, managed from the theme's card on Design > Themes, and picked by each
         // user from the user menu.
         services.AddScoped<AdminSchemeStore>();
+        services.ConfigureOptions<TheAdminCookieOptionsSetup>();
         services.AddScoped<AdminSchemeService>();
         services.AddDisplayDriver<AdminSchemeEntry, AdminSchemeDisplayDriver>();
         services.AddDisplayDriver<ThemeEntry, ThemeEntrySchemesDisplayDriver>();

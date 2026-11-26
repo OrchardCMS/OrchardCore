@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -39,6 +40,20 @@ public sealed class Startup : StartupBase
         services.Replace(ServiceDescriptor.Singleton<ILocalizationFileLocationProvider, ModularPoFileLocationProvider>());
 
         services.AddLiquidFilter<TransliterateFilter>("transliterate");
+
+        services.ConfigureOptions<LocalizationCookieOptionsSetup>();
+        services.AddOptions<RequestLocalizationOptions>()
+            .PostConfigure<IOptions<LocalizationCookieOptions>>((options, cookieOptions) =>
+            {
+                // Only the provider reading the visitor culture, derived providers use their own cookie.
+                foreach (var provider in options.RequestCultureProviders)
+                {
+                    if (provider.GetType() == typeof(CookieRequestCultureProvider))
+                    {
+                        ((CookieRequestCultureProvider)provider).CookieName = cookieOptions.Value.Culture;
+                    }
+                }
+            });
     }
 
     /// <inheritdocs />
