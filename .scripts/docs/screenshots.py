@@ -56,8 +56,8 @@ SEARCH_RESULTS = [("scroll", "input[name='Terms']", "start")]
 #   steps:     optional actions after opening the page: ("follow", selector) opens the address of the first matching
 #              link, even a hidden one; ("click", selector); ("fill", selector, value); ("type", selector, value) types
 #              the value key by key; ("select", selector, value);
-#              ("check", selector); ("uncheck", selector); ("scroll", selector[, "start"]) scrolls the first matching
-#              element to the middle, or the top, of its container; ("wait", milliseconds). Steps never save a form.
+#              ("check", selector); ("uncheck", selector); ("scroll", selector[, "start" or "end"]) scrolls the first
+#              matching element to the middle, the top or the bottom of its container; ("wait", milliseconds). Steps never save a form.
 #   anonymous: true to take the shot signed out.
 #   full_page: true to capture the whole page instead of the window (cut at 1600 pixels).
 #   site:      the site of SITES the shot is taken from, "blog" when omitted.
@@ -278,6 +278,38 @@ SHOTS = [
      "steps": [("follow", "a[href*='/Workflows/Types/Edit/']:has-text('Contact Form Workflow')"), ("wait", 1500),
                ("click", "[data-cy='toolbox-collapse']"), ("click", "[data-cy='panel-collapse']"),
                ("click", "[data-cy='zoom-fit']"), ("wait", 800)]},
+    # Guides 'Create a CMS application' and 'Decoupled CMS': the setup screen of a tenant that isn't set up yet, filled in.
+    {"file": "../guides/create-cms-application/images/setup-screen.webp", "path": "/Admin/Tenants",
+     "steps": [("follow", "a:has-text('Setup')"), ("fill", "#SiteName", "MySite"), ("click", "#recipeButton"),
+               ("click", "a[data-recipe-name='Blog']"), ("fill", "#UserName", "admin"), ("fill", "#Email", "admin@example.com")]},
+    {"file": "../guides/create-cms-application/images/blog-home-page.webp", "path": "/", "anonymous": True},
+    {"file": "../guides/decoupled-cms/images/setup.webp", "path": "/Admin/Tenants",
+     "steps": [("follow", "a:has-text('Setup')"), ("fill", "#SiteName", "My Site"), ("click", "#recipeButton"),
+               ("click", "a[data-recipe-name='Blank']"), ("fill", "#UserName", "admin"), ("fill", "#Email", "admin@example.com")]},
+    # Guide 'Decoupled CMS', in a tenant set up with the Blank site recipe, with the Markdown, Alias and Preview features.
+    # First with a 'Blog Post' type without parts:
+    {"file": "../guides/decoupled-cms/images/new-content-type.webp", "path": "/Admin/ContentTypes/Create", "tenant": "Decoupled",
+     "steps": [("type", "#DisplayName", "Blog Post")]},
+    {"file": "../guides/decoupled-cms/images/add-content-parts.webp", "path": "/Admin/ContentTypes/AddPartsTo/BlogPost", "tenant": "Decoupled",
+     "steps": [("check", "li:has(label:text-is('Title')) input[type='checkbox']"),
+               ("check", "li:has(label:text-is('MarkdownBody')) input[type='checkbox']")]},
+    # Then with the Title and Markdown Body parts, the Markdown Body using the Wysiwyg editor:
+    {"file": "../guides/decoupled-cms/images/edit-content-type.webp", "path": "/Admin/ContentTypes/Edit/BlogPost", "tenant": "Decoupled",
+     "steps": [("scroll", ".ta-content", "end")]},
+    {"file": "../guides/decoupled-cms/images/edit-markdownbody.webp", "path": "/Admin/ContentTypes/Edit/BlogPost", "tenant": "Decoupled",
+     "steps": [("follow", "a[href*='/ContentParts/MarkdownBodyPart/Edit']")]},
+    {"file": "../guides/decoupled-cms/images/edit-blogpost.webp", "path": "/Admin/Contents/ContentTypes/BlogPost/Create", "tenant": "Decoupled"},
+    # Then with the Alias part after the Title, the Preview part with the pattern of the guide, and the blog post 'This
+    # is a new day' with its generated alias 'this-is-a-new-day':
+    {"file": "../guides/decoupled-cms/images/content-items.webp", "path": "/Admin/Contents/ContentItems", "tenant": "Decoupled"},
+    {"file": "../guides/decoupled-cms/images/edit-alias.webp", "path": "/Admin/Contents/ContentItems", "tenant": "Decoupled",
+     "steps": [("follow", "a[href*='/Edit']:has-text('This is a new day')"), ("fill", "input[name='AliasPart.Alias']", "new-day")]},
+    {"file": "../guides/decoupled-cms/images/alias-pattern.webp", "path": "/Admin/ContentTypes/Edit/BlogPost", "tenant": "Decoupled",
+     "steps": [("follow", "a[href*='/ContentParts/AliasPart/Edit']")]},
+    {"file": "../guides/decoupled-cms/images/generated-alias.webp", "path": "/Admin/Contents/ContentItems", "tenant": "Decoupled",
+     "steps": [("follow", "a[href*='/Edit']:has-text('This is a new day')")]},
+    {"file": "../guides/decoupled-cms/images/preview-pattern.webp", "path": "/Admin/ContentTypes/Edit/BlogPost", "tenant": "Decoupled",
+     "steps": [("follow", "a[href*='/ContentParts/PreviewPart/Edit']")]},
     # Guide 'Microsoft Entra ID integration', in a tenant set up with the Blog recipe. Taken before enabling the
     # Microsoft Entra ID Authentication and Users Registration features:
     {"file": "../guides/microsoft-entra-id-integration/images/entra-id-feature.webp", "path": "/Admin/Features", "tenant": "EntraId",
@@ -344,7 +376,8 @@ def capture(page, url, shot):
             page.uncheck(step[1], force=True)
         elif step[0] == "scroll":
             block = step[2] if len(step) > 2 else "center"
-            page.locator(step[1]).first.evaluate("(element, block) => element.scrollIntoView({ block })", block)
+            # Scroll at once: the admin theme scrolls smoothly, which would still be moving when the shot is taken.
+            page.locator(step[1]).first.evaluate("(element, block) => element.scrollIntoView({ block, behavior: 'instant' })", block)
         elif step[0] == "wait":
             page.wait_for_timeout(step[1])
 
