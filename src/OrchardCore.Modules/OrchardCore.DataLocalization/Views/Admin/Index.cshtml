@@ -209,7 +209,7 @@
                         <tr v-if="group.name" class="translation-group-header">
                             <th scope="rowgroup" colspan="3">
                                 <span class="text-break">{{ group.name }}</span>
-                                <span class="translation-group-count">{{ group.strings.length }}</span>
+                                <span class="badge rounded-pill text-bg-secondary ms-1">{{ group.strings.length }}</span>
                             </th>
                         </tr>
                         <tr v-for="(str, strIndex) in group.strings" :key="str.context + '|' + str.key" class="translation-row"
