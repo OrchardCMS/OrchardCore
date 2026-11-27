@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Records;
 using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Modules;
@@ -33,7 +34,19 @@ public sealed class DefaultContentsAdminListQueryService : IContentsAdminListQue
         _logger = logger;
     }
 
-    public async Task<IQuery<ContentItem>> QueryAsync(ContentOptionsViewModel model, IUpdateModel updater)
+    public Task<IQuery<ContentItem>> QueryAsync(ContentOptionsViewModel model, IUpdateModel updater)
+        => ApplyAsync(model, updater, _session.Query<ContentItem>());
+
+    /// <inheritdoc />
+    public async Task<IReadOnlyList<ContentItemIndex>> QueryIndexAsync(ContentOptionsViewModel model, IUpdateModel updater, CancellationToken cancellationToken = default)
+    {
+        var indexQuery = _session.QueryIndex<ContentItemIndex>();
+        var projection = new ContentItemIndexQuery(indexQuery);
+        projection.EnsureOwnership(await ApplyAsync(model, updater, projection));
+        return (await indexQuery.ListAsync(cancellationToken)).DistinctBy(index => index.DocumentId).ToArray();
+    }
+
+    private async Task<IQuery<ContentItem>> ApplyAsync(ContentOptionsViewModel model, IUpdateModel updater, IQuery<ContentItem> query)
     {
         ArgumentNullException.ThrowIfNull(model);
 
@@ -75,9 +88,6 @@ public sealed class DefaultContentsAdminListQueryService : IContentsAdminListQue
                 }
             }
         }
-
-        // Because admin filters can add a different index to the query this must be added as a 'Query<ContentItem>()'.
-        var query = _session.Query<ContentItem>();
 
         if (hasFilterResult)
         {

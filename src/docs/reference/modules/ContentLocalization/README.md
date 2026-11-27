@@ -6,6 +6,12 @@ This module allows you to localize your content items.
 
 Attach this part to a content type to manage multiple localized versions of a content item.
 
+## Admin list grouping
+
+This feature registers **Localization set** (`groupBy=LocalizationSet`) for the `Contents` [admin list](../Admin/README.md#grouping-admin-list-rows). Only rows matching the current content filters are grouped; related translations outside those filters are not added. Items without a localization set remain separate singleton groups.
+
+Groups follow the first matching item's selected sort order, with that item's display text as the heading and **Untitled** as the fallback. `LocalizationSetIndex` records membership for each document version, including historical versions, independently of the active-version `LocalizedContentItemIndex`. The migration creates this index and backfills existing localized documents.
+
 ## ContentCulturePicker (`OrchardCore.ContentLocalization.ContentCulturePicker`)
 
 ## ContentCulturePicker Feature

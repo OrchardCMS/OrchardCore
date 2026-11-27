@@ -1,8 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.ContentLocalization.Indexes;
 using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.ContentManagement.Records;
 using OrchardCore.Data.Migration;
 using OrchardCore.Environment.Shell.Scope;
 using YesSql;
@@ -43,8 +45,10 @@ public sealed class Migrations : DataMigration
             "Latest")
         );
 
+        await CreateLocalizationSetIndexAsync();
+
         // Shortcut other migration steps on new content definition schemas.
-        return 4;
+        return 5;
     }
 
     // This code can be removed in a later version.
@@ -93,5 +97,48 @@ public sealed class Migrations : DataMigration
         });
 
         return 4;
+    }
+
+    /// <summary>
+    /// Adds version-specific membership without changing the active-version localization index.
+    /// </summary>
+    public async Task<int> UpdateFrom4Async()
+    {
+        await CreateLocalizationSetIndexAsync();
+        ShellScope.AddDeferredTask(async scope =>
+        {
+            var session = scope.ServiceProvider.GetRequiredService<ISession>();
+            var lastId = 0L;
+            while (true)
+            {
+                var items = await session.Query<ContentItem, ContentItemIndex>(index => index.DocumentId > lastId)
+                    .OrderBy(index => index.DocumentId).Take(100).ListAsync();
+                if (items.Count == 0)
+                {
+                    break;
+                }
+
+                foreach (var item in items)
+                {
+                    if (item.Has<LocalizationPart>())
+                    {
+                        await session.SaveAsync(item);
+                    }
+
+                    lastId = item.Id;
+                }
+
+                await session.FlushAsync();
+            }
+        });
+        return 5;
+    }
+
+    private async Task CreateLocalizationSetIndexAsync()
+    {
+        await SchemaBuilder.CreateMapIndexTableAsync<LocalizationSetIndex>(table => table
+            .Column<string>(nameof(LocalizationSetIndex.LocalizationSet), column => column.WithLength(26)));
+        await SchemaBuilder.AlterIndexTableAsync<LocalizationSetIndex>(table => table
+            .CreateIndex("IDX_LocalizationSetIndex_DocumentId", "DocumentId", nameof(LocalizationSetIndex.LocalizationSet)));
     }
 }

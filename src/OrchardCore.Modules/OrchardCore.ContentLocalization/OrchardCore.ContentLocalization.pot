@@ -93,6 +93,16 @@ msgctxt "OrchardCore.ContentLocalization.GraphQL.LocalizationQueryObjectType"
 msgid "The localizations of the content item."
 msgstr ""
 
+#: Services/LocalizationSetGroupingProvider.cs
+msgctxt "OrchardCore.ContentLocalization.Services.LocalizationSetGroupingProvider"
+msgid "Localization set"
+msgstr ""
+
+#: Services/LocalizationSetGroupingProvider.cs
+msgctxt "OrchardCore.ContentLocalization.Services.LocalizationSetGroupingProvider"
+msgid "Untitled"
+msgstr ""
+
 #: Views/ContentCulturePickerSettings.Edit.cshtml
 msgctxt "OrchardCore.ContentLocalization.Views.ContentCulturePickerSettings.Edit"
 msgid "Homepage redirect "

@@ -1,5 +1,13 @@
 # Contents (`OrchardCore.Contents`)
 
+## Admin list grouping
+
+The `Contents` admin list registers **Content type** (`groupBy=ContentType`) with the shared [admin list grouping service](../Admin/README.md#grouping-admin-list-rows). The [Content Localization module](../ContentLocalization/README.md) contributes **Localization set** (`groupBy=LocalizationSet`). **None** preserves ordinary sorting.
+
+Grouping runs after the existing content filters and ordering, before absolute row pagination. Group order follows each group's first matching item in the selected sort; items within a group retain that sort. A group can continue onto another page, where its heading repeats. Page sizes and bulk selection count content rows only.
+
+`IContentsAdminListQueryService.QueryIndexAsync` supplies filtered, ordered `ContentItemIndex` metadata without deserializing every matching content item. The default service applies the content-list filter pipeline to an index query and removes duplicate document IDs from joins. Grouping materializes all matching index metadata, but loads content documents and invokes loading handlers only for the selected page. A replacement query service must implement `QueryIndexAsync` to support grouping and preserve the same filtering and ordering as `QueryAsync`; its default interface implementation throws `NotSupportedException`. Filters must compose index predicates and sorting on the supplied query rather than replace, enumerate or paginate it. Unsupported replacements throw `NotSupportedException` instead of displaying unfiltered content.
+
 This module provides Content Management services.
 
 ## Content Quick Navigation

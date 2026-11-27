@@ -34,6 +34,16 @@ Each row has these buttons:
 - **Edit**: opens the content type editor.
 - **Delete**: deletes the type. The button is disabled for system-defined types, which the site needs to work.
 
+## Group content types by category
+
+1. Open **Design → Content Definition → Content Types**.
+2. Open **Group by** above the rows.
+3. Choose **Category**.
+
+Types appear under alphabetical category headings. Types without a category appear under **Uncategorized**. The **Search** box still narrows the rows and hides headings with no matches. Grouping works in both the **List** and **Grid** layouts.
+
+Choose **None** to remove grouping. The browser remembers the choice for this list. Set a type's **Category** in its editor to choose its group.
+
 ## Create a content type
 
 1. Open **Design → Content Definition → Content Types** and click **Create new type**.
@@ -65,7 +75,7 @@ Open **Design → Content Definition → Content Types** and click **Edit** on t
 | **Versionable** | The site keeps the earlier versions of a content item when it is published again. The [audit trail](audit-trail.md) uses these versions to compare and restore. |
 | **Securable** | The type gets its own permissions in the role editor (for example *Publish or unpublish Event for others*), so you can let a role edit one type but not another. See [Roles](../users/roles.md). |
 | **Stereotype** | Optional. Gives the type a special role. Pick one from the list or type it: **Widget** (a block placed in zones or inside a [flow](flows-and-bags.md)), **Menu Item**, **Custom Settings**, **Custom User Settings**, **DashboardWidget**. Leave it empty for ordinary content. It must start with a letter and contain only letters and digits. For some stereotypes, such as **Custom Settings**, some of the boxes above are hidden after you save. |
-| **Category** | Optional. Groups types in content type pickers, for example *Layout* or *Media*. |
+| **Category** | Optional. Groups types in content type pickers and, with **Group by → Category**, in the content types list, for example *Layout* or *Media*. |
 | **Thumbnail** | Optional. The path of a small picture shown for the type in content type pickers. |
 | **Full-text** | Decides which text of the content items is used for free-text searches: the display text, the body parts, and an optional Liquid template. See [Site search](../search/site-search.md). |
 

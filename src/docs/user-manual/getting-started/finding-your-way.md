@@ -153,6 +153,12 @@ The bar with the search box stays at the top of the screen while you scroll.
 
 Each row has its own buttons, such as **Edit** or **View**. Less common actions are in the **Actions** menu at the end of the row. When an administrator chooses the **Menu** actions layout, all of a row's actions are in one menu, opened with the three-dots button.
 
+### Group related rows
+
+Lists that support grouping offer **Group by** above the rows. Choose a grouping, such as **Content type** on the content items list, or **None** to keep the ordinary list. The available choices depend on the list and the features enabled on the site.
+
+The browser remembers your choice separately for each list. Filters still apply, and grouping works in both layouts. Headings are not selectable and do not count toward the page size. If a group spans pages, its heading repeats.
+
 ### Switch between the List and Grid layouts
 
 A list can show its items as a **List** (one card per row) or as a **Grid** (a table with column headings, such as **Title**, **Type**, **Status** and **Last modified** for content).

@@ -1,0 +1,22 @@
+@using OrchardCore.Admin
+@inject IAdminListGroupingService GroupingService
+@{
+    var selection = (AdminListGroupingSelection)Model.Selection;
+    string listName = Model.ListName;
+}
+<div class="dropdown admin-list-grouping-selector">
+    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        @T["Group by: {0}", selection.Provider?.DisplayName.Value ?? T["None"].Value]
+    </button>
+    <div class="dropdown-menu dropdown-menu-end">
+        <a class="dropdown-item @(selection.Provider == null ? "active" : null)"
+           aria-current="@(selection.Provider == null ? "true" : null)"
+           href="@GroupingService.GetUrl(listName, AdminListGroupingSelection.None)">@T["None"]</a>
+        @foreach (var provider in selection.Providers)
+        {
+            <a class="dropdown-item @(selection.Provider == provider ? "active" : null)"
+               aria-current="@(selection.Provider == provider ? "true" : null)"
+               href="@GroupingService.GetUrl(listName, provider.Name)">@provider.DisplayName</a>
+        }
+    </div>
+</div>

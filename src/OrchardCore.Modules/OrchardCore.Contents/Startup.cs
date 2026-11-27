@@ -144,6 +144,7 @@ public sealed class Startup : StartupBase
         services.AddNavigationProvider<AdminMenu>();
         services.AddScoped<IContentDisplayDriver, ContentsDriver>();
         services.AddScoped<IAdminListItemDisplayManager<ContentItem>, ContentItemAdminListDisplayManager>();
+        services.AddAdminListGroupingProvider<ContentTypeGroupingProvider>(ContentsAdminList.Name);
         services.AddScoped<IContentHandler, ContentsHandler>();
         services.AddRecipeExecutionStep<ContentStep>();
 

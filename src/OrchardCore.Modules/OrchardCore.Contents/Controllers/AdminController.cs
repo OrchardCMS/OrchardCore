@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
@@ -69,6 +70,7 @@ public sealed class AdminController : Controller, IUpdateModel
         [FromServices] IOptions<PagerOptions> pagerOptions,
         [FromServices] IShapeFactory shapeFactory,
         [FromServices] IContentsAdminListQueryService contentsAdminListQueryService,
+        [FromServices] IAdminListGroupingService groupingService,
         [ModelBinder(BinderType = typeof(ContentItemFilterEngineModelBinder), Name = "q")] QueryFilterResult<ContentItem> queryFilterResult,
         ContentOptionsViewModel options,
         PagerParameters pagerParameters,
@@ -220,7 +222,17 @@ public sealed class AdminController : Controller, IUpdateModel
         options.ContentTypeOptions ??= [];
 
         // With the populated options, filter the query allowing the filters to alter the options.
-        var query = await contentsAdminListQueryService.QueryAsync(options, this);
+        var grouping = groupingService.GetSelection(ContentsAdminList.Name);
+        IQuery<ContentItem> query = null;
+        IReadOnlyList<ContentItemIndex> indexes = null;
+        if (grouping.Provider != null)
+        {
+            indexes = await contentsAdminListQueryService.QueryIndexAsync(options, this, HttpContext.RequestAborted);
+        }
+        else
+        {
+            query = await contentsAdminListQueryService.QueryAsync(options, this);
+        }
 
         // The search text is provided back to the UI.
         options.SearchText = options.FilterResult.ToString();
@@ -232,21 +244,41 @@ public sealed class AdminController : Controller, IUpdateModel
         var pager = new Pager(pagerParameters, pagerOptions.Value);
 
         var maxPagedCount = pagerOptions.Value.MaxPagedCount;
-
-        var totalItemCount = maxPagedCount > 0
-            ? maxPagedCount
-            : await query.CountAsync();
-
-        // Load items so that loading handlers are invoked.
-        var pageOfContentItems = await query.Skip(pager.GetStartIndex())
-            .Take(pager.PageSize)
-            .ListAsync(_contentManager);
+        options.RouteValues[AdminListGroupingSelection.QueryKey] = grouping.Name;
+        int totalItemCount;
+        IEnumerable<ContentItem> pageOfContentItems;
+        IReadOnlyList<AdminListGroup> pageGroups = null;
+        if (grouping.Provider != null)
+        {
+            totalItemCount = maxPagedCount > 0 ? Math.Min(indexes.Count, maxPagedCount) : indexes.Count;
+            var groups = await grouping.Provider.GroupAsync(indexes, HttpContext.RequestAborted);
+            var page = AdminListGrouping.Page(groups, pager.GetStartIndex(), Math.Min(pager.PageSize, Math.Max(0, totalItemCount - pager.GetStartIndex())));
+            var ids = page.SelectMany(group => group.Source.Cast<ContentItemIndex>()).Select(index => index.DocumentId).ToArray();
+            var items = ids.Length == 0
+                ? []
+                : (await _session.Query<ContentItem, ContentItemIndex>(index => index.DocumentId.IsIn(ids)).ListAsync(_contentManager)).ToArray();
+            var byId = items.ToDictionary(item => item.Id);
+            pageGroups = page.Select(group => new AdminListGroup
+            {
+                Key = group.Key,
+                Title = group.Title,
+                TotalCount = group.TotalCount,
+                Source = group.Source.Cast<ContentItemIndex>().Select(index => byId[index.DocumentId]).ToArray(),
+            }).ToArray();
+            pageOfContentItems = pageGroups.SelectMany(group => group.Source.Cast<ContentItem>()).ToArray();
+        }
+        else
+        {
+            totalItemCount = maxPagedCount > 0 ? maxPagedCount : await query.CountAsync();
+            // Load items so that loading handlers are invoked.
+            pageOfContentItems = await query.Skip(pager.GetStartIndex()).Take(pager.PageSize).ListAsync(_contentManager);
+        }
 
         var contentItemsCount = pageOfContentItems.Count();
 
         // The items aren't counted when a maximum is set, but no item comes after a page that isn't full,
         // so that page tells where the list ends.
-        if (maxPagedCount > 0 && contentItemsCount < pager.PageSize)
+        if (grouping.Provider == null && maxPagedCount > 0 && contentItemsCount < pager.PageSize)
         {
             totalItemCount = Math.Min(pager.GetStartIndex() + contentItemsCount, maxPagedCount);
         }
@@ -266,6 +298,7 @@ public sealed class AdminController : Controller, IUpdateModel
         var list = new AdminListContext<ContentItem>
         {
             Source = pageOfContentItems,
+            Groups = pageGroups,
             Header = header,
             Pager = pagerShape,
         };
@@ -315,12 +348,15 @@ public sealed class AdminController : Controller, IUpdateModel
     [FormValueRequired("submit.Filter")]
     public async Task<ActionResult> ListFilterPOST(ContentOptionsViewModel options)
     {
+        var grouping = HttpContext.RequestServices.GetRequiredService<IAdminListGroupingService>().GetSelection(ContentsAdminList.Name);
+        options.RouteValues[AdminListGroupingSelection.QueryKey] = grouping.Name;
         // When the user has typed something into the search input no further evaluation of the form post is required.
         if (!string.Equals(options.SearchText, options.OriginalSearchText, StringComparison.OrdinalIgnoreCase))
         {
             return RedirectToAction(nameof(List), new RouteValueDictionary
             {
                 { "q", options.SearchText },
+                { AdminListGroupingSelection.QueryKey, grouping.Name },
             });
         }
 

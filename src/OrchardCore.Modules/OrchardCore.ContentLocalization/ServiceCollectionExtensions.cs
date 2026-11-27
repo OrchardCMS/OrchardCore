@@ -26,6 +26,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<LocalizedContentItemIndexProvider>();
         services.AddScoped<IScopedIndexProvider>(sp => sp.GetRequiredService<LocalizedContentItemIndexProvider>());
         services.AddScoped<IContentHandler>(sp => sp.GetRequiredService<LocalizedContentItemIndexProvider>());
+        services.AddIndexProvider<LocalizationSetIndexProvider>();
 
         services.AddDataMigration<Migrations>();
         services.AddScoped<IContentLocalizationHandler, ContentLocalizationPartHandlerCoordinator>();

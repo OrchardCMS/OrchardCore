@@ -140,6 +140,8 @@ public sealed class AdminListShapeTableProvider : ShapeTableProvider
         // The other parts of a list, which are overridden for a layout, for a list, or for a list in a layout.
         builder.Describe(AdminListConstants.ToolbarShapeType).OnDisplaying(AddListAlternates);
         builder.Describe(AdminListConstants.SearchShapeType).OnDisplaying(AddListAlternates);
+        builder.Describe("AdminListGroupingSelector").OnDisplaying(AddListAlternates);
+        builder.Describe("AdminListGroupHeader").OnDisplaying(AddListAlternates);
 
         builder.Describe(AdminListConstants.CellShapeType)
             .OnDisplaying(context =>
@@ -238,6 +240,7 @@ public sealed class AdminListShapeTableProvider : ShapeTableProvider
         "Search",
         "Actions",
         "LayoutSelector",
+        "GroupingSelector",
         "Pager",
         "PageSize",
     ];

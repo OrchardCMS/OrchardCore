@@ -63,6 +63,7 @@
 @{
     // Everything the layout renders above the rows, so it can leave any of it out.
     var layoutSelector = Model.LayoutSelector;
+    var groupingSelector = Model.GroupingSelector;
     var search = Model.Search;
     var actions = Model.Actions;
 }
@@ -92,7 +93,7 @@
 }
 
 <ul class="list-group with-checkbox admin-list admin-list-list @rowsCssClass" @rowsAttributesHtml>
-    @if (toolbar != null || header != null || layoutSelector != null)
+    @if (toolbar != null || header != null || layoutSelector != null || groupingSelector != null)
     {
         <li class="list-group-item text-bg-theme">
             @* Wrapping: a narrow list sends the selector to a line of its own instead of over the filters. *@
@@ -114,6 +115,10 @@
                         </div>
                     }
                 </div>
+                @if (groupingSelector != null)
+                {
+                    @await DisplayAsync(groupingSelector)
+                }
                 @if (layoutSelector != null)
                 {
                     @await DisplayAsync(layoutSelector)
@@ -125,8 +130,19 @@
     {
         hasRows = true;
 
+        if (row.GetProperty<IShape>("AdminListGroupHeader") is { } groupHeader)
+        {
+            <li class="list-group-item admin-list-group-header" data-admin-list-group-header="@(row.GetProperty<string>("AdminListGroupKey"))">
+                @await DisplayAsync(groupHeader)
+            </li>
+        }
+
         var item = new TagBuilder("li");
         item.AddCssClass(itemCssClass);
+        if (row.GetProperty<string>("AdminListGroupKey") is { } groupKey)
+        {
+            item.Attributes["data-admin-list-group"] = groupKey;
+        }
 
         if (row is Shape rowShape)
         {

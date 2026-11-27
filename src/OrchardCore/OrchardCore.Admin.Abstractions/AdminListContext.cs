@@ -25,6 +25,12 @@ public class AdminListContext
     public Type ItemType { get; set; }
 
     /// <summary>
+    /// Groups already selected by a query-backed page, in display order. Null lets the shared list group
+    /// its source with the selected provider. An empty collection means the grouped page has no results.
+    /// </summary>
+    public IReadOnlyList<AdminListGroup> Groups { get; set; }
+
+    /// <summary>
     /// Gets or sets the columns declared by the rendering view, before column providers extend them.
     /// </summary>
     public IEnumerable<Models.AdminListColumn> Columns { get; set; } = [];

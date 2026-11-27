@@ -11,6 +11,7 @@ using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Builders;
 using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.ContentManagement.Records;
 using OrchardCore.Contents.Controllers;
 using OrchardCore.Contents.Services;
 using OrchardCore.Contents.ViewModels;
@@ -40,6 +41,7 @@ public class AdminControllerTests
             Options.Create(new PagerOptions()),
             Mock.Of<IShapeFactory>(),
             queryService.Object,
+            Mock.Of<IAdminListGroupingService>(service => service.GetSelection("Contents") == new AdminListGroupingSelection()),
             filterResult,
             options,
             new PagerParameters(),
@@ -65,6 +67,7 @@ public class AdminControllerTests
             Options.Create(new PagerOptions()),
             Mock.Of<IShapeFactory>(),
             queryService.Object,
+            Mock.Of<IAdminListGroupingService>(service => service.GetSelection("Contents") == new AdminListGroupingSelection()),
             filterResult,
             options,
             new PagerParameters(),
@@ -90,6 +93,7 @@ public class AdminControllerTests
             Options.Create(new PagerOptions()),
             Mock.Of<IShapeFactory>(),
             queryService.Object,
+            Mock.Of<IAdminListGroupingService>(service => service.GetSelection("Contents") == new AdminListGroupingSelection()),
             filterResult,
             options,
             new PagerParameters(),
@@ -135,6 +139,38 @@ public class AdminControllerTests
         Assert.Equal(25, pagerShape.Properties["TotalItemCount"]);
     }
 
+    [Fact]
+    public async Task List_GroupedPageBeyondResults_KeepsExactCappedTotalAndRunsFiltersOnce()
+    {
+        var (controller, queryService) = CreateController();
+        var options = new ContentOptionsViewModel();
+        var shapeFactory = new TestShapeFactory();
+        var indexes = Enumerable.Range(1, 5).Select(id => new ContentItemIndex { DocumentId = id }).ToArray();
+        var provider = new Mock<IAdminListGroupingProvider>();
+        provider.SetupGet(value => value.Name).Returns("ContentType");
+        provider.Setup(value => value.GroupAsync(indexes, It.IsAny<CancellationToken>()))
+            .ReturnsAsync([new AdminListGroup { Key = "Article", Title = "Article", Source = indexes, TotalCount = 5 }]);
+        queryService.Setup(value => value.QueryIndexAsync(options, controller, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(indexes);
+        var selection = new AdminListGroupingSelection { Provider = provider.Object, Providers = [provider.Object] };
+        var groupingService = Mock.Of<IAdminListGroupingService>(value => value.GetSelection("Contents") == selection);
+
+        await Assert.ThrowsAsync<HeaderReachedException>(() => controller.List(
+            Options.Create(new PagerOptions { PageSize = 10, MaxPagedCount = 1000 }),
+            shapeFactory,
+            queryService.Object,
+            groupingService,
+            CreateFilterResult(),
+            options,
+            new PagerParameters { Page = 50 }));
+
+        Assert.Equal(0, options.ContentItemsCount);
+        Assert.Equal(5, options.TotalItemCount);
+        Assert.Equal("ContentType", options.RouteValues["groupBy"]);
+        queryService.Verify(value => value.QueryAsync(It.IsAny<ContentOptionsViewModel>(), It.IsAny<IUpdateModel>()), Times.Never());
+        queryService.Verify(value => value.QueryIndexAsync(options, controller, It.IsAny<CancellationToken>()), Times.Once());
+    }
+
     private static async Task<(ContentOptionsViewModel Options, IShape PagerShape)> ListAsync(Mock<IQuery<ContentItem>> query, PagerOptions pagerOptions, int page)
     {
         var (controller, queryService) = CreateController();
@@ -148,6 +184,7 @@ public class AdminControllerTests
             Options.Create(pagerOptions),
             shapeFactory,
             queryService.Object,
+            Mock.Of<IAdminListGroupingService>(service => service.GetSelection("Contents") == new AdminListGroupingSelection()),
             CreateFilterResult(),
             options,
             new PagerParameters { Page = page }));

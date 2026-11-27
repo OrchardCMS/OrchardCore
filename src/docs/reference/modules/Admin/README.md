@@ -34,6 +34,37 @@ services.AddShapeTableProvider<AdminDashboardShapeTableProvider>();
 
 The `MyAdminDashboardContent` shape is rendered using its matching shape template. Contributions are ordered by the position passed to `AddAsync()`.
 
+## Grouping admin list rows
+
+The shared `AdminList` supports grouping in both `List` and `Grid`. Register an `IAdminListGroupingProvider` for the stable list name:
+
+```csharp
+services.AddAdminListGroupingProvider<CategoryGroupingProvider>("Products");
+```
+
+The scoped provider exposes a unique `Name`, a localized `DisplayName`, and `GroupAsync(IEnumerable source, CancellationToken cancellationToken)`. It returns ordered `AdminListGroup` objects with a stable `Key`, plain-text `Title`, raw model records in `Source`, and a `TotalCount`. Preserve every input row exactly once and use the model type the list expects. Providers own group ordering and ordering within each group. Group titles are HTML-encoded.
+
+A list with registered providers displays **Group by**, including **None**. The `groupBy` query parameter overrides its saved browser preference, for example `?groupBy=Category`; `?groupBy=None` explicitly disables grouping. Unknown choices fall back to **None**. Choices are remembered independently for each list in a tenant-path-scoped cookie, not in the user's account. Provider identifiers and list names used in preferences contain at most 64 ASCII letters, digits, dots, underscores or hyphens; `None` is reserved.
+
+For an in-memory list, the builder calls the selected provider on `AdminListContext.Source`. A database-backed, paginated list must group the entire filtered, ordered result **before** selecting a page:
+
+```csharp
+var selection = groupingService.GetSelection("Products");
+var groups = await selection.Provider.GroupAsync(filteredRecords, cancellationToken);
+var pageGroups = AdminListGrouping.Page(groups, skip, pageSize);
+model.List = new AdminListContext<Product>
+{
+    Source = pageGroups.SelectMany(group => group.Source.Cast<Product>()).ToArray(),
+    Groups = pageGroups,
+};
+```
+
+Use the ordinary ungrouped path when `selection.Provider` is null. A non-null `Groups` collection tells the builder that the page has already been grouped. Keep the normalized `selection.Name` in pager and filter route values.
+
+Pagination counts rows, not headers. Pages fill to the row page size while matching rows remain, even when that splits a group. A continuation page repeats the group header and its full filtered `TotalCount`. Headers are not selectable and do not change bulk actions or row counts. Sorting, filtering and permissions still apply to the underlying records.
+
+The `AdminListGroupingSelector` and `AdminListGroupHeader` shapes support list-name and layout alternates, for example `AdminListGroupHeader-Products-Grid.cshtml`. A header carries `Key`, `Title` and `TotalCount`; each grouped row carries `AdminListGroupKey`, and the first visible row of each group also carries `AdminListGroupHeader`.
+
 ## Custom Admin prefix
 
 If you want to specify another prefix in the URLs to access the admin section, you can change it by using this option in the `appsettings.json`:

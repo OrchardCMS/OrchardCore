@@ -321,6 +321,14 @@
     }
 
     function updateSearchGroups(root, config) {
+        const rows = Array.from(queryAll(root, '[data-admin-list-group]'));
+        for (const header of queryAll(root, '[data-admin-list-group-header]')) {
+            const key = header.dataset.adminListGroupHeader;
+            const list = header.closest('.admin-list');
+            const hasVisibleResult = rows.some((row) => row.closest('.admin-list') === list && row.dataset.adminListGroup === key && !row.classList.contains(hiddenClass));
+            header.classList.toggle(hiddenClass, !hasVisibleResult);
+        }
+
         if (!config.searchGroupSelector) {
             return;
         }

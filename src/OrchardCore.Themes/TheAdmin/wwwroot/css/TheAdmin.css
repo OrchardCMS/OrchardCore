@@ -1031,6 +1031,13 @@ html:has(.action-bar-bottom) {
 
  The containers must not clip their overflow: the row action dropdowns open past the last row.
 */
+.admin-list .admin-list-group-header {
+  grid-column: 1/-1;
+  padding: var(--ta-row-padding-y) var(--ta-surface-padding-x);
+  background-color: var(--ta-surface);
+  border-bottom: var(--bs-border-width) solid var(--ta-border);
+}
+
 /*
  Both layouts are drawn as a surface, like a card, with two header layers: the toolbar, a bar in the scheme's primary
  ('--ta-toolbar-bg'), and, in the Grid layout, the column headers, a lighter shade. Their rows, toolbar and headers
@@ -1390,8 +1397,12 @@ html:has(.action-bar-bottom) {
 }
 
 .admin-list > .text-bg-theme .admin-list-layout-selector .btn, .admin-list > .text-bg-theme .admin-list-layout-selector .button,
+.admin-list > .text-bg-theme .admin-list-grouping-selector > .btn,
+.admin-list > .text-bg-theme .admin-list-grouping-selector > .button,
 .admin-list .admin-list-toolbar .admin-list-layout-selector .btn,
-.admin-list .admin-list-toolbar .admin-list-layout-selector .button {
+.admin-list .admin-list-toolbar .admin-list-layout-selector .button,
+.admin-list .admin-list-toolbar .admin-list-grouping-selector > .btn,
+.admin-list .admin-list-toolbar .admin-list-grouping-selector > .button {
   --bs-btn-color: var(--ta-toolbar-fg);
   --bs-btn-bg: transparent;
   --bs-btn-border-color: rgba(var(--ta-toolbar-fg-rgb), 0.6);

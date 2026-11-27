@@ -86,6 +86,23 @@ msgctxt "OrchardCore.Admin.Views.AdminListActions-Menu"
 msgid "Actions"
 msgstr ""
 
+#: Views/AdminListGroupHeader.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminListGroupHeader"
+msgid "Total matching rows in this group"
+msgstr ""
+
+#. Format arguments: {0}: selection.Provider?.DisplayName.Value ?? T["None"].Value
+#: Views/AdminListGroupingSelector.cshtml
+#, csharp-format
+msgctxt "OrchardCore.Admin.Views.AdminListGroupingSelector"
+msgid "Group by: {0}"
+msgstr ""
+
+#: Views/AdminListGroupingSelector.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminListGroupingSelector"
+msgid "None"
+msgstr ""
+
 #: Views/AdminListLayoutSelector.cshtml
 msgctxt "OrchardCore.Admin.Views.AdminListLayoutSelector"
 msgid "Grid"

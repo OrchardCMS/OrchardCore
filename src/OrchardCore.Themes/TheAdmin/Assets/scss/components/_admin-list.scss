@@ -25,6 +25,13 @@
 
 $oc-admin-list-stack-width: 48rem;
 
+.admin-list .admin-list-group-header {
+    grid-column: 1 / -1;
+    padding: var(--ta-row-padding-y) var(--ta-surface-padding-x);
+    background-color: var(--ta-surface);
+    border-bottom: var(--bs-border-width) solid var(--ta-border);
+}
+
 // Column headers: the secondary size and color, in sentence case.
 @mixin admin-list-header-cell {
     font-size: var(--ta-font-size-sm);
@@ -398,7 +405,8 @@ $oc-admin-list-stack-width: 48rem;
         border-color: var(--ta-toolbar-fg);
     }
 
-    .admin-list-layout-selector .btn {
+    .admin-list-layout-selector .btn,
+    .admin-list-grouping-selector > .btn {
         --bs-btn-color: var(--ta-toolbar-fg);
         --bs-btn-bg: transparent;
         --bs-btn-border-color: rgba(var(--ta-toolbar-fg-rgb), 0.6);
