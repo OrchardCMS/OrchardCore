@@ -28,7 +28,7 @@ Workflow definitions are edited in the workflow designer: open **Workflows** in 
 
 In the list of workflows, **Edit** opens the designer, and each workflow's **Actions** menu can **Clone** it (with a new name and its own settings), **Export** it as a recipe, or **Delete** it. The settings of a workflow, such as its name or whether it is enabled, are edited on the designer's **Workflow** tab.
 
-![The workflow designer](docs/workflow-designer.png)
+![The workflow designer, showing the Article approval workflow with the activities filtered on notify.](images/workflow-designer.webp)
 
 The designer has four areas. What concerns the whole workflow is on the right, and what concerns the selected activity is below the canvas:
 
@@ -107,7 +107,7 @@ In right-to-left languages, the activities pane and the workflow panel swap side
 
 The page of a workflow instance shows the version of its workflow that the instance runs on, in a read-only designer, with the activities the instance waits on (its **blocking** activities) highlighted. Select an activity to see its details and outputs in the activity panel. The **Variables** tab of the workflow panel shows the values of the instance's variables, and the activities and connections the instance ran are highlighted (see [Execution Journal](#execution-journal)). Right-click an activity to collapse the activities after it; the blocking activities are never hidden. The **State** tab shows the instance's state as JSON.
 
-![A workflow instance waiting on a signal](docs/workflow-instance-viewer.png)
+![A workflow instance of Article approval, waiting on the Wait for approval signal.](images/workflow-instance.webp)
 
 ### Listing and Operating Instances
 
@@ -1239,3 +1239,13 @@ This video reacts to registrations, sign-ins and role changes with a workflow.
 
 <!-- video:workflows-user-events -->
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/5OSh78XTbI4" title="Workflows: React to Registrations, Sign-Ins and Role Changes" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video uses expressions, variables, branches and loops in a workflow.
+
+<!-- video:workflows-expressions-and-loops -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/jcUHIQeiUR0" title="Workflows in Depth: Expressions, Variables, Branches and Loops" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video commits, forks and joins the database session in a workflow.
+
+<!-- video:workflows-session-activities -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/qGmjXRYENVI" title="Workflows and the Database Session: Commit, Fork and Join" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

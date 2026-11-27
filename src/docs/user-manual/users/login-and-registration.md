@@ -145,3 +145,25 @@ The check appears only after the site key and secret key are filled in on **Sett
 ## The emails people receive
 
 The site sends a *Confirm your account* email for email confirmation and a reset link for forgotten passwords. Both go through the site's email settings. Their wording is part of the site's templates; ask your developer if it needs to change.
+
+## Videos
+
+This video sets the sign-in options and the lockout of user accounts.
+
+<!-- video:users-login-settings -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/e5b3QRTfdO0" title="User Login Settings: Sign-In Options and Lockout" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video lets visitors create their own accounts.
+
+<!-- video:users-registration -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/bEGdevqvzPk" title="User Registration: Let Visitors Create Accounts" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video lets users recover their accounts with a password reset.
+
+<!-- video:users-reset-password -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/IN4Y8boTxd8" title="Reset Password: Let Users Recover Their Accounts" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video lets users update their email address.
+
+<!-- video:users-change-email -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/v6h8bw8iS6w" title="Change Email: Let Users Update Their Email Address" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

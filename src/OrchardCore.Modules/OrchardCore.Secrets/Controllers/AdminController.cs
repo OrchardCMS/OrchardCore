@@ -69,6 +69,7 @@ public sealed class AdminController : Controller
 
         options ??= new SecretIndexOptions();
 
+        var canManage = await _authorizationService.AuthorizeAsync(User, SecretsPermissions.ManageSecrets);
         var providers = _secretTypeProviders.ToList();
 
         var allSecrets = (await _secretManager.GetSecretInfosAsync())
@@ -76,7 +77,7 @@ public sealed class AdminController : Controller
             {
                 var type = GetSimpleTypeName(info.Type);
 
-                return new SecretEntryViewModel
+                return new SecretListEntry
                 {
                     Name = info.Name,
                     Store = info.Store,
@@ -86,11 +87,12 @@ public sealed class AdminController : Controller
                     CreatedUtc = info.CreatedUtc,
                     UpdatedUtc = info.UpdatedUtc,
                     ExpiresUtc = info.ExpiresUtc,
+                    CanManage = canManage,
                 };
             })
             .ToList();
 
-        IEnumerable<SecretEntryViewModel> secrets = allSecrets;
+        IEnumerable<SecretListEntry> secrets = allSecrets;
 
         if (!string.IsNullOrWhiteSpace(options.Search))
         {
@@ -149,9 +151,21 @@ public sealed class AdminController : Controller
 
         var model = new SecretIndexViewModel
         {
-            Secrets = filtered.Skip(pager.GetStartIndex()).Take(pager.PageSize).ToList(),
             Options = options,
-            Pager = await _shapeFactory.PagerAsync(pager, filtered.Count, routeData),
+
+            // The AdminList shape renders the secrets with the configured layout (List, Grid) and actions layout
+            // (Buttons, Menu); the expiration and type filters sit at the end of its toolbar.
+            List = new AdminListContext<SecretListEntry>
+            {
+                Source = filtered.Skip(pager.GetStartIndex()).Take(pager.PageSize).ToList(),
+                Pager = await _shapeFactory.PagerAsync(pager, filtered.Count, routeData),
+                BulkActions = canManage ? options.BulkActions : [],
+                ShowSelectAll = canManage,
+                ToolbarActions = await _shapeFactory.CreateAsync("SecretsFilters", Arguments.From(new
+                {
+                    Options = options,
+                })),
+            },
             ExpiredCount = allSecrets.Count(secret => secret.IsExpired),
             ExpiringCount = allSecrets.Count(secret => secret.IsExpiringSoon),
             AvailableTypes = providers.Select(p => new SecretTypeViewModel

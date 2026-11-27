@@ -200,9 +200,7 @@ A custom admin theme that doesn't build on **TheAdmin** can override the `ocat-*
 
 With these styles applied, admin editors display with a horizontal form layout:
 
-![content-fields](https://user-images.githubusercontent.com/24724371/195202615-d61a13f4-3b8e-4b6c-ab91-720fdf6e4d2e.gif)
-
-![content-parts](https://user-images.githubusercontent.com/24724371/195202640-1f7c7dcf-191e-4246-9690-5a7a2bf8c03f.gif)
+![The editor of a new blog post with the horizontal form layout, each label beside its editor.](images/horizontal-form-layout.webp)
 
 ### Content Part & Field Wrapper Classes
 

@@ -111,11 +111,11 @@ Once you have generated a Site Key and Site Secret with Google, copy & paste tho
 
 The final form configuration should look something like this:
 
-![Contact Form - Expanded](./assets/contact-form-expanded-1.png)
+![The editor of the Contact Form page, with the Form widget and its fields.](images/contact-form-editor.webp)
 
 And on the front-end, it will look like this:
 
-![Contact Form - front-end](./assets/contact-form-front-end-1.png)
+![The contact form on the site, with the Name, Email and Message fields and the Submit! button.](images/contact-form.webp)
 
 ### Create the Contact Form Workflow
 
@@ -233,7 +233,7 @@ To fix this, we must add the **Bind Form Model State** activity to the workflow,
 
 The final workflow should look like this:
 
-![Contact Form Workflow](./assets/contact-form-workflow-1.png)
+![The Contact Form Workflow in the workflow designer.](images/contact-form-workflow.webp)
 
 ## Video
 

@@ -1,18 +1,20 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using OrchardCore.Admin;
 
 namespace OrchardCore.Secrets.ViewModels;
 
 public class SecretIndexViewModel
 {
-    public IList<SecretEntryViewModel> Secrets { get; set; } = [];
-
     public IList<SecretTypeViewModel> AvailableTypes { get; set; } = [];
 
     public SecretIndexOptions Options { get; set; } = new();
 
+    /// <summary>
+    /// Gets or sets the secrets of the page, rendered by the <c>AdminList</c> shape with its toolbar and pager.
+    /// </summary>
     [BindNever]
-    public dynamic Pager { get; set; }
+    public AdminListContext List { get; set; }
 
     [BindNever]
     public int ExpiredCount { get; set; }
@@ -58,7 +60,10 @@ public enum SecretsBulkAction
     Remove,
 }
 
-public class SecretEntryViewModel
+/// <summary>
+/// A secret listed on the Secrets admin page, displayed as a row of the <c>Secrets</c> admin list.
+/// </summary>
+public class SecretListEntry
 {
     public string Name { get; set; }
     public string Store { get; set; }
@@ -68,6 +73,11 @@ public class SecretEntryViewModel
     public DateTime? CreatedUtc { get; set; }
     public DateTime? UpdatedUtc { get; set; }
     public DateTime? ExpiresUtc { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether the current user can manage the secret: select, edit, move and delete it.
+    /// </summary>
+    public bool CanManage { get; set; }
 
     /// <summary>
     /// Gets the value of the bulk selection checkbox, which identifies the secret in its store.

@@ -754,6 +754,7 @@ The columns of a list are declared in its rendering view.
 | `RemoteClients` | `RemoteClient` | `OrchardCore.Deployment.Remote` |
 | `RemoteInstances` | `RemoteInstance` | `OrchardCore.Deployment.Remote` |
 | `Roles` | `RoleEntry` | `OrchardCore.Roles` |
+| `Secrets` | `SecretListEntry` | `OrchardCore.Secrets` |
 | `Shortcodes` | `ShortcodeTemplateEntry` | `OrchardCore.Shortcodes` |
 | `SitemapCache` | `SitemapCacheEntry` | `OrchardCore.Sitemaps` |
 | `SitemapIndexes` | `SitemapIndexListEntry` | `OrchardCore.Sitemaps` |

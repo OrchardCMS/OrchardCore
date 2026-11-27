@@ -69,3 +69,10 @@ The values are saved with the user account right away; there is no draft or publ
 ## Remove a set
 
 To stop using a set, delete its content type in **Design → Content Definition → Content Types**. The tab disappears from the user editor and the profile.
+
+## Video
+
+This video adds your own fields to user profiles with custom user settings.
+
+<!-- video:users-custom-user-settings -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/kBhPHCNqQYY" title="Custom User Settings: Add Your Own Fields to User Profiles" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

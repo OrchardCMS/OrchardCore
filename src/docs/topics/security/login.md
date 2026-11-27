@@ -14,3 +14,10 @@ Related options live in their own places:
 - **Account lockout after failed attempts**: see [Change lockout configuration](../../guides/lockout-configuration/README.md).
 
 To let visitors create their own account, see [Registration](registration.md).
+
+## Video
+
+This video sets the sign-in options and the lockout of user accounts.
+
+<!-- video:users-login-settings -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/e5b3QRTfdO0" title="User Login Settings: Sign-In Options and Lockout" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

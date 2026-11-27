@@ -200,3 +200,8 @@ This video customizes the screens of the admin with Liquid admin templates.
 
 <!-- video:admin-templates -->
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/_HoBVym4lBo" title="Admin Templates: Customize Admin Screens With Liquid" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video commits, forks and joins the database session in a workflow.
+
+<!-- video:workflows-session-activities -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/qGmjXRYENVI" title="Workflows and the Database Session: Commit, Fork and Join" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

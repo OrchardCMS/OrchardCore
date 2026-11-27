@@ -475,3 +475,38 @@ This video reacts to registrations, sign-ins and role changes with a workflow.
 
 <!-- video:workflows-user-events -->
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/5OSh78XTbI4" title="Workflows: React to Registrations, Sign-Ins and Role Changes" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video creates, edits, disables and deletes user accounts.
+
+<!-- video:users-manage -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/zuhO5OFcxmA" title="Users: Create, Edit, Disable and Delete Accounts" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video sets the sign-in options and the lockout of user accounts.
+
+<!-- video:users-login-settings -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/e5b3QRTfdO0" title="User Login Settings: Sign-In Options and Lockout" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video lets visitors create their own accounts.
+
+<!-- video:users-registration -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/bEGdevqvzPk" title="User Registration: Let Visitors Create Accounts" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video lets users recover their accounts with a password reset.
+
+<!-- video:users-reset-password -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/IN4Y8boTxd8" title="Reset Password: Let Users Recover Their Accounts" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video lets users update their email address.
+
+<!-- video:users-change-email -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/v6h8bw8iS6w" title="Change Email: Let Users Update Their Email Address" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video lets each user choose a time zone and a culture.
+
+<!-- video:users-time-zone-and-culture -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/nvVDJxqcTw4" title="User Time Zone and Culture: Personal Preferences for Each User" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video keeps sign-in tickets on the server with the authentication ticket store.
+
+<!-- video:users-ticket-store -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/X1TKmwKmo3g" title="Authentication Ticket Store: Keep Sign-In Tickets on the Server" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

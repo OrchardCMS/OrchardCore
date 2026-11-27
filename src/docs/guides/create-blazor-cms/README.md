@@ -29,7 +29,7 @@ dotnet sln add ./BlazorCms
 - Open `OCBlazor.sln` in Visual Studio 2022 and run the application. If you are using Visual Studio Code, you can run the application by running `dotnet run --project ./BlazorCms/BlazorCms.csproj`.
 - Open a browser, navigate to `https://localhost:5001`, and complete setting up a default site. In this guide, we are using the `Headless site` recipe.
 
-![Setup Default Orchard Core site](./images/image-002.PNG)
+![The setup screen, with BlazorCMS as the site name and the Headless site recipe.](images/setup.webp)
 
 - Once the setup is complete, log in to the admin and create a new content type as following. (By navigating to **Design → Content Definition → Content Types**) 
     - Create a 'MarkdownPage' content type.
@@ -142,7 +142,7 @@ dotnet sln add ./BlazorCms
 
 - Go to **Content → Content Items** and verify that the content item is available as shown in the image below.
  
-![Content Item](./images/image-001.PNG)
+![The content items list, with the Markdown Page ORCHARD CORE.](images/content-items.webp)
 
 ### Create a Blazor App in the Razor Class library.
 
@@ -778,25 +778,25 @@ One of the key features of Orchard Core is its multi-tenancy support. In this se
 
 In orchard core admin, go to **Tools → Features** and enable the `Tenants` feature.
 
-![Enable tenants feature](./images/enable-tenants.jpg)
+![The Features page, with the Tenants feature disabled.](images/enable-tenants.webp)
 
 ## Add the first tenant
 
 Navigate to **Multi-Tenancy → Tenants** and add a new tenant with the following settings.
 
-![Create first tenant](./images/create-tenant.png)
+![The Tenants page, listing the Default tenant.](images/tenants.webp)
 
 - Tenant name: FirstTenant
 - URL Prefix: tenant01
 - Recipe: Headless site
 
-![Create first tenant](./images/first-tenant.png)
+![The Create Tenant page, with FirstTenant as the name and tenant01 as the URL prefix.](images/first-tenant.webp)
 
 Now set up the first tenant by clicking the `Setup` button.
 
-![Setup new tenant](./images/setup-first-tenant.png)
+![The Tenants page, with FirstTenant not set up yet.](images/setup-first-tenant.webp)
 
-![Setup screen first tenant](./images/setup-screen-first-tenant.png)
+![The setup screen of FirstTenant.](images/setup-screen-first-tenant.webp)
 
 After setup is finished, you can access the first tenant by navigating to `https://localhost:5001/tenant01`. Since Orchard listens to ```/``` (and on ```/tenant01/```), it presents the login screen. You can log in with the user you just created in the setup procedure.
 
@@ -870,7 +870,7 @@ The example contains a page with the URL `baseurl` that demonstrates the various
 >
 > The settings for the base path can be set in orchard. If you don't set them, the value returned is null/empty.
 >
-> ![Tenant site settings](./images/tenant-site-settings.png)
+> ![The general settings of FirstTenant, with its base URL.](images/tenant-site-settings.webp)
 
 ## Test the modifications
 
@@ -979,7 +979,7 @@ Log in to administration, and go to **Tools → Deployments → JSON Import**
 }
 ```
 
-![Import content definition and item into tenant 01](./images/import-content-tenant.png)
+![The JSON Import page of FirstTenant, with the content of the tenant pasted.](images/import-content-tenant.webp)
 
 Now, navigate to `https://localhost:5001/tenant01` and click on the `Orchard Core` link in the left navigation. You should see the content item rendered in the Blazor App.
 

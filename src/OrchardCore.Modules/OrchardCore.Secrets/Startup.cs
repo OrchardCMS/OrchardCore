@@ -42,6 +42,9 @@ public sealed class Startup : StartupBase
         services.AddDisplayDriver<SecretEditViewModel, SecretEditDisplayDriver>();
         services.AddDisplayDriver<SecretStoreViewModel, SecretStoreDisplayDriver>();
 
+        // Build the rows of the list of the secrets.
+        services.AddDisplayDriver<SecretListEntry, SecretListEntryDisplayDriver>();
+
         services.AddDeployment<SecretsDeploymentSource, SecretsDeploymentStep, SecretsDeploymentStepDriver>();
         services.AddRecipeExecutionStep<SecretsRecipeStep>();
     }

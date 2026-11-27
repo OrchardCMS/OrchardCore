@@ -760,3 +760,8 @@ This video creates, updates and publishes content automatically with a workflow.
 
 <!-- video:workflows-content-tasks -->
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/d8eJUVHGMHI" title="Workflows: Create, Update and Publish Content Automatically" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video sets content permissions by content type and by owner.
+
+<!-- video:roles-content-permissions -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/dm2dLVWDg08" title="Content Permissions: By Content Type and by Owner" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
