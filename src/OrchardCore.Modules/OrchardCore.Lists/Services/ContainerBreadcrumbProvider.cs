@@ -1,8 +1,11 @@
 using Microsoft.AspNetCore.Routing;
 using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Contents;
+using OrchardCore.ContentTypes;
 using OrchardCore.Lists.Models;
+using OrchardCore.Localization.Data;
 using OrchardCore.Navigation;
 
 namespace OrchardCore.Lists.Services;
@@ -16,10 +19,14 @@ public sealed class ContainerBreadcrumbProvider : IBreadcrumbProvider
     private const string ContainerIdKey = "ListPart.ContainerId";
 
     private readonly IContentManager _contentManager;
+    private readonly IContentDefinitionManager _contentDefinitionManager;
+    private readonly IDataLocalizer _dataLocalizer;
 
-    public ContainerBreadcrumbProvider(IContentManager contentManager)
+    public ContainerBreadcrumbProvider(IContentManager contentManager, IContentDefinitionManager contentDefinitionManager, IDataLocalizer dataLocalizer)
     {
         _contentManager = contentManager;
+        _contentDefinitionManager = contentDefinitionManager;
+        _dataLocalizer = dataLocalizer;
     }
 
     public async ValueTask BuildBreadcrumbAsync(BreadcrumbContext context)
@@ -46,10 +53,18 @@ public sealed class ContainerBreadcrumbProvider : IBreadcrumbProvider
             return;
         }
 
+        var text = container.DisplayText;
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(container.ContentType);
+            text = typeDefinition is not null ? _dataLocalizer[typeDefinition.DisplayName, DataLocalizationContext.ContentType] : container.ContentType;
+        }
+
         var item = new BreadcrumbItem
         {
             Id = "Container",
-            Text = string.IsNullOrWhiteSpace(container.DisplayText) ? container.ContentType : container.DisplayText,
+            Text = text,
+
             RouteValues = new RouteValueDictionary
             {
                 { "area", "OrchardCore.Contents" },
