@@ -129,3 +129,10 @@ For more information, please refer to:
 
 - [Configuration](../Configuration/README.md)
 - [Microsoft ASP.NET Core Forwarded Headers Documentation](https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/proxy-load-balancer)
+
+## Video
+
+This video sets up the reverse proxy options to run behind a load balancer.
+
+<!-- video:security-reverse-proxy -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/VvFU3NBn-9M" title="Reverse Proxy Settings: Run Behind a Load Balancer" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

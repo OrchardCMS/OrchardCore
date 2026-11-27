@@ -54,3 +54,8 @@ and `UserProfile` is the property to extend the `User` entity with.
 ## Video
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/_ff79hm5PAc" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video adds your own fields to user profiles with custom user settings.
+
+<!-- video:users-custom-user-settings -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/kBhPHCNqQYY" title="Custom User Settings: Add Your Own Fields to User Profiles" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

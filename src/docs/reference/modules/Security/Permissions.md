@@ -170,3 +170,13 @@ This video writes your own shortcodes with Liquid shortcode templates.
 
 <!-- video:shortcode-templates -->
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/eTiX2f5VdqI" title="Shortcode Templates: Write Your Own Shortcodes With Liquid" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video controls who can do what with roles and permissions.
+
+<!-- video:roles-and-permissions -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/Jz57DRQlIts" title="Roles and Permissions: Control Who Can Do What" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video sets content permissions by content type and by owner.
+
+<!-- video:roles-content-permissions -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/dm2dLVWDg08" title="Content Permissions: By Content Type and by Owner" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

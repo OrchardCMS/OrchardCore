@@ -9,3 +9,10 @@ By default, only administrators create accounts. To let visitors sign up themsel
 When external login providers are enabled (see [Login](login.md)), separate [external registration settings](../../reference/modules/Users/README.md#external-authentication-settings) control whether an account is created automatically for users who authenticate with an external provider, and which information (username, email, password) is asked for or generated.
 
 Registration settings can also be applied from a recipe: see the [Registration Settings recipe step](../../reference/modules/Users/README.md#registration-settings).
+
+## Video
+
+This video lets visitors create their own accounts.
+
+<!-- video:users-registration -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/bEGdevqvzPk" title="User Registration: Let Visitors Create Accounts" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

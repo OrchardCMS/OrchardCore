@@ -5,3 +5,10 @@ Roles group [permissions](../../reference/modules/Security/Permissions.md) and a
 Orchard Core defines a set of [predefined roles](../../reference/modules/Roles/README.md#predefined-roles): `Administrator`, `Editor`, `Moderator`, `Author`, `Contributor`, and the two special roles `Anonymous` (unauthenticated visitors) and `Authenticated` (any logged-in user).
 
 Roles are assigned to [users](users.md) from the user editor and can also be configured from a recipe: see the [Roles module documentation](../../reference/modules/Roles/README.md).
+
+## Video
+
+This video controls who can do what with roles and permissions.
+
+<!-- video:roles-and-permissions -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/Jz57DRQlIts" title="Roles and Permissions: Control Who Can Do What" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

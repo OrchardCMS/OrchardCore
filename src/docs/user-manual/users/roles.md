@@ -106,3 +106,15 @@ If the role editor shows a red **Duplicate Permissions Detected** box, two modul
 
 !!! example "See it in practice"
     [Give an editor limited access](../use-cases/editor-with-limited-access.md) and [Set up content approval](../use-cases/content-approval.md) walk through this step by step.
+
+## Videos
+
+This video controls who can do what with roles and permissions.
+
+<!-- video:roles-and-permissions -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/Jz57DRQlIts" title="Roles and Permissions: Control Who Can Do What" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video sets content permissions by content type and by owner.
+
+<!-- video:roles-content-permissions -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/dm2dLVWDg08" title="Content Permissions: By Content Type and by Owner" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

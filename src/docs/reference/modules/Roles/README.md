@@ -98,10 +98,20 @@ The roles editor and the admin menu and menu item permission pickers translate t
 
 A description passed as a plain `string` is still supported, for example `new Permission("ManageWidgets", "Manage widgets")`. The constructor wraps it in a `LocalizationSource` without a type. It is not translated with PO files, but it can be translated with Data Localization in the roles editor. Built-in templates, for example `"Edit {0}"`, use this context-free path because the format arguments are applied before the description is shown; the permissions built from them, for example "Edit Article", are also translated with Data Localization. Permission categories are translated with Data Localization too.
 
-## Video
+## Videos
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/FmgZHpFHCcg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/2O1F7pwUrTY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/PY61oZm6mBo" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video controls who can do what with roles and permissions.
+
+<!-- video:roles-and-permissions -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/Jz57DRQlIts" title="Roles and Permissions: Control Who Can Do What" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video sets content permissions by content type and by owner.
+
+<!-- video:roles-content-permissions -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/dm2dLVWDg08" title="Content Permissions: By Content Type and by Owner" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

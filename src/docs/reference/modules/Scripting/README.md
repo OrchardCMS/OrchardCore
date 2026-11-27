@@ -309,9 +309,14 @@ The following JavaScript functions are available by default to any workflow acti
 | `setOutcome(outcome: String): void`                                                               | Adds the provided outcome to the list of outcomes of the current activity                                                                                                                                                                                                                        |
 | `createWorkflowToken(workflowTypeId: String, activityId: String, expiresInDays: Integer): String` | Generates a workflow SAS token for the specified workflowTypeid, activityId. You can also set the expiration date in number of days.                                                                                                                                                             |
 
-## Video
+## Videos
 
 This video handles HTTP requests and calls web APIs from a workflow.
 
 <!-- video:workflows-http -->
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/iJ1bmOI-bvg" title="HTTP Workflows: Handle Requests and Call Web APIs" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video uses expressions, variables, branches and loops in a workflow.
+
+<!-- video:workflows-expressions-and-loops -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/jcUHIQeiUR0" title="Workflows in Depth: Expressions, Variables, Branches and Loops" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

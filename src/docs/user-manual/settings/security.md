@@ -228,3 +228,25 @@ The **HTTPS** feature makes sure visitors use a secure connection (`https://`). 
 ## Response compression
 
 The **Response Compression** feature compresses pages before sending them, so they download faster, also over HTTPS. It has no settings: when it is on, it works for every page. Your hosting may already compress pages, in which case your IT team may leave it off.
+
+## Videos
+
+This video walks through a security checklist for administrators.
+
+<!-- video:secure-your-site -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/PxKUWRXGKas" title="Secure Your Site: A Checklist for Administrators" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video requires secure connections with HTTPS.
+
+<!-- video:security-https -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/GuGGh5yTkD4" title="HTTPS: Require Secure Connections" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video lets other sites call your APIs with CORS policies.
+
+<!-- video:security-cors -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/jkep9BfFLXM" title="CORS: Allow Other Sites to Call Your APIs" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video sets up the reverse proxy options to run behind a load balancer.
+
+<!-- video:security-reverse-proxy -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/VvFU3NBn-9M" title="Reverse Proxy Settings: Run Behind a Load Balancer" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

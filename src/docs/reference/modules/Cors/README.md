@@ -141,3 +141,8 @@ For protocol details, see [Cross-Origin Resource Sharing (CORS) on MDN](https://
 ## Video
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/OYXFvKWyVGo" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video lets other sites call your APIs with CORS policies.
+
+<!-- video:security-cors -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/jkep9BfFLXM" title="CORS: Allow Other Sites to Call Your APIs" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
