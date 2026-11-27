@@ -2,10 +2,11 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Email.Azure.Models;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Email.Azure.Services;
 
-public class AzureEmailProvider : AzureEmailProviderBase<AzureEmailOptions>
+public class AzureEmailProvider : AzureEmailProviderBase<AzureEmailOptions>, IEmailProviderDescription
 {
     public const string TechnicalName = "Azure";
 
@@ -17,6 +18,5 @@ public class AzureEmailProvider : AzureEmailProviderBase<AzureEmailOptions>
     {
     }
 
-    public override LocalizedString DisplayName
-        => S["Azure Communication Services"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<AzureEmailProvider>("Azure Communication Services");
 }

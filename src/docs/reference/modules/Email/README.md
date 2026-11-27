@@ -18,12 +18,23 @@ Enabling the `Email` feature will add a new settings page under **Settings → C
 
 ## Adding Custom Providers
 
-The `OrchardCore.Email` module provides you with the capability to integrate additional providers for dispatching email messages. To achieve this, you can easily create an implementation of the `IEmailProvider` interface and then proceed to register it using one of the following approaches:
+The `OrchardCore.Email` module provides you with the capability to integrate additional providers for dispatching email messages. To achieve this, you can easily create an implementation of the `IEmailProvider` interface, which also implements `IEmailProviderDescription` to declare the static `DisplayName` of the provider, and then proceed to register it using one of the following approaches:
 
 If your provider does not require any settings, you may register it using the `AddEmailProvider<>` extension. For instance:
 
 ```csharp
 services.AddEmailProvider<YourCustomImplementation>("A technical name for your implementation")
+```
+
+The display name is a `LocalizationSource` declared as a static member of the provider, so the providers can be listed in the admin without creating them:
+
+```csharp
+public class YourCustomImplementation : IEmailProvider, IEmailProviderDescription
+{
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<YourCustomImplementation>("Your custom provider");
+
+    // ...
+}
 ```
 
 However, if you have a complex provider like the included SMTP one, you may implement `IConfigureOptions<EmailProviderOptions>` and register it using the `AddEmailProviderOptionsConfiguration<>` extension. For instance:
@@ -46,10 +57,8 @@ public class SmtpProviderOptionsConfigurations : IConfigureOptions<EmailProvider
 
     public void Configure(EmailProviderOptions options)
     {
-        var typeOptions = new EmailProviderTypeOptions(typeof(SmtpEmailProvider))
-        {
-            IsEnabled = _smtpOptions.IsEnabled
-        };
+        var typeOptions = EmailProviderTypeOptions.Create<SmtpEmailProvider>();
+        typeOptions.IsEnabled = _smtpOptions.IsEnabled;
 
         options.TryAddProvider(SmtpEmailProvider.TechnicalName, typeOptions);
     }

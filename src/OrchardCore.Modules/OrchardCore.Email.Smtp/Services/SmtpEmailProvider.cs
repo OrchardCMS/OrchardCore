@@ -1,10 +1,11 @@
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Email.Smtp.Services;
 
-public class SmtpEmailProvider : SmtpEmailProviderBase<SmtpOptions>
+public class SmtpEmailProvider : SmtpEmailProviderBase<SmtpOptions>, IEmailProviderDescription
 {
     public const string TechnicalName = "SMTP";
 
@@ -17,5 +18,5 @@ public class SmtpEmailProvider : SmtpEmailProviderBase<SmtpOptions>
     {
     }
 
-    public override LocalizedString DisplayName => S["Simple Mail Transfer Protocol (SMTP)"];
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<SmtpEmailProvider>("Simple Mail Transfer Protocol (SMTP)");
 }
