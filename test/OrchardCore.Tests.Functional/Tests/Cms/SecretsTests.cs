@@ -243,7 +243,7 @@ public sealed class SecretsTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         await SecretEntry(page, "LaterKey").GetByRole(AriaRole.Link, new LocatorGetByRoleOptions { Name = "Text Secret" }).ClickAsync();
         await Assertions.Expect(page).ToHaveURLAsync(new Regex(@"Options\.Type=TextSecret"));
         await Assertions.Expect(page.Locator("input[name=itemIds]")).ToHaveCountAsync(4);
-        await Assertions.Expect(page.Locator("#Options_Type")).ToHaveValueAsync("TextSecret");
+        await Assertions.Expect(page.Locator("select[name='Options.Type']")).ToHaveValueAsync("TextSecret");
     }
 
     [Fact]
