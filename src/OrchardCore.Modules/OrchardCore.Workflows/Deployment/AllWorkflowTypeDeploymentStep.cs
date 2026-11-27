@@ -1,16 +1,13 @@
-using System.Text.Json.Serialization;
 using OrchardCore.Deployment;
 using OrchardCore.Localization;
 
 namespace OrchardCore.Workflows.Deployment;
 
-public class AllWorkflowTypeDeploymentStep : DeploymentStep
+public class AllWorkflowTypeDeploymentStep : DeploymentStep, IDeploymentStep
 {
     public override string Name => "AllWorkflowType";
 
-    [JsonIgnore]
-    public override LocalizationSource Category => WorkflowsLocalizationSources.Workflows;
+    public static LocalizationSource Category => WorkflowsLocalizationSources.Workflows;
 
-    [JsonIgnore]
-    public override LocalizationSource Title => WorkflowsLocalizationSources.AllWorkflowTypes;
+    public static LocalizationSource Title => WorkflowsLocalizationSources.AllWorkflowTypes;
 }

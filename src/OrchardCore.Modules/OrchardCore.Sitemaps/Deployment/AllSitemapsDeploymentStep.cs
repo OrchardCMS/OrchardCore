@@ -1,13 +1,11 @@
-using System.Text.Json.Serialization;
 using OrchardCore.Deployment;
 using OrchardCore.Localization;
 
 namespace OrchardCore.Sitemaps.Deployment;
 
-public sealed class AllSitemapsDeploymentStep : DeploymentStep
+public sealed class AllSitemapsDeploymentStep : DeploymentStep, IDeploymentStep
 {
     public override string Name => "AllSitemaps";
 
-    [JsonIgnore]
-    public override LocalizationSource Category => CommonLocalizationSources.ContentManagement;
+    public static LocalizationSource Category => CommonLocalizationSources.ContentManagement;
 }

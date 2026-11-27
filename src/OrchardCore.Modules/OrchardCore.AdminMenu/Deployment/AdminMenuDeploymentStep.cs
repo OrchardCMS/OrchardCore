@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using OrchardCore.Deployment;
 using OrchardCore.Localization;
 
@@ -7,13 +6,11 @@ namespace OrchardCore.AdminMenu.Deployment;
 /// <summary>
 /// Adds all admin menus to a <see cref="DeploymentPlanResult"/>.
 /// </summary>
-public class AdminMenuDeploymentStep : DeploymentStep
+public class AdminMenuDeploymentStep : DeploymentStep, IDeploymentStep
 {
     public override string Name => "AdminMenu";
 
-    [JsonIgnore]
-    public override LocalizationSource Category => CommonLocalizationSources.ContentManagement;
+    public static LocalizationSource Category => CommonLocalizationSources.ContentManagement;
 
-    [JsonIgnore]
-    public override LocalizationSource Title => AdminMenuLocalizationSources.AdminMenus;
+    public static LocalizationSource Title => AdminMenuLocalizationSources.AdminMenus;
 }

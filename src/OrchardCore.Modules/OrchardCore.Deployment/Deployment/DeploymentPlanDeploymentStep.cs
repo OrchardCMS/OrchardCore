@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using OrchardCore.Localization;
 
 namespace OrchardCore.Deployment.Deployment;
@@ -6,15 +5,13 @@ namespace OrchardCore.Deployment.Deployment;
 /// <summary>
 /// Adds deployment plans to a <see cref="DeploymentPlanResult"/>.
 /// </summary>
-public class DeploymentPlanDeploymentStep : DeploymentStep
+public class DeploymentPlanDeploymentStep : DeploymentStep, IDeploymentStep
 {
     public override string Name => "DeploymentPlan";
 
-    [JsonIgnore]
-    public override LocalizationSource Category => DeploymentLocalizationSources.Deployment;
+    public static LocalizationSource Category => DeploymentLocalizationSources.Deployment;
 
-    [JsonIgnore]
-    public override LocalizationSource Title => DeploymentLocalizationSources.DeploymentPlans;
+    public static LocalizationSource Title => DeploymentLocalizationSources.DeploymentPlans;
 
     public bool IncludeAll { get; set; } = true;
 

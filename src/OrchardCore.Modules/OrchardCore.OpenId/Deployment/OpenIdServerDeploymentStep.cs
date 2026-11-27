@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using OrchardCore.Deployment;
 using OrchardCore.Localization;
 
@@ -7,10 +6,9 @@ namespace OrchardCore.OpenId.Deployment;
 /// <summary>
 /// Adds Open ID settings to a <see cref="DeploymentPlanResult"/>.
 /// </summary>
-public class OpenIdServerDeploymentStep : DeploymentStep
+public class OpenIdServerDeploymentStep : DeploymentStep, IDeploymentStep
 {
     public override string Name => "OpenID Server";
 
-    [JsonIgnore]
-    public override LocalizationSource Category => OpenIdLocalizationSources.OpenIdConnect;
+    public static LocalizationSource Category => OpenIdLocalizationSources.OpenIdConnect;
 }

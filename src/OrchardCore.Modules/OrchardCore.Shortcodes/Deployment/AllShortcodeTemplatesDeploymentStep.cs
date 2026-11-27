@@ -1,13 +1,11 @@
-using System.Text.Json.Serialization;
 using OrchardCore.Deployment;
 using OrchardCore.Localization;
 
 namespace OrchardCore.Shortcodes.Deployment;
 
-public class AllShortcodeTemplatesDeploymentStep : DeploymentStep
+public class AllShortcodeTemplatesDeploymentStep : DeploymentStep, IDeploymentStep
 {
     public override string Name => "AllShortcodeTemplates";
 
-    [JsonIgnore]
-    public override LocalizationSource Category => CommonLocalizationSources.Content;
+    public static LocalizationSource Category => CommonLocalizationSources.Content;
 }

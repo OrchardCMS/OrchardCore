@@ -1,19 +1,16 @@
-using System.Text.Json.Serialization;
 using OrchardCore.Deployment;
 using OrchardCore.Indexing.Core.Recipes;
 using OrchardCore.Localization;
 
 namespace OrchardCore.Indexing.Core.Deployments;
 
-public sealed class IndexProfileDeploymentStep : DeploymentStep
+public sealed class IndexProfileDeploymentStep : DeploymentStep, IDeploymentStep
 {
     public override string Name => CreateOrUpdateIndexProfileStep.StepKey;
 
-    [JsonIgnore]
-    public override LocalizationSource Category => IndexingLocalizationSources.Indexing;
+    public static LocalizationSource Category => IndexingLocalizationSources.Indexing;
 
-    [JsonIgnore]
-    public override LocalizationSource Title => IndexingLocalizationSources.IndexProfiles;
+    public static LocalizationSource Title => IndexingLocalizationSources.IndexProfiles;
 
     public bool IncludeAll { get; set; }
 

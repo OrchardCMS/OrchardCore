@@ -6,15 +6,13 @@ namespace OrchardCore.Deployment.Steps;
 /// <summary>
 /// Adds a JSON recipe to a <see cref="DeploymentPlanResult"/>.
 /// </summary>
-public class JsonRecipeDeploymentStep : DeploymentStep
+public class JsonRecipeDeploymentStep : DeploymentStep, IDeploymentStep
 {
     public override string Name => "JsonRecipe";
 
-    [JsonIgnore]
-    public override LocalizationSource Category => DeploymentLocalizationSources.Deployment;
+    public static LocalizationSource Category => DeploymentLocalizationSources.Deployment;
 
-    [JsonIgnore]
-    public override LocalizationSource Title => DeploymentLocalizationSources.JsonRecipe;
+    public static LocalizationSource Title => DeploymentLocalizationSources.JsonRecipe;
 
     public string Json { get; set; }
 }

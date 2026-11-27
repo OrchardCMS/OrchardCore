@@ -1,12 +1,15 @@
 using OrchardCore.Deployment;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Secrets.Deployment;
 
 /// <summary>
 /// Adds all secrets to a <see cref="DeploymentPlanResult"/>.
 /// </summary>
-public class SecretsDeploymentStep : DeploymentStep
+public class SecretsDeploymentStep : DeploymentStep, IDeploymentStep
 {
+    public static LocalizationSource Category => CommonLocalizationSources.Security;
+
     public SecretsDeploymentStep()
     {
         Name = "Secrets";

@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using OrchardCore.Deployment;
 using OrchardCore.Localization;
 
@@ -8,7 +7,7 @@ namespace OrchardCore.Themes.TheAdmin.Deployment;
 /// Adds every scheme of TheAdmin, the theme's own ones included, and the site's default scheme to a
 /// <see cref="DeploymentPlanResult"/>.
 /// </summary>
-public sealed class AdminSchemesDeploymentStep : DeploymentStep
+public sealed class AdminSchemesDeploymentStep : DeploymentStep, IDeploymentStep
 {
     /// <summary>
     /// The name of the deployment step, and of the recipe step that imports what it exports.
@@ -32,9 +31,7 @@ public sealed class AdminSchemesDeploymentStep : DeploymentStep
 
     public override string Name => StepName;
 
-    [JsonIgnore]
-    public override LocalizationSource Category => TheAdminLocalizationSources.Theming;
+    public static LocalizationSource Category => TheAdminLocalizationSources.Theming;
 
-    [JsonIgnore]
-    public override LocalizationSource Title => TheAdminLocalizationSources.AdminSchemes;
+    public static LocalizationSource Title => TheAdminLocalizationSources.AdminSchemes;
 }

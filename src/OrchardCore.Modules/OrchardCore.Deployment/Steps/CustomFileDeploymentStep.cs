@@ -1,21 +1,18 @@
 using OrchardCore.Localization;
 using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
 
 namespace OrchardCore.Deployment.Steps;
 
 /// <summary>
 /// Adds a custom file to a <see cref="DeploymentPlanResult"/>.
 /// </summary>
-public class CustomFileDeploymentStep : DeploymentStep
+public class CustomFileDeploymentStep : DeploymentStep, IDeploymentStep
 {
     public override string Name => nameof(CustomFileDeploymentStep);
 
-    [JsonIgnore]
-    public override LocalizationSource Category => DeploymentLocalizationSources.Deployment;
+    public static LocalizationSource Category => DeploymentLocalizationSources.Deployment;
 
-    [JsonIgnore]
-    public override LocalizationSource Title => DeploymentLocalizationSources.CustomFile;
+    public static LocalizationSource Title => DeploymentLocalizationSources.CustomFile;
 
     [Required]
     public string FileName { get; set; }

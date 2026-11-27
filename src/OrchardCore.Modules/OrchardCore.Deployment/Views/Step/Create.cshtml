@@ -26,7 +26,7 @@
 
         stepName = new HtmlContentString(derivedName.CamelFriendly() ?? string.Empty);
 
-        var displayName = StringLocalizerFactory.Localize(StepFactories.FirstOrDefault(factory => factory.Name == stepType)?.Create().Title);
+        var displayName = StringLocalizerFactory.Localize(StepFactories.FirstOrDefault(factory => factory.Name == stepType)?.Title);
         if (!string.IsNullOrEmpty(displayName?.Value))
         {
             stepName = new HtmlContentString(displayName.Value);

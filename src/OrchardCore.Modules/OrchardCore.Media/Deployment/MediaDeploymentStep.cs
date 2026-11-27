@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using OrchardCore.Deployment;
 using OrchardCore.Localization;
 
@@ -7,15 +6,13 @@ namespace OrchardCore.Media.Deployment;
 /// <summary>
 /// Adds layers to a <see cref="DeploymentPlanResult"/>.
 /// </summary>
-public class MediaDeploymentStep : DeploymentStep
+public class MediaDeploymentStep : DeploymentStep, IDeploymentStep
 {
     public override string Name => "Media";
 
-    [JsonIgnore]
-    public override LocalizationSource Category => CommonLocalizationSources.ContentManagement;
+    public static LocalizationSource Category => CommonLocalizationSources.ContentManagement;
 
-    [JsonIgnore]
-    public override LocalizationSource Title => MediaLocalizationSources.Media;
+    public static LocalizationSource Title => MediaLocalizationSources.Media;
 
     public bool IncludeAll { get; set; } = true;
 

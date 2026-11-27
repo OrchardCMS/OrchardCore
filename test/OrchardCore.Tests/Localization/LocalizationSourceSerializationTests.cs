@@ -12,59 +12,17 @@ namespace OrchardCore.Tests.Localization;
 public class LocalizationSourceSerializationTests
 {
     [Fact]
-    public void Serialize_DeploymentPlanWithStepWithJsonIgnore_SavesAndReadsBack()
-    {
-        var documentOptions = CreateDocumentOptions<StepWithJsonIgnore>();
-
-        var plan = new DeploymentPlan
-        {
-            Name = "Plan",
-            DeploymentSteps = [new StepWithJsonIgnore { Id = "step1" }],
-        };
-
-        var json = JsonSerializer.Serialize(plan, documentOptions.SerializerOptions);
-        var copy = JsonSerializer.Deserialize<DeploymentPlan>(json, documentOptions.SerializerOptions);
-
-        Assert.DoesNotContain("Category", json, StringComparison.Ordinal);
-        var step = Assert.IsType<StepWithJsonIgnore>(Assert.Single(copy.DeploymentSteps));
-        Assert.Equal("step1", step.Id);
-        Assert.Equal(typeof(StepWithJsonIgnore), step.Category.Type);
-    }
-
-    [Fact]
-    public void Serialize_DeploymentPlanWithStepWithoutJsonIgnore_SavesAndReadsBack()
-    {
-        // The options YesSql saves the documents with. An override doesn't inherit the '[JsonIgnore]' of the base
-        // property, but the document contract removes every LocalizationSource property.
-        var documentOptions = CreateDocumentOptions<StepWithoutJsonIgnore>();
-
-        var plan = new DeploymentPlan
-        {
-            Name = "Plan",
-            DeploymentSteps = [new StepWithoutJsonIgnore { Id = "step1" }],
-        };
-
-        var json = JsonSerializer.Serialize(plan, documentOptions.SerializerOptions);
-        var copy = JsonSerializer.Deserialize<DeploymentPlan>(json, documentOptions.SerializerOptions);
-
-        Assert.DoesNotContain("Category", json, StringComparison.Ordinal);
-        var step = Assert.IsType<StepWithoutJsonIgnore>(Assert.Single(copy.DeploymentSteps));
-        Assert.Equal("step1", step.Id);
-        Assert.Equal(typeof(StepWithoutJsonIgnore), step.Category.Type);
-    }
-
-    [Fact]
     public void Deserialize_DocumentWithStoredSource_IgnoresIt()
     {
-        var documentOptions = CreateDocumentOptions<StepWithoutJsonIgnore>();
+        var documentOptions = CreateDocumentOptions<PlainStep>();
 
         var plan = new DeploymentPlan
         {
             Name = "Plan",
-            DeploymentSteps = [new StepWithoutJsonIgnore { Id = "step1" }],
+            DeploymentSteps = [new PlainStep { Id = "step1" }],
         };
 
-        // A plan saved before the sources were excluded may still have them.
+        // A plan saved before the category and title became static members of the step may still have them.
         var json = JsonSerializer.Serialize(plan, documentOptions.SerializerOptions)
             .Replace("\"Id\":\"step1\"", "\"Id\":\"step1\",\"Category\":\"Hello\"", StringComparison.Ordinal);
 
@@ -72,9 +30,8 @@ public class LocalizationSourceSerializationTests
 
         var copy = JsonSerializer.Deserialize<DeploymentPlan>(json, documentOptions.SerializerOptions);
 
-        var step = Assert.IsType<StepWithoutJsonIgnore>(Assert.Single(copy.DeploymentSteps));
+        var step = Assert.IsType<PlainStep>(Assert.Single(copy.DeploymentSteps));
         Assert.Equal("step1", step.Id);
-        Assert.Equal(typeof(StepWithoutJsonIgnore), step.Category.Type);
     }
 
     [Fact]
@@ -227,22 +184,8 @@ public class LocalizationSourceSerializationTests
         public LocalizationSource[] Items { get; set; } = [LocalizationSource.Create<UnmarkedSourceHolder>("c")];
     }
 
-    public sealed class StepWithJsonIgnore : DeploymentStep
+    public sealed class PlainStep : DeploymentStep
     {
-        private static readonly LocalizationSource s_category = LocalizationSource.Create<StepWithJsonIgnore>("Hello");
-
-        public override string Name => "StepWithJsonIgnore";
-
-        [JsonIgnore]
-        public override LocalizationSource Category => s_category;
-    }
-
-    public sealed class StepWithoutJsonIgnore : DeploymentStep
-    {
-        private static readonly LocalizationSource s_category = LocalizationSource.Create<StepWithoutJsonIgnore>("Hello");
-
-        public override string Name => "StepWithoutJsonIgnore";
-
-        public override LocalizationSource Category => s_category;
+        public override string Name => "PlainStep";
     }
 }

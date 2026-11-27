@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using OrchardCore.Deployment;
 using OrchardCore.Localization;
 
@@ -7,10 +6,9 @@ namespace OrchardCore.Facebook.Deployment;
 /// <summary>
 /// Adds Facebook Login settings to a <see cref="DeploymentPlanResult"/>.
 /// </summary>
-public class FacebookLoginDeploymentStep : DeploymentStep
+public class FacebookLoginDeploymentStep : DeploymentStep, IDeploymentStep
 {
     public override string Name => "Facebook Login";
 
-    [JsonIgnore]
-    public override LocalizationSource Category => FacebookLocalizationSources.Meta;
+    public static LocalizationSource Category => FacebookLocalizationSources.Meta;
 }
