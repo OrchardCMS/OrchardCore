@@ -124,7 +124,7 @@ app.Run();
 
 Start the application, the Setup screen shows up:
 
-![Setup](images/setup.jpg)
+![The setup screen, with My Site as the site name and the Blank site recipe.](images/setup.webp)
 
 ### Setting up a new site
 
@@ -171,16 +171,16 @@ Let's create a new content type named `Blog Post` and add some necessary content
 - Click on __Create new type__ in the top right corner
 - In __Display Name__ enter `Blog Post`. The __Technical Name__ will be generated automatically with the value `BlogPost`, like this:
 
-![New Content Type](images/new-content-type.jpg)
+![The New Content Type page, with Blog Post as the display name.](images/new-content-type.webp)
 
 - Click __Create__
 - A list of __Content Parts__ is presented. Select __Title__ and __Markdown Body__, then click on __Save__
 
-![Add Content Parts](images/add-content-parts.jpg)
+![The Add Parts page of Blog Post, with MarkdownBody and Title checked.](images/add-content-parts.webp)
 
 - In the following screen, scroll to the bottom of the page and re-order the Parts like this:
 
-![Edit Content Type](images/edit-content-type.jpg)
+![The Blog Post content type editor, with the Title and MarkdownBody parts.](images/edit-content-type.webp)
 
 - Then click __Save__
 
@@ -189,7 +189,7 @@ You can notice an __Edit__ button in front of each content part. This lets us de
 - On the `MarkdownBody` part, click __Edit__.
 - Select __`Wysiwyg editor`__ as the type of editor to use, then click __Save__:
 
-![Edit Markdown Body Type](images/edit-markdownbody.jpg)
+![The MarkdownBody part settings of Blog Post, with the Wysiwyg editor.](images/edit-markdownbody.webp)
 
 The __Blog Post__ content type is ready to use.
 
@@ -198,11 +198,11 @@ The __Blog Post__ content type is ready to use.
 - In the left menu, select __Content__ then __ContentItems__
 - Click on __New Blog Post__ to reveal an editor for the newly created `BlogPost` content type.
 
-![Edit Blog Post](images/edit-blogpost.jpg)
+![The editor of a new blog post, with its Title and MarkdownBody.](images/edit-blogpost.webp)
 
 - Fill in the __Title__ and the __MarkdownBody__ form elements with some content, then click on __Publish__. For the sake of this example we'll use `This is a new day` and some Lorem Ipsum text.
 
-![Content Items](images/content-items-1.jpg)
+![The content items list, with the blog post This is a new day.](images/content-items.webp)
 
 This shows that we now have a new blog post content item named `This is a new day`. As we create more content items these will appear on this page.
 
@@ -320,7 +320,7 @@ In Orchard Core CMS the __Alias Part__ allows to provide a custom user friendly 
 - Move __Alias__ under __Title__ and save
 - Edit the blog post, the __Alias__ text box is now displayed, in which you can enter some text. In this example we'll use `new-day`
 
-![Edit Alias](images/edit-alias.jpg)
+![The editor of the blog post, with new-day as its alias.](images/edit-alias.webp)
 
 We can now update the Razor Page to use the alias instead of the content item id, in both the URL and in the way we load the content item.
 
@@ -355,7 +355,7 @@ The __Alias Part__ provides some custom settings in order to let it be generated
 - Edit the content definition of Blog Post, and for the __Alias Part__ click on __Edit__.
 - In the __Pattern__ textbox note the pre-filled pattern:
 
-![Edit Alias Pattern](images/alias-pattern.jpg)
+![The Alias part settings of Blog Post, with the pattern of the alias.](images/alias-pattern.webp)
 
 This will dynamically extract the `DisplayText` property of a content item, in our case the __Title__, and call the `slugify` filter on this values, which will turn the title into a value that can be used in slugs.
 
@@ -365,7 +365,7 @@ This will dynamically extract the `DisplayText` property of a content item, in o
 
 The alias is now `this-is-a-new-day`:
 
-![Generated Alias](images/generated-alias.jpg)
+![The editor of the blog post, with its generated alias this-is-a-new-day.](images/generated-alias.webp)
 
 - Open the URL `/blogpost/this-is-a-new-day` to confirm that the route still works with this auto-generated alias.
 
@@ -389,7 +389,7 @@ The CMS doesn't know what Razor Page to use when rendering a content item, and w
 - In the list of parts, for __Preview__, click on __Edit__ to change its settings for this content type.
 - In the __Pattern__ textbox, enter `/blogpost/{{ ContentItem.Content.AliasPart.Alias }}` which is the way to generate the same URL as the route which is configured in the Razor page.
 
-![Edit Preview Pattern](images/preview-pattern.jpg)
+![The Preview part settings of Blog Post, with the pattern of the preview URL.](images/preview-pattern.webp)
 
 - Click __Save__ and open the preview of a Blog Post while editing it.
 

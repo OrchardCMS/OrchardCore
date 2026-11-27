@@ -54,7 +54,7 @@ You are now ready to configure Microsoft Entra ID login in Orchard too. After en
 
 Now, the login screen will display a button for Microsoft Entra ID login:
 
-![Microsoft Entra ID login button on the Orchard Core login screen](images/azure-ad-login-button.png)
+![The login page, with the My Company Microsoft account button to log in with Microsoft Entra ID.](images/entra-id-login-button.webp)
 
 Existing users who have the same e-mail address in Orchard and in Microsoft Entra ID will be able to log in and attach their two accounts. New users will be able to register if registration is otherwise enabled and set up, see below.
 

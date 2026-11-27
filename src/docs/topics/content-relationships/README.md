@@ -17,7 +17,7 @@ Bag Part can contain other content items in a specified order. The contained ite
 
 The editor of a FAQ page modeled like in the example mentioned above:
 
-![The editor of a FAQ page modeled like in the example mentioned above.](images/faq-page-editor.jpg)
+![The editor of a FAQ page modeled like in the example mentioned above.](images/faq-page-editor.webp)
 
 ## Content Picker Field for Many-to-Many Relationships of Specific Items
 
@@ -28,7 +28,7 @@ Content Picker Field can be used to select one or more arbitrary other content i
 
 The editor of a product bundle item, with products selected:
 
-![The editor of a product bundle item, with products selected.](images/product-bundle.jpg)
+![The editor of a product bundle item, with products selected.](images/product-bundle.webp)
 
 !!! note
     While it's not only about content item relationships, there's also the [User Picker Field](../../reference/modules/ContentFields/README.md#userpickerfield) that can be used to connect user accounts to content items.
@@ -42,7 +42,7 @@ If you not only want to list content items under another item but also specify i
 
 The editor of an About Us page using Flow Part:
 
-![The editor of an About Us page using Flow Part.](images/page-editor-with-flow-part.jpg)
+![The editor of an About Us page using Flow Part.](images/page-editor-with-flow-part.webp)
 
 ## List Part for One-To-Many Hierarchical Relationships
 
@@ -53,7 +53,7 @@ With List Part, you can connect two otherwise independently managed content item
 
 List of Blog Post content items in a Blog:
 
-![List of Blog Post content items in a Blog.](images/blog-posts-list.jpg)
+![List of Blog Post content items in a Blog.](images/blog-posts-list.webp)
 
 ## Taxonomies for Categorization and Tagging
 
@@ -64,11 +64,11 @@ The Taxonomies module is about categorizing and tagging content items with Terms
 
 Tags and category Taxonomy Terms under a Blog Post content item:
 
-![Tags and category Taxonomy Terms under a Blog Post content item.](images/blog-post-tags-categories.jpg)
+![Tags and category Taxonomy Terms under a Blog Post content item.](images/blog-post-tags-categories.webp)
 
 Editor of the Categories Taxonomy with Terms:
 
-![Editor of the Categories Taxonomy with Terms.](images/taxonomy-editor.jpg)
+![Editor of the Categories Taxonomy with Terms.](images/taxonomy-editor.webp)
 
 ## Video
 

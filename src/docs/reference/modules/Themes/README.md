@@ -11,7 +11,7 @@ The portfolio should have its own URL like `/portfolio`, and should display the 
 
 The end result would look like this:
 
-![Portfolio](./assets/portfolio-page.png)
+![The portfolio page on the site, listing the Jint and YesSql projects.](images/portfolio-page.webp)
 
 ## Modeling the content
 
@@ -44,7 +44,7 @@ Click __Add Field__, give it a display name `Url`, and select __Text Field__. Cl
 
 Take the time to drag and drop the __Title__ part at the top of the list such that it will appear first in the editor. Then click __Save__.
 
-![New Content Type](./assets/new-content-type.png)
+![The New Content Type page, with Project as the display name.](images/new-content-type.webp)
 
 At that point you could already create all the Project content items you want very easily. However we need to create a `Portfolio` type to contain and organize them.
 
@@ -60,7 +60,7 @@ Click __Edit__ for the __Autoroute__ part. Enter `{{ ContentItem | display_text 
 
 Take the time to drag and drop the __Title__ part at the top of the list such that it will appear first in the editor. Then click __Save__.
 
-![Project](./assets/project.png)
+![The Project content type editor, with its Url field and its parts.](images/project-type.webp)
 
 ## Creating the Portfolio
 
@@ -76,7 +76,7 @@ Create a few Projects, then click __Publish__.
 
 Click on the __View__ button to see how it looks like already.
 
-![Portfolio](./assets/portfolio.png)
+![The Portfolio content type editor, with its fields and parts.](images/portfolio-type.webp)
 
 At that point it already looks like something that could be shipped, and all the information that was entered is rendered in some way. Next step is to understand how all this content got rendered.
 

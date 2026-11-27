@@ -49,11 +49,11 @@ For demonstration purposes, we will create the website using the __Blog__ recipe
 
 Complete the setup form and select the __Blog__ recipe and __SQLite__ for the database.
 
-![image](assets/setup-screen.jpg)
+![The setup screen, with MySite as the site name and the Blog recipe.](images/setup-screen.webp)
 
 Submit the form. A few seconds later you should be looking at a Blog Site.
 
-![image](assets/blog-home-page.jpg)
+![The home page of the Blog recipe.](images/blog-home-page.webp)
 
 In order to configure it and start writing content you can go to <https://localhost:5001/admin>.
 

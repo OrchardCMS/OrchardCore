@@ -208,6 +208,7 @@ public sealed class AdminListLayoutTests : CmsTestBase<AdminListLayoutTestsFixtu
             "OrchardCore.Sitemaps",
             "OrchardCore.Workflows",
             "OrchardCore.DataPipelines",
+            "OrchardCore.Secrets",
         ];
         foreach (var feature in features)
         {
@@ -235,6 +236,7 @@ public sealed class AdminListLayoutTests : CmsTestBase<AdminListLayoutTestsFixtu
             $"/Admin/Workflows/Types/{workflowTypeId}/Instances/Index",
             "/Admin/DataPipelines",
             "/Admin/DataPipelines/Runs",
+            "/Admin/Secrets/Index",
         ];
         string[] layouts = ["List", "Grid"];
         foreach (var layout in layouts)

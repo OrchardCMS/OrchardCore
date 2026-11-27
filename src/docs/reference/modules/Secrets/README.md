@@ -158,7 +158,7 @@ Register the named client in the host as shown in [Azure Key Vault Store](#azure
 2. Search for "Secrets"
 3. Click **Enable** on the "Secrets" feature
 
-![Enabling the Secrets feature](images/features-secrets.png)
+![Enabling the Secrets feature](images/features-secrets.webp)
 
 ### Accessing the Secrets Admin
 
@@ -168,7 +168,7 @@ Once enabled, the Secrets admin is available under the **Tools → Security** me
 2. Click **Security**
 3. Click **Secrets** to manage the secrets, **Secret Stores** to move secrets between stores, or **Migrate Secrets** to move the credentials kept in the settings of other features to secrets
 
-![Secrets menu location](images/admin-menu.png)
+![Secrets menu location](images/admin-menu.webp)
 
 ### Managing Secrets
 
@@ -176,7 +176,7 @@ Once enabled, the Secrets admin is available under the **Tools → Security** me
 
 The Secrets index page lists the stored secrets like the other admin lists. Each entry shows its name and description, with badges for its type, its store, its expiration, and when it was last updated. Use the search box to find secrets by name, description, type, or store, and the filters of the list header to show the secrets that have expired, expire within 30 days, or never expire, or the secrets of a type, such as **Text Secret**. Clicking the type badge of a secret also shows the secrets of that type. The list is paged, and the page size can be changed when the site settings allow it. Select several secrets to delete them at once with the **Actions** menu.
 
-![Secrets list](images/secrets-list.png)
+![Secrets list](images/secrets-list.webp)
 
 #### Creating a Secret
 
@@ -189,7 +189,7 @@ The Secrets index page lists the stored secrets like the other admin lists. Each
    - **Description**: Optional description for documentation purposes
 4. Click **Save**
 
-![Create secret form](images/secret-create.png)
+![Create secret form](images/secret-create.webp)
 
 #### Editing a Secret
 
@@ -198,7 +198,7 @@ The Secrets index page lists the stored secrets like the other admin lists. Each
    - Note: The secret value field is empty for security. Leave it empty to keep the existing value, or enter a new value to update it.
 3. Click **Save**
 
-![Edit secret form](images/secret-edit.png)
+![Edit secret form](images/secret-edit.webp)
 
 #### Deleting a Secret
 
