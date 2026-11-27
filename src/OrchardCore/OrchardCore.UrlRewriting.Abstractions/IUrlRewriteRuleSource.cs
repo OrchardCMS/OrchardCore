@@ -1,9 +1,12 @@
 using Microsoft.AspNetCore.Rewrite;
-using Microsoft.Extensions.Localization;
 using OrchardCore.UrlRewriting.Models;
 
 namespace OrchardCore.UrlRewriting;
 
+/// <summary>
+/// Configures the rewrite options from the rules of a source. Implement <see cref="IUrlRewriteRuleSourceDescription"/> too, to register the
+/// source with <c>services.AddRewriteRuleSource&lt;TSource&gt;(name)</c> and describe it to users.
+/// </summary>
 public interface IUrlRewriteRuleSource
 {
     /// <summary>
@@ -14,21 +17,6 @@ public interface IUrlRewriteRuleSource
     /// </para>
     /// </summary>
     string TechnicalName { get; }
-
-    /// <summary>
-    /// Gets a localized display name for the rule source.
-    /// </summary>
-    LocalizedString DisplayName { get; }
-
-    /// <summary>
-    /// Gets a localized description for the rule source.
-    /// <para>
-    /// This description provides more information about the source and its purpose.
-    /// It is intended for display in user interfaces where users can select or configure 
-    /// URL rewrite rules.
-    /// </para>
-    /// </summary>
-    LocalizedString Description { get; }
 
     /// <summary>
     /// Configures the rewrite options for a specific URL rewrite rule.

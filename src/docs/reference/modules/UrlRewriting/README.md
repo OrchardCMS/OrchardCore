@@ -13,7 +13,27 @@ Once enabled, you can manage your rewrite rules by navigating to **Tools → URL
 
 ## Creating Additional Rule Sources
 
-To add a new rule source, implement the `IUrlRewriteRuleSource` interface. This implementation will allow you to register a new rule source and provide a mechanism to configure these rules.
+To add a new rule source, implement the `IUrlRewriteRuleSource` interface, which configures the rewrite options from the rules, and the `IUrlRewriteRuleSourceDescription` interface, which declares the static `DisplayName` and `Description` of the source. They are `LocalizationSource` values, translated when they are shown, so the sources can be listed without creating them:
+
+```csharp
+public sealed class CustomRuleSource : IUrlRewriteRuleSource, IUrlRewriteRuleSourceDescription
+{
+    public const string SourceName = "Custom";
+
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<CustomRuleSource>("Custom");
+
+    public static LocalizationSource Description { get; } = LocalizationSource.Create<CustomRuleSource>("A custom rule");
+
+    public string TechnicalName => SourceName;
+
+    public void Configure(RewriteOptions options, RewriteRule rule)
+    {
+        // ...
+    }
+}
+```
+
+The rule source is a singleton, so it doesn't depend on the culture of the request.
 
 After implementing your rule source, register it in the service collection using the following method:
 
@@ -28,7 +48,7 @@ services.AddRewriteRuleSource<CustomRuleSource>(CustomRuleSource.SourceName)
     .AddScoped<IDisplayDriver<RewriteRule>, CustomRuleDisplayDriver>();
 ```
 
-In this example, `CustomRuleSource` represents your implementation of `IUrlRewriteRuleSource`, and `CustomRuleDisplayDriver` provides the user interface for configuring the rule within the admin interface.
+In this example, `CustomRuleSource` represents your implementation of `IUrlRewriteRuleSource` and `IUrlRewriteRuleSourceDescription`, and `CustomRuleDisplayDriver` provides the user interface for configuring the rule within the admin interface.
 
 ## Recipes
 
