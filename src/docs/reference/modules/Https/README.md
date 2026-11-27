@@ -36,3 +36,10 @@ HTTPS settings can be configured using the `Settings` recipe step:
 | `Disabled` | Always disables HSTS headers, regardless of environment. |
 | `Enabled` | Always enables HSTS headers, regardless of environment. |
 | `FromConfiguration` | Enables HSTS automatically in the `Production` environment and disables it in other environments. |
+
+## Video
+
+This video requires secure connections with HTTPS.
+
+<!-- video:security-https -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/GuGGh5yTkD4" title="HTTPS: Require Secure Connections" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

@@ -77,3 +77,10 @@ Finally, create a file called `appsettings.json` with this configuration in json
 ## Summary
 
 You just learned how to configure the password settings from an `appsettings.json` file.
+
+## Video
+
+This video configures the password and lockout options of ASP.NET Core Identity.
+
+<!-- video:users-password-and-lockout-options -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/nrdNWZz-wds" title="Password and Lockout Options: Configure ASP.NET Core Identity" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

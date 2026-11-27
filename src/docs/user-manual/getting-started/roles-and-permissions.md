@@ -98,3 +98,10 @@ You find your roles on your **Profile** page when you can assign roles, or by as
 - To create roles and choose their permissions, see [Roles](../users/roles.md).
 - To turn features on, see [Features](features.md).
 - For a worked example of a limited editor account, see [An editor with limited access](../use-cases/editor-with-limited-access.md).
+
+## Video
+
+This video controls who can do what with roles and permissions.
+
+<!-- video:roles-and-permissions -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/Jz57DRQlIts" title="Roles and Permissions: Control Who Can Do What" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

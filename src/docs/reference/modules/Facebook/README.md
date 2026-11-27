@@ -168,3 +168,10 @@ The following configuration values can be customized:
 ```
 
 For more information please refer to [Configuration](../Configuration/README.md).
+
+## Video
+
+This video lets visitors create their own accounts.
+
+<!-- video:users-registration -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/bEGdevqvzPk" title="User Registration: Let Visitors Create Accounts" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

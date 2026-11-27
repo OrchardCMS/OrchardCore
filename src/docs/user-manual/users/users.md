@@ -155,6 +155,23 @@ Both are optional for each person.
 
 When someone signs in, the site normally keeps their sign-in details in a cookie in their browser. People with many roles or claims can end up with a cookie that is too large for some servers. The **Users Authentication Ticket Store** feature (`OrchardCore.Users.Authentication.CacheTicketStore`) keeps those details on the server instead and leaves only a small cookie in the browser. It has no screen. Turn it on only when your IT team asks; on a site that runs on several servers it needs a shared (distributed) cache. Everyone may need to sign in again after it is turned on or off.
 
+## Videos
+
+This video creates, edits, disables and deletes user accounts.
+
+<!-- video:users-manage -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/zuhO5OFcxmA" title="Users: Create, Edit, Disable and Delete Accounts" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video lets each user choose a time zone and a culture.
+
+<!-- video:users-time-zone-and-culture -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/nvVDJxqcTw4" title="User Time Zone and Culture: Personal Preferences for Each User" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video keeps sign-in tickets on the server with the authentication ticket store.
+
+<!-- video:users-ticket-store -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/X1TKmwKmo3g" title="Authentication Ticket Store: Keep Sign-In Tickets on the Server" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
 ## Related pages
 
 - [Signing in](../getting-started/signing-in.md): what people see on the login page and their own profile.

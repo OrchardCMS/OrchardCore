@@ -1239,3 +1239,13 @@ This video reacts to registrations, sign-ins and role changes with a workflow.
 
 <!-- video:workflows-user-events -->
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/5OSh78XTbI4" title="Workflows: React to Registrations, Sign-Ins and Role Changes" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video uses expressions, variables, branches and loops in a workflow.
+
+<!-- video:workflows-expressions-and-loops -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/jcUHIQeiUR0" title="Workflows in Depth: Expressions, Variables, Branches and Loops" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+This video commits, forks and joins the database session in a workflow.
+
+<!-- video:workflows-session-activities -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/qGmjXRYENVI" title="Workflows and the Database Session: Commit, Fork and Join" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

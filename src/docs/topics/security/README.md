@@ -18,3 +18,10 @@ Orchard Core provides many security features to give an authenticated access to 
 - [Login](login.md)
 - [Registration](registration.md)
 - [Security Settings](security-settings.md)
+
+## Video
+
+This video walks through a security checklist for administrators.
+
+<!-- video:secure-your-site -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/PxKUWRXGKas" title="Secure Your Site: A Checklist for Administrators" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

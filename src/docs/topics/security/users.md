@@ -17,3 +17,10 @@ The Users module also provides optional features you can enable individually, am
 - **Custom User Settings**: extend the user profile with your own settings, defined like content types ([documentation](../../reference/modules/Users/CustomUserSettings/README.md)).
 
 See the [Users module documentation](../../reference/modules/Users/README.md) for the full feature list, the custom authentication paths, and the recipe steps to configure these features from code.
+
+## Video
+
+This video creates, edits, disables and deletes user accounts.
+
+<!-- video:users-manage -->
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/zuhO5OFcxmA" title="Users: Create, Edit, Disable and Delete Accounts" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
