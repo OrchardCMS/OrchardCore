@@ -1,12 +1,13 @@
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Localization;
 using OrchardCore.RateLimits.Models;
 
 namespace OrchardCore.RateLimits.Core;
 
 /// <summary>
-/// Defines a reusable source that can create and describe a concrete rate limiter configuration.
+/// Defines a reusable source that can create and describe a concrete rate limiter configuration. Implement
+/// <see cref="IRateLimiterSourceDescription"/> too, to register the source with
+/// <c>services.AddRateLimiterSource&lt;TSource&gt;(name)</c> and describe it to users.
 /// </summary>
 public interface IRateLimiterSource
 {
@@ -14,16 +15,6 @@ public interface IRateLimiterSource
     /// Gets the stable identifier used to persist this limiter source.
     /// </summary>
     string Name { get; }
-
-    /// <summary>
-    /// Gets the localized display name shown in the admin UI.
-    /// </summary>
-    LocalizedString DisplayName { get; }
-
-    /// <summary>
-    /// Gets the localized description shown in the admin UI.
-    /// </summary>
-    LocalizedString Description { get; }
 
     /// <summary>
     /// Creates a rate-limiter partition for the specified policy and request context.

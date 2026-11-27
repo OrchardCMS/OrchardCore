@@ -1,6 +1,8 @@
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
+using OrchardCore.RateLimits.Core;
 using OrchardCore.RateLimits.Core.Models;
 using OrchardCore.RateLimits.Models;
 
@@ -9,7 +11,7 @@ namespace OrchardCore.RateLimits.Services;
 /// <summary>
 /// Creates token-bucket rate-limit partitions for policy limiters.
 /// </summary>
-public sealed class TokenBucketRateLimiterSource : RateLimiterSourceBase<TokenBucketRateLimiterData>
+public sealed class TokenBucketRateLimiterSource : RateLimiterSourceBase<TokenBucketRateLimiterData>, IRateLimiterSourceDescription
 {
     /// <summary>
     /// The persisted source name for token-bucket limiters.
@@ -28,11 +30,11 @@ public sealed class TokenBucketRateLimiterSource : RateLimiterSourceBase<TokenBu
     /// <inheritdoc />
     public override string Name => SourceName;
 
-    /// <inheritdoc />
-    public override LocalizedString DisplayName => S["Token bucket"];
+    /// <inheritdoc cref="IRateLimiterSourceDescription.DisplayName" />
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<TokenBucketRateLimiterSource>("Token bucket");
 
-    /// <inheritdoc />
-    public override LocalizedString Description => S["Allows short bursts of traffic while steadily refilling capacity over time."];
+    /// <inheritdoc cref="IRateLimiterSourceDescription.Description" />
+    public static LocalizationSource Description { get; } = LocalizationSource.Create<TokenBucketRateLimiterSource>("Allows short bursts of traffic while steadily refilling capacity over time.");
 
     protected override RateLimitPartition<string> CreatePartition(string policyName, HttpContext context, TokenBucketRateLimiterData model)
     {

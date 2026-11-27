@@ -36,16 +36,16 @@ public sealed class Startup : StartupBase
         // Builds the editor of a policy.
         services.AddDisplayDriver<RateLimitPolicyEditViewModel, RateLimitPolicyEditDisplayDriver>();
 
-        services.AddKeyedSingleton<IRateLimiterSource, FixedWindowRateLimiterSource>(FixedWindowRateLimiterSource.SourceName)
+        services.AddRateLimiterSource<FixedWindowRateLimiterSource>(FixedWindowRateLimiterSource.SourceName)
             .AddDisplayDriver<RateLimitLimiter, FixedWindowRateLimiterDisplayDriver>();
 
-        services.AddKeyedSingleton<IRateLimiterSource, SlidingWindowRateLimiterSource>(SlidingWindowRateLimiterSource.SourceName)
+        services.AddRateLimiterSource<SlidingWindowRateLimiterSource>(SlidingWindowRateLimiterSource.SourceName)
             .AddDisplayDriver<RateLimitLimiter, SlidingWindowRateLimiterDisplayDriver>();
 
-        services.AddKeyedSingleton<IRateLimiterSource, ConcurrencyRateLimiterSource>(ConcurrencyRateLimiterSource.SourceName)
+        services.AddRateLimiterSource<ConcurrencyRateLimiterSource>(ConcurrencyRateLimiterSource.SourceName)
             .AddDisplayDriver<RateLimitLimiter, ConcurrencyRateLimiterDisplayDriver>();
 
-        services.AddKeyedSingleton<IRateLimiterSource, TokenBucketRateLimiterSource>(TokenBucketRateLimiterSource.SourceName)
+        services.AddRateLimiterSource<TokenBucketRateLimiterSource>(TokenBucketRateLimiterSource.SourceName)
             .AddDisplayDriver<RateLimitLimiter, TokenBucketRateLimiterDisplayDriver>();
 
         services.AddNavigationProvider<AdminMenu>();

@@ -1,6 +1,8 @@
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
+using OrchardCore.RateLimits.Core;
 using OrchardCore.RateLimits.Core.Models;
 using OrchardCore.RateLimits.Models;
 
@@ -9,7 +11,7 @@ namespace OrchardCore.RateLimits.Services;
 /// <summary>
 /// Creates sliding-window rate-limit partitions for policy limiters.
 /// </summary>
-public sealed class SlidingWindowRateLimiterSource : RateLimiterSourceBase<SlidingWindowRateLimiterData>
+public sealed class SlidingWindowRateLimiterSource : RateLimiterSourceBase<SlidingWindowRateLimiterData>, IRateLimiterSourceDescription
 {
     /// <summary>
     /// The persisted source name for sliding-window limiters.
@@ -28,11 +30,11 @@ public sealed class SlidingWindowRateLimiterSource : RateLimiterSourceBase<Slidi
     /// <inheritdoc />
     public override string Name => SourceName;
 
-    /// <inheritdoc />
-    public override LocalizedString DisplayName => S["Sliding window"];
+    /// <inheritdoc cref="IRateLimiterSourceDescription.DisplayName" />
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<SlidingWindowRateLimiterSource>("Sliding window");
 
-    /// <inheritdoc />
-    public override LocalizedString Description => S["Spreads a request limit across a rolling time period so traffic is smoothed instead of resetting all at once."];
+    /// <inheritdoc cref="IRateLimiterSourceDescription.Description" />
+    public static LocalizationSource Description { get; } = LocalizationSource.Create<SlidingWindowRateLimiterSource>("Spreads a request limit across a rolling time period so traffic is smoothed instead of resetting all at once.");
 
     protected override RateLimitPartition<string> CreatePartition(string policyName, HttpContext context, SlidingWindowRateLimiterData model)
     {

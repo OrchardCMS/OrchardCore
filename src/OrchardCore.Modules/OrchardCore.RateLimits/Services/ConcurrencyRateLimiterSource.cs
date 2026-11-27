@@ -1,6 +1,8 @@
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
+using OrchardCore.RateLimits.Core;
 using OrchardCore.RateLimits.Core.Models;
 using OrchardCore.RateLimits.Models;
 
@@ -9,7 +11,7 @@ namespace OrchardCore.RateLimits.Services;
 /// <summary>
 /// Creates concurrency rate-limit partitions for policy limiters.
 /// </summary>
-public sealed class ConcurrencyRateLimiterSource : RateLimiterSourceBase<ConcurrencyRateLimiterData>
+public sealed class ConcurrencyRateLimiterSource : RateLimiterSourceBase<ConcurrencyRateLimiterData>, IRateLimiterSourceDescription
 {
     /// <summary>
     /// The persisted source name for concurrency limiters.
@@ -28,11 +30,11 @@ public sealed class ConcurrencyRateLimiterSource : RateLimiterSourceBase<Concurr
     /// <inheritdoc />
     public override string Name => SourceName;
 
-    /// <inheritdoc />
-    public override LocalizedString DisplayName => S["Concurrency"];
+    /// <inheritdoc cref="IRateLimiterSourceDescription.DisplayName" />
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<ConcurrencyRateLimiterSource>("Concurrency");
 
-    /// <inheritdoc />
-    public override LocalizedString Description => S["Limits how many matching requests can run at the same time, which is useful for expensive operations."];
+    /// <inheritdoc cref="IRateLimiterSourceDescription.Description" />
+    public static LocalizationSource Description { get; } = LocalizationSource.Create<ConcurrencyRateLimiterSource>("Limits how many matching requests can run at the same time, which is useful for expensive operations.");
 
     protected override RateLimitPartition<string> CreatePartition(string policyName, HttpContext context, ConcurrencyRateLimiterData model)
     {

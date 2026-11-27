@@ -3,6 +3,7 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Entities;
+using OrchardCore.Localization;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.RateLimits.Core;
 using OrchardCore.RateLimits.Models;
@@ -15,12 +16,15 @@ public sealed class FixedWindowRateLimiterDisplayDriver : DisplayDriver<RateLimi
 {
     private readonly IRateLimiterSource _source;
     private readonly IStringLocalizer S;
+    private readonly IStringLocalizerFactory _stringLocalizerFactory;
 
     public FixedWindowRateLimiterDisplayDriver(
         [FromKeyedServices(FixedWindowRateLimiterSource.SourceName)] IRateLimiterSource source,
+        IStringLocalizerFactory stringLocalizerFactory,
         IStringLocalizer<FixedWindowRateLimiterDisplayDriver> stringLocalizer)
     {
         _source = source;
+        _stringLocalizerFactory = stringLocalizerFactory;
         S = stringLocalizer;
     }
 
@@ -82,7 +86,7 @@ public sealed class FixedWindowRateLimiterDisplayDriver : DisplayDriver<RateLimi
             Initialize<RateLimiterSourceViewModel>("FixedWindowRateLimiter_SummaryAdmin", model =>
             {
                 model.Name = _source.Name;
-                model.DisplayName = _source.DisplayName.Value;
+                model.DisplayName = _stringLocalizerFactory.Localize(FixedWindowRateLimiterSource.DisplayName).Value;
                 model.Description = _source.Describe(limiter);
             }).Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Content:5"));
     }
