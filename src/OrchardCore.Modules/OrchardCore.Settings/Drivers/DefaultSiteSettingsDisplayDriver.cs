@@ -4,6 +4,7 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Localization;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Settings.ViewModels;
 
@@ -11,6 +12,8 @@ namespace OrchardCore.Settings.Drivers;
 
 public sealed class DefaultSiteSettingsDisplayDriver : DisplayDriver<ISite>
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     public const string GroupId = "general";
 
     private readonly IHttpContextAccessor _httpContextAccessor;
@@ -22,8 +25,10 @@ public sealed class DefaultSiteSettingsDisplayDriver : DisplayDriver<ISite>
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
         IShellReleaseManager shellReleaseManager,
-        IStringLocalizer<DefaultSiteSettingsDisplayDriver> stringLocalizer)
+        IStringLocalizer<DefaultSiteSettingsDisplayDriver> stringLocalizer,
+        IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         _shellReleaseManager = shellReleaseManager;
@@ -48,7 +53,7 @@ public sealed class DefaultSiteSettingsDisplayDriver : DisplayDriver<ISite>
 
         var result = Combine(
             Initialize<SiteSettingsViewModel>("Settings_Edit__Site", model => PopulateProperties(site, model))
-                .Location(l => l.Zone("Content", "1").Tab(S["Site"], "10").Card(S["General"], "10"))
+                .Location(l => l.Zone("Content", "1").Tab(S["Site"], "10").Card(_localizerFactory.Localize(CommonLocalizationSources.General), "10"))
                 .OnGroup(GroupId),
             Initialize<SiteSettingsViewModel>("Settings_Edit__TimeZone", model => PopulateProperties(site, model))
                 .Location(l => l.Zone("Content", "2").Tab(S["Site"], "10").Card(S["Regional settings"], "20"))

@@ -1,11 +1,14 @@
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 using OrchardCore.Navigation;
 
 namespace OrchardCore.Seo;
 
 public sealed class AdminMenu : AdminNavigationProvider
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     private static readonly RouteValueDictionary s_routeValues = new()
     {
         { "area", "OrchardCore.Settings" },
@@ -14,16 +17,17 @@ public sealed class AdminMenu : AdminNavigationProvider
 
     internal readonly IStringLocalizer S;
 
-    public AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer)
+    public AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer, IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         S = stringLocalizer;
     }
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
         builder
-            .Add(S["Settings"], settings => settings
-                .Add(S["Search"], S["Search"].PrefixPosition(), search => search
+            .Add(_localizerFactory.Localize(CommonLocalizationSources.Settings), settings => settings
+                .Add(_localizerFactory.Localize(CommonLocalizationSources.Search), _localizerFactory.Localize(CommonLocalizationSources.Search).PrefixPosition(), search => search
                     .Add(S["Search Engine Optimization"], S["Search Engine Optimization"].PrefixPosition(), seo => seo
                         .AddClass("seo")
                         .Id("seo")

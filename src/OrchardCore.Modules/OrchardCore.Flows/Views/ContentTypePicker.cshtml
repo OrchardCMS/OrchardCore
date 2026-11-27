@@ -12,8 +12,8 @@
                        v-model="searchFilter"
                        type="search"
                        class="form-control"
-                       placeholder="@T["Search"]"
-                       aria-label="@T["Search"]">
+                       placeholder="@Localize(CommonLocalizationSources.Commands.Search)"
+                       aria-label="@Localize(CommonLocalizationSources.Commands.Search)">
             </div>
             <ul class="nav nav-pills flex-column content-type-picker-categories">
                 <li v-for="category in categories" :key="category" class="nav-item">

@@ -1,3 +1,4 @@
+using OrchardCore.Localization;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Authorization;
@@ -25,6 +26,8 @@ namespace OrchardCore.Placements.Controllers;
 [Admin("Placements/{action}/{shapeType?}", "Placements.{action}")]
 public sealed class AdminController : Controller
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     private const string _optionsSearch = "Options.Search";
 
     private readonly ILogger _logger;
@@ -49,8 +52,10 @@ public sealed class AdminController : Controller
         IOptions<PagerOptions> pagerOptions,
         IShapeFactory shapeFactory,
         IDisplayManager<EditShapePlacementViewModel> displayManager,
-        IUpdateModelAccessor updateModelAccessor)
+        IUpdateModelAccessor updateModelAccessor,
+        IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         _logger = logger;
         _authorizationService = authorizationService;
         _placementsManager = placementsManager;
@@ -113,7 +118,7 @@ public sealed class AdminController : Controller
 
         model.Options.ContentsBulkAction =
         [
-            new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
+            new SelectListItem(_localizerFactory.Localize(CommonLocalizationSources.Delete), nameof(ContentsBulkAction.Remove)),
         ];
 
         // The AdminList shape renders the placements with the configured layout (List, Grid, ...).

@@ -1,3 +1,4 @@
+using OrchardCore.Localization;
 using System.Collections.Concurrent;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
@@ -9,6 +10,8 @@ namespace OrchardCore.CustomSettings;
 
 public sealed class AdminMenu : AdminNavigationProvider
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     private static readonly ConcurrentDictionary<string, RouteValueDictionary> s_routeValues = [];
 
     private readonly CustomSettingsService _customSettingsService;
@@ -17,8 +20,10 @@ public sealed class AdminMenu : AdminNavigationProvider
 
     public AdminMenu(
         IStringLocalizer<AdminMenu> localizer,
-        CustomSettingsService customSettingsService)
+        CustomSettingsService customSettingsService,
+        IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         S = localizer;
         _customSettingsService = customSettingsService;
     }
@@ -41,7 +46,7 @@ public sealed class AdminMenu : AdminNavigationProvider
             var htmlName = type.Name.HtmlClassify();
 
             builder
-                .Add(S["Settings"], settings => settings
+                .Add(_localizerFactory.Localize(CommonLocalizationSources.Settings), settings => settings
                     .Add(new LocalizedString(type.DisplayName, type.DisplayName), type.DisplayName.PrefixPosition(), layers => layers
                         .Action("Index", "Admin", routeValues)
                         .AddClass(htmlName)

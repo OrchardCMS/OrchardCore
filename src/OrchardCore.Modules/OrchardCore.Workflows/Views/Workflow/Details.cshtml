@@ -43,7 +43,7 @@
                     </div>
                 </div>
                 <div class="ocat-wrapper">
-                    <span class="ocat-label">@T["Status"]</span>
+                    <span class="ocat-label">@Localize(CommonLocalizationSources.Status)</span>
                     <div class="ocat-end">
                         <span>@T.GetLocalizedStatus(Model.Workflow.Status)</span>
                     </div>
@@ -94,7 +94,7 @@
         {
             <a asp-action="Restart" asp-route-id="@Model.Workflow.Id" class="btn btn-warning" data-title="@T["Restart"]" data-message="@T["Are you sure you want to restart this workflow instance?"]" data-url-af="RemoveUrl UnsafeUrl">@T["Restart"]</a>
         }
-        <a class="btn btn-danger" data-message="@T["Are you sure you want to delete this workflow instance?"]" data-url-af="RemoveUrl UnsafeUrl" asp-action="Delete" asp-route-id="@Model.Workflow.Id">@T["Delete"]</a>
+        <a class="btn btn-danger" data-message="@T["Are you sure you want to delete this workflow instance?"]" data-url-af="RemoveUrl UnsafeUrl" asp-action="Delete" asp-route-id="@Model.Workflow.Id">@Localize(CommonLocalizationSources.Delete)</a>
     </div>
 </div>
 

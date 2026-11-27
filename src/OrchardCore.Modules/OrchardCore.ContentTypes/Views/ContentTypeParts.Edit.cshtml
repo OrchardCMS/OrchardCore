@@ -54,18 +54,18 @@
                             }
 
                             <div class="float-end">
-                                <a asp-route-action="EditTypePart" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@partDefinition.Name" class="btn btn-primary btn-sm" role="button">@T["Edit"]</a>
+                                <a asp-route-action="EditTypePart" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@partDefinition.Name" class="btn btn-primary btn-sm" role="button">@Localize(CommonLocalizationSources.Edit)</a>
                                 @if (settings.IsSystemDefined)
                                 {
                                     <div class="d-inline" data-bs-toggle="tooltip" data-bs-title="@T["System-defined parts are integral components of the system and cannot be removed."]">
                                         <button type="button" class="btn btn-danger btn-sm" disabled>
-                                            @T["Remove"]
+                                            @Localize(CommonLocalizationSources.Remove)
                                         </button>
                                     </div>
                                 }
                                 else
                                 {
-                                    <a asp-route-action="RemovePart" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@partDefinition.Name" class="btn btn-danger btn-sm" role="button" data-url-af="UnsafeUrl RemoveUrl">@T["Remove"]</a>
+                                    <a asp-route-action="RemovePart" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@partDefinition.Name" class="btn btn-danger btn-sm" role="button" data-url-af="UnsafeUrl RemoveUrl">@Localize(CommonLocalizationSources.Remove)</a>
                                 }
                             </div>
                         }

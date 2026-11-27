@@ -1,4 +1,5 @@
 using OrchardCore.Admin;
+using OrchardCore.Localization;
 using OrchardCore.Data;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Implementation;
@@ -93,7 +94,8 @@ public class AdminControllerTests
             Mock.Of<IDisplayManager<EditTenantViewModel>>(),
             Mock.Of<IUpdateModelAccessor>(),
             Mock.Of<IStringLocalizer<AdminController>>(),
-            Mock.Of<IHtmlLocalizer<AdminController>>())
+            Mock.Of<IHtmlLocalizer<AdminController>>(),
+            new NullStringLocalizerFactory())
         {
             ControllerContext = new ControllerContext
             {

@@ -37,5 +37,5 @@
 
 @if (!isCurrentUser && await AuthorizationService.AuthorizeAsync(User, UsersPermissions.DeleteUsers, Model.User))
 {
-    <a asp-action="Delete" asp-route-id="@Model.User.UserId" class="dropdown-item text-danger" data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+    <a asp-action="Delete" asp-route-id="@Model.User.UserId" class="dropdown-item text-danger" data-url-af="RemoveUrl UnsafeUrl">@Localize(CommonLocalizationSources.Delete)</a>
 }

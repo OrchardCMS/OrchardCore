@@ -9,6 +9,7 @@ using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.Localization;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
 using OrchardCore.Templates.Models;
@@ -20,6 +21,8 @@ namespace OrchardCore.Templates.Controllers;
 [Admin("Templates/{action}/{name?}", "Templates.{action}")]
 public sealed class TemplateController : Controller
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     private const string _optionsSearch = "Options.Search";
 
     private readonly IAuthorizationService _authorizationService;
@@ -46,8 +49,10 @@ public sealed class TemplateController : Controller
         IOptions<PagerOptions> pagerOptions,
         IStringLocalizer<TemplateController> stringLocalizer,
         IHtmlLocalizer<TemplateController> htmlLocalizer,
-        INotifier notifier)
+        INotifier notifier,
+        IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         _authorizationService = authorizationService;
         _templatesManager = templatesManager;
         _adminTemplatesManager = adminTemplatesManager;
@@ -118,7 +123,7 @@ public sealed class TemplateController : Controller
 
         model.Options.ContentsBulkAction =
         [
-            new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
+            new SelectListItem(_localizerFactory.Localize(CommonLocalizationSources.Delete), nameof(ContentsBulkAction.Remove)),
         ];
 
         var search = await _shapeFactory.CreateAsync("AdminListSearch", Arguments.From(new

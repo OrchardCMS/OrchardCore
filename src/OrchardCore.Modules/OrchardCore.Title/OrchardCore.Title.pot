@@ -21,21 +21,11 @@ msgctxt "OrchardCore.Title.Settings.TitlePartSettingsDisplayDriver"
 msgid "A pattern is required when using the selected behavior option."
 msgstr ""
 
-#: Settings/TitlePartSettingsDisplayDriver.cs
-msgctxt "OrchardCore.Title.Settings.TitlePartSettingsDisplayDriver"
-msgid "Settings"
-msgstr ""
-
 #. Format arguments: {0}: string.Join(' ', errors)
 #: Settings/TitlePartSettingsDisplayDriver.cs
 #, csharp-format
 msgctxt "OrchardCore.Title.Settings.TitlePartSettingsDisplayDriver"
 msgid "The pattern doesn't contain a valid Liquid expression. Details: {0}"
-msgstr ""
-
-#: Views/TitlePart.DisplayOption.cshtml
-msgctxt "OrchardCore.Title.Views.TitlePart.DisplayOption"
-msgid "Standard"
 msgstr ""
 
 #: Views/TitlePart.Edit.cshtml
@@ -46,11 +36,6 @@ msgstr ""
 #: Views/TitlePart.Edit.cshtml
 msgctxt "OrchardCore.Title.Views.TitlePart.Edit"
 msgid "Title"
-msgstr ""
-
-#: Views/TitlePart.Option.cshtml
-msgctxt "OrchardCore.Title.Views.TitlePart.Option"
-msgid "Standard"
 msgstr ""
 
 #: Views/TitlePartSettings.Edit.cshtml

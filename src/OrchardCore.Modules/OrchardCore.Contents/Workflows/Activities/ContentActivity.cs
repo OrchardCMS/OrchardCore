@@ -57,7 +57,7 @@ public abstract class ContentActivity : Activity
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        return Outcome(S["Done"]);
+        return Outcome(LocalizerFactory.Localize(CommonLocalizationSources.Workflow.Done));
     }
 
     public override Task OnInputReceivedAsync(WorkflowExecutionContext workflowContext, IDictionary<string, object> input)

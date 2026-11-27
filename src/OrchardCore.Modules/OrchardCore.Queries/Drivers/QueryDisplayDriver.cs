@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Localization;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Queries.ViewModels;
@@ -9,14 +10,18 @@ namespace OrchardCore.Queries.Drivers;
 
 public sealed class QueryDisplayDriver : DisplayDriver<Query>
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     private readonly IQueryManager _queryManager;
 
     internal readonly IStringLocalizer S;
 
     public QueryDisplayDriver(
         IQueryManager queryManager,
-        IStringLocalizer<QueryDisplayDriver> stringLocalizer)
+        IStringLocalizer<QueryDisplayDriver> stringLocalizer,
+        IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         _queryManager = queryManager;
         S = stringLocalizer;
     }
@@ -60,7 +65,7 @@ public sealed class QueryDisplayDriver : DisplayDriver<Query>
                 model.Source = query.Source;
                 model.Schema = query.Schema;
                 model.Query = query;
-            }).Location(l => l.Zone("Content", "1").Card(S["General"], "10")),
+            }).Location(l => l.Zone("Content", "1").Card(_localizerFactory.Localize(CommonLocalizationSources.General), "10")),
             Initialize<EditQueryViewModel>("QuerySchema_Edit", model =>
             {
                 model.Name = query.Name;

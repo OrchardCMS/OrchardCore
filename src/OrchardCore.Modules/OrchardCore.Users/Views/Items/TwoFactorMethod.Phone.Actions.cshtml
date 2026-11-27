@@ -13,6 +13,6 @@ else
 
     @if (Site.GetOrCreate<LoginSettings>().AllowChangingPhoneNumber)
     {
-        <a asp-action="Index" asp-controller="SmsAuthenticator" class="btn btn-sm btn-primary me-1">@T["Edit"]</a>
+        <a asp-action="Index" asp-controller="SmsAuthenticator" class="btn btn-sm btn-primary me-1">@Localize(CommonLocalizationSources.Edit)</a>
     }
 }

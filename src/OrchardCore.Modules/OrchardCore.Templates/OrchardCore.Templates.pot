@@ -36,11 +36,6 @@ msgctxt "OrchardCore.Templates.Controllers.TemplateController"
 msgid "A template with the same name already exists."
 msgstr ""
 
-#: Controllers/TemplateController.cs
-msgctxt "OrchardCore.Templates.Controllers.TemplateController"
-msgid "Delete"
-msgstr ""
-
 #. Format arguments: {0}: placementsLink; {1}: docsLink
 #: Controllers/TemplateController.cs
 #, csharp-format
@@ -88,11 +83,6 @@ msgstr ""
 #: Controllers/TemplateSourceController.cs
 msgctxt "OrchardCore.Templates.Controllers.TemplateSourceController"
 msgid "Clone"
-msgstr ""
-
-#: Controllers/TemplateSourceController.cs
-msgctxt "OrchardCore.Templates.Controllers.TemplateSourceController"
-msgid "Delete"
 msgstr ""
 
 #: Controllers/TemplateSourceController.cs
@@ -223,11 +213,6 @@ msgstr ""
 #: Deployment/AllTemplatesDeploymentStepDriver.cs
 msgctxt "OrchardCore.Templates.Deployment.AllTemplatesDeploymentStepDriver"
 msgid "Templates"
-msgstr ""
-
-#: Drivers/TemplateDisplayDriver.cs
-msgctxt "OrchardCore.Templates.Drivers.TemplateDisplayDriver"
-msgid "General"
 msgstr ""
 
 #: Drivers/TemplateDisplayDriver.cs
@@ -426,16 +411,6 @@ msgstr ""
 
 #: Views/SourceTemplateEntry.Buttons.SummaryAdmin.cshtml
 msgctxt "OrchardCore.Templates.Views.SourceTemplateEntry.Buttons.SummaryAdmin"
-msgid "Delete"
-msgstr ""
-
-#: Views/SourceTemplateEntry.Buttons.SummaryAdmin.cshtml
-msgctxt "OrchardCore.Templates.Views.SourceTemplateEntry.Buttons.SummaryAdmin"
-msgid "Edit"
-msgstr ""
-
-#: Views/SourceTemplateEntry.Buttons.SummaryAdmin.cshtml
-msgctxt "OrchardCore.Templates.Views.SourceTemplateEntry.Buttons.SummaryAdmin"
 msgid "Reset"
 msgstr ""
 
@@ -574,11 +549,6 @@ msgstr ""
 
 #: Views/Template/Create.cshtml
 msgctxt "OrchardCore.Templates.Views.Template.Create"
-msgid "Cancel"
-msgstr ""
-
-#: Views/Template/Create.cshtml
-msgctxt "OrchardCore.Templates.Views.Template.Create"
 msgid "Create Template"
 msgstr ""
 
@@ -589,27 +559,7 @@ msgstr ""
 
 #: Views/Template/Create.cshtml
 msgctxt "OrchardCore.Templates.Views.Template.Create"
-msgid "Save"
-msgstr ""
-
-#: Views/Template/Create.cshtml
-msgctxt "OrchardCore.Templates.Views.Template.Create"
-msgid "Save actions"
-msgstr ""
-
-#: Views/Template/Create.cshtml
-msgctxt "OrchardCore.Templates.Views.Template.Create"
-msgid "Save and continue"
-msgstr ""
-
-#: Views/Template/Create.cshtml
-msgctxt "OrchardCore.Templates.Views.Template.Create"
 msgid "Templates"
-msgstr ""
-
-#: Views/Template/Create.cshtml
-msgctxt "OrchardCore.Templates.Views.Template.Create"
-msgid "Toggle Dropdown"
 msgstr ""
 
 #: Views/Template/Create.cshtml
@@ -620,11 +570,6 @@ msgstr ""
 #: Views/Template/Edit.cshtml
 msgctxt "OrchardCore.Templates.Views.Template.Edit"
 msgid "Admin Templates"
-msgstr ""
-
-#: Views/Template/Edit.cshtml
-msgctxt "OrchardCore.Templates.Views.Template.Edit"
-msgid "Cancel"
 msgstr ""
 
 #: Views/Template/Edit.cshtml
@@ -644,27 +589,7 @@ msgstr ""
 
 #: Views/Template/Edit.cshtml
 msgctxt "OrchardCore.Templates.Views.Template.Edit"
-msgid "Save"
-msgstr ""
-
-#: Views/Template/Edit.cshtml
-msgctxt "OrchardCore.Templates.Views.Template.Edit"
-msgid "Save actions"
-msgstr ""
-
-#: Views/Template/Edit.cshtml
-msgctxt "OrchardCore.Templates.Views.Template.Edit"
-msgid "Save and continue"
-msgstr ""
-
-#: Views/Template/Edit.cshtml
-msgctxt "OrchardCore.Templates.Views.Template.Edit"
 msgid "Templates"
-msgstr ""
-
-#: Views/Template/Edit.cshtml
-msgctxt "OrchardCore.Templates.Views.Template.Edit"
-msgid "Toggle Dropdown"
 msgstr ""
 
 #: Views/Template/Edit.cshtml
@@ -681,17 +606,7 @@ msgstr ""
 
 #: Views/Template/Index.cshtml
 msgctxt "OrchardCore.Templates.Views.Template.Index"
-msgid "Actions"
-msgstr ""
-
-#: Views/Template/Index.cshtml
-msgctxt "OrchardCore.Templates.Views.Template.Index"
 msgid "Admin Templates"
-msgstr ""
-
-#: Views/Template/Index.cshtml
-msgctxt "OrchardCore.Templates.Views.Template.Index"
-msgid "Name"
 msgstr ""
 
 #: Views/Template/Index.cshtml
@@ -758,11 +673,6 @@ msgstr ""
 
 #: Views/TemplateAlternateEntry.Buttons.SummaryAdmin.cshtml
 msgctxt "OrchardCore.Templates.Views.TemplateAlternateEntry.Buttons.SummaryAdmin"
-msgid "Edit"
-msgstr ""
-
-#: Views/TemplateAlternateEntry.Buttons.SummaryAdmin.cshtml
-msgctxt "OrchardCore.Templates.Views.TemplateAlternateEntry.Buttons.SummaryAdmin"
 msgid "View"
 msgstr ""
 
@@ -825,16 +735,6 @@ msgctxt "OrchardCore.Templates.Views.TemplateCreateButton"
 msgid "Template sources"
 msgstr ""
 
-#: Views/TemplateEntry.Buttons.SummaryAdmin.cshtml
-msgctxt "OrchardCore.Templates.Views.TemplateEntry.Buttons.SummaryAdmin"
-msgid "Delete"
-msgstr ""
-
-#: Views/TemplateEntry.Buttons.SummaryAdmin.cshtml
-msgctxt "OrchardCore.Templates.Views.TemplateEntry.Buttons.SummaryAdmin"
-msgid "Edit"
-msgstr ""
-
 #. Format arguments: {0}: Model.Value.Name
 #: Views/TemplateEntry.Checkbox.SummaryAdmin.cshtml
 #, csharp-format
@@ -845,11 +745,6 @@ msgstr ""
 #: Views/TemplateGeneral.Edit.cshtml
 msgctxt "OrchardCore.Templates.Views.TemplateGeneral.Edit"
 msgid "Description"
-msgstr ""
-
-#: Views/TemplateGeneral.Edit.cshtml
-msgctxt "OrchardCore.Templates.Views.TemplateGeneral.Edit"
-msgid "Name"
 msgstr ""
 
 #: Views/TemplateGeneral.Edit.cshtml
@@ -894,11 +789,6 @@ msgstr ""
 #: Views/TemplateInspector/Index.cshtml
 msgctxt "OrchardCore.Templates.Views.TemplateInspector.Index"
 msgid "Code"
-msgstr ""
-
-#: Views/TemplateInspector/Index.cshtml
-msgctxt "OrchardCore.Templates.Views.TemplateInspector.Index"
-msgid "Content item"
 msgstr ""
 
 #: Views/TemplateInspector/Index.cshtml
@@ -948,16 +838,6 @@ msgstr ""
 #: Views/TemplateInspector/Index.cshtml
 msgctxt "OrchardCore.Templates.Views.TemplateInspector.Index"
 msgid "Pick a content item to see the shapes the front end renders for it, the template rendering each of them with the site theme and the templates, and their alternates: create a template with one of these names to customize the shape for this content item, its content type or display type."
-msgstr ""
-
-#: Views/TemplateInspector/Index.cshtml
-msgctxt "OrchardCore.Templates.Views.TemplateInspector.Index"
-msgid "Remove"
-msgstr ""
-
-#: Views/TemplateInspector/Index.cshtml
-msgctxt "OrchardCore.Templates.Views.TemplateInspector.Index"
-msgid "Search"
 msgstr ""
 
 #: Views/TemplateInspector/Index.cshtml
@@ -1030,11 +910,6 @@ msgstr ""
 
 #: Views/TemplateSource/Alternates.cshtml
 msgctxt "OrchardCore.Templates.Views.TemplateSource.Alternates"
-msgid "Actions"
-msgstr ""
-
-#: Views/TemplateSource/Alternates.cshtml
-msgctxt "OrchardCore.Templates.Views.TemplateSource.Alternates"
 msgid "Admin Templates"
 msgstr ""
 
@@ -1062,16 +937,6 @@ msgstr ""
 #, csharp-format
 msgctxt "OrchardCore.Templates.Views.TemplateSource.Alternates"
 msgid "Clone <code>{0}</code> to start from its content."
-msgstr ""
-
-#: Views/TemplateSource/Alternates.cshtml
-msgctxt "OrchardCore.Templates.Views.TemplateSource.Alternates"
-msgid "Name"
-msgstr ""
-
-#: Views/TemplateSource/Alternates.cshtml
-msgctxt "OrchardCore.Templates.Views.TemplateSource.Alternates"
-msgid "Status"
 msgstr ""
 
 #: Views/TemplateSource/Alternates.cshtml
@@ -1158,27 +1023,12 @@ msgstr ""
 
 #: Views/TemplateSource/Index.cshtml
 msgctxt "OrchardCore.Templates.Views.TemplateSource.Index"
-msgid "Actions"
-msgstr ""
-
-#: Views/TemplateSource/Index.cshtml
-msgctxt "OrchardCore.Templates.Views.TemplateSource.Index"
 msgid "Admin Templates"
 msgstr ""
 
 #: Views/TemplateSource/Index.cshtml
 msgctxt "OrchardCore.Templates.Views.TemplateSource.Index"
-msgid "Name"
-msgstr ""
-
-#: Views/TemplateSource/Index.cshtml
-msgctxt "OrchardCore.Templates.Views.TemplateSource.Index"
 msgid "Source"
-msgstr ""
-
-#: Views/TemplateSource/Index.cshtml
-msgctxt "OrchardCore.Templates.Views.TemplateSource.Index"
-msgid "Status"
 msgstr ""
 
 #: Views/TemplateSource/Index.cshtml
@@ -1236,9 +1086,4 @@ msgstr ""
 #: Views/TemplateSourceFilters.cshtml
 msgctxt "OrchardCore.Templates.Views.TemplateSourceFilters"
 msgid "Renders"
-msgstr ""
-
-#: Views/TemplateSourceFilters.cshtml
-msgctxt "OrchardCore.Templates.Views.TemplateSourceFilters"
-msgid "Status"
 msgstr ""

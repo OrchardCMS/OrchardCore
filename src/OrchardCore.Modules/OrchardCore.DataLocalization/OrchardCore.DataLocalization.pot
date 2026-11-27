@@ -16,11 +16,6 @@ msgctxt "OrchardCore.DataLocalization.AdminMenu"
 msgid "Localization"
 msgstr ""
 
-#: AdminMenu.cs
-msgctxt "OrchardCore.DataLocalization.AdminMenu"
-msgid "Settings"
-msgstr ""
-
 #: Controllers/AdminController.cs
 msgctxt "OrchardCore.DataLocalization.Controllers.AdminController"
 msgid "Translations saved successfully."
@@ -104,16 +99,6 @@ msgstr ""
 #: Views/Admin/Index.cshtml
 msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
 msgid "Original"
-msgstr ""
-
-#: Views/Admin/Index.cshtml
-msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
-msgid "Save"
-msgstr ""
-
-#: Views/Admin/Index.cshtml
-msgctxt "OrchardCore.DataLocalization.Views.Admin.Index"
-msgid "Search"
 msgstr ""
 
 #: Views/Admin/Index.cshtml

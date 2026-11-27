@@ -5,7 +5,7 @@ using OrchardCore.Localization;
 
 namespace OrchardCore.Cors.Services;
 
-public sealed class CorsJSLocalizer(IStringLocalizer<CorsJSLocalizer> S) : IJSLocalizer
+public sealed class CorsJSLocalizer(IStringLocalizer<CorsJSLocalizer> S, IStringLocalizerFactory localizerFactory) : IJSLocalizer
 {
     public IDictionary<string, string> GetLocalizations(string group)
     {
@@ -13,14 +13,14 @@ public sealed class CorsJSLocalizer(IStringLocalizer<CorsJSLocalizer> S) : IJSLo
         {
             return new Dictionary<string, string>
             {
-                { "Search", S["Search"].Value },
+                { "Search", localizerFactory.Localize(CommonLocalizationSources.Commands.Search).Value },
                 { "AddPolicy", S["Add a policy"].Value },
                 { "DefaultPolicy", S["Default Policy"].Value },
-                { "Edit", S["Edit"].Value },
-                { "Delete", S["Delete"].Value },
+                { "Edit", localizerFactory.Localize(CommonLocalizationSources.Edit).Value },
+                { "Delete", localizerFactory.Localize(CommonLocalizationSources.Delete).Value },
                 { "Add", S["Add"].Value },
-                { "Save", S["Save"].Value },
-                { "Cancel", S["Cancel"].Value },
+                { "Save", localizerFactory.Localize(CommonLocalizationSources.Save).Value },
+                { "Cancel", localizerFactory.Localize(CommonLocalizationSources.Cancel).Value },
                 { "NothingHere", S["Nothing here! There are no CORS policies for the moment."].Value },
                 { "NothingHereSearch", S["Nothing here! Your search returned no results."].Value },
                 { "Details", S["Details"].Value },

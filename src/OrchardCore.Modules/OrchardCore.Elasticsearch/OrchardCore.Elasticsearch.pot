@@ -23,11 +23,6 @@ msgctxt "OrchardCore.Elasticsearch.AdminMenu"
 msgid "Run Elasticsearch Query"
 msgstr ""
 
-#: AdminMenu.cs
-msgctxt "OrchardCore.Elasticsearch.AdminMenu"
-msgid "Search"
-msgstr ""
-
 #: Startup.cs
 msgctxt "OrchardCore.Elasticsearch.ContentsStartup"
 msgid "Content in Elasticsearch"

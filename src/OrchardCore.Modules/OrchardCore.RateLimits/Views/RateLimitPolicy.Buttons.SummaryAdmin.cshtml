@@ -3,4 +3,4 @@
 
 @model ShapeViewModel<RateLimitPolicy>
 
-<a asp-action="Edit" asp-controller="Admin" asp-route-policyId="@Model.Value.PolicyId" class="btn btn-primary btn-sm">@T["Edit"]</a>
+<a asp-action="Edit" asp-controller="Admin" asp-route-policyId="@Model.Value.PolicyId" class="btn btn-primary btn-sm">@Localize(CommonLocalizationSources.Edit)</a>

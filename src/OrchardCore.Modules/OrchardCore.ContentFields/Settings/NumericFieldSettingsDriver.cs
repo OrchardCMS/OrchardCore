@@ -4,15 +4,19 @@ using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Localization;
 
 namespace OrchardCore.ContentFields.Settings;
 
 public sealed class NumericFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<NumericField>
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     internal readonly IStringLocalizer S;
 
-    public NumericFieldSettingsDriver(IStringLocalizer<NumericFieldSettingsDriver> stringLocalizer)
+    public NumericFieldSettingsDriver(IStringLocalizer<NumericFieldSettingsDriver> stringLocalizer, IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         S = stringLocalizer;
     }
 
@@ -29,7 +33,7 @@ public sealed class NumericFieldSettingsDriver : ContentPartFieldDefinitionDispl
             model.Maximum = settings.Maximum;
             model.Placeholder = settings.Placeholder;
             model.DefaultValue = settings.DefaultValue;
-        }).Location(l => l.Zone("Content").Card(S["Settings"], "20"));
+        }).Location(l => l.Zone("Content").Card(_localizerFactory.Localize(CommonLocalizationSources.Settings), "20"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)

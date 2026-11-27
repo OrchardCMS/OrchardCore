@@ -18,11 +18,6 @@ msgstr ""
 
 #: Controllers/AdminController.cs
 msgctxt "OrchardCore.UrlRewriting.Controllers.AdminController"
-msgid "Delete"
-msgstr ""
-
-#: Controllers/AdminController.cs
-msgctxt "OrchardCore.UrlRewriting.Controllers.AdminController"
 msgid "Invalid rule source."
 msgstr ""
 
@@ -49,11 +44,6 @@ msgstr ""
 #: Controllers/AdminController.cs
 msgctxt "OrchardCore.UrlRewriting.Controllers.AdminController"
 msgid "Unable to find a rule-source that can handle the source '{Source}'."
-msgstr ""
-
-#: Drivers/RewriteRulesDisplayDriver.cs
-msgctxt "OrchardCore.UrlRewriting.Drivers.RewriteRulesDisplayDriver"
-msgid "General"
 msgstr ""
 
 #: Drivers/RewriteRulesDisplayDriver.cs
@@ -156,11 +146,6 @@ msgctxt "OrchardCore.UrlRewriting.Recipes.UrlRewritingStep"
 msgid "Unable to find a rule-source that can handle the source '{Source}'."
 msgstr ""
 
-#: Views/Admin/Create.cshtml
-msgctxt "OrchardCore.UrlRewriting.Views.Admin.Create"
-msgid "Cancel"
-msgstr ""
-
 #. Format arguments: {0}: Model.DisplayName
 #: Views/Admin/Create.cshtml
 #, csharp-format
@@ -170,17 +155,7 @@ msgstr ""
 
 #: Views/Admin/Create.cshtml
 msgctxt "OrchardCore.UrlRewriting.Views.Admin.Create"
-msgid "Save"
-msgstr ""
-
-#: Views/Admin/Create.cshtml
-msgctxt "OrchardCore.UrlRewriting.Views.Admin.Create"
 msgid "URL Rewriting Rules"
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.UrlRewriting.Views.Admin.Edit"
-msgid "Cancel"
 msgstr ""
 
 #. Format arguments: {0}: Model.DisplayName
@@ -188,11 +163,6 @@ msgstr ""
 #, csharp-format
 msgctxt "OrchardCore.UrlRewriting.Views.Admin.Edit"
 msgid "Edit '{0}' rule"
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.UrlRewriting.Views.Admin.Edit"
-msgid "Save"
 msgstr ""
 
 #: Views/Admin/Edit.cshtml
@@ -207,11 +177,6 @@ msgstr ""
 
 #: Views/Admin/Index.cshtml
 msgctxt "OrchardCore.UrlRewriting.Views.Admin.Index"
-msgid "Actions"
-msgstr ""
-
-#: Views/Admin/Index.cshtml
-msgctxt "OrchardCore.UrlRewriting.Views.Admin.Index"
 msgid "Add Rule"
 msgstr ""
 
@@ -222,22 +187,7 @@ msgstr ""
 
 #: Views/Admin/Index.cshtml
 msgctxt "OrchardCore.UrlRewriting.Views.Admin.Index"
-msgid "Cancel"
-msgstr ""
-
-#: Views/Admin/Index.cshtml
-msgctxt "OrchardCore.UrlRewriting.Views.Admin.Index"
 msgid "Last modified"
-msgstr ""
-
-#: Views/Admin/Index.cshtml
-msgctxt "OrchardCore.UrlRewriting.Views.Admin.Index"
-msgid "Name"
-msgstr ""
-
-#: Views/Admin/Index.cshtml
-msgctxt "OrchardCore.UrlRewriting.Views.Admin.Index"
-msgid "Search"
 msgstr ""
 
 #: Views/Admin/Index.cshtml
@@ -270,16 +220,6 @@ msgctxt "OrchardCore.UrlRewriting.Views.Admin.Index"
 msgid "selected"
 msgstr ""
 
-#: Views/RewriteRule.Buttons.SummaryAdmin.cshtml
-msgctxt "OrchardCore.UrlRewriting.Views.RewriteRule.Buttons.SummaryAdmin"
-msgid "Delete"
-msgstr ""
-
-#: Views/RewriteRule.Buttons.SummaryAdmin.cshtml
-msgctxt "OrchardCore.UrlRewriting.Views.RewriteRule.Buttons.SummaryAdmin"
-msgid "Edit"
-msgstr ""
-
 #. Format arguments: {0}: Model.Value.Name
 #: Views/RewriteRule.Checkbox.SummaryAdmin.cshtml
 #, csharp-format
@@ -295,11 +235,6 @@ msgstr ""
 #: Views/RewriteRule.DefaultTags.SummaryAdmin.cshtml
 msgctxt "OrchardCore.UrlRewriting.Views.RewriteRule.DefaultTags.SummaryAdmin"
 msgid "Source"
-msgstr ""
-
-#: Views/RewriteRule.Edit.cshtml
-msgctxt "OrchardCore.UrlRewriting.Views.RewriteRule.Edit"
-msgid "General"
 msgstr ""
 
 #: Views/RewriteRule.Fields.Edit.cshtml

@@ -57,7 +57,7 @@
             <div class="action-bar-bottom">
                 @if (isSingleSecret)
                 {
-                    <a asp-controller="Admin" asp-action="Index" class="btn btn-secondary">@T["Cancel"]</a>
+                    <a asp-controller="Admin" asp-action="Index" class="btn btn-secondary">@Localize(CommonLocalizationSources.Cancel)</a>
                 }
                 <button type="submit" class="btn btn-primary">@T["Move"]</button>
             </div>

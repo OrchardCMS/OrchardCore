@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Localization;
 using OrchardCore.Tenants.Workflows.Activities;
 using OrchardCore.Tenants.Workflows.ViewModels;
 using OrchardCore.Workflows.Models;
@@ -9,10 +10,13 @@ namespace OrchardCore.Tenants.Workflows.Drivers;
 
 public sealed class CreateTenantTaskDisplayDriver : TenantTaskDisplayDriver<CreateTenantTask, CreateTenantTaskViewModel>
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     internal readonly IStringLocalizer S;
 
-    public CreateTenantTaskDisplayDriver(IStringLocalizer<CreateTenantTaskDisplayDriver> stringLocalizer)
+    public CreateTenantTaskDisplayDriver(IStringLocalizer<CreateTenantTaskDisplayDriver> stringLocalizer, IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         S = stringLocalizer;
     }
 
@@ -20,7 +24,7 @@ public sealed class CreateTenantTaskDisplayDriver : TenantTaskDisplayDriver<Crea
     {
         return Combine(
             Initialize<CreateTenantTaskViewModel>("CreateTenantTask_Fields_Edit", model => EditActivityAsync(activity, model))
-                .Location(l => l.Zone("Content", "1").Card(S["General"], "10")),
+                .Location(l => l.Zone("Content", "1").Card(_localizerFactory.Localize(CommonLocalizationSources.General), "10")),
             Initialize<CreateTenantTaskViewModel>("CreateTenantTaskUrl_Fields_Edit", model => EditActivityAsync(activity, model))
                 .Location(l => l.Zone("Content", "1").Card(S["URL"], "20")),
             Initialize<CreateTenantTaskViewModel>("CreateTenantTaskSetup_Fields_Edit", model => EditActivityAsync(activity, model))

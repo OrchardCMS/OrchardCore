@@ -13,12 +13,10 @@ namespace OrchardCore.DataPipelines.Workflows;
 public sealed class DataPipelineRunCompletedEvent : EventActivity, IActivityDescription
 {
     private readonly IStringLocalizerFactory _localizerFactory;
-    private readonly IStringLocalizer S;
 
-    public DataPipelineRunCompletedEvent(IStringLocalizerFactory localizerFactory, IStringLocalizer<DataPipelineRunCompletedEvent> localizer)
+    public DataPipelineRunCompletedEvent(IStringLocalizerFactory localizerFactory)
     {
         _localizerFactory = localizerFactory;
-        S = localizer;
     }
 
     public override string Name => nameof(DataPipelineRunCompletedEvent);
@@ -68,7 +66,7 @@ public sealed class DataPipelineRunCompletedEvent : EventActivity, IActivityDesc
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        return Outcome(S["Done"]);
+        return Outcome(_localizerFactory.Localize(CommonLocalizationSources.Workflow.Done));
     }
 
     public override ActivityExecutionResult Resume(WorkflowExecutionContext workflowContext, ActivityContext activityContext)

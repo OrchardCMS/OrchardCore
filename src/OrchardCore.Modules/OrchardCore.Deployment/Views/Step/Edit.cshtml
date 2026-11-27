@@ -54,7 +54,7 @@
            role="button"
            asp-route-action="Display"
            asp-route-controller="DeploymentPlan"
-           asp-route-id="@Model.DeploymentPlanId">@T["Cancel"]</a>
+           asp-route-id="@Model.DeploymentPlanId">@Localize(CommonLocalizationSources.Cancel)</a>
 
         <a class="btn btn-danger btn-sm delete action-bar-secondary"
            role="button"
@@ -62,8 +62,8 @@
            asp-controller="Step"
            asp-route-id="@Model.DeploymentPlanId"
            asp-route-stepId="@Model.DeploymentStepId"
-           data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+           data-url-af="RemoveUrl UnsafeUrl">@Localize(CommonLocalizationSources.Delete)</a>
 
-        <button class="btn btn-primary btn-sm save" type="submit">@T["Save"]</button>
+        <button class="btn btn-primary btn-sm save" type="submit">@Localize(CommonLocalizationSources.Save)</button>
     </div>
 </form>

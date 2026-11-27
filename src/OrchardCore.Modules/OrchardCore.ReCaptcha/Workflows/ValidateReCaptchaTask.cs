@@ -39,7 +39,7 @@ public class ValidateReCaptchaTask : TaskActivity<ValidateReCaptchaTask>, IActiv
     public override bool HasEditor => false;
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-        => Outcome(S["Done"], S["Valid"], S["Invalid"]);
+        => Outcome(_localizerFactory.Localize(CommonLocalizationSources.Workflow.Done), S["Valid"], S["Invalid"]);
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {

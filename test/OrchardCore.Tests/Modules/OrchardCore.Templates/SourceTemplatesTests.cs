@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 using Microsoft.Extensions.Options;
 using Moq;
 using OrchardCore.Admin;
@@ -667,7 +668,8 @@ public sealed class SourceTemplatesTests : IDisposable
             Options.Create(new PagerOptions()),
             Mock.Of<INotifier>(),
             localizer.Object,
-            htmlLocalizer.Object)
+            htmlLocalizer.Object,
+            new NullStringLocalizerFactory())
         {
             ControllerContext = new ControllerContext
             {

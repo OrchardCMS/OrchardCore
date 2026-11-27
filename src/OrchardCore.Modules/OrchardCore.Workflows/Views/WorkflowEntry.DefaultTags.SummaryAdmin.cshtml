@@ -16,7 +16,7 @@
     };
 }
 
-<span class="badge ta-badge fw-normal text-bg-@statusCss" data-bs-toggle="tooltip" title="@T["Status"]" data-cy="instance-status">@T.GetLocalizedStatus(workflow.Status)</span>
+<span class="badge ta-badge fw-normal text-bg-@statusCss" data-bs-toggle="tooltip" title="@Localize(CommonLocalizationSources.Status)" data-cy="instance-status">@T.GetLocalizedStatus(workflow.Status)</span>
 
 @if (Model.Value.Version is not null)
 {

@@ -9,12 +9,15 @@ using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Https.Settings;
 using OrchardCore.Https.ViewModels;
+using OrchardCore.Localization;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Https.Drivers;
 
 public sealed class HttpsSettingsDisplayDriver : SiteDisplayDriver<HttpsSettings>
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     public const string GroupId = "Https";
 
     private readonly IShellReleaseManager _shellReleaseManager;
@@ -32,8 +35,10 @@ public sealed class HttpsSettingsDisplayDriver : SiteDisplayDriver<HttpsSettings
         IAuthorizationService authorizationService,
         INotifier notifier,
         IHtmlLocalizer<HttpsSettingsDisplayDriver> htmlLocalizer,
-        IStringLocalizer<HttpsSettingsDisplayDriver> stringLocalizer)
+        IStringLocalizer<HttpsSettingsDisplayDriver> stringLocalizer,
+        IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         _shellReleaseManager = shellReleaseManager;
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
@@ -71,7 +76,7 @@ public sealed class HttpsSettingsDisplayDriver : SiteDisplayDriver<HttpsSettings
                             (isHttpsRequest && !settings.RequireHttps
                                 ? _httpContextAccessor.HttpContext.Request.Host.Port
                                 : null);
-        }).Location(l => l.Zone("Content", "2").Card(S["General"], "10"))
+        }).Location(l => l.Zone("Content", "2").Card(_localizerFactory.Localize(CommonLocalizationSources.General), "10"))
         .OnGroup(GroupId);
     }
 

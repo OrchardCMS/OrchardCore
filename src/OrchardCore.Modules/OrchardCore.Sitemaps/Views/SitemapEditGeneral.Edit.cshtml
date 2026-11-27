@@ -1,7 +1,7 @@
 @model EditSitemapViewModel
 
 <div class="ocat-wrapper" asp-validation-class-for="Name">
-    <label asp-for="Name" class="ocat-label ocat-label-required">@T["Name"]</label>
+    <label asp-for="Name" class="ocat-label ocat-label-required">@Localize(CommonLocalizationSources.Name)</label>
     <div class="ocat-end">
         <input asp-for="Name" class="form-control" autofocus />
         <span asp-validation-for="Name" class="text-danger"></span>
@@ -27,7 +27,7 @@
     <div class="ocat-end-offset">
         <div class="form-check">
             <input asp-for="Enabled" class="form-check-input" />
-            <label asp-for="Enabled" class="form-check-label">@T["Enabled"]</label>
+            <label asp-for="Enabled" class="form-check-label">@Localize(CommonLocalizationSources.BooleanFields.Enabled)</label>
             <span class="hint">@T["Uncheck to disable routing to this sitemap."]</span>
         </div>
     </div>

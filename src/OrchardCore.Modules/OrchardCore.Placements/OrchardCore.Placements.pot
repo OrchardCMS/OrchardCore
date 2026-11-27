@@ -35,11 +35,6 @@ msgctxt "OrchardCore.Placements.Controllers.AdminController"
 msgid "An error occurred while saving the placement."
 msgstr ""
 
-#: Controllers/AdminController.cs
-msgctxt "OrchardCore.Placements.Controllers.AdminController"
-msgid "Delete"
-msgstr ""
-
 #. Format arguments: {0}: viewModel.ShapeType
 #: Controllers/AdminController.cs
 #, csharp-format
@@ -172,17 +167,7 @@ msgstr ""
 
 #: Views/Admin/Edit.cshtml
 msgctxt "OrchardCore.Placements.Views.Admin.Edit"
-msgid "Cancel"
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.Placements.Views.Admin.Edit"
 msgid "Create Placement"
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.Placements.Views.Admin.Edit"
-msgid "Delete"
 msgstr ""
 
 #: Views/Admin/Edit.cshtml
@@ -197,26 +182,6 @@ msgstr ""
 
 #: Views/Admin/Edit.cshtml
 msgctxt "OrchardCore.Placements.Views.Admin.Edit"
-msgid "Save"
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.Placements.Views.Admin.Edit"
-msgid "Save actions"
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.Placements.Views.Admin.Edit"
-msgid "Save and continue"
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.Placements.Views.Admin.Edit"
-msgid "Toggle Dropdown"
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.Placements.Views.Admin.Edit"
 msgid "and continue"
 msgstr ""
 
@@ -227,22 +192,12 @@ msgstr ""
 
 #: Views/Admin/Index.cshtml
 msgctxt "OrchardCore.Placements.Views.Admin.Index"
-msgid "Actions"
-msgstr ""
-
-#: Views/Admin/Index.cshtml
-msgctxt "OrchardCore.Placements.Views.Admin.Index"
 msgid "Add Placement"
 msgstr ""
 
 #: Views/Admin/Index.cshtml
 msgctxt "OrchardCore.Placements.Views.Admin.Index"
 msgid "Placements"
-msgstr ""
-
-#: Views/Admin/Index.cshtml
-msgctxt "OrchardCore.Placements.Views.Admin.Index"
-msgid "Search"
 msgstr ""
 
 #: Views/Admin/Index.cshtml
@@ -283,16 +238,6 @@ msgstr ""
 #: Views/PlacementSettings.cshtml
 msgctxt "OrchardCore.Placements.Views.PlacementSettings"
 msgid "Edit placements"
-msgstr ""
-
-#: Views/ShapePlacement.Buttons.SummaryAdmin.cshtml
-msgctxt "OrchardCore.Placements.Views.ShapePlacement.Buttons.SummaryAdmin"
-msgid "Delete"
-msgstr ""
-
-#: Views/ShapePlacement.Buttons.SummaryAdmin.cshtml
-msgctxt "OrchardCore.Placements.Views.ShapePlacement.Buttons.SummaryAdmin"
-msgid "Edit"
 msgstr ""
 
 #. Format arguments: {0}: Model.Value.ShapeType

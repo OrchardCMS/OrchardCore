@@ -11,11 +11,6 @@ msgctxt "OrchardCore.Admin.AdminMenu"
 msgid "Admin"
 msgstr ""
 
-#: AdminMenu.cs
-msgctxt "OrchardCore.Admin.AdminMenu"
-msgid "Settings"
-msgstr ""
-
 #: Startup.cs
 msgctxt "OrchardCore.Admin.DeploymentStartup"
 msgid "Admin settings"
@@ -76,16 +71,6 @@ msgctxt "OrchardCore.Admin.Views.AdminList-Grid"
 msgid "No results found."
 msgstr ""
 
-#: Views/AdminListActions.cshtml
-msgctxt "OrchardCore.Admin.Views.AdminListActions"
-msgid "Actions"
-msgstr ""
-
-#: Views/AdminListActions-Menu.cshtml
-msgctxt "OrchardCore.Admin.Views.AdminListActions-Menu"
-msgid "Actions"
-msgstr ""
-
 #: Views/AdminListLayoutSelector.cshtml
 msgctxt "OrchardCore.Admin.Views.AdminListLayoutSelector"
 msgid "Grid"
@@ -101,11 +86,6 @@ msgctxt "OrchardCore.Admin.Views.AdminListLayoutSelector"
 msgid "List"
 msgstr ""
 
-#: Views/AdminListSearch.cshtml
-msgctxt "OrchardCore.Admin.Views.AdminListSearch"
-msgid "Search"
-msgstr ""
-
 #. Format arguments: {0}: count
 #: Views/AdminListToolbar.cshtml
 #, csharp-format
@@ -114,11 +94,6 @@ msgid " / {0} item in total"
 msgid_plural " / {0} items in total"
 msgstr[0] ""
 msgstr[1] ""
-
-#: Views/AdminListToolbar.cshtml
-msgctxt "OrchardCore.Admin.Views.AdminListToolbar"
-msgid "Actions"
-msgstr ""
 
 #. Format arguments: {0}: item.Text.ToLower()
 #: Views/AdminListToolbar.cshtml

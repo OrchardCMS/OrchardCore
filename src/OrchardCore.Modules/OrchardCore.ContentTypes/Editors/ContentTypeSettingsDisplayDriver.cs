@@ -7,11 +7,14 @@ using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentTypes.ViewModels;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Localization;
 
 namespace OrchardCore.ContentTypes.Editors;
 
 public sealed class ContentTypeSettingsDisplayDriver : ContentTypeDefinitionDisplayDriver
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     private static readonly ContentTypeDefinitionDriverOptions s_defaultOptions = new();
     private readonly IStereotypeService _stereotypeService;
     private readonly IContentDefinitionManager _contentDefinitionManager;
@@ -23,8 +26,10 @@ public sealed class ContentTypeSettingsDisplayDriver : ContentTypeDefinitionDisp
         IStringLocalizer<ContentTypeSettingsDisplayDriver> stringLocalizer,
         IOptions<ContentTypeDefinitionOptions> options,
         IStereotypeService stereotypeService,
-        IContentDefinitionManager contentDefinitionManager)
+        IContentDefinitionManager contentDefinitionManager,
+        IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         S = stringLocalizer;
         _options = options.Value;
         _stereotypeService = stereotypeService;
@@ -39,7 +44,7 @@ public sealed class ContentTypeSettingsDisplayDriver : ContentTypeDefinitionDisp
         var results = new List<IDisplayResult>
         {
             Initialize<ContentTypeSettingsViewModel>("ContentTypeSettings_Edit", model => PopulateViewModel(model, settings, options))
-                .Location(l => l.Zone("Content", "5").Card(S["General"], "10")),
+                .Location(l => l.Zone("Content", "5").Card(_localizerFactory.Localize(CommonLocalizationSources.General), "10")),
         };
 
         // The behavior card is only rendered when at least one of its options can be changed.

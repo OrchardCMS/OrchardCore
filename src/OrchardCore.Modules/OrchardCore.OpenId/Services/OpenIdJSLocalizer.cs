@@ -5,7 +5,7 @@ using OrchardCore.Localization;
 
 namespace OrchardCore.OpenId.Services;
 
-public sealed class OpenIdJSLocalizer(IStringLocalizer<OpenIdJSLocalizer> S) : IJSLocalizer
+public sealed class OpenIdJSLocalizer(IStringLocalizer<OpenIdJSLocalizer> S, IStringLocalizerFactory localizerFactory) : IJSLocalizer
 {
     public IDictionary<string, string> GetLocalizations(string group)
     {
@@ -20,7 +20,7 @@ public sealed class OpenIdJSLocalizer(IStringLocalizer<OpenIdJSLocalizer> S) : I
                 { "AddAParameter", S["Add a parameter"].Value },
                 { "EditData", S["Edit Data"].Value },
                 { "Ok", S["OK"].Value },
-                { "Cancel", S["Cancel"].Value },
+                { "Cancel", localizerFactory.Localize(CommonLocalizationSources.Cancel).Value },
                 { "RemoveParameterFromList", S["Remove parameter from list"].Value },
                 { "Parameters", S["Parameters"].Value },
                 {

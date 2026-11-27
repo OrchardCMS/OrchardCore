@@ -157,11 +157,6 @@ msgctxt "OrchardCore.DataPipelines.Drivers.CreateFileStepDisplayDriver"
 msgid "Choose the format of the file."
 msgstr ""
 
-#: Drivers/DataPipelineCreateDisplayDriver.cs
-msgctxt "OrchardCore.DataPipelines.Drivers.DataPipelineCreateDisplayDriver"
-msgid "General"
-msgstr ""
-
 #: Drivers/SourceAndFileStepDisplayDrivers.cs
 msgctxt "OrchardCore.DataPipelines.Drivers.DataSourceStepDisplayDriver"
 msgid "A step that reads only the new rows reads all of them: set the maximum number of rows to 0."
@@ -745,11 +740,6 @@ msgstr ""
 
 #: Views/Admin/Create.cshtml
 msgctxt "OrchardCore.DataPipelines.Views.Admin.Create"
-msgid "Cancel"
-msgstr ""
-
-#: Views/Admin/Create.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.Admin.Create"
 msgid "Create"
 msgstr ""
 
@@ -766,11 +756,6 @@ msgstr ""
 #: Views/Admin/Index.cshtml
 msgctxt "OrchardCore.DataPipelines.Views.Admin.Index"
 msgid "<strong>Nothing here!</strong> There are no data pipelines for the moment."
-msgstr ""
-
-#: Views/Admin/Index.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.Admin.Index"
-msgid "Actions"
 msgstr ""
 
 #: Views/Admin/Index.cshtml
@@ -795,27 +780,7 @@ msgstr ""
 
 #: Views/Admin/Index.cshtml
 msgctxt "OrchardCore.DataPipelines.Views.Admin.Index"
-msgid "Name"
-msgstr ""
-
-#: Views/Admin/Index.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.Admin.Index"
-msgid "Search"
-msgstr ""
-
-#: Views/Admin/Index.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.Admin.Index"
 msgid "Search the pipelines"
-msgstr ""
-
-#: Views/Admin/Index.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.Admin.Index"
-msgid "Status"
-msgstr ""
-
-#: Views/Admin/Run.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.Admin.Run"
-msgid "Cancel"
 msgstr ""
 
 #: Views/Admin/Run.cshtml
@@ -892,11 +857,6 @@ msgstr ""
 
 #: Views/Admin/Run.cshtml
 msgctxt "OrchardCore.DataPipelines.Views.Admin.Run"
-msgid "Status"
-msgstr ""
-
-#: Views/Admin/Run.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.Admin.Run"
 msgid "Step"
 msgstr ""
 
@@ -925,11 +885,6 @@ msgstr ""
 #: Views/Admin/Runs.cshtml
 msgctxt "OrchardCore.DataPipelines.Views.Admin.Runs"
 msgid "<strong>Nothing here!</strong> No run matches your search."
-msgstr ""
-
-#: Views/Admin/Runs.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.Admin.Runs"
-msgid "Actions"
 msgstr ""
 
 #: Views/Admin/Runs.cshtml
@@ -971,11 +926,6 @@ msgstr ""
 
 #: Views/Admin/Runs.cshtml
 msgctxt "OrchardCore.DataPipelines.Views.Admin.Runs"
-msgid "Search"
-msgstr ""
-
-#: Views/Admin/Runs.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.Admin.Runs"
 msgid "Search by pipeline"
 msgstr ""
 
@@ -987,11 +937,6 @@ msgstr ""
 #: Views/Admin/Runs.cshtml
 msgctxt "OrchardCore.DataPipelines.Views.Admin.Runs"
 msgid "Started by"
-msgstr ""
-
-#: Views/Admin/Runs.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.Admin.Runs"
-msgid "Status"
 msgstr ""
 
 #. Format arguments: {0}: Model.Pipeline.Name
@@ -1159,11 +1104,6 @@ msgstr ""
 
 #: Views/ConvertTimeZone.Fields.Edit.cshtml
 msgctxt "OrchardCore.DataPipelines.Views.ConvertTimeZone.Fields.Edit"
-msgid "Name"
-msgstr ""
-
-#: Views/ConvertTimeZone.Fields.Edit.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.ConvertTimeZone.Fields.Edit"
 msgid "Orchard Core stores dates in UTC: convert them from UTC to show local dates and times, and convert local dates and times, such as the ones of a file, to UTC to save them."
 msgstr ""
 
@@ -1251,11 +1191,6 @@ msgstr ""
 
 #: Views/DataPipelineCreateGeneral.Edit.cshtml
 msgctxt "OrchardCore.DataPipelines.Views.DataPipelineCreateGeneral.Edit"
-msgid "Name"
-msgstr ""
-
-#: Views/DataPipelineCreateGeneral.Edit.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.DataPipelineCreateGeneral.Edit"
 msgid "You design the pipeline next: add a source to read data from, then the steps that transform and deliver it."
 msgstr ""
 
@@ -1271,16 +1206,6 @@ msgstr ""
 
 #: Views/DataPipelineDesigner/DataPipelineDesignerSettings.cshtml
 msgctxt "OrchardCore.DataPipelines.Views.DataPipelineDesigner.DataPipelineDesignerSettings"
-msgid "Enabled"
-msgstr ""
-
-#: Views/DataPipelineDesigner/DataPipelineDesignerSettings.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.DataPipelineDesigner.DataPipelineDesignerSettings"
-msgid "Name"
-msgstr ""
-
-#: Views/DataPipelineDesigner/DataPipelineDesignerSettings.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.DataPipelineDesigner.DataPipelineDesignerSettings"
 msgid "What the pipeline does, shown in the list of pipelines."
 msgstr ""
 
@@ -1291,26 +1216,11 @@ msgctxt "OrchardCore.DataPipelines.Views.DataPipelineEntry.ActionsMenuItems.Summ
 msgid "Are you sure you want to delete the pipeline '{0}', its versions and its run history?"
 msgstr ""
 
-#: Views/DataPipelineEntry.ActionsMenuItems.SummaryAdmin.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.DataPipelineEntry.ActionsMenuItems.SummaryAdmin"
-msgid "Cancel"
-msgstr ""
-
-#: Views/DataPipelineEntry.ActionsMenuItems.SummaryAdmin.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.DataPipelineEntry.ActionsMenuItems.SummaryAdmin"
-msgid "Delete"
-msgstr ""
-
 #. Format arguments: {0}: pipeline.Name
 #: Views/DataPipelineEntry.ActionsMenuItems.SummaryAdmin.cshtml
 #, csharp-format
 msgctxt "OrchardCore.DataPipelines.Views.DataPipelineEntry.ActionsMenuItems.SummaryAdmin"
 msgid "Forget what the runs of the pipeline '{0}' kept, such as how far its sources read new rows? Its next run starts over, and may deliver data again."
-msgstr ""
-
-#: Views/DataPipelineEntry.ActionsMenuItems.SummaryAdmin.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.DataPipelineEntry.ActionsMenuItems.SummaryAdmin"
-msgid "Ok"
 msgstr ""
 
 #: Views/DataPipelineEntry.ActionsMenuItems.SummaryAdmin.cshtml
@@ -1342,11 +1252,6 @@ msgstr ""
 
 #: Views/DataPipelineEntry.Buttons.SummaryAdmin.cshtml
 msgctxt "OrchardCore.DataPipelines.Views.DataPipelineEntry.Buttons.SummaryAdmin"
-msgid "Edit"
-msgstr ""
-
-#: Views/DataPipelineEntry.Buttons.SummaryAdmin.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.DataPipelineEntry.Buttons.SummaryAdmin"
 msgid "View"
 msgstr ""
 
@@ -1358,11 +1263,6 @@ msgstr ""
 #: Views/DataPipelineEntry.Modified.SummaryAdmin.cshtml
 msgctxt "OrchardCore.DataPipelines.Views.DataPipelineEntry.Modified.SummaryAdmin"
 msgid "Modified"
-msgstr ""
-
-#: Views/DataPipelineEntry.Status.SummaryAdmin.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.DataPipelineEntry.Status.SummaryAdmin"
-msgid "Disabled"
 msgstr ""
 
 #: Views/DataPipelineEntry.Status.SummaryAdmin.cshtml
@@ -1404,22 +1304,12 @@ msgstr ""
 
 #: Views/DataPipelineRunEntry.ActionsMenuItems.SummaryAdmin.cshtml
 msgctxt "OrchardCore.DataPipelines.Views.DataPipelineRunEntry.ActionsMenuItems.SummaryAdmin"
-msgid "No"
-msgstr ""
-
-#: Views/DataPipelineRunEntry.ActionsMenuItems.SummaryAdmin.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.DataPipelineRunEntry.ActionsMenuItems.SummaryAdmin"
 msgid "Open the pipeline"
 msgstr ""
 
 #: Views/DataPipelineRunEntry.ActionsMenuItems.SummaryAdmin.cshtml
 msgctxt "OrchardCore.DataPipelines.Views.DataPipelineRunEntry.ActionsMenuItems.SummaryAdmin"
 msgid "Run history of the pipeline"
-msgstr ""
-
-#: Views/DataPipelineRunEntry.ActionsMenuItems.SummaryAdmin.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.DataPipelineRunEntry.ActionsMenuItems.SummaryAdmin"
-msgid "Yes"
 msgstr ""
 
 #: Views/DataPipelineRunEntry.Buttons.SummaryAdmin.cshtml
@@ -1442,11 +1332,6 @@ msgstr ""
 #: Views/DataPipelineRunEntry.Queued.SummaryAdmin.cshtml
 msgctxt "OrchardCore.DataPipelines.Views.DataPipelineRunEntry.Queued.SummaryAdmin"
 msgid "Queued"
-msgstr ""
-
-#: Views/DataPipelineRunEntry.Status.SummaryAdmin.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.DataPipelineRunEntry.Status.SummaryAdmin"
-msgid "Status"
 msgstr ""
 
 #: Views/DataPipelineRunEntry.Trigger.SummaryAdmin.cshtml
@@ -1474,11 +1359,6 @@ msgstr ""
 #: Views/DataPipelineRunsFilters.cshtml
 msgctxt "OrchardCore.DataPipelines.Views.DataPipelineRunsFilters"
 msgid "Filter by status"
-msgstr ""
-
-#: Views/DataPipelineRunsFilters.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.DataPipelineRunsFilters"
-msgid "Status"
 msgstr ""
 
 #: Views/DataPipelineStepTitle.Edit.cshtml
@@ -2485,16 +2365,6 @@ msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineCalculatedFieldRow"
 msgid "Move up"
 msgstr ""
 
-#: Views/Shared/DataPipelineCalculatedFieldRow.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineCalculatedFieldRow"
-msgid "Name"
-msgstr ""
-
-#: Views/Shared/DataPipelineCalculatedFieldRow.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineCalculatedFieldRow"
-msgid "Remove"
-msgstr ""
-
 #: Views/Shared/DataPipelineContentMappingRow.cshtml
 msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineContentMappingRow"
 msgid "Choose a part or field"
@@ -2510,11 +2380,6 @@ msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineContentMappingRow"
 msgid "Part or field"
 msgstr ""
 
-#: Views/Shared/DataPipelineContentMappingRow.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineContentMappingRow"
-msgid "Remove"
-msgstr ""
-
 #: Views/Shared/DataPipelineDataSourceFilterRow.cshtml
 msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineDataSourceFilterRow"
 msgid "Choose a value"
@@ -2528,16 +2393,6 @@ msgstr ""
 #: Views/Shared/DataPipelineDataSourceFilterRow.cshtml
 msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineDataSourceFilterRow"
 msgid "Field"
-msgstr ""
-
-#: Views/Shared/DataPipelineDataSourceFilterRow.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineDataSourceFilterRow"
-msgid "No"
-msgstr ""
-
-#: Views/Shared/DataPipelineDataSourceFilterRow.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineDataSourceFilterRow"
-msgid "Remove"
 msgstr ""
 
 #: Views/Shared/DataPipelineDataSourceFilterRow.cshtml
@@ -2565,11 +2420,6 @@ msgstr ""
 #, csharp-format
 msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineDataSourceFilterRow"
 msgid "Write the value as text, such as {0}"
-msgstr ""
-
-#: Views/Shared/DataPipelineDataSourceFilterRow.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineDataSourceFilterRow"
-msgid "Yes"
 msgstr ""
 
 #: Views/Shared/DataPipelineDataSourceFilterRow.cshtml
@@ -2724,16 +2574,6 @@ msgstr ""
 
 #: Views/Shared/DataPipelineHttpHeaderRow.cshtml
 msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineHttpHeaderRow"
-msgid "Name"
-msgstr ""
-
-#: Views/Shared/DataPipelineHttpHeaderRow.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineHttpHeaderRow"
-msgid "Remove"
-msgstr ""
-
-#: Views/Shared/DataPipelineHttpHeaderRow.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineHttpHeaderRow"
 msgid "Value"
 msgstr ""
 
@@ -2745,11 +2585,6 @@ msgstr ""
 #: Views/Shared/DataPipelineJoinKeyRow.cshtml
 msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineJoinKeyRow"
 msgid "Left field"
-msgstr ""
-
-#: Views/Shared/DataPipelineJoinKeyRow.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineJoinKeyRow"
-msgid "Remove"
 msgstr ""
 
 #: Views/Shared/DataPipelineJoinKeyRow.cshtml
@@ -2809,16 +2644,6 @@ msgstr ""
 
 #: Views/Shared/DataPipelineMeasureRow.cshtml
 msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineMeasureRow"
-msgid "Name"
-msgstr ""
-
-#: Views/Shared/DataPipelineMeasureRow.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineMeasureRow"
-msgid "Remove"
-msgstr ""
-
-#: Views/Shared/DataPipelineMeasureRow.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineMeasureRow"
 msgid "Sum"
 msgstr ""
 
@@ -2864,11 +2689,6 @@ msgstr ""
 
 #: Views/Shared/DataPipelineSelectedFieldRow.cshtml
 msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineSelectedFieldRow"
-msgid "Remove"
-msgstr ""
-
-#: Views/Shared/DataPipelineSelectedFieldRow.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineSelectedFieldRow"
 msgid "Same type"
 msgstr ""
 
@@ -2908,11 +2728,6 @@ msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineSortRow"
 msgid "Order"
 msgstr ""
 
-#: Views/Shared/DataPipelineSortRow.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.Shared.DataPipelineSortRow"
-msgid "Remove"
-msgstr ""
-
 #. Format arguments: {0}: count
 #: Views/SharedLinksAdmin/Index.cshtml
 #, csharp-format
@@ -2948,22 +2763,7 @@ msgstr ""
 
 #: Views/SharedLinksAdmin/Index.cshtml
 msgctxt "OrchardCore.DataPipelines.Views.SharedLinksAdmin.Index"
-msgid "Actions"
-msgstr ""
-
-#: Views/SharedLinksAdmin/Index.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.SharedLinksAdmin.Index"
 msgid "Active"
-msgstr ""
-
-#: Views/SharedLinksAdmin/Index.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.SharedLinksAdmin.Index"
-msgid "Cancel"
-msgstr ""
-
-#: Views/SharedLinksAdmin/Index.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.SharedLinksAdmin.Index"
-msgid "Delete"
 msgstr ""
 
 #. Format arguments: {0}: link.Title
@@ -2981,16 +2781,6 @@ msgstr ""
 #: Views/SharedLinksAdmin/Index.cshtml
 msgctxt "OrchardCore.DataPipelines.Views.SharedLinksAdmin.Index"
 msgid "Kind"
-msgstr ""
-
-#: Views/SharedLinksAdmin/Index.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.SharedLinksAdmin.Index"
-msgid "No"
-msgstr ""
-
-#: Views/SharedLinksAdmin/Index.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.SharedLinksAdmin.Index"
-msgid "Ok"
 msgstr ""
 
 #: Views/SharedLinksAdmin/Index.cshtml
@@ -3062,11 +2852,6 @@ msgctxt "OrchardCore.DataPipelines.Views.SharedLinksAdmin.Index"
 msgid "View the source"
 msgstr ""
 
-#: Views/SharedLinksAdmin/Index.cshtml
-msgctxt "OrchardCore.DataPipelines.Views.SharedLinksAdmin.Index"
-msgid "Yes"
-msgstr ""
-
 #. Format arguments: {0}: count
 #: Views/SharedLinksAdmin/Index.cshtml
 #, csharp-format
@@ -3130,11 +2915,6 @@ msgctxt "OrchardCore.DataPipelines.Workflows.DataPipelineRunCompletedEvent"
 msgid "Data Pipeline Run Completed Event"
 msgstr ""
 
-#: Workflows/DataPipelineRunCompletedEvent.cs
-msgctxt "OrchardCore.DataPipelines.Workflows.DataPipelineRunCompletedEvent"
-msgid "Done"
-msgstr ""
-
 #. Format arguments: {0}: pipeline.Name
 #: Workflows/RunDataPipelineTask.cs
 #, csharp-format
@@ -3182,11 +2962,6 @@ msgstr ""
 #: DataSources/Contents/ContentDataColumns.cs
 msgctxt "OrchardCore.DataSources.Contents.ContentDataColumns"
 msgid "Author"
-msgstr ""
-
-#: DataSources/Contents/ContentDataColumns.cs
-msgctxt "OrchardCore.DataSources.Contents.ContentDataColumns"
-msgid "Content item"
 msgstr ""
 
 #: DataSources/Contents/ContentDataColumns.cs
@@ -3341,11 +3116,6 @@ msgstr ""
 #: DataSources/Users/UsersDataSource.cs
 msgctxt "OrchardCore.DataSources.Users.UsersDataSource"
 msgid "Email confirmed"
-msgstr ""
-
-#: DataSources/Users/UsersDataSource.cs
-msgctxt "OrchardCore.DataSources.Users.UsersDataSource"
-msgid "Enabled"
 msgstr ""
 
 #: DataSources/Users/UsersDataSource.cs

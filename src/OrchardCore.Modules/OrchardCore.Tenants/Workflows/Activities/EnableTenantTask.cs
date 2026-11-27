@@ -24,7 +24,7 @@ public class EnableTenantTask : TenantTask, IActivityDescription
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        return Outcome(S["Enabled"], S["Failed"]);
+        return Outcome(LocalizerFactory.Localize(CommonLocalizationSources.Workflow.Enabled), S["Failed"]);
     }
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)

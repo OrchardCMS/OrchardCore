@@ -6,20 +6,25 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Liquid;
+using OrchardCore.Localization;
 using OrchardCore.Mvc.ModelBinding;
 
 namespace OrchardCore.ContentFields.Settings;
 
 public sealed class ContentPickerFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<ContentPickerField>
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     private readonly ILiquidTemplateManager _templateManager;
 
     internal readonly IStringLocalizer S;
 
     public ContentPickerFieldSettingsDriver(
         ILiquidTemplateManager templateManager,
-        IStringLocalizer<ContentPickerFieldSettingsDriver> localizer)
+        IStringLocalizer<ContentPickerFieldSettingsDriver> localizer,
+        IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         _templateManager = templateManager;
         S = localizer;
     }
@@ -37,7 +42,7 @@ public sealed class ContentPickerFieldSettingsDriver : ContentPartFieldDefinitio
             model.TitlePattern = settings.TitlePattern;
             model.Stereotypes = string.Join(',', settings.DisplayedStereotypes ?? []);
             model.Placeholder = settings.Placeholder;
-        }).Location(l => l.Zone("Content").Card(S["Settings"], "20"));
+        }).Location(l => l.Zone("Content").Card(_localizerFactory.Localize(CommonLocalizationSources.Settings), "20"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)

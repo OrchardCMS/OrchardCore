@@ -15,6 +15,7 @@ using OrchardCore.Indexing.Core;
 using OrchardCore.Indexing.Models;
 using OrchardCore.Indexing.ViewModels;
 using OrchardCore.Infrastructure.Entities;
+using OrchardCore.Localization;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
 
@@ -22,6 +23,8 @@ namespace OrchardCore.Indexing.Controllers;
 
 public sealed class AdminController : Controller
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     private const string _optionsSearch = "Options.Search";
 
     private readonly IAuthorizationService _authorizationService;
@@ -44,8 +47,10 @@ public sealed class AdminController : Controller
         IServiceProvider serviceProvider,
         INotifier notifier,
         IHtmlLocalizer<AdminController> htmlLocalizer,
-        IStringLocalizer<AdminController> stringLocalizer)
+        IStringLocalizer<AdminController> stringLocalizer,
+        IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         _authorizationService = authorizationService;
         _updateModelAccessor = updateModelAccessor;
         _indexProfileManager = indexProfileManager;
@@ -118,7 +123,7 @@ public sealed class AdminController : Controller
             new SelectListItem(S["Synchronize"], nameof(IndexingEntityAction.Synchronize)),
             new SelectListItem(S["Reset"], nameof(IndexingEntityAction.Reset)),
             new SelectListItem(S["Rebuild"], nameof(IndexingEntityAction.Rebuild)),
-            new SelectListItem(S["Delete"], nameof(IndexingEntityAction.Remove)),
+            new SelectListItem(_localizerFactory.Localize(CommonLocalizationSources.Delete), nameof(IndexingEntityAction.Remove)),
         ];
 
         // The AdminList shape renders the index profiles with the configured layout (List, Grid, ...).

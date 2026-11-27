@@ -6,12 +6,15 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Indexing.Models;
 using OrchardCore.Indexing.ViewModels;
+using OrchardCore.Localization;
 using OrchardCore.Mvc.ModelBinding;
 
 namespace OrchardCore.Indexing.Drivers;
 
 internal sealed class IndexProfileDisplayDriver : DisplayDriver<IndexProfile>
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     private readonly IIndexProfileStore _indexProfileStore;
     private readonly IServiceProvider _serviceProvider;
 
@@ -20,8 +23,10 @@ internal sealed class IndexProfileDisplayDriver : DisplayDriver<IndexProfile>
     public IndexProfileDisplayDriver(
         IIndexProfileStore indexProfileStore,
         IServiceProvider serviceProvider,
-        IStringLocalizer<IndexProfileDisplayDriver> stringLocalizer)
+        IStringLocalizer<IndexProfileDisplayDriver> stringLocalizer,
+        IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         _indexProfileStore = indexProfileStore;
         _serviceProvider = serviceProvider;
         S = stringLocalizer;
@@ -65,7 +70,7 @@ internal sealed class IndexProfileDisplayDriver : DisplayDriver<IndexProfile>
             model.Name = indexProfile.Name;
             model.IndexName = indexProfile.IndexName;
             model.IsNew = context.IsNew;
-        }).Location(l => l.Zone("Content", "1").Card(S["General"], "10"));
+        }).Location(l => l.Zone("Content", "1").Card(_localizerFactory.Localize(CommonLocalizationSources.General), "10"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(IndexProfile indexProfile, UpdateEditorContext context)

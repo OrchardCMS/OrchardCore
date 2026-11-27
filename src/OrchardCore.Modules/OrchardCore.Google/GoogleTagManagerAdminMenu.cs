@@ -1,11 +1,14 @@
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 using OrchardCore.Navigation;
 
 namespace OrchardCore.Google;
 
 public sealed class GoogleTagManagerAdminMenu : AdminNavigationProvider
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     private static readonly RouteValueDictionary s_routeValues = new()
     {
         { "area", "OrchardCore.Settings" },
@@ -14,15 +17,16 @@ public sealed class GoogleTagManagerAdminMenu : AdminNavigationProvider
 
     internal readonly IStringLocalizer S;
 
-    public GoogleTagManagerAdminMenu(IStringLocalizer<GoogleTagManagerAdminMenu> stringLocalizer)
+    public GoogleTagManagerAdminMenu(IStringLocalizer<GoogleTagManagerAdminMenu> stringLocalizer, IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         S = stringLocalizer;
     }
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
         builder
-            .Add(S["Settings"], settings => settings
+            .Add(_localizerFactory.Localize(CommonLocalizationSources.Settings), settings => settings
                 .Add(S["Integrations"], S["Integrations"].PrefixPosition(), integrations => integrations
                     .Add(S["Google Tag Manager"], S["Google Tag Manager"].PrefixPosition(), google => google
                         .AddClass("googleTagManager")

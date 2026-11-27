@@ -90,7 +90,7 @@ public class ExecuteWorkflowTask : TaskActivity<ExecuteWorkflowTask>, IActivityO
     }
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-        => Outcome(S["Done"], S["Failed"]);
+        => Outcome(_localizerFactory.Localize(CommonLocalizationSources.Workflow.Done), S["Failed"]);
 
     public IEnumerable<ActivityOutputDescriptor> GetOutputs()
         => Outputs.Select(output => new ActivityOutputDescriptor

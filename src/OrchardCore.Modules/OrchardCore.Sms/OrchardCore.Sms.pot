@@ -8,11 +8,6 @@ msgstr ""
 
 #: Activities/SmsTask.cs
 msgctxt "OrchardCore.Sms.Activities.SmsTask"
-msgid "Done"
-msgstr ""
-
-#: Activities/SmsTask.cs
-msgctxt "OrchardCore.Sms.Activities.SmsTask"
 msgid "Failed"
 msgstr ""
 
@@ -39,11 +34,6 @@ msgstr ""
 #: AdminMenu.cs
 msgctxt "OrchardCore.Sms.AdminMenu"
 msgid "SMS Test"
-msgstr ""
-
-#: AdminMenu.cs
-msgctxt "OrchardCore.Sms.AdminMenu"
-msgid "Settings"
 msgstr ""
 
 #: AdminMenu.cs
@@ -104,11 +94,6 @@ msgstr ""
 #: Drivers/SmsTaskDisplayDriver.cs
 msgctxt "OrchardCore.Sms.Drivers.SmsTaskDisplayDriver"
 msgid "Phone number requires a value."
-msgstr ""
-
-#: Drivers/SmsTestDisplayDriver.cs
-msgctxt "OrchardCore.Sms.Drivers.SmsTestDisplayDriver"
-msgid "General"
 msgstr ""
 
 #: Drivers/TwilioSecretMigrationDisplayDriver.cs

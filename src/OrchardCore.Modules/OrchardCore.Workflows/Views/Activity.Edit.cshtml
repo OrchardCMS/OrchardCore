@@ -10,7 +10,7 @@
 @{
     if (Model.Content is IEnumerable<object> shapes)
     {
-        var generalCard = new GroupingMetadata(T["General"].Value, "10");
+        var generalCard = new GroupingMetadata(Localize(CommonLocalizationSources.General).Value, "10");
 
         foreach (var shape in shapes.OfType<IShape>())
         {

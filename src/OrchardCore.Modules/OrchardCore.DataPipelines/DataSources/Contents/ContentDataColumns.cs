@@ -1,3 +1,4 @@
+using OrchardCore.Localization;
 using System.Text.Json.Nodes;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
@@ -26,14 +27,16 @@ public static class ContentDataColumns
     /// use the values of <paramref name="options"/> only.
     /// </param>
     /// <param name="S">Localizes the labels.</param>
+    /// <param name="localizerFactory">Localizes shared labels using their declaring contexts.</param>
     /// <returns>The columns.</returns>
-    public static List<ContentDataColumn> Build(ContentTypeDefinition definition, ContentDataSourceOptions options, ContentOptions contentOptions, IStringLocalizer S)
+    public static List<ContentDataColumn> Build(ContentTypeDefinition definition, ContentDataSourceOptions options, ContentOptions contentOptions, IStringLocalizer S, IStringLocalizerFactory localizerFactory)
     {
         ArgumentNullException.ThrowIfNull(definition);
         ArgumentNullException.ThrowIfNull(options);
         ArgumentNullException.ThrowIfNull(S);
+        ArgumentNullException.ThrowIfNull(localizerFactory);
 
-        var common = S["Content item"].Value;
+        var common = localizerFactory.Localize(CommonLocalizationSources.ContentItem).Value;
         var columns = new List<ContentDataColumn>
         {
             new(new DataField("ContentItemId", S["Content item id"], DataFieldType.Text, common) { IsIdentifier = true, IsKeyFilterable = true }, item => item.ContentItemId),

@@ -14,6 +14,7 @@ using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Localization;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
 
@@ -22,6 +23,8 @@ namespace OrchardCore.BackgroundTasks.Controllers;
 [Admin("BackgroundTasks/{action}/{name?}", "BackgroundTasks{action}")]
 public sealed class BackgroundTaskController : Controller
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     private const string _optionsSearch = $"{nameof(BackgroundTaskIndexViewModel.Options)}.{nameof(AdminIndexOptions.Search)}";
     private const string _optionsStatus = $"{nameof(BackgroundTaskIndexViewModel.Options)}.{nameof(AdminIndexOptions.Status)}";
 
@@ -59,8 +62,10 @@ public sealed class BackgroundTaskController : Controller
         IUpdateModelAccessor updateModelAccessor,
         IHtmlLocalizer<BackgroundTaskController> htmlLocalizer,
         IStringLocalizer<BackgroundTaskController> stringLocalizer,
-        INotifier notifier)
+        INotifier notifier,
+        IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         _authorizationService = authorizationService;
         _backgroundTasks = backgroundTasks;
         _backgroundTaskManager = backgroundTaskManager;
@@ -138,8 +143,8 @@ public sealed class BackgroundTaskController : Controller
 
         options.Statuses =
         [
-            new SelectListItem(S["Enabled"], "enabled"),
-            new SelectListItem(S["Disabled"], "disabled"),
+            new SelectListItem(_localizerFactory.Localize(CommonLocalizationSources.EnabledState), "enabled"),
+            new SelectListItem(_localizerFactory.Localize(CommonLocalizationSources.DisabledState), "disabled"),
         ];
 
         if (_backgroundTaskMonitor is not null)

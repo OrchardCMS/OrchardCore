@@ -3,6 +3,7 @@ using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Localization;
 using OrchardCore.Seo.Models;
 using OrchardCore.Seo.ViewModels;
 
@@ -10,10 +11,13 @@ namespace OrchardCore.SeoMeta.Settings;
 
 public sealed class SeoMetaPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<SeoMetaPart>
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     internal readonly IStringLocalizer S;
 
-    public SeoMetaPartSettingsDisplayDriver(IStringLocalizer<SeoMetaPartSettingsDisplayDriver> stringLocalizer)
+    public SeoMetaPartSettingsDisplayDriver(IStringLocalizer<SeoMetaPartSettingsDisplayDriver> stringLocalizer, IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         S = stringLocalizer;
     }
 
@@ -28,7 +32,7 @@ public sealed class SeoMetaPartSettingsDisplayDriver : ContentTypePartDefinition
             model.DisplayOpenGraph = settings.DisplayOpenGraph;
             model.DisplayTwitter = settings.DisplayTwitter;
             model.DisplayGoogleSchema = settings.DisplayGoogleSchema;
-        }).Location(l => l.Zone("Content").Card(S["Settings"], "20"));
+        }).Location(l => l.Zone("Content").Card(_localizerFactory.Localize(CommonLocalizationSources.Settings), "20"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)

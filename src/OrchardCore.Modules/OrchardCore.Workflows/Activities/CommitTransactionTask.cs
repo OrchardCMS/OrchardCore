@@ -35,7 +35,7 @@ public class CommitTransactionTask : TaskActivity<CommitTransactionTask>, IActiv
     public override LocalizedString Category => _localizerFactory.Localize(CategoryName);
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-        => Outcome(S["Done"], S["Valid"], S["Invalid"]);
+        => Outcome(_localizerFactory.Localize(CommonLocalizationSources.Workflow.Done), S["Valid"], S["Invalid"]);
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {

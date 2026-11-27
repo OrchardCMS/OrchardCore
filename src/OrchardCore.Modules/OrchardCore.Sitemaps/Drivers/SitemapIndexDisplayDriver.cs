@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Localization;
 using OrchardCore.Sitemaps.ViewModels;
 
 namespace OrchardCore.Sitemaps.Drivers;
@@ -10,10 +11,13 @@ namespace OrchardCore.Sitemaps.Drivers;
 /// </summary>
 internal sealed class SitemapIndexDisplayDriver : DisplayDriver<CreateSitemapIndexViewModel>
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     internal readonly IStringLocalizer S;
 
-    public SitemapIndexDisplayDriver(IStringLocalizer<SitemapIndexDisplayDriver> stringLocalizer)
+    public SitemapIndexDisplayDriver(IStringLocalizer<SitemapIndexDisplayDriver> stringLocalizer, IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         S = stringLocalizer;
     }
 
@@ -21,7 +25,7 @@ internal sealed class SitemapIndexDisplayDriver : DisplayDriver<CreateSitemapInd
     {
         return Combine(
             Initialize<CreateSitemapIndexViewModel>("SitemapIndexGeneral_Edit", m => Populate(model, m))
-                .Location(l => l.Zone("Content", "1").Card(S["General"], "10")),
+                .Location(l => l.Zone("Content", "1").Card(_localizerFactory.Localize(CommonLocalizationSources.General), "10")),
             Initialize<CreateSitemapIndexViewModel>("SitemapIndexSitemaps_Edit", m => Populate(model, m))
                 .Location(l => l.Zone("Content", "2").Card(S["Sitemaps"], "20")));
     }

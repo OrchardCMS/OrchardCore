@@ -94,7 +94,7 @@ public class HttpRequestEvent : EventActivity, IActivityProvidedValues, IActivit
     }
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-        => Outcome(S["Done"]);
+        => Outcome(_localizerFactory.Localize(CommonLocalizationSources.Workflow.Done));
 
     public override ActivityExecutionResult Resume(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         => Outcome("Done");

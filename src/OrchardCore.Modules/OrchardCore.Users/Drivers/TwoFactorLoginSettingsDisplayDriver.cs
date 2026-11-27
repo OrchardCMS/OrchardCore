@@ -4,6 +4,7 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Localization;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Settings;
 using OrchardCore.Users.Models;
@@ -12,6 +13,8 @@ namespace OrchardCore.Users.Drivers;
 
 public sealed class TwoFactorLoginSettingsDisplayDriver : SiteDisplayDriver<TwoFactorLoginSettings>
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
 
@@ -23,8 +26,10 @@ public sealed class TwoFactorLoginSettingsDisplayDriver : SiteDisplayDriver<TwoF
     public TwoFactorLoginSettingsDisplayDriver(
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
-        IStringLocalizer<TwoFactorLoginSettingsDisplayDriver> stringLocalizer)
+        IStringLocalizer<TwoFactorLoginSettingsDisplayDriver> stringLocalizer,
+        IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         S = stringLocalizer;
@@ -37,7 +42,7 @@ public sealed class TwoFactorLoginSettingsDisplayDriver : SiteDisplayDriver<TwoF
             model.NumberOfRecoveryCodesToGenerate = settings.NumberOfRecoveryCodesToGenerate;
             model.RequireTwoFactorAuthentication = settings.RequireTwoFactorAuthentication;
             model.AllowRememberClientTwoFactorAuthentication = settings.AllowRememberClientTwoFactorAuthentication;
-        }).Location(l => l.Zone("Content", "5").Tab("Two-Factor Authentication").Card(S["General"], "10"))
+        }).Location(l => l.Zone("Content", "5").Tab("Two-Factor Authentication").Card(_localizerFactory.Localize(CommonLocalizationSources.General), "10"))
         .RenderWhen(static (driver) => driver._authorizationService.AuthorizeAsync(driver._httpContextAccessor.HttpContext?.User, UsersPermissions.ManageUsers), this)
         .OnGroup(SettingsGroupId);
     }

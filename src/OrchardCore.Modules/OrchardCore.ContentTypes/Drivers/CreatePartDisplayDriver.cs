@@ -2,6 +2,7 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.ContentTypes.ViewModels;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Localization;
 
 namespace OrchardCore.ContentTypes.Drivers;
 
@@ -10,17 +11,20 @@ namespace OrchardCore.ContentTypes.Drivers;
 /// </summary>
 internal sealed class CreatePartDisplayDriver : DisplayDriver<CreatePartViewModel>
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     internal readonly IStringLocalizer S;
 
-    public CreatePartDisplayDriver(IStringLocalizer<CreatePartDisplayDriver> stringLocalizer)
+    public CreatePartDisplayDriver(IStringLocalizer<CreatePartDisplayDriver> stringLocalizer, IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         S = stringLocalizer;
     }
 
     public override IDisplayResult Edit(CreatePartViewModel model, BuildEditorContext context)
     {
         return Initialize<CreatePartViewModel>("CreatePartGeneral_Edit", m => m.Name = model.Name)
-            .Location(l => l.Zone("Content", "1").Card(S["General"], "10"));
+            .Location(l => l.Zone("Content", "1").Card(_localizerFactory.Localize(CommonLocalizationSources.General), "10"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(CreatePartViewModel model, UpdateEditorContext context)

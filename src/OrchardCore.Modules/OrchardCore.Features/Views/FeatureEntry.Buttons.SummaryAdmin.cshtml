@@ -50,6 +50,6 @@ else
             confirmationMessage = T["Disabling the {0} feature will also disable the following dependent features:{1}Continue?", featureName, enabledDependentFeatures];
         }
 
-        <a id="btn-disable-@Html.GenerateIdFromName(featureId)" asp-action="Disable" asp-controller="Admin" asp-route-id="@featureId" asp-route-tenant="@entry.Tenant" class="btn btn-danger btn-sm" data-title="@T["Disable Feature"]" data-message="@confirmationMessage" data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]" data-url-af="UnsafeUrl RemoveUrl">@T["Disable"]</a>
+        <a id="btn-disable-@Html.GenerateIdFromName(featureId)" asp-action="Disable" asp-controller="Admin" asp-route-id="@featureId" asp-route-tenant="@entry.Tenant" class="btn btn-danger btn-sm" data-title="@T["Disable Feature"]" data-message="@confirmationMessage" data-ok-text="@Localize(CommonLocalizationSources.Yes)" data-cancel-text="@Localize(CommonLocalizationSources.No)" data-url-af="UnsafeUrl RemoveUrl">@T["Disable"]</a>
     }
 }

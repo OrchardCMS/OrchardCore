@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Localization.Drivers;
+using OrchardCore.Localization;
 using OrchardCore.Navigation;
 
 namespace OrchardCore.Localization;
@@ -10,6 +11,8 @@ namespace OrchardCore.Localization;
 /// </summary>
 public sealed class AdminMenu : AdminNavigationProvider
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     private static readonly RouteValueDictionary s_routeValues = new()
     {
         { "area", "OrchardCore.Settings" },
@@ -22,8 +25,9 @@ public sealed class AdminMenu : AdminNavigationProvider
     /// Creates a new instance of the <see cref="AdminMenu"/>.
     /// </summary>
     /// <param name="stringLocalizer">The <see cref="IStringLocalizer"/>.</param>
-    public AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer)
+    public AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer, IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         S = stringLocalizer;
     }
 
@@ -31,7 +35,7 @@ public sealed class AdminMenu : AdminNavigationProvider
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
         builder
-            .Add(S["Settings"], settings => settings
+            .Add(_localizerFactory.Localize(CommonLocalizationSources.Settings), settings => settings
                 .Add(S["Localization"], S["Localization"].PrefixPosition(), localization => localization
                     .AddClass("localization")
                     .Id("localization")

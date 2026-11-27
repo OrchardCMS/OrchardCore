@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Microsoft.AspNetCore.Mvc.Routing;
 using OrchardCore.BackgroundTasks;
+using OrchardCore.Localization;
 using OrchardCore.BackgroundTasks.Controllers;
 using OrchardCore.BackgroundTasks.Models;
 using OrchardCore.BackgroundTasks.Services;
@@ -409,7 +410,8 @@ public class BackgroundTaskControllerTests
             Mock.Of<IUpdateModelAccessor>(),
             htmlLocalizer.Object,
             stringLocalizer.Object,
-            notifier)
+            notifier,
+            new NullStringLocalizerFactory())
         {
             ControllerContext = new ControllerContext
             {

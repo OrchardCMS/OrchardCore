@@ -2,6 +2,7 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.AdminMenu.ViewModels;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Localization;
 
 namespace OrchardCore.AdminMenu.Drivers;
 
@@ -10,10 +11,13 @@ namespace OrchardCore.AdminMenu.Drivers;
 /// </summary>
 internal sealed class AdminMenuEditDisplayDriver : DisplayDriver<AdminMenuEditViewModel>
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     internal readonly IStringLocalizer S;
 
-    public AdminMenuEditDisplayDriver(IStringLocalizer<AdminMenuEditDisplayDriver> stringLocalizer)
+    public AdminMenuEditDisplayDriver(IStringLocalizer<AdminMenuEditDisplayDriver> stringLocalizer, IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         S = stringLocalizer;
     }
 
@@ -23,7 +27,7 @@ internal sealed class AdminMenuEditDisplayDriver : DisplayDriver<AdminMenuEditVi
         {
             m.Id = model.Id;
             m.Name = model.Name;
-        }).Location(l => l.Zone("Content", "1").Card(S["General"], "10"));
+        }).Location(l => l.Zone("Content", "1").Card(_localizerFactory.Localize(CommonLocalizationSources.General), "10"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(AdminMenuEditViewModel model, UpdateEditorContext context)

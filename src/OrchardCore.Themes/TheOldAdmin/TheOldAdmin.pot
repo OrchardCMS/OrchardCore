@@ -18,27 +18,12 @@ msgstr ""
 
 #: Views/Layout.cshtml
 msgctxt "TheOldAdmin.Views.Layout"
-msgid "Cancel"
-msgstr ""
-
-#: Views/Layout.cshtml
-msgctxt "TheOldAdmin.Views.Layout"
 msgid "Collapse / expand menu"
 msgstr ""
 
 #: Views/Layout.cshtml
 msgctxt "TheOldAdmin.Views.Layout"
-msgid "Delete"
-msgstr ""
-
-#: Views/Layout.cshtml
-msgctxt "TheOldAdmin.Views.Layout"
 msgid "More actions"
-msgstr ""
-
-#: Views/Layout.cshtml
-msgctxt "TheOldAdmin.Views.Layout"
-msgid "Ok"
 msgstr ""
 
 #: Views/Layout.cshtml

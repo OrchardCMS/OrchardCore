@@ -15,6 +15,7 @@ namespace OrchardCore.DataPipelines.Drivers;
 
 public sealed class SaveContentItemsStepDisplayDriver : DataPipelineStepDisplayDriver<SaveContentItemsStepSettings, SaveContentItemsStepViewModel>
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly ContentDataSourceOptions _options;
     private readonly ContentOptions _contentOptions;
@@ -26,8 +27,10 @@ public sealed class SaveContentItemsStepDisplayDriver : DataPipelineStepDisplayD
         IOptions<ContentDataSourceOptions> options,
         IOptions<ContentOptions> contentOptions,
         DataPipelineEditorContext editorContext,
-        IStringLocalizer<SaveContentItemsStepDisplayDriver> localizer)
+        IStringLocalizer<SaveContentItemsStepDisplayDriver> localizer,
+        IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         _contentDefinitionManager = contentDefinitionManager;
         _options = options.Value;
         _contentOptions = contentOptions.Value;
@@ -55,7 +58,7 @@ public sealed class SaveContentItemsStepDisplayDriver : DataPipelineStepDisplayD
             if (definition.Name == settings.ContentType)
             {
                 model.ContentTypeName = definition.DisplayName;
-                model.Targets = ContentDataColumns.Build(definition, _options, _contentOptions, S)
+                model.Targets = ContentDataColumns.Build(definition, _options, _contentOptions, S, _localizerFactory)
                     .Where(column => column.Write is not null)
                     .Select(column => column.Field)
                     .ToArray();

@@ -26,11 +26,6 @@ msgctxt "OrchardCore.Lucene.AdminMenu"
 msgid "Run Lucene Query"
 msgstr ""
 
-#: AdminMenu.cs
-msgctxt "OrchardCore.Lucene.AdminMenu"
-msgid "Search"
-msgstr ""
-
 #: Startup.cs
 msgctxt "OrchardCore.Lucene.ContentsStartup"
 msgid "Content in Lucene"

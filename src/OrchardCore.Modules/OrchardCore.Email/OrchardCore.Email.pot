@@ -23,11 +23,6 @@ msgstr ""
 
 #: AdminMenu.cs
 msgctxt "OrchardCore.Email.AdminMenu"
-msgid "Settings"
-msgstr ""
-
-#: AdminMenu.cs
-msgctxt "OrchardCore.Email.AdminMenu"
 msgid "Testing"
 msgstr ""
 
@@ -279,11 +274,6 @@ msgstr ""
 #: Views/Items/EmailTaskMessage.Fields.Edit.cshtml
 msgctxt "OrchardCore.Email.Views.Items.EmailTaskMessage.Fields.Edit"
 msgid "The subject of the email message. With Liquid support."
-msgstr ""
-
-#: Workflows/Activities/EmailTask.cs
-msgctxt "OrchardCore.Email.Workflows.Activities.EmailTask"
-msgid "Done"
 msgstr ""
 
 #: Workflows/Activities/EmailTask.cs

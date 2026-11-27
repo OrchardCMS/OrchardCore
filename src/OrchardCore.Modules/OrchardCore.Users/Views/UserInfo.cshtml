@@ -15,7 +15,7 @@
         <dd>@Model.User.PhoneNumber</dd>
     }
 
-    <dt>@T["Status"]</dt>
-    <dd>@(Model.User.IsEnabled ? T["Enabled"] : T["Disabled"])</dd>
+    <dt>@Localize(CommonLocalizationSources.Status)</dt>
+    <dd>@(Model.User.IsEnabled ? Localize(CommonLocalizationSources.EnabledState) : Localize(CommonLocalizationSources.DisabledState))</dd>
 
 </dl>

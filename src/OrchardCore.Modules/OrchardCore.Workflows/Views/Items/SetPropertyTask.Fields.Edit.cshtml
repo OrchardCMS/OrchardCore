@@ -2,7 +2,7 @@
 @model SetPropertyTaskViewModel
 
 <div class="ocat-wrapper" asp-validation-class-for="PropertyName">
-    <label asp-for="PropertyName" class="ocat-label ocat-label-required">@T["Name"]</label>
+    <label asp-for="PropertyName" class="ocat-label ocat-label-required">@Localize(CommonLocalizationSources.TechnicalNames.Name)</label>
     <div class="ocat-end">
         <input asp-for="PropertyName" class="form-control" autofocus="autofocus" />
         <span asp-validation-for="PropertyName"></span>

@@ -31,42 +31,302 @@ msgctxt "Microsoft.AspNetCore.Mvc.ProblemDetailsApiLocalization"
 msgid "You do not have sufficient permissions to complete this request"
 msgstr ""
 
+#. Plural noun for a menu, toolbar or column of commands available on items, including bulk actions.
+#: Localization/CommonLocalizationSources.cs
+msgctxt "OrchardCore.Localization.CommonLocalizationSources"
+msgid "Actions"
+msgstr ""
+
+#. Command to dismiss an editor or dialog without accepting changes; not to stop a running operation.
+#: Localization/CommonLocalizationSources.cs
+msgctxt "OrchardCore.Localization.CommonLocalizationSources"
+msgid "Cancel"
+msgstr ""
+
+#. Category noun for application configuration and configuration deployment steps.
 #: Localization/CommonLocalizationSources.cs
 msgctxt "OrchardCore.Localization.CommonLocalizationSources"
 msgid "Configuration"
 msgstr ""
 
+#. Category noun for the site's content, not a field value or message body.
 #: Localization/CommonLocalizationSources.cs
 msgctxt "OrchardCore.Localization.CommonLocalizationSources"
 msgid "Content"
 msgstr ""
 
+#. Title-case heading identifying an Orchard content entity in deployment summaries.
+#: Localization/CommonLocalizationSources.cs
+msgctxt "OrchardCore.Localization.CommonLocalizationSources"
+msgid "Content Item"
+msgstr ""
+
+#. Category for managing site content and deploying content definitions or items.
 #: Localization/CommonLocalizationSources.cs
 msgctxt "OrchardCore.Localization.CommonLocalizationSources"
 msgid "Content Management"
 msgstr ""
 
+#. Title-case plural noun for Orchard content-type definitions, used in navigation, headings and selection labels.
+#: Localization/CommonLocalizationSources.cs
+msgctxt "OrchardCore.Localization.CommonLocalizationSources"
+msgid "Content Types"
+msgstr ""
+
+#. Singular noun for an Orchard content entity, used as a heading, picker label or workflow value type.
+#: Localization/CommonLocalizationSources.cs
+msgctxt "OrchardCore.Localization.CommonLocalizationSources"
+msgid "Content item"
+msgstr ""
+
+#. Plural noun for Orchard content-type definitions, used in editor section headings and selection labels.
+#: Localization/CommonLocalizationSources.cs
+msgctxt "OrchardCore.Localization.CommonLocalizationSources"
+msgid "Content types"
+msgstr ""
+
+#. Command to delete an entity or entities; also used as the title of its confirmation dialog.
+#: Localization/CommonLocalizationSources.cs
+msgctxt "OrchardCore.Localization.CommonLocalizationSources"
+msgid "Delete"
+msgstr ""
+
+#. Category noun for developer tools and related deployment steps.
 #: Localization/CommonLocalizationSources.cs
 msgctxt "OrchardCore.Localization.CommonLocalizationSources"
 msgid "Development"
 msgstr ""
 
+#. Standalone state of a disabled entity or feature, shown as a badge or state option; not a boolean field caption or past event.
+#: Localization/CommonLocalizationSources.cs
+msgctxt "OrchardCore.Localization.CommonLocalizationSources"
+msgid "Disabled"
+msgstr ""
+
+#. Command to open the editor of an existing entity.
+#: Localization/CommonLocalizationSources.cs
+msgctxt "OrchardCore.Localization.CommonLocalizationSources"
+msgid "Edit"
+msgstr ""
+
+#. Standalone state of an enabled entity or feature, shown as a badge or state option; not a boolean field caption or past event.
+#: Localization/CommonLocalizationSources.cs
+msgctxt "OrchardCore.Localization.CommonLocalizationSources"
+msgid "Enabled"
+msgstr ""
+
+#. Standalone heading for general settings in an editor section or configuration menu.
+#: Localization/CommonLocalizationSources.cs
+msgctxt "OrchardCore.Localization.CommonLocalizationSources"
+msgid "General"
+msgstr ""
+
+#. Category noun for application infrastructure and related deployment steps.
 #: Localization/CommonLocalizationSources.cs
 msgctxt "OrchardCore.Localization.CommonLocalizationSources"
 msgid "Infrastructure"
 msgstr ""
 
+#. Noun label for the name of an entity, such as a template, role, tenant, menu, file or pipeline; not a user's name or a technical field identifier.
+#: Localization/CommonLocalizationSources.cs
+msgctxt "OrchardCore.Localization.CommonLocalizationSources"
+msgid "Name"
+msgstr ""
+
+#. Negative response to a confirmation question in a dialog.
+#: Localization/CommonLocalizationSources.cs
+msgctxt "OrchardCore.Localization.CommonLocalizationSources"
+msgid "No"
+msgstr ""
+
+#. Dialog confirmation command; the English spelling is intentionally 'Ok'.
+#: Localization/CommonLocalizationSources.cs
+msgctxt "OrchardCore.Localization.CommonLocalizationSources"
+msgid "Ok"
+msgstr ""
+
+#. Command to remove a selection, relationship or editor row without deleting the referenced entity.
+#: Localization/CommonLocalizationSources.cs
+msgctxt "OrchardCore.Localization.CommonLocalizationSources"
+msgid "Remove"
+msgstr ""
+
+#. Command to persist changes made in an editor, including a preview of that button.
+#: Localization/CommonLocalizationSources.cs
+msgctxt "OrchardCore.Localization.CommonLocalizationSources"
+msgid "Save"
+msgstr ""
+
+#. Accessible label for a button group offering save commands.
+#: Localization/CommonLocalizationSources.cs
+msgctxt "OrchardCore.Localization.CommonLocalizationSources"
+msgid "Save actions"
+msgstr ""
+
+#. Command to save changes and continue editing the same entity.
+#: Localization/CommonLocalizationSources.cs
+msgctxt "OrchardCore.Localization.CommonLocalizationSources"
+msgid "Save and continue"
+msgstr ""
+
+#. Category noun for search functionality, indexing and search-related deployment steps; not a command.
 #: Localization/CommonLocalizationSources.cs
 msgctxt "OrchardCore.Localization.CommonLocalizationSources"
 msgid "Search"
 msgstr ""
 
+#. Category noun for application security and related deployment steps.
 #: Localization/CommonLocalizationSources.cs
 msgctxt "OrchardCore.Localization.CommonLocalizationSources"
 msgid "Security"
 msgstr ""
 
+#. Link command to open documentation about the current feature or editor.
+#: Localization/CommonLocalizationSources.cs
+msgctxt "OrchardCore.Localization.CommonLocalizationSources"
+msgid "See documentation"
+msgstr ""
+
+#. Plural noun heading for configuration settings in menus, editor sections and categories.
 #: Localization/CommonLocalizationSources.cs
 msgctxt "OrchardCore.Localization.CommonLocalizationSources"
 msgid "Settings"
+msgstr ""
+
+#. Option selecting the default editor of a content part or field; not a display mode or form validation option.
+#: Localization/CommonLocalizationSources.cs
+msgctxt "OrchardCore.Localization.CommonLocalizationSources"
+msgid "Standard"
+msgstr ""
+
+#. Noun heading for an entity's current state or an operation's execution state; not an HTTP status code.
+#: Localization/CommonLocalizationSources.cs
+msgctxt "OrchardCore.Localization.CommonLocalizationSources"
+msgid "Status"
+msgstr ""
+
+#. Accessible command label for opening or closing a dropdown menu.
+#: Localization/CommonLocalizationSources.cs
+msgctxt "OrchardCore.Localization.CommonLocalizationSources"
+msgid "Toggle Dropdown"
+msgstr ""
+
+#. Affirmative response to a confirmation question in a dialog.
+#: Localization/CommonLocalizationSources.cs
+msgctxt "OrchardCore.Localization.CommonLocalizationSources"
+msgid "Yes"
+msgstr ""
+
+#. Past audit event indicating that a user was disabled; not a current-state badge or boolean field.
+#: Localization/CommonLocalizationSources.cs
+msgctxt "OrchardCore.Localization.CommonLocalizationSources.AuditEvents"
+msgid "Disabled"
+msgstr ""
+
+#. Past audit event indicating that a user was enabled; not a current-state badge or boolean field.
+#: Localization/CommonLocalizationSources.cs
+msgctxt "OrchardCore.Localization.CommonLocalizationSources.AuditEvents"
+msgid "Enabled"
+msgstr ""
+
+#. Caption of a boolean field controlling whether functionality is disabled; not its current-state badge or a past event.
+#: Localization/CommonLocalizationSources.cs
+msgctxt "OrchardCore.Localization.CommonLocalizationSources.BooleanFields"
+msgid "Disabled"
+msgstr ""
+
+#. Caption of a boolean field controlling whether an entity or feature is enabled; not its current-state badge or a past event.
+#: Localization/CommonLocalizationSources.cs
+msgctxt "OrchardCore.Localization.CommonLocalizationSources.BooleanFields"
+msgid "Enabled"
+msgstr ""
+
+#. Value representing false in a boolean selector or read-only property; not a dialog response.
+#: Localization/CommonLocalizationSources.cs
+msgctxt "OrchardCore.Localization.CommonLocalizationSources.BooleanValues"
+msgid "No"
+msgstr ""
+
+#. Value representing true in a boolean selector or read-only property; not a dialog response.
+#: Localization/CommonLocalizationSources.cs
+msgctxt "OrchardCore.Localization.CommonLocalizationSources.BooleanValues"
+msgid "Yes"
+msgstr ""
+
+#. Command to delete a stored record or credential, such as a notification, tenant, run or passkey; not merely to deselect it.
+#: Localization/CommonLocalizationSources.cs
+msgctxt "OrchardCore.Localization.CommonLocalizationSources.Commands"
+msgid "Remove"
+msgstr ""
+
+#. Command to perform a search, or the prompt on a search box; not the search category or an HTML input type.
+#: Localization/CommonLocalizationSources.cs
+msgctxt "OrchardCore.Localization.CommonLocalizationSources.Commands"
+msgid "Search"
+msgstr ""
+
+#. Option selecting the default display mode of a content part or field; not its editor or form validation.
+#: Localization/CommonLocalizationSources.cs
+msgctxt "OrchardCore.Localization.CommonLocalizationSources.DisplayModes"
+msgid "Standard"
+msgstr ""
+
+#. Option selecting normal label rendering for a form element; not a content editor or validation mode.
+#: Localization/CommonLocalizationSources.cs
+msgctxt "OrchardCore.Localization.CommonLocalizationSources.FormLabels"
+msgid "Standard"
+msgstr ""
+
+#. Option selecting normal validation rendering for a form element; not a content editor or label mode.
+#: Localization/CommonLocalizationSources.cs
+msgctxt "OrchardCore.Localization.CommonLocalizationSources.FormValidation"
+msgid "Standard"
+msgstr ""
+
+#. Name of the HTML search input type in a form-element type selector; not a command or search category.
+#: Localization/CommonLocalizationSources.cs
+msgctxt "OrchardCore.Localization.CommonLocalizationSources.InputTypes"
+msgid "Search"
+msgstr ""
+
+#. Command to stop execution of a running workflow or data pipeline; not to dismiss an editor or dialog.
+#: Localization/CommonLocalizationSources.cs
+msgctxt "OrchardCore.Localization.CommonLocalizationSources.RunningOperations"
+msgid "Cancel"
+msgstr ""
+
+#. Noun label for a technical identifier, such as a property, variable, field, HTTP header, OpenID scope or time zone; not an entity's display name.
+#: Localization/CommonLocalizationSources.cs
+msgctxt "OrchardCore.Localization.CommonLocalizationSources.TechnicalNames"
+msgid "Name"
+msgstr ""
+
+#. Noun label or sort option for a user's name; not the name of a template, tenant or technical field.
+#: Localization/CommonLocalizationSources.cs
+msgctxt "OrchardCore.Localization.CommonLocalizationSources.UserNames"
+msgid "Name"
+msgstr ""
+
+#. Plural noun for the action names defined by a workflow user task, which determine its possible outcomes.
+#: Localization/CommonLocalizationSources.cs
+msgctxt "OrchardCore.Localization.CommonLocalizationSources.Workflow"
+msgid "Actions"
+msgstr ""
+
+#. Workflow outcome indicating that the activity disabled a tenant; not a current-state badge.
+#: Localization/CommonLocalizationSources.cs
+msgctxt "OrchardCore.Localization.CommonLocalizationSources.Workflow"
+msgid "Disabled"
+msgstr ""
+
+#. Workflow activity completion outcome. Completion does not necessarily mean that validation succeeded.
+#: Localization/CommonLocalizationSources.cs
+msgctxt "OrchardCore.Localization.CommonLocalizationSources.Workflow"
+msgid "Done"
+msgstr ""
+
+#. Workflow outcome indicating that the activity enabled a tenant; not a current-state badge.
+#: Localization/CommonLocalizationSources.cs
+msgctxt "OrchardCore.Localization.CommonLocalizationSources.Workflow"
+msgid "Enabled"
 msgstr ""

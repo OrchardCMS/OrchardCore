@@ -5,6 +5,29 @@ namespace OrchardCore.Localization.Extraction.Tests;
 public sealed class LocalizationSourceExtractorTests
 {
     [Theory]
+    [InlineData("Cancel", 2)]
+    [InlineData("Search", 3)]
+    [InlineData("Actions", 2)]
+    [InlineData("Enabled", 4)]
+    [InlineData("Disabled", 4)]
+    [InlineData("Name", 3)]
+    [InlineData("Standard", 4)]
+    [InlineData("Yes", 2)]
+    [InlineData("No", 2)]
+    [InlineData("Remove", 2)]
+    public void Extract_CommonSourcesWithDifferentMeanings_PreservesContextsAndTranslatorNotes(string text, int contextCount)
+    {
+        var path = Path.Combine(TestWorkspace.RepositoryRoot, "src", "OrchardCore", "OrchardCore.Abstractions", "Localization", "CommonLocalizationSources.cs");
+        var catalog = TestWorkspace.ExtractCSharp(File.ReadAllText(path), includeSources: true);
+        var messages = catalog.Messages.Where(message => message.Text == text).ToArray();
+
+        Assert.Equal(contextCount, messages.Length);
+        Assert.Equal(contextCount, messages.Select(message => message.Context).Distinct().Count());
+        Assert.All(messages, message => Assert.NotEmpty(message.Comments));
+        Assert.Empty(catalog.Diagnostics);
+    }
+
+    [Theory]
     [InlineData("LocalizationSource.Create<Resources.Nested>(\"Message \" + nameof(Resources))")]
     [InlineData("LocalizationSource.Create(type: typeof(Resources.Nested), value: \"Message \" + nameof(Resources))")]
     [InlineData("new LocalizationSource(\"Message \" + nameof(Resources), typeof(Resources.Nested))")]

@@ -5,12 +5,15 @@ using OrchardCore.ContentLocalization.Models;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Localization;
 using OrchardCore.Settings;
 
 namespace OrchardCore.ContentLocalization.Drivers;
 
 public sealed class ContentCulturePickerSettingsDriver : SiteDisplayDriver<ContentCulturePickerSettings>
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     public const string GroupId = "ContentCulturePicker";
 
     private readonly IHttpContextAccessor _httpContextAccessor;
@@ -21,8 +24,10 @@ public sealed class ContentCulturePickerSettingsDriver : SiteDisplayDriver<Conte
     public ContentCulturePickerSettingsDriver(
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
-        IStringLocalizer<ContentCulturePickerSettingsDriver> stringLocalizer)
+        IStringLocalizer<ContentCulturePickerSettingsDriver> stringLocalizer,
+        IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         S = stringLocalizer;
@@ -44,7 +49,7 @@ public sealed class ContentCulturePickerSettingsDriver : SiteDisplayDriver<Conte
         {
             model.SetCookie = settings.SetCookie;
             model.RedirectToHomepage = settings.RedirectToHomepage;
-        }).Location(l => l.Zone("Content", "5").Card(S["General"], "10"))
+        }).Location(l => l.Zone("Content", "5").Card(_localizerFactory.Localize(CommonLocalizationSources.General), "10"))
         .OnGroup(SettingsGroupId);
     }
 

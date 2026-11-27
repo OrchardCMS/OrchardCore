@@ -30,6 +30,8 @@ namespace OrchardCore.Workflows.Controllers;
 [Admin]
 public sealed class WorkflowController : Controller
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     // The statuses of the instances that are starting, running or resuming.
     private static readonly WorkflowStatus[] s_runningStatuses =
     [
@@ -69,8 +71,10 @@ public sealed class WorkflowController : Controller
         IStringLocalizer<WorkflowController> stringLocalizer,
         IEnumerable<IJSLocalizer> jsLocalizers,
         IWorkflowExecutionJournal journal,
-        IClock clock)
+        IClock clock,
+        IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         _pagerOptions = pagerOptions.Value;
         _session = session;
         _workflowManager = workflowManager;
@@ -318,8 +322,8 @@ public sealed class WorkflowController : Controller
         options.WorkflowsBulkAction =
         [
             new SelectListItem(S["Retry"], nameof(WorkflowBulkAction.Retry)),
-            new SelectListItem(S["Cancel"], nameof(WorkflowBulkAction.Cancel)),
-            new SelectListItem(S["Delete"], nameof(WorkflowBulkAction.Delete)),
+            new SelectListItem(_localizerFactory.Localize(CommonLocalizationSources.RunningOperations.Cancel), nameof(WorkflowBulkAction.Cancel)),
+            new SelectListItem(_localizerFactory.Localize(CommonLocalizationSources.Delete), nameof(WorkflowBulkAction.Delete)),
         ];
 
         // The status, workflow, creation date and sort filters render at the end of the toolbar, next to the bulk actions.

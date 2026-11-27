@@ -89,7 +89,7 @@ public class CreateTenantTask : TenantTask, IActivityProvidedValues, IActivityDe
     }
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-        => Outcome(S["Done"], S["Failed"]);
+        => Outcome(LocalizerFactory.Localize(CommonLocalizationSources.Workflow.Done), S["Failed"]);
 
     private static readonly ActivityProvidedValue[] s_providedValues = [ActivityProvidedValue.LastResult("any", LocalizationSource.Create<CreateTenantTask>("The settings of the tenant it created, or the validation errors when it failed."))];
 

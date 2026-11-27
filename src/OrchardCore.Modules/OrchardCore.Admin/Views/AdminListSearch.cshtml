@@ -18,7 +18,7 @@
     string value = Model.Value;
     string id = Model.Id ?? "search-box";
     string submitName = Model.SubmitName ?? "submit.Filter";
-    var placeholder = Model.Placeholder ?? T["Search"];
+    var placeholder = Model.Placeholder ?? Localize(CommonLocalizationSources.Commands.Search);
     var autofocus = Model.Autofocus == null || (bool)Model.Autofocus;
     var zones = Model as IZoneHolding;
     var filters = zones != null && zones.Zones.IsNotEmpty("Filters") ? zones.Zones["Filters"] : null;
@@ -30,5 +30,5 @@
         @await DisplayAsync(filters)
     }
     <input id="@id" name="@name" value="@value" class="form-control" placeholder="@placeholder" type="search" autofocus="@autofocus" autocomplete="off" />
-    <button type="submit" name="@submitName" value="@submitName" class="btn btn-outline-secondary" title="@T["Search"]" aria-label="@T["Search"]"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></button>
+    <button type="submit" name="@submitName" value="@submitName" class="btn btn-outline-secondary" title="@Localize(CommonLocalizationSources.Commands.Search)" aria-label="@Localize(CommonLocalizationSources.Commands.Search)"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></button>
 </div>

@@ -8,7 +8,7 @@
     <div class="ocat-end">
         <div class="w-xl-50">
             <input type="hidden" asp-for="SelectedPermissionNames" />
-            <select id="PermissionPicker" multiple data-permission-picker data-values-input="@Html.IdFor(m => m.SelectedPermissionNames)" data-live-search="true" data-show-selected-tags="true" data-selected-items-style="list" data-width="100%" placeholder="@T["Type to search"]" data-live-search-placeholder="@T["Search"]" data-none-results-text="@T["No permissions match {0}", "{0}"]" data-selected-tag-remove-label="@T["Remove"]">
+            <select id="PermissionPicker" multiple data-permission-picker data-values-input="@Html.IdFor(m => m.SelectedPermissionNames)" data-live-search="true" data-show-selected-tags="true" data-selected-items-style="list" data-width="100%" placeholder="@T["Type to search"]" data-live-search-placeholder="@Localize(CommonLocalizationSources.Commands.Search)" data-none-results-text="@T["No permissions match {0}", "{0}"]" data-selected-tag-remove-label="@Localize(CommonLocalizationSources.Remove)">
                 @foreach (var permission in Model.AllItems)
                 {
                     <option value="@permission.Name" selected="@Model.SelectedItems.Any(item => item.Name == permission.Name)">@permission.DisplayText</option>

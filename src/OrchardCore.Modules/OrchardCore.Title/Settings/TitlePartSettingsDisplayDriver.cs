@@ -4,6 +4,7 @@ using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Liquid;
+using OrchardCore.Localization;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Title.Models;
 using OrchardCore.Title.ViewModels;
@@ -12,14 +13,18 @@ namespace OrchardCore.Title.Settings;
 
 public sealed class TitlePartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<TitlePart>
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     private readonly ILiquidTemplateManager _liquidTemplateManager;
 
     internal readonly IStringLocalizer S;
 
     public TitlePartSettingsDisplayDriver(
         ILiquidTemplateManager liquidTemplateManager,
-        IStringLocalizer<TitlePartSettingsDisplayDriver> localizer)
+        IStringLocalizer<TitlePartSettingsDisplayDriver> localizer,
+        IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         _liquidTemplateManager = liquidTemplateManager;
         S = localizer;
     }
@@ -35,7 +40,7 @@ public sealed class TitlePartSettingsDisplayDriver : ContentTypePartDefinitionDi
             model.RenderTitle = settings.RenderTitle;
             model.TitlePartSettings = settings;
             model.Placeholder = settings.Placeholder;
-        }).Location(l => l.Zone("Content").Card(S["Settings"], "20"));
+        }).Location(l => l.Zone("Content").Card(_localizerFactory.Localize(CommonLocalizationSources.Settings), "20"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)

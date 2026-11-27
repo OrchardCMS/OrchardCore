@@ -4,12 +4,15 @@ using Microsoft.Extensions.Options;
 using OrchardCore.AzureAI.Drivers;
 using OrchardCore.AzureAI.Models;
 using OrchardCore.Indexing.Core;
+using OrchardCore.Localization;
 using OrchardCore.Navigation;
 
 namespace OrchardCore.AzureAI;
 
 public sealed class AdminMenu : AdminNavigationProvider
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     private static readonly RouteValueDictionary s_routeValues = new()
     {
         { "area", "OrchardCore.Settings" },
@@ -22,8 +25,10 @@ public sealed class AdminMenu : AdminNavigationProvider
 
     public AdminMenu(
         IOptionsMonitor<AzureAISearchDefaultOptions> azureAISearchSettings,
-        IStringLocalizer<AdminMenu> stringLocalizer)
+        IStringLocalizer<AdminMenu> stringLocalizer,
+        IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         _azureAISearchSettings = azureAISearchSettings;
         S = stringLocalizer;
     }
@@ -36,8 +41,8 @@ public sealed class AdminMenu : AdminNavigationProvider
         }
 
         builder
-            .Add(S["Settings"], settings => settings
-                .Add(S["Search"], S["Search"].PrefixPosition(), search => search
+            .Add(_localizerFactory.Localize(CommonLocalizationSources.Settings), settings => settings
+                .Add(_localizerFactory.Localize(CommonLocalizationSources.Search), _localizerFactory.Localize(CommonLocalizationSources.Search).PrefixPosition(), search => search
                     .Add(S["Azure AI Search"], S["Azure AI Search"].PrefixPosition(), azureAISearch => azureAISearch
                     .AddClass("azure-ai-search")
                         .Id("azureaisearch")

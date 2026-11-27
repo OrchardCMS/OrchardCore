@@ -27,9 +27,9 @@
             }
             @if (hasMenu)
             {
-                <div class="btn-group" title="@T["Actions"]">
+                <div class="btn-group" title="@Localize(CommonLocalizationSources.Actions)">
                     <button type="button" class="btn btn-sm btn-secondary dropdown-toggle actions" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <span>@T["Actions"]</span>
+                        <span>@Localize(CommonLocalizationSources.Actions)</span>
                     </button>
                     <div class="actions-menu dropdown-menu dropdown-menu-end">
                         @await DisplayAsync(menu)

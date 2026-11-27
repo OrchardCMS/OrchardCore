@@ -29,7 +29,7 @@
 @if (Model.TimeZone == TimeZoneSource.Specific)
 {
     <div class="ocat-wrapper" asp-validation-class-for="TimeZoneId">
-        <label asp-for="TimeZoneId" class="ocat-label ocat-label-required">@T["Name"]</label>
+        <label asp-for="TimeZoneId" class="ocat-label ocat-label-required">@Localize(CommonLocalizationSources.TechnicalNames.Name)</label>
         <div class="ocat-end">
             <select asp-for="TimeZoneId" data-dp-select data-live-search="true" data-width="100%">
                 <option value="">@T["Choose a time zone"]</option>

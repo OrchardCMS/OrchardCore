@@ -23,11 +23,6 @@ msgstr ""
 
 #: Controllers/AdminController.cs
 msgctxt "OrchardCore.Shortcodes.Controllers.AdminController"
-msgid "Delete"
-msgstr ""
-
-#: Controllers/AdminController.cs
-msgctxt "OrchardCore.Shortcodes.Controllers.AdminController"
 msgid "Shortcode template deleted successfully."
 msgstr ""
 
@@ -65,17 +60,7 @@ msgstr ""
 
 #: Drivers/ShortcodeTemplateDisplayDriver.cs
 msgctxt "OrchardCore.Shortcodes.Drivers.ShortcodeTemplateDisplayDriver"
-msgid "General"
-msgstr ""
-
-#: Drivers/ShortcodeTemplateDisplayDriver.cs
-msgctxt "OrchardCore.Shortcodes.Drivers.ShortcodeTemplateDisplayDriver"
 msgid "Template"
-msgstr ""
-
-#: Views/Admin/Create.cshtml
-msgctxt "OrchardCore.Shortcodes.Views.Admin.Create"
-msgid "Cancel"
 msgstr ""
 
 #: Views/Admin/Create.cshtml
@@ -85,27 +70,7 @@ msgstr ""
 
 #: Views/Admin/Create.cshtml
 msgctxt "OrchardCore.Shortcodes.Views.Admin.Create"
-msgid "Save"
-msgstr ""
-
-#: Views/Admin/Create.cshtml
-msgctxt "OrchardCore.Shortcodes.Views.Admin.Create"
-msgid "Save actions"
-msgstr ""
-
-#: Views/Admin/Create.cshtml
-msgctxt "OrchardCore.Shortcodes.Views.Admin.Create"
-msgid "Save and continue"
-msgstr ""
-
-#: Views/Admin/Create.cshtml
-msgctxt "OrchardCore.Shortcodes.Views.Admin.Create"
 msgid "Shortcodes"
-msgstr ""
-
-#: Views/Admin/Create.cshtml
-msgctxt "OrchardCore.Shortcodes.Views.Admin.Create"
-msgid "Toggle Dropdown"
 msgstr ""
 
 #: Views/Admin/Create.cshtml
@@ -115,37 +80,12 @@ msgstr ""
 
 #: Views/Admin/Edit.cshtml
 msgctxt "OrchardCore.Shortcodes.Views.Admin.Edit"
-msgid "Cancel"
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.Shortcodes.Views.Admin.Edit"
 msgid "Edit Shortcode"
 msgstr ""
 
 #: Views/Admin/Edit.cshtml
 msgctxt "OrchardCore.Shortcodes.Views.Admin.Edit"
-msgid "Save"
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.Shortcodes.Views.Admin.Edit"
-msgid "Save actions"
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.Shortcodes.Views.Admin.Edit"
-msgid "Save and continue"
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.Shortcodes.Views.Admin.Edit"
 msgid "Shortcodes"
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.Shortcodes.Views.Admin.Edit"
-msgid "Toggle Dropdown"
 msgstr ""
 
 #: Views/Admin/Edit.cshtml
@@ -160,27 +100,12 @@ msgstr ""
 
 #: Views/Admin/Index.cshtml
 msgctxt "OrchardCore.Shortcodes.Views.Admin.Index"
-msgid "Actions"
-msgstr ""
-
-#: Views/Admin/Index.cshtml
-msgctxt "OrchardCore.Shortcodes.Views.Admin.Index"
 msgid "Add Shortcode Template"
 msgstr ""
 
 #: Views/Admin/Index.cshtml
 msgctxt "OrchardCore.Shortcodes.Views.Admin.Index"
 msgid "Categories"
-msgstr ""
-
-#: Views/Admin/Index.cshtml
-msgctxt "OrchardCore.Shortcodes.Views.Admin.Index"
-msgid "Name"
-msgstr ""
-
-#: Views/Admin/Index.cshtml
-msgctxt "OrchardCore.Shortcodes.Views.Admin.Index"
-msgid "Search"
 msgstr ""
 
 #: Views/Admin/Index.cshtml
@@ -230,11 +155,6 @@ msgstr ""
 
 #: Views/ShortcodeModal.cshtml
 msgctxt "OrchardCore.Shortcodes.Views.ShortcodeModal"
-msgid "Cancel"
-msgstr ""
-
-#: Views/ShortcodeModal.cshtml
-msgctxt "OrchardCore.Shortcodes.Views.ShortcodeModal"
 msgid "Filter"
 msgstr ""
 
@@ -256,16 +176,6 @@ msgstr ""
 #: Views/ShortcodeTemplateCreateContent.Edit.cshtml
 msgctxt "OrchardCore.Shortcodes.Views.ShortcodeTemplateCreateContent.Edit"
 msgid "The Shortcode Liquid template."
-msgstr ""
-
-#: Views/ShortcodeTemplateEntry.Buttons.SummaryAdmin.cshtml
-msgctxt "OrchardCore.Shortcodes.Views.ShortcodeTemplateEntry.Buttons.SummaryAdmin"
-msgid "Delete"
-msgstr ""
-
-#: Views/ShortcodeTemplateEntry.Buttons.SummaryAdmin.cshtml
-msgctxt "OrchardCore.Shortcodes.Views.ShortcodeTemplateEntry.Buttons.SummaryAdmin"
-msgid "Edit"
 msgstr ""
 
 #. Format arguments: {0}: Model.Value.Name
@@ -307,26 +217,11 @@ msgctxt "OrchardCore.Shortcodes.Views.ShortcodeTemplateGeneral.Edit"
 msgid "Hint"
 msgstr ""
 
-#: Views/ShortcodeTemplateGeneral.Edit.cshtml
-msgctxt "OrchardCore.Shortcodes.Views.ShortcodeTemplateGeneral.Edit"
-msgid "Name"
-msgstr ""
-
 #. Format arguments: {0}: "{0}"
 #: Views/ShortcodeTemplateGeneral.Edit.cshtml
 #, csharp-format
 msgctxt "OrchardCore.Shortcodes.Views.ShortcodeTemplateGeneral.Edit"
 msgid "No categories match {0}"
-msgstr ""
-
-#: Views/ShortcodeTemplateGeneral.Edit.cshtml
-msgctxt "OrchardCore.Shortcodes.Views.ShortcodeTemplateGeneral.Edit"
-msgid "Remove"
-msgstr ""
-
-#: Views/ShortcodeTemplateGeneral.Edit.cshtml
-msgctxt "OrchardCore.Shortcodes.Views.ShortcodeTemplateGeneral.Edit"
-msgid "Search"
 msgstr ""
 
 #: Views/ShortcodeTemplateGeneral.Edit.cshtml

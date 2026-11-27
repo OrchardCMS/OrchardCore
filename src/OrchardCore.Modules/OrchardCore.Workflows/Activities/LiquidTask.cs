@@ -37,7 +37,7 @@ public class LiquidTask : TaskActivity<LiquidTask>, IActivityOutputs, IActivityP
     }
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-        => Outcome(S["Done"]);
+        => Outcome(_localizerFactory.Localize(CommonLocalizationSources.Workflow.Done));
 
     private static readonly ActivityProvidedValue[] s_providedValues = [ActivityProvidedValue.LastResult("string", LocalizationSource.Create<LiquidTask>("The rendered template."))];
 

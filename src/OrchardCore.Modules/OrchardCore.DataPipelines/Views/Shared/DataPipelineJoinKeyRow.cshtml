@@ -14,5 +14,5 @@
     <select name="@(prefix).RightField" class="form-select" aria-label="@T["Right field"]">
         <partial name="DataPipelineFieldOptions" model="@((Model.RightFields, Model.Key.RightField, true))" />
     </select>
-    <button type="button" class="btn btn-outline-danger" data-dp-remove title="@T["Remove"]"><i class="fa-solid fa-trash" aria-hidden="true"></i></button>
+    <button type="button" class="btn btn-outline-danger" data-dp-remove title="@Localize(CommonLocalizationSources.Remove)"><i class="fa-solid fa-trash" aria-hidden="true"></i></button>
 </div>

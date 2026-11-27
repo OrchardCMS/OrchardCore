@@ -65,7 +65,7 @@ public class CreateContentTask : ContentTask, IActivityOutputs, IActivityProvide
     }
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-        => Outcome(S["Done"], S["Failed"]);
+        => Outcome(LocalizerFactory.Localize(CommonLocalizationSources.Workflow.Done), S["Failed"]);
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
@@ -134,7 +134,7 @@ public class CreateContentTask : ContentTask, IActivityOutputs, IActivityProvide
         return Outcome("Failed");
     }
 
-    private static readonly ActivityOutputDescriptor[] s_outputs = [new ActivityOutputDescriptor { Name = "ContentItem", TypeName = "contentItem", DisplayName = LocalizationSource.Create<CreateContentTask>("Content item"), Description = LocalizationSource.Create<CreateContentTask>("The content item the task created.") }];
+    private static readonly ActivityOutputDescriptor[] s_outputs = [new ActivityOutputDescriptor { Name = "ContentItem", TypeName = "contentItem", DisplayName = CommonLocalizationSources.ContentItem, Description = LocalizationSource.Create<CreateContentTask>("The content item the task created.") }];
 
     public IEnumerable<ActivityOutputDescriptor> GetOutputs()
         => s_outputs;

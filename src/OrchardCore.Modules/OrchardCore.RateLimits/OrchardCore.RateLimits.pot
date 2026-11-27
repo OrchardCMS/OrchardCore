@@ -38,11 +38,6 @@ msgstr ""
 
 #: Controllers/AdminController.cs
 msgctxt "OrchardCore.RateLimits.Controllers.AdminController"
-msgid "Delete"
-msgstr ""
-
-#: Controllers/AdminController.cs
-msgctxt "OrchardCore.RateLimits.Controllers.AdminController"
 msgid "Disable"
 msgstr ""
 
@@ -220,11 +215,6 @@ msgstr ""
 
 #: Drivers/RateLimitPolicyEditDisplayDriver.cs
 msgctxt "OrchardCore.RateLimits.Drivers.RateLimitPolicyEditDisplayDriver"
-msgid "General"
-msgstr ""
-
-#: Drivers/RateLimitPolicyEditDisplayDriver.cs
-msgctxt "OrchardCore.RateLimits.Drivers.RateLimitPolicyEditDisplayDriver"
 msgid "Limiters"
 msgstr ""
 
@@ -353,11 +343,6 @@ msgstr ""
 
 #: Views/Admin/Create.cshtml
 msgctxt "OrchardCore.RateLimits.Views.Admin.Create"
-msgid "Cancel"
-msgstr ""
-
-#: Views/Admin/Create.cshtml
-msgctxt "OrchardCore.RateLimits.Views.Admin.Create"
 msgid "New Rate Limit Policy"
 msgstr ""
 
@@ -383,22 +368,12 @@ msgstr ""
 
 #: Views/Admin/Edit.cshtml
 msgctxt "OrchardCore.RateLimits.Views.Admin.Edit"
-msgid "Cancel"
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.RateLimits.Views.Admin.Edit"
 msgid "Edit Rate Limit Policy"
 msgstr ""
 
 #: Views/Admin/Edit.cshtml
 msgctxt "OrchardCore.RateLimits.Views.Admin.Edit"
 msgid "Rate Limit Policies"
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.RateLimits.Views.Admin.Edit"
-msgid "Save"
 msgstr ""
 
 #: Views/Admin/Edit.cshtml
@@ -418,11 +393,6 @@ msgstr ""
 
 #: Views/Admin/Index.cshtml
 msgctxt "OrchardCore.RateLimits.Views.Admin.Index"
-msgid "Actions"
-msgstr ""
-
-#: Views/Admin/Index.cshtml
-msgctxt "OrchardCore.RateLimits.Views.Admin.Index"
 msgid "Add Policy"
 msgstr ""
 
@@ -433,17 +403,7 @@ msgstr ""
 
 #: Views/Admin/Index.cshtml
 msgctxt "OrchardCore.RateLimits.Views.Admin.Index"
-msgid "Enabled"
-msgstr ""
-
-#: Views/Admin/Index.cshtml
-msgctxt "OrchardCore.RateLimits.Views.Admin.Index"
 msgid "Group limits"
-msgstr ""
-
-#: Views/Admin/Index.cshtml
-msgctxt "OrchardCore.RateLimits.Views.Admin.Index"
-msgid "Name"
 msgstr ""
 
 #: Views/Admin/Index.cshtml
@@ -469,11 +429,6 @@ msgstr ""
 #: Views/Admin/Index.cshtml
 msgctxt "OrchardCore.RateLimits.Views.Admin.Index"
 msgid "Search policies"
-msgstr ""
-
-#: Views/Admin/Index.cshtml
-msgctxt "OrchardCore.RateLimits.Views.Admin.Index"
-msgid "Status"
 msgstr ""
 
 #: Views/Admin/Index.cshtml
@@ -585,16 +540,6 @@ msgctxt "OrchardCore.RateLimits.Views.Items.AllRateLimitPoliciesDeploymentStep.T
 msgid "Exports every tenant rate limit policy."
 msgstr ""
 
-#: Views/Items/RateLimitLimiter.Buttons.SummaryAdmin.cshtml
-msgctxt "OrchardCore.RateLimits.Views.Items.RateLimitLimiter.Buttons.SummaryAdmin"
-msgid "Delete"
-msgstr ""
-
-#: Views/Items/RateLimitLimiter.Buttons.SummaryAdmin.cshtml
-msgctxt "OrchardCore.RateLimits.Views.Items.RateLimitLimiter.Buttons.SummaryAdmin"
-msgid "Edit"
-msgstr ""
-
 #: Views/Items/RateLimitPolicy.DefaultMeta.SummaryAdmin.cshtml
 msgctxt "OrchardCore.RateLimits.Views.Items.RateLimitPolicy.DefaultMeta.SummaryAdmin"
 msgid "Author"
@@ -610,11 +555,6 @@ msgstr ""
 #: Views/Limiter/Create.cshtml
 msgctxt "OrchardCore.RateLimits.Views.Limiter.Create"
 msgid "Add Limiter"
-msgstr ""
-
-#: Views/Limiter/Create.cshtml
-msgctxt "OrchardCore.RateLimits.Views.Limiter.Create"
-msgid "Cancel"
 msgstr ""
 
 #: Views/Limiter/Create.cshtml
@@ -659,11 +599,6 @@ msgctxt "OrchardCore.RateLimits.Views.Limiter.Edit"
 msgid "Rate Limit Policy"
 msgstr ""
 
-#: Views/Limiter/Edit.cshtml
-msgctxt "OrchardCore.RateLimits.Views.Limiter.Edit"
-msgid "Save"
-msgstr ""
-
 #: Views/RateLimitLimiter.Link.cshtml
 msgctxt "OrchardCore.RateLimits.Views.RateLimitLimiter.Link"
 msgid "Add"
@@ -701,11 +636,6 @@ msgstr ""
 
 #: Views/RateLimitPolicy.ActionsMenuItems.SummaryAdmin.cshtml
 msgctxt "OrchardCore.RateLimits.Views.RateLimitPolicy.ActionsMenuItems.SummaryAdmin"
-msgid "Delete"
-msgstr ""
-
-#: Views/RateLimitPolicy.ActionsMenuItems.SummaryAdmin.cshtml
-msgctxt "OrchardCore.RateLimits.Views.RateLimitPolicy.ActionsMenuItems.SummaryAdmin"
 msgid "Delete Policy"
 msgstr ""
 
@@ -729,31 +659,11 @@ msgctxt "OrchardCore.RateLimits.Views.RateLimitPolicy.ActionsMenuItems.SummaryAd
 msgid "Enable Policy"
 msgstr ""
 
-#: Views/RateLimitPolicy.Buttons.SummaryAdmin.cshtml
-msgctxt "OrchardCore.RateLimits.Views.RateLimitPolicy.Buttons.SummaryAdmin"
-msgid "Edit"
-msgstr ""
-
 #. Format arguments: {0}: Model.Value.Name
 #: Views/RateLimitPolicy.Checkbox.SummaryAdmin.cshtml
 #, csharp-format
 msgctxt "OrchardCore.RateLimits.Views.RateLimitPolicy.Checkbox.SummaryAdmin"
 msgid "Select {0}"
-msgstr ""
-
-#: Views/RateLimitPolicy.DefaultTags.SummaryAdmin.cshtml
-msgctxt "OrchardCore.RateLimits.Views.RateLimitPolicy.DefaultTags.SummaryAdmin"
-msgid "Disabled"
-msgstr ""
-
-#: Views/RateLimitPolicy.DefaultTags.SummaryAdmin.cshtml
-msgctxt "OrchardCore.RateLimits.Views.RateLimitPolicy.DefaultTags.SummaryAdmin"
-msgid "Enabled"
-msgstr ""
-
-#: Views/RateLimitPolicy.DefaultTags.SummaryAdmin.cshtml
-msgctxt "OrchardCore.RateLimits.Views.RateLimitPolicy.DefaultTags.SummaryAdmin"
-msgid "Status"
 msgstr ""
 
 #: Views/RateLimitPolicy.Description.SummaryAdmin.cshtml
@@ -848,11 +758,6 @@ msgstr ""
 #: Views/RateLimitPolicyTarget.Edit.cshtml
 msgctxt "OrchardCore.RateLimits.Views.RateLimitPolicyTarget.Edit"
 msgid "The request path is read-only while this policy is enabled. Disable it first to change endpoint targeting."
-msgstr ""
-
-#: Views/RateLimitsToolbar.cshtml
-msgctxt "OrchardCore.RateLimits.Views.RateLimitsToolbar"
-msgid "Actions"
 msgstr ""
 
 #: Views/RateLimitsToolbar.cshtml

@@ -10,6 +10,7 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Localization;
 using OrchardCore.Routing;
 using OrchardCore.UrlRewriting.Endpoints.Rules;
 using OrchardCore.UrlRewriting.Models;
@@ -20,6 +21,8 @@ namespace OrchardCore.UrlRewriting.Controllers;
 [Admin("UrlRewriting/{action}/{id?}", "UrlRewriting{action}")]
 public sealed class AdminController : Controller
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     private readonly IAuthorizationService _authorizationService;
     private readonly INotifier _notifier;
     private readonly IDisplayManager<RewriteRule> _rewriteRuleDisplayManager;
@@ -43,8 +46,10 @@ public sealed class AdminController : Controller
         IServiceProvider serviceProvider,
         IStringLocalizer<AdminController> stringLocalizer,
         IHtmlLocalizer<AdminController> htmlLocalizer
-        )
+        ,
+        IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         _rewriteRuleDisplayManager = rewriteRuleDisplayManager;
         _authorizationService = authorizationService;
         _notifier = notifier;
@@ -76,7 +81,7 @@ public sealed class AdminController : Controller
 
         model.Options.BulkActions =
         [
-            new SelectListItem(S["Delete"], nameof(RewriteRuleAction.Remove)),
+            new SelectListItem(_localizerFactory.Localize(CommonLocalizationSources.Delete), nameof(RewriteRuleAction.Remove)),
         ];
 
         // The AdminList shape renders the rules with the configured layout (List, Grid, ...).

@@ -31,11 +31,6 @@ msgctxt "OrchardCore.Media.AdminMenu"
 msgid "Profiles"
 msgstr ""
 
-#: AdminMenu.cs
-msgctxt "OrchardCore.Media.AdminMenu"
-msgid "Settings"
-msgstr ""
-
 #: Controllers/AdminController.cs
 msgctxt "OrchardCore.Media.Controllers.AdminController"
 msgid "Unspecified"
@@ -85,11 +80,6 @@ msgstr ""
 #: Controllers/MediaProfilesController.cs
 msgctxt "OrchardCore.Media.Controllers.MediaProfilesController"
 msgid "Default (Max)"
-msgstr ""
-
-#: Controllers/MediaProfilesController.cs
-msgctxt "OrchardCore.Media.Controllers.MediaProfilesController"
-msgid "Delete"
 msgstr ""
 
 #: Controllers/MediaProfilesController.cs
@@ -228,11 +218,6 @@ msgstr ""
 #: Drivers/MediaOptionsDisplayDriver.cs
 msgctxt "OrchardCore.Media.Drivers.MediaOptionsDisplayDriver"
 msgid "Uploads"
-msgstr ""
-
-#: Drivers/MediaProfileDisplayDriver.cs
-msgctxt "OrchardCore.Media.Drivers.MediaProfileDisplayDriver"
-msgid "General"
 msgstr ""
 
 #: Drivers/MediaProfileDisplayDriver.cs
@@ -453,11 +438,6 @@ msgctxt "OrchardCore.Media.MediaCacheAdminMenu"
 msgid "Media"
 msgstr ""
 
-#: MediaCacheAdminMenu.cs
-msgctxt "OrchardCore.Media.MediaCacheAdminMenu"
-msgid "Settings"
-msgstr ""
-
 #: MediaLocalizationSources.cs
 msgctxt "OrchardCore.Media.MediaLocalizationSources"
 msgid "Media"
@@ -531,11 +511,6 @@ msgstr ""
 
 #: Services/MediaJSLocalizer.cs
 msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
-msgid "Cancel"
-msgstr ""
-
-#: Services/MediaJSLocalizer.cs
-msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
 msgid "Cannot delete the root folder"
 msgstr ""
 
@@ -579,11 +554,6 @@ msgstr ""
 #: Services/MediaJSLocalizer.cs
 msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
 msgid "Create folder"
-msgstr ""
-
-#: Services/MediaJSLocalizer.cs
-msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
-msgid "Delete"
 msgstr ""
 
 #: Services/MediaJSLocalizer.cs
@@ -723,11 +693,6 @@ msgstr ""
 
 #: Services/MediaJSLocalizer.cs
 msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
-msgid "Name"
-msgstr ""
-
-#: Services/MediaJSLocalizer.cs
-msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
 msgid "Next"
 msgstr ""
 
@@ -753,22 +718,12 @@ msgstr ""
 
 #: Services/MediaJSLocalizer.cs
 msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
-msgid "Ok"
-msgstr ""
-
-#: Services/MediaJSLocalizer.cs
-msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
 msgid "Pause upload"
 msgstr ""
 
 #: Services/MediaJSLocalizer.cs
 msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
 msgid "Previous"
-msgstr ""
-
-#: Services/MediaJSLocalizer.cs
-msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
-msgid "Remove"
 msgstr ""
 
 #: Services/MediaJSLocalizer.cs
@@ -938,11 +893,6 @@ msgctxt "OrchardCore.Media.Settings.MediaFieldSettingsDriver"
 msgid "Please select at least one extension."
 msgstr ""
 
-#: Settings/MediaFieldSettingsDriver.cs
-msgctxt "OrchardCore.Media.Settings.MediaFieldSettingsDriver"
-msgid "Settings"
-msgstr ""
-
 #: Views/Admin/Index.cshtml
 msgctxt "OrchardCore.Media.Views.Admin.Index"
 msgid "Assets"
@@ -956,11 +906,6 @@ msgstr ""
 #: Views/Admin/Options.cshtml
 msgctxt "OrchardCore.Media.Views.Admin.Options"
 msgid "Media options"
-msgstr ""
-
-#: Views/Admin/Options.cshtml
-msgctxt "OrchardCore.Media.Views.Admin.Options"
-msgid "See documentation"
 msgstr ""
 
 #: Views/Items/AllMediaProfilesDeploymentStep.Edit.cshtml
@@ -1071,16 +1016,6 @@ msgstr ""
 #: Views/MediaField-Gallery.Option.cshtml
 msgctxt "OrchardCore.Media.Views.MediaField-Gallery.Option"
 msgid "Gallery"
-msgstr ""
-
-#: Views/MediaField.DisplayOption.cshtml
-msgctxt "OrchardCore.Media.Views.MediaField.DisplayOption"
-msgid "Standard"
-msgstr ""
-
-#: Views/MediaField.Option.cshtml
-msgctxt "OrchardCore.Media.Views.MediaField.Option"
-msgid "Standard"
 msgstr ""
 
 #: Views/MediaFieldSettings.Edit.cshtml
@@ -1354,11 +1289,6 @@ msgstr ""
 
 #: Views/MediaProfileCreateGeneral.Edit.cshtml
 msgctxt "OrchardCore.Media.Views.MediaProfileCreateGeneral.Edit"
-msgid "Name"
-msgstr ""
-
-#: Views/MediaProfileCreateGeneral.Edit.cshtml
-msgctxt "OrchardCore.Media.Views.MediaProfileCreateGeneral.Edit"
 msgid "The hint for the media profile."
 msgstr ""
 
@@ -1437,16 +1367,6 @@ msgctxt "OrchardCore.Media.Views.MediaProfileCreateImageProcessing.Edit"
 msgid "Width"
 msgstr ""
 
-#: Views/MediaProfileEntry.Buttons.SummaryAdmin.cshtml
-msgctxt "OrchardCore.Media.Views.MediaProfileEntry.Buttons.SummaryAdmin"
-msgid "Delete"
-msgstr ""
-
-#: Views/MediaProfileEntry.Buttons.SummaryAdmin.cshtml
-msgctxt "OrchardCore.Media.Views.MediaProfileEntry.Buttons.SummaryAdmin"
-msgid "Edit"
-msgstr ""
-
 #. Format arguments: {0}: Model.Value.Name
 #: Views/MediaProfileEntry.Checkbox.SummaryAdmin.cshtml
 #, csharp-format
@@ -1457,11 +1377,6 @@ msgstr ""
 #: Views/MediaProfileGeneral.Edit.cshtml
 msgctxt "OrchardCore.Media.Views.MediaProfileGeneral.Edit"
 msgid "Hint"
-msgstr ""
-
-#: Views/MediaProfileGeneral.Edit.cshtml
-msgctxt "OrchardCore.Media.Views.MediaProfileGeneral.Edit"
-msgid "Name"
 msgstr ""
 
 #: Views/MediaProfileGeneral.Edit.cshtml
@@ -1546,11 +1461,6 @@ msgstr ""
 
 #: Views/MediaProfiles/Create.cshtml
 msgctxt "OrchardCore.Media.Views.MediaProfiles.Create"
-msgid "Cancel"
-msgstr ""
-
-#: Views/MediaProfiles/Create.cshtml
-msgctxt "OrchardCore.Media.Views.MediaProfiles.Create"
 msgid "Create Media Profile"
 msgstr ""
 
@@ -1561,32 +1471,7 @@ msgstr ""
 
 #: Views/MediaProfiles/Create.cshtml
 msgctxt "OrchardCore.Media.Views.MediaProfiles.Create"
-msgid "Save"
-msgstr ""
-
-#: Views/MediaProfiles/Create.cshtml
-msgctxt "OrchardCore.Media.Views.MediaProfiles.Create"
-msgid "Save actions"
-msgstr ""
-
-#: Views/MediaProfiles/Create.cshtml
-msgctxt "OrchardCore.Media.Views.MediaProfiles.Create"
-msgid "Save and continue"
-msgstr ""
-
-#: Views/MediaProfiles/Create.cshtml
-msgctxt "OrchardCore.Media.Views.MediaProfiles.Create"
-msgid "Toggle Dropdown"
-msgstr ""
-
-#: Views/MediaProfiles/Create.cshtml
-msgctxt "OrchardCore.Media.Views.MediaProfiles.Create"
 msgid "and continue"
-msgstr ""
-
-#: Views/MediaProfiles/Edit.cshtml
-msgctxt "OrchardCore.Media.Views.MediaProfiles.Edit"
-msgid "Cancel"
 msgstr ""
 
 #: Views/MediaProfiles/Edit.cshtml
@@ -1601,37 +1486,12 @@ msgstr ""
 
 #: Views/MediaProfiles/Edit.cshtml
 msgctxt "OrchardCore.Media.Views.MediaProfiles.Edit"
-msgid "Save"
-msgstr ""
-
-#: Views/MediaProfiles/Edit.cshtml
-msgctxt "OrchardCore.Media.Views.MediaProfiles.Edit"
-msgid "Save actions"
-msgstr ""
-
-#: Views/MediaProfiles/Edit.cshtml
-msgctxt "OrchardCore.Media.Views.MediaProfiles.Edit"
-msgid "Save and continue"
-msgstr ""
-
-#: Views/MediaProfiles/Edit.cshtml
-msgctxt "OrchardCore.Media.Views.MediaProfiles.Edit"
-msgid "Toggle Dropdown"
-msgstr ""
-
-#: Views/MediaProfiles/Edit.cshtml
-msgctxt "OrchardCore.Media.Views.MediaProfiles.Edit"
 msgid "and continue"
 msgstr ""
 
 #: Views/MediaProfiles/Index.cshtml
 msgctxt "OrchardCore.Media.Views.MediaProfiles.Index"
 msgid "<strong>Nothing here!</strong> There are no media profiles for the moment."
-msgstr ""
-
-#: Views/MediaProfiles/Index.cshtml
-msgctxt "OrchardCore.Media.Views.MediaProfiles.Index"
-msgid "Actions"
 msgstr ""
 
 #: Views/MediaProfiles/Index.cshtml
@@ -1646,22 +1506,7 @@ msgstr ""
 
 #: Views/MediaProfiles/Index.cshtml
 msgctxt "OrchardCore.Media.Views.MediaProfiles.Index"
-msgid "Name"
-msgstr ""
-
-#: Views/MediaProfiles/Index.cshtml
-msgctxt "OrchardCore.Media.Views.MediaProfiles.Index"
-msgid "Search"
-msgstr ""
-
-#: Views/MediaProfiles/Index.cshtml
-msgctxt "OrchardCore.Media.Views.MediaProfiles.Index"
 msgid "selected"
-msgstr ""
-
-#: Views/Shared/MediaFieldEditAnchorModal.cshtml
-msgctxt "OrchardCore.Media.Views.Shared.MediaFieldEditAnchorModal"
-msgid "Cancel"
 msgstr ""
 
 #: Views/Shared/MediaFieldEditAnchorModal.cshtml
@@ -1702,11 +1547,6 @@ msgstr ""
 #: Views/Shared/MediaFieldEditLocalization.cshtml
 msgctxt "OrchardCore.Media.Views.Shared.MediaFieldEditLocalization"
 msgid "Temporarily unavailable"
-msgstr ""
-
-#: Views/Shared/MediaFieldEditMediaTextModal.cshtml
-msgctxt "OrchardCore.Media.Views.Shared.MediaFieldEditMediaTextModal"
-msgid "Cancel"
 msgstr ""
 
 #: Views/Shared/MediaFieldEditMediaTextModal.cshtml

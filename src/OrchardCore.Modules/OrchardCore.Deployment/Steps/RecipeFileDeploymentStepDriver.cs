@@ -2,15 +2,19 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.Deployment.ViewModels;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Deployment.Steps;
 
 public sealed class RecipeFileDeploymentStepDriver : DisplayDriver<DeploymentStep, RecipeFileDeploymentStep>
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     internal readonly IStringLocalizer S;
 
-    public RecipeFileDeploymentStepDriver(IStringLocalizer<RecipeFileDeploymentStepDriver> stringLocalizer)
+    public RecipeFileDeploymentStepDriver(IStringLocalizer<RecipeFileDeploymentStepDriver> stringLocalizer, IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         S = stringLocalizer;
     }
 
@@ -32,7 +36,7 @@ public sealed class RecipeFileDeploymentStepDriver : DisplayDriver<DeploymentSte
                 model.DisplayName = step.DisplayName;
                 model.Description = step.Description;
                 model.IsSetupRecipe = step.IsSetupRecipe;
-            }).Location(l => l.Zone("Content", "1").Card(S["General"], "10")),
+            }).Location(l => l.Zone("Content", "1").Card(_localizerFactory.Localize(CommonLocalizationSources.General), "10")),
             Initialize<RecipeFileDeploymentStepViewModel>("RecipeFileDeploymentStepMetadata_Fields_Edit", model =>
             {
                 model.Author = step.Author;

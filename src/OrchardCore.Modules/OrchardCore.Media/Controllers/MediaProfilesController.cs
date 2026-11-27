@@ -10,6 +10,7 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Localization;
 using OrchardCore.Media.Core.Processing;
 using OrchardCore.Media.Models;
 using OrchardCore.Media.Services;
@@ -22,6 +23,8 @@ namespace OrchardCore.Media.Controllers;
 [Admin("MediaProfiles/{action}", "MediaProfiles.{action}")]
 public sealed class MediaProfilesController : Controller
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     private const string _optionsSearch = "Options.Search";
 
     private readonly IAuthorizationService _authorizationService;
@@ -47,8 +50,10 @@ public sealed class MediaProfilesController : Controller
         IUpdateModelAccessor updateModelAccessor,
         IStringLocalizer<MediaProfilesController> stringLocalizer,
         IHtmlLocalizer<MediaProfilesController> htmlLocalizer
-        )
+        ,
+        IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         _authorizationService = authorizationService;
         _mediaProfilesManager = mediaProfilesManager;
         _mediaOptions = mediaOptions.Value;
@@ -107,7 +112,7 @@ public sealed class MediaProfilesController : Controller
 
         model.Options.ContentsBulkAction =
         [
-            new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
+            new SelectListItem(_localizerFactory.Localize(CommonLocalizationSources.Delete), nameof(ContentsBulkAction.Remove)),
         ];
 
         // The AdminList shape renders the profiles with the configured layout (List, Grid, ...).

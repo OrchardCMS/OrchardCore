@@ -87,16 +87,6 @@ msgctxt "OrchardCore.Flows.Settings.BagPartSettingsDisplayDriver"
 msgid "Please provide a Stereotype."
 msgstr ""
 
-#: Settings/BagPartSettingsDisplayDriver.cs
-msgctxt "OrchardCore.Flows.Settings.BagPartSettingsDisplayDriver"
-msgid "Settings"
-msgstr ""
-
-#: Settings/FlowPartSettingsDisplayDriver.cs
-msgctxt "OrchardCore.Flows.Settings.FlowPartSettingsDisplayDriver"
-msgid "Settings"
-msgstr ""
-
 #: Views/BagPart-Blocks.Edit.cshtml
 msgctxt "OrchardCore.Flows.Views.BagPart-Blocks.Edit"
 msgid "Add Block"
@@ -134,11 +124,6 @@ msgstr ""
 #, csharp-format
 msgctxt "OrchardCore.Flows.Views.BagPart.Edit"
 msgid "Add {0}"
-msgstr ""
-
-#: Views/BagPart.Option.cshtml
-msgctxt "OrchardCore.Flows.Views.BagPart.Option"
-msgid "Standard"
 msgstr ""
 
 #: Views/BagPartBlocksEditorSettings.Edit.cshtml
@@ -188,11 +173,6 @@ msgstr ""
 
 #: Views/BagPartSettings.Edit.cshtml
 msgctxt "OrchardCore.Flows.Views.BagPartSettings.Edit"
-msgid "Content Types"
-msgstr ""
-
-#: Views/BagPartSettings.Edit.cshtml
-msgctxt "OrchardCore.Flows.Views.BagPartSettings.Edit"
 msgid "Display Type"
 msgstr ""
 
@@ -231,11 +211,6 @@ msgctxt "OrchardCore.Flows.Views.ContentCard-BagPart.Edit"
 msgid "Are you sure you want to remove this item?"
 msgstr ""
 
-#: Views/ContentCard-BagPart.Edit.cshtml
-msgctxt "OrchardCore.Flows.Views.ContentCard-BagPart.Edit"
-msgid "Delete"
-msgstr ""
-
 #. Format arguments: {0}: contentItem.DisplayText; {1}: contentTypeDisplayText
 #: Views/ContentCard-BagPart.Edit.cshtml
 #, csharp-format
@@ -246,11 +221,6 @@ msgstr ""
 #: Views/ContentCard-FlowPart.Edit.cshtml
 msgctxt "OrchardCore.Flows.Views.ContentCard-FlowPart.Edit"
 msgid "Are you sure you want to remove this item?"
-msgstr ""
-
-#: Views/ContentCard-FlowPart.Edit.cshtml
-msgctxt "OrchardCore.Flows.Views.ContentCard-FlowPart.Edit"
-msgid "Delete"
 msgstr ""
 
 #: Views/ContentCard-FlowPart.Edit.cshtml
@@ -273,11 +243,6 @@ msgstr ""
 #: Views/ContentCard-FlowPartBlocks.Edit.cshtml
 msgctxt "OrchardCore.Flows.Views.ContentCard-FlowPartBlocks.Edit"
 msgid "Are you sure you want to remove this item?"
-msgstr ""
-
-#: Views/ContentCard-FlowPartBlocks.Edit.cshtml
-msgctxt "OrchardCore.Flows.Views.ContentCard-FlowPartBlocks.Edit"
-msgid "Delete"
 msgstr ""
 
 #: Views/ContentCard-FlowPartBlocks.Edit.cshtml
@@ -310,11 +275,6 @@ msgstr ""
 #: Views/ContentTypePicker.cshtml
 msgctxt "OrchardCore.Flows.Views.ContentTypePicker"
 msgid "No content types match your search criteria."
-msgstr ""
-
-#: Views/ContentTypePicker.cshtml
-msgctxt "OrchardCore.Flows.Views.ContentTypePicker"
-msgid "Search"
 msgstr ""
 
 #: Views/FlowMetadata.Edit.cshtml
@@ -400,11 +360,6 @@ msgstr ""
 #: Views/FlowPart.Edit.cshtml
 msgctxt "OrchardCore.Flows.Views.FlowPart.Edit"
 msgid "No widgets found."
-msgstr ""
-
-#: Views/FlowPart.Option.cshtml
-msgctxt "OrchardCore.Flows.Views.FlowPart.Option"
-msgid "Standard"
 msgstr ""
 
 #: Views/FlowPartSettings.Edit.cshtml

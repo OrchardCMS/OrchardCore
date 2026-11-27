@@ -23,11 +23,6 @@ msgstr ""
 
 #: Activities/NotifyUserTaskActivity.cs
 msgctxt "OrchardCore.Notifications.Activities.NotifyUserTaskActivity"
-msgid "Done"
-msgstr ""
-
-#: Activities/NotifyUserTaskActivity.cs
-msgctxt "OrchardCore.Notifications.Activities.NotifyUserTaskActivity"
 msgid "Failed"
 msgstr ""
 
@@ -64,11 +59,6 @@ msgstr ""
 #: Controllers/AdminController.cs
 msgctxt "OrchardCore.Notifications.Controllers.AdminController"
 msgid "Recently created"
-msgstr ""
-
-#: Controllers/AdminController.cs
-msgctxt "OrchardCore.Notifications.Controllers.AdminController"
-msgid "Remove"
 msgstr ""
 
 #: Controllers/AdminController.cs
@@ -358,11 +348,6 @@ msgstr ""
 
 #: Views/NotificationsActions_DetailAdmin.cshtml
 msgctxt "OrchardCore.Notifications.Views.NotificationsActions_DetailAdmin"
-msgid "Delete"
-msgstr ""
-
-#: Views/NotificationsActions_DetailAdmin.cshtml
-msgctxt "OrchardCore.Notifications.Views.NotificationsActions_DetailAdmin"
 msgid "Delete a notification"
 msgstr ""
 
@@ -373,27 +358,12 @@ msgstr ""
 
 #: Views/NotificationsActions_DetailAdmin.cshtml
 msgctxt "OrchardCore.Notifications.Views.NotificationsActions_DetailAdmin"
-msgid "No"
-msgstr ""
-
-#: Views/NotificationsActions_DetailAdmin.cshtml
-msgctxt "OrchardCore.Notifications.Views.NotificationsActions_DetailAdmin"
 msgid "Open"
-msgstr ""
-
-#: Views/NotificationsActions_DetailAdmin.cshtml
-msgctxt "OrchardCore.Notifications.Views.NotificationsActions_DetailAdmin"
-msgid "Yes"
 msgstr ""
 
 #: Views/NotificationsActions_SummaryAdmin.cshtml
 msgctxt "OrchardCore.Notifications.Views.NotificationsActions_SummaryAdmin"
 msgid "Mark as read"
-msgstr ""
-
-#: Views/NotificationsAdminList.cshtml
-msgctxt "OrchardCore.Notifications.Views.NotificationsAdminList"
-msgid "Actions"
 msgstr ""
 
 #: Views/NotificationsAdminList.cshtml
@@ -416,11 +386,6 @@ msgctxt "OrchardCore.Notifications.Views.NotificationsAdminList"
 msgid "selected"
 msgstr ""
 
-#: Views/NotificationsAdminList.Fields.BulkActions.cshtml
-msgctxt "OrchardCore.Notifications.Views.NotificationsAdminList.Fields.BulkActions"
-msgid "Actions"
-msgstr ""
-
 #: Views/NotificationsAdminListActionBarButtons.cshtml
 msgctxt "OrchardCore.Notifications.Views.NotificationsAdminListActionBarButtons"
 msgid "Are you sure you to mark all notifications as read?"
@@ -428,22 +393,7 @@ msgstr ""
 
 #: Views/NotificationsAdminListActionBarButtons.cshtml
 msgctxt "OrchardCore.Notifications.Views.NotificationsAdminListActionBarButtons"
-msgid "Cancel"
-msgstr ""
-
-#: Views/NotificationsAdminListActionBarButtons.cshtml
-msgctxt "OrchardCore.Notifications.Views.NotificationsAdminListActionBarButtons"
-msgid "Delete"
-msgstr ""
-
-#: Views/NotificationsAdminListActionBarButtons.cshtml
-msgctxt "OrchardCore.Notifications.Views.NotificationsAdminListActionBarButtons"
 msgid "Mark All as Read"
-msgstr ""
-
-#: Views/NotificationsAdminListActionBarButtons.cshtml
-msgctxt "OrchardCore.Notifications.Views.NotificationsAdminListActionBarButtons"
-msgid "Ok"
 msgstr ""
 
 #. Format arguments: {0}: @item.Text.ToLower()
@@ -498,11 +448,6 @@ msgctxt "OrchardCore.Notifications.Views.NotificationsAdminListFilters"
 msgid "Type"
 msgstr ""
 
-#: Views/NotificationsAdminListSearch.cshtml
-msgctxt "OrchardCore.Notifications.Views.NotificationsAdminListSearch"
-msgid "Search"
-msgstr ""
-
 #. Format arguments: {0}: count
 #: Views/NotificationsAdminListSummary.cshtml
 #, csharp-format
@@ -545,11 +490,6 @@ msgstr ""
 
 #: Views/NotificationsButtonActions_SummaryAdmin.cshtml
 msgctxt "OrchardCore.Notifications.Views.NotificationsButtonActions_SummaryAdmin"
-msgid "Delete"
-msgstr ""
-
-#: Views/NotificationsButtonActions_SummaryAdmin.cshtml
-msgctxt "OrchardCore.Notifications.Views.NotificationsButtonActions_SummaryAdmin"
 msgid "Delete a notification"
 msgstr ""
 
@@ -560,22 +500,12 @@ msgstr ""
 
 #: Views/NotificationsButtonActions_SummaryAdmin.cshtml
 msgctxt "OrchardCore.Notifications.Views.NotificationsButtonActions_SummaryAdmin"
-msgid "No"
-msgstr ""
-
-#: Views/NotificationsButtonActions_SummaryAdmin.cshtml
-msgctxt "OrchardCore.Notifications.Views.NotificationsButtonActions_SummaryAdmin"
 msgid "Unread a message"
 msgstr ""
 
 #: Views/NotificationsButtonActions_SummaryAdmin.cshtml
 msgctxt "OrchardCore.Notifications.Views.NotificationsButtonActions_SummaryAdmin"
 msgid "View"
-msgstr ""
-
-#: Views/NotificationsButtonActions_SummaryAdmin.cshtml
-msgctxt "OrchardCore.Notifications.Views.NotificationsButtonActions_SummaryAdmin"
-msgid "Yes"
 msgstr ""
 
 #. Format arguments: {0}: Model.Notification.Summary

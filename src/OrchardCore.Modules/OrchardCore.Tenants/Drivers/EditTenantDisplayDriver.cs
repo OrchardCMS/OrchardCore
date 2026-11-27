@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Localization;
 using OrchardCore.Tenants.ViewModels;
 
 namespace OrchardCore.Tenants.Drivers;
@@ -10,10 +11,13 @@ namespace OrchardCore.Tenants.Drivers;
 /// </summary>
 internal sealed class EditTenantDisplayDriver : DisplayDriver<EditTenantViewModel>
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     internal readonly IStringLocalizer S;
 
-    public EditTenantDisplayDriver(IStringLocalizer<EditTenantDisplayDriver> stringLocalizer)
+    public EditTenantDisplayDriver(IStringLocalizer<EditTenantDisplayDriver> stringLocalizer, IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         S = stringLocalizer;
     }
 
@@ -24,7 +28,7 @@ internal sealed class EditTenantDisplayDriver : DisplayDriver<EditTenantViewMode
         var results = new List<IDisplayResult>
         {
             Initialize<EditTenantViewModel>("TenantGeneral_Edit", m => Populate(model, m, isNew))
-                .Location(l => l.Zone("Content", "1").Card(S["General"], "10")),
+                .Location(l => l.Zone("Content", "1").Card(_localizerFactory.Localize(CommonLocalizationSources.General), "10")),
             Initialize<EditTenantViewModel>("TenantUrl_Edit", m => Populate(model, m, isNew))
                 .Location(l => l.Zone("Content", "2").Card(S["URL"], "20")),
         };

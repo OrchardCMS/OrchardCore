@@ -8,11 +8,6 @@ msgstr ""
 
 #: Activities/HttpRedirectToFormLocationTask.cs
 msgctxt "OrchardCore.Forms.Activities.HttpRedirectToFormLocationTask"
-msgid "Done"
-msgstr ""
-
-#: Activities/HttpRedirectToFormLocationTask.cs
-msgctxt "OrchardCore.Forms.Activities.HttpRedirectToFormLocationTask"
 msgid "Failed"
 msgstr ""
 
@@ -121,11 +116,6 @@ msgstr ""
 #: Services/FormsJSLocalizer.cs
 msgctxt "OrchardCore.Forms.Services.FormsJSLocalizer"
 msgid "Add an option"
-msgstr ""
-
-#: Services/FormsJSLocalizer.cs
-msgctxt "OrchardCore.Forms.Services.FormsJSLocalizer"
-msgid "Cancel"
 msgstr ""
 
 #: Services/FormsJSLocalizer.cs
@@ -307,11 +297,6 @@ msgstr ""
 
 #: Views/Items/FormElementLabelPart.Fields.Edit.cshtml
 msgctxt "OrchardCore.Forms.Views.Items.FormElementLabelPart.Fields.Edit"
-msgid "Standard"
-msgstr ""
-
-#: Views/Items/FormElementLabelPart.Fields.Edit.cshtml
-msgctxt "OrchardCore.Forms.Views.Items.FormElementLabelPart.Fields.Edit"
 msgid "The text to display in the label."
 msgstr ""
 
@@ -333,11 +318,6 @@ msgstr ""
 #: Views/Items/FormElementValidationPart.Fields.Edit.cshtml
 msgctxt "OrchardCore.Forms.Views.Items.FormElementValidationPart.Fields.Edit"
 msgid "None"
-msgstr ""
-
-#: Views/Items/FormElementValidationPart.Fields.Edit.cshtml
-msgctxt "OrchardCore.Forms.Views.Items.FormElementValidationPart.Fields.Edit"
-msgid "Standard"
 msgstr ""
 
 #: Views/Items/FormElementValidationPart.Fields.Edit.cshtml
@@ -518,11 +498,6 @@ msgstr ""
 #: Views/Items/InputPart.Fields.Edit.cshtml
 msgctxt "OrchardCore.Forms.Views.Items.InputPart.Fields.Edit"
 msgid "Reset"
-msgstr ""
-
-#: Views/Items/InputPart.Fields.Edit.cshtml
-msgctxt "OrchardCore.Forms.Views.Items.InputPart.Fields.Edit"
-msgid "Search"
 msgstr ""
 
 #: Views/Items/InputPart.Fields.Edit.cshtml
@@ -738,24 +713,9 @@ msgctxt "OrchardCore.Forms.Workflows.Activities.AddModelValidationErrorTask"
 msgid "Add Model Validation Error Task"
 msgstr ""
 
-#: Workflows/Activities/AddModelValidationErrorTask.cs
-msgctxt "OrchardCore.Forms.Workflows.Activities.AddModelValidationErrorTask"
-msgid "Done"
-msgstr ""
-
 #: Workflows/Activities/BindModelStateTask.cs
 msgctxt "OrchardCore.Forms.Workflows.Activities.BindModelStateTask"
 msgid "Bind Model State Task"
-msgstr ""
-
-#: Workflows/Activities/BindModelStateTask.cs
-msgctxt "OrchardCore.Forms.Workflows.Activities.BindModelStateTask"
-msgid "Done"
-msgstr ""
-
-#: Workflows/Activities/ValidateAntiforgeryTokenTask.cs
-msgctxt "OrchardCore.Forms.Workflows.Activities.ValidateAntiforgeryTokenTask"
-msgid "Done"
 msgstr ""
 
 #: Workflows/Activities/ValidateAntiforgeryTokenTask.cs
@@ -771,11 +731,6 @@ msgstr ""
 #: Workflows/Activities/ValidateAntiforgeryTokenTask.cs
 msgctxt "OrchardCore.Forms.Workflows.Activities.ValidateAntiforgeryTokenTask"
 msgid "Validate Antiforgery Token Task"
-msgstr ""
-
-#: Workflows/Activities/ValidateFormFieldTask.cs
-msgctxt "OrchardCore.Forms.Workflows.Activities.ValidateFormFieldTask"
-msgid "Done"
 msgstr ""
 
 #: Workflows/Activities/ValidateFormFieldTask.cs

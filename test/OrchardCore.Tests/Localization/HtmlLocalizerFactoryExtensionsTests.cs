@@ -1,13 +1,48 @@
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Html;
+using OrchardCore.DisplayManagement.Razor;
 using OrchardCore.Localization;
 
 namespace OrchardCore.Tests.Localization;
 
 public class HtmlLocalizerFactoryExtensionsTests
 {
+    [Fact]
+    public void Localize_RazorPageWithDifferentRequestServices_UsesCurrentTenantFactory()
+    {
+        var source = CommonLocalizationSources.Save;
+        var first = new Mock<IHtmlLocalizer>();
+        first.Setup(l => l["Save"]).Returns(new LocalizedHtmlString("Save", "<strong>first</strong>"));
+        var second = new Mock<IHtmlLocalizer>();
+        second.Setup(l => l["Save"]).Returns(new LocalizedHtmlString("Save", "<strong>second</strong>"));
+        var firstFactory = new Mock<IHtmlLocalizerFactory>();
+        firstFactory.Setup(f => f.Create(source.Type)).Returns(first.Object);
+        var secondFactory = new Mock<IHtmlLocalizerFactory>();
+        secondFactory.Setup(f => f.Create(source.Type)).Returns(second.Object);
+        using var firstServices = new ServiceCollection()
+            .AddSingleton<ViewContextAccessor>()
+            .AddSingleton(firstFactory.Object)
+            .BuildServiceProvider();
+        using var secondServices = new ServiceCollection()
+            .AddSingleton(secondFactory.Object)
+            .BuildServiceProvider();
+        var context = new DefaultHttpContext { RequestServices = firstServices };
+        var page = new SharedSourcePage { ViewContext = new ViewContext { HttpContext = context } };
+
+        Assert.Equal("<strong>first</strong>", Render(page.Localize(source)));
+        context.RequestServices = secondServices;
+        Assert.Equal("<strong>second</strong>", Render(page.Localize(source)));
+    }
+
+    private sealed class SharedSourcePage : RazorPage<object>
+    {
+        public override Task ExecuteAsync() => Task.CompletedTask;
+    }
+
     [Fact]
     public void Localize_WithNullFactory_Throws()
     {

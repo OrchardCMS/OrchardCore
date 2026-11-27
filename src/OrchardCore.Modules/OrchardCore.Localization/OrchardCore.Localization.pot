@@ -16,11 +16,6 @@ msgctxt "OrchardCore.Localization.AdminMenu"
 msgid "Localization"
 msgstr ""
 
-#: AdminMenu.cs
-msgctxt "OrchardCore.Localization.AdminMenu"
-msgid "Settings"
-msgstr ""
-
 #: Drivers/LocalizationSettingsDisplayDriver.cs
 msgctxt "OrchardCore.Localization.Drivers.LocalizationSettingsDisplayDriver"
 msgid "A culture is required"

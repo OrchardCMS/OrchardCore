@@ -33,11 +33,6 @@ msgstr ""
 
 #: Controllers/AdminController.cs
 msgctxt "OrchardCore.Sitemaps.Controllers.AdminController"
-msgid "Delete"
-msgstr ""
-
-#: Controllers/AdminController.cs
-msgctxt "OrchardCore.Sitemaps.Controllers.AdminController"
 msgid "Sitemap deleted successfully."
 msgstr ""
 
@@ -74,11 +69,6 @@ msgstr ""
 #: Controllers/SitemapCacheController.cs
 msgctxt "OrchardCore.Sitemaps.Controllers.SitemapCacheController"
 msgid "Sitemap cache purged."
-msgstr ""
-
-#: Controllers/SitemapIndexController.cs
-msgctxt "OrchardCore.Sitemaps.Controllers.SitemapIndexController"
-msgid "Delete"
 msgstr ""
 
 #: Controllers/SitemapIndexController.cs
@@ -131,11 +121,6 @@ msgctxt "OrchardCore.Sitemaps.Deployment.AllSitemapsDeploymentStepDriver"
 msgid "Sitemaps"
 msgstr ""
 
-#: Drivers/CreateSitemapDisplayDriver.cs
-msgctxt "OrchardCore.Sitemaps.Drivers.CreateSitemapDisplayDriver"
-msgid "General"
-msgstr ""
-
 #: Drivers/CustomPathSitemapSourceDriver.cs
 msgctxt "OrchardCore.Sitemaps.Drivers.CustomPathSitemapSourceDriver"
 msgid "Custom path"
@@ -153,16 +138,6 @@ msgstr ""
 #, csharp-format
 msgctxt "OrchardCore.Sitemaps.Drivers.CustomPathSitemapSourceDriver"
 msgid "Your path is too long. The path can only be up to {0} characters."
-msgstr ""
-
-#: Drivers/EditSitemapDisplayDriver.cs
-msgctxt "OrchardCore.Sitemaps.Drivers.EditSitemapDisplayDriver"
-msgid "General"
-msgstr ""
-
-#: Drivers/SitemapIndexDisplayDriver.cs
-msgctxt "OrchardCore.Sitemaps.Drivers.SitemapIndexDisplayDriver"
-msgid "General"
 msgstr ""
 
 #: Drivers/SitemapIndexDisplayDriver.cs
@@ -208,11 +183,6 @@ msgstr ""
 
 #: Views/Admin/Create.cshtml
 msgctxt "OrchardCore.Sitemaps.Views.Admin.Create"
-msgid "Cancel"
-msgstr ""
-
-#: Views/Admin/Create.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.Admin.Create"
 msgid "Create"
 msgstr ""
 
@@ -253,11 +223,6 @@ msgstr ""
 
 #: Views/Admin/Display.cshtml
 msgctxt "OrchardCore.Sitemaps.Views.Admin.Display"
-msgid "Cancel"
-msgstr ""
-
-#: Views/Admin/Display.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.Admin.Display"
 msgid "Sitemap"
 msgstr ""
 
@@ -278,17 +243,7 @@ msgstr ""
 
 #: Views/Admin/Edit.cshtml
 msgctxt "OrchardCore.Sitemaps.Views.Admin.Edit"
-msgid "Cancel"
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.Admin.Edit"
 msgid "Edit Sitemap"
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.Admin.Edit"
-msgid "Save"
 msgstr ""
 
 #: Views/Admin/Edit.cshtml
@@ -308,32 +263,12 @@ msgstr ""
 
 #: Views/Admin/List.cshtml
 msgctxt "OrchardCore.Sitemaps.Views.Admin.List"
-msgid "Actions"
-msgstr ""
-
-#: Views/Admin/List.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.Admin.List"
 msgid "Add Sitemap"
 msgstr ""
 
 #: Views/Admin/List.cshtml
 msgctxt "OrchardCore.Sitemaps.Views.Admin.List"
-msgid "Name"
-msgstr ""
-
-#: Views/Admin/List.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.Admin.List"
-msgid "Search"
-msgstr ""
-
-#: Views/Admin/List.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.Admin.List"
 msgid "Sitemaps"
-msgstr ""
-
-#: Views/Admin/List.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.Admin.List"
-msgid "Status"
 msgstr ""
 
 #: Views/Admin/List.cshtml
@@ -478,11 +413,6 @@ msgstr ""
 
 #: Views/SitemapCache/List.cshtml
 msgctxt "OrchardCore.Sitemaps.Views.SitemapCache.List"
-msgid "Actions"
-msgstr ""
-
-#: Views/SitemapCache/List.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.SitemapCache.List"
 msgid "Are you sure you want to purge the entire sitemap cache?"
 msgstr ""
 
@@ -494,11 +424,6 @@ msgstr ""
 #: Views/SitemapCache/List.cshtml
 msgctxt "OrchardCore.Sitemaps.Views.SitemapCache.List"
 msgid "Purge All"
-msgstr ""
-
-#: Views/SitemapCache/List.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.SitemapCache.List"
-msgid "Search"
 msgstr ""
 
 #: Views/SitemapCache/List.cshtml
@@ -523,16 +448,6 @@ msgstr ""
 
 #: Views/SitemapCreateGeneral.Edit.cshtml
 msgctxt "OrchardCore.Sitemaps.Views.SitemapCreateGeneral.Edit"
-msgid "Enabled"
-msgstr ""
-
-#: Views/SitemapCreateGeneral.Edit.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.SitemapCreateGeneral.Edit"
-msgid "Name"
-msgstr ""
-
-#: Views/SitemapCreateGeneral.Edit.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.SitemapCreateGeneral.Edit"
 msgid "Permalink"
 msgstr ""
 
@@ -548,16 +463,6 @@ msgstr ""
 
 #: Views/SitemapEditGeneral.Edit.cshtml
 msgctxt "OrchardCore.Sitemaps.Views.SitemapEditGeneral.Edit"
-msgid "Enabled"
-msgstr ""
-
-#: Views/SitemapEditGeneral.Edit.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.SitemapEditGeneral.Edit"
-msgid "Name"
-msgstr ""
-
-#: Views/SitemapEditGeneral.Edit.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.SitemapEditGeneral.Edit"
 msgid "Permalink"
 msgstr ""
 
@@ -569,21 +474,11 @@ msgstr ""
 #: Views/SitemapEditGeneral.Edit.cshtml
 msgctxt "OrchardCore.Sitemaps.Views.SitemapEditGeneral.Edit"
 msgid "Uncheck to disable routing to this sitemap."
-msgstr ""
-
-#: Views/SitemapIndex/Create.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.SitemapIndex.Create"
-msgid "Cancel"
 msgstr ""
 
 #: Views/SitemapIndex/Create.cshtml
 msgctxt "OrchardCore.Sitemaps.Views.SitemapIndex.Create"
 msgid "Create Sitemap Index"
-msgstr ""
-
-#: Views/SitemapIndex/Create.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.SitemapIndex.Create"
-msgid "Save"
 msgstr ""
 
 #: Views/SitemapIndex/Create.cshtml
@@ -598,17 +493,7 @@ msgstr ""
 
 #: Views/SitemapIndex/Edit.cshtml
 msgctxt "OrchardCore.Sitemaps.Views.SitemapIndex.Edit"
-msgid "Cancel"
-msgstr ""
-
-#: Views/SitemapIndex/Edit.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.SitemapIndex.Edit"
 msgid "Edit Sitemap Index"
-msgstr ""
-
-#: Views/SitemapIndex/Edit.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.SitemapIndex.Edit"
-msgid "Save"
 msgstr ""
 
 #: Views/SitemapIndex/Edit.cshtml
@@ -628,32 +513,12 @@ msgstr ""
 
 #: Views/SitemapIndex/List.cshtml
 msgctxt "OrchardCore.Sitemaps.Views.SitemapIndex.List"
-msgid "Actions"
-msgstr ""
-
-#: Views/SitemapIndex/List.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.SitemapIndex.List"
 msgid "Add Sitemap Index"
 msgstr ""
 
 #: Views/SitemapIndex/List.cshtml
 msgctxt "OrchardCore.Sitemaps.Views.SitemapIndex.List"
-msgid "Name"
-msgstr ""
-
-#: Views/SitemapIndex/List.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.SitemapIndex.List"
-msgid "Search"
-msgstr ""
-
-#: Views/SitemapIndex/List.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.SitemapIndex.List"
 msgid "Sitemap Indexes"
-msgstr ""
-
-#: Views/SitemapIndex/List.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.SitemapIndex.List"
-msgid "Status"
 msgstr ""
 
 #: Views/SitemapIndex/List.cshtml
@@ -664,16 +529,6 @@ msgstr ""
 #: Views/SitemapIndex/List.cshtml
 msgctxt "OrchardCore.Sitemaps.Views.SitemapIndex.List"
 msgid "selected"
-msgstr ""
-
-#: Views/SitemapIndexGeneral.Edit.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.SitemapIndexGeneral.Edit"
-msgid "Enabled"
-msgstr ""
-
-#: Views/SitemapIndexGeneral.Edit.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.SitemapIndexGeneral.Edit"
-msgid "Name"
 msgstr ""
 
 #: Views/SitemapIndexGeneral.Edit.cshtml
@@ -703,16 +558,6 @@ msgstr ""
 
 #: Views/SitemapIndexListEntry.Buttons.SummaryAdmin.cshtml
 msgctxt "OrchardCore.Sitemaps.Views.SitemapIndexListEntry.Buttons.SummaryAdmin"
-msgid "Delete"
-msgstr ""
-
-#: Views/SitemapIndexListEntry.Buttons.SummaryAdmin.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.SitemapIndexListEntry.Buttons.SummaryAdmin"
-msgid "Edit"
-msgstr ""
-
-#: Views/SitemapIndexListEntry.Buttons.SummaryAdmin.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.SitemapIndexListEntry.Buttons.SummaryAdmin"
 msgid "View"
 msgstr ""
 
@@ -721,21 +566,6 @@ msgstr ""
 #, csharp-format
 msgctxt "OrchardCore.Sitemaps.Views.SitemapIndexListEntry.Checkbox.SummaryAdmin"
 msgid "Select {0}"
-msgstr ""
-
-#: Views/SitemapIndexListEntry.DefaultTags.SummaryAdmin.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.SitemapIndexListEntry.DefaultTags.SummaryAdmin"
-msgid "Disabled"
-msgstr ""
-
-#: Views/SitemapIndexListEntry.DefaultTags.SummaryAdmin.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.SitemapIndexListEntry.DefaultTags.SummaryAdmin"
-msgid "Enabled"
-msgstr ""
-
-#: Views/SitemapIndexListEntry.DefaultTags.SummaryAdmin.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.SitemapIndexListEntry.DefaultTags.SummaryAdmin"
-msgid "Status"
 msgstr ""
 
 #: Views/SitemapIndexSitemaps.Edit.cshtml
@@ -760,16 +590,6 @@ msgstr ""
 
 #: Views/SitemapListEntry.Buttons.SummaryAdmin.cshtml
 msgctxt "OrchardCore.Sitemaps.Views.SitemapListEntry.Buttons.SummaryAdmin"
-msgid "Delete"
-msgstr ""
-
-#: Views/SitemapListEntry.Buttons.SummaryAdmin.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.SitemapListEntry.Buttons.SummaryAdmin"
-msgid "Edit"
-msgstr ""
-
-#: Views/SitemapListEntry.Buttons.SummaryAdmin.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.SitemapListEntry.Buttons.SummaryAdmin"
 msgid "Manage Sources"
 msgstr ""
 
@@ -783,21 +603,6 @@ msgstr ""
 #, csharp-format
 msgctxt "OrchardCore.Sitemaps.Views.SitemapListEntry.Checkbox.SummaryAdmin"
 msgid "Select {0}"
-msgstr ""
-
-#: Views/SitemapListEntry.DefaultTags.SummaryAdmin.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.SitemapListEntry.DefaultTags.SummaryAdmin"
-msgid "Disabled"
-msgstr ""
-
-#: Views/SitemapListEntry.DefaultTags.SummaryAdmin.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.SitemapListEntry.DefaultTags.SummaryAdmin"
-msgid "Enabled"
-msgstr ""
-
-#: Views/SitemapListEntry.DefaultTags.SummaryAdmin.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.SitemapListEntry.DefaultTags.SummaryAdmin"
-msgid "Status"
 msgstr ""
 
 #: Views/SitemapPart.Edit.cshtml
@@ -895,21 +700,6 @@ msgctxt "OrchardCore.Sitemaps.Views.SitemapPart.Edit"
 msgid "The frequency this content item is likely to change."
 msgstr ""
 
-#: Views/SitemapSource.Edit.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.SitemapSource.Edit"
-msgid "General"
-msgstr ""
-
-#: Views/SitemapSource.SummaryAdmin.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.SitemapSource.SummaryAdmin"
-msgid "Delete"
-msgstr ""
-
-#: Views/SitemapSource.SummaryAdmin.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.SitemapSource.SummaryAdmin"
-msgid "Edit"
-msgstr ""
-
 #: Views/SitemapSource.Thumbnail.cshtml
 msgctxt "OrchardCore.Sitemaps.Views.SitemapSource.Thumbnail"
 msgid "Add"
@@ -927,22 +717,12 @@ msgstr ""
 
 #: Views/Source/Create.cshtml
 msgctxt "OrchardCore.Sitemaps.Views.Source.Create"
-msgid "Cancel"
-msgstr ""
-
-#: Views/Source/Create.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.Source.Create"
 msgid "Create"
 msgstr ""
 
 #: Views/Source/Create.cshtml
 msgctxt "OrchardCore.Sitemaps.Views.Source.Create"
 msgid "Create Sitemap Source"
-msgstr ""
-
-#: Views/Source/Create.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.Source.Create"
-msgid "General"
 msgstr ""
 
 #: Views/Source/Create.cshtml
@@ -957,27 +737,7 @@ msgstr ""
 
 #: Views/Source/Edit.cshtml
 msgctxt "OrchardCore.Sitemaps.Views.Source.Edit"
-msgid "Cancel"
-msgstr ""
-
-#: Views/Source/Edit.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.Source.Edit"
-msgid "Delete"
-msgstr ""
-
-#: Views/Source/Edit.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.Source.Edit"
 msgid "Edit Sitemap Source"
-msgstr ""
-
-#: Views/Source/Edit.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.Source.Edit"
-msgid "General"
-msgstr ""
-
-#: Views/Source/Edit.cshtml
-msgctxt "OrchardCore.Sitemaps.Views.Source.Edit"
-msgid "Save"
 msgstr ""
 
 #: Views/Source/Edit.cshtml

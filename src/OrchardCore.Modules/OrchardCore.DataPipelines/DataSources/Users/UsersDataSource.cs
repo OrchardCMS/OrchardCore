@@ -16,6 +16,8 @@ namespace OrchardCore.DataSources.Users;
 /// </summary>
 public sealed class UsersDataSource : IDataSource
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     /// <summary>
     /// The technical name of the data source.
     /// </summary>
@@ -38,8 +40,10 @@ public sealed class UsersDataSource : IDataSource
     public UsersDataSource(
         ISession session,
         IAuthorizationService authorizationService,
-        IStringLocalizer<UsersDataSource> localizer)
+        IStringLocalizer<UsersDataSource> localizer,
+        IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         _session = session;
         _authorizationService = authorizationService;
         S = localizer;
@@ -187,7 +191,7 @@ public sealed class UsersDataSource : IDataSource
             new(new DataField("EmailConfirmed", S["Email confirmed"], DataFieldType.Boolean), user => user.EmailConfirmed),
             new(new DataField("PhoneNumber", S["Phone number"], DataFieldType.Text), user => user.PhoneNumber),
             new(new DataField("PhoneNumberConfirmed", S["Phone number confirmed"], DataFieldType.Boolean), user => user.PhoneNumberConfirmed),
-            new(new DataField("IsEnabled", S["Enabled"], DataFieldType.Boolean), user => user.IsEnabled),
+            new(new DataField("IsEnabled", _localizerFactory.Localize(CommonLocalizationSources.BooleanFields.Enabled), DataFieldType.Boolean), user => user.IsEnabled),
             new(new DataField("TwoFactorEnabled", S["Two-factor authentication"], DataFieldType.Boolean), user => user.TwoFactorEnabled),
             new(new DataField("IsLockoutEnabled", S["Lockout enabled"], DataFieldType.Boolean), user => user.IsLockoutEnabled),
             new(new DataField("LockoutEndUtc", S["Locked out until"], DataFieldType.DateTime), user => user.LockoutEndUtc),

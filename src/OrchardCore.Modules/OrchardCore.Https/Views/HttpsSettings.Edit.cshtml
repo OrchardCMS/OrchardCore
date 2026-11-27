@@ -14,8 +14,8 @@
     <label asp-for="StrictTransportSecurityMode" class="ocat-label">@T["HSTS mode"]</label>
     <div class="ocat-end">
         <select asp-for="StrictTransportSecurityMode" class="form-select" asp-is-disabled="@(!Model.IsHttpsRequest)">
-            <option value="@nameof(OrchardCore.Https.Settings.HttpStrictTransportSecurityMode.Disabled)">@T["Disabled"]</option>
-            <option value="@nameof(OrchardCore.Https.Settings.HttpStrictTransportSecurityMode.Enabled)">@T["Enabled"]</option>
+            <option value="@nameof(OrchardCore.Https.Settings.HttpStrictTransportSecurityMode.Disabled)">@Localize(CommonLocalizationSources.DisabledState)</option>
+            <option value="@nameof(OrchardCore.Https.Settings.HttpStrictTransportSecurityMode.Enabled)">@Localize(CommonLocalizationSources.EnabledState)</option>
             <option value="@nameof(OrchardCore.Https.Settings.HttpStrictTransportSecurityMode.FromConfiguration)">@T["From environment — enabled in Production, disabled otherwise"]</option>
         </select>
         <span class="hint">@T["Determines whether HTTP Strict Transport Security (HSTS) headers are disabled by default, enabled explicitly, or follow the current environment."]</span>

@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Localization;
 using OrchardCore.Secrets.ViewModels;
 
 namespace OrchardCore.Secrets.Drivers;
@@ -10,10 +11,13 @@ namespace OrchardCore.Secrets.Drivers;
 /// </summary>
 internal sealed class SecretEditDisplayDriver : DisplayDriver<SecretEditViewModel>
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     internal readonly IStringLocalizer S;
 
-    public SecretEditDisplayDriver(IStringLocalizer<SecretEditDisplayDriver> stringLocalizer)
+    public SecretEditDisplayDriver(IStringLocalizer<SecretEditDisplayDriver> stringLocalizer, IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         S = stringLocalizer;
     }
 
@@ -29,7 +33,7 @@ internal sealed class SecretEditDisplayDriver : DisplayDriver<SecretEditViewMode
 
         return Combine(
             Initialize<SecretEditViewModel>("SecretEditGeneral_Edit", m => Populate(model, m))
-                .Location(l => l.Zone("Content", "1").Card(S["General"], "10")),
+                .Location(l => l.Zone("Content", "1").Card(_localizerFactory.Localize(CommonLocalizationSources.General), "10")),
             Initialize<SecretEditViewModel>("SecretEditValue_Edit", m => Populate(model, m))
                 .Location(l => l.Zone("Content", "2").Card(valueCardName, "20")));
     }

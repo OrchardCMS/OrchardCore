@@ -44,7 +44,7 @@ public abstract class TenantActivity : Activity
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        return Outcome(S["Done"]);
+        return Outcome(LocalizerFactory.Localize(CommonLocalizationSources.Workflow.Done));
     }
 
     public override ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)

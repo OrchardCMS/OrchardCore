@@ -31,8 +31,8 @@
 
         @if (hasEditor)
         {
-            <a class="btn btn-sm btn-primary activity-edit-action" asp-action="Edit" asp-controller="Activity" asp-route-workflowtypeid="@Model.WorkflowTypeId" asp-route-activityid="@activityRecord.ActivityId" asp-route-returnurl="@Model.ReturnUrl" data-persist-workflow="true" title="@T["Edit"]"><i class="fa-solid fa-pencil" aria-hidden="true"></i></a>
+            <a class="btn btn-sm btn-primary activity-edit-action" asp-action="Edit" asp-controller="Activity" asp-route-workflowtypeid="@Model.WorkflowTypeId" asp-route-activityid="@activityRecord.ActivityId" asp-route-returnurl="@Model.ReturnUrl" data-persist-workflow="true" title="@Localize(CommonLocalizationSources.Edit)"><i class="fa-solid fa-pencil" aria-hidden="true"></i></a>
         }
-        <a class="btn btn-sm btn-danger activity-delete-action" href="#" title="@T["Delete"]"><i class="fa-solid fa-trash" aria-hidden="true"></i></a>
+        <a class="btn btn-sm btn-danger activity-delete-action" href="#" title="@Localize(CommonLocalizationSources.Delete)"><i class="fa-solid fa-trash" aria-hidden="true"></i></a>
     </div>
 </div>

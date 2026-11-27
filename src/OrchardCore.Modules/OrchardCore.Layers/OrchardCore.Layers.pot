@@ -13,11 +13,6 @@ msgstr ""
 
 #: AdminMenu.cs
 msgctxt "OrchardCore.Layers.AdminMenu"
-msgid "Settings"
-msgstr ""
-
-#: AdminMenu.cs
-msgctxt "OrchardCore.Layers.AdminMenu"
 msgid "Widgets"
 msgstr ""
 
@@ -76,11 +71,6 @@ msgstr ""
 #: Deployment/AllLayersDeploymentStepDriver.cs
 msgctxt "OrchardCore.Layers.Deployment.AllLayersDeploymentStepDriver"
 msgid "Layers"
-msgstr ""
-
-#: Drivers/LayerEditDisplayDriver.cs
-msgctxt "OrchardCore.Layers.Drivers.LayerEditDisplayDriver"
-msgid "General"
 msgstr ""
 
 #: Drivers/LayerEditDisplayDriver.cs
@@ -179,11 +169,6 @@ msgstr ""
 
 #: Views/Admin/Create.cshtml
 msgctxt "OrchardCore.Layers.Views.Admin.Create"
-msgid "Cancel"
-msgstr ""
-
-#: Views/Admin/Create.cshtml
-msgctxt "OrchardCore.Layers.Views.Admin.Create"
 msgid "Create"
 msgstr ""
 
@@ -195,11 +180,6 @@ msgstr ""
 #: Views/Admin/Create.cshtml
 msgctxt "OrchardCore.Layers.Views.Admin.Create"
 msgid "Widgets and Layers"
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.Layers.Views.Admin.Edit"
-msgid "Cancel"
 msgstr ""
 
 #. Format arguments: {0}: Model.Name
@@ -216,17 +196,7 @@ msgstr ""
 
 #: Views/Admin/Edit.cshtml
 msgctxt "OrchardCore.Layers.Views.Admin.Edit"
-msgid "Save"
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.Layers.Views.Admin.Edit"
 msgid "Widgets and Layers"
-msgstr ""
-
-#: Views/Admin/Index.cshtml
-msgctxt "OrchardCore.Layers.Views.Admin.Index"
-msgid "Actions"
 msgstr ""
 
 #: Views/Admin/Index.cshtml
@@ -237,11 +207,6 @@ msgstr ""
 #: Views/Admin/Index.cshtml
 msgctxt "OrchardCore.Layers.Views.Admin.Index"
 msgid "Layers"
-msgstr ""
-
-#: Views/Admin/Index.cshtml
-msgctxt "OrchardCore.Layers.Views.Admin.Index"
-msgid "Name"
 msgstr ""
 
 #: Views/Admin/Index.cshtml
@@ -266,11 +231,6 @@ msgstr ""
 #, csharp-format
 msgctxt "OrchardCore.Layers.Views.Admin.Index"
 msgid "Please <a href=\"{0}\">define the available zones</a> before adding Widgets"
-msgstr ""
-
-#: Views/Admin/Index.cshtml
-msgctxt "OrchardCore.Layers.Views.Admin.Index"
-msgid "See documentation"
 msgstr ""
 
 #: Views/Admin/Index.cshtml
@@ -318,16 +278,6 @@ msgctxt "OrchardCore.Layers.Views.Items.AllLayersDeploymentStep.Thumbnail"
 msgid "Exports all layers."
 msgstr ""
 
-#: Views/Layer.Buttons.SummaryAdmin.cshtml
-msgctxt "OrchardCore.Layers.Views.Layer.Buttons.SummaryAdmin"
-msgid "Delete"
-msgstr ""
-
-#: Views/Layer.Buttons.SummaryAdmin.cshtml
-msgctxt "OrchardCore.Layers.Views.Layer.Buttons.SummaryAdmin"
-msgid "Edit"
-msgstr ""
-
 #. Format arguments: {0}: Model.Value.Name
 #: Views/Layer.Checkbox.SummaryAdmin.cshtml
 #, csharp-format
@@ -338,11 +288,6 @@ msgstr ""
 #: Views/LayerGeneral.Edit.cshtml
 msgctxt "OrchardCore.Layers.Views.LayerGeneral.Edit"
 msgid "Description"
-msgstr ""
-
-#: Views/LayerGeneral.Edit.cshtml
-msgctxt "OrchardCore.Layers.Views.LayerGeneral.Edit"
-msgid "Name"
 msgstr ""
 
 #: Views/LayerMetadata.Edit.cshtml
@@ -377,11 +322,6 @@ msgstr ""
 
 #: Views/LayerRule/Create.cshtml
 msgctxt "OrchardCore.Layers.Views.LayerRule.Create"
-msgid "Cancel"
-msgstr ""
-
-#: Views/LayerRule/Create.cshtml
-msgctxt "OrchardCore.Layers.Views.LayerRule.Create"
 msgid "Create"
 msgstr ""
 
@@ -402,11 +342,6 @@ msgctxt "OrchardCore.Layers.Views.LayerRule.Create"
 msgid "Widgets and Layers"
 msgstr ""
 
-#: Views/LayerRule/Edit.cshtml
-msgctxt "OrchardCore.Layers.Views.LayerRule.Edit"
-msgid "Cancel"
-msgstr ""
-
 #. Format arguments: {0}: Model.Name
 #: Views/LayerRule/Edit.cshtml
 #, csharp-format
@@ -417,11 +352,6 @@ msgstr ""
 #: Views/LayerRule/Edit.cshtml
 msgctxt "OrchardCore.Layers.Views.LayerRule.Edit"
 msgid "Edit Rule"
-msgstr ""
-
-#: Views/LayerRule/Edit.cshtml
-msgctxt "OrchardCore.Layers.Views.LayerRule.Edit"
-msgid "Save"
 msgstr ""
 
 #: Views/LayerRule/Edit.cshtml

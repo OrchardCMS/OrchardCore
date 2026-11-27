@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Localization;
 using OrchardCore.Tenants.ViewModels;
 
 namespace OrchardCore.Tenants.Drivers;
@@ -10,17 +11,20 @@ namespace OrchardCore.Tenants.Drivers;
 /// </summary>
 internal sealed class FeatureProfileDisplayDriver : DisplayDriver<FeatureProfileViewModel>
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     internal readonly IStringLocalizer S;
 
-    public FeatureProfileDisplayDriver(IStringLocalizer<FeatureProfileDisplayDriver> stringLocalizer)
+    public FeatureProfileDisplayDriver(IStringLocalizer<FeatureProfileDisplayDriver> stringLocalizer, IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         S = stringLocalizer;
     }
 
     public override IDisplayResult Edit(FeatureProfileViewModel model, BuildEditorContext context)
     {
         return Initialize<FeatureProfileViewModel>("FeatureProfileGeneral_Edit", m => Populate(model, m))
-            .Location(l => l.Zone("Content", "1").Card(S["General"], "10"));
+            .Location(l => l.Zone("Content", "1").Card(_localizerFactory.Localize(CommonLocalizationSources.General), "10"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(FeatureProfileViewModel model, UpdateEditorContext context)

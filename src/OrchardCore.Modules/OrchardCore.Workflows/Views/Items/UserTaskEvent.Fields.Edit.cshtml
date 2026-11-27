@@ -2,7 +2,7 @@
 @model UserTaskEventViewModel
 
 <div class="ocat-wrapper" asp-validation-class-for="Actions">
-    <label asp-for="Actions" class="ocat-label">@T["Actions"]</label>
+    <label asp-for="Actions" class="ocat-label">@Localize(CommonLocalizationSources.Workflow.Actions)</label>
     <div class="ocat-end">
         <input asp-for="Actions" class="form-control" />
         <span asp-validation-for="Actions"></span>

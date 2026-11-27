@@ -1,3 +1,4 @@
+using OrchardCore.Localization;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -25,6 +26,8 @@ namespace OrchardCore.Tenants.Controllers;
 [Admin("TenantFeatureProfiles/{action}/{id?}", "TenantFeatureProfiles{action}")]
 public sealed class FeatureProfilesController : Controller
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     private const string _optionsSearch = "Options.Search";
 
     private readonly IAuthorizationService _authorizationService;
@@ -48,8 +51,10 @@ public sealed class FeatureProfilesController : Controller
         IUpdateModelAccessor updateModelAccessor,
         IStringLocalizer<FeatureProfilesController> stringLocalizer,
         IHtmlLocalizer<FeatureProfilesController> htmlLocalizer
-        )
+        ,
+        IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         _authorizationService = authorizationService;
         _featureProfilesManager = featureProfilesManager;
         _notifier = notifier;
@@ -115,7 +120,7 @@ public sealed class FeatureProfilesController : Controller
 
         model.Options.ContentsBulkAction =
         [
-            new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
+            new SelectListItem(_localizerFactory.Localize(CommonLocalizationSources.Delete), nameof(ContentsBulkAction.Remove)),
         ];
 
         // The AdminList shape renders the profiles with the configured layout (List, Grid, ...).

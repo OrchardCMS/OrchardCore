@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 using Microsoft.Extensions.Options;
 using Moq;
 using OrchardCore.Admin;
@@ -234,7 +235,8 @@ public class AdminControllerTests
             Mock.Of<YesSql.ISession>(),
             Mock.Of<INotifier>(),
             Mock.Of<IHtmlLocalizer<AdminController>>(),
-            stringLocalizer.Object)
+            stringLocalizer.Object,
+            new NullStringLocalizerFactory())
         {
             ControllerContext = new()
             {

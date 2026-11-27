@@ -28,17 +28,7 @@ msgstr ""
 
 #: Controllers/BackgroundTaskController.cs
 msgctxt "OrchardCore.BackgroundTasks.Controllers.BackgroundTaskController"
-msgid "Disabled"
-msgstr ""
-
-#: Controllers/BackgroundTaskController.cs
-msgctxt "OrchardCore.BackgroundTasks.Controllers.BackgroundTaskController"
 msgid "Enable"
-msgstr ""
-
-#: Controllers/BackgroundTaskController.cs
-msgctxt "OrchardCore.BackgroundTasks.Controllers.BackgroundTaskController"
-msgid "Enabled"
 msgstr ""
 
 #: Controllers/BackgroundTaskController.cs
@@ -154,11 +144,6 @@ msgstr ""
 
 #: Drivers/BackgroundTaskDisplayDriver.cs
 msgctxt "OrchardCore.BackgroundTasks.Drivers.BackgroundTaskDisplayDriver"
-msgid "General"
-msgstr ""
-
-#: Drivers/BackgroundTaskDisplayDriver.cs
-msgctxt "OrchardCore.BackgroundTasks.Drivers.BackgroundTaskDisplayDriver"
 msgid "Locking"
 msgstr ""
 
@@ -201,22 +186,7 @@ msgstr ""
 
 #: Views/BackgroundTask/Details.cshtml
 msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Details"
-msgid "Disabled"
-msgstr ""
-
-#: Views/BackgroundTask/Details.cshtml
-msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Details"
 msgid "Duration"
-msgstr ""
-
-#: Views/BackgroundTask/Details.cshtml
-msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Details"
-msgid "Edit"
-msgstr ""
-
-#: Views/BackgroundTask/Details.cshtml
-msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Details"
-msgid "Enabled"
 msgstr ""
 
 #: Views/BackgroundTask/Details.cshtml
@@ -276,11 +246,6 @@ msgstr ""
 
 #: Views/BackgroundTask/Details.cshtml
 msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Details"
-msgid "No"
-msgstr ""
-
-#: Views/BackgroundTask/Details.cshtml
-msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Details"
 msgid "Not scheduled, the task is disabled."
 msgstr ""
 
@@ -306,17 +271,7 @@ msgstr ""
 
 #: Views/BackgroundTask/Details.cshtml
 msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Details"
-msgid "Settings"
-msgstr ""
-
-#: Views/BackgroundTask/Details.cshtml
-msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Details"
 msgid "Started"
-msgstr ""
-
-#: Views/BackgroundTask/Details.cshtml
-msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Details"
-msgid "Status"
 msgstr ""
 
 #: Views/BackgroundTask/Details.cshtml
@@ -354,11 +309,6 @@ msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Details"
 msgid "Waiting for the background service to load this task."
 msgstr ""
 
-#: Views/BackgroundTask/Details.cshtml
-msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Details"
-msgid "Yes"
-msgstr ""
-
 #. Format arguments: {0}: Model.LockTimeout; {1}: Model.LockExpiration
 #: Views/BackgroundTask/Details.cshtml
 #, csharp-format
@@ -378,27 +328,12 @@ msgstr ""
 
 #: Views/BackgroundTask/Edit.cshtml
 msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Edit"
-msgid "Cancel"
-msgstr ""
-
-#: Views/BackgroundTask/Edit.cshtml
-msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Edit"
 msgid "Edit Task Settings"
-msgstr ""
-
-#: Views/BackgroundTask/Edit.cshtml
-msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Edit"
-msgid "Save"
 msgstr ""
 
 #: Views/BackgroundTask/Index.cshtml
 msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Index"
 msgid "<strong>Nothing here!</strong> There are no background tasks for the moment."
-msgstr ""
-
-#: Views/BackgroundTask/Index.cshtml
-msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Index"
-msgid "Actions"
 msgstr ""
 
 #: Views/BackgroundTask/Index.cshtml
@@ -418,16 +353,6 @@ msgstr ""
 
 #: Views/BackgroundTask/Index.cshtml
 msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Index"
-msgid "Search"
-msgstr ""
-
-#: Views/BackgroundTask/Index.cshtml
-msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Index"
-msgid "Status"
-msgstr ""
-
-#: Views/BackgroundTask/Index.cshtml
-msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Index"
 msgid "The execution state of the tasks is not available because the background service is not registered."
 msgstr ""
 
@@ -439,11 +364,6 @@ msgstr ""
 #: Views/BackgroundTask/Index.cshtml
 msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask.Index"
 msgid "selected"
-msgstr ""
-
-#: Views/BackgroundTask/_BackgroundTaskActions.cshtml
-msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTask._BackgroundTaskActions"
-msgid "Actions"
 msgstr ""
 
 #: Views/BackgroundTask/_BackgroundTaskActions.cshtml
@@ -517,11 +437,6 @@ msgstr ""
 
 #: Views/BackgroundTaskEntry.Buttons.SummaryAdmin.cshtml
 msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTaskEntry.Buttons.SummaryAdmin"
-msgid "Edit"
-msgstr ""
-
-#: Views/BackgroundTaskEntry.Buttons.SummaryAdmin.cshtml
-msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTaskEntry.Buttons.SummaryAdmin"
 msgid "Enable"
 msgstr ""
 
@@ -530,21 +445,6 @@ msgstr ""
 #, csharp-format
 msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTaskEntry.Checkbox.SummaryAdmin"
 msgid "Select {0}"
-msgstr ""
-
-#: Views/BackgroundTaskEntry.DefaultTags.SummaryAdmin.cshtml
-msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTaskEntry.DefaultTags.SummaryAdmin"
-msgid "Disabled"
-msgstr ""
-
-#: Views/BackgroundTaskEntry.DefaultTags.SummaryAdmin.cshtml
-msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTaskEntry.DefaultTags.SummaryAdmin"
-msgid "Enabled"
-msgstr ""
-
-#: Views/BackgroundTaskEntry.DefaultTags.SummaryAdmin.cshtml
-msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTaskEntry.DefaultTags.SummaryAdmin"
-msgid "Status"
 msgstr ""
 
 #: Views/BackgroundTaskEntry.LastRun.SummaryAdmin.cshtml
@@ -667,9 +567,4 @@ msgstr ""
 #: Views/BackgroundTasksFilters.cshtml
 msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTasksFilters"
 msgid "Filter by status"
-msgstr ""
-
-#: Views/BackgroundTasksFilters.cshtml
-msgctxt "OrchardCore.BackgroundTasks.Views.BackgroundTasksFilters"
-msgid "Status"
 msgstr ""

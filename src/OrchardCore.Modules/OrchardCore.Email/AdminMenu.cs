@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Email.Controllers;
+using OrchardCore.Localization;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 
@@ -8,6 +9,8 @@ namespace OrchardCore.Email;
 
 public sealed class AdminMenu : AdminNavigationProvider
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     private static readonly RouteValueDictionary s_routeValues = new()
     {
         { "area", "OrchardCore.Settings" },
@@ -16,8 +19,9 @@ public sealed class AdminMenu : AdminNavigationProvider
 
     internal readonly IStringLocalizer S;
 
-    public AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer)
+    public AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer, IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         S = stringLocalizer;
     }
 
@@ -35,7 +39,7 @@ public sealed class AdminMenu : AdminNavigationProvider
                     )
                 )
             )
-            .Add(S["Settings"], settings => settings
+            .Add(_localizerFactory.Localize(CommonLocalizationSources.Settings), settings => settings
                 .Add(S["Communication"], S["Communication"].PrefixPosition(), communication => communication
                     .Add(S["Email"], S["Email"].PrefixPosition(), entry => entry
                         .AddClass("email")

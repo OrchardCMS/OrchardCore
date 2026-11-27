@@ -84,11 +84,6 @@ msgstr ""
 
 #: Views/Admin/Features.cshtml
 msgctxt "OrchardCore.Features.Views.Admin.Features"
-msgid "Actions"
-msgstr ""
-
-#: Views/Admin/Features.cshtml
-msgctxt "OrchardCore.Features.Views.Admin.Features"
 msgid "Any status"
 msgstr ""
 
@@ -154,26 +149,11 @@ msgctxt "OrchardCore.Features.Views.Admin.Features"
 msgid "Hide on demand"
 msgstr ""
 
-#: Views/Admin/Features.cshtml
-msgctxt "OrchardCore.Features.Views.Admin.Features"
-msgid "Name"
-msgstr ""
-
-#: Views/Admin/Features.cshtml
-msgctxt "OrchardCore.Features.Views.Admin.Features"
-msgid "Search"
-msgstr ""
-
 #. Format arguments: {0}: "__VISIBLE__", totalFeatures; {1}: "__TOTAL__", totalFeatures
 #: Views/Admin/Features.cshtml
 #, csharp-format
 msgctxt "OrchardCore.Features.Views.Admin.Features"
 msgid "Showing {0} of {1} features"
-msgstr ""
-
-#: Views/Admin/Features.cshtml
-msgctxt "OrchardCore.Features.Views.Admin.Features"
-msgid "Status"
 msgstr ""
 
 #: Views/Admin/Features.cshtml
@@ -212,11 +192,6 @@ msgstr ""
 
 #: Views/FeatureEntry.Buttons.SummaryAdmin.cshtml
 msgctxt "OrchardCore.Features.Views.FeatureEntry.Buttons.SummaryAdmin"
-msgid "No"
-msgstr ""
-
-#: Views/FeatureEntry.Buttons.SummaryAdmin.cshtml
-msgctxt "OrchardCore.Features.Views.FeatureEntry.Buttons.SummaryAdmin"
 msgid "This feature is always enabled and cannot be manually disabled."
 msgstr ""
 
@@ -230,26 +205,11 @@ msgctxt "OrchardCore.Features.Views.FeatureEntry.Buttons.SummaryAdmin"
 msgid "This feature is automatically enabled based on dependency and cannot be manually disabled."
 msgstr ""
 
-#: Views/FeatureEntry.Buttons.SummaryAdmin.cshtml
-msgctxt "OrchardCore.Features.Views.FeatureEntry.Buttons.SummaryAdmin"
-msgid "Yes"
-msgstr ""
-
 #. Format arguments: {0}: Model.Value.Feature.Descriptor.Name
 #: Views/FeatureEntry.Checkbox.SummaryAdmin.cshtml
 #, csharp-format
 msgctxt "OrchardCore.Features.Views.FeatureEntry.Checkbox.SummaryAdmin"
 msgid "Select {0}"
-msgstr ""
-
-#: Views/FeatureEntry.DefaultMeta.SummaryAdmin.cshtml
-msgctxt "OrchardCore.Features.Views.FeatureEntry.DefaultMeta.SummaryAdmin"
-msgid "Disabled"
-msgstr ""
-
-#: Views/FeatureEntry.DefaultMeta.SummaryAdmin.cshtml
-msgctxt "OrchardCore.Features.Views.FeatureEntry.DefaultMeta.SummaryAdmin"
-msgid "Enabled"
 msgstr ""
 
 #: Views/FeatureEntry.DefaultMeta.SummaryAdmin.cshtml

@@ -1,7 +1,7 @@
 @model AdminIndexViewModel
 
 <zone Name="Title">
-    <breadcrumb name="GeneralSettings" title="@T["Settings"]" />
+    <breadcrumb name="GeneralSettings" title="@Localize(CommonLocalizationSources.Settings)" />
 </zone>
 
 <form asp-action="Index" asp-route-returnUrl="@Context.Request.Query["ReturnUrl"]" method="post" enctype="multipart/form-data" class="no-multisubmit">

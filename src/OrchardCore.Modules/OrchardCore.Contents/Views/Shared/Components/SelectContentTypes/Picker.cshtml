@@ -18,7 +18,7 @@
         data-deselect-all-text="@T["Deselect all"]"
         data-none-results-text="@T["No content type matches {0}", "{0}"]"
         data-live-search-placeholder="@T["Search content types"]"
-        data-selected-tag-remove-label="@T["Remove"]">
+        data-selected-tag-remove-label="@Localize(CommonLocalizationSources.Remove)">
     @foreach (var selection in Model.ContentTypeSelections)
     {
         <option value="@selection.ContentTypeDefinition.Name" selected="@selection.IsSelected">@D[selection.ContentTypeDefinition.DisplayName, "Content Types"]</option>

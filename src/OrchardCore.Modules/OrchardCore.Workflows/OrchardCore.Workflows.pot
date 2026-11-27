@@ -13,11 +13,6 @@ msgstr ""
 
 #: Activities/CommitTransactionTask.cs
 msgctxt "OrchardCore.Workflows.Activities.CommitTransactionTask"
-msgid "Done"
-msgstr ""
-
-#: Activities/CommitTransactionTask.cs
-msgctxt "OrchardCore.Workflows.Activities.CommitTransactionTask"
 msgid "Invalid"
 msgstr ""
 
@@ -29,16 +24,6 @@ msgstr ""
 #: Activities/CorrelateTask.cs
 msgctxt "OrchardCore.Workflows.Activities.CorrelateTask"
 msgid "Correlate Task"
-msgstr ""
-
-#: Activities/CorrelateTask.cs
-msgctxt "OrchardCore.Workflows.Activities.CorrelateTask"
-msgid "Done"
-msgstr ""
-
-#: Activities/ExecuteWorkflowTask.cs
-msgctxt "OrchardCore.Workflows.Activities.ExecuteWorkflowTask"
-msgid "Done"
 msgstr ""
 
 #: Activities/ExecuteWorkflowTask.cs
@@ -58,11 +43,6 @@ msgstr ""
 
 #: Activities/ForEachTask.cs
 msgctxt "OrchardCore.Workflows.Activities.ForEachTask"
-msgid "Done"
-msgstr ""
-
-#: Activities/ForEachTask.cs
-msgctxt "OrchardCore.Workflows.Activities.ForEachTask"
 msgid "For Each Task"
 msgstr ""
 
@@ -74,11 +54,6 @@ msgstr ""
 #: Activities/ForEachTask.cs
 msgctxt "OrchardCore.Workflows.Activities.ForEachTask"
 msgid "The current item of the loop."
-msgstr ""
-
-#: Activities/ForLoopTask.cs
-msgctxt "OrchardCore.Workflows.Activities.ForLoopTask"
-msgid "Done"
 msgstr ""
 
 #: Activities/ForLoopTask.cs
@@ -128,11 +103,6 @@ msgstr ""
 
 #: Activities/LiquidTask.cs
 msgctxt "OrchardCore.Workflows.Activities.LiquidTask"
-msgid "Done"
-msgstr ""
-
-#: Activities/LiquidTask.cs
-msgctxt "OrchardCore.Workflows.Activities.LiquidTask"
 msgid "Liquid Task"
 msgstr ""
 
@@ -153,22 +123,12 @@ msgstr ""
 
 #: Activities/LogTask.cs
 msgctxt "OrchardCore.Workflows.Activities.LogTask"
-msgid "Done"
-msgstr ""
-
-#: Activities/LogTask.cs
-msgctxt "OrchardCore.Workflows.Activities.LogTask"
 msgid "Log Task"
 msgstr ""
 
 #: Activities/MissingActivity.cs
 msgctxt "OrchardCore.Workflows.Activities.MissingActivity"
 msgid "Missing Activity"
-msgstr ""
-
-#: Activities/NotifyTask.cs
-msgctxt "OrchardCore.Workflows.Activities.NotifyTask"
-msgid "Done"
 msgstr ""
 
 #: Activities/NotifyTask.cs
@@ -198,22 +158,12 @@ msgstr ""
 
 #: Activities/SetOutputTask.cs
 msgctxt "OrchardCore.Workflows.Activities.SetOutputTask"
-msgid "Done"
-msgstr ""
-
-#: Activities/SetOutputTask.cs
-msgctxt "OrchardCore.Workflows.Activities.SetOutputTask"
 msgid "Set Output Task"
 msgstr ""
 
 #: Activities/SetOutputTask.cs
 msgctxt "OrchardCore.Workflows.Activities.SetOutputTask"
 msgid "The value this activity sets."
-msgstr ""
-
-#: Activities/SetPropertyTask.cs
-msgctxt "OrchardCore.Workflows.Activities.SetPropertyTask"
-msgid "Done"
 msgstr ""
 
 #: Activities/SetPropertyTask.cs
@@ -238,17 +188,7 @@ msgstr ""
 
 #: Activities/SetVariableTask.cs
 msgctxt "OrchardCore.Workflows.Activities.SetVariableTask"
-msgid "Done"
-msgstr ""
-
-#: Activities/SetVariableTask.cs
-msgctxt "OrchardCore.Workflows.Activities.SetVariableTask"
 msgid "Set Variable Task"
-msgstr ""
-
-#: Activities/WhileLoopTask.cs
-msgctxt "OrchardCore.Workflows.Activities.WhileLoopTask"
-msgid "Done"
 msgstr ""
 
 #: Activities/WhileLoopTask.cs
@@ -321,16 +261,6 @@ msgstr ""
 #: Controllers/WorkflowController.cs
 msgctxt "OrchardCore.Workflows.Controllers.WorkflowController"
 msgid "Any time"
-msgstr ""
-
-#: Controllers/WorkflowController.cs
-msgctxt "OrchardCore.Workflows.Controllers.WorkflowController"
-msgid "Cancel"
-msgstr ""
-
-#: Controllers/WorkflowController.cs
-msgctxt "OrchardCore.Workflows.Controllers.WorkflowController"
-msgid "Delete"
 msgstr ""
 
 #: Controllers/WorkflowController.cs
@@ -473,11 +403,6 @@ msgctxt "OrchardCore.Workflows.Controllers.WorkflowDesignerController"
 msgid "This workflow runs one instance at a time, and one is running."
 msgstr ""
 
-#: Controllers/WorkflowTypeController.cs
-msgctxt "OrchardCore.Workflows.Controllers.WorkflowTypeController"
-msgid "Delete"
-msgstr ""
-
 #. Format arguments: {0}: count; {1}: string.Join(", ", deletedWorkflowTypeNames)
 #: Controllers/WorkflowTypeController.cs
 #, csharp-format
@@ -602,11 +527,6 @@ msgstr ""
 
 #: Drivers/WorkflowTypePropertiesDisplayDriver.cs
 msgctxt "OrchardCore.Workflows.Drivers.WorkflowTypePropertiesDisplayDriver"
-msgid "General"
-msgstr ""
-
-#: Drivers/WorkflowTypePropertiesDisplayDriver.cs
-msgctxt "OrchardCore.Workflows.Drivers.WorkflowTypePropertiesDisplayDriver"
 msgid "History"
 msgstr ""
 
@@ -622,22 +542,12 @@ msgstr ""
 
 #: Events/StartedByWorkflowEvent.cs
 msgctxt "OrchardCore.Workflows.Events.StartedByWorkflowEvent"
-msgid "Done"
-msgstr ""
-
-#: Events/StartedByWorkflowEvent.cs
-msgctxt "OrchardCore.Workflows.Events.StartedByWorkflowEvent"
 msgid "Started By Workflow Event"
 msgstr ""
 
 #: Events/WorkflowFaultEvent.cs
 msgctxt "OrchardCore.Workflows.Events.WorkflowFaultEvent"
 msgid "Catch Workflow Fault Event"
-msgstr ""
-
-#: Events/WorkflowFaultEvent.cs
-msgctxt "OrchardCore.Workflows.Events.WorkflowFaultEvent"
-msgid "Done"
 msgstr ""
 
 #: Events/WorkflowFaultEvent.cs
@@ -696,17 +606,7 @@ msgstr ""
 
 #: Http/Activities/HttpRedirectTask.cs
 msgctxt "OrchardCore.Workflows.Http.Activities.HttpRedirectTask"
-msgid "Done"
-msgstr ""
-
-#: Http/Activities/HttpRedirectTask.cs
-msgctxt "OrchardCore.Workflows.Http.Activities.HttpRedirectTask"
 msgid "Http Redirect Task"
-msgstr ""
-
-#: Http/Activities/HttpRequestEvent.cs
-msgctxt "OrchardCore.Workflows.Http.Activities.HttpRequestEvent"
-msgid "Done"
 msgstr ""
 
 #: Http/Activities/HttpRequestEvent.cs
@@ -776,17 +676,7 @@ msgstr ""
 
 #: Http/Activities/HttpResponseTask.cs
 msgctxt "OrchardCore.Workflows.Http.Activities.HttpResponseTask"
-msgid "Done"
-msgstr ""
-
-#: Http/Activities/HttpResponseTask.cs
-msgctxt "OrchardCore.Workflows.Http.Activities.HttpResponseTask"
 msgid "Http Response Task"
-msgstr ""
-
-#: Http/Activities/SignalEvent.cs
-msgctxt "OrchardCore.Workflows.Http.Activities.SignalEvent"
-msgid "Done"
 msgstr ""
 
 #: Http/Activities/SignalEvent.cs
@@ -1350,11 +1240,6 @@ msgstr ""
 
 #: Services/WorkflowsDesignerJSLocalizer.cs
 msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
-msgid "Cancel"
-msgstr ""
-
-#: Services/WorkflowsDesignerJSLocalizer.cs
-msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
 msgid "Changed"
 msgstr ""
 
@@ -1463,11 +1348,6 @@ msgstr ""
 
 #: Services/WorkflowsDesignerJSLocalizer.cs
 msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
-msgid "Delete"
-msgstr ""
-
-#: Services/WorkflowsDesignerJSLocalizer.cs
-msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
 msgid "Delete connection"
 msgstr ""
 
@@ -1572,11 +1452,6 @@ msgstr ""
 #: Services/WorkflowsDesignerJSLocalizer.cs
 msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
 msgid "Each time the instance ran this activity, and what it evaluated, set and changed."
-msgstr ""
-
-#: Services/WorkflowsDesignerJSLocalizer.cs
-msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
-msgid "Edit"
 msgstr ""
 
 #: Services/WorkflowsDesignerJSLocalizer.cs
@@ -1786,11 +1661,6 @@ msgstr ""
 
 #: Services/WorkflowsDesignerJSLocalizer.cs
 msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
-msgid "Name"
-msgstr ""
-
-#: Services/WorkflowsDesignerJSLocalizer.cs
-msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
 msgid "No activities match the search."
 msgstr ""
 
@@ -1956,11 +1826,6 @@ msgstr ""
 #: Services/WorkflowsDesignerJSLocalizer.cs
 msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
 msgid "Reload to get the latest version. Your unsaved changes are lost."
-msgstr ""
-
-#: Services/WorkflowsDesignerJSLocalizer.cs
-msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
-msgid "Remove"
 msgstr ""
 
 #. Format arguments: {0}; {1}
@@ -2134,11 +1999,6 @@ msgstr ""
 #: Services/WorkflowsDesignerJSLocalizer.cs
 msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
 msgid "Set by a workflow that runs this one as an activity, or by the input of the same name the workflow starts with."
-msgstr ""
-
-#: Services/WorkflowsDesignerJSLocalizer.cs
-msgctxt "OrchardCore.Workflows.Services.WorkflowsDesignerJSLocalizer"
-msgid "Settings"
 msgstr ""
 
 #: Services/WorkflowsDesignerJSLocalizer.cs
@@ -2872,22 +2732,12 @@ msgstr ""
 
 #: Timers/TimerEvent.cs
 msgctxt "OrchardCore.Workflows.Timers.TimerEvent"
-msgid "Done"
-msgstr ""
-
-#: Timers/TimerEvent.cs
-msgctxt "OrchardCore.Workflows.Timers.TimerEvent"
 msgid "The text TimerEvent."
 msgstr ""
 
 #: Timers/TimerEvent.cs
 msgctxt "OrchardCore.Workflows.Timers.TimerEvent"
 msgid "Timer Event"
-msgstr ""
-
-#: Trimming/AdminMenu.cs
-msgctxt "OrchardCore.Workflows.Trimming.AdminMenu"
-msgid "Settings"
 msgstr ""
 
 #: Trimming/AdminMenu.cs
@@ -3002,22 +2852,7 @@ msgstr ""
 
 #: Views/Activity.Design.cshtml
 msgctxt "OrchardCore.Workflows.Views.Activity.Design"
-msgid "Delete"
-msgstr ""
-
-#: Views/Activity.Design.cshtml
-msgctxt "OrchardCore.Workflows.Views.Activity.Design"
-msgid "Edit"
-msgstr ""
-
-#: Views/Activity.Design.cshtml
-msgctxt "OrchardCore.Workflows.Views.Activity.Design"
 msgid "Startup event"
-msgstr ""
-
-#: Views/Activity.Edit.cshtml
-msgctxt "OrchardCore.Workflows.Views.Activity.Edit"
-msgid "General"
 msgstr ""
 
 #: Views/Activity.Thumbnail.cshtml
@@ -3100,11 +2935,6 @@ msgstr ""
 #: Views/ActivityRetryPolicy.Edit.cshtml
 msgctxt "OrchardCore.Workflows.Views.ActivityRetryPolicy.Edit"
 msgid "Twice as long each time"
-msgstr ""
-
-#: Views/Content.UserTaskButton.cshtml
-msgctxt "OrchardCore.Workflows.Views.Content.UserTaskButton"
-msgid "Toggle Dropdown"
 msgstr ""
 
 #: Views/Content.UserTaskButton.cshtml
@@ -3926,11 +3756,6 @@ msgstr ""
 
 #: Views/Items/SetOutputTask.Fields.Edit.cshtml
 msgctxt "OrchardCore.Workflows.Views.Items.SetOutputTask.Fields.Edit"
-msgid "Name"
-msgstr ""
-
-#: Views/Items/SetOutputTask.Fields.Edit.cshtml
-msgctxt "OrchardCore.Workflows.Views.Items.SetOutputTask.Fields.Edit"
 msgid "The name to output to."
 msgstr ""
 
@@ -3959,11 +3784,6 @@ msgstr ""
 #, csharp-format
 msgctxt "OrchardCore.Workflows.Views.Items.SetPropertyTask.Fields.Design"
 msgid "Set {0} Property"
-msgstr ""
-
-#: Views/Items/SetPropertyTask.Fields.Edit.cshtml
-msgctxt "OrchardCore.Workflows.Views.Items.SetPropertyTask.Fields.Edit"
-msgid "Name"
 msgstr ""
 
 #: Views/Items/SetPropertyTask.Fields.Edit.cshtml
@@ -4038,11 +3858,6 @@ msgstr ""
 #, csharp-format
 msgctxt "OrchardCore.Workflows.Views.Items.SignalEvent.Fields.Design"
 msgid "When <em>{0}</em> is triggered"
-msgstr ""
-
-#: Views/Items/SignalEvent.Fields.Edit.cshtml
-msgctxt "OrchardCore.Workflows.Views.Items.SignalEvent.Fields.Edit"
-msgid "Name"
 msgstr ""
 
 #: Views/Items/SignalEvent.Fields.Edit.cshtml
@@ -4144,11 +3959,6 @@ msgstr ""
 #: Views/Items/UserTaskEvent.Fields.Design.cshtml
 msgctxt "OrchardCore.Workflows.Views.Items.UserTaskEvent.Fields.Design"
 msgid "User Task"
-msgstr ""
-
-#: Views/Items/UserTaskEvent.Fields.Edit.cshtml
-msgctxt "OrchardCore.Workflows.Views.Items.UserTaskEvent.Fields.Edit"
-msgid "Actions"
 msgstr ""
 
 #: Views/Items/UserTaskEvent.Fields.Edit.cshtml
@@ -4335,11 +4145,6 @@ msgstr ""
 
 #: Views/Workflow/Details.cshtml
 msgctxt "OrchardCore.Workflows.Views.Workflow.Details"
-msgid "Delete"
-msgstr ""
-
-#: Views/Workflow/Details.cshtml
-msgctxt "OrchardCore.Workflows.Views.Workflow.Details"
 msgid "Fault Message"
 msgstr ""
 
@@ -4365,11 +4170,6 @@ msgstr ""
 
 #: Views/Workflow/Details.cshtml
 msgctxt "OrchardCore.Workflows.Views.Workflow.Details"
-msgid "Status"
-msgstr ""
-
-#: Views/Workflow/Details.cshtml
-msgctxt "OrchardCore.Workflows.Views.Workflow.Details"
 msgid "Workflow"
 msgstr ""
 
@@ -4391,11 +4191,6 @@ msgstr ""
 #: Views/Workflow/Index.cshtml
 msgctxt "OrchardCore.Workflows.Views.Workflow.Index"
 msgid "Aborted"
-msgstr ""
-
-#: Views/Workflow/Index.cshtml
-msgctxt "OrchardCore.Workflows.Views.Workflow.Index"
-msgid "Actions"
 msgstr ""
 
 #: Views/Workflow/Index.cshtml
@@ -4440,11 +4235,6 @@ msgstr ""
 
 #: Views/Workflow/Index.cshtml
 msgctxt "OrchardCore.Workflows.Views.Workflow.Index"
-msgid "Status"
-msgstr ""
-
-#: Views/Workflow/Index.cshtml
-msgctxt "OrchardCore.Workflows.Views.Workflow.Index"
 msgid "Workflow"
 msgstr ""
 
@@ -4466,11 +4256,6 @@ msgstr ""
 #: Views/WorkflowEntry.Buttons.SummaryAdmin.cshtml
 msgctxt "OrchardCore.Workflows.Views.WorkflowEntry.Buttons.SummaryAdmin"
 msgid "Are you sure you want to restart this workflow instance?"
-msgstr ""
-
-#: Views/WorkflowEntry.Buttons.SummaryAdmin.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowEntry.Buttons.SummaryAdmin"
-msgid "Delete"
 msgstr ""
 
 #: Views/WorkflowEntry.Buttons.SummaryAdmin.cshtml
@@ -4505,11 +4290,6 @@ msgstr ""
 #: Views/WorkflowEntry.DefaultTags.SummaryAdmin.cshtml
 msgctxt "OrchardCore.Workflows.Views.WorkflowEntry.DefaultTags.SummaryAdmin"
 msgid "Runs on the published version"
-msgstr ""
-
-#: Views/WorkflowEntry.DefaultTags.SummaryAdmin.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowEntry.DefaultTags.SummaryAdmin"
-msgid "Status"
 msgstr ""
 
 #. Format arguments: {0}: Model.Value.Version
@@ -4554,11 +4334,6 @@ msgstr ""
 #: Views/WorkflowInstancesFilters.cshtml
 msgctxt "OrchardCore.Workflows.Views.WorkflowInstancesFilters"
 msgid "Sort by"
-msgstr ""
-
-#: Views/WorkflowInstancesFilters.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowInstancesFilters"
-msgid "Status"
 msgstr ""
 
 #: Views/WorkflowInstancesFilters.cshtml
@@ -4660,11 +4435,6 @@ msgstr ""
 
 #: Views/WorkflowType/Clone.cshtml
 msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
-msgid "Cancel"
-msgstr ""
-
-#: Views/WorkflowType/Clone.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
 msgid "Clone Workflow"
 msgstr ""
 
@@ -4680,11 +4450,6 @@ msgstr ""
 
 #: Views/WorkflowType/Clone.cshtml
 msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
-msgid "Save"
-msgstr ""
-
-#: Views/WorkflowType/Clone.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowType.Clone"
 msgid "Workflows"
 msgstr ""
 
@@ -4696,11 +4461,6 @@ msgstr ""
 #: Views/WorkflowType/CompareVersions.cshtml
 msgctxt "OrchardCore.Workflows.Views.WorkflowType.CompareVersions"
 msgid "Workflows"
-msgstr ""
-
-#: Views/WorkflowType/Create.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowType.Create"
-msgid "Cancel"
 msgstr ""
 
 #: Views/WorkflowType/Create.cshtml
@@ -4725,32 +4485,12 @@ msgstr ""
 
 #: Views/WorkflowType/Index.cshtml
 msgctxt "OrchardCore.Workflows.Views.WorkflowType.Index"
-msgid "Actions"
-msgstr ""
-
-#: Views/WorkflowType/Index.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowType.Index"
 msgid "Create Workflow"
 msgstr ""
 
 #: Views/WorkflowType/Index.cshtml
 msgctxt "OrchardCore.Workflows.Views.WorkflowType.Index"
 msgid "Instances"
-msgstr ""
-
-#: Views/WorkflowType/Index.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowType.Index"
-msgid "Name"
-msgstr ""
-
-#: Views/WorkflowType/Index.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowType.Index"
-msgid "Search"
-msgstr ""
-
-#: Views/WorkflowType/Index.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowType.Index"
-msgid "Status"
 msgstr ""
 
 #: Views/WorkflowType/Index.cshtml
@@ -4785,26 +4525,11 @@ msgctxt "OrchardCore.Workflows.Views.WorkflowTypeEntry.ActionsMenuItems.SummaryA
 msgid "Export"
 msgstr ""
 
-#: Views/WorkflowTypeEntry.Buttons.SummaryAdmin.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowTypeEntry.Buttons.SummaryAdmin"
-msgid "Delete"
-msgstr ""
-
-#: Views/WorkflowTypeEntry.Buttons.SummaryAdmin.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowTypeEntry.Buttons.SummaryAdmin"
-msgid "Edit"
-msgstr ""
-
 #. Format arguments: {0}: Model.Value.Name
 #: Views/WorkflowTypeEntry.Checkbox.SummaryAdmin.cshtml
 #, csharp-format
 msgctxt "OrchardCore.Workflows.Views.WorkflowTypeEntry.Checkbox.SummaryAdmin"
 msgid "Select {0}"
-msgstr ""
-
-#: Views/WorkflowTypeEntry.DefaultTags.SummaryAdmin.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowTypeEntry.DefaultTags.SummaryAdmin"
-msgid "Disabled"
 msgstr ""
 
 #: Views/WorkflowTypeEntry.DefaultTags.SummaryAdmin.cshtml
@@ -4815,11 +4540,6 @@ msgstr ""
 #: Views/WorkflowTypeEntry.DefaultTags.SummaryAdmin.cshtml
 msgctxt "OrchardCore.Workflows.Views.WorkflowTypeEntry.DefaultTags.SummaryAdmin"
 msgid "No startup task"
-msgstr ""
-
-#: Views/WorkflowTypeEntry.DefaultTags.SummaryAdmin.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowTypeEntry.DefaultTags.SummaryAdmin"
-msgid "Status"
 msgstr ""
 
 #: Views/WorkflowTypeExecution.Edit.cshtml
@@ -4835,11 +4555,6 @@ msgstr ""
 #: Views/WorkflowTypeExecution.Edit.cshtml
 msgctxt "OrchardCore.Workflows.Views.WorkflowTypeExecution.Edit"
 msgid "Check to let other workflows run this one with the Execute Workflow task. Its variables marked as inputs and outputs are what they pass and get back."
-msgstr ""
-
-#: Views/WorkflowTypeExecution.Edit.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowTypeExecution.Edit"
-msgid "Enabled"
 msgstr ""
 
 #: Views/WorkflowTypeExecution.Edit.cshtml
@@ -4900,16 +4615,6 @@ msgstr ""
 #: Views/WorkflowTypeExecution.Edit.cshtml
 msgctxt "OrchardCore.Workflows.Views.WorkflowTypeExecution.Edit"
 msgid "With one at a time, an event doesn't start an instance while another instance waits. With one per correlated item, it doesn't start one while an instance for the same item waits, such as the same content item or user, when the event starting it has a correlation id."
-msgstr ""
-
-#: Views/WorkflowTypeGeneral.Edit.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowTypeGeneral.Edit"
-msgid "Enabled"
-msgstr ""
-
-#: Views/WorkflowTypeGeneral.Edit.cshtml
-msgctxt "OrchardCore.Workflows.Views.WorkflowTypeGeneral.Edit"
-msgid "Name"
 msgstr ""
 
 #: Views/WorkflowTypeGeneral.Edit.cshtml

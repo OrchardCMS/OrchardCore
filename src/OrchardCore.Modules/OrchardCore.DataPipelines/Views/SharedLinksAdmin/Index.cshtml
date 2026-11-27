@@ -87,9 +87,9 @@
                     </div>
                 </div>
                 <div class="col-lg-auto col-12 d-flex justify-content-end align-items-center">
-                    <div class="btn-group" title="@T["Actions"]">
+                    <div class="btn-group" title="@Localize(CommonLocalizationSources.Actions)">
                         <button type="button" class="btn btn-sm btn-secondary dropdown-toggle actions" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <span>@T["Actions"]</span>
+                            <span>@Localize(CommonLocalizationSources.Actions)</span>
                         </button>
                         <div class="actions-menu dropdown-menu dropdown-menu-end">
                             @if (Model.SourceUrls.TryGetValue(link.LinkId, out var sourceUrl))
@@ -98,10 +98,10 @@
                             }
                             @if (active)
                             {
-                                <a asp-action="Revoke" asp-route-linkId="@link.LinkId" class="dropdown-item btn-sm" data-url-af="UnsafeUrl" data-title="@T["Revoke"]" data-message="@T["Stop the link to '{0}' from working?", link.Title]" data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]">@T["Revoke the link"]</a>
+                                <a asp-action="Revoke" asp-route-linkId="@link.LinkId" class="dropdown-item btn-sm" data-url-af="UnsafeUrl" data-title="@T["Revoke"]" data-message="@T["Stop the link to '{0}' from working?", link.Title]" data-ok-text="@Localize(CommonLocalizationSources.Yes)" data-cancel-text="@Localize(CommonLocalizationSources.No)">@T["Revoke the link"]</a>
                             }
                             <div class="dropdown-divider"></div>
-                            <a asp-action="Delete" asp-route-linkId="@link.LinkId" class="dropdown-item btn-sm" data-url-af="RemoveUrl UnsafeUrl" data-title="@T["Delete"]" data-message="@T["Delete the link to '{0}'?", link.Title]" data-ok-text="@T["Ok"]" data-cancel-text="@T["Cancel"]">@T["Delete"]</a>
+                            <a asp-action="Delete" asp-route-linkId="@link.LinkId" class="dropdown-item btn-sm" data-url-af="RemoveUrl UnsafeUrl" data-title="@Localize(CommonLocalizationSources.Delete)" data-message="@T["Delete the link to '{0}'?", link.Title]" data-ok-text="@Localize(CommonLocalizationSources.Ok)" data-cancel-text="@Localize(CommonLocalizationSources.Cancel)">@Localize(CommonLocalizationSources.Delete)</a>
                         </div>
                     </div>
                 </div>

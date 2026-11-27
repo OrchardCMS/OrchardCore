@@ -6,11 +6,6 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-OrchardCore-Catalog-Schema: 1\n"
 
-#: AdminMenu.cs
-msgctxt "OrchardCore.CustomSettings.AdminMenu"
-msgid "Settings"
-msgstr ""
-
 #: CustomSettingsLocalizationSources.cs
 msgctxt "OrchardCore.CustomSettings.CustomSettingsLocalizationSources"
 msgid "Custom Settings"

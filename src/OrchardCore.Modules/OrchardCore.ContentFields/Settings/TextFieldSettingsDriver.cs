@@ -1,3 +1,4 @@
+using OrchardCore.Localization;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
@@ -15,6 +16,8 @@ namespace OrchardCore.ContentFields.Settings;
 
 public sealed partial class TextFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<TextField>
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     private const string TextFieldColorEditor = "Color";
 
     private readonly ILiquidTemplateManager _liquidTemplateManager;
@@ -23,8 +26,10 @@ public sealed partial class TextFieldSettingsDriver : ContentPartFieldDefinition
 
     public TextFieldSettingsDriver(
         ILiquidTemplateManager liquidTemplateManager,
-        IStringLocalizer<TextFieldSettingsDriver> stringLocalizer)
+        IStringLocalizer<TextFieldSettingsDriver> stringLocalizer,
+        IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         _liquidTemplateManager = liquidTemplateManager;
         S = stringLocalizer;
     }
@@ -49,7 +54,7 @@ public sealed partial class TextFieldSettingsDriver : ContentPartFieldDefinition
                 new(S["Generated Hidden"], nameof(FieldBehaviorType.GeneratedHidden)),
                 new(S["Generated Disabled"], nameof(FieldBehaviorType.GeneratedDisabled)),
             };
-        }).Location(l => l.Zone("Content").Card(S["Settings"], "20"));
+        }).Location(l => l.Zone("Content").Card(_localizerFactory.Localize(CommonLocalizationSources.Settings), "20"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)

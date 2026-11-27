@@ -27,8 +27,8 @@
     <input name="@(prefix).Value" value="@Model.Filter.Value" class="form-control" aria-label="@T["Value"]" placeholder="@T["Value"]" data-dp-filter-value data-dp-value-placeholder="@T["Value"]" data-dp-list-placeholder="@T["Values, separated by commas"]" />
     <select name="@(prefix).Value" class="form-select" aria-label="@T["Value"]" hidden disabled data-dp-filter-boolean>
         <option value="">@T["Choose a value"]</option>
-        <option value="true">@T["Yes"]</option>
-        <option value="false">@T["No"]</option>
+        <option value="true">@Localize(CommonLocalizationSources.BooleanValues.Yes)</option>
+        <option value="false">@Localize(CommonLocalizationSources.BooleanValues.No)</option>
     </select>
     <span class="input-group-text" hidden data-dp-filter-days>@T["days"]</span>
     <span class="input-group-text" hidden data-dp-filter-and>@T["and"]</span>
@@ -37,7 +37,7 @@
         <i class="fa-solid fa-i-cursor" aria-hidden="true"></i>
         <span class="visually-hidden">@T["Write the value as text"]</span>
     </button>
-    <button type="button" class="btn btn-outline-danger" data-dp-remove title="@T["Remove"]"><i class="fa-solid fa-trash" aria-hidden="true"></i></button>
+    <button type="button" class="btn btn-outline-danger" data-dp-remove title="@Localize(CommonLocalizationSources.Remove)"><i class="fa-solid fa-trash" aria-hidden="true"></i></button>
 </div>
 
 @functions {

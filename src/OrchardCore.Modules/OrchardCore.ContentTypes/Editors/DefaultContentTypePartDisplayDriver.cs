@@ -6,6 +6,7 @@ using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Localization;
 
 namespace OrchardCore.ContentTypes.Editors;
 
@@ -19,6 +20,8 @@ namespace OrchardCore.ContentTypes.Editors;
 /// </remarks>
 internal sealed class DefaultContentTypePartDisplayDriver : ContentTypePartDefinitionDisplayDriver
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     private readonly IThemeManager _themeManager;
     private readonly IShapeTableManager _shapeTableManager;
 
@@ -27,8 +30,10 @@ internal sealed class DefaultContentTypePartDisplayDriver : ContentTypePartDefin
     public DefaultContentTypePartDisplayDriver(
         IThemeManager themeManager,
         IShapeTableManager shapeTableManager,
-        IStringLocalizer<DefaultContentTypePartDisplayDriver> stringLocalizer)
+        IStringLocalizer<DefaultContentTypePartDisplayDriver> stringLocalizer,
+        IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         _themeManager = themeManager;
         _shapeTableManager = shapeTableManager;
         S = stringLocalizer;
@@ -84,6 +89,6 @@ internal sealed class DefaultContentTypePartDisplayDriver : ContentTypePartDefin
             model.TypePartDefinition = typePartDefinition;
             model.EditorShapes = editorShapes;
             model.DisplayShapes = displayShapes;
-        }).Location(l => l.Zone("Header", "1").Card(S["General"], "10"));
+        }).Location(l => l.Zone("Header", "1").Card(_localizerFactory.Localize(CommonLocalizationSources.General), "10"));
     }
 }

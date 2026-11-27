@@ -3,15 +3,19 @@ using OrchardCore.Contents.ViewModels;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Contents.Deployment;
 
 public sealed class ContentDeploymentStepDriver : DisplayDriver<DeploymentStep, ContentDeploymentStep>
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     internal readonly IStringLocalizer S;
 
-    public ContentDeploymentStepDriver(IStringLocalizer<ContentDeploymentStepDriver> stringLocalizer)
+    public ContentDeploymentStepDriver(IStringLocalizer<ContentDeploymentStepDriver> stringLocalizer, IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         S = stringLocalizer;
     }
 
@@ -28,7 +32,7 @@ public sealed class ContentDeploymentStepDriver : DisplayDriver<DeploymentStep, 
     {
         return Combine(
             Initialize<ContentDeploymentStepViewModel>("ContentDeploymentStep_Fields_Edit", model => PopulateViewModel(step, model))
-                .Location(l => l.Zone("Content", "1").Card(S["Content types"], "10")),
+                .Location(l => l.Zone("Content", "1").Card(_localizerFactory.Localize(CommonLocalizationSources.ContentTypes), "10")),
             Initialize<ContentDeploymentStepViewModel>("ContentDeploymentStepExport_Fields_Edit", model => PopulateViewModel(step, model))
                 .Location(l => l.Zone("Content", "2").Card(S["Export"], "20")));
     }

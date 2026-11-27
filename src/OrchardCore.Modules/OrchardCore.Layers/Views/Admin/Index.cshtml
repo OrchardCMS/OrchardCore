@@ -122,7 +122,7 @@
         <p>
             <span class="hint">
                 @T["Select a layer to reveal its associated widgets."]
-                <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Layers/#rules" target="_blank">@T["See documentation"]</a>
+                <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Layers/#rules" target="_blank">@Localize(CommonLocalizationSources.SeeDocumentation)</a>
             </span>
         </p>
         @if (Model.Layers.Count > 0)
@@ -134,8 +134,8 @@
                     <admin-list-list item-css-class="list-group-item" />
                     <admin-list-grid>
                         <admin-list-column type="Select" />
-                        <admin-list-column name="Name" position="20" title="@T["Name"]" />
-                        <admin-list-column type="Actions" title="@T["Actions"]" />
+                        <admin-list-column name="Name" position="20" title="@Localize(CommonLocalizationSources.Name)" />
+                        <admin-list-column type="Actions" title="@Localize(CommonLocalizationSources.Actions)" />
                     </admin-list-grid>
                 </admin-list>
             </div>

@@ -435,11 +435,6 @@ msgstr ""
 
 #: Services/ContentFieldsJSLocalizer.cs
 msgctxt "OrchardCore.ContentFields.Services.ContentFieldsJSLocalizer"
-msgid "Cancel"
-msgstr ""
-
-#: Services/ContentFieldsJSLocalizer.cs
-msgctxt "OrchardCore.ContentFields.Services.ContentFieldsJSLocalizer"
 msgid "Default value"
 msgstr ""
 
@@ -488,11 +483,6 @@ msgctxt "OrchardCore.ContentFields.Services.ContentFieldsJSLocalizer"
 msgid "Value"
 msgstr ""
 
-#: Settings/BooleanFieldSettingsDriver.cs
-msgctxt "OrchardCore.ContentFields.Settings.BooleanFieldSettingsDriver"
-msgid "Settings"
-msgstr ""
-
 #: Settings/ContentPickerFieldSettingsDriver.cs
 msgctxt "OrchardCore.ContentFields.Settings.ContentPickerFieldSettingsDriver"
 msgid "At least one content type must be selected."
@@ -503,11 +493,6 @@ msgctxt "OrchardCore.ContentFields.Settings.ContentPickerFieldSettingsDriver"
 msgid "Please provide a Stereotype."
 msgstr ""
 
-#: Settings/ContentPickerFieldSettingsDriver.cs
-msgctxt "OrchardCore.ContentFields.Settings.ContentPickerFieldSettingsDriver"
-msgid "Settings"
-msgstr ""
-
 #. Format arguments: {0}: string.Join(" ", titleErrors)
 #: Settings/ContentPickerFieldSettingsDriver.cs
 #, csharp-format
@@ -515,16 +500,6 @@ msgctxt "OrchardCore.ContentFields.Settings.ContentPickerFieldSettingsDriver"
 msgid "Title Pattern does not contain a valid Liquid expression. Details: {0}"
 msgstr ""
 
-#: Settings/DateFieldSettingsDriver.cs
-msgctxt "OrchardCore.ContentFields.Settings.DateFieldSettingsDriver"
-msgid "Settings"
-msgstr ""
-
-#: Settings/DateTimeFieldSettingsDriver.cs
-msgctxt "OrchardCore.ContentFields.Settings.DateTimeFieldSettingsDriver"
-msgid "Settings"
-msgstr ""
-
 #: Settings/HtmlFieldMonacoEditorSettingsDriver.cs
 msgctxt "OrchardCore.ContentFields.Settings.HtmlFieldMonacoEditorSettingsDriver"
 msgid "Editor"
@@ -533,11 +508,6 @@ msgstr ""
 #: Settings/HtmlFieldMonacoEditorSettingsDriver.cs
 msgctxt "OrchardCore.ContentFields.Settings.HtmlFieldMonacoEditorSettingsDriver"
 msgid "The options are written in an incorrect format."
-msgstr ""
-
-#: Settings/HtmlFieldSettingsDriver.cs
-msgctxt "OrchardCore.ContentFields.Settings.HtmlFieldSettingsDriver"
-msgid "Settings"
 msgstr ""
 
 #: Settings/HtmlFieldTrumbowygEditorSettingsDriver.cs
@@ -550,29 +520,9 @@ msgctxt "OrchardCore.ContentFields.Settings.HtmlFieldTrumbowygEditorSettingsDriv
 msgid "The options are written in an incorrect format."
 msgstr ""
 
-#: Settings/LinkFieldSettingsDriver.cs
-msgctxt "OrchardCore.ContentFields.Settings.LinkFieldSettingsDriver"
-msgid "Settings"
-msgstr ""
-
-#: Settings/LocalizationSetContentPickerFieldSettingsDriver.cs
-msgctxt "OrchardCore.ContentFields.Settings.LocalizationSetContentPickerFieldSettingsDriver"
-msgid "Settings"
-msgstr ""
-
-#: Settings/MultiTextFieldSettingsDriver.cs
-msgctxt "OrchardCore.ContentFields.Settings.MultiTextFieldSettingsDriver"
-msgid "Settings"
-msgstr ""
-
 #: Settings/MultiTextFieldSettingsDriver.cs
 msgctxt "OrchardCore.ContentFields.Settings.MultiTextFieldSettingsDriver"
 msgid "The options are written in an incorrect format."
-msgstr ""
-
-#: Settings/NumericFieldSettingsDriver.cs
-msgctxt "OrchardCore.ContentFields.Settings.NumericFieldSettingsDriver"
-msgid "Settings"
 msgstr ""
 
 #: Settings/TextFieldHeaderDisplaySettingsDriver.cs
@@ -641,11 +591,6 @@ msgstr ""
 
 #: Settings/TextFieldSettingsDriver.cs
 msgctxt "OrchardCore.ContentFields.Settings.TextFieldSettingsDriver"
-msgid "Settings"
-msgstr ""
-
-#: Settings/TextFieldSettingsDriver.cs
-msgctxt "OrchardCore.ContentFields.Settings.TextFieldSettingsDriver"
 msgid "The maximum length can't be a negative number."
 msgstr ""
 
@@ -659,34 +604,9 @@ msgctxt "OrchardCore.ContentFields.Settings.TextFieldSettingsDriver"
 msgid "The minimum length can't be a negative number."
 msgstr ""
 
-#: Settings/TimeFieldSettingsDriver.cs
-msgctxt "OrchardCore.ContentFields.Settings.TimeFieldSettingsDriver"
-msgid "Settings"
-msgstr ""
-
-#: Settings/UserPickerFieldSettingsDriver.cs
-msgctxt "OrchardCore.ContentFields.Settings.UserPickerFieldSettingsDriver"
-msgid "Settings"
-msgstr ""
-
-#: Settings/YoutubeFieldSettingsDriver.cs
-msgctxt "OrchardCore.ContentFields.Settings.YoutubeFieldSettingsDriver"
-msgid "Settings"
-msgstr ""
-
 #: Views/BooleanField-Switch.Option.cshtml
 msgctxt "OrchardCore.ContentFields.Views.BooleanField-Switch.Option"
 msgid "Switch"
-msgstr ""
-
-#: Views/BooleanField.DisplayOption.cshtml
-msgctxt "OrchardCore.ContentFields.Views.BooleanField.DisplayOption"
-msgid "Standard"
-msgstr ""
-
-#: Views/BooleanField.Option.cshtml
-msgctxt "OrchardCore.ContentFields.Views.BooleanField.Option"
-msgid "Standard"
 msgstr ""
 
 #: Views/BooleanFieldSettings.Edit.cshtml
@@ -729,11 +649,6 @@ msgctxt "OrchardCore.ContentFields.Views.ContentPickerField.DetailAdmin"
 msgid "No content items."
 msgstr ""
 
-#: Views/ContentPickerField.DisplayOption.cshtml
-msgctxt "OrchardCore.ContentFields.Views.ContentPickerField.DisplayOption"
-msgid "Standard"
-msgstr ""
-
 #. Format arguments: {0}: "{0}"
 #: Views/ContentPickerField.Edit.cshtml
 #, csharp-format
@@ -748,22 +663,7 @@ msgstr ""
 
 #: Views/ContentPickerField.Edit.cshtml
 msgctxt "OrchardCore.ContentFields.Views.ContentPickerField.Edit"
-msgid "Remove"
-msgstr ""
-
-#: Views/ContentPickerField.Edit.cshtml
-msgctxt "OrchardCore.ContentFields.Views.ContentPickerField.Edit"
-msgid "Search"
-msgstr ""
-
-#: Views/ContentPickerField.Edit.cshtml
-msgctxt "OrchardCore.ContentFields.Views.ContentPickerField.Edit"
 msgid "Type to search"
-msgstr ""
-
-#: Views/ContentPickerField.Option.cshtml
-msgctxt "OrchardCore.ContentFields.Views.ContentPickerField.Option"
-msgid "Standard"
 msgstr ""
 
 #: Views/ContentPickerFieldSettings.Edit.cshtml
@@ -779,11 +679,6 @@ msgstr ""
 #: Views/ContentPickerFieldSettings.Edit.cshtml
 msgctxt "OrchardCore.ContentFields.Views.ContentPickerFieldSettings.Edit"
 msgid "Contained Content Types"
-msgstr ""
-
-#: Views/ContentPickerFieldSettings.Edit.cshtml
-msgctxt "OrchardCore.ContentFields.Views.ContentPickerFieldSettings.Edit"
-msgid "Content Types"
 msgstr ""
 
 #: Views/ContentPickerFieldSettings.Edit.cshtml
@@ -861,16 +756,6 @@ msgctxt "OrchardCore.ContentFields.Views.DateField-Localized.Option"
 msgid "Localized"
 msgstr ""
 
-#: Views/DateField.DisplayOption.cshtml
-msgctxt "OrchardCore.ContentFields.Views.DateField.DisplayOption"
-msgid "Standard"
-msgstr ""
-
-#: Views/DateField.Option.cshtml
-msgctxt "OrchardCore.ContentFields.Views.DateField.Option"
-msgid "Standard"
-msgstr ""
-
 #: Views/DateFieldSettings.Edit.cshtml
 msgctxt "OrchardCore.ContentFields.Views.DateFieldSettings.Edit"
 msgid "Hint"
@@ -889,16 +774,6 @@ msgstr ""
 #: Views/DateFieldSettings.Edit.cshtml
 msgctxt "OrchardCore.ContentFields.Views.DateFieldSettings.Edit"
 msgid "Whether a value is required."
-msgstr ""
-
-#: Views/DateTimeField.DisplayOption.cshtml
-msgctxt "OrchardCore.ContentFields.Views.DateTimeField.DisplayOption"
-msgid "Standard"
-msgstr ""
-
-#: Views/DateTimeField.Option.cshtml
-msgctxt "OrchardCore.ContentFields.Views.DateTimeField.Option"
-msgid "Standard"
 msgstr ""
 
 #: Views/DateTimeFieldSettings.Edit.cshtml
@@ -941,16 +816,6 @@ msgctxt "OrchardCore.ContentFields.Views.HtmlField-Wysiwyg.Option"
 msgid "Wysiwyg editor"
 msgstr ""
 
-#: Views/HtmlField.DisplayOption.cshtml
-msgctxt "OrchardCore.ContentFields.Views.HtmlField.DisplayOption"
-msgid "Standard"
-msgstr ""
-
-#: Views/HtmlField.Option.cshtml
-msgctxt "OrchardCore.ContentFields.Views.HtmlField.Option"
-msgid "Standard"
-msgstr ""
-
 #: Views/HtmlFieldMonacoEditorSettings.Edit.cshtml
 msgctxt "OrchardCore.ContentFields.Views.HtmlFieldMonacoEditorSettings.Edit"
 msgid "Documentation for options"
@@ -969,11 +834,6 @@ msgstr ""
 #: Views/HtmlFieldSettings.Edit.cshtml
 msgctxt "OrchardCore.ContentFields.Views.HtmlFieldSettings.Edit"
 msgid "Sanitize Html"
-msgstr ""
-
-#: Views/HtmlFieldSettings.Edit.cshtml
-msgctxt "OrchardCore.ContentFields.Views.HtmlFieldSettings.Edit"
-msgid "See documentation"
 msgstr ""
 
 #: Views/HtmlFieldSettings.Edit.cshtml
@@ -1004,11 +864,6 @@ msgstr ""
 #: Views/HtmlFieldTrumbowygEditorSettings.Edit.cshtml
 msgctxt "OrchardCore.ContentFields.Views.HtmlFieldTrumbowygEditorSettings.Edit"
 msgid "Whether the url is used when selected from Insert Media (By default, the Shortcode is inserted)."
-msgstr ""
-
-#: Views/LinkField.DisplayOption.cshtml
-msgctxt "OrchardCore.ContentFields.Views.LinkField.DisplayOption"
-msgid "Standard"
 msgstr ""
 
 #: Views/LinkField.Edit.cshtml
@@ -1186,11 +1041,6 @@ msgctxt "OrchardCore.ContentFields.Views.LocalizationSetContentPickerField.Detai
 msgid "No content items."
 msgstr ""
 
-#: Views/LocalizationSetContentPickerField.DisplayOption.cshtml
-msgctxt "OrchardCore.ContentFields.Views.LocalizationSetContentPickerField.DisplayOption"
-msgid "Standard"
-msgstr ""
-
 #. Format arguments: {0}: "{0}"
 #: Views/LocalizationSetContentPickerField.Edit.cshtml
 #, csharp-format
@@ -1205,32 +1055,12 @@ msgstr ""
 
 #: Views/LocalizationSetContentPickerField.Edit.cshtml
 msgctxt "OrchardCore.ContentFields.Views.LocalizationSetContentPickerField.Edit"
-msgid "Remove"
-msgstr ""
-
-#: Views/LocalizationSetContentPickerField.Edit.cshtml
-msgctxt "OrchardCore.ContentFields.Views.LocalizationSetContentPickerField.Edit"
-msgid "Search"
-msgstr ""
-
-#: Views/LocalizationSetContentPickerField.Edit.cshtml
-msgctxt "OrchardCore.ContentFields.Views.LocalizationSetContentPickerField.Edit"
 msgid "Type to search"
-msgstr ""
-
-#: Views/LocalizationSetContentPickerField.Option.cshtml
-msgctxt "OrchardCore.ContentFields.Views.LocalizationSetContentPickerField.Option"
-msgid "Standard"
 msgstr ""
 
 #: Views/LocalizationSetContentPickerFieldSettings.Edit.cshtml
 msgctxt "OrchardCore.ContentFields.Views.LocalizationSetContentPickerFieldSettings.Edit"
 msgid "Allow multiple"
-msgstr ""
-
-#: Views/LocalizationSetContentPickerFieldSettings.Edit.cshtml
-msgctxt "OrchardCore.ContentFields.Views.LocalizationSetContentPickerFieldSettings.Edit"
-msgid "Content Types"
 msgstr ""
 
 #: Views/LocalizationSetContentPickerFieldSettings.Edit.cshtml
@@ -1282,16 +1112,6 @@ msgstr ""
 
 #: Views/MultiTextField-Picker.Edit.cshtml
 msgctxt "OrchardCore.ContentFields.Views.MultiTextField-Picker.Edit"
-msgid "Remove"
-msgstr ""
-
-#: Views/MultiTextField-Picker.Edit.cshtml
-msgctxt "OrchardCore.ContentFields.Views.MultiTextField-Picker.Edit"
-msgid "Search"
-msgstr ""
-
-#: Views/MultiTextField-Picker.Edit.cshtml
-msgctxt "OrchardCore.ContentFields.Views.MultiTextField-Picker.Edit"
 msgid "Type to search"
 msgstr ""
 
@@ -1303,16 +1123,6 @@ msgstr ""
 #: Views/MultiTextField.DetailAdmin.cshtml
 msgctxt "OrchardCore.ContentFields.Views.MultiTextField.DetailAdmin"
 msgid ", "
-msgstr ""
-
-#: Views/MultiTextField.DisplayOption.cshtml
-msgctxt "OrchardCore.ContentFields.Views.MultiTextField.DisplayOption"
-msgid "Standard"
-msgstr ""
-
-#: Views/MultiTextField.Option.cshtml
-msgctxt "OrchardCore.ContentFields.Views.MultiTextField.Option"
-msgid "Standard"
 msgstr ""
 
 #: Views/MultiTextFieldSettings.Edit.cshtml
@@ -1363,11 +1173,6 @@ msgstr ""
 #: Views/NumericField-Spinner.Option.cshtml
 msgctxt "OrchardCore.ContentFields.Views.NumericField-Spinner.Option"
 msgid "Spinner"
-msgstr ""
-
-#: Views/NumericField.DisplayOption.cshtml
-msgctxt "OrchardCore.ContentFields.Views.NumericField.DisplayOption"
-msgid "Standard"
 msgstr ""
 
 #: Views/NumericField.Option.cshtml
@@ -1498,16 +1303,6 @@ msgstr ""
 #: Views/TextField-Url.Option.cshtml
 msgctxt "OrchardCore.ContentFields.Views.TextField-Url.Option"
 msgid "Url"
-msgstr ""
-
-#: Views/TextField.DisplayOption.cshtml
-msgctxt "OrchardCore.ContentFields.Views.TextField.DisplayOption"
-msgid "Standard"
-msgstr ""
-
-#: Views/TextField.Option.cshtml
-msgctxt "OrchardCore.ContentFields.Views.TextField.Option"
-msgid "Standard"
 msgstr ""
 
 #: Views/TextFieldHeaderDisplaySettings.Edit.cshtml
@@ -1650,16 +1445,6 @@ msgctxt "OrchardCore.ContentFields.Views.TextFieldSettings.Edit"
 msgid "Whether a value is required."
 msgstr ""
 
-#: Views/TimeField.DisplayOption.cshtml
-msgctxt "OrchardCore.ContentFields.Views.TimeField.DisplayOption"
-msgid "Standard"
-msgstr ""
-
-#: Views/TimeField.Option.cshtml
-msgctxt "OrchardCore.ContentFields.Views.TimeField.Option"
-msgid "Standard"
-msgstr ""
-
 #: Views/TimeFieldSettings.Edit.cshtml
 msgctxt "OrchardCore.ContentFields.Views.TimeFieldSettings.Edit"
 msgid "For seconds use a divisor of 60 e.g. '15', for ms a decimal equal to a divisor of 1000 divided by 1000 e.g. '0.250'."
@@ -1720,11 +1505,6 @@ msgctxt "OrchardCore.ContentFields.Views.UserPickerField.DetailAdmin"
 msgid "No users."
 msgstr ""
 
-#: Views/UserPickerField.DisplayOption.cshtml
-msgctxt "OrchardCore.ContentFields.Views.UserPickerField.DisplayOption"
-msgid "Standard"
-msgstr ""
-
 #. Format arguments: {0}: "{0}"
 #: Views/UserPickerField.Edit.cshtml
 #, csharp-format
@@ -1739,22 +1519,7 @@ msgstr ""
 
 #: Views/UserPickerField.Edit.cshtml
 msgctxt "OrchardCore.ContentFields.Views.UserPickerField.Edit"
-msgid "Remove"
-msgstr ""
-
-#: Views/UserPickerField.Edit.cshtml
-msgctxt "OrchardCore.ContentFields.Views.UserPickerField.Edit"
-msgid "Search"
-msgstr ""
-
-#: Views/UserPickerField.Edit.cshtml
-msgctxt "OrchardCore.ContentFields.Views.UserPickerField.Edit"
 msgid "Type to search"
-msgstr ""
-
-#: Views/UserPickerField.Option.cshtml
-msgctxt "OrchardCore.ContentFields.Views.UserPickerField.Option"
-msgid "Standard"
 msgstr ""
 
 #: Views/UserPickerFieldSettings.Edit.cshtml
@@ -1815,11 +1580,6 @@ msgstr ""
 #: Views/UserPickerFieldSettings.Edit.cshtml
 msgctxt "OrchardCore.ContentFields.Views.UserPickerFieldSettings.Edit"
 msgid "Whether to ensure at least one element is selected."
-msgstr ""
-
-#: Views/YoutubeField.DisplayOption.cshtml
-msgctxt "OrchardCore.ContentFields.Views.YoutubeField.DisplayOption"
-msgid "Standard"
 msgstr ""
 
 #: Views/YoutubeFieldSetting.Edit.cshtml

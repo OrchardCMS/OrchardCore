@@ -6,20 +6,25 @@ using OrchardCore.Contents.Workflows.Activities;
 using OrchardCore.Contents.Workflows.ViewModels;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Localization;
 using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Contents.Workflows.Drivers;
 
 public sealed class UpdateContentTaskDisplayDriver : ContentTaskDisplayDriver<UpdateContentTask, UpdateContentTaskViewModel>
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     private readonly IContentDefinitionManager _contentDefinitionManager;
 
     internal readonly IStringLocalizer S;
 
     public UpdateContentTaskDisplayDriver(
         IContentDefinitionManager contentDefinitionManager,
-        IStringLocalizer<UpdateContentTaskDisplayDriver> stringLocalizer)
+        IStringLocalizer<UpdateContentTaskDisplayDriver> stringLocalizer,
+        IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         _contentDefinitionManager = contentDefinitionManager;
         S = stringLocalizer;
     }
@@ -27,7 +32,7 @@ public sealed class UpdateContentTaskDisplayDriver : ContentTaskDisplayDriver<Up
     public override IDisplayResult Edit(UpdateContentTask activity, BuildEditorContext context)
     {
         return Initialize<UpdateContentTaskViewModel>("UpdateContentTask_Fields_Edit", model => EditActivityAsync(activity, model))
-            .Location(l => l.Zone("Content", "1").Card(S["Content item"], "10"));
+            .Location(l => l.Zone("Content", "1").Card(_localizerFactory.Localize(CommonLocalizationSources.ContentItem), "10"));
     }
 
     protected override async ValueTask EditActivityAsync(UpdateContentTask activity, UpdateContentTaskViewModel model)

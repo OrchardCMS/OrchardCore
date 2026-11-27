@@ -1,7 +1,7 @@
 @model MediaProfileViewModel
 
 <div class="ocat-wrapper form-g" asp-validation-class-for="Name">
-    <label asp-for="Name" class="ocat-label ocat-label-required">@T["Name"]</label>
+    <label asp-for="Name" class="ocat-label ocat-label-required">@Localize(CommonLocalizationSources.Name)</label>
     <div class="ocat-end w-100">
         <div class="w-100 w-lg-75 w-xl-50">
             <input asp-for="Name" class="form-control" autofocus />

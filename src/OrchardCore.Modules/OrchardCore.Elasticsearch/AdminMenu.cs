@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
+using OrchardCore.Localization;
 using OrchardCore.Navigation;
 using OrchardCore.Elasticsearch.Core.Models;
 
@@ -7,14 +8,18 @@ namespace OrchardCore.Elasticsearch;
 
 public sealed class AdminMenu : AdminNavigationProvider
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     private readonly ElasticsearchConnectionOptions _connectionOptions;
 
     internal readonly IStringLocalizer S;
 
     public AdminMenu(
         IOptions<ElasticsearchConnectionOptions> connectionOptions,
-        IStringLocalizer<AdminMenu> stringLocalizer)
+        IStringLocalizer<AdminMenu> stringLocalizer,
+        IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         _connectionOptions = connectionOptions.Value;
         S = stringLocalizer;
     }
@@ -27,7 +32,7 @@ public sealed class AdminMenu : AdminNavigationProvider
         }
 
         builder
-            .Add(S["Search"], NavigationConstants.AdminMenuSearchPosition, search => search
+            .Add(_localizerFactory.Localize(CommonLocalizationSources.Search), NavigationConstants.AdminMenuSearchPosition, search => search
                 .AddClass("search")
                 .Id("search")
                 .Add(S["Queries"], S["Queries"].PrefixPosition(), import => import

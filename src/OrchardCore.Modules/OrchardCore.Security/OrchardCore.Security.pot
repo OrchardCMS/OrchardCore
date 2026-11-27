@@ -16,11 +16,6 @@ msgctxt "OrchardCore.Security.AdminMenu"
 msgid "Security Headers"
 msgstr ""
 
-#: AdminMenu.cs
-msgctxt "OrchardCore.Security.AdminMenu"
-msgid "Settings"
-msgstr ""
-
 #: Drivers/SecuritySettingsDisplayDriver.cs
 msgctxt "OrchardCore.Security.Drivers.SecuritySettingsDisplayDriver"
 msgid "Directives"
@@ -29,11 +24,6 @@ msgstr ""
 #: Drivers/SecuritySettingsDisplayDriver.cs
 msgctxt "OrchardCore.Security.Drivers.SecuritySettingsDisplayDriver"
 msgid "Features"
-msgstr ""
-
-#: Drivers/SecuritySettingsDisplayDriver.cs
-msgctxt "OrchardCore.Security.Drivers.SecuritySettingsDisplayDriver"
-msgid "General"
 msgstr ""
 
 #: Drivers/SecuritySettingsDisplayDriver.cs
@@ -119,11 +109,6 @@ msgstr ""
 #: Views/ContentSecurityPolicySettings-Directives.Edit.cshtml
 msgctxt "OrchardCore.Security.Views.ContentSecurityPolicySettings-Directives.Edit"
 msgid "Media Source"
-msgstr ""
-
-#: Views/ContentSecurityPolicySettings-Directives.Edit.cshtml
-msgctxt "OrchardCore.Security.Views.ContentSecurityPolicySettings-Directives.Edit"
-msgid "Name"
 msgstr ""
 
 #: Views/ContentSecurityPolicySettings-Directives.Edit.cshtml
@@ -254,11 +239,6 @@ msgstr ""
 #: Views/PermissionsPolicySettings.Edit.cshtml
 msgctxt "OrchardCore.Security.Views.PermissionsPolicySettings.Edit"
 msgid "Midi"
-msgstr ""
-
-#: Views/PermissionsPolicySettings.Edit.cshtml
-msgctxt "OrchardCore.Security.Views.PermissionsPolicySettings.Edit"
-msgid "Name"
 msgstr ""
 
 #: Views/PermissionsPolicySettings.Edit.cshtml

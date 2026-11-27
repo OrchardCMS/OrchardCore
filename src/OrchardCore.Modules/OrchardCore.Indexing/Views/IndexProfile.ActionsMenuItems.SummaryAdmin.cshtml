@@ -7,8 +7,8 @@
    class="dropdown-item btn-sm"
    data-title="@T["Synchronize Index"]"
    data-message="@T["This will synchronize the indexing of content items. Continue?"]"
-   data-ok-text="@T["Yes"]"
-   data-cancel-text="@T["No"]"
+   data-ok-text="@Localize(CommonLocalizationSources.Yes)"
+   data-cancel-text="@Localize(CommonLocalizationSources.No)"
    data-ok-class="btn-primary"
    data-url-af="UnsafeUrl">@T["Synchronize"]</a>
 
@@ -17,8 +17,8 @@
    class="dropdown-item btn-sm"
    data-title="@T["Reset Index"]"
    data-message="@T["This will restart the indexing of all content items. Continue?"]"
-   data-ok-text="@T["Yes"]"
-   data-cancel-text="@T["No"]"
+   data-ok-text="@Localize(CommonLocalizationSources.Yes)"
+   data-cancel-text="@Localize(CommonLocalizationSources.No)"
    data-ok-class="btn-primary"
    data-url-af="UnsafeUrl">@T["Reset"]</a>
 
@@ -27,8 +27,8 @@
    class="dropdown-item btn-sm text-danger"
    data-title="@T["Rebuild Index"]"
    data-message="@T["Your index will be rebuilt, which might alter some services during the process. Continue?"]"
-   data-ok-text="@T["Yes"]"
-   data-cancel-text="@T["No"]"
+   data-ok-text="@Localize(CommonLocalizationSources.Yes)"
+   data-cancel-text="@Localize(CommonLocalizationSources.No)"
    data-url-af="UnsafeUrl">@T["Rebuild"]</a>
 
 <a asp-action="Delete"
@@ -37,6 +37,6 @@
    class="dropdown-item btn-sm text-danger"
    data-title="@T["Force Delete"]"
    data-message="@T["Your index will be forcing to delete, which might alter some services during the process. Continue?"]"
-   data-ok-text="@T["Yes"]"
-   data-cancel-text="@T["No"]"
+   data-ok-text="@Localize(CommonLocalizationSources.Yes)"
+   data-cancel-text="@Localize(CommonLocalizationSources.No)"
    data-url-af="RemoveUrl UnsafeUrl">@T["Force Delete"]</a>

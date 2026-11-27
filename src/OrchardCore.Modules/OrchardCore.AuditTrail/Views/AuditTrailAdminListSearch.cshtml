@@ -29,9 +29,9 @@
     </ul>
     <input asp-for="OriginalSearchText" type="hidden" />
 
-    <label asp-for="SearchText" class="visually-hidden">@T["Search"]</label>
-    <input asp-for="SearchText" class="form-control" placeholder="@T["Search"]" inputmode="search" type="search" autofocus />
-    <button type="submit" name="submit.Filter" value="submit.Filter" class="btn btn-outline-secondary" title="@T["Search"]" aria-label="@T["Search"]"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></button>
+    <label asp-for="SearchText" class="visually-hidden">@Localize(CommonLocalizationSources.Commands.Search)</label>
+    <input asp-for="SearchText" class="form-control" placeholder="@Localize(CommonLocalizationSources.Commands.Search)" inputmode="search" type="search" autofocus />
+    <button type="submit" name="submit.Filter" value="submit.Filter" class="btn btn-outline-secondary" title="@Localize(CommonLocalizationSources.Commands.Search)" aria-label="@Localize(CommonLocalizationSources.Commands.Search)"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></button>
 </div>
 
 

@@ -14,7 +14,7 @@ internal static class ContentsLocalizationSources
     public static readonly LocalizationSource AllContent = LocalizationSource.Create("All Content", typeof(ContentsLocalizationSources));
 
     /// <summary>Gets the "Content Types" text.</summary>
-    public static readonly LocalizationSource ContentTypes = LocalizationSource.Create("Content Types", typeof(ContentsLocalizationSources));
+    public static readonly LocalizationSource ContentTypes = CommonLocalizationSources.ContentTypesTitle;
 
     /// <summary>Gets the "Export Content To Deployment Target" text.</summary>
     public static readonly LocalizationSource ExportContentToDeploymentTarget = LocalizationSource.Create("Export Content To Deployment Target", typeof(ContentsLocalizationSources));

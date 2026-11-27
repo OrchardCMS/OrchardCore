@@ -100,7 +100,7 @@ public abstract class NotifyUserTaskActivity : TaskActivity, IActivityProvidedVa
     /// <param name="activityContext">The activity context.</param>
     /// <returns>The possible workflow outcomes.</returns>
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-        => Outcome(S["Done"], S["Failed"], S["Failed: no user found"]);
+        => Outcome(LocalizerFactory.Localize(CommonLocalizationSources.Workflow.Done), S["Failed"], S["Failed: no user found"]);
 
     /// <summary>
     /// Returns the values the activity provides: how many notifications it sent, as the last result.

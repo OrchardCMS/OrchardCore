@@ -127,11 +127,6 @@ msgctxt "OrchardCore.Lists.Settings.ListPartSettingsDisplayDriver"
 msgid "At least one content type must be selected."
 msgstr ""
 
-#: Settings/ListPartSettingsDisplayDriver.cs
-msgctxt "OrchardCore.Lists.Settings.ListPartSettingsDisplayDriver"
-msgid "Settings"
-msgstr ""
-
 #: Views/Items/ListsAdminNode.Fields.TreeEdit.cshtml
 msgctxt "OrchardCore.Lists.Views.Items.ListsAdminNode.Fields.TreeEdit"
 msgid "Add parent menu item"
@@ -192,16 +187,6 @@ msgctxt "OrchardCore.Lists.Views.ListPart"
 msgid "The list is empty"
 msgstr ""
 
-#: Views/ListPart.DisplayOption.cshtml
-msgctxt "OrchardCore.Lists.Views.ListPart.DisplayOption"
-msgid "Standard"
-msgstr ""
-
-#: Views/ListPartDetailAdmin.cshtml
-msgctxt "OrchardCore.Lists.Views.ListPartDetailAdmin"
-msgid "Actions"
-msgstr ""
-
 #: Views/ListPartDetailAdmin.cshtml
 msgctxt "OrchardCore.Lists.Views.ListPartDetailAdmin"
 msgid "Last modified"
@@ -210,11 +195,6 @@ msgstr ""
 #: Views/ListPartDetailAdmin.cshtml
 msgctxt "OrchardCore.Lists.Views.ListPartDetailAdmin"
 msgid "Please specify at least one contained content type."
-msgstr ""
-
-#: Views/ListPartDetailAdmin.cshtml
-msgctxt "OrchardCore.Lists.Views.ListPartDetailAdmin"
-msgid "Status"
 msgstr ""
 
 #: Views/ListPartDetailAdmin.cshtml
@@ -255,11 +235,6 @@ msgstr ""
 #: Views/ListPartDetailAdminSearchPanel.cshtml
 msgctxt "OrchardCore.Lists.Views.ListPartDetailAdminSearchPanel"
 msgid "Owned by me"
-msgstr ""
-
-#: Views/ListPartDetailAdminSearchPanel.cshtml
-msgctxt "OrchardCore.Lists.Views.ListPartDetailAdminSearchPanel"
-msgid "Search"
 msgstr ""
 
 #: Views/ListPartFeed.Edit.cshtml

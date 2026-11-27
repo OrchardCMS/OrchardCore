@@ -1,3 +1,4 @@
+using OrchardCore.Localization;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -28,6 +29,8 @@ namespace OrchardCore.Users.Controllers;
 [Admin("Users/{action}/{id?}", "Users{action}")]
 public sealed class AdminController : Controller
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     private readonly UserManager<IUser> _userManager;
     private readonly IDisplayManager<UserIndexOptions> _userOptionsDisplayManager;
     private readonly SignInManager<IUser> _signInManager;
@@ -64,8 +67,10 @@ public sealed class AdminController : Controller
         IHtmlLocalizer<AdminController> htmlLocalizer,
         IStringLocalizer<AdminController> stringLocalizer,
         IUpdateModelAccessor updateModelAccessor,
-        IDisplayManager<EditPasswordViewModel> editPasswordDisplayManager)
+        IDisplayManager<EditPasswordViewModel> editPasswordDisplayManager,
+        IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         _userDisplayManager = userDisplayManager;
         _editPasswordDisplayManager = editPasswordDisplayManager;
         _userOptionsDisplayManager = userOptionsDisplayManager;
@@ -132,7 +137,7 @@ public sealed class AdminController : Controller
 
         options.UserSorts =
         [
-            new SelectListItem() { Text = S["Name"], Value = nameof(UsersOrder.Name), Selected = options.Order == UsersOrder.Name },
+            new SelectListItem() { Text = _localizerFactory.Localize(CommonLocalizationSources.UserNames.Name), Value = nameof(UsersOrder.Name), Selected = options.Order == UsersOrder.Name },
             new SelectListItem() { Text = S["Email"], Value = nameof(UsersOrder.Email), Selected = options.Order == UsersOrder.Email },
         ];
 
@@ -141,7 +146,7 @@ public sealed class AdminController : Controller
             new SelectListItem() { Text = S["Confirm email"], Value = nameof(UsersBulkAction.ConfirmEmail) },
             new SelectListItem() { Text = S["Enable"], Value = nameof(UsersBulkAction.Enable) },
             new SelectListItem() { Text = S["Disable"], Value = nameof(UsersBulkAction.Disable) },
-            new SelectListItem() { Text = S["Delete"], Value = nameof(UsersBulkAction.Delete) },
+            new SelectListItem() { Text = _localizerFactory.Localize(CommonLocalizationSources.Delete), Value = nameof(UsersBulkAction.Delete) },
         ];
 
         var roleNames = new List<string>();

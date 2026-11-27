@@ -24,9 +24,9 @@
 <div class="@($"ocat-wrapper field-wrapper field-wrapper-{Model.PartFieldDefinition.PartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" + (Model.PartFieldDefinition.IsNamedPart() ? $" field-wrapper-{Model.PartFieldDefinition.ContentTypePartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" : string.Empty))" id="@Html.IdFor(x => x.ContentItemIds)_FieldWrapper">
     <label for="@Html.IdFor(x => x.ContentItemIds)_Search" class="ocat-label @(settings.Required ? "ocat-label-required" : "")">@localizedFieldName</label>
     <div class="ocat-end">
-        <div class="remote-picker" data-remote-picker data-search-url="@searchUrl" data-multiple="@multiple" data-selected-items="@selectedItems" data-values-input="@Html.IdFor(x => x.ContentItemIds)" data-status-field="hasPublished" data-status-text="@T["Not published"]" data-edit-url="@editUrl" data-remove-text="@T["Remove"]">
+        <div class="remote-picker" data-remote-picker data-search-url="@searchUrl" data-multiple="@multiple" data-selected-items="@selectedItems" data-values-input="@Html.IdFor(x => x.ContentItemIds)" data-status-field="hasPublished" data-status-text="@T["Not published"]" data-edit-url="@editUrl" data-remove-text="@Localize(CommonLocalizationSources.Remove)">
             <input type="hidden" asp-for="ContentItemIds" />
-            <select id="@Html.IdFor(x => x.ContentItemIds)_Search" data-remote-picker-search placeholder="@placeholder" data-live-search-placeholder="@T["Search"]" data-none-results-text="@T["No results match {0}", "{0}"]"></select>
+            <select id="@Html.IdFor(x => x.ContentItemIds)_Search" data-remote-picker-search placeholder="@placeholder" data-live-search-placeholder="@Localize(CommonLocalizationSources.Commands.Search)" data-none-results-text="@T["No results match {0}", "{0}"]"></select>
         </div>
         @if (!string.IsNullOrEmpty(settings.Hint))
         {

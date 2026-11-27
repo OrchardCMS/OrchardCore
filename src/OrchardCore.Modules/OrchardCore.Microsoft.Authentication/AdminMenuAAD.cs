@@ -1,11 +1,14 @@
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 using OrchardCore.Navigation;
 
 namespace OrchardCore.Microsoft.Authentication;
 
 public sealed class AdminMenuAAD : AdminNavigationProvider
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     private static readonly RouteValueDictionary s_routeValues = new()
     {
         { "area", "OrchardCore.Settings" },
@@ -14,15 +17,16 @@ public sealed class AdminMenuAAD : AdminNavigationProvider
 
     internal readonly IStringLocalizer S;
 
-    public AdminMenuAAD(IStringLocalizer<AdminMenuAAD> stringLocalizer)
+    public AdminMenuAAD(IStringLocalizer<AdminMenuAAD> stringLocalizer, IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         S = stringLocalizer;
     }
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
         builder
-            .Add(S["Settings"], settings => settings
+            .Add(_localizerFactory.Localize(CommonLocalizationSources.Settings), settings => settings
                 .Add(S["Security"], S["Security"].PrefixPosition(), security => security
                     .Add(S["Authentication"], S["Authentication"].PrefixPosition(), authentication => authentication
                         .Add(S["Microsoft Entra ID"], S["Microsoft Entra ID"].PrefixPosition(), entraId => entraId

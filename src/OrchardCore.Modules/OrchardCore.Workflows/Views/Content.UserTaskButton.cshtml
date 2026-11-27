@@ -10,7 +10,7 @@
         <div class="btn-group action-bar-secondary" role="group">
             <button class="btn btn-warning" type="submit" name="submit.Save" value="user-task.@action">@T[Html.Encode(action)] @T["and Save"]</button>
             <button type="button" class="btn btn-warning dropdown-toggle dropdown-toggle-split" data-reference="parent" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <span class="visually-hidden">@T["Toggle Dropdown"]</span>
+                <span class="visually-hidden">@Localize(CommonLocalizationSources.ToggleDropdown)</span>
             </button>
             <div class="dropdown-menu" aria-labelledby="userActionsButtonGroup">
                 <button type="submit" name="submit.Publish" class="dropdown-item" value="user-task.@action">@T[Html.Encode(action)] @T["and Publish"]</button>

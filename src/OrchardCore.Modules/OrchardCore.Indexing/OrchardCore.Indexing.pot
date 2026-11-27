@@ -11,11 +11,6 @@ msgctxt "OrchardCore.Indexing.AdminMenu"
 msgid "Indexes"
 msgstr ""
 
-#: AdminMenu.cs
-msgctxt "OrchardCore.Indexing.AdminMenu"
-msgid "Search"
-msgstr ""
-
 #. Format arguments: {0}: count
 #: Controllers/AdminController.cs
 #, csharp-format
@@ -75,11 +70,6 @@ msgstr ""
 #: Controllers/AdminController.cs
 msgctxt "OrchardCore.Indexing.Controllers.AdminController"
 msgid "An index has been updated successfully."
-msgstr ""
-
-#: Controllers/AdminController.cs
-msgctxt "OrchardCore.Indexing.Controllers.AdminController"
-msgid "Delete"
 msgstr ""
 
 #: Controllers/AdminController.cs
@@ -204,11 +194,6 @@ msgstr ""
 
 #: Drivers/IndexProfileDisplayDriver.cs
 msgctxt "OrchardCore.Indexing.Drivers.IndexProfileDisplayDriver"
-msgid "General"
-msgstr ""
-
-#: Drivers/IndexProfileDisplayDriver.cs
-msgctxt "OrchardCore.Indexing.Drivers.IndexProfileDisplayDriver"
 msgid "The index name is a required field."
 msgstr ""
 
@@ -234,11 +219,6 @@ msgstr ""
 
 #: Views/Admin/Create.cshtml
 msgctxt "OrchardCore.Indexing.Views.Admin.Create"
-msgid "Cancel"
-msgstr ""
-
-#: Views/Admin/Create.cshtml
-msgctxt "OrchardCore.Indexing.Views.Admin.Create"
 msgid "Indexes"
 msgstr ""
 
@@ -247,16 +227,6 @@ msgstr ""
 #, csharp-format
 msgctxt "OrchardCore.Indexing.Views.Admin.Create"
 msgid "New '{0}' index"
-msgstr ""
-
-#: Views/Admin/Create.cshtml
-msgctxt "OrchardCore.Indexing.Views.Admin.Create"
-msgid "Save"
-msgstr ""
-
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.Indexing.Views.Admin.Edit"
-msgid "Cancel"
 msgstr ""
 
 #. Format arguments: {0}: Model.DisplayName
@@ -271,19 +241,9 @@ msgctxt "OrchardCore.Indexing.Views.Admin.Edit"
 msgid "Indexes"
 msgstr ""
 
-#: Views/Admin/Edit.cshtml
-msgctxt "OrchardCore.Indexing.Views.Admin.Edit"
-msgid "Save"
-msgstr ""
-
 #: Views/Admin/Index.cshtml
 msgctxt "OrchardCore.Indexing.Views.Admin.Index"
 msgid "<strong>Nothing here!</strong> There are no indexes at the moment."
-msgstr ""
-
-#: Views/Admin/Index.cshtml
-msgctxt "OrchardCore.Indexing.Views.Admin.Index"
-msgid "Actions"
 msgstr ""
 
 #: Views/Admin/Index.cshtml
@@ -298,27 +258,12 @@ msgstr ""
 
 #: Views/Admin/Index.cshtml
 msgctxt "OrchardCore.Indexing.Views.Admin.Index"
-msgid "Cancel"
-msgstr ""
-
-#: Views/Admin/Index.cshtml
-msgctxt "OrchardCore.Indexing.Views.Admin.Index"
 msgid "Indexes"
 msgstr ""
 
 #: Views/Admin/Index.cshtml
 msgctxt "OrchardCore.Indexing.Views.Admin.Index"
 msgid "Last modified"
-msgstr ""
-
-#: Views/Admin/Index.cshtml
-msgctxt "OrchardCore.Indexing.Views.Admin.Index"
-msgid "Name"
-msgstr ""
-
-#: Views/Admin/Index.cshtml
-msgctxt "OrchardCore.Indexing.Views.Admin.Index"
-msgid "Search"
 msgstr ""
 
 #: Views/Admin/Index.cshtml
@@ -353,11 +298,6 @@ msgstr ""
 
 #: Views/ContentIndexMetadata.Edit.cshtml
 msgctxt "OrchardCore.Indexing.Views.ContentIndexMetadata.Edit"
-msgid "Content types"
-msgstr ""
-
-#: Views/ContentIndexMetadata.Edit.cshtml
-msgctxt "OrchardCore.Indexing.Views.ContentIndexMetadata.Edit"
 msgid "Culture"
 msgstr ""
 
@@ -379,11 +319,6 @@ msgstr ""
 #: Views/IndexProfile.ActionsMenuItems.SummaryAdmin.cshtml
 msgctxt "OrchardCore.Indexing.Views.IndexProfile.ActionsMenuItems.SummaryAdmin"
 msgid "Force Delete"
-msgstr ""
-
-#: Views/IndexProfile.ActionsMenuItems.SummaryAdmin.cshtml
-msgctxt "OrchardCore.Indexing.Views.IndexProfile.ActionsMenuItems.SummaryAdmin"
-msgid "No"
 msgstr ""
 
 #: Views/IndexProfile.ActionsMenuItems.SummaryAdmin.cshtml
@@ -428,27 +363,12 @@ msgstr ""
 
 #: Views/IndexProfile.ActionsMenuItems.SummaryAdmin.cshtml
 msgctxt "OrchardCore.Indexing.Views.IndexProfile.ActionsMenuItems.SummaryAdmin"
-msgid "Yes"
-msgstr ""
-
-#: Views/IndexProfile.ActionsMenuItems.SummaryAdmin.cshtml
-msgctxt "OrchardCore.Indexing.Views.IndexProfile.ActionsMenuItems.SummaryAdmin"
 msgid "Your index will be forcing to delete, which might alter some services during the process. Continue?"
 msgstr ""
 
 #: Views/IndexProfile.ActionsMenuItems.SummaryAdmin.cshtml
 msgctxt "OrchardCore.Indexing.Views.IndexProfile.ActionsMenuItems.SummaryAdmin"
 msgid "Your index will be rebuilt, which might alter some services during the process. Continue?"
-msgstr ""
-
-#: Views/IndexProfile.Buttons.SummaryAdmin.cshtml
-msgctxt "OrchardCore.Indexing.Views.IndexProfile.Buttons.SummaryAdmin"
-msgid "Delete"
-msgstr ""
-
-#: Views/IndexProfile.Buttons.SummaryAdmin.cshtml
-msgctxt "OrchardCore.Indexing.Views.IndexProfile.Buttons.SummaryAdmin"
-msgid "Edit"
 msgstr ""
 
 #. Format arguments: {0}: Model.Value.Name
@@ -486,11 +406,6 @@ msgstr ""
 #: Views/IndexProfileFields.Edit.cshtml
 msgctxt "OrchardCore.Indexing.Views.IndexProfileFields.Edit"
 msgid "Index Name"
-msgstr ""
-
-#: Views/IndexProfileFields.Edit.cshtml
-msgctxt "OrchardCore.Indexing.Views.IndexProfileFields.Edit"
-msgid "Name"
 msgstr ""
 
 #: Views/Items/IndexProfileDeploymentStep.Fields.Edit.cshtml

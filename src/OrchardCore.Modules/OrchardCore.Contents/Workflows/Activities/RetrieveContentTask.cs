@@ -50,7 +50,7 @@ public class RetrieveContentTask : ContentTask, IActivityOutputs, IActivityProvi
         return Outcome("Retrieved");
     }
 
-    private static readonly ActivityOutputDescriptor[] s_outputs = [new ActivityOutputDescriptor { Name = "ContentItem", TypeName = "contentItem", DisplayName = LocalizationSource.Create<RetrieveContentTask>("Content item"), Description = LocalizationSource.Create<RetrieveContentTask>("The content item the task retrieved.") }];
+    private static readonly ActivityOutputDescriptor[] s_outputs = [new ActivityOutputDescriptor { Name = "ContentItem", TypeName = "contentItem", DisplayName = CommonLocalizationSources.ContentItem, Description = LocalizationSource.Create<RetrieveContentTask>("The content item the task retrieved.") }];
 
     public IEnumerable<ActivityOutputDescriptor> GetOutputs()
         => s_outputs;

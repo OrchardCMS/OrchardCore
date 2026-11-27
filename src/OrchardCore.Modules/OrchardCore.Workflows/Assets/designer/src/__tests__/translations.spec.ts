@@ -32,7 +32,8 @@ const usedKeys = (...roots: string[]) => {
     return keys;
 };
 
-const definedKeyList = () => Array.from(readFileSync(localizerPath, "utf8").matchAll(/\{\s*"([A-Za-z0-9]+)",\s*S\[/g), (match) => match[1]);
+const definedKeyList = () => Array.from(readFileSync(localizerPath, "utf8")
+    .matchAll(/^\s*\{\s*"([A-Za-z0-9]+)",/gm), (match) => match[1]);
 
 const definedKeys = () => new Set(definedKeyList());
 

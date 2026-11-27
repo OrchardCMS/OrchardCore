@@ -1,3 +1,4 @@
+using OrchardCore.Localization;
 using System.Text.Json;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentFields.Fields;
@@ -11,10 +12,13 @@ namespace OrchardCore.ContentFields.Settings;
 
 public sealed class MultiTextFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<MultiTextField>
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     internal readonly IStringLocalizer S;
 
-    public MultiTextFieldSettingsDriver(IStringLocalizer<MultiTextFieldSettingsDriver> localizer)
+    public MultiTextFieldSettingsDriver(IStringLocalizer<MultiTextFieldSettingsDriver> localizer, IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         S = localizer;
     }
 
@@ -27,7 +31,7 @@ public sealed class MultiTextFieldSettingsDriver : ContentPartFieldDefinitionDis
             model.Required = settings.Required;
             model.Hint = settings.Hint;
             model.Options = JConvert.SerializeObject(settings.Options, JOptions.Indented);
-        }).Location(l => l.Zone("Content").Card(S["Settings"], "20"));
+        }).Location(l => l.Zone("Content").Card(_localizerFactory.Localize(CommonLocalizationSources.Settings), "20"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)

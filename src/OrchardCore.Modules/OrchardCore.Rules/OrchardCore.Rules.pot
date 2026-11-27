@@ -127,24 +127,9 @@ msgctxt "OrchardCore.Rules.Services.ConditionOperatorConfigureOptions"
 msgid "Starts with"
 msgstr ""
 
-#: Views/Condition.Edit.cshtml
-msgctxt "OrchardCore.Rules.Views.Condition.Edit"
-msgid "General"
-msgstr ""
-
 #: Views/Condition.Summary.cshtml
 msgctxt "OrchardCore.Rules.Views.Condition.Summary"
 msgid "Add"
-msgstr ""
-
-#: Views/Condition.Summary.cshtml
-msgctxt "OrchardCore.Rules.Views.Condition.Summary"
-msgid "Delete"
-msgstr ""
-
-#: Views/Condition.Summary.cshtml
-msgctxt "OrchardCore.Rules.Views.Condition.Summary"
-msgid "Edit"
 msgstr ""
 
 #: Views/Condition.Thumbnail.cshtml
@@ -159,17 +144,7 @@ msgstr ""
 
 #: Views/ConditionsModal.cshtml
 msgctxt "OrchardCore.Rules.Views.ConditionsModal"
-msgid "Cancel"
-msgstr ""
-
-#: Views/ConditionsModal.cshtml
-msgctxt "OrchardCore.Rules.Views.ConditionsModal"
 msgid "Filter"
-msgstr ""
-
-#: Views/Items/AllCondition.Fields.Edit.cshtml
-msgctxt "OrchardCore.Rules.Views.Items.AllCondition.Fields.Edit"
-msgid "Name"
 msgstr ""
 
 #: Views/Items/AllCondition.Fields.Summary.cshtml
@@ -185,11 +160,6 @@ msgstr ""
 #: Views/Items/AllCondition.Fields.Thumbnail.cshtml
 msgctxt "OrchardCore.Rules.Views.Items.AllCondition.Fields.Thumbnail"
 msgid "An all condition group contains other conditions which are all required to be true."
-msgstr ""
-
-#: Views/Items/AnyCondition.Fields.Edit.cshtml
-msgctxt "OrchardCore.Rules.Views.Items.AnyCondition.Fields.Edit"
-msgid "Name"
 msgstr ""
 
 #: Views/Items/AnyCondition.Fields.Summary.cshtml

@@ -28,7 +28,7 @@ public class CreateTenantTaskDisplayDriverTests
             .ReturnsAsync(true);
 
         var activity = CreateActivity();
-        var driver = new CreateTenantTaskDisplayDriver(new StringLocalizer<CreateTenantTaskDisplayDriver>(new NullStringLocalizerFactory()));
+        var driver = new CreateTenantTaskDisplayDriver(new StringLocalizer<CreateTenantTaskDisplayDriver>(new NullStringLocalizerFactory()), new NullStringLocalizerFactory());
         var context = new UpdateEditorContext(new Shape(), string.Empty, false, string.Empty, null, null, updater.Object);
 
         // Act

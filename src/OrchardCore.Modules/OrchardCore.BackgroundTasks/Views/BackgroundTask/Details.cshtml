@@ -24,7 +24,7 @@
         <div class="d-flex flex-wrap align-items-start gap-2 mb-3">
             <p class="text-muted mb-0 me-auto">@Model.Description</p>
             <div class="d-flex gap-1 ms-auto">
-                <a asp-action="Edit" asp-route-name="@Model.Name" class="btn btn-primary btn-sm">@T["Edit"]</a>
+                <a asp-action="Edit" asp-route-name="@Model.Name" class="btn btn-primary btn-sm">@Localize(CommonLocalizationSources.Edit)</a>
                 <partial name="_BackgroundTaskActions" model="Model" />
             </div>
         </div>
@@ -45,7 +45,7 @@
                         else
                         {
                             <dl class="row mb-0">
-                                <dt class="col-sm-5">@T["Status"]</dt>
+                                <dt class="col-sm-5">@Localize(CommonLocalizationSources.Status)</dt>
                                 <dd class="col-sm-7">
                                     @switch (state.Status)
                                     {
@@ -134,21 +134,21 @@
 
             <div class="col-12 col-lg-6">
                 <div class="card h-100">
-                    <div class="card-header">@T["Settings"]</div>
+                    <div class="card-header">@Localize(CommonLocalizationSources.Settings)</div>
                     <div class="card-body">
                         <dl class="row mb-0">
                             <dt class="col-sm-5">@T["Technical name"]</dt>
                             <dd class="col-sm-7 text-break"><code>@Model.Name</code></dd>
 
-                            <dt class="col-sm-5">@T["Enabled"]</dt>
+                            <dt class="col-sm-5">@Localize(CommonLocalizationSources.BooleanFields.Enabled)</dt>
                             <dd class="col-sm-7">
                                 @if (Model.Enable)
                                 {
-                                    <span class="badge text-bg-success">@T["Enabled"]</span>
+                                    <span class="badge text-bg-success">@Localize(CommonLocalizationSources.EnabledState)</span>
                                 }
                                 else
                                 {
-                                    <span class="badge text-bg-secondary">@T["Disabled"]</span>
+                                    <span class="badge text-bg-secondary">@Localize(CommonLocalizationSources.DisabledState)</span>
                                 }
                             </dd>
 
@@ -162,7 +162,7 @@
                             </dd>
 
                             <dt class="col-sm-5">@T["Use tenant pipeline"]</dt>
-                            <dd class="col-sm-7">@(Model.UsePipeline ? T["Yes"] : T["No"])</dd>
+                            <dd class="col-sm-7">@(Model.UsePipeline ? Localize(CommonLocalizationSources.BooleanValues.Yes) : Localize(CommonLocalizationSources.BooleanValues.No))</dd>
 
                             <dt class="col-sm-5">@T["Atomic"]</dt>
                             <dd class="col-sm-7">
@@ -172,7 +172,7 @@
                                 }
                                 else
                                 {
-                                    @T["No"]
+                                    @Localize(CommonLocalizationSources.BooleanValues.No)
                                 }
                             </dd>
                         </dl>

@@ -11,7 +11,7 @@
     @await DisplayAsync(Model.Editor)
 
     <div class="action-bar-bottom">
-        <a class="btn btn-secondary cancel" role="button" asp-route-action="Index">@T["Cancel"]</a>
+        <a class="btn btn-secondary cancel" role="button" asp-route-action="Index">@Localize(CommonLocalizationSources.Cancel)</a>
         <button class="btn btn-primary create" type="submit">@T["Create"]</button>
     </div>
 </form>

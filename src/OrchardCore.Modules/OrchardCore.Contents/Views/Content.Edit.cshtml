@@ -26,7 +26,7 @@
                 }
                 @if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
                 {
-                    <a class="btn btn-secondary cancel" role="button" href="@returnUrl">@T["Cancel"]</a>
+                    <a class="btn btn-secondary cancel" role="button" href="@returnUrl">@Localize(CommonLocalizationSources.Cancel)</a>
                 }
                 @await DisplayAsync(Model.Actions)
             </div>

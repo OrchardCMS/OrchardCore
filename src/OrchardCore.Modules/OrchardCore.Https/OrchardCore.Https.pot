@@ -16,11 +16,6 @@ msgctxt "OrchardCore.Https.AdminMenu"
 msgid "Security"
 msgstr ""
 
-#: AdminMenu.cs
-msgctxt "OrchardCore.Https.AdminMenu"
-msgid "Settings"
-msgstr ""
-
 #: Startup.cs
 msgctxt "OrchardCore.Https.DeploymentStartup"
 msgid "Exports the Https settings."
@@ -36,11 +31,6 @@ msgctxt "OrchardCore.Https.Drivers.HttpsSettingsDisplayDriver"
 msgid "For safety, changing HTTPS-only settings over HTTP has been prevented."
 msgstr ""
 
-#: Drivers/HttpsSettingsDisplayDriver.cs
-msgctxt "OrchardCore.Https.Drivers.HttpsSettingsDisplayDriver"
-msgid "General"
-msgstr ""
-
 #: Permissions.cs
 msgctxt "OrchardCore.Https.Permissions"
 msgid "Manage HTTPS"
@@ -49,16 +39,6 @@ msgstr ""
 #: Views/HttpsSettings.Edit.cshtml
 msgctxt "OrchardCore.Https.Views.HttpsSettings.Edit"
 msgid "Determines whether HTTP Strict Transport Security (HSTS) headers are disabled by default, enabled explicitly, or follow the current environment."
-msgstr ""
-
-#: Views/HttpsSettings.Edit.cshtml
-msgctxt "OrchardCore.Https.Views.HttpsSettings.Edit"
-msgid "Disabled"
-msgstr ""
-
-#: Views/HttpsSettings.Edit.cshtml
-msgctxt "OrchardCore.Https.Views.HttpsSettings.Edit"
-msgid "Enabled"
 msgstr ""
 
 #: Views/HttpsSettings.Edit.cshtml

@@ -30,7 +30,7 @@
                 <div class="col">
                     <div class="has-search">
                         <i class="fa-solid fa-search form-control-feedback" aria-hidden="true"></i>
-                        <input id="search-box" asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
+                        <input id="search-box" asp-for="Options.Search" class="form-control" placeholder="@Localize(CommonLocalizationSources.Commands.Search)" type="search" autofocus />
                     </div>
                 </div>
                 @if (canManage)
@@ -70,7 +70,7 @@
                     {
                         <div class="dropdown d-none" id="actions">
                             <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="bulk-action-menu-button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                @T["Actions"]
+                                @Localize(CommonLocalizationSources.Actions)
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bulk-action-menu-button">
                                 @foreach (var item in Model.Options.BulkActions)
@@ -157,9 +157,9 @@
                         @if (canManage)
                         {
                             <div class="col-lg-auto col-12 d-flex justify-content-end align-items-center">
-                                <a asp-action="Edit" asp-route-name="@secret.Name" asp-route-store="@secret.Store" class="btn btn-sm btn-primary">@T["Edit"]</a>
+                                <a asp-action="Edit" asp-route-name="@secret.Name" asp-route-store="@secret.Store" class="btn btn-sm btn-primary">@Localize(CommonLocalizationSources.Edit)</a>
                                 <a asp-controller="Store" asp-action="Index" asp-route-name="@secret.Name" asp-route-sourceStore="@secret.Store" class="btn btn-sm btn-secondary ms-1">@T["Move"]</a>
-                                <a asp-action="Delete" asp-route-name="@secret.Name" asp-route-store="@secret.Store" class="btn btn-sm btn-danger ms-1" data-url-af="RemoveUrl UnsafeUrl" data-title="@T["Delete Secret"]" data-message="@T["Are you sure you want to delete the secret '{0}'?", secret.Name]">@T["Delete"]</a>
+                                <a asp-action="Delete" asp-route-name="@secret.Name" asp-route-store="@secret.Store" class="btn btn-sm btn-danger ms-1" data-url-af="RemoveUrl UnsafeUrl" data-title="@T["Delete Secret"]" data-message="@T["Are you sure you want to delete the secret '{0}'?", secret.Name]">@Localize(CommonLocalizationSources.Delete)</a>
                             </div>
                         }
                     </div>
@@ -223,7 +223,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@T["Cancel"]</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@Localize(CommonLocalizationSources.Cancel)</button>
                 </div>
             </div>
         </div>

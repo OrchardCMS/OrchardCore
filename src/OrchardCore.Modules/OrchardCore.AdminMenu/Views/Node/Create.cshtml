@@ -18,7 +18,7 @@
     // are grouped in the "General" card.
     if (Model.Editor.Content is IEnumerable<object> editorShapes)
     {
-        var generalCard = new OrchardCore.DisplayManagement.Descriptors.GroupingMetadata(T["General"].Value, "10");
+        var generalCard = new OrchardCore.DisplayManagement.Descriptors.GroupingMetadata(Localize(CommonLocalizationSources.General).Value, "10");
 
         foreach (var shape in editorShapes.OfType<OrchardCore.DisplayManagement.IShape>())
         {
@@ -43,7 +43,7 @@
            role="button"
            asp-route-controller="Node"
            asp-route-action="List"
-           asp-route-id="@Model.AdminMenuId">@T["Cancel"]</a>
+           asp-route-id="@Model.AdminMenuId">@Localize(CommonLocalizationSources.Cancel)</a>
         <button class="btn btn-primary create" type="submit">@T["Create"]</button>
     </div>
 </form>

@@ -3,6 +3,7 @@ using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Localization;
 using OrchardCore.Menu.Models;
 using OrchardCore.Menu.ViewModels;
 
@@ -10,10 +11,13 @@ namespace OrchardCore.Menu.Settings;
 
 public sealed class HtmlMenuItemPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<HtmlMenuItemPart>
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     internal readonly IStringLocalizer S;
 
-    public HtmlMenuItemPartSettingsDisplayDriver(IStringLocalizer<HtmlMenuItemPartSettingsDisplayDriver> stringLocalizer)
+    public HtmlMenuItemPartSettingsDisplayDriver(IStringLocalizer<HtmlMenuItemPartSettingsDisplayDriver> stringLocalizer, IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         S = stringLocalizer;
     }
 
@@ -24,7 +28,7 @@ public sealed class HtmlMenuItemPartSettingsDisplayDriver : ContentTypePartDefin
             var settings = contentTypePartDefinition.GetSettings<HtmlMenuItemPartSettings>();
 
             model.SanitizeHtml = settings.SanitizeHtml;
-        }).Location(l => l.Zone("Content", "20").Card(S["Settings"], "20"));
+        }).Location(l => l.Zone("Content", "20").Card(_localizerFactory.Localize(CommonLocalizationSources.Settings), "20"));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)

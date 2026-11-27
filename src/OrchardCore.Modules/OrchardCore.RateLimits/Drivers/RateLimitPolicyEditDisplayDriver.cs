@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Localization;
 using OrchardCore.RateLimits.ViewModels;
 
 namespace OrchardCore.RateLimits.Drivers;
@@ -10,10 +11,13 @@ namespace OrchardCore.RateLimits.Drivers;
 /// </summary>
 internal sealed class RateLimitPolicyEditDisplayDriver : DisplayDriver<RateLimitPolicyEditViewModel>
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     internal readonly IStringLocalizer S;
 
-    public RateLimitPolicyEditDisplayDriver(IStringLocalizer<RateLimitPolicyEditDisplayDriver> stringLocalizer)
+    public RateLimitPolicyEditDisplayDriver(IStringLocalizer<RateLimitPolicyEditDisplayDriver> stringLocalizer, IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         S = stringLocalizer;
     }
 
@@ -22,7 +26,7 @@ internal sealed class RateLimitPolicyEditDisplayDriver : DisplayDriver<RateLimit
         var results = new List<IDisplayResult>
         {
             Initialize<RateLimitPolicyEditViewModel>("RateLimitPolicyGeneral_Edit", m => Populate(model, m))
-                .Location(l => l.Zone("Content", "1").Card(S["General"], "10")),
+                .Location(l => l.Zone("Content", "1").Card(_localizerFactory.Localize(CommonLocalizationSources.General), "10")),
             Initialize<RateLimitPolicyEditViewModel>("RateLimitPolicyTarget_Edit", m => Populate(model, m))
                 .Location(l => l.Zone("Content", "2").Card(S["Target"], "20")),
         };

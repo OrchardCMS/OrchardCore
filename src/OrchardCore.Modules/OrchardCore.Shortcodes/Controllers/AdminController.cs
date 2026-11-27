@@ -1,3 +1,4 @@
+using OrchardCore.Localization;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -26,6 +27,8 @@ namespace OrchardCore.Shortcodes.Controllers;
 [Feature("OrchardCore.Shortcodes.Templates")]
 public sealed class AdminController : Controller
 {
+    private readonly IStringLocalizerFactory _localizerFactory;
+
     private const string _optionsSearch = "Options.Search";
 
     private readonly IAuthorizationService _authorizationService;
@@ -53,8 +56,10 @@ public sealed class AdminController : Controller
         IHtmlSanitizerService htmlSanitizerService,
         IDisplayManager<ShortcodeTemplateViewModel> displayManager,
         IUpdateModelAccessor updateModelAccessor
-        )
+        ,
+        IStringLocalizerFactory localizerFactory)
     {
+        _localizerFactory = localizerFactory;
         _authorizationService = authorizationService;
         _shortcodeTemplatesManager = shortcodeTemplatesManager;
         _liquidTemplateManager = liquidTemplateManager;
@@ -113,7 +118,7 @@ public sealed class AdminController : Controller
 
         model.Options.ContentsBulkAction =
         [
-            new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
+            new SelectListItem(_localizerFactory.Localize(CommonLocalizationSources.Delete), nameof(ContentsBulkAction.Remove)),
         ];
 
         // The AdminList shape renders the templates with the configured layout (List, Grid, ...).

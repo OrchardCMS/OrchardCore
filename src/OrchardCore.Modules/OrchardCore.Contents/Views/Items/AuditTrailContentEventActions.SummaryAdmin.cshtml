@@ -16,8 +16,8 @@
         asp-route-auditTrailEventId="@Model.AuditTrailEvent.EventId"
         data-title="@T["Restore to Version"]"
         data-message="@T["Are you sure you want to restore to version {0}?", versionNumber]"
-        data-ok-text="@T["Yes"]"
-        data-cancel-text="@T["No"]"
+        data-ok-text="@Localize(CommonLocalizationSources.Yes)"
+        data-cancel-text="@Localize(CommonLocalizationSources.No)"
         data-url-af="UnsafeUrl RemoveUrl">
         @T["Restore"]
     </a>
@@ -31,8 +31,8 @@
         asp-route-auditTrailEventId="@Model.AuditTrailEvent.EventId"
         data-title="@T["Restore content item"]"
         data-message="@T["Are you sure you want to restore this content item?"]"
-        data-ok-text="@T["Yes"]"
-        data-cancel-text="@T["No"]"
+        data-ok-text="@Localize(CommonLocalizationSources.Yes)"
+        data-cancel-text="@Localize(CommonLocalizationSources.No)"
         data-url-af="UnsafeUrl RemoveUrl">
         @T["Restore"]
     </a>

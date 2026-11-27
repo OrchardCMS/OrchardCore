@@ -21,11 +21,6 @@ msgctxt "OrchardCore.ContentLocalization.AdminMenu"
 msgid "Localization"
 msgstr ""
 
-#: AdminMenu.cs
-msgctxt "OrchardCore.ContentLocalization.AdminMenu"
-msgid "Settings"
-msgstr ""
-
 #. Format arguments: {0}: targetCulture
 #: Controllers/AdminController.cs
 #, csharp-format
@@ -41,16 +36,6 @@ msgstr ""
 #: Controllers/AdminController.cs
 msgctxt "OrchardCore.ContentLocalization.Controllers.AdminController"
 msgid "Localized version of the content created successfully."
-msgstr ""
-
-#: Drivers/ContentCulturePickerSettingsDriver.cs
-msgctxt "OrchardCore.ContentLocalization.Drivers.ContentCulturePickerSettingsDriver"
-msgid "General"
-msgstr ""
-
-#: Drivers/ContentRequestCultureProviderSettingsDriver.cs
-msgctxt "OrchardCore.ContentLocalization.Drivers.ContentRequestCultureProviderSettingsDriver"
-msgid "General"
 msgstr ""
 
 #: Drivers/LocalizationContentsAdminListDisplayDriver.cs

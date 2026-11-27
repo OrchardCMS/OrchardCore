@@ -22,7 +22,7 @@ public class DisableTenantTask : TenantTask, IActivityDescription
     public override LocalizedString DisplayText => LocalizerFactory.Localize(DisplayName);
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-        => Outcome(S["Disabled"], S["Failed"]);
+        => Outcome(LocalizerFactory.Localize(CommonLocalizationSources.Workflow.Disabled), S["Failed"]);
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
