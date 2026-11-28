@@ -37,12 +37,12 @@ public sealed class FileSizeHelper
 
         return magnitude switch
         {
-            0 or 1 => S["{0} B", adjustedSize],
-            2 => S["{0} KB", adjustedSize],
-            3 => S["{0} MB", adjustedSize],
-            4 => S["{0} GB", adjustedSize],
-            5 => S["{0} TB", adjustedSize],
-            6 => S["{0} PB", adjustedSize],
+            0 => S["{0} B", adjustedSize],
+            1 => S["{0} KB", adjustedSize],
+            2 => S["{0} MB", adjustedSize],
+            3 => S["{0} GB", adjustedSize],
+            4 => S["{0} TB", adjustedSize],
+            5 => S["{0} PB", adjustedSize],
             _ => S["{0} EB", adjustedSize]
         };
     }
