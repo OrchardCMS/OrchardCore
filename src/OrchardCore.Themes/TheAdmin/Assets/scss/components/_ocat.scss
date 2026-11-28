@@ -51,9 +51,12 @@
     margin-bottom: 1rem;
 }
 
+// The share of the row follows the viewport, so in a narrow column (a form laid out in columns, a card in a sidebar) a
+// quarter could be narrower than a date or an amount: never narrower than that, nor than its column.
 .ocat-limited {
     width: 100%;
     max-width: 100%;
+    min-width: min(100%, 12rem);
 
     @media (min-width: 768px) {
         width: 50%;

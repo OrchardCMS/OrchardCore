@@ -9,7 +9,9 @@ namespace OrchardCore.Themes.TheAdmin.Schemes;
 /// Writes the stylesheet of TheAdmin's schemes. For each scheme with a valid id and valid colors it writes the
 /// generated tokens (<see cref="WriteTokens"/>) and the layout's (<see cref="TheAdminSchemeTokens"/>) under
 /// <c>[data-ta-scheme="{id}"]</c> for the light mode and under <c>[data-bs-theme="dark"][data-ta-scheme="{id}"]</c> for
-/// the dark mode, then the rules of the scheme's swatch.
+/// the dark mode, then the rules of the scheme's swatch. Each rule also applies to an area of the page with a color mode
+/// of its own (<see cref="GetNestedAreaSelector"/>), so that a light area in the dark mode, or a dark one in the light
+/// mode, takes the tokens of its mode, as Bootstrap's own variables do.
 /// </summary>
 public static class AdminSchemeStylesheet
 {
@@ -60,8 +62,8 @@ public static class AdminSchemeStylesheet
             return;
         }
 
-        AppendRule(css, GetSelector(scheme.Id), BuildTokens(palette, AdminSchemeMode.Light));
-        AppendRule(css, TheAdminSchemes.DarkModeSelector + GetSelector(scheme.Id), BuildTokens(palette, AdminSchemeMode.Dark));
+        AppendRule(css, GetNestedAreaSelector(scheme.Id, AdminSchemeMode.Light) + "," + GetSelector(scheme.Id), BuildTokens(palette, AdminSchemeMode.Light));
+        AppendRule(css, GetNestedAreaSelector(scheme.Id, AdminSchemeMode.Dark) + "," + TheAdminSchemes.DarkModeSelector + GetSelector(scheme.Id), BuildTokens(palette, AdminSchemeMode.Dark));
         TheAdminSchemeTokens.AppendRules(css, scheme, palette);
 
         if (scheme.HorizontalFormLayout)
@@ -149,11 +151,11 @@ public static class AdminSchemeStylesheet
             .Add("focus", colors.Focus)
             .Add("page", colors.Page)
             .AddWithRgb("surface", colors.Surface)
-            .Add("surface-muted", colors.SurfaceMuted);
+            .AddWithRgb("surface-muted", colors.SurfaceMuted);
 
         if (colors.SecondaryBackground is { } secondary)
         {
-            tokens.Add("secondary-bg", secondary);
+            tokens.AddWithRgb("secondary-bg", secondary);
         }
 
         if (colors.BodyColor is { } bodyColor)
@@ -188,6 +190,14 @@ public static class AdminSchemeStylesheet
     /// </summary>
     public static string GetSelector(string schemeId)
         => $"[{TheAdminSchemes.AttributeName}=\"{schemeId}\"]";
+
+    /// <summary>
+    /// The selector of an area of the page in a color mode of its own, under a scheme:
+    /// <c>[data-ta-scheme="{id}"] [data-bs-theme="{mode}"]:not([data-ta-scheme])</c>. An area that names a scheme of its
+    /// own (a scheme's preview) is left to that scheme's rules.
+    /// </summary>
+    public static string GetNestedAreaSelector(string schemeId, AdminSchemeMode mode)
+        => $"{GetSelector(schemeId)} [data-bs-theme=\"{(mode == AdminSchemeMode.Dark ? "dark" : "light")}\"]:not([{TheAdminSchemes.AttributeName}])";
 
     /// <summary>
     /// The version of a stylesheet: the first 16 hexadecimal characters of the SHA-256 of its text, which changes when

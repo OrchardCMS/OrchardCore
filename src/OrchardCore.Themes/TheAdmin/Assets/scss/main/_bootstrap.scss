@@ -27,6 +27,8 @@
     --bs-border-color: var(--ta-border);
     --bs-secondary-color: var(--ta-muted);
     --bs-tertiary-bg: var(--ta-surface-muted);
+    // The background utilities (.bg-body-tertiary) read the triplet.
+    --bs-tertiary-bg-rgb: var(--ta-surface-muted-rgb);
 }
 
 :root[data-bs-theme="dark"],
@@ -35,6 +37,7 @@
     --bs-body-bg: var(--ta-surface);
     --bs-body-bg-rgb: var(--ta-surface-rgb);
     --bs-secondary-bg: var(--ta-secondary-bg);
+    --bs-secondary-bg-rgb: var(--ta-secondary-bg-rgb);
     --bs-body-color: var(--ta-body-color);
     --bs-body-color-rgb: var(--ta-body-color-rgb);
 }
@@ -108,6 +111,51 @@ b {
 [data-bs-theme="dark"] .btn-outline-primary {
     --bs-btn-color: var(--ta-sky);
     --bs-btn-border-color: var(--ta-sky);
+}
+
+// Bootstrap draws its color utilities and outline buttons from the theme colors, the same in both modes, which fall under
+// 4.5:1 on the dark surfaces. In dark mode the primary text reads the link color (the primary at text contrast), the
+// secondary the muted color, the others Bootstrap's text emphasis colors; the secondary and danger outlines follow.
+[data-bs-theme="dark"] {
+    .text-primary {
+        --bs-primary-rgb: var(--ta-link-rgb);
+    }
+
+    .text-secondary {
+        color: var(--bs-secondary-color) !important;
+    }
+
+    .text-success {
+        color: var(--bs-success-text-emphasis) !important;
+    }
+
+    .text-danger {
+        color: var(--bs-danger-text-emphasis) !important;
+    }
+
+    .text-warning {
+        color: var(--bs-warning-text-emphasis) !important;
+    }
+
+    .text-info {
+        color: var(--bs-info-text-emphasis) !important;
+    }
+
+    .btn-outline-secondary {
+        --bs-btn-color: var(--bs-body-color);
+        --bs-btn-border-color: var(--ta-control-border);
+        --bs-btn-hover-color: var(--bs-body-color);
+        --bs-btn-hover-bg: var(--ta-row-hover-bg);
+        --bs-btn-hover-border-color: var(--bs-secondary-color);
+        --bs-btn-active-color: var(--bs-body-color);
+        --bs-btn-active-bg: var(--ta-row-hover-bg);
+        --bs-btn-active-border-color: var(--bs-secondary-color);
+    }
+
+    .btn-outline-danger {
+        --bs-btn-color: var(--bs-danger-text-emphasis);
+        --bs-btn-border-color: var(--bs-danger-text-emphasis);
+    }
 }
 
 // Focus rings and form controls.
