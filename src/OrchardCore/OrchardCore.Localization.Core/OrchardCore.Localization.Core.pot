@@ -364,3 +364,135 @@ msgstr ""
 msgctxt "OrchardCore.Localization.LocalizationPermissions"
 msgid "Manage supported culture"
 msgstr ""
+
+#. Plural rule condition of a language having a single plural form.
+#: PluralLocalizationSources.cs
+msgctxt "OrchardCore.Localization.PluralLocalizationSources"
+msgid "All counts"
+msgstr ""
+
+#. Plural rule condition of the form used for the counts not matched by the other forms.
+#: PluralLocalizationSources.cs
+msgctxt "OrchardCore.Localization.PluralLocalizationSources"
+msgid "All remaining counts"
+msgstr ""
+
+#. Plural rule condition starting a sentence, matching the counts whose last digits are {0}, e.g. "2-4" or "01".
+#. Format arguments: {0}
+#: PluralLocalizationSources.cs
+#, csharp-format
+msgctxt "OrchardCore.Localization.PluralLocalizationSources"
+msgid "Ends in {0}"
+msgstr ""
+
+#. Plural rule condition starting a sentence. {0} is a number or a list of numbers, e.g. "0 or 1".
+#. Format arguments: {0}
+#: PluralLocalizationSources.cs
+#, csharp-format
+msgctxt "OrchardCore.Localization.PluralLocalizationSources"
+msgid "Exactly {0}"
+msgstr ""
+
+#. Plural rule condition starting a sentence, matching the counts from {0} to {1} inclusive.
+#. Format arguments: {0}; {1}
+#: PluralLocalizationSources.cs
+#, csharp-format
+msgctxt "OrchardCore.Localization.PluralLocalizationSources"
+msgid "From {0} to {1}"
+msgstr ""
+
+#. Plural rule condition starting a sentence, matching the multiples of the number {0}.
+#. Format arguments: {0}
+#: PluralLocalizationSources.cs
+#, csharp-format
+msgctxt "OrchardCore.Localization.PluralLocalizationSources"
+msgid "Multiple of {0}"
+msgstr ""
+
+#. Plural rule condition within a sentence, matching the counts whose last digits are {0}, e.g. "2-4" or "01".
+#. Format arguments: {0}
+#: PluralLocalizationSources.cs
+#, csharp-format
+msgctxt "OrchardCore.Localization.PluralLocalizationSources"
+msgid "ends in {0}"
+msgstr ""
+
+#. Plural rule condition within a sentence, e.g. "Ends in 1, except exactly 1". {0} is a number or a list of numbers.
+#. Format arguments: {0}
+#: PluralLocalizationSources.cs
+#, csharp-format
+msgctxt "OrchardCore.Localization.PluralLocalizationSources"
+msgid "exactly {0}"
+msgstr ""
+
+#. Plural rule condition within a sentence, e.g. "Exactly 0 or 1, or from 11 to 99", matching the counts from {0} to {1} inclusive.
+#. Format arguments: {0}; {1}
+#: PluralLocalizationSources.cs
+#, csharp-format
+msgctxt "OrchardCore.Localization.PluralLocalizationSources"
+msgid "from {0} to {1}"
+msgstr ""
+
+#. Plural rule condition within a sentence, e.g. "Ends in 01000-20000 and multiple of 1,000", matching the multiples of the number {0}.
+#. Format arguments: {0}
+#: PluralLocalizationSources.cs
+#, csharp-format
+msgctxt "OrchardCore.Localization.PluralLocalizationSources"
+msgid "multiple of {0}"
+msgstr ""
+
+#. Combines two plural rule conditions, matching the counts matched by both of them.
+#. Format arguments: {0}; {1}
+#: PluralLocalizationSources.cs
+#, csharp-format
+msgctxt "OrchardCore.Localization.PluralLocalizationSources"
+msgid "{0} and {1}"
+msgstr ""
+
+#. Joins the last value {1} of a list in a plural rule condition, e.g. "0 or 1", or "1, 21 or 41".
+#. Format arguments: {0}; {1}
+#: PluralLocalizationSources.cs
+#, csharp-format
+msgctxt "OrchardCore.Localization.PluralLocalizationSources"
+msgid "{0} or {1}"
+msgstr ""
+
+#. Plural rule condition {0}, already having an exception, without the counts of {1}.
+#. Format arguments: {0}; {1}
+#: PluralLocalizationSources.cs
+#, csharp-format
+msgctxt "OrchardCore.Localization.PluralLocalizationSources"
+msgid "{0}, and except {1}"
+msgstr ""
+
+#. Plural rule condition {0} without the counts of {1}, e.g. "Ends in 1, except 11".
+#. Format arguments: {0}; {1}
+#: PluralLocalizationSources.cs
+#, csharp-format
+msgctxt "OrchardCore.Localization.PluralLocalizationSources"
+msgid "{0}, except {1}"
+msgstr ""
+
+#. Combines two plural rule conditions, matching the counts matched by either of them.
+#. Format arguments: {0}; {1}
+#: PluralLocalizationSources.cs
+#, csharp-format
+msgctxt "OrchardCore.Localization.PluralLocalizationSources"
+msgid "{0}, or {1}"
+msgstr ""
+
+#. Separates the values of a list in a plural rule condition, except the last two, e.g. "1, 21" in "1, 21 or 41".
+#. Format arguments: {0}; {1}
+#: PluralLocalizationSources.cs
+#, csharp-format
+msgctxt "OrchardCore.Localization.PluralLocalizationSources"
+msgid "{0}, {1}"
+msgstr ""
+
+#. A range of trailing digits in a plural rule condition, e.g. "12-14" in "Ends in 12-14".
+#. Format arguments: {0}; {1}
+#: PluralLocalizationSources.cs
+#, csharp-format
+msgctxt "OrchardCore.Localization.PluralLocalizationSources"
+msgid "{0}-{1}"
+msgstr ""
