@@ -54,7 +54,7 @@ public class InvalidRewriteRuleTests
         ]);
 
         var serviceProvider = new ServiceCollection()
-            .AddKeyedSingleton<IUrlRewriteRuleSource>(UrlRedirectRuleSource.SourceName, new UrlRedirectRuleSource(Mock.Of<IStringLocalizer<UrlRedirectRuleSource>>()))
+            .AddKeyedSingleton<IUrlRewriteRuleSource>(UrlRedirectRuleSource.SourceName, new UrlRedirectRuleSource())
             .BuildServiceProvider();
 
         var configuration = new RewriteOptionsConfiguration(

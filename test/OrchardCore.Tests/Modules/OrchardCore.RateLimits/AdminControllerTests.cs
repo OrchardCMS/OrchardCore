@@ -199,10 +199,11 @@ public class AdminControllerTests
             Mock.Of<IUpdateModelAccessor>(),
             Mock.Of<INotifier>(),
             policyStore,
-            new ServiceCollection().BuildServiceProvider(),
             shellReleaseManager,
             new EmptyEndpointDataSource(),
             Options.Create(new RateLimitsOptions()),
+            Options.Create(new RateLimiterSourceOptions()),
+            Mock.Of<IStringLocalizerFactory>(),
             Mock.Of<IStringLocalizer<AdminController>>(),
             Mock.Of<IHtmlLocalizer<AdminController>>())
         {

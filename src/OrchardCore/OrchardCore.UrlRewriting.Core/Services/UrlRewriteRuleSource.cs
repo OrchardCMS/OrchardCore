@@ -1,31 +1,22 @@
 using System.Text;
 using Microsoft.AspNetCore.Rewrite;
-using Microsoft.Extensions.Localization;
 using OrchardCore.Entities;
+using OrchardCore.Localization;
 using OrchardCore.Modules.Extensions;
 using OrchardCore.UrlRewriting.Models;
 
 namespace OrchardCore.UrlRewriting.Services;
 
-public sealed class UrlRewriteRuleSource : IUrlRewriteRuleSource
+public sealed class UrlRewriteRuleSource : IUrlRewriteRuleSource, IUrlRewriteRuleSourceDescription
 {
     public const string SourceName = "Rewrite";
-
-    internal readonly IStringLocalizer S;
-
-    public UrlRewriteRuleSource(IStringLocalizer<UrlRewriteRuleSource> stringLocalizer)
-    {
-        S = stringLocalizer;
-        DisplayName = S["Rewrite"];
-        Description = S["URL Rewrite Rule"];
-    }
 
     public string TechnicalName
         => SourceName;
 
-    public LocalizedString DisplayName { get; }
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<UrlRewriteRuleSource>("Rewrite");
 
-    public LocalizedString Description { get; }
+    public static LocalizationSource Description { get; } = LocalizationSource.Create<UrlRewriteRuleSource>("URL Rewrite Rule");
 
     public void Configure(RewriteOptions options, RewriteRule rule)
     {

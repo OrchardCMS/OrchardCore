@@ -108,8 +108,8 @@ public class NestedAdminInlineBreadcrumbTests
             FileContent = "Breadcrumb test",
         };
 
-        // The parameterless constructor sets the untranslated title. The step pages translate it with the step type as the context.
-        Assert.Equal("Custom File", step.Title.Value);
+        // The untranslated title is a static member of the step. The step pages translate it with the step type as the context.
+        Assert.Equal("Custom File", CustomFileDeploymentStep.Title.Value);
 
         var plan = new DeploymentPlan { Name = EscapedName, DeploymentSteps = [step] };
         await context.UsingTenantScopeAsync(async scope =>

@@ -1,15 +1,22 @@
-@using Microsoft.Extensions.DependencyInjection
+@using Microsoft.Extensions.Localization
+@using Microsoft.Extensions.Options
+@using OrchardCore.Localization
 @using OrchardCore.UrlRewriting
 
+@inject IOptions<UrlRewriteRuleSourceOptions> RuleSourceOptions
+@inject IStringLocalizerFactory StringLocalizerFactory
+
 @{
-    var service = ViewContext.HttpContext.RequestServices.GetKeyedService<IUrlRewriteRuleSource>(Model.Source as string);
+    RuleSourceOptions.Value.Sources.TryGetValue(Model.Source as string ?? string.Empty, out var descriptor);
+    var displayName = descriptor == null ? null : StringLocalizerFactory.Localize(descriptor.DisplayName).Value;
+    var description = descriptor == null ? null : StringLocalizerFactory.Localize(descriptor.Description).Value;
 }
 
 <div class="col">
     <div class="card h-100">
         <div class="card-body">
-            <h4>@(service?.DisplayName ?? Model.Source)</h4>
-            <p class="hint">@(service?.Description)</p>
+            <h4>@(displayName ?? Model.Source)</h4>
+            <p class="hint">@description</p>
         </div>
         <div class="card-footer text-muted text-sm-end">
             <a class="btn btn-primary btn-sm" 

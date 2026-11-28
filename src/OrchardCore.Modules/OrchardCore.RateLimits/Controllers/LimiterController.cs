@@ -2,10 +2,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Localization;
 using OrchardCore.RateLimits.Core;
 using OrchardCore.RateLimits.Models;
 using OrchardCore.RateLimits.Services;
@@ -24,6 +27,8 @@ public sealed class LimiterController : Controller
     private readonly IRateLimitPolicyStore _policyStore;
     private readonly IServiceProvider _serviceProvider;
     private readonly IUpdateModelAccessor _updateModelAccessor;
+    private readonly RateLimiterSourceOptions _limiterSourceOptions;
+    private readonly IStringLocalizerFactory _stringLocalizerFactory;
 
     internal readonly IHtmlLocalizer H;
 
@@ -34,7 +39,9 @@ public sealed class LimiterController : Controller
         INotifier notifier,
         IRateLimitPolicyStore policyStore,
         IServiceProvider serviceProvider,
-        IUpdateModelAccessor updateModelAccessor)
+        IUpdateModelAccessor updateModelAccessor,
+        IOptions<RateLimiterSourceOptions> limiterSourceOptions,
+        IStringLocalizerFactory stringLocalizerFactory)
     {
         _authorizationService = authorizationService;
         _displayManager = displayManager;
@@ -42,6 +49,8 @@ public sealed class LimiterController : Controller
         _policyStore = policyStore;
         _serviceProvider = serviceProvider;
         _updateModelAccessor = updateModelAccessor;
+        _limiterSourceOptions = limiterSourceOptions.Value;
+        _stringLocalizerFactory = stringLocalizerFactory;
         H = htmlLocalizer;
     }
 
@@ -78,8 +87,8 @@ public sealed class LimiterController : Controller
 
         var model = new RateLimiterEditorViewModel
         {
-            DisplayName = source.DisplayName.Value,
-            Description = source.Description.Value,
+            DisplayName = _stringLocalizerFactory.Localize(_limiterSourceOptions.Sources[source.Name].DisplayName).Value,
+            Description = _stringLocalizerFactory.Localize(_limiterSourceOptions.Sources[source.Name].Description).Value,
             DocumentationUrl = GetLimiterDocumentationUrl(source.Name),
             Editor = await _displayManager.BuildEditorAsync(limiter, _updateModelAccessor.ModelUpdater, isNew: true),
         };
@@ -123,8 +132,8 @@ public sealed class LimiterController : Controller
 
         var model = new RateLimiterEditorViewModel
         {
-            DisplayName = source.DisplayName.Value,
-            Description = source.Description.Value,
+            DisplayName = _stringLocalizerFactory.Localize(_limiterSourceOptions.Sources[source.Name].DisplayName).Value,
+            Description = _stringLocalizerFactory.Localize(_limiterSourceOptions.Sources[source.Name].Description).Value,
             DocumentationUrl = GetLimiterDocumentationUrl(source.Name),
             Editor = await _displayManager.UpdateEditorAsync(limiter, _updateModelAccessor.ModelUpdater, isNew: true),
         };
@@ -165,8 +174,8 @@ public sealed class LimiterController : Controller
 
         var model = new RateLimiterEditorViewModel
         {
-            DisplayName = source.DisplayName.Value,
-            Description = source.Description.Value,
+            DisplayName = _stringLocalizerFactory.Localize(_limiterSourceOptions.Sources[source.Name].DisplayName).Value,
+            Description = _stringLocalizerFactory.Localize(_limiterSourceOptions.Sources[source.Name].Description).Value,
             DocumentationUrl = GetLimiterDocumentationUrl(source.Name),
             Editor = await _displayManager.BuildEditorAsync(limiter, _updateModelAccessor.ModelUpdater, isNew: false),
         };
@@ -197,8 +206,8 @@ public sealed class LimiterController : Controller
 
         var model = new RateLimiterEditorViewModel
         {
-            DisplayName = source.DisplayName.Value,
-            Description = source.Description.Value,
+            DisplayName = _stringLocalizerFactory.Localize(_limiterSourceOptions.Sources[source.Name].DisplayName).Value,
+            Description = _stringLocalizerFactory.Localize(_limiterSourceOptions.Sources[source.Name].Description).Value,
             DocumentationUrl = GetLimiterDocumentationUrl(source.Name),
             Editor = await _displayManager.UpdateEditorAsync(originalLimiter, _updateModelAccessor.ModelUpdater, isNew: false),
         };

@@ -1,15 +1,13 @@
-using Microsoft.Extensions.Localization;
 using OrchardCore.Infrastructure;
 
 namespace OrchardCore.Email;
 
+/// <summary>
+/// Sends email messages. Implement <see cref="IEmailProviderDescription"/> too, to register the provider with
+/// <c>services.AddEmailProvider&lt;T&gt;(name)</c>.
+/// </summary>
 public interface IEmailProvider
 {
-    /// <summary>
-    /// The display name of the provider.
-    /// </summary>
-    LocalizedString DisplayName { get; }
-
     /// <summary>
     /// Send the given message via email.
     /// </summary>

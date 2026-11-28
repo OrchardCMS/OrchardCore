@@ -1,6 +1,5 @@
 using OrchardCore.Localization;
 using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
 using OrchardCore.Deployment;
 
 namespace OrchardCore.Queries.Deployment;
@@ -8,15 +7,13 @@ namespace OrchardCore.Queries.Deployment;
 /// <summary>
 /// Adds all content items from the result of a Query to a <see cref="DeploymentPlanResult"/>.
 /// </summary>
-public class QueryBasedContentDeploymentStep : DeploymentStep
+public class QueryBasedContentDeploymentStep : DeploymentStep, IDeploymentStep
 {
     public override string Name => "QueryBasedContentDeploymentStep";
 
-    [JsonIgnore]
-    public override LocalizationSource Category => CommonLocalizationSources.ContentManagement;
+    public static LocalizationSource Category => CommonLocalizationSources.ContentManagement;
 
-    [JsonIgnore]
-    public override LocalizationSource Title => QueriesLocalizationSources.QueriedContentItems;
+    public static LocalizationSource Title => QueriesLocalizationSources.QueriedContentItems;
 
     [Required]
     public string QueryName { get; set; }

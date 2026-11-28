@@ -28,20 +28,16 @@ public sealed class SmtpProviderOptionsConfigurations : IConfigureOptions<EmailP
 
     private void ConfigureTenantProvider(EmailProviderOptions options)
     {
-        var typeOptions = new EmailProviderTypeOptions(typeof(SmtpEmailProvider))
-        {
-            IsEnabled = _smtpOptions.CurrentValue.IsEnabled,
-        };
+        var typeOptions = EmailProviderTypeOptions.Create<SmtpEmailProvider>();
+        typeOptions.IsEnabled = _smtpOptions.CurrentValue.IsEnabled;
 
         options.TryAddProvider(SmtpEmailProvider.TechnicalName, typeOptions);
     }
 
     private static void ConfigureDefaultProvider(EmailProviderOptions options)
     {
-        var typeOptions = new EmailProviderTypeOptions(typeof(DefaultSmtpEmailProvider))
-        {
-            IsEnabled = true,
-        };
+        var typeOptions = EmailProviderTypeOptions.Create<DefaultSmtpEmailProvider>();
+        typeOptions.IsEnabled = true;
 
         options.TryAddProvider(DefaultSmtpEmailProvider.TechnicalName, typeOptions);
     }

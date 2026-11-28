@@ -5,6 +5,7 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Entities;
+using OrchardCore.Localization;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.RateLimits.Core;
 using OrchardCore.RateLimits.Models;
@@ -17,12 +18,15 @@ public sealed class TokenBucketRateLimiterDisplayDriver : DisplayDriver<RateLimi
 {
     private readonly IRateLimiterSource _source;
     private readonly IStringLocalizer S;
+    private readonly IStringLocalizerFactory _stringLocalizerFactory;
 
     public TokenBucketRateLimiterDisplayDriver(
         [FromKeyedServices(TokenBucketRateLimiterSource.SourceName)] IRateLimiterSource source,
+        IStringLocalizerFactory stringLocalizerFactory,
         IStringLocalizer<TokenBucketRateLimiterDisplayDriver> stringLocalizer)
     {
         _source = source;
+        _stringLocalizerFactory = stringLocalizerFactory;
         S = stringLocalizer;
     }
 
@@ -97,7 +101,7 @@ public sealed class TokenBucketRateLimiterDisplayDriver : DisplayDriver<RateLimi
             Initialize<RateLimiterSourceViewModel>("TokenBucketRateLimiter_SummaryAdmin", model =>
             {
                 model.Name = _source.Name;
-                model.DisplayName = _source.DisplayName.Value;
+                model.DisplayName = _stringLocalizerFactory.Localize(TokenBucketRateLimiterSource.DisplayName).Value;
                 model.Description = _source.Describe(limiter);
             }).Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Content:5"));
     }

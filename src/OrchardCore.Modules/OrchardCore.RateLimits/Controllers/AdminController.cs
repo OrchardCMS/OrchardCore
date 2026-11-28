@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Patterns;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
@@ -17,6 +16,7 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Infrastructure.Entities;
+using OrchardCore.Localization;
 using OrchardCore.Navigation;
 using OrchardCore.RateLimits.Core;
 using OrchardCore.RateLimits.Models;
@@ -42,11 +42,12 @@ public sealed class AdminController : Controller
     ];
 
     private readonly IAuthorizationService _authorizationService;
-    private readonly IServiceProvider _serviceProvider;
     private readonly INotifier _notifier;
     private readonly IRateLimitPolicyStore _policyStore;
     private readonly IShellReleaseManager _shellReleaseManager;
     private readonly RateLimitsOptions _rateLimitsOptions;
+    private readonly RateLimiterSourceOptions _limiterSourceOptions;
+    private readonly IStringLocalizerFactory _stringLocalizerFactory;
     private readonly EndpointDataSource _endpointDataSource;
     private readonly IDisplayManager<RateLimitLimiter> _displayManager;
     private readonly IDisplayManager<RateLimitPolicyEditViewModel> _policyDisplayManager;
@@ -62,10 +63,11 @@ public sealed class AdminController : Controller
         IUpdateModelAccessor updateModelAccessor,
         INotifier notifier,
         IRateLimitPolicyStore policyStore,
-        IServiceProvider serviceProvider,
         IShellReleaseManager shellReleaseManager,
         EndpointDataSource endpointDataSource,
         IOptions<RateLimitsOptions> rateLimitsOptions,
+        IOptions<RateLimiterSourceOptions> limiterSourceOptions,
+        IStringLocalizerFactory stringLocalizerFactory,
         IStringLocalizer<AdminController> stringLocalizer,
         IHtmlLocalizer<AdminController> htmlLocalizer)
     {
@@ -75,10 +77,11 @@ public sealed class AdminController : Controller
         _updateModelAccessor = updateModelAccessor;
         _notifier = notifier;
         _policyStore = policyStore;
-        _serviceProvider = serviceProvider;
         _shellReleaseManager = shellReleaseManager;
         _endpointDataSource = endpointDataSource;
         _rateLimitsOptions = rateLimitsOptions.Value;
+        _limiterSourceOptions = limiterSourceOptions.Value;
+        _stringLocalizerFactory = stringLocalizerFactory;
         S = stringLocalizer;
         H = htmlLocalizer;
     }
@@ -667,16 +670,15 @@ public sealed class AdminController : Controller
         return
         [
             .. s_rateLimiterSourceNames
-                .Select(sourceName => _serviceProvider.GetKeyedService<IRateLimiterSource>(sourceName))
-                .Where(static source => source is not null)
-                .OrderBy(x => x.DisplayName.Value, StringComparer.OrdinalIgnoreCase)
-                .Select(x => new RateLimiterSourceViewModel
+                .Where(sourceName => _limiterSourceOptions.Sources.ContainsKey(sourceName))
+                .Select(sourceName => new RateLimiterSourceViewModel
                 {
-                    Name = x.Name,
-                    DisplayName = x.DisplayName.Value,
-                    Description = x.Description.Value,
-                    DocumentationUrl = GetLimiterDocumentationUrl(x.Name),
-                }),
+                    Name = sourceName,
+                    DisplayName = _stringLocalizerFactory.Localize(_limiterSourceOptions.Sources[sourceName].DisplayName).Value,
+                    Description = _stringLocalizerFactory.Localize(_limiterSourceOptions.Sources[sourceName].Description).Value,
+                    DocumentationUrl = GetLimiterDocumentationUrl(sourceName),
+                })
+                .OrderBy(x => x.DisplayName, StringComparer.OrdinalIgnoreCase),
         ];
     }
 

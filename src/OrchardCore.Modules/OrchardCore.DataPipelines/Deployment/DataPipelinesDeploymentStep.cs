@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using OrchardCore.Deployment;
 using OrchardCore.Localization;
 
@@ -8,15 +7,13 @@ namespace OrchardCore.DataPipelines.Deployment;
 /// Exports data pipelines, every one or the selected ones, with their published definition, or their draft when they
 /// were never published, and without the secrets of their steps.
 /// </summary>
-public class DataPipelinesDeploymentStep : DeploymentStep
+public class DataPipelinesDeploymentStep : DeploymentStep, IDeploymentStep
 {
     public override string Name => "DataPipelines";
 
-    [JsonIgnore]
-    public override LocalizationSource Category => DataPipelinesLocalizationSources.Data;
+    public static LocalizationSource Category => DataPipelinesLocalizationSources.Data;
 
-    [JsonIgnore]
-    public override LocalizationSource Title => DataPipelinesLocalizationSources.DataPipelines;
+    public static LocalizationSource Title => DataPipelinesLocalizationSources.DataPipelines;
 
     /// <summary>
     /// Gets or sets a value indicating whether every pipeline is exported, including the ones created later.

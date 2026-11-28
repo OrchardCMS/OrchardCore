@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using OrchardCore.Deployment;
 using OrchardCore.Localization;
 
@@ -7,12 +6,11 @@ namespace OrchardCore.DataLocalization.Deployment;
 /// <summary>
 /// Adds translations to a <see cref="DeploymentPlanResult"/>.
 /// </summary>
-public class TranslationsDeploymentStep : DeploymentStep
+public class TranslationsDeploymentStep : DeploymentStep, IDeploymentStep
 {
     public override string Name => "Translations";
 
-    [JsonIgnore]
-    public override LocalizationSource Category => DataLocalizationLocalizationSources.Internationalization;
+    public static LocalizationSource Category => DataLocalizationLocalizationSources.Internationalization;
 
     /// <summary>
     /// Gets or sets whether to include all cultures or selected cultures.

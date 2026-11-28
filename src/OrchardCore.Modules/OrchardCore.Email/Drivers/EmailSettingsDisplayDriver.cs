@@ -9,6 +9,7 @@ using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Email.Services;
 using OrchardCore.Email.ViewModels;
 using OrchardCore.Environment.Options;
+using OrchardCore.Localization;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Email.Drivers;
@@ -18,7 +19,7 @@ public sealed class EmailSettingsDisplayDriver : SiteDisplayDriver<EmailSettings
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly IOptionsMonitor<EmailOptions> _emailOptions;
-    private readonly IEmailProviderResolver _emailProviderResolver;
+    private readonly IStringLocalizerFactory _stringLocalizerFactory;
     private readonly IOptionsUpdateNotifier _optionsUpdateNotifier;
     private readonly IOptionsMonitor<EmailProviderOptions> _emailProviders;
 
@@ -32,14 +33,14 @@ public sealed class EmailSettingsDisplayDriver : SiteDisplayDriver<EmailSettings
         IAuthorizationService authorizationService,
         IOptionsMonitor<EmailProviderOptions> emailProviders,
         IOptionsMonitor<EmailOptions> emailOptions,
-        IEmailProviderResolver emailProviderResolver,
+        IStringLocalizerFactory stringLocalizerFactory,
         IOptionsUpdateNotifier optionsUpdateNotifier,
         IStringLocalizer<EmailSettingsDisplayDriver> stringLocalizer)
     {
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         _emailOptions = emailOptions;
-        _emailProviderResolver = emailProviderResolver;
+        _stringLocalizerFactory = stringLocalizerFactory;
         _emailProviders = emailProviders;
         _optionsUpdateNotifier = optionsUpdateNotifier;
         S = stringLocalizer;
@@ -52,10 +53,10 @@ public sealed class EmailSettingsDisplayDriver : SiteDisplayDriver<EmailSettings
             return null;
         }
 
-        return Initialize<EmailSettingsViewModel>("EmailSettings_Edit", async model =>
+        return Initialize<EmailSettingsViewModel>("EmailSettings_Edit", model =>
         {
             model.DefaultProvider = settings.DefaultProviderName ?? _emailOptions.CurrentValue.DefaultProviderName;
-            model.Providers = await GetProviderOptionsAsync();
+            model.Providers = GetProviderOptions();
         }).Location(l => l.Zone("Content", "1").Tab(S["Providers"]).Card(S["Default provider"], "10"))
         .OnGroup(SettingsGroupId);
     }
@@ -81,7 +82,7 @@ public sealed class EmailSettingsDisplayDriver : SiteDisplayDriver<EmailSettings
         return await EditAsync(site, settings, context);
     }
 
-    private async Task<SelectListItem[]> GetProviderOptionsAsync()
+    private SelectListItem[] GetProviderOptions()
     {
         var options = new List<SelectListItem>();
 
@@ -92,9 +93,7 @@ public sealed class EmailSettingsDisplayDriver : SiteDisplayDriver<EmailSettings
                 continue;
             }
 
-            var provider = await _emailProviderResolver.GetAsync(entry.Key);
-
-            options.Add(new SelectListItem(provider.DisplayName, entry.Key));
+            options.Add(new SelectListItem(_stringLocalizerFactory.Localize(entry.Value.DisplayName), entry.Key));
         }
 
         return options.OrderBy(x => x.Text).ToArray();

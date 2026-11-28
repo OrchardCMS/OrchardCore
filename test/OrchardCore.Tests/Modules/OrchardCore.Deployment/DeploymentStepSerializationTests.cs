@@ -60,9 +60,9 @@ public class DeploymentStepSerializationTests
     }
 
     [Fact]
-    public void DeploymentStep_DoesNotPersistItsLocalizedNames()
+    public void DeploymentStep_DoesNotPersistItsStaticLocalizedNames()
     {
-        // They are read from the step's type, never from the stored plan, so writing them
+        // They are static members of the step's type, never from the stored plan, so writing them
         // would only be dead data.
         var step = new StubDeploymentStep();
 
@@ -72,13 +72,11 @@ public class DeploymentStepSerializationTests
         Assert.DoesNotContain("Title", json, StringComparison.Ordinal);
     }
 
-    private sealed class StubDeploymentStep : DeploymentStep
+    private sealed class StubDeploymentStep : DeploymentStep, IDeploymentStep
     {
-        [JsonIgnore]
-        public override LocalizationSource Category => CommonLocalizationSources.Content;
+        public static LocalizationSource Category => CommonLocalizationSources.Content;
 
-        [JsonIgnore]
-        public override LocalizationSource Title => LocalizationSource.Create<StubDeploymentStep>("All Content");
+        public static LocalizationSource Title => LocalizationSource.Create<StubDeploymentStep>("All Content");
 
         public override string Name => "Stub";
 

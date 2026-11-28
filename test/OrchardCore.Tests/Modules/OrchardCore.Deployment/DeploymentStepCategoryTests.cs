@@ -18,40 +18,39 @@ public class DeploymentStepCategoryTests
     [InlineData(typeof(DeploymentPlanDeploymentStep))]
     public void Create_MultipleInstances_SharesUntranslatedSources(Type stepType)
     {
-        var first = CreateStep(stepType);
-        var second = CreateStep(stepType);
+        var factory = CreateFactory(stepType);
 
-        Assert.NotSame(first, second);
-        Assert.Same(first.Category, second.Category);
-        Assert.Same(first.Title, second.Title);
+        Assert.NotSame(factory.Create(), factory.Create());
+        Assert.Same(factory.Category, CreateFactory(stepType).Category);
+        Assert.Same(factory.Title, CreateFactory(stepType).Title);
     }
 
     [Theory]
     [InlineData(typeof(IndexProfileDeploymentStep), "Indexing", "OrchardCore.Indexing.Core.IndexingLocalizationSources", "Index Profiles", "OrchardCore.Indexing.Core.IndexingLocalizationSources")]
     [InlineData(typeof(AllContentDeploymentStep), "Content Management", "OrchardCore.Localization.CommonLocalizationSources", "All Content", "OrchardCore.Contents.ContentsLocalizationSources")]
     [InlineData(typeof(DeploymentPlanDeploymentStep), "Deployment", "OrchardCore.Deployment.DeploymentLocalizationSources", "Deployment Plans", "OrchardCore.Deployment.DeploymentLocalizationSources")]
-    public void Create_FromFactory_SetsUntranslatedCategoryAndTitle(Type stepType, string category, string categoryContext, string title, string titleContext)
+    public void Factory_Describes_UntranslatedCategoryAndTitle(Type stepType, string category, string categoryContext, string title, string titleContext)
     {
         // Act
-        var step = CreateStep(stepType);
+        var factory = CreateFactory(stepType);
 
         // Assert
-        Assert.Equal(category, step.Category.Value);
-        Assert.Equal(categoryContext, step.Category.Type.FullName);
-        Assert.Equal(title, step.Title.Value);
-        Assert.Equal(titleContext, step.Title.Type.FullName);
+        Assert.Equal(category, factory.Category.Value);
+        Assert.Equal(categoryContext, factory.Category.Type.FullName);
+        Assert.Equal(title, factory.Title.Value);
+        Assert.Equal(titleContext, factory.Title.Type.FullName);
     }
 
     [Fact]
     public void Create_StepsOfDifferentModules_ShareTheirCategory()
     {
         // Act
-        var contentStep = CreateStep(typeof(AllContentDeploymentStep));
-        var definitionStep = CreateStep(typeof(ContentDefinitionDeploymentStep));
+        var contentFactory = CreateFactory(typeof(AllContentDeploymentStep));
+        var definitionFactory = CreateFactory(typeof(ContentDefinitionDeploymentStep));
 
         // Assert
-        Assert.Same(CommonLocalizationSources.ContentManagement, contentStep.Category);
-        Assert.Same(contentStep.Category, definitionStep.Category);
+        Assert.Same(CommonLocalizationSources.ContentManagement, contentFactory.Category);
+        Assert.Same(contentFactory.Category, definitionFactory.Category);
     }
 
     [Theory]
@@ -60,13 +59,13 @@ public class DeploymentStepCategoryTests
     public void LocalizeCategory_TranslationInCommonContext_ReturnsTranslation(Type stepType, string category, string translation)
     {
         // Arrange
-        var step = CreateStep(stepType);
+        var factory = CreateFactory(stepType);
         var localizerFactory = CreateLocalizerFactory("fr", new CultureDictionaryRecord(category, typeof(CommonLocalizationSources).FullName, [translation]));
 
         using var scope = CultureScope.Create("fr");
 
         // Act
-        var localized = localizerFactory.Localize(step.Category);
+        var localized = localizerFactory.Localize(factory.Category);
 
         // Assert
         Assert.Equal(translation, localized.Value);
@@ -76,13 +75,13 @@ public class DeploymentStepCategoryTests
     public void LocalizeCategory_TranslationInModuleContext_ReturnsTranslation()
     {
         // Arrange
-        var step = CreateStep(typeof(IndexProfileDeploymentStep));
+        var factory = CreateFactory(typeof(IndexProfileDeploymentStep));
         var localizerFactory = CreateLocalizerFactory("fr", new CultureDictionaryRecord("Indexing", "OrchardCore.Indexing.Core.IndexingLocalizationSources", ["Indexation"]));
 
         using var scope = CultureScope.Create("fr");
 
         // Act
-        var localized = localizerFactory.Localize(step.Category);
+        var localized = localizerFactory.Localize(factory.Category);
 
         // Assert
         Assert.Equal("Indexation", localized.Value);
@@ -92,13 +91,13 @@ public class DeploymentStepCategoryTests
     public void LocalizeTitle_TranslationInModuleContext_ReturnsTranslation()
     {
         // Arrange
-        var step = CreateStep(typeof(IndexProfileDeploymentStep));
+        var factory = CreateFactory(typeof(IndexProfileDeploymentStep));
         var localizerFactory = CreateLocalizerFactory("fr", new CultureDictionaryRecord("Index Profiles", "OrchardCore.Indexing.Core.IndexingLocalizationSources", ["Profils d'index"]));
 
         using var scope = CultureScope.Create("fr");
 
         // Act
-        var localized = localizerFactory.Localize(step.Title);
+        var localized = localizerFactory.Localize(factory.Title);
 
         // Assert
         Assert.Equal("Profils d'index", localized.Value);
@@ -108,23 +107,22 @@ public class DeploymentStepCategoryTests
     public void LocalizeTitle_StepWithoutTitle_ReturnsNull()
     {
         // Arrange
-        var step = CreateStep(typeof(AllRolesDeploymentStep));
+        var factory = CreateFactory(typeof(AllRolesDeploymentStep));
         var localizerFactory = new Mock<IStringLocalizerFactory>();
 
         // Act
-        var localized = localizerFactory.Object.Localize(step.Title);
+        var localized = localizerFactory.Object.Localize(factory.Title);
 
         // Assert
         Assert.Null(localized);
         localizerFactory.VerifyNoOtherCalls();
     }
 
-    private static DeploymentStep CreateStep(Type stepType)
+    private static IDeploymentStepFactory CreateFactory(Type stepType)
     {
         var factoryType = typeof(DeploymentStepFactory<>).MakeGenericType(stepType);
-        var factory = (IDeploymentStepFactory)Activator.CreateInstance(factoryType, new ServiceCollection().BuildServiceProvider());
 
-        return factory.Create();
+        return (IDeploymentStepFactory)Activator.CreateInstance(factoryType, new ServiceCollection().BuildServiceProvider());
     }
 
     private static PortableObjectStringLocalizerFactory CreateLocalizerFactory(string cultureName, params CultureDictionaryRecord[] records)

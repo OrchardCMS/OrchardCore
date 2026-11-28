@@ -34,8 +34,6 @@ public abstract class SmtpEmailProviderBase<TOptions> : IEmailProvider
         S = stringLocalizer;
     }
 
-    public abstract LocalizedString DisplayName { get; }
-
     /// <summary>
     /// Sends the specified email message by using the configured SMTP delivery method.
     /// </summary>

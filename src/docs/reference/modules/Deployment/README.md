@@ -86,13 +86,13 @@ Administrators receive these permissions by default.
 
 ## Extending deployment
 
-A module can provide a custom deployment step by implementing an `IDeploymentSource`, deriving its step model from `DeploymentStep`, and optionally adding a display driver for its editor. Register the components together:
+A module can provide a custom deployment step by implementing an `IDeploymentSource`, deriving its step model from `DeploymentStep` and implementing `IDeploymentStep`, and optionally adding a display driver for its editor. Register the components together:
 
 ```csharp
 services.AddDeployment<MyDeploymentSource, MyDeploymentStep, MyDeploymentStepDisplayDriver>();
 ```
 
-The step model overrides its `Name`, `Category`, and `Title` properties. The name is persisted with the plan, and the category and the title are `LocalizationSource` instances that are translated when they are shown:
+The step model overrides its `Name` property, and declares the static `Category` and `Title` members of `IDeploymentStep`. The name is persisted with the plan, and the category and the title are `LocalizationSource` instances that are translated when they are shown. The title is optional and is `null` by default:
 
 - The category groups the step in the list of steps that can be added to a plan. Use a category of `CommonLocalizationSources` when the steps of several modules share it, such as `CommonLocalizationSources.ContentManagement`, `Security`, or `Search`, so that the step is listed with the other steps of the same category and the category is translated once. A category used only by the steps of one module, such as "Workflows", is declared in the module's class.
 - The title is the display name of the step. It is shown as the heading of the step's add and edit screens, and in their breadcrumb, so the screens do not need an `<h5>` of their own. Declare it in the class of the module's localization sources.
@@ -109,28 +109,22 @@ internal static class MyModuleLocalizationSources
 ```
 
 ```csharp
-using System.Text.Json.Serialization;
 using OrchardCore.Deployment;
 using OrchardCore.Localization;
 
 namespace MyModule.Deployment;
 
-public sealed class MyDeploymentStep : DeploymentStep
+public sealed class MyDeploymentStep : DeploymentStep, IDeploymentStep
 {
     public override string Name => "MyStep";
 
-    [JsonIgnore]
-    public override LocalizationSource Category => CommonLocalizationSources.ContentManagement;
+    public static LocalizationSource Category => CommonLocalizationSources.ContentManagement;
 
-    [JsonIgnore]
-    public override LocalizationSource Title => MyModuleLocalizationSources.ExportMyData;
+    public static LocalizationSource Title => MyModuleLocalizationSources.ExportMyData;
 }
 ```
 
-The properties return static readonly fields, so the sources are not allocated for every step instance. They can be shared across tenants and cultures because they are translated only when they are shown with `IStringLocalizerFactory.Localize()`. The translation uses the class that declares the source as the context, so a PO file entry for the title above uses `msgctxt "MyModule.MyModuleLocalizationSources"`, and the categories use `msgctxt "OrchardCore.Localization.CommonLocalizationSources"`. These sources are not persisted with the deployment plan; they are always read from the step's type.
-
-!!! warning
-    Add `[JsonIgnore]` to the `Category` and `Title` overrides. `System.Text.Json` doesn't apply the attribute of the base property to an override. A `LocalizationSource` is a static declaration and is never serialized or deserialized: the serializer that saves the plans also removes these properties from its contract, and the attribute keeps them out of every other serializer. See [Deferring localization with LocalizationSource](../Localize/README.md#deferring-localization-with-localizationsource).
+The members are static, so the steps can be listed and grouped without creating them, and the sources are not allocated for every step instance. They can be shared across tenants and cultures because they are translated only when they are shown with `IStringLocalizerFactory.Localize()`. The translation uses the class that declares the source as the context, so a PO file entry for the title above uses `msgctxt "MyModule.MyModuleLocalizationSources"`, and the categories use `msgctxt "OrchardCore.Localization.CommonLocalizationSources"`. These sources are not persisted with the deployment plan, because static members are never serialized. See [Deferring localization with LocalizationSource](../Localize/README.md#deferring-localization-with-localizationsource).
 
 The source processes the configured step and adds recipe steps or files to the `DeploymentPlanResult`. Register a custom execution destination by implementing `IDeploymentTargetProvider`.
 

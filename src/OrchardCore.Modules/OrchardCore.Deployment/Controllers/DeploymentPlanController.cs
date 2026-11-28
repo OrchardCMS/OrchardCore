@@ -197,7 +197,7 @@ public sealed class DeploymentPlanController : Controller
             var step = factory.Create();
             var thumbnail = await _displayManager.BuildDisplayAsync(step, _updateModelAccessor.ModelUpdater, "Thumbnail");
             thumbnail.Properties["DeploymentStep"] = step;
-            var category = _stringLocalizerFactory.Localize(step.Category)?.Value ?? string.Empty;
+            var category = _stringLocalizerFactory.Localize(factory.Category)?.Value ?? string.Empty;
 
             thumbnails.Add(new DisplayDeploymentPlanThumbnailViewModel
             {

@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using OrchardCore.Localization;
 
 namespace OrchardCore.Deployment.Steps;
@@ -6,15 +5,13 @@ namespace OrchardCore.Deployment.Steps;
 /// <summary>
 /// Adds a Recipe file to a <see cref="DeploymentPlanResult"/>.
 /// </summary>
-public class RecipeFileDeploymentStep : DeploymentStep
+public class RecipeFileDeploymentStep : DeploymentStep, IDeploymentStep
 {
     public override string Name => nameof(RecipeFileDeploymentStep);
 
-    [JsonIgnore]
-    public override LocalizationSource Category => DeploymentLocalizationSources.Deployment;
+    public static LocalizationSource Category => DeploymentLocalizationSources.Deployment;
 
-    [JsonIgnore]
-    public override LocalizationSource Title => DeploymentLocalizationSources.RecipeFile;
+    public static LocalizationSource Title => DeploymentLocalizationSources.RecipeFile;
 
     public string RecipeName { get; set; }
 

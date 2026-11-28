@@ -30,20 +30,16 @@ public sealed class AzureEmailProviderOptionsConfigurations : IConfigureOptions<
 
     private void ConfigureTenantProvider(EmailProviderOptions options)
     {
-        var typeOptions = new EmailProviderTypeOptions(typeof(AzureEmailProvider))
-        {
-            IsEnabled = _azureOptions.CurrentValue.IsEnabled,
-        };
+        var typeOptions = EmailProviderTypeOptions.Create<AzureEmailProvider>();
+        typeOptions.IsEnabled = _azureOptions.CurrentValue.IsEnabled;
 
         options.TryAddProvider(AzureEmailProvider.TechnicalName, typeOptions);
     }
 
     private static void ConfigureDefaultProvider(EmailProviderOptions options)
     {
-        var typeOptions = new EmailProviderTypeOptions(typeof(DefaultAzureEmailProvider))
-        {
-            IsEnabled = true,
-        };
+        var typeOptions = EmailProviderTypeOptions.Create<DefaultAzureEmailProvider>();
+        typeOptions.IsEnabled = true;
 
         options.TryAddProvider(DefaultAzureEmailProvider.TechnicalName, typeOptions);
     }

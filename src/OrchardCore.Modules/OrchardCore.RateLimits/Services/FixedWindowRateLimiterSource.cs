@@ -1,6 +1,8 @@
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
+using OrchardCore.RateLimits.Core;
 using OrchardCore.RateLimits.Core.Models;
 using OrchardCore.RateLimits.Models;
 
@@ -9,7 +11,7 @@ namespace OrchardCore.RateLimits.Services;
 /// <summary>
 /// Creates fixed-window rate-limit partitions for policy limiters.
 /// </summary>
-public sealed class FixedWindowRateLimiterSource : RateLimiterSourceBase<FixedWindowRateLimiterData>
+public sealed class FixedWindowRateLimiterSource : RateLimiterSourceBase<FixedWindowRateLimiterData>, IRateLimiterSourceDescription
 {
     /// <summary>
     /// The persisted source name for fixed-window limiters.
@@ -28,11 +30,11 @@ public sealed class FixedWindowRateLimiterSource : RateLimiterSourceBase<FixedWi
     /// <inheritdoc />
     public override string Name => SourceName;
 
-    /// <inheritdoc />
-    public override LocalizedString DisplayName => S["Fixed window"];
+    /// <inheritdoc cref="IRateLimiterSourceDescription.DisplayName" />
+    public static LocalizationSource DisplayName { get; } = LocalizationSource.Create<FixedWindowRateLimiterSource>("Fixed window");
 
-    /// <inheritdoc />
-    public override LocalizedString Description => S["Allows a set number of requests during each time period, then resets the count all at once."];
+    /// <inheritdoc cref="IRateLimiterSourceDescription.Description" />
+    public static LocalizationSource Description { get; } = LocalizationSource.Create<FixedWindowRateLimiterSource>("Allows a set number of requests during each time period, then resets the count all at once.");
 
     protected override RateLimitPartition<string> CreatePartition(string policyName, HttpContext context, FixedWindowRateLimiterData model)
     {

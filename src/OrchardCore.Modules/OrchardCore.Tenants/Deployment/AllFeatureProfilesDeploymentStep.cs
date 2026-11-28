@@ -1,13 +1,11 @@
-using System.Text.Json.Serialization;
 using OrchardCore.Deployment;
 using OrchardCore.Localization;
 
 namespace OrchardCore.Tenants.Deployment;
 
-public class AllFeatureProfilesDeploymentStep : DeploymentStep
+public class AllFeatureProfilesDeploymentStep : DeploymentStep, IDeploymentStep
 {
     public override string Name => "AllFeatureProfiles";
 
-    [JsonIgnore]
-    public override LocalizationSource Category => CommonLocalizationSources.Infrastructure;
+    public static LocalizationSource Category => CommonLocalizationSources.Infrastructure;
 }

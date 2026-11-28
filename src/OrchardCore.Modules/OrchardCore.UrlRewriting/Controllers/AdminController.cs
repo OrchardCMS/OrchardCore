@@ -4,12 +4,14 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Localization;
 using OrchardCore.Routing;
 using OrchardCore.UrlRewriting.Endpoints.Rules;
 using OrchardCore.UrlRewriting.Models;
@@ -28,6 +30,8 @@ public sealed class AdminController : Controller
     private readonly IShellReleaseManager _shellReleaseManager;
     private readonly IEnumerable<IUrlRewriteRuleSource> _urlRewritingRuleSources;
     private readonly IRewriteRulesManager _rewriteRulesManager;
+    private readonly UrlRewriteRuleSourceOptions _ruleSourceOptions;
+    private readonly IStringLocalizerFactory _stringLocalizerFactory;
 
     internal readonly IStringLocalizer S;
     internal readonly IHtmlLocalizer H;
@@ -41,6 +45,8 @@ public sealed class AdminController : Controller
         IRewriteRulesManager rewriteRulesManager,
         IUpdateModelAccessor updateModelAccessor,
         IServiceProvider serviceProvider,
+        IOptions<UrlRewriteRuleSourceOptions> ruleSourceOptions,
+        IStringLocalizerFactory stringLocalizerFactory,
         IStringLocalizer<AdminController> stringLocalizer,
         IHtmlLocalizer<AdminController> htmlLocalizer
         )
@@ -53,6 +59,8 @@ public sealed class AdminController : Controller
         _rewriteRulesManager = rewriteRulesManager;
         _updateModelAccessor = updateModelAccessor;
         _serviceProvider = serviceProvider;
+        _ruleSourceOptions = ruleSourceOptions.Value;
+        _stringLocalizerFactory = stringLocalizerFactory;
         S = stringLocalizer;
         H = htmlLocalizer;
     }
@@ -115,7 +123,7 @@ public sealed class AdminController : Controller
 
         var model = new RewriteRuleViewModel
         {
-            DisplayName = ruleSource.DisplayName,
+            DisplayName = _stringLocalizerFactory.Localize(_ruleSourceOptions.Sources[id].DisplayName).Value,
             Editor = await _rewriteRuleDisplayManager.BuildEditorAsync(rule, _updateModelAccessor.ModelUpdater, isNew: true),
         };
 
@@ -151,7 +159,7 @@ public sealed class AdminController : Controller
 
         var model = new RewriteRuleViewModel
         {
-            DisplayName = ruleSource.DisplayName,
+            DisplayName = _stringLocalizerFactory.Localize(_ruleSourceOptions.Sources[id].DisplayName).Value,
             Editor = await _rewriteRuleDisplayManager.UpdateEditorAsync(rule, _updateModelAccessor.ModelUpdater, isNew: true),
         };
 

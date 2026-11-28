@@ -29,12 +29,6 @@ public abstract class RateLimiterSourceBase<TModel> : IRateLimiterSource where T
     public abstract string Name { get; }
 
     /// <inheritdoc />
-    public abstract LocalizedString DisplayName { get; }
-
-    /// <inheritdoc />
-    public abstract LocalizedString Description { get; }
-
-    /// <inheritdoc />
     public RateLimitPartition<string> CreatePartition(string policyName, HttpContext context, RateLimitLimiter limiter)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(policyName);

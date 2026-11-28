@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using OrchardCore.Deployment;
 using OrchardCore.Localization;
 
@@ -7,15 +6,13 @@ namespace OrchardCore.Elasticsearch.Core.Deployment;
 /// <summary>
 /// Adds rebuild Elasticsearch index task to a <see cref="DeploymentPlanResult"/>.
 /// </summary>
-public sealed class ElasticsearchIndexRebuildDeploymentStep : DeploymentStep
+public sealed class ElasticsearchIndexRebuildDeploymentStep : DeploymentStep, IDeploymentStep
 {
     public override string Name => "ElasticIndexRebuild";
 
-    [JsonIgnore]
-    public override LocalizationSource Category => CommonLocalizationSources.Search;
+    public static LocalizationSource Category => CommonLocalizationSources.Search;
 
-    [JsonIgnore]
-    public override LocalizationSource Title => ElasticsearchLocalizationSources.RebuildElasticsearchIndices;
+    public static LocalizationSource Title => ElasticsearchLocalizationSources.RebuildElasticsearchIndices;
 
     public bool IncludeAll { get; set; } = true;
 

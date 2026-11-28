@@ -18,11 +18,11 @@ public static class ServiceCollectionExtensions
     }
 
     public static IServiceCollection AddEmailProvider<T>(this IServiceCollection services, string name)
-        where T : class, IEmailProvider
+        where T : class, IEmailProvider, IEmailProviderDescription
     {
         services.Configure<EmailProviderOptions>(options =>
         {
-            options.TryAddProvider(name, new EmailProviderTypeOptions(typeof(T))
+            options.TryAddProvider(name, new EmailProviderTypeOptions(typeof(T), T.DisplayName)
             {
                 IsEnabled = true,
             });
