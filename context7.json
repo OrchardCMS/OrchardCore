@@ -7,6 +7,8 @@
     "The default (latest) version is built from the main branch: it documents Orchard Core 4.0.0-preview, which is still in development.",
     "For the current stable release, use version 3.0.1. Pick the version that matches the OrchardCore NuGet packages the project references."
   ],
+  "url": "https://context7.com/orchardcms/orchardcore",
+  "public_key": "pk_2v7DO2TApaq4nXvxkHC96",
   "previousVersions": [
     { "tag": "v3.0.1", "title": "3.0.1 (stable)" },
     { "tag": "v3.0.0", "title": "3.0.0" },
