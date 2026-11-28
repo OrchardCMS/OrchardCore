@@ -85,7 +85,7 @@ public sealed class AdminController : Controller
             {
                 ModelState.AddModelError(nameof(model.Provider), S["Please select a valid provider."]);
             }
-            else if (!_phoneFormatValidator.IsValid(model.PhoneNumber))
+            else if (!_phoneFormatValidator.Validate(model.PhoneNumber).Succeeded)
             {
                 ModelState.AddModelError(nameof(model.PhoneNumber), S["Please provide a valid phone number."]);
             }

@@ -58,3 +58,45 @@ msgstr ""
 msgctxt "OrchardCore.Infrastructure.ErrorHandling.ApiProblemDetailsMiddleware"
 msgid "Authentication required"
 msgstr ""
+
+#: PhoneFormatValidator.cs
+msgctxt "OrchardCore.PhoneFormatValidator"
+msgid "Please provide a phone number."
+msgstr ""
+
+#: PhoneFormatValidator.cs
+msgctxt "OrchardCore.PhoneFormatValidator"
+msgid "Please provide a valid phone number."
+msgstr ""
+
+#: PhoneFormatValidator.cs
+msgctxt "OrchardCore.PhoneFormatValidator"
+msgid "The phone number has an invalid country code. Please include a valid country code (e.g., +1 for US)."
+msgstr ""
+
+#. Format arguments: {0}: regionCode
+#: PhoneFormatValidator.cs
+#, csharp-format
+msgctxt "OrchardCore.PhoneFormatValidator"
+msgid "The phone number is not valid for the detected region ({0})."
+msgstr ""
+
+#: PhoneFormatValidator.cs
+msgctxt "OrchardCore.PhoneFormatValidator"
+msgid "The phone number is too long."
+msgstr ""
+
+#: PhoneFormatValidator.cs
+msgctxt "OrchardCore.PhoneFormatValidator"
+msgid "The phone number is too short after the country code."
+msgstr ""
+
+#: PhoneFormatValidator.cs
+msgctxt "OrchardCore.PhoneFormatValidator"
+msgid "The phone number is too short."
+msgstr ""
+
+#: PhoneFormatValidator.cs
+msgctxt "OrchardCore.PhoneFormatValidator"
+msgid "The value provided is not a valid phone number."
+msgstr ""
