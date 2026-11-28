@@ -39,19 +39,23 @@ public class FileSizeHelperTests
         var result = fileSizeHelper.FormatSize(-1024);
 
         // Assert
-        Assert.Equal("-1 B", result);
+        Assert.Equal("-1 KB", result);
     }
 
-    [Fact]
-    public void BytesLessThan1KB_Uses_B_Unit()
+    [Theory]
+    [InlineData(1, "1 B")]
+    [InlineData(500, "500 B")]
+    [InlineData(1000, "1000 B")]
+    [InlineData(1.4, "1 B")]
+    [InlineData(1.5, "2 B")]
+    [InlineData(1023.4, "1023 B")]
+    public void BytesLessThan1KB_Uses_B_Unit(long bytes, string expected)
     {
         // Arrange
         var fileSizeHelper = new FileSizeHelper(_stringLocalizerMock.Object);
 
         // Act & Assert
-        Assert.Equal("1 B", fileSizeHelper.FormatSize(1));
-        Assert.Equal($"{Math.Round(1536d / 1024, 2).ToString(CultureInfo.CurrentCulture)} B", fileSizeHelper.FormatSize(1536));
-        Assert.Equal("2 B", fileSizeHelper.FormatSize(2048));
+        Assert.Equal(expected, fileSizeHelper.FormatSize(bytes));
     }
 
     [Fact]
@@ -67,15 +71,15 @@ public class FileSizeHelperTests
         const long PB = TB * KB;
 
         // Act & Assert
-        Assert.Equal("1 KB", fileSizeHelper.FormatSize(MB));
-        Assert.Equal("1 MB", fileSizeHelper.FormatSize(GB));
-        Assert.Equal("1 GB", fileSizeHelper.FormatSize(TB));
-        Assert.Equal("1 TB", fileSizeHelper.FormatSize(PB));
-        Assert.Equal("1 PB", fileSizeHelper.FormatSize(PB * KB));
+        Assert.Equal("1 KB", fileSizeHelper.FormatSize(KB));
+        Assert.Equal("1 MB", fileSizeHelper.FormatSize(MB));
+        Assert.Equal("1 GB", fileSizeHelper.FormatSize(GB));
+        Assert.Equal("1 TB", fileSizeHelper.FormatSize(TB));
+        Assert.Equal("1 PB", fileSizeHelper.FormatSize(PB));
     }
 
     [Fact]
-    public void LongMaxValue_Formats_As_PB_With_AdjustedSize()
+    public void LongMaxValue_Formats_As_EB_With_AdjustedSize()
     {
         // Arrange
         var fileSizeHelper = new FileSizeHelper(_stringLocalizerMock.Object);
@@ -84,12 +88,12 @@ public class FileSizeHelperTests
         var adjustedSize = bytes / Math.Pow(1024, magnitude);
         var unit = magnitude switch
         {
-            0 or 1 => "B",
-            2 => "KB",
-            3 => "MB",
-            4 => "GB",
-            5 => "TB",
-            6 => "PB",
+            0 => "B",
+            1 => "KB",
+            2 => "MB",
+            3 => "GB",
+            4 => "TB",
+            5 => "PB",
             _ => "EB"
         };
         var expected = $"{Math.Round(adjustedSize, 2).ToString(CultureInfo.CurrentCulture)} {unit}";
@@ -108,7 +112,7 @@ public class FileSizeHelperTests
         var fileSizeHelper = new FileSizeHelper(_stringLocalizerMock.Object);
 
         // Act & Assert
-        Assert.Equal("2 B", fileSizeHelper.FormatSize(1536, digits: 0));
-        Assert.Equal($"{Math.Round(1536d / 1024, 5).ToString(CultureInfo.CurrentCulture)} B", fileSizeHelper.FormatSize(1536, digits: 5));
+        Assert.Equal("2 KB", fileSizeHelper.FormatSize(1536, digits: 0));
+        Assert.Equal($"{Math.Round(1536d / 1024, 5).ToString(CultureInfo.CurrentCulture)} KB", fileSizeHelper.FormatSize(1536, digits: 5));
     }
 }
