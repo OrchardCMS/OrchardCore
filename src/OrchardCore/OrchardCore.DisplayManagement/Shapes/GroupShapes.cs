@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.ViewModels;
+using OrchardCore.Localization.Data;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Utilities;
 
@@ -16,8 +17,15 @@ public class GroupShapes : IShapeAttributeProvider
     /// </summary>
     public const string InTabPaneProperty = "InTabPane";
 
+    private readonly IDataLocalizer _dataLocalizer;
+
+    public GroupShapes(IDataLocalizer dataLocalizer)
+    {
+        _dataLocalizer = dataLocalizer;
+    }
+
     [Shape]
-    public static IHtmlContent AdminTabs(IShape shape)
+    public IHtmlContent AdminTabs(IShape shape)
     {
         var tabsGrouping = shape.GetProperty<IList<IGrouping<string, object>>>("Tabs");
         if (tabsGrouping == null)
@@ -25,7 +33,7 @@ public class GroupShapes : IShapeAttributeProvider
             return HtmlString.Empty;
         }
 
-        var tabs = tabsGrouping.Select(group => group.Key).ToArray();
+        var tabs = tabsGrouping.ToArray();
         if (tabs.Length == 0)
         {
             return HtmlString.Empty;
@@ -55,14 +63,16 @@ public class GroupShapes : IShapeAttributeProvider
                 aTag.AddCssClass("active");
             }
 
-            var tabId = $"tab-{tab}-{identifier}".HtmlClassify();
+            var tabId = $"tab-{tab.Key}-{identifier}".HtmlClassify();
 
             aTag.Attributes["href"] = '#' + tabId;
             aTag.Attributes["data-bs-toggle"] = "tab";
             aTag.Attributes["role"] = "tab";
             aTag.Attributes["aria-controls"] = tabId;
             aTag.Attributes["aria-selected"] = "false";
-            aTag.InnerHtml.Append(tab);
+
+            // The name stays the identifier of the tab, only its caption is translated.
+            aTag.InnerHtml.Append(TabAndCardNames.GetTabCaption(tab, _dataLocalizer));
 
             linkTag.InnerHtml.AppendHtml(aTag);
             tagBuilder.InnerHtml.AppendHtml(linkTag);
@@ -73,7 +83,7 @@ public class GroupShapes : IShapeAttributeProvider
     }
 
     [Shape]
-    public static async Task<IHtmlContent> Card(IDisplayHelper displayAsync, GroupingViewModel shape)
+    public async Task<IHtmlContent> Card(IDisplayHelper displayAsync, GroupingViewModel shape)
     {
         var tagBuilder = shape.GetTagBuilder("div");
         tagBuilder.AddCssClass("card-body");
@@ -92,7 +102,7 @@ public class GroupShapes : IShapeAttributeProvider
 
         var headerTitleTag = new TagBuilder("h5");
         headerTitleTag.AddCssClass("float-start mb-0 mt-1");
-        headerTitleTag.InnerHtml.Append(shape.Grouping.Key);
+        headerTitleTag.InnerHtml.Append(TabAndCardNames.GetCardCaption(shape.Grouping, _dataLocalizer));
 
         var buttonTag = new TagBuilder("button");
         buttonTag.AddCssClass("btn btn-link btn-block text-start float-end");

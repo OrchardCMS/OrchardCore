@@ -31,6 +31,16 @@ public readonly struct GroupingMetadata : IEquatable<GroupingMetadata>
     public string Width { get; }
 
     /// <summary>
+    /// Gets the name the grouping is shown with, such as the translation of a tab or card name given as a localized
+    /// string, or <see langword="null"/> when it is shown by its <see cref="Name"/>.
+    /// </summary>
+    /// <remarks>
+    /// <see cref="Name"/> remains the identifier of the grouping. The display name isn't part of the location string, so
+    /// it is only kept when the location is built with <see cref="PlacementLocationBuilder"/>.
+    /// </remarks>
+    public string DisplayName { get; }
+
+    /// <summary>
     /// Gets whether this grouping metadata has a value.
     /// </summary>
     public bool HasValue => !string.IsNullOrEmpty(Name);
@@ -39,10 +49,19 @@ public readonly struct GroupingMetadata : IEquatable<GroupingMetadata>
     /// Creates a new grouping metadata with parsed values.
     /// </summary>
     public GroupingMetadata(string name, string position = null, string width = null)
+        : this(name, position, width, displayName: null)
+    {
+    }
+
+    /// <summary>
+    /// Creates a new grouping metadata with parsed values and the name it is shown with.
+    /// </summary>
+    public GroupingMetadata(string name, string position, string width, string displayName)
     {
         Name = name;
         Position = position;
         Width = width;
+        DisplayName = displayName;
     }
 
     /// <summary>
@@ -133,13 +152,13 @@ public readonly struct GroupingMetadata : IEquatable<GroupingMetadata>
     }
 
     public bool Equals(GroupingMetadata other)
-        => Name == other.Name && Position == other.Position && Width == other.Width;
+        => Name == other.Name && Position == other.Position && Width == other.Width && DisplayName == other.DisplayName;
 
     public override bool Equals(object obj)
         => obj is GroupingMetadata other && Equals(other);
 
     public override int GetHashCode()
-        => HashCode.Combine(Name, Position, Width);
+        => HashCode.Combine(Name, Position, Width, DisplayName);
 
     public static bool operator ==(GroupingMetadata left, GroupingMetadata right)
         => left.Equals(right);
