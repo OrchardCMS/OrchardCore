@@ -304,9 +304,28 @@ public sealed class MyService
 
 Queue update requests only after validation succeeds and only for the options types affected by the change. The notifier is intentionally one-way: Orchard Core coalesces requests per shell scope and dispatches them after commit, so there is no `RemoveUpdateRequest()` API to cancel earlier requests.
 
-For named options, register `IOptionsChangeTokenSource<TOptions>` manually with `SignalOptionsChangeTokenSource<TOptions>` for the matching name and call `RequestUpdate<TOptions>(name)` with the same value.
+The options are invalidated in the order they were first requested. `IOptionsMonitor<TOptions>` rebuilds an options instance as soon as it is invalidated, so when an options type is built from another one, request the update of the source options first.
 
-In multi-node environments, use a distributed `ISignal` implementation such as the Redis Bus feature from [`OrchardCore.Redis`](../Redis/README.md). This ensures every node invalidates its local `IOptionsMonitor<TOptions>` cache and rebuilds the updated options from the committed tenant state.
+```csharp
+_optionsUpdateNotifier
+    .RequestUpdate<MySettings>()
+    .RequestUpdate<MyOptions>();
+```
+
+For named options, such as the options of an authentication handler that are named after its scheme, register the change token source for that name and call `RequestUpdate<TOptions>(name)` with the same value.
+
+```csharp
+services.AddSignalOptionsChangeTokenSource<GoogleOptions>(GoogleDefaults.AuthenticationScheme);
+
+_optionsUpdateNotifier.RequestUpdate<GoogleOptions>(GoogleDefaults.AuthenticationScheme);
+```
+
+`OptionsUpdateSignal.SignalAllAsync(signal)` invalidates every signal-backed options instance of the tenant, whatever its type and name, including the options built from other signal-backed options.
+
+In multi-node environments, the other nodes refresh the options of the tenant as follows:
+
+- With the Distributed Tenants feature (`OrchardCore.Tenants.Distributed`), the same feature that keeps the tenants in sync when they are released or reloaded, each node invalidates all the signal-backed options of the tenant once the document identifiers it may have cached have expired, i.e. after the `Documents:SynchronizationLatency` (1 second by default). This ensures that the options are rebuilt from the committed tenant state.
+- With a distributed `ISignal` implementation, such as the Redis Bus feature from [`OrchardCore.Redis`](../Redis/README.md), each node also invalidates the options as soon as it receives the signal.
 
 ### `ORCHARD_APP_DATA` Environment Variable
 
