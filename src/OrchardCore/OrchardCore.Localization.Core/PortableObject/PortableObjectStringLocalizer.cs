@@ -45,9 +45,9 @@ public class PortableObjectStringLocalizer : IPluralStringLocalizer
         {
             ArgumentNullException.ThrowIfNull(name);
 
-            var translation = GetTranslation(name, _context, CultureInfo.CurrentUICulture, null);
+            var translation = GetTranslation(name, _context, CultureInfo.CurrentUICulture, null, out var plainText);
 
-            return new LocalizedString(name, translation ?? name, translation == null);
+            return plainText ? new PlainTextLocalizedString(name, translation) : new LocalizedString(name, translation ?? name, translation == null);
         }
     }
 
@@ -83,7 +83,7 @@ public class PortableObjectStringLocalizer : IPluralStringLocalizer
         // Check if a plural form is called, which is when the only argument is of type PluralizationArgument.
         if (arguments.Length == 1 && arguments[0] is PluralizationArgument pluralArgument)
         {
-            var translation = GetTranslation(name, _context, CultureInfo.CurrentUICulture, pluralArgument.Count);
+            var translation = GetTranslation(name, _context, CultureInfo.CurrentUICulture, pluralArgument.Count, out var plainText);
 
             object[] argumentsWithCount;
 
@@ -100,12 +100,12 @@ public class PortableObjectStringLocalizer : IPluralStringLocalizer
 
             translation ??= GetTranslation(pluralArgument.Forms, CultureInfo.CurrentUICulture, pluralArgument.Count);
 
-            return (new LocalizedString(name, translation, translation == null), argumentsWithCount);
+            return (plainText ? new PlainTextLocalizedString(name, translation) : new LocalizedString(name, translation, translation == null), argumentsWithCount);
         }
         else
         {
             var translation = this[name];
-            return (new LocalizedString(name, translation, translation.ResourceNotFound), arguments);
+            return (translation, arguments);
         }
     }
 
@@ -166,8 +166,12 @@ public class PortableObjectStringLocalizer : IPluralStringLocalizer
     }
 
     protected string GetTranslation(string name, string context, CultureInfo culture, int? count)
+        => GetTranslation(name, context, culture, count, out _);
+
+    private string GetTranslation(string name, string context, CultureInfo culture, int? count, out bool plainText)
     {
         string translation = null;
+        var isPlainText = false;
         try
         {
             if (_fallBackToParentCulture)
@@ -202,6 +206,7 @@ public class PortableObjectStringLocalizer : IPluralStringLocalizer
                         // Extract translation with context.
                         key = CultureDictionaryRecord.GetKey(name, s_dataAnnotationsDefaultErrorMessagesContext);
                         translation = dictionary[key];
+                        isPlainText = translation != null && dictionary.PlainTextTranslations.Contains(key);
 
                         if (translation != null)
                         {
@@ -211,6 +216,7 @@ public class PortableObjectStringLocalizer : IPluralStringLocalizer
                         // Extract translation without context.
                         key = CultureDictionaryRecord.GetKey(name, null);
                         translation = dictionary[key];
+                        isPlainText = translation != null && dictionary.PlainTextTranslations.Contains(key);
 
                         if (translation != null)
                         {
@@ -220,12 +226,14 @@ public class PortableObjectStringLocalizer : IPluralStringLocalizer
 
                     // Extract translation with context.
                     translation = dictionary[key, count];
+                    isPlainText = translation != null && dictionary.PlainTextTranslations.Contains(key);
 
                     if (context != null && translation == null)
                     {
                         // Extract translation without context.
                         key = CultureDictionaryRecord.GetKey(name, null);
                         translation = dictionary[key, count];
+                        isPlainText = translation != null && dictionary.PlainTextTranslations.Contains(key);
                     }
                 }
 
@@ -237,6 +245,7 @@ public class PortableObjectStringLocalizer : IPluralStringLocalizer
             _logger.LogWarning(ex, "Plural form not found.");
         }
 
+        plainText = isPlainText;
         return translation;
     }
 }

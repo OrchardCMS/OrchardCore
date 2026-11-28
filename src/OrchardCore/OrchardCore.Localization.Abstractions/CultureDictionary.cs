@@ -71,6 +71,11 @@ public class CultureDictionary : IEnumerable<CultureDictionaryRecord>
     public IDictionary<CultureDictionaryRecordKey, string[]> Translations { get; }
 
     /// <summary>
+    /// Gets keys whose translations are plain text and must be encoded by HTML localizers.
+    /// </summary>
+    public ISet<CultureDictionaryRecordKey> PlainTextTranslations { get; } = new HashSet<CultureDictionaryRecordKey>();
+
+    /// <summary>
     /// Gets the pluralization rule selecting the plural form of the translations of a resource key.
     /// </summary>
     /// <param name="key">The resource key.</param>

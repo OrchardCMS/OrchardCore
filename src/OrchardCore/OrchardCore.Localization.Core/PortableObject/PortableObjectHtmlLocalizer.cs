@@ -1,3 +1,4 @@
+using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 
@@ -22,7 +23,7 @@ public class PortableObjectHtmlLocalizer : HtmlLocalizer
 
     /// <inheritdocs />
     public override LocalizedHtmlString this[string name]
-        => ToHtmlString(_localizer[name]);
+        => ToHtmlString(EncodePlainText(_localizer[name]));
 
     /// <inheritdocs />
     public override LocalizedHtmlString this[string name, params object[] arguments]
@@ -45,10 +46,15 @@ public class PortableObjectHtmlLocalizer : HtmlLocalizer
                 var (translation, argumentsWithCount) = pluralLocalizer.GetTranslation(name, arguments);
 
                 // Formatting will use non plural arguments if any.
-                return ToHtmlString(translation, argumentsWithCount);
+                return ToHtmlString(EncodePlainText(translation), argumentsWithCount);
             }
 
-            return ToHtmlString(_localizer[name], arguments);
+            return ToHtmlString(EncodePlainText(_localizer[name]), arguments);
         }
     }
+
+    private static LocalizedString EncodePlainText(LocalizedString value)
+        => value is PlainTextLocalizedString
+            ? new LocalizedString(value.Name, HtmlEncoder.Default.Encode(value.Value), value.ResourceNotFound)
+            : value;
 }

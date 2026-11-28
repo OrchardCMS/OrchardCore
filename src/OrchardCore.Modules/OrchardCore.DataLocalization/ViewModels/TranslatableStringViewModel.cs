@@ -19,4 +19,31 @@ public class TranslatableStringViewModel
     /// The translated value for the current culture, or empty if not translated.
     /// </summary>
     public string Value { get; set; }
+
+    /// <summary>
+    /// The plural source identifier for a UI catalog entry, or null for a singular entry.
+    /// </summary>
+    public string Plural { get; set; }
+
+    /// <summary>
+    /// The UI override forms, with an empty input for each required form when no override exists.
+    /// Null for dynamic data translations.
+    /// </summary>
+    public string[] Values { get; set; }
+
+    /// <summary>
+    /// The translation forms of the localization files of the edited culture, used when no override exists.
+    /// Null when the localization files have no translation, and for dynamic data translations.
+    /// </summary>
+    public string[] Fallback { get; set; }
+
+    /// <summary>
+    /// Extracted UI catalog comments, flags and source references.
+    /// </summary>
+    public string[] Metadata { get; set; }
+
+    /// <summary>
+    /// Format placeholders and their argument descriptions from the UI catalog.
+    /// </summary>
+    public string[] FormatArguments { get; set; }
 }
