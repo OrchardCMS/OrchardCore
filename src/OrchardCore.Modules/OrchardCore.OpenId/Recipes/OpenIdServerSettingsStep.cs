@@ -25,45 +25,45 @@ public sealed class OpenIdServerSettingsStep : NamedRecipeStepHandler
         var model = context.Step.ToObject<OpenIdServerSettingsStepModel>();
         var settings = await _serverService.LoadSettingsAsync();
 
-        settings.AccessTokenFormat = model.AccessTokenFormat;
-        settings.Authority = !string.IsNullOrEmpty(model.Authority) ? new Uri(model.Authority, UriKind.Absolute) : null;
+        settings.AccessTokenFormat = model.OpenIdServerSettings.AccessTokenFormat;
+        settings.Authority = !string.IsNullOrEmpty(model.OpenIdServerSettings.Authority) ? new Uri(model.OpenIdServerSettings.Authority, UriKind.Absolute) : null;
 
-        settings.EncryptionCertificateStoreLocation = model.EncryptionCertificateStoreLocation;
-        settings.EncryptionCertificateStoreName = model.EncryptionCertificateStoreName;
-        settings.EncryptionCertificateThumbprint = model.EncryptionCertificateThumbprint;
+        settings.EncryptionCertificateStoreLocation = model.OpenIdServerSettings.EncryptionCertificateStoreLocation;
+        settings.EncryptionCertificateStoreName = model.OpenIdServerSettings.EncryptionCertificateStoreName;
+        settings.EncryptionCertificateThumbprint = model.OpenIdServerSettings.EncryptionCertificateThumbprint;
 
-        settings.SigningCertificateStoreLocation = model.SigningCertificateStoreLocation;
-        settings.SigningCertificateStoreName = model.SigningCertificateStoreName;
-        settings.SigningCertificateThumbprint = model.SigningCertificateThumbprint;
+        settings.SigningCertificateStoreLocation = model.OpenIdServerSettings.SigningCertificateStoreLocation;
+        settings.SigningCertificateStoreName = model.OpenIdServerSettings.SigningCertificateStoreName;
+        settings.SigningCertificateThumbprint = model.OpenIdServerSettings.SigningCertificateThumbprint;
 
-        settings.AuthorizationEndpointPath = model.EnableAuthorizationEndpoint ?
+        settings.AuthorizationEndpointPath = model.OpenIdServerSettings.EnableAuthorizationEndpoint ?
             new PathString("/connect/authorize") : PathString.Empty;
-        settings.LogoutEndpointPath = model.EnableLogoutEndpoint ?
+        settings.LogoutEndpointPath = model.OpenIdServerSettings.EnableLogoutEndpoint ?
             new PathString("/connect/logout") : PathString.Empty;
-        settings.TokenEndpointPath = model.EnableTokenEndpoint ?
+        settings.TokenEndpointPath = model.OpenIdServerSettings.EnableTokenEndpoint ?
             new PathString("/connect/token") : PathString.Empty;
-        settings.UserinfoEndpointPath = model.EnableUserInfoEndpoint ?
+        settings.UserinfoEndpointPath = model.OpenIdServerSettings.EnableUserInfoEndpoint ?
             new PathString("/connect/userinfo") : PathString.Empty;
-        settings.IntrospectionEndpointPath = model.EnableIntrospectionEndpoint ?
+        settings.IntrospectionEndpointPath = model.OpenIdServerSettings.EnableIntrospectionEndpoint ?
             new PathString("/connect/introspect") : PathString.Empty;
-        settings.PushedAuthorizationEndpointPath = model.EnablePushedAuthorizationEndpoint ?
+        settings.PushedAuthorizationEndpointPath = model.OpenIdServerSettings.EnablePushedAuthorizationEndpoint ?
             new PathString("/connect/par") : PathString.Empty;
-        settings.RevocationEndpointPath = model.EnableRevocationEndpoint ?
+        settings.RevocationEndpointPath = model.OpenIdServerSettings.EnableRevocationEndpoint ?
             new PathString("/connect/revoke") : PathString.Empty;
 
-        settings.AllowAuthorizationCodeFlow = model.AllowAuthorizationCodeFlow;
-        settings.AllowClientCredentialsFlow = model.AllowClientCredentialsFlow;
-        settings.AllowHybridFlow = model.AllowHybridFlow;
-        settings.AllowImplicitFlow = model.AllowImplicitFlow;
-        settings.AllowPasswordFlow = model.AllowPasswordFlow;
-        settings.AllowRefreshTokenFlow = model.AllowRefreshTokenFlow;
+        settings.AllowAuthorizationCodeFlow = model.OpenIdServerSettings.AllowAuthorizationCodeFlow;
+        settings.AllowClientCredentialsFlow = model.OpenIdServerSettings.AllowClientCredentialsFlow;
+        settings.AllowHybridFlow = model.OpenIdServerSettings.AllowHybridFlow;
+        settings.AllowImplicitFlow = model.OpenIdServerSettings.AllowImplicitFlow;
+        settings.AllowPasswordFlow = model.OpenIdServerSettings.AllowPasswordFlow;
+        settings.AllowRefreshTokenFlow = model.OpenIdServerSettings.AllowRefreshTokenFlow;
 
-        settings.DisableAccessTokenEncryption = model.DisableAccessTokenEncryption;
-        settings.DisableRollingRefreshTokens = model.DisableRollingRefreshTokens;
-        settings.UseReferenceAccessTokens = model.UseReferenceAccessTokens;
-        settings.RequireProofKeyForCodeExchange = model.RequireProofKeyForCodeExchange;
-        settings.RequirePushedAuthorizationRequests = model.RequirePushedAuthorizationRequests;
-        settings.RequireEndSessionConfirmation = model.RequireEndSessionConfirmation;
+        settings.DisableAccessTokenEncryption = model.OpenIdServerSettings.DisableAccessTokenEncryption;
+        settings.DisableRollingRefreshTokens = model.OpenIdServerSettings.DisableRollingRefreshTokens;
+        settings.UseReferenceAccessTokens = model.OpenIdServerSettings.UseReferenceAccessTokens;
+        settings.RequireProofKeyForCodeExchange = model.OpenIdServerSettings.RequireProofKeyForCodeExchange;
+        settings.RequirePushedAuthorizationRequests = model.OpenIdServerSettings.RequirePushedAuthorizationRequests;
+        settings.RequireEndSessionConfirmation = model.OpenIdServerSettings.RequireEndSessionConfirmation;
 
         await _serverService.UpdateSettingsAsync(settings);
     }
