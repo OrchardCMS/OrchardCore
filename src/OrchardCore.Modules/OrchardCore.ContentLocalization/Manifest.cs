@@ -1,3 +1,4 @@
+using OrchardCore.ContentLocalization;
 using OrchardCore.Modules.Manifest;
 
 [assembly: Module(
@@ -10,7 +11,7 @@ using OrchardCore.Modules.Manifest;
 )]
 
 [assembly: Feature(
-    Id = "OrchardCore.ContentLocalization",
+    Id = ContentLocalizationConstants.Features.ContentLocalization,
     Name = "Content Localization",
     Description = "Provides a part that allows to localize content items.",
     Dependencies = ["OrchardCore.ContentTypes", "OrchardCore.Localization"],
@@ -21,7 +22,7 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.ContentLocalization.ContentCulturePicker",
     Name = "Content Culture Picker",
     Description = "Provides a culture picker shape for the frontend.",
-    Dependencies = ["OrchardCore.ContentLocalization", "OrchardCore.Autoroute"],
+    Dependencies = [ContentLocalizationConstants.Features.ContentLocalization, "OrchardCore.Autoroute"],
     Category = "Internationalization"
 )]
 
@@ -29,6 +30,6 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.ContentLocalization.Sitemaps",
     Name = "Localized Content Item Sitemaps",
     Description = "Provides support for localized content item sitemaps.",
-    Dependencies = ["OrchardCore.ContentLocalization", "OrchardCore.Sitemaps"],
+    Dependencies = [ContentLocalizationConstants.Features.ContentLocalization, "OrchardCore.Sitemaps"],
     Category = "Internationalization"
 )]
