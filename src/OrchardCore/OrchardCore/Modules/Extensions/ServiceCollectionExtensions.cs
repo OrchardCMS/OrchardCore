@@ -1,4 +1,5 @@
 using Fluid;
+using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
@@ -20,6 +21,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using OrchardCore;
+using OrchardCore.Cookies;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
@@ -185,6 +187,12 @@ public static class ServiceCollectionExtensions
             // The 'OrchardCore_Localization_CultureOptions' section is deprecated and will be removed in a future major version, use 'Localization:CultureOptions' instead.
             services.Configure<CultureOptions>(configuration.GetSectionCompat("Localization:CultureOptions", "OrchardCore_Localization_CultureOptions"));
             services.Configure<TempDirectoryOptions>(configuration.GetSection("TempDirectory"));
+
+            services.ConfigureOptions<CoreCookieOptionsSetup>();
+            services.AddOptions<CookieTempDataProviderOptions>()
+                .Configure<IOptions<CoreCookieOptions>>((options, cookieOptions) => options.Cookie.Name = cookieOptions.Value.TempData);
+            services.AddOptions<CookiePolicyOptions>()
+                .Configure<IOptions<CoreCookieOptions>>((options, cookieOptions) => options.ConsentCookie.Name = cookieOptions.Value.Consent);
         });
 
         services.AddSingleton(new FluidParser());
@@ -441,21 +449,18 @@ public static class ServiceCollectionExtensions
     {
         builder.ApplicationServices.AddAntiforgery();
 
-        builder.ConfigureServices((services, serviceProvider) =>
+        builder.ConfigureServices(services =>
         {
-            var settings = serviceProvider.GetRequiredService<ShellSettings>();
-            var cookieName = "__orchantiforgery_" + settings.VersionId;
-
             // Re-register the antiforgery services to be tenant-aware.
             var collection = new ServiceCollection()
-                .AddAntiforgery(options =>
-                {
-                    options.Cookie.Name = cookieName;
+                .AddAntiforgery();
 
-                    // Don't set the cookie builder 'Path' so that it uses the 'IAuthenticationFeature' value
-                    // set by the pipeline and coming from the request 'PathBase' which already ends with the
-                    // tenant prefix but may also start by a path related e.g to a virtual folder.
-                });
+            // Don't set the cookie builder 'Path' so that it uses the 'IAuthenticationFeature' value
+            // set by the pipeline and coming from the request 'PathBase' which already ends with the
+            // tenant prefix but may also start by a path related e.g to a virtual folder.
+            collection
+                .AddOptions<AntiforgeryOptions>()
+                .Configure<IOptions<CoreCookieOptions>>((options, cookieOptions) => options.Cookie.Name = cookieOptions.Value.Antiforgery);
 
             services.Add(collection);
         });

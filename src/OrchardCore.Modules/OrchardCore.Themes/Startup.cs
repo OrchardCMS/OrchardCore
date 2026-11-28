@@ -29,6 +29,7 @@ public sealed class Startup : StartupBase
         services.AddScoped<ISiteThemeService, SiteThemeService>();
         services.AddNavigationProvider<AdminMenu>();
         services.AddScoped<IThemeService, ThemeService>();
+        services.ConfigureOptions<ThemesCookieOptionsSetup>();
         services.AddScoped<ThemeTogglerService>();
         services.AddDeployment<ThemesDeploymentSource, ThemesDeploymentStep, ThemesDeploymentStepDriver>();
         services.AddDisplayDriver<ThemeEntry, ThemeEntryDisplayDriver>();

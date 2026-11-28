@@ -4,6 +4,22 @@
     "OrchardCore": {
       "type": "object",
       "properties": {
+        "Cookies": {
+          "type": "object",
+          "description": "Configures the names of the cookies used by the tenant, in a section per module. Leave a name empty to keep its default name. Can be set in a section named after a tenant, e.g. 'OrchardCore:MyTenant:Cookies'; names set directly under 'OrchardCore' apply to all tenants. See https://docs.orchardcore.net/en/latest/reference/modules/Configuration/#cookie-names.",
+          "properties": {
+            "Admin": {
+              "type": "object",
+              "description": "The names of the cookies used by the 'OrchardCore.Admin' module.",
+              "properties": {
+                "ListLayout": {
+                  "type": "string",
+                  "description": "The cookie holding the layout picked for the admin lists. Defaults to 'orchardcore_admin_list_layout'."
+                }
+              }
+            }
+          }
+        },
         "Admin": {
           "type": "object",
           "description": "Configures the admin area of Orchard Core. The values can also be defined per tenant under 'OrchardCore:{TenantName}:Admin'. See https://docs.orchardcore.net/en/latest/reference/modules/Admin/.",

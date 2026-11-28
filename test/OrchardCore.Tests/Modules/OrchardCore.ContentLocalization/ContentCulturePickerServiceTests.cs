@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Net.Http.Headers;
 using OrchardCore.ContentLocalization;
 using OrchardCore.ContentLocalization.Services;
@@ -20,7 +21,8 @@ public class ContentCulturePickerServiceTests
             localizationEntries: null,
             siteService: null,
             new HttpContextAccessor { HttpContext = httpContext },
-            Options.Create(new CulturePickerOptions()));
+            Options.Create(new CulturePickerOptions()),
+            Options.Create(new RequestLocalizationOptions()));
 
         service.SetContentCulturePickerCookie("fr");
 

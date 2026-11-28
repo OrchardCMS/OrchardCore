@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following
@@ -13,6 +14,8 @@ using System.Runtime.InteropServices;
 // to COM components.  If you need to access a type in this assembly from
 // COM, set the ComVisible attribute to true on that type.
 [assembly: ComVisible(false)]
+
+[assembly: InternalsVisibleTo("OrchardCore.Tests")]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("b7a9fca8-fdf3-468e-98ea-4e9a45913972")]

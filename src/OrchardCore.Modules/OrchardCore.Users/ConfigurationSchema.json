@@ -4,6 +4,42 @@
     "OrchardCore": {
       "type": "object",
       "properties": {
+        "Cookies": {
+          "type": "object",
+          "description": "Configures the names of the cookies used by the tenant, in a section per module. Leave a name empty to keep its default name. Can be set in a section named after a tenant, e.g. 'OrchardCore:MyTenant:Cookies'; names set directly under 'OrchardCore' apply to all tenants. See https://docs.orchardcore.net/en/latest/reference/modules/Configuration/#cookie-names.",
+          "properties": {
+            "Users": {
+              "type": "object",
+              "description": "The names of the cookies used by the 'OrchardCore.Users' module.",
+              "properties": {
+                "Authentication": {
+                  "type": "string",
+                  "description": "The authentication cookie of the users. Defaults to 'orchauth_{TenantName}'."
+                },
+                "EmailConfirmation": {
+                  "type": "string",
+                  "description": "The cookie remembering the user whose email must be confirmed. Defaults to 'orchemail_{TenantName}'."
+                },
+                "Passkey": {
+                  "type": "string",
+                  "description": "The cookie used while signing in with a passkey. Defaults to 'orchpasskey_{TenantName}'."
+                },
+                "ExternalAuthentication": {
+                  "type": "string",
+                  "description": "The cookie used while signing in with an external provider. Defaults to 'Identity.External'."
+                },
+                "TwoFactorUserId": {
+                  "type": "string",
+                  "description": "The cookie remembering the user during a two-factor sign-in. Defaults to 'Identity.TwoFactorUserId'."
+                },
+                "TwoFactorRememberMe": {
+                  "type": "string",
+                  "description": "The cookie remembering the browser of a two-factor sign-in. Defaults to 'Identity.TwoFactorRememberMe'."
+                }
+              }
+            }
+          }
+        },
         "Users": {
           "type": "object",
           "description": "Paths of the authentication related pages, relative to the tenant base path. Leading and trailing '/' characters are ignored. See https://docs.orchardcore.net/en/latest/reference/modules/Users/.",

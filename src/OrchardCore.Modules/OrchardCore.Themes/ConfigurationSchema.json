@@ -1,0 +1,30 @@
+{
+  "type": "object",
+  "properties": {
+    "OrchardCore": {
+      "type": "object",
+      "properties": {
+        "Cookies": {
+          "type": "object",
+          "description": "Configures the names of the cookies used by the tenant, in a section per module. Leave a name empty to keep its default name. Can be set in a section named after a tenant, e.g. 'OrchardCore:MyTenant:Cookies'; names set directly under 'OrchardCore' apply to all tenants. See https://docs.orchardcore.net/en/latest/reference/modules/Configuration/#cookie-names.",
+          "properties": {
+            "Themes": {
+              "type": "object",
+              "description": "The names of the cookies used by the 'OrchardCore.Themes' module and the admin themes.",
+              "properties": {
+                "AdminTheme": {
+                  "type": "string",
+                  "description": "The cookie holding the light or dark mode picked in the admin. Defaults to '{TenantName}-admintheme'."
+                },
+                "AdminPreferences": {
+                  "type": "string",
+                  "description": "The cookie holding the admin preferences, e.g. the state of the admin menu. Defaults to '{TenantName}-adminPreferences'."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

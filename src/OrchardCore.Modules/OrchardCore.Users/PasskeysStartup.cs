@@ -1,4 +1,3 @@
-using System.Web;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -7,7 +6,6 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.RateLimits;
@@ -23,13 +21,6 @@ public sealed class PasskeysStartup : StartupBase
 {
     private static readonly string s_passkeyControllerName = typeof(PasskeyController).ControllerName();
 
-    private readonly string _tenantName;
-
-    public PasskeysStartup(ShellSettings shellSettings)
-    {
-        _tenantName = shellSettings.Name;
-    }
-
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddTransient<IConfigureOptions<IdentityPasskeyOptions>, PasskeyOptionsConfiguration>();
@@ -40,10 +31,11 @@ public sealed class PasskeysStartup : StartupBase
         services.AddAuthentication()
             .AddCookie(UserConstants.PasskeyAuthenticationScheme, options =>
             {
-                options.Cookie.Name = "orchpasskey_" + HttpUtility.UrlEncode(_tenantName);
                 options.Cookie.SameSite = SameSiteMode.Strict;
                 options.SlidingExpiration = false;
             });
+
+        services.ConfigureCookieName(UserConstants.PasskeyAuthenticationScheme, cookieNames => cookieNames.Passkey);
 
         // The state must outlive the time the browser waits for the user to use their passkey.
         services.AddOptions<CookieAuthenticationOptions>(UserConstants.PasskeyAuthenticationScheme)

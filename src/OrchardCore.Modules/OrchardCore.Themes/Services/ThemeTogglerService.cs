@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 using OrchardCore.Admin.Models;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Settings;
@@ -9,15 +10,18 @@ public class ThemeTogglerService
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ISiteService _siteService;
+    private readonly string _cookieName;
 
     public ThemeTogglerService(
         IHttpContextAccessor httpContextAccessor,
         ISiteService siteService,
-        ShellSettings shellSettings)
+        ShellSettings shellSettings,
+        IOptions<ThemesCookieOptions> cookieOptions)
     {
         _httpContextAccessor = httpContextAccessor;
         _siteService = siteService;
         CurrentTenant = shellSettings.Name;
+        _cookieName = cookieOptions.Value.AdminTheme;
     }
 
     public string CurrentTenant { get; }
@@ -28,9 +32,7 @@ public class ThemeTogglerService
 
         if (adminSettings.DisplayThemeToggler)
         {
-            var cookieName = $"{CurrentTenant}-admintheme";
-
-            if (_httpContextAccessor.HttpContext.Request.Cookies.TryGetValue(cookieName, out var value)
+            if (_httpContextAccessor.HttpContext.Request.Cookies.TryGetValue(_cookieName, out var value)
                 && !string.IsNullOrWhiteSpace(value))
             {
                 return value;

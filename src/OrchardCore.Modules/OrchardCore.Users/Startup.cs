@@ -1,5 +1,4 @@
 using System.Security.Claims;
-using System.Web;
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Authorization;
@@ -63,14 +62,7 @@ public sealed class Startup : StartupBase
     // Long enough to read the confirmation notice and request a new email again once the resend cooldown is over.
     private static readonly TimeSpan s_emailConfirmationCookieLifetime = TimeSpan.FromMinutes(10);
 
-    private readonly string _tenantName;
-
     private UserOptions _userOptions;
-
-    public Startup(ShellSettings shellSettings)
-    {
-        _tenantName = shellSettings.Name;
-    }
 
     public override void ConfigureServices(IServiceCollection services)
     {
@@ -93,6 +85,12 @@ public sealed class Startup : StartupBase
         services.AddIdentity<IUser, IRole>()
             .AddTokenProvider<DataProtectorTokenProvider<IUser>>(TokenOptions.DefaultProvider);
 
+        services.ConfigureOptions<UsersCookieOptionsSetup>();
+        services.ConfigureCookieName(IdentityConstants.ApplicationScheme, cookieNames => cookieNames.Authentication);
+        services.ConfigureCookieName(IdentityConstants.ExternalScheme, cookieNames => cookieNames.ExternalAuthentication);
+        services.ConfigureCookieName(IdentityConstants.TwoFactorUserIdScheme, cookieNames => cookieNames.TwoFactorUserId);
+        services.ConfigureCookieName(IdentityConstants.TwoFactorRememberMeScheme, cookieNames => cookieNames.TwoFactorRememberMe);
+
         // Configure token provider for email confirmation.
         services.AddTransient<IConfigureOptions<IdentityOptions>, EmailConfirmationIdentityOptionsConfigurations>()
             .AddTransient<EmailConfirmationTokenProvider>()
@@ -108,19 +106,18 @@ public sealed class Startup : StartupBase
         services.AddAuthentication()
             .AddCookie(UserConstants.EmailConfirmationAuthenticationScheme, options =>
             {
-                options.Cookie.Name = "orchemail_" + HttpUtility.UrlEncode(_tenantName);
                 options.Cookie.SameSite = SameSiteMode.Strict;
                 options.ExpireTimeSpan = s_emailConfirmationCookieLifetime;
                 options.SlidingExpiration = false;
             });
+
+        services.ConfigureCookieName(UserConstants.EmailConfirmationAuthenticationScheme, cookieNames => cookieNames.EmailConfirmation);
 
         services.AddUsers();
 
         services.ConfigureApplicationCookie(options =>
         {
             var userOptions = ShellScope.Services.GetRequiredService<IOptions<UserOptions>>();
-
-            options.Cookie.Name = "orchauth_" + HttpUtility.UrlEncode(_tenantName);
 
             // Don't set the cookie builder 'Path' so that it uses the 'IAuthenticationFeature' value
             // set by the pipeline and coming from the request 'PathBase' which already ends with the

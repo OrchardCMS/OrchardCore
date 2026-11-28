@@ -76,6 +76,7 @@ public sealed class Startup : StartupBase
         services.AddScoped(typeof(IAdminListItemDisplayManager<>), typeof(DefaultAdminListItemDisplayManager<>));
         services.AddScoped<AdminListLayoutResolver>();
         services.AddScoped<IAdminListColumnsBuilder, DefaultAdminListColumnsBuilder>();
+        services.ConfigureOptions<AdminCookieOptionsSetup>();
         services.AddScoped<AdminListLayoutPreference>();
 
         // The 'OrchardCore_Admin' section is deprecated and will be removed in a future major version, use 'Admin' instead.

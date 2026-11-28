@@ -5,6 +5,7 @@
 @inject ThemeTogglerService ThemeTogglerService
 @inject AdminSchemeService AdminSchemes
 @inject IOptions<AdminOptions> AdminOptions
+@inject IOptions<OrchardCore.Themes.ThemesCookieOptions> ThemesCookieOptions
 @inject IOptionsMonitor<AdminListOptions> AdminListOptions
 @inject IDisplayManager<Navbar> DisplayManager
 @inject IUpdateModelAccessor UpdateModelAccessor
@@ -33,7 +34,7 @@
     var schemesUrl = await AdminSchemes.GetStylesheetUrlAsync(Url);
 }
 <!DOCTYPE html>
-<html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()" data-bs-theme="@await ThemeTogglerService.CurrentTheme()" data-tenant="@ThemeTogglerService.CurrentTenant" data-ta-scheme="@(await AdminSchemes.GetSchemeAttributeAsync())" data-admin-prefix="@Url.Content("~/" + AdminOptions.Value.AdminUrlPrefix)">
+<html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()" data-bs-theme="@await ThemeTogglerService.CurrentTheme()" data-tenant="@ThemeTogglerService.CurrentTenant" data-ta-scheme="@(await AdminSchemes.GetSchemeAttributeAsync())" data-admin-preferences-cookie="@ThemesCookieOptions.Value.AdminPreferences" data-admin-prefix="@Url.Content("~/" + AdminOptions.Value.AdminUrlPrefix)">
 <head>
     <title>@RenderTitleSegments(Site.SiteName, "before")</title>
     <meta charset="utf-8">

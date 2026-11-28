@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Options;
@@ -14,19 +15,26 @@ public class ContentCulturePickerService : IContentCulturePickerService
     private readonly ISiteService _siteService;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly CulturePickerOptions _culturePickerOptions;
+    private readonly string _cookieName;
 
     public ContentCulturePickerService(
         IAutorouteEntries autorouteEntries,
         ILocalizationEntries localizationEntries,
         ISiteService siteService,
         IHttpContextAccessor httpContextAccessor,
-        IOptions<CulturePickerOptions> culturePickerOptions)
+        IOptions<CulturePickerOptions> culturePickerOptions,
+        IOptions<RequestLocalizationOptions> requestLocalizationOptions)
     {
         _autorouteEntries = autorouteEntries;
         _localizationEntries = localizationEntries;
         _siteService = siteService;
         _httpContextAccessor = httpContextAccessor;
         _culturePickerOptions = culturePickerOptions.Value;
+        // Use the cookie read by the request localization, its name is configured by the 'OrchardCore.Localization' module.
+        _cookieName = requestLocalizationOptions.Value.RequestCultureProviders
+            .FirstOrDefault(provider => provider.GetType() == typeof(CookieRequestCultureProvider)) is CookieRequestCultureProvider provider
+            ? provider.CookieName
+            : CookieRequestCultureProvider.DefaultCookieName;
     }
 
     public async Task<string> GetContentItemIdFromRouteAsync(PathString url)
@@ -103,9 +111,9 @@ public class ContentCulturePickerService : IContentCulturePickerService
         var httpContext = _httpContextAccessor.HttpContext;
         var response = httpContext.Response;
         // Set the cookie to handle redirecting to a custom controller
-        response.Cookies.Delete(CookieRequestCultureProvider.DefaultCookieName);
+        response.Cookies.Delete(_cookieName);
         response.Cookies.Append(
-            CookieRequestCultureProvider.DefaultCookieName,
+            _cookieName,
             CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(targetCulture)),
             new CookieOptions
             {
