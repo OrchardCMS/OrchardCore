@@ -23,6 +23,12 @@ To alter the presentation of a particular HTTP status code, you can easily creat
 
 We utilize a template named `HttpError` to structure the default output of the undefined error.
 
+## Error Rendering Scope
+
+When Diagnostics re-executes a request to render an exception or an HTTP status-code error, it uses a fresh service scope for the current tenant. Both `HttpContext.RequestServices` and `ShellScope.Services` resolve services from this scope, so scoped state such as page-title segments and the theme layout is not reused from the failed request.
+
+The request's own scope is restored afterward, including when rendering the error page fails. Exceptions aren't re-executed in the Development environment, where the developer exception page is used instead.
+
 ## Utilizing the Templates Feature for Customizing Error Pages
 
 You can utilize the [Templates](../Templates/README.md) feature to modify the appearance of your error pages.

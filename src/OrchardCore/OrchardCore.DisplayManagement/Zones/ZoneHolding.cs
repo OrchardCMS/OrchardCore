@@ -20,6 +20,8 @@ public class ZoneHolding : Shape, IZoneHolding
     private readonly Func<ValueTask<IShape>> _zoneFactory;
     private Zones _zones;
 
+    internal int ZoneVersion { get; private set; }
+
     public ZoneHolding(Func<ValueTask<IShape>> zoneFactory)
     {
         _zoneFactory = zoneFactory;
@@ -30,6 +32,27 @@ public class ZoneHolding : Shape, IZoneHolding
     }
 
     public Zones Zones => _zones ??= new Zones(this);
+
+    /// <summary>
+    /// Removes shape-valued properties and cached rendered content without replacing this shape or its metadata.
+    /// </summary>
+    /// <remarks>
+    /// Shape-valued properties are treated as zones, as in layout rendering.
+    /// Zone placeholders retrieved before the reset add to the zones created after it.
+    /// </remarks>
+    internal void ResetZones()
+    {
+        foreach (var property in Properties.ToArray())
+        {
+            if (property.Value is IShape)
+            {
+                Properties.Remove(property.Key);
+            }
+        }
+
+        Metadata.ChildContent = null;
+        ZoneVersion++;
+    }
 
     public override bool TryGetMember(System.Dynamic.GetMemberBinder binder, out object result)
     {

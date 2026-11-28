@@ -14,12 +14,14 @@ public class ZoneOnDemand : Shape
     private readonly ZoneHolding _parent;
     private readonly string _potentialZoneName;
     private IShape _zone;
+    private int _zoneVersion;
 
     public ZoneOnDemand(Func<ValueTask<IShape>> zoneFactory, ZoneHolding parent, string potentialZoneName)
     {
         _zoneFactory = zoneFactory;
         _parent = parent;
         _potentialZoneName = potentialZoneName;
+        _zoneVersion = parent?.ZoneVersion ?? 0;
     }
 
     internal ZoneOnDemand(ZoneHolding parent, string potentialZoneName)
@@ -108,6 +110,13 @@ public class ZoneOnDemand : Shape
 
     public override async ValueTask<IShape> AddAsync(object item, string position)
     {
+        if (_parent is not null && _zoneVersion != _parent.ZoneVersion)
+        {
+            _zoneVersion = _parent.ZoneVersion;
+            _parent.Properties.TryGetValue(_potentialZoneName, out var zone);
+            _zone = zone is ZoneOnDemand ? null : zone as IShape;
+        }
+
         if (item == null)
         {
             if (_zone != null)

@@ -11,6 +11,7 @@ using OrchardCore.Contents;
 using OrchardCore.Data.Documents;
 using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Documents;
 using OrchardCore.Layers.Handlers;
@@ -24,6 +25,8 @@ namespace OrchardCore.Layers.Services;
 public sealed class LayerFilter : IAsyncResultFilter
 {
     private const string WidgetsKey = "OrchardCore.Layers.LayerFilter:AllWidgets";
+    private const string LayerWidgetName = "OrchardCore.Layers.LayerFilter:Widget";
+    private const string WidgetsAddedKey = "OrchardCore.Layers.LayerFilter:WidgetsAdded";
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly ILayoutAccessor _layoutAccessor;
     private readonly IContentItemDisplayManager _contentItemDisplayManager;
@@ -61,8 +64,32 @@ public sealed class LayerFilter : IAsyncResultFilter
 
     public async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
     {
+        if (!context.IsViewOrPageResult())
+        {
+            await next.Invoke();
+            return;
+        }
+
+        // Re-execution can reuse the layout, but must reevaluate layers for the new path,
+        // including when it renders an admin page. Only a request that added widgets can hold stale ones.
+        if (context.HttpContext.Items.ContainsKey(WidgetsAddedKey))
+        {
+            var previousLayout = await _layoutAccessor.GetLayoutAsync();
+
+            foreach (var property in previousLayout.Properties)
+            {
+                if (property.Value is Shape zone)
+                {
+                    while (zone.Named(LayerWidgetName) is not null)
+                    {
+                        zone.Remove(LayerWidgetName);
+                    }
+                }
+            }
+        }
+
         // Should only run on the front-end for a full view
-        if (context.IsViewOrPageResult() && !AdminAttribute.IsApplied(context.HttpContext))
+        if (!AdminAttribute.IsApplied(context.HttpContext))
         {
             // Even if the Admin attribute is not applied we might be using the admin theme, for instance in Login views.
             // In this case don't render Layers.
@@ -153,9 +180,12 @@ public sealed class LayerFilter : IAsyncResultFilter
                         widget.Zone);
 
                     wrapper.Metadata.Alternates.AddRange(cachedAlternates);
+                    wrapper.Metadata.Name = LayerWidgetName;
 
                     var contentZone = layout.Zones[widget.Zone];
 
+                    // The value isn't important, it's just a marker for a later re-execution.
+                    context.HttpContext.Items[WidgetsAddedKey] = null;
                     await contentZone.AddAsync(wrapper, "");
                 }
             }

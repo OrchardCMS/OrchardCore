@@ -14,6 +14,8 @@ When you add a widget into a zone, you must also select a Layer to associate the
 
 You can select the checkbox next to each Layer in order to highlight the associated Widgets on the left.
 
+When a request is re-executed to display an error page, layer rules are evaluated for that page. Previously added layer widgets are replaced, without duplicating widgets or removing unrelated zone content.
+
 In the rule you may specify multiple conditions which must evaluate to true, or you can use condition groups, `All` or `Any`, to vary the rule.
 
 ![The Edit Layer page, with the Available Rules dialog open.](images/layer-rules.webp)
