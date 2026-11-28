@@ -44,6 +44,100 @@ public sealed class AdminListLayoutTests : CmsTestBase<AdminListLayoutTestsFixtu
     public AdminListLayoutTests(AdminListLayoutTestsFixture fixture) : base(fixture) { }
 
     [Fact]
+    public async Task ActionsLayout_Menu_LocalizationsSubmenuCreatesAndEditsTranslations()
+    {
+        var page = await Fixture.CreatePageAsync();
+        await page.LoginAsync();
+        var consoleErrors = page.CollectConsoleErrors();
+
+        await page.EnableFeatureAsync(string.Empty, "OrchardCore.ContentLocalization");
+        await page.GotoAndAssertOkAsync("/Admin/Settings/localization");
+        await page.Locator(".localization-settings-wrapper input[name$='SupportedCultures']").WaitForAsync(new() { State = WaitForSelectorState.Attached });
+        await page.Locator(".localization-settings-wrapper").EvaluateAsync(
+            """
+            element => {
+                element.querySelector('input[name$="SupportedCultures"]').value = JSON.stringify(['en-US', 'fr-FR', 'de-DE']);
+                element.querySelector('input[name$="DefaultCulture"]').value = 'en-US';
+            }
+            """);
+        await page.ClickSaveAsync();
+        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+
+        await page.GotoAndAssertOkAsync("/Admin/ContentTypes/AddPartsTo/Article");
+        var part = page.Locator("li.list-group-item").Filter(new() { Has = page.Locator("input[value='LocalizationPart']") });
+        await part.Locator("input[type='checkbox']").CheckAsync();
+        await page.ClickSaveAsync();
+        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+
+        await page.GotoAndAssertOkAsync("/Admin/Contents/ContentTypes/Article/Create");
+        await page.Locator("#TitlePart_Title").FillAsync("Menu localization article");
+        await page.ClickPublishAsync();
+        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+
+        foreach (var layout in new[] { "List", "Grid" })
+        {
+            await page.SetAdminListSettingsAsync(layout, allowUserSelection: false, actionsLayout: "Menu");
+            var actionsSetting = page.GetByLabel("Actions layout", new() { Exact = true });
+            await Assertions.Expect(actionsSetting.Locator("xpath=ancestor::fieldset[1]/legend")).ToHaveTextAsync("Appearance");
+
+            await page.GotoAndAssertOkAsync("/Admin/Contents/ContentItems");
+            var row = page.Locator(".admin-list-grid-row, ul.admin-list-list > li.list-group-item")
+                .Filter(new() { HasText = "Menu localization article" });
+            var actions = row.Locator(".admin-list-actions-menu");
+            var toggle = actions.Locator(":scope > button");
+            var localizations = actions.Locator("button.localizations");
+            var createFrench = actions.Locator("a[title='Create French (France)']");
+            var editFrench = actions.Locator("a[title='Edit French (France)']");
+
+            await toggle.ClickAsync();
+            await localizations.ClickAsync();
+            await Assertions.Expect(toggle).ToHaveAttributeAsync("aria-expanded", "true");
+            await Assertions.Expect(actions.Locator("a[title='Create German (Germany)']")).ToBeVisibleAsync();
+
+            await localizations.ClickAsync();
+            await Assertions.Expect(localizations).ToHaveAttributeAsync("aria-expanded", "false");
+            await Assertions.Expect(toggle).ToHaveAttributeAsync("aria-expanded", "true");
+
+            await localizations.PressAsync("ArrowDown");
+            await Assertions.Expect(actions.Locator(".localizations + .dropdown-menu a").First).ToBeFocusedAsync();
+            await page.Keyboard.PressAsync("Escape");
+            await Assertions.Expect(localizations).ToBeFocusedAsync();
+            await Assertions.Expect(toggle).ToHaveAttributeAsync("aria-expanded", "true");
+
+            await localizations.ClickAsync();
+            await toggle.ClickAsync();
+            await Assertions.Expect(localizations).ToHaveAttributeAsync("aria-expanded", "false");
+            await toggle.ClickAsync();
+            await Assertions.Expect(localizations).ToHaveAttributeAsync("aria-expanded", "false");
+            await localizations.ClickAsync();
+
+            if (layout == "List")
+            {
+                await createFrench.ClickAsync();
+                await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+                await page.Locator("#TitlePart_Title").FillAsync("French localization article");
+                await page.ClickPublishAsync();
+                await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            }
+            else
+            {
+                await editFrench.ClickAsync();
+                await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+                await Assertions.Expect(page.Locator("#TitlePart_Title")).ToHaveValueAsync("French localization article");
+            }
+        }
+
+        await page.SetAdminListSettingsAsync("List", allowUserSelection: false, actionsLayout: "Buttons");
+        await page.GotoAndAssertOkAsync("/Admin/Contents/ContentItems");
+        await page.Locator(".localizations").First.ClickAsync();
+        await Assertions.Expect(page.Locator(".localizations").First).ToHaveAttributeAsync("aria-expanded", "true");
+        await Assertions.Expect(page.Locator(".localizations + .dropdown-menu.show a").First).ToBeVisibleAsync();
+
+        Assert.Empty(consoleErrors);
+        await page.CloseAsync();
+    }
+
+    [Fact]
     public async Task LayoutSelector_UserPicksGrid_ListRendersViewDefinedColumnsAndKeepsTheChoice()
     {
         var page = await Fixture.CreatePageAsync();

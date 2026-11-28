@@ -22,3 +22,24 @@
         text-decoration: none;
     }
 }
+
+// Nested action menus expand inline so they remain usable at the edges of the viewport.
+.admin-list-actions-menu,
+.action-bar-menu {
+    .dropdown-menu .dropdown-menu {
+        position: static !important;
+        transform: none !important;
+        margin: 0;
+        padding-inline-start: 1rem;
+        border: 0;
+        box-shadow: none;
+    }
+
+    .dropdown-menu .btn-group:has(> .dropdown-menu) {
+        flex-wrap: wrap;
+
+        > .dropdown-menu {
+            width: 100%;
+        }
+    }
+}

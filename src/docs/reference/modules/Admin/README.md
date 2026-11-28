@@ -541,12 +541,14 @@ Most lists share their first and last columns, so `AdminListColumns` declares th
 
 ### Row actions
 
-The `Actions` and `ActionsMenu` zones of a row are rendered by the `AdminListActions` shape in the layout selected under **Settings → Admin → Actions layout**. `AdminSettings.ActionsLayout` is a nullable `AdminListActionsLayout` enum. Select **Use configuration default** to clear the override and inherit `AdminListOptions.DefaultActionsLayout`. Exactly two layouts are supported:
+The `Actions` and `ActionsMenu` zones of a row are rendered by the `AdminListActions` shape in the layout selected under **Settings → Admin → Appearance → Actions layout**. `AdminSettings.ActionsLayout` is a nullable `AdminListActionsLayout` enum. Select **Use configuration default** to clear the override and inherit `AdminListOptions.DefaultActionsLayout`. Exactly two layouts are supported:
 
 | Layout    | Description                                                                                                   |
 | --------- | ------------------------------------------------------------------------------------------------------------- |
 | `Buttons` | The default. The shapes of the `Actions` zone as buttons, followed by an "Actions" dropdown for `ActionsMenu`. |
 | `Menu`    | A single dropdown opened by an ellipsis button, holding the `Actions` shapes (restyled as menu items) and the `ActionsMenu` shapes. |
+
+In TheAdmin, dropdown actions such as **Localizations** expand inside the containing menu. Opening or closing a submenu keeps the containing menu open; selecting an action or dismissing the containing menu closes its submenus.
 
 Row templates render it with `@await DisplayAsync(await Factory.CreateAdminListActionsAsync((IShape)Model))`, which creates the shape with its properties rather than through the dynamic `New`, since it is rendered once per row. The `Grid` layout renders it in the `Actions` column, so the actions layout applies to every list layout. The alternates are `AdminListActions__{Layout}`, `AdminListActions__{ListName}` and `AdminListActions__{ListName}__{Layout}`. Themes can override the Buttons or Menu templates, including per list, but option shapes do not register additional choices. For example, override the Buttons presentation to render icon buttons without adding a third selectable mode.
 

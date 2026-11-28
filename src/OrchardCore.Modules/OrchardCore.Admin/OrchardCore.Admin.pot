@@ -155,31 +155,12 @@ msgstr[1] ""
 
 #: Views/AdminSettings-Lists.Edit.cshtml
 msgctxt "OrchardCore.Admin.Views.AdminSettings-Lists.Edit"
-msgid "Actions layout"
-msgstr ""
-
-#: Views/AdminSettings-Lists.Edit.cshtml
-msgctxt "OrchardCore.Admin.Views.AdminSettings-Lists.Edit"
-msgid "Buttons"
-msgstr ""
-
-#: Views/AdminSettings-Lists.Edit.cshtml
-msgctxt "OrchardCore.Admin.Views.AdminSettings-Lists.Edit"
 msgid "Grid"
 msgstr ""
 
-#. Format arguments: {0}: "OrchardCore:Admin:List:DefaultActionsLayout"
 #: Views/AdminSettings-Lists.Edit.cshtml
-#, csharp-format
 msgctxt "OrchardCore.Admin.Views.AdminSettings-Lists.Edit"
-msgid "How the actions of each list row and the secondary actions of the bottom action bar of edit pages are displayed: as buttons, or in a single compact menu. On small screens the secondary actions of the bottom action bar are always in a menu. Use the configuration default to inherit {0} from appsettings.json."
-msgstr ""
-
-#. Format arguments: {0}: "OrchardCore:Admin:List:DefaultLayout"
-#: Views/AdminSettings-Lists.Edit.cshtml
-#, csharp-format
-msgctxt "OrchardCore.Admin.Views.AdminSettings-Lists.Edit"
-msgid "How the admin lists are rendered, e.g. the content items list. Use the configuration default to inherit {0} from appsettings.json."
+msgid "How the admin lists are rendered, e.g. the content items list. Use the configuration default to inherit from appsettings.json."
 msgstr ""
 
 #: Views/AdminSettings-Lists.Edit.cshtml
@@ -195,11 +176,6 @@ msgstr ""
 #: Views/AdminSettings-Lists.Edit.cshtml
 msgctxt "OrchardCore.Admin.Views.AdminSettings-Lists.Edit"
 msgid "List layout"
-msgstr ""
-
-#: Views/AdminSettings-Lists.Edit.cshtml
-msgctxt "OrchardCore.Admin.Views.AdminSettings-Lists.Edit"
-msgid "Menu"
 msgstr ""
 
 #: Views/AdminSettings-Lists.Edit.cshtml
@@ -284,12 +260,37 @@ msgstr ""
 
 #: Views/AdminSettings.Edit.cshtml
 msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
+msgid "Actions layout"
+msgstr ""
+
+#: Views/AdminSettings.Edit.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
+msgid "Buttons"
+msgstr ""
+
+#: Views/AdminSettings.Edit.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
 msgid "Display titles in top bar"
 msgstr ""
 
 #: Views/AdminSettings.Edit.cshtml
 msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
 msgid "Enable theme toggler"
+msgstr ""
+
+#: Views/AdminSettings.Edit.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
+msgid "How the actions of each list row and the secondary actions of the bottom action bar of edit pages are displayed: as buttons, or in a single compact menu. On small screens the secondary actions of the bottom action bar are always in a menu. Use the configuration default to inherit from appsettings.json."
+msgstr ""
+
+#: Views/AdminSettings.Edit.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
+msgid "Menu"
+msgstr ""
+
+#: Views/AdminSettings.Edit.cshtml
+msgctxt "OrchardCore.Admin.Views.AdminSettings.Edit"
+msgid "Use configuration default"
 msgstr ""
 
 #: Views/AdminSettings.Edit.cshtml

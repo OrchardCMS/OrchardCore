@@ -217,7 +217,7 @@ Administrators decide which of these tools everyone sees.
 | **Show breadcrumb** | Shows the breadcrumb on admin pages. On by default. |
 | **Navigation menu behavior** | **Focused** (the default): only the section of the current page is open, and opening a section closes the others. **Persistent**: sections stay open until you close them, so several can be open at once. |
 | **List layout** | The layout every list starts with: **List** or **Grid**. **Use configuration default** keeps the layout your IT team set up, which is **List** unless they changed it. |
-| **Actions layout** | How the actions of each row, and the less common buttons at the bottom of edit pages, are shown: **Buttons**, or a single compact **Menu**. **Use configuration default** keeps the setting your IT team chose. On small screens the less common buttons of edit pages are always in a menu. |
+| **Actions layout** | Under **Appearance**. How the actions of each row, and the less common buttons at the bottom of edit pages, are shown: **Buttons**, or a single compact **Menu**. **Use configuration default** keeps the setting your IT team chose. On small screens the less common buttons of edit pages are always in a menu. |
 | **Let users choose the layout of a list** | Shows the **List** / **Grid** buttons on each list. On by default. Each person's choice applies to them only. |
 | **Recent content items in quick navigation** | Shown with the **Content Quick Navigation** feature. How many of the most recently updated content items quick navigation includes. Must be at least 1; the default is 50. |
 
