@@ -288,8 +288,9 @@ public sealed class TheAdminSchemeTests
         ]);
 
         var lines = css.Split('\n');
-        var light = Assert.Single(lines, line => line.StartsWith("[data-ta-scheme=\"custom-a\"]{", StringComparison.Ordinal));
-        var dark = Assert.Single(lines, line => line.StartsWith("[data-bs-theme=\"dark\"][data-ta-scheme=\"custom-a\"]{", StringComparison.Ordinal));
+        // Each rule ends with the scheme's own selector, after the selector of a nested area (see the test below).
+        var light = Assert.Single(lines, line => line.Contains(",[data-ta-scheme=\"custom-a\"]{", StringComparison.Ordinal));
+        var dark = Assert.Single(lines, line => line.Contains(",[data-bs-theme=\"dark\"][data-ta-scheme=\"custom-a\"]{", StringComparison.Ordinal));
 
         Assert.Contains("--ta-font-scale:1.0625;", light, StringComparison.Ordinal);
         Assert.Contains("--ta-font-family:\"Lato\"", light, StringComparison.Ordinal);
@@ -297,6 +298,48 @@ public sealed class TheAdminSchemeTests
         Assert.DoesNotContain("--ta-font", dark, StringComparison.Ordinal);
         Assert.DoesNotContain("--ta-density", dark, StringComparison.Ordinal);
         Assert.DoesNotContain("--ta-radius-scale", dark, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void Stylesheet_AnAreaInAColorModeOfItsOwn_TakesTheTokensOfThatMode()
+    {
+        var css = Build(
+        [
+            new AdminScheme { Id = "custom-a", Name = "A", Primary = "#2a81bb", Deep = "#144c71", Ink = "#081b26", Accent = "#5aa4ef" },
+        ]);
+
+        var lines = css.Split('\n');
+
+        // A light area in the dark mode (or a dark one in the light mode) shares the rule of its mode; an area that names a
+        // scheme of its own, a scheme's preview, is left to that scheme's rules.
+        Assert.Single(lines, line => line.StartsWith(
+            "[data-ta-scheme=\"custom-a\"] [data-bs-theme=\"light\"]:not([data-ta-scheme]),[data-ta-scheme=\"custom-a\"]{",
+            StringComparison.Ordinal));
+        Assert.Single(lines, line => line.StartsWith(
+            "[data-ta-scheme=\"custom-a\"] [data-bs-theme=\"dark\"]:not([data-ta-scheme]),[data-bs-theme=\"dark\"][data-ta-scheme=\"custom-a\"]{",
+            StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void CompiledFallback_AnAreaInAColorModeOfItsOwn_TakesTheTokensOfThatMode()
+    {
+        var css = ReadCompiledStylesheet();
+
+        Assert.Contains(":root [data-bs-theme=light]:not([data-ta-scheme]),\n:root {", css, StringComparison.Ordinal);
+        Assert.Contains(":root [data-bs-theme=dark]:not([data-ta-scheme]),\n:root[data-bs-theme=dark] {", css, StringComparison.Ordinal);
+    }
+
+    [Theory]
+    [MemberData(nameof(DefaultSchemes))]
+    public void Tokens_WriteTheTripletsOfTheMutedAndSecondarySurfaces(string id)
+    {
+        // Bootstrap's background utilities (.bg-body-tertiary, .bg-body-secondary) read the triplets, not the colors.
+        var light = Light(s_builtIn[id]);
+        var dark = Dark(s_builtIn[id]);
+
+        Assert.Equal(Color(light["--ta-surface-muted"]).ToTriplet(), light["--ta-surface-muted-rgb"]);
+        Assert.Equal(Color(dark["--ta-surface-muted"]).ToTriplet(), dark["--ta-surface-muted-rgb"]);
+        Assert.Equal(Color(dark["--ta-secondary-bg"]).ToTriplet(), dark["--ta-secondary-bg-rgb"]);
     }
 
     private static string Build(IEnumerable<AdminScheme> schemes)
@@ -421,10 +464,16 @@ public sealed class TheAdminSchemeTests
         return new AdminColor(channels[0], channels[1], channels[2]);
     }
 
+    private static string CompiledStylesheetPath
+        => Path.Combine(FindRepositoryRoot(), "src", "OrchardCore.Themes", "TheAdmin", "wwwroot", "css", "TheAdmin.css");
+
+    private static string ReadCompiledStylesheet()
+        => File.ReadAllText(CompiledStylesheetPath).Replace("\r\n", "\n", StringComparison.Ordinal);
+
     private static Dictionary<string, string> ReadBlock(string selector, string mustContain)
     {
-        var path = Path.Combine(FindRepositoryRoot(), "src", "OrchardCore.Themes", "TheAdmin", "wwwroot", "css", "TheAdmin.css");
-        var css = File.ReadAllText(path).Replace("\r\n", "\n", StringComparison.Ordinal);
+        var path = CompiledStylesheetPath;
+        var css = ReadCompiledStylesheet();
         var start = 0;
 
         while ((start = css.IndexOf(selector + " {", start, StringComparison.Ordinal)) >= 0)

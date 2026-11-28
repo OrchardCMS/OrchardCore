@@ -229,6 +229,7 @@ $ui-contrast: 3.1;
     --ta-surface: #ffffff;
     --ta-surface-rgb: 255, 255, 255;
     --ta-surface-muted: #{$surface-muted};
+    --ta-surface-muted-rgb: #{rgb-triplet($surface-muted)};
     --ta-toolbar-bg: #{$toolbar};
     --ta-toolbar-fg: #{on-primary($scheme)};
     --ta-toolbar-fg-rgb: #{rgb-triplet(on-primary($scheme))};
@@ -274,6 +275,7 @@ $ui-contrast: 3.1;
     $surfaces: ($page, $surface, $surface-muted, $tint-start, $tint-end, $list-header, $row-hover);
     $border: tone($hue, 49% * $k, 28%);
     $body-color: tone($hue, 35% * $k, 92%);
+    $secondary-bg: tone($hue, 55% * $k, 23.3%);
     $link: ensure-contrast($accent, $surfaces, $text-contrast, #fff);
 
     // Hovering and pressing darken the buttons in both modes, so their white text keeps its contrast.
@@ -292,9 +294,11 @@ $ui-contrast: 3.1;
     --ta-surface: #{$surface};
     --ta-surface-rgb: #{rgb-triplet($surface)};
     --ta-surface-muted: #{$surface-muted};
+    --ta-surface-muted-rgb: #{rgb-triplet($surface-muted)};
     --ta-list-header-bg: #{$list-header};
     --ta-row-hover-bg: #{$row-hover};
-    --ta-secondary-bg: #{tone($hue, 55% * $k, 23.3%)};
+    --ta-secondary-bg: #{$secondary-bg};
+    --ta-secondary-bg-rgb: #{rgb-triplet($secondary-bg)};
     --ta-border: #{$border};
     --ta-control-border: #{ensure-contrast($border, $surfaces, $ui-contrast, #fff)};
     // A checked box keeps the primary fill under its white mark, outlined in the accent so it stands out.
@@ -313,10 +317,15 @@ $ui-contrast: 3.1;
     @include menu-dark($scheme, $primary);
 }
 
+// An area with a color mode of its own (Bootstrap's 'data-bs-theme' on any element, e.g. a light preview in the dark
+// mode) takes the tokens of that mode, as Bootstrap's own variables do, instead of inheriting those of <html>. An area that
+// names a scheme of its own (a scheme's preview) has that scheme's rules.
+:root [data-bs-theme="light"]:not([data-ta-scheme]),
 :root {
     @include scheme-light(map.get($schemes, $default-scheme));
 }
 
+:root [data-bs-theme="dark"]:not([data-ta-scheme]),
 :root[data-bs-theme="dark"] {
     @include scheme-dark(map.get($schemes, $default-scheme));
 }
