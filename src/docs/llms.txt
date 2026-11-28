@@ -137,7 +137,8 @@ Orchard Core consists of two different targets:
 - [Glossary](reference/glossary/README.md): Glossary of Orchard Core terms and concepts.
 - [Branding](reference/branding/README.md): Orchard Core branding guidelines and assets.
 - [Contributing](contributing/README.md): How to contribute to Orchard Core development.
-- [Release Notes](releases/2.2.1.md): Latest release notes and changelog.
+- [Release Notes](releases/3.0.1.md): Release notes for 3.0.1, the latest stable release.
+- [4.0.0 Release Notes](releases/4.0.0.md): Release notes for 4.0.0, in development on the main branch (preview packages).
 
 ## Source Code and Community
 
